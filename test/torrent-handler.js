@@ -5,7 +5,7 @@
 const client = new WebTorrent(),
     dummyTorrent = client.add('06d67cc41f44fd57241551b6d95c2d1de38121ae'),
     torrentPrototype = Object.getPrototypeOf(dummyTorrent),
-      announceList = [
+    announceList = [
         ['udp://tracker.openbittorrent.com:80'],
         ['udp://tracker.internetwarriors.net:1337'],
         ['udp://tracker.leechers-paradise.org:6969'],
@@ -26,6 +26,32 @@ WEBTORRENT_ANNOUNCE = announceList
     .filter(function (url) {
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
+
+function addTorrent(magnet) {
+    if (client.torrents[0]) {
+        client.remove(client.torrents[0].infoHash)
+    }
+    client.add(magnet, async function (torrent) {
+        const server = await torrent.createServer()
+        await server.listen()
+
+        let a = document.createElement('a')
+        a.href = a.innerText = `/webtorrent/${torrent.infoHash}/`
+        a.target = '_blank'
+        document.body.appendChild(a)
+
+        let videoFile = torrent.files[0]
+        torrent.files.forEach(file => {
+            if (file.length > videoFile.length) {
+                videoFile = file
+            }
+        }
+
+        )
+        video.src = `/webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
+    })
+}
+
 
 function getPageHTML(title, pageHtml) {
     return "<!DOCTYPE html><html><head><meta><title>" + title + "</title></head><body>" + pageHtml + "<body></html>";

@@ -10,35 +10,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/webtorrent/0.102.4/webtorrent.min.js"></script>
   <script src="range-parser.js"></script>
   <script src="torrent-handler.js"></script>
-  <script>
-    function addTorrent(magnet) {
-      client.add(magnet, async function (torrent) {
-        const server = await torrent.createServer()
-        await server.listen()
-
-        let a = document.createElement('a')
-        a.href = a.innerText = `/webtorrent/${torrent.infoHash}/`
-        a.target = '_blank'
-        document.body.appendChild(a)
-
-        let videoFile = torrent.files[0]
-        torrent.files.forEach(file => {
-            if (file.length > videoFile.length){
-              videoFile = file
-            }
-        }
-
-        )
-
-        let video = document.createElement('video')
-        video.controls = true
-        video.src = `/webtorrent/${torrent.infoHash}/${videoFile.path}`
-        document.body.appendChild(video)
-      })
-    }
     // addTorrent('magnet:?xt=urn:btih:051f0b074ffbdb44c51c5bc0f11b42200b14c3e4&dn=%5BHorribleSubs%5D%20The%20God%20of%20High%20School%20-%2007%20%5B1080p%5D.mkv&tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce')
-    addTorrent('magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F')
-
+    // addTorrent('magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F')
   </script>
 </body>
 

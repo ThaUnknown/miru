@@ -1,4 +1,4 @@
-let controls,
+var controls,
     video,
     player,
     volume;
@@ -186,6 +186,7 @@ function bfull() {
 
 function seek(a) {
     video.currentTime += a;
+    updateDisplay()
 }
 
 //bar related shit
