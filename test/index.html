@@ -1,186 +1,216 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>browser server test</title>
-  </head>
-  <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/webtorrent/0.102.4/webtorrent.min.js"></script>
-    <script src="range-parser.js"></script>
-    <script>
-      const client = new WebTorrent()
-      const sintel = 'magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F'
 
-      client.add(sintel, async function(torrent) {
-        const server = await torrent.createServer()
-        await server.listen()
+<head>
+  <meta charset="utf-8">
+  <title>browser server test</title>
+</head>
 
-        const a = document.createElement('a')
-        a.href = a.innerText = `./webtorrent/${torrent.infoHash}/`
-        a.innerText += ' (opens in a new tab - since you need to have this page open for webtorrent to work)'
-        a.target = '_blank'
-        document.body.appendChild(a)
-
-        const video = document.createElement('video')
-        video.controls = true
-        video.src = `./webtorrent/${torrent.infoHash}/${torrent.files[5].path}`
-        document.body.appendChild(video)
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/webtorrent/0.102.4/webtorrent.min.js"></script>
+  <script src="range-parser.js"></script>
+  <script>
+    const client = new WebTorrent()
+    const announceList = [
+      ['udp://tracker.openbittorrent.com:80'],
+      ['udp://tracker.internetwarriors.net:1337'],
+      ['udp://tracker.leechers-paradise.org:6969'],
+      ['udp://tracker.coppersurfer.tk:6969'],
+      ['udp://exodus.desync.com:6969'],
+      ['wss://tracker.webtorrent.io'],
+      ['wss://tracker.btorrent.xyz'],
+      ['wss://tracker.openwebtorrent.com'],
+      ['wss://tracker.fastcast.nz']
+    ]
+    
+    WEBTORRENT_ANNOUNCE = announceList
+      .map(function (arr) {
+        return arr[0]
       })
+      .filter(function (url) {
+        return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
+      })
+    const sintel =
+      'magnet:?xt=urn:btih:051f0b074ffbdb44c51c5bc0f11b42200b14c3e4&dn=%5BHorribleSubs%5D%20The%20God%20of%20High%20School%20-%2007%20%5B1080p%5D.mkv&tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce'
 
-      // Wish there where a easier way to get some of webtorrent's classes so i can patch stuff
-      // const WebTorrent = require('webtorrent')
-      // const { Torrent } = WebTorrent
-      const dummyTorrent = client.add('06d67cc41f44fd57241551b6d95c2d1de38121ae')
-      const torrentPrototype = Object.getPrototypeOf(dummyTorrent)
-      client.remove('06d67cc41f44fd57241551b6d95c2d1de38121ae')
+    client.add(sintel, async function (torrent) {
+      const server = await torrent.createServer()
+      await server.listen()
 
-      function getPageHTML (title, pageHtml) {
-        return "<!DOCTYPE html><html><head><meta><title>" + title + "</title></head><body>" + pageHtml + "<body></html>";
-      }
+      const a = document.createElement('a')
+      a.href = a.innerText = `/webtorrent/${torrent.infoHash}/`
+      a.target = '_blank'
+      document.body.appendChild(a)
 
-      // From https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
-      function encodeRFC5987 (str) {
-        return encodeURIComponent(str)
-          // Note that although RFC3986 reserves "!", RFC5987 does not,
-          // so we do not need to escape it
-          .replace(/['()]/g, escape) // i.e., %27 %28 %29
-          .replace(/\*/g, '%2A')
-          // The following are not required for percent-encoding per RFC5987,
-          // so we can allow for a little better readability over the wire: |`^
-          .replace(/%(?:7C|60|5E)/g, unescape)
-      }
+      const video = document.createElement('video')
+      video.controls = true
+      video.src = `/webtorrent/${torrent.infoHash}/${torrent.files[0].path}`
+      document.body.appendChild(video)
+    })
 
-      torrentPrototype.createServer = function(requestListener) {
-        if (this.destroyed) throw new Error('torrent is destroyed')
+    // Wish there where a easier way to get some of webtorrent's classes so i can patch stuff
+    // const WebTorrent = require('webtorrent')
+    // const { Torrent } = WebTorrent
+    const dummyTorrent = client.add('06d67cc41f44fd57241551b6d95c2d1de38121ae')
+    const torrentPrototype = Object.getPrototypeOf(dummyTorrent)
+    client.remove('06d67cc41f44fd57241551b6d95c2d1de38121ae')
 
-        let registration = null
-        const torrent = this
+    function getPageHTML(title, pageHtml) {
+      return "<!DOCTYPE html><html><head><meta><title>" + title + "</title></head><body>" + pageHtml + "<body></html>";
+    }
 
-        function serveIndexPage () {
-          const listHtml = torrent.files.map((file, i) => `<li><a x_download="${file.name}" href="${registration.scope}webtorrent/${torrent.infoHash}/${file.path}">${file.path}</a> (${file.length} bytes)</li>`).join('<br>')
+    // From https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+    function encodeRFC5987(str) {
+      return encodeURIComponent(str)
+        // Note that although RFC3986 reserves "!", RFC5987 does not,
+        // so we do not need to escape it
+        .replace(/['()]/g, escape) // i.e., %27 %28 %29
+        .replace(/\*/g, '%2A')
+        // The following are not required for percent-encoding per RFC5987,
+        // so we can allow for a little better readability over the wire: |`^
+        .replace(/%(?:7C|60|5E)/g, unescape)
+    }
 
-          const body = getPageHTML(
-            `${torrent.name} - WebTorrent`,
-            `<h1>${torrent.name}</h1><ol>${listHtml}</ol>`
-          )
+    torrentPrototype.createServer = function (requestListener) {
+      if (this.destroyed) throw new Error('torrent is destroyed')
 
-          return {
-            status: 200,
-            headers: {'Content-Type': 'text/html'},
-            body,
-          }
-        }
+      let registration = null
+      const torrent = this
 
-        function serve404Page () {
-          return {
-            status: 404,
-            headers: {'Content-Type': 'text/html'},
-            body: getPageHTML('404 - Not Found', '<h1>404 - Not Found</h1>')
-          }
-        }
+      function serveIndexPage() {
+        const listHtml = torrent.files.map((file, i) =>
+          `<li><a x_download="${file.name}" href="${registration.scope}webtorrent/${torrent.infoHash}/${file.path}">${file.path}</a> (${file.length} bytes)</li>`
+          ).join('<br>')
 
-        function serveFile (file, req) {
-          const res = {
-            status: 200,
-            headers: {
-              'Content-Type': file._getMimeType(),
-              // Support range-requests
-              'Accept-Ranges': 'bytes',
-              // Set name of file (for "Save Page As..." dialog)
-              'Content-Disposition': `inline; filename*=UTF-8''${encodeRFC5987(file.name)}`
-            }
-          }
+        const body = getPageHTML(
+          `${torrent.name} - WebTorrent`,
+          `<h1>${torrent.name}</h1><ol>${listHtml}</ol>`
+        )
 
-          // `rangeParser` returns an array of ranges, or an error code (number) if
-          // there was an error parsing the range.
-          let range = rangeParser(file.length, new Headers(req.headers).get('range') || '')
-
-          if (Array.isArray(range)) {
-            res.status = 206 // indicates that range-request was understood
-
-            // no support for multi-range request, just use the first range
-            range = range[0]
-
-            res.headers['Content-Range'] = `bytes ${range.start}-${range.end}/${file.length}`
-            res.headers['Content-Length'] =  `${range.end - range.start + 1}`
-          } else {
-            range = null
-            res.headers['Content-Length'] = file.length
-          }
-
-          if (req.method === 'HEAD') res.body = ''
-          else res.stream = file.createReadStream(range)
-
-          return res
-        }
-
-
-        navigator.serviceWorker.addEventListener('message', evt => {
-          const root = new URL(registration.scope).pathname
-          const url = new URL(evt.data.url)
-          const pathname = url.pathname.split(`webtorrent/${torrent.infoHash}/`)[1]
-          const respond = msg => evt.ports[0].postMessage(msg)
-
-          if (pathname === '') {
-            return respond(serveIndexPage())
-          }
-
-          const file = torrent.files.find(f => f.path === pathname)
-          const res = serveFile(file, evt.data)
-          if (res.stream) {
-            const stream = res.stream
-            delete res.stream
-
-            stream.once('end', () => {
-              respond(null)  // Signal end event
-              evt.ports[0].onmessage = null
-            })
-
-            evt.ports[0].onmessage = evt => {
-              const chunk = stream.read()
-              if (chunk === null) {
-                stream.once('readable', () => {
-                  const chunk = stream.read()
-                  respond(new Uint8Array(chunk))
-                })
-              } else {
-                respond(new Uint8Array(chunk))
-              }
-            }
-          }
-
-          respond(res)
-        })
-
-        const res = {
-          listen(port) {
-            const scope = `./`
-            res.scope = scope
-            return navigator.serviceWorker.getRegistration(scope).then(swReg => {
-              return swReg || navigator.serviceWorker.register('sw.js', { scope })
-            }).then(swReg => {
-              registration = swReg
-              res.scope = registration.scope
-              res.registration = registration
-              let swRegTmp = swReg.installing || swReg.waiting
-
-              if (swReg.active)
-                return
-
-              return new Promise(rs => {
-                swRegTmp.onstatechange = () => {
-                  if (swRegTmp.state === 'activated') rs()
-                }
-              })
-            })
+        return {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/html'
           },
-          close() {
-            registration && registration.unregister()
+          body,
+        }
+      }
+
+      function serve404Page() {
+        return {
+          status: 404,
+          headers: {
+            'Content-Type': 'text/html'
+          },
+          body: getPageHTML('404 - Not Found', '<h1>404 - Not Found</h1>')
+        }
+      }
+
+      function serveFile(file, req) {
+        const res = {
+          status: 200,
+          headers: {
+            'Content-Type': file._getMimeType(),
+            // Support range-requests
+            'Accept-Ranges': 'bytes',
+            // Set name of file (for "Save Page As..." dialog)
+            'Content-Disposition': `inline; filename*=UTF-8''${encodeRFC5987(file.name)}`
           }
         }
+
+        // `rangeParser` returns an array of ranges, or an error code (number) if
+        // there was an error parsing the range.
+        let range = rangeParser(file.length, new Headers(req.headers).get('range') || '')
+
+        if (Array.isArray(range)) {
+          res.status = 206 // indicates that range-request was understood
+
+          // no support for multi-range request, just use the first range
+          range = range[0]
+
+          res.headers['Content-Range'] = `bytes ${range.start}-${range.end}/${file.length}`
+          res.headers['Content-Length'] = `${range.end - range.start + 1}`
+        } else {
+          range = null
+          res.headers['Content-Length'] = file.length
+        }
+
+        if (req.method === 'HEAD') res.body = ''
+        else res.stream = file.createReadStream(range)
 
         return res
       }
-    </script>
-  </body>
+
+
+      navigator.serviceWorker.addEventListener('message', evt => {
+        const root = new URL(registration.scope).pathname
+        const url = new URL(evt.data.url)
+        const pathname = url.pathname.split(`webtorrent/${torrent.infoHash}/`)[1]
+        const respond = msg => evt.ports[0].postMessage(msg)
+
+        if (pathname === '') {
+          return respond(serveIndexPage())
+        }
+
+        const file = torrent.files.find(f => pathname)
+        const res = serveFile(file, evt.data)
+        if (res.stream) {
+          const stream = res.stream
+          delete res.stream
+
+          stream.once('end', () => {
+            respond(null) // Signal end event
+            evt.ports[0].onmessage = null
+          })
+
+          evt.ports[0].onmessage = evt => {
+            const chunk = stream.read()
+            if (chunk === null) {
+              stream.once('readable', () => {
+                const chunk = stream.read()
+                respond(new Uint8Array(chunk))
+              })
+            } else {
+              respond(new Uint8Array(chunk))
+            }
+          }
+        }
+
+        respond(res)
+      })
+
+      const res = {
+        listen(port) {
+          const scope = `./`
+          res.scope = scope
+          return navigator.serviceWorker.getRegistration(scope).then(swReg => {
+            return swReg || navigator.serviceWorker.register('sw.js', {
+              scope
+            })
+          }).then(swReg => {
+            registration = swReg
+            res.scope = registration.scope
+            res.registration = registration
+            let swRegTmp = swReg.installing || swReg.waiting
+
+            if (swReg.active)
+              return
+
+            return new Promise(rs => {
+              swRegTmp.onstatechange = () => {
+                if (swRegTmp.state === 'activated') rs()
+              }
+            })
+          })
+        },
+        close() {
+          registration && registration.unregister()
+        }
+      }
+
+      return res
+    }
+  </script>
+</body>
+
 </html>
