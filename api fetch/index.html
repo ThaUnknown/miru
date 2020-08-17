@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="generator" content="">
+    <title>API</title>
+
+    <link href="css.css" rel="stylesheet">
+    <link href="css1.css" rel="stylesheet">
+    <script src='js.js' defer></script>
+</head>
+
+<body>
+    <div class="view bg-dark ovf-y-scroll" hidden>
+        <div class="banner">
+            <img class="cover-img">
+            <button type="button" class="close" onclick="hideAnime()">
+                <span>&times;</span>
+            </button>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mt-nc pb-4">
+                    <img class="contain-img rounded-lg">
+                </div>
+                <div class="col-9 py-4">
+                    <h4 class="title">
+                    </h4>
+                    <p class="text-muted desc">
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-black">
+            <div class="container">
+                <div class="row py-4">
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-body text-muted details">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-9">
+                        <table class="table table-borderless table-hover rounded-lg overflow-hidden">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Size</th>
+                                    <th scope="col">Seed</th>
+                                    <th scope="col">Leech</th>
+                                    <th scope="col">Downloads</th>
+                                    <th scope="col">Play</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center pt-5">
+        <div class="container">
+            <form class="input-group mb-3" action="javascript:search()">
+                <div class="input-group-prepend">
+                    <button class="btn btn-secondary" type="submit">O</button>
+                </div>
+                <input type="text" class="form-control search" placeholder="Search" id="search">
+            </form>
+        </div>
+    </div>
+
+    <div class="container-fluid h-100">
+        <div class="gallery">
+        </div>
+    </div>
+</body>
+
+</html>

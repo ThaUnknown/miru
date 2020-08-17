@@ -1,0 +1,77 @@
+<script>
+    var query = `
+    query ($page: Int, $perPage: Int, $search: String, $type: MediaType) {
+        Page (page: $page, perPage: $perPage) {
+        pageInfo {
+            total
+            currentPage
+            lastPage
+            hasNextPage
+            perPage
+        }
+        media (type: $type, search: $search) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            description(
+                asHtml: true
+            )
+            season
+            seasonYear
+            format
+            status
+            episodes
+            duration
+            averageScore
+            genres
+            coverImage {
+                large
+            }
+            bannerImage
+        }
+    }
+}
+`;
+
+    var variables = {
+        search: "Fate/Zero",
+        type: "ANIME",
+        page: 1,
+        perPage: 50
+    };
+
+    var url = 'https://graphql.anilist.co',
+        options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                query: query,
+                variables: variables
+            })
+        };
+
+    fetch(url, options).then(handleResponse)
+        .then(handleData)
+        .catch(handleError);
+
+    function handleResponse(response) {
+        return response.json().then(function(json) {
+            return response.ok ? json : Promise.reject(json);
+        });
+    }
+
+    function handleData(data) {
+        console.log(data);
+    }
+
+    function handleError(error) {
+        console.error(error);
+    }
+
+</script>

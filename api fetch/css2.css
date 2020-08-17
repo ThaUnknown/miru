@@ -1,0 +1,280 @@
+:root {
+    font-size: 15px;
+    font-family: Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    --nav-size: 5rem;
+    --accent-color: #e5204c;
+    --volume-level: 100%;
+    --progress: 0%;
+    --buffer: 0%;
+    color: #b6b6b6;
+}
+
+::-webkit-scrollbar {
+    display: none
+}
+
+html,
+body {
+    margin: 0;
+    background: #222;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.cont {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: row
+}
+
+/*NAVBAR*/
+
+
+nav {
+    min-width: 5rem;
+    height: 100vh;
+    z-index: 100;
+}
+
+nav:hover ul {
+    max-width: 13.4rem;
+    transition: max-width .2s ease
+}
+
+nav ul {
+    overflow-x: hidden;
+    max-width: var(--nav-size);
+    background: #111;
+    position: absolute;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    transition: max-width .2s ease;
+}
+
+nav li {
+    width: 100%;
+}
+
+nav li:last-child {
+    margin-top: auto;
+}
+
+nav a {
+    display: flex;
+    align-items: center;
+    height: 5rem;
+    text-decoration: none;
+    filter: grayscale(100%) opacity(0.7);
+    color: #b6b6b6;
+}
+
+nav a:hover i {
+    filter: drop-shadow(0 0 4px #888);
+}
+
+nav a:hover {
+    filter: grayscale(0%) opacity(1);
+    color: #ececec;
+}
+
+nav span {
+    margin: 0 3rem 0 1rem;
+    font-weight: 600
+}
+
+.nav i {
+    font-size: 2rem !important;
+    min-width: 2rem;
+    margin: 0 1.5rem;
+}
+
+nav img {
+    width: 3rem;
+    margin: 0 1rem;
+}
+
+
+/*PLAYER*/
+
+
+#player:target {
+    bottom: 0;
+    right: 0;
+    position: relative;
+    align-self: center;
+    width: 100%;
+    height: 100%;
+    transition: none !important;
+    display: flex
+}
+
+#player {
+    position: absolute;
+    display: flex;
+    bottom: 2rem;
+    right: 2rem;
+    width: 25%;
+    transition: width .2s ease;
+    z-index: 10
+}
+
+
+#player video {
+    width: 100%;
+}
+
+#player:target a {
+    display: none;
+}
+
+#player a {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 10
+}
+
+#player:target .controls {
+    display: flex;
+    font-family: Roboto, monospace
+}
+
+#player .controls {
+    display: none
+}
+
+.controls {
+    position: absolute;
+    align-self: flex-end;
+    align-items: flex-end;
+    user-select: none;
+    min-width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, .8), rgba(0, 0, 0, .4) 25%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .1) 75%, transparent);
+    opacity: 1;
+    transition: .5s opacity ease
+}
+
+.controls > *:hover {
+    filter: drop-shadow(0 0 8px #000);
+}
+
+.controls span {
+    font-size: 1.7rem !important;
+    color: #ececec;
+    padding: 1rem;
+    transition: all .2s ease;
+    cursor: pointer
+}
+
+.controls .ts {
+    font-size: 1.3rem !important;
+    white-space: nowrap;
+    align-self: center;
+    cursor: default;
+    padding: 0 1rem;
+    font-weight: 600
+}
+
+#prog {
+    width: 100%;
+    align-self: center;
+    padding: 1rem 0;
+}
+
+.volume {
+    display: flex;
+    width: auto
+}
+
+.volume:hover > input[type=range] {
+    width: 5vw;
+    display: inline-block;
+    transition: all .1s ease;
+    margin-right: 1rem
+}
+
+.volume > input[type=range] {
+    width: 0;
+    transition: all .1s ease;
+    margin-right: 0
+}
+
+.controls input[type=range] {
+    -webkit-appearance: none;
+    background: transparent;
+    margin: 0
+}
+
+.controls input[type=range]:focus {
+    outline: none;
+}
+
+.controls input#vol[type=range]::-webkit-slider-runnable-track {
+    width: 50%;
+    height: 3px;
+    cursor: pointer;
+    background: linear-gradient(90deg, #e5204c var(--volume-level), rgba(255, 255, 255, .2) var(--volume-level))
+}
+
+.controls input#prog[type=range]::-webkit-slider-runnable-track {
+    width: 50%;
+    height: 3px;
+    cursor: pointer;
+    background: linear-gradient(90deg, #e5204c var(--progress), rgba(255, 255, 255, .4) var(--progress), rgba(255, 255, 255, .4) var(--buffer), rgba(255, 255, 255, .2) var(--buffer))
+}
+
+.controls input[type=range]:hover::-webkit-slider-thumb {
+    height: 12px;
+    width: 12px;
+    margin-top: -4px
+}
+
+.controls input[type=range]::-webkit-slider-thumb {
+    height: 0px;
+    width: 0px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: 1px;
+    transition: all .1s ease
+}
+
+
+/*BROWSE*/
+/*CONTAINER*/
+
+#browse {
+    width: 100%;
+    height: 100vh;
+    flex-direction: column;
+    position: relative;
+    overflow-y: scroll
+}
+
+#browse:target {
+    display: flex
+}
+
+/*PREVIEW*/
+
+/*DETAILS*/
+
+
+/*SEARCH*/
+
+
+/*SECTIONS*/
+
+
+section {
+    display: none
+}

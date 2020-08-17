@@ -1,0 +1,76 @@
+::-webkit-scrollbar {
+    display: none
+}
+
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.bg-tp-dark {
+    background: rgba(48, 48, 48, 0.6)
+}
+.bg-black{
+    background: #222
+}
+
+.cover-img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%
+}
+.contain-img {
+    object-fit: contain;
+    width: 100%
+}
+.banner {
+    height: 400px;
+    opacity: 0.85
+}
+.mt-nc{
+    margin-top: -150px
+}
+.view{
+    position: fixed;
+    z-index: 9;
+    height: 100vh;
+    width: 100%;
+    top: 0;
+    left: 0
+}
+.desc {
+    max-height: 210px;
+    overflow: scroll
+}
+
+.ovf-y-scroll {
+    overflow-y: scroll
+}
+
+.card-grid {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+
+.search {
+    background: #444 !important;
+    color: #ADB5BD !important;
+    border-color: #444;
+}
+
+.gallery .card {
+    cursor: pointer;
+    transition: transform .2s ease;
+}
+.gallery .card:hover {
+    transform: scale(1.05)
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 540px);
+    grid-auto-rows: 280px;
+    justify-content: center;
+    grid-gap: 2rem;
+    padding: 2rem;
+}
