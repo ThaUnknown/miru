@@ -210,7 +210,7 @@ function tsearch(a, b) {
                                     <td>${i("seeders").textContent}</td>
                                     <td>${i("leechers").textContent}</td>
                                     <td>${i("downloads").textContent}</td>
-                                    <td onclick="console.log('${i('link').textContent}')">Play</td>
+                                    <td onclick="addTorrent('${i('infoHash').textContent}')">Play</td>
                             `
                     frag.appendChild(template)
                 })
