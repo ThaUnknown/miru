@@ -49,7 +49,7 @@ function addTorrent(magnet) {
 
 
 function getPageHTML(title, pageHtml) {
-    return "<!DOCTYPE html><html><head><meta><title>" + title + "</title></head><body>" + pageHtml + "<body></html>";
+    return `<!DOCTYPE html><html><head><meta><title>${title}</title></head><body>${pageHtml}<body></html>`;
 }
 
 // From https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent

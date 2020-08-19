@@ -4,25 +4,7 @@
  * Copyright(c) 2015-2016 Douglas Christopher Wilson
  * MIT Licensed
  */
-
 'use strict'
-
-/**
- * Module exports.
- * @public
- */
-
-// module.exports = rangeParser
-
-/**
- * Parse "Range" header `str` relative to the given file `size`.
- *
- * @param {Number} size
- * @param {String} str
- * @param {Object} [options]
- * @return {Array}
- * @public
- */
 
 function rangeParser (size, str, options) {
   if (typeof str !== 'string') {

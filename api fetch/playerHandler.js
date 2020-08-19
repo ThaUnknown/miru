@@ -20,7 +20,7 @@ document.onreadystatechange = function () {
         video.addEventListener("playing", playcheck);
         video.addEventListener("canplay", updateDisplay);
         video.addEventListener("loadedmetadata", setduration);
-        video.addEventListener("click", bpp)
+        video.addEventListener("click", bpp);
         immerse();
 
         for (let i = 0; i < controls.length; i++) {
@@ -78,15 +78,15 @@ function toTS(sec) {
     var minutes = Math.floor((sec - (hours * 3600)) / 60);
     var seconds = Math.floor(sec - (hours * 3600) - (minutes * 60));
     if (minutes < 10) {
-        minutes = "0" + minutes;
+        minutes = `0${minutes}`;
     }
     if (seconds < 10) {
-        seconds = "0" + seconds;
+        seconds = `0${seconds}`;
     }
     if (hours > 0) {
-        return hours + ':' + minutes + ':' + seconds;
+        return `${hours}:${minutes}:${seconds}`;
     } else {
-        return minutes + ':' + seconds;
+        return `${minutes}:${seconds}`;
     }
 }
 

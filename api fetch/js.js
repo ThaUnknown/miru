@@ -165,10 +165,10 @@ function handleData(data) {
         console.error(e)
     }
     if (hasBegun) {
-        document.querySelector('.gallery').textContent = '';
+        document.querySelector(".gallery").textContent = '';
         hasBegun = false;
     }
-    document.querySelector('.gallery').appendChild(frag)
+    document.querySelector(".gallery").appendChild(frag)
 }
 function hideAnime(){
     document.querySelector(".view").setAttribute("hidden", "")
@@ -191,16 +191,16 @@ const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
 function tsearch(a, b) {
     let name = request.data.Page.media[a].title.romaji
     if (b < 10) {
-        b = "0" + b
+        b = `0${b}`
     }
-    let url = new URL("https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=" + name + " \" " + b + " \"")
+    let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${name}" ${b} "`)
     let frag = document.createDocumentFragment(),
         hasBegun = true
     fetch(url).then((res) => {
         res.text().then((xmlTxt) => {
             try {
                 let doc = DOMPARSER(xmlTxt, "text/xml")
-                doc.querySelectorAll('item').forEach((item, index) => {
+                doc.querySelectorAll("item").forEach((item, index) => {
                     let i = item.querySelector.bind(item),
                         template = document.createElement("tr")
                     template.innerHTML = `
@@ -218,12 +218,12 @@ function tsearch(a, b) {
                 console.error(e)
             }
             if (hasBegun) {
-                document.querySelector('tbody').textContent = '';
+                document.querySelector("tbody").textContent = "";
                 hasBegun = false;
             }
-            document.querySelector('tbody').appendChild(frag)
+            document.querySelector("tbody").appendChild(frag)
         })
-    }).catch(() => console.error('Error in fetching the RSS feed'))
+    }).catch(() => console.error("Error in fetching the RSS feed"))
 }
 
 
