@@ -1,12 +1,3 @@
-::-webkit-scrollbar {
-    display: none
-}
-
-* {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
 .bg-tp-dark {
     background: rgba(48, 48, 48, 0.6)
 }
