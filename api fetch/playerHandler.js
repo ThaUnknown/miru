@@ -1,35 +1,29 @@
-var controls,
-    video,
-    player,
-    volume;
-
 //create event listeners after page load
 
-document.onreadystatechange = function () {
-    if (document.readyState == "interactive") {
-        controls = document.getElementsByClassName('ctrl');
-        video = document.querySelector('#video');
-        player = document.querySelector('#player');
-        volume = document.querySelector('#vol');
-        progress = document.querySelector('#prog');
+const controls = document.getElementsByClassName('ctrl'),
+    video = document.querySelector('#video'),
+    player = document.querySelector('#player'),
+    volume = document.querySelector('#vol'),
+    progress = document.querySelector('#prog'),
+    peers = document.querySelector('#peers'),
+    downSpeed = document.querySelector('#down'),
+    upSpeed = document.querySelector('#up')
 
-        volume.addEventListener("input", function () {
-            updatevolume(null)
-        });
-        progress.addEventListener("input", setprogress);
-        video.addEventListener("playing", playcheck);
-        video.addEventListener("canplay", updateDisplay);
-        video.addEventListener("loadedmetadata", setduration);
-        video.addEventListener("click", bpp);
-        immerse();
+volume.addEventListener("input", function () {
+    updatevolume()
+});
+progress.addEventListener("input", setprogress);
+video.addEventListener("playing", playcheck);
+video.addEventListener("canplay", updateDisplay);
+video.addEventListener("loadedmetadata", setduration);
+video.addEventListener("click", bpp);
+immerse();
 
-        for (let i = 0; i < controls.length; i++) {
-            controls[i].addEventListener("click", function () {
-                let func = this.id;
-                window[func]()
-            })
-        }
-    }
+for (let i = 0; i < controls.length; i++) {
+    controls[i].addEventListener("click", function () {
+        let func = this.id;
+        window[func]()
+    })
 }
 //immerse timeout
 let immersetime;
@@ -38,12 +32,12 @@ function immerse() {
     document.onmousemove = resetTimer;
     document.onkeypress = resetTimer;
     function immerseplayer() {
-        document.querySelector('#player').classList.add('immersed')
+        player.classList.add('immersed')
     }
 
     function resetTimer() {
         clearTimeout(immersetime);
-        document.querySelector('#player').classList.remove('immersed')
+        player.classList.remove('immersed')
         immersetime = setTimeout(immerseplayer, 3000)
     }
 }
@@ -165,8 +159,7 @@ function bpip() {
 //theathe mode
 
 function btheatre() {
-    let nav = document.querySelector('#nav');
-    nav.classList.toggle('theatre');
+    halfmoon.toggleSidebar();
 }
 
 //fullscreen
@@ -251,33 +244,33 @@ if ('mediaSession' in navigator) {
                 src: 'https://dummyimage.com/96x96',
                 sizes: '96x96',
                 type: 'image/png'
-                },
+            },
             {
                 src: 'https://dummyimage.com/128x128',
                 sizes: '128x128',
                 type: 'image/png'
-                },
+            },
             {
                 src: 'https://dummyimage.com/192x192',
                 sizes: '192x192',
                 type: 'image/png'
-                },
+            },
             {
                 src: 'https://dummyimage.com/256x256',
                 sizes: '256x256',
                 type: 'image/png'
-                },
+            },
             {
                 src: 'https://dummyimage.com/384x384',
                 sizes: '384x384',
                 type: 'image/png'
-                },
+            },
             {
                 src: 'https://dummyimage.com/512x512',
                 sizes: '512x512',
                 type: 'image/png'
-                },
-    ]
+            },
+        ]
     });
 
     navigator.mediaSession.setActionHandler('play', function () {

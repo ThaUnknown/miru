@@ -66,11 +66,6 @@ function rangeParser (size, str, options) {
     : ranges
 }
 
-/**
- * Combine overlapping & adjacent ranges.
- * @private
- */
-
 function combineRanges (ranges) {
   var ordered = ranges.map(mapWithIndex).sort(sortByRangeStart)
 
@@ -100,11 +95,6 @@ function combineRanges (ranges) {
   return combined
 }
 
-/**
- * Map function to add index value to ranges.
- * @private
- */
-
 function mapWithIndex (range, index) {
   return {
     start: range.start,
@@ -113,11 +103,6 @@ function mapWithIndex (range, index) {
   }
 }
 
-/**
- * Map function to remove index value from ranges.
- * @private
- */
-
 function mapWithoutIndex (range) {
   return {
     start: range.start,
@@ -125,19 +110,9 @@ function mapWithoutIndex (range) {
   }
 }
 
-/**
- * Sort function to sort ranges by index.
- * @private
- */
-
 function sortByRangeIndex (a, b) {
   return a.index - b.index
 }
-
-/**
- * Sort function to sort ranges by start position.
- * @private
- */
 
 function sortByRangeStart (a, b) {
   return a.start - b.start

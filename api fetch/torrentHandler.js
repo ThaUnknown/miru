@@ -1,20 +1,24 @@
-// Wish there where a easier way to get some of webtorrent's classes so i can patch stuff
-// const WebTorrent = require('webtorrent')
-// const { Torrent } = WebTorrent
-
 const client = new WebTorrent(),
     dummyTorrent = client.add('06d67cc41f44fd57241551b6d95c2d1de38121ae'),
     torrentPrototype = Object.getPrototypeOf(dummyTorrent),
     announceList = [
-        ['udp://tracker.openbittorrent.com:80'],
-        ['udp://tracker.internetwarriors.net:1337'],
-        ['udp://tracker.leechers-paradise.org:6969'],
-        ['udp://tracker.coppersurfer.tk:6969'],
-        ['udp://exodus.desync.com:6969'],
         ['wss://tracker.webtorrent.io'],
         ['wss://tracker.btorrent.xyz'],
         ['wss://tracker.openwebtorrent.com'],
-        ['wss://tracker.fastcast.nz']
+        ['wss://tracker.fastcast.nz'],
+        ['wss://video.blender.org:443/tracker/socket'],
+        ['wss://tube.privacytools.io:443/tracker/socket'],
+        ['wss://tracker.sloppyta.co:443/announce'],
+        ['wss://tracker.lab.vvc.niif.hu:443/announce'],
+        ['wss://tracker.files.fm:7073/announce'],
+        ['wss://open.tube:443/tracker/socket'],
+        ['wss://hub.bugout.link:443/announce'],
+        ['wss://peertube.cpy.re:443/tracker/socket'],
+        ['ws://tracker.sloppyta.co:80/announce'],
+        ['ws://tracker.lab.vvc.niif.hu:80/announce'],
+        ['ws://tracker.files.fm:7072/announce'],
+        ['ws://tracker.btsync.cf:6969/announce'],
+        ['ws://hub.bugout.link:80/announce']
     ]
 client.remove('06d67cc41f44fd57241551b6d95c2d1de38121ae')
 
@@ -34,6 +38,15 @@ function addTorrent(magnet) {
     client.add(magnet, async function (torrent) {
         const server = await torrent.createServer()
         await server.listen()
+
+        torrent.on('download', onProgress)
+
+        function onProgress() {
+            peers.textContent = torrent.numPeers
+            downSpeed.textContent = prettyBytes(torrent.downloadSpeed) + '/s'
+            upSpeed.textContent = prettyBytes(torrent.uploadSpeed) + '/s'
+        }
+        // TODO: load video after downloading torrent data
 
         let videoFile = torrent.files[0]
         torrent.files.forEach(file => {
@@ -86,16 +99,6 @@ torrentPrototype.createServer = function (requestListener) {
                 'Content-Type': 'text/html'
             },
             body,
-        }
-    }
-
-    function serve404Page() {
-        return {
-            status: 404,
-            headers: {
-                'Content-Type': 'text/html'
-            },
-            body: getPageHTML('404 - Not Found', '<h1>404 - Not Found</h1>')
         }
     }
 
@@ -203,3 +206,13 @@ torrentPrototype.createServer = function (requestListener) {
 
     return res
 }
+
+function prettyBytes(num) {
+    var exponent, unit, neg = num < 0, units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    if (neg) num = -num
+    if (num < 1) return (neg ? '-' : '') + num + ' B'
+    exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1)
+    num = Number((num / Math.pow(1000, exponent)).toFixed(2))
+    unit = units[exponent]
+    return (neg ? '-' : '') + num + ' ' + unit
+  }

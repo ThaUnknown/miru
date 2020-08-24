@@ -144,8 +144,8 @@ function handleData(data) {
                             </div>
                             <div class="col-8 h-100 card-grid">
                                 <div class="card-header px-3 pb-1">
-                                    <h5 class="m-0 text-capitalize">${(!!media.season ? media.season.toLowerCase()+" ": "") + (!!media.seasonYear ? media.seasonYear : "")}</h5>
-                                    <p class="card-text text-muted mb-0 text-capitalize"><small>${((!!media.format ? (media.format == "TV" ? media.format + " Show" : media.format) + " • " : "")+(!!media.episodes ? media.episodes + " Episodes • " : (!!media.duration ? media.duration + " Minutes • " : "" ))+(!!media.status ? media.status.toLowerCase() : ""))}</small></p>
+                                    <h5 class="m-0 text-capitalize">${(!!media.season ? media.season.toLowerCase() + " " : "") + (!!media.seasonYear ? media.seasonYear : "")}</h5>
+                                    <p class="card-text text-muted mb-0 text-capitalize"><small>${((!!media.format ? (media.format == "TV" ? media.format + " Show" : media.format) + " • " : "") + (!!media.episodes ? media.episodes + " Episodes • " : (!!media.duration ? media.duration + " Minutes • " : "")) + (!!media.status ? media.status.toLowerCase() : ""))}</small></p>
                                 </div>
                                 <div class="card-body ovf-y-scroll px-3 py-2">
                                     <p class="card-text mb-0">${media.description}</p>
@@ -170,26 +170,27 @@ function handleData(data) {
     }
     document.querySelector(".gallery").appendChild(frag)
 }
-function hideAnime(){
+function hideAnime() {
     document.querySelector(".view").setAttribute("hidden", "")
 }
 
 function viewAnime(a) {
     let media = request.data.Page.media[a]
-    let details =["title.english","title.romaji","status","season","seasonYear","episodes","duration","format","averageScore"]
+    let details = ["title.english", "title.romaji", "status", "season", "seasonYear", "episodes", "duration", "format", "averageScore"]
     document.querySelector(".view").removeAttribute("hidden")
     document.querySelector(".view .banner img").src = media.bannerImage
     document.querySelector(".view .contain-img").src = media.coverImage.large
     document.querySelector(".view .contain-img").src = media.coverImage.large
     document.querySelector(".view .title").textContent = !!media.title.english ? media.title.english : media.title.romaji
     document.querySelector(".view .desc").innerHTML = !!media.description ? media.description : ""
-    tsearch(a,1)
+    tsearch(a, 1)
 }
 const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
 
 
 function tsearch(a, b) {
-    let name = request.data.Page.media[a].title.romaji
+    let name = request.data.Page.media[a].title.romaji,
+        table = document.querySelector("tbody.tsearch")
     if (b < 10) {
         b = `0${b}`
     }
@@ -204,7 +205,7 @@ function tsearch(a, b) {
                     let i = item.querySelector.bind(item),
                         template = document.createElement("tr")
                     template.innerHTML = `
-                                    <th scope="row">${(index+1)}</th>
+                                    <th>${(index + 1)}</th>
                                     <td>${i("title").textContent}</td>
                                     <td>${i("size").textContent}</td>
                                     <td>${i("seeders").textContent}</td>
@@ -218,10 +219,10 @@ function tsearch(a, b) {
                 console.error(e)
             }
             if (hasBegun) {
-                document.querySelector("tbody").textContent = "";
+                table.textContent = "";
                 hasBegun = false;
             }
-            document.querySelector("tbody").appendChild(frag)
+            table.appendChild(frag)
         })
     }).catch(() => console.error("Error in fetching the RSS feed"))
 }
