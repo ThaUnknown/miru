@@ -141,8 +141,9 @@ function bmute() {
     }
 }
 
+let level;
+
 function updatevolume(a) {
-    let level;
     if (a == null) {
         level = volume.value;
     } else {
@@ -228,56 +229,24 @@ document.onkeydown = function (a) {
 if ('mediaSession' in navigator) {
 
     navigator.mediaSession.metadata = new MediaMetadata({
-        title: 'Never Gonna Give You Up',
-        artist: 'Rick Astley',
-        album: 'Whenever You Need Somebody',
+        title: 'THE GOD OF HIGH SCHOOL',
+        artist: 'Miru',
         artwork: [
             {
-                src: 'https://dummyimage.com/96x96',
-                sizes: '96x96',
-                type: 'image/png'
-            },
-            {
-                src: 'https://dummyimage.com/128x128',
+                src: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/small/bx116006-XasdW0bB4n18.png',
                 sizes: '128x128',
                 type: 'image/png'
-            },
-            {
-                src: 'https://dummyimage.com/192x192',
-                sizes: '192x192',
-                type: 'image/png'
-            },
-            {
-                src: 'https://dummyimage.com/256x256',
-                sizes: '256x256',
-                type: 'image/png'
-            },
-            {
-                src: 'https://dummyimage.com/384x384',
-                sizes: '384x384',
-                type: 'image/png'
-            },
-            {
-                src: 'https://dummyimage.com/512x512',
-                sizes: '512x512',
-                type: 'image/png'
-            },
+            }
         ]
     });
 
-    navigator.mediaSession.setActionHandler('play', function () {
-        bpp();
-    });
-    navigator.mediaSession.setActionHandler('pause', function () {
-        bpp();
-    });
+    navigator.mediaSession.setActionHandler('play', bpp);
+    navigator.mediaSession.setActionHandler('pause', bpp);
     navigator.mediaSession.setActionHandler('seekbackward', function () {
         seek(-2);
     });
     navigator.mediaSession.setActionHandler('seekforward', function () {
         seek(2);
     });
-    navigator.mediaSession.setActionHandler('nexttrack', function () {
-        bnext();
-    });
+    navigator.mediaSession.setActionHandler('nexttrack', bnext);
 }

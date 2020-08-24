@@ -22,6 +22,13 @@
                 <a href="#" class="close" role="button" aria-label="Close">
                     <span aria-hidden="true" class="mb-5">&times;</span>
                 </a>
+                <div class="input-group mb-20">
+                    <input type="text" id="title" class="form-control" placeholder="Anime Name">
+                    <input type="number" id="ep" class="form-control flex-reset w-50" placeholder="#">
+                    <div class="input-group-append">
+                      <button class="btn btn-primary" type="button">Search</button>
+                    </div>
+                  </div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -145,11 +152,11 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.0.4/js/halfmoon.min.js"></script>
-    <script src='js.js' defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
+    <script src='animeHandler.js'></script>
     <script src="playerHandler.js"></script>
-    <script src="torrentHandler.js"></script>
-    <script src="rangeParser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js" defer></script>
+    <script src="torrentHandler.js" defer></script>
+    <script src="rangeParser.js" defer></script>
 </body>
 
 </html>

@@ -61,7 +61,8 @@ function alRequest(a) {
             averageScore
             genres
             coverImage {
-                large
+                extraLarge
+                medium
             }
             bannerImage
         }
@@ -100,7 +101,7 @@ function alRequest(a) {
             averageScore
             genres
             coverImage {
-                large
+                extraLarge
             }
             bannerImage
         }
@@ -135,7 +136,7 @@ function handleData(data) {
             template.innerHTML = `
                         <div class="row no-gutters h-100">
                             <div class="col-4 h-100">
-                                <img src="${media.coverImage.large}" class="cover-img">
+                                <img src="${media.coverImage.extraLarge}" class="cover-img">
                                 <div class="card-img-overlay d-flex align-content-end flex-wrap p-0">
                                     <div class="bg-tp-dark d-flex flex-grow-1 px-3 py-2">
                                         ${!!media.title.english ? media.title.english : media.title.romaji}
@@ -179,22 +180,26 @@ function viewAnime(index) {
     let details = ["title.english", "title.romaji", "status", "season", "seasonYear", "episodes", "duration", "format", "averageScore"]
     document.querySelector(".view").removeAttribute("hidden")
     document.querySelector(".view .banner img").src = media.bannerImage
-    document.querySelector(".view .contain-img").src = media.coverImage.large
-    document.querySelector(".view .contain-img").src = media.coverImage.large
+    document.querySelector(".view .contain-img").src = media.coverImage.extraLarge
+    document.querySelector(".view .contain-img").src = media.coverImage.extraLarge
     document.querySelector(".view .title").textContent = !!media.title.english ? media.title.english : media.title.romaji
     document.querySelector(".view .desc").innerHTML = !!media.description ? media.description : ""
     tsearch(index, 1)
 }
-const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
+const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser()),
+    searchTitle = document.querySelector("#title"),
+    searchEpisode = document.querySelector("#ep")
 
 
 function tsearch(index, episode) {
-    let name = request.data.Page.media[index].title.romaji,
+    let media = request.data.Page.media[index],
         table = document.querySelector("tbody.tsearch")
+        searchTitle.value = !!media.title.english ? media.title.english : media.title.romaji
+        searchEpisode.value = episode
     if (episode < 10) {
         episode = `0${episode}`
     }
-    let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${name}" ${episode} "`)
+    let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${media.title.romaji}" ${episode} "`)
     console.log(name)
     let frag = document.createDocumentFragment(),
         hasBegun = true
