@@ -1,5 +1,3 @@
-//create event listeners after page load
-
 const controls = document.getElementsByClassName('ctrl'),
     video = document.querySelector('#video'),
     player = document.querySelector('#player'),
@@ -8,7 +6,12 @@ const controls = document.getElementsByClassName('ctrl'),
     peers = document.querySelector('#peers'),
     downSpeed = document.querySelector('#down'),
     upSpeed = document.querySelector('#up'),
-    playPause = document.querySelector('#ptoggle')
+    playPause = document.querySelector('#ptoggle'),
+    btnpp = document.querySelector('#bpp'),
+    btnm = document.querySelector("#bmute"),
+    btnfull = document.querySelector('#bfull'),
+    elapsed = document.querySelector("#elapsed"),
+    remaining = document.querySelector("#remaining")
 
 volume.addEventListener("input", function () {
     updatevolume()
@@ -57,21 +60,25 @@ function setprogress() {
     updateDisplay();
 }
 
+let progresspercent,
+    bufferpercent,
+    remainingTime
+
 function updateDisplay() {
-    let progresspercent = (video.currentTime / duration * 100).toFixed(4),
-        bufferpercent = (video.buffered.end(video.buffered.length - 1) / duration * 100).toFixed(4),
-        remaining = duration - video.currentTime
+    progresspercent = (video.currentTime / duration * 100).toFixed(4)
+    bufferpercent = (video.buffered.end(video.buffered.length - 1) / duration * 100).toFixed(4)
+    remainingTime = duration - video.currentTime
     document.documentElement.style.setProperty("--progress", progresspercent + "%");
     document.documentElement.style.setProperty("--buffer", bufferpercent + "%");
-    document.querySelector("#elapsed").innerHTML = toTS(video.currentTime);
-    document.querySelector("#remaining").innerHTML = toTS(remaining);
+    elapsed.innerHTML = toTS(video.currentTime);
+    remaining.innerHTML = toTS(remainingTime);
     progress.value = Math.floor(progresspercent * 10)
 }
 
 function toTS(sec) {
-    var hours = Math.floor(sec / 3600);
-    var minutes = Math.floor((sec - (hours * 3600)) / 60);
-    var seconds = Math.floor(sec - (hours * 3600) - (minutes * 60));
+    let hours = Math.floor(sec / 3600),
+        minutes = Math.floor((sec - (hours * 3600)) / 60),
+        seconds = Math.floor(sec - (hours * 3600) - (minutes * 60));
     if (minutes < 10) {
         minutes = `0${minutes}`;
     }
@@ -99,15 +106,14 @@ function playcheck() {
 }
 
 //play/pause button
-const btnpp = document.querySelector('#bpp')
 async function playVideo() {
     try {
-      await video.play();
-      btnpp.innerHTML = "pause";
-    } catch(err) {
+        await video.play();
+        btnpp.innerHTML = "pause";
+    } catch (err) {
         btnpp.innerHTML = "play_arrow";
     }
-  }
+}
 function bpp() {
     if (video.paused) {
         playVideo();
@@ -136,8 +142,7 @@ function bmute() {
 }
 
 function updatevolume(a) {
-    let btnm = document.querySelector("#bmute"),
-        level;
+    let level;
     if (a == null) {
         level = volume.value;
     } else {
@@ -156,10 +161,9 @@ function bpip() {
     if (!document.pictureInPictureElement) {
         video.requestPictureInPicture();
 
-    } else {
-        if (document.pictureInPictureElement) {
-            document.exitPictureInPicture();
-        }
+    } else if (document.pictureInPictureElement) {
+        document.exitPictureInPicture();
+
     }
 }
 
@@ -172,38 +176,19 @@ function btheatre() {
 //fullscreen
 
 function bfull() {
-    let btnfull = document.querySelector('#bfull')
     if (!document.fullscreenElement) {
         player.requestFullscreen();
         btnfull.innerHTML = "fullscreen_exit"
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-            btnfull.innerHTML = "fullscreen"
-        }
+    } else if (document.exitFullscreen) {
+        document.exitFullscreen();
+        btnfull.innerHTML = "fullscreen"
+
     }
 }
 
 function seek(a) {
     video.currentTime += a;
     updateDisplay()
-}
-
-//bar related shit
-
-function getPositionP(e) {
-    let element = e.target.getBoundingClientRect();
-    let x = (e.offsetX / element.width).toFixed(5);
-    return {
-        x
-    };
-}
-
-function printPosition(e) {
-    let positionP = getPositionP(e);
-    e.onmousemove = function () {
-        document.querySelector('#vol').innerHTML = positionP.x
-    }
 }
 
 //keybinds

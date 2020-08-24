@@ -174,8 +174,8 @@ function hideAnime() {
     document.querySelector(".view").setAttribute("hidden", "")
 }
 
-function viewAnime(a) {
-    let media = request.data.Page.media[a]
+function viewAnime(index) {
+    let media = request.data.Page.media[index]
     let details = ["title.english", "title.romaji", "status", "season", "seasonYear", "episodes", "duration", "format", "averageScore"]
     document.querySelector(".view").removeAttribute("hidden")
     document.querySelector(".view .banner img").src = media.bannerImage
@@ -183,18 +183,19 @@ function viewAnime(a) {
     document.querySelector(".view .contain-img").src = media.coverImage.large
     document.querySelector(".view .title").textContent = !!media.title.english ? media.title.english : media.title.romaji
     document.querySelector(".view .desc").innerHTML = !!media.description ? media.description : ""
-    tsearch(a, 1)
+    tsearch(index, 1)
 }
 const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
 
 
-function tsearch(a, b) {
-    let name = request.data.Page.media[a].title.romaji,
+function tsearch(index, episode) {
+    let name = request.data.Page.media[index].title.romaji,
         table = document.querySelector("tbody.tsearch")
-    if (b < 10) {
-        b = `0${b}`
+    if (episode < 10) {
+        episode = `0${episode}`
     }
-    let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${name}" ${b} "`)
+    let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${name}" ${episode} "`)
+    console.log(name)
     let frag = document.createDocumentFragment(),
         hasBegun = true
     fetch(url).then((res) => {
