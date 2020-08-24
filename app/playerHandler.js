@@ -7,7 +7,8 @@ const controls = document.getElementsByClassName('ctrl'),
     progress = document.querySelector('#prog'),
     peers = document.querySelector('#peers'),
     downSpeed = document.querySelector('#down'),
-    upSpeed = document.querySelector('#up')
+    upSpeed = document.querySelector('#up'),
+    playPause = document.querySelector('#ptoggle')
 
 volume.addEventListener("input", function () {
     updatevolume()
@@ -16,7 +17,7 @@ progress.addEventListener("input", setprogress);
 video.addEventListener("playing", playcheck);
 video.addEventListener("canplay", updateDisplay);
 video.addEventListener("loadedmetadata", setduration);
-video.addEventListener("click", bpp);
+playPause.addEventListener("click", bpp);
 immerse();
 
 for (let i = 0; i < controls.length; i++) {
@@ -98,12 +99,18 @@ function playcheck() {
 }
 
 //play/pause button
-
+const btnpp = document.querySelector('#bpp')
+async function playVideo() {
+    try {
+      await video.play();
+      btnpp.innerHTML = "pause";
+    } catch(err) {
+        btnpp.innerHTML = "play_arrow";
+    }
+  }
 function bpp() {
-    let btnpp = document.querySelector('#bpp')
     if (video.paused) {
-        btnpp.innerHTML = "pause";
-        video.play();
+        playVideo();
     } else {
         btnpp.innerHTML = "play_arrow";
         video.pause();
