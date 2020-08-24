@@ -40,6 +40,7 @@ function addTorrent(magnet) {
         await server.listen()
 
         torrent.on('download', onProgress)
+        torrent.on('upload', onProgress)
 
         function onProgress() {
             peers.textContent = torrent.numPeers
@@ -53,9 +54,7 @@ function addTorrent(magnet) {
             if (file.length > videoFile.length) {
                 videoFile = file
             }
-        }
-
-        )
+        })
         video.src = `/webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
     })
 }
@@ -148,7 +147,7 @@ torrentPrototype.createServer = function (requestListener) {
             return respond(serveIndexPage())
         }
 
-        const file = torrent.files.find(f => f.path == decodeURIComponent(pathname))
+        const file = torrent.files.find(f => f.path === decodeURIComponent(pathname))
         const res = serveFile(file, evt.data)
         if (res.stream) {
             const stream = res.stream
@@ -215,4 +214,4 @@ function prettyBytes(num) {
     num = Number((num / Math.pow(1000, exponent)).toFixed(2))
     unit = units[exponent]
     return (neg ? '-' : '') + num + ' ' + unit
-  }
+}
