@@ -195,36 +195,37 @@ function seek(a) {
 //keybinds
 
 document.onkeydown = function (a) {
-    switch (a.key) {
-        case " ":
-            bpp();
-            break;
-        case "n":
-            bnext();
-            break;
-        case "m":
-            bmute();
-            break;
-        case "p":
-            bpip();
-            break;
-        case "t":
-            btheatre();
-            break;
-        case "f":
-            bfull();
-            break;
-        case "s":
-            seek(89);
-            break;
-        case "ArrowLeft":
-            seek(-2);
-            break;
-        case "ArrowRight":
-            seek(2);
+    if (document.location.href.endsWith("#player")){
+        switch (a.key) {
+            case " ":
+                bpp();
+                break;
+            case "n":
+                bnext();
+                break;
+            case "m":
+                bmute();
+                break;
+            case "p":
+                bpip();
+                break;
+            case "t":
+                btheatre();
+                break;
+            case "f":
+                bfull();
+                break;
+            case "s":
+                seek(89);
+                break;
+            case "ArrowLeft":
+                seek(-2);
+                break;
+            case "ArrowRight":
+                seek(2);
+        }
     }
 }
-
 //media session
 if ('mediaSession' in navigator) {
 

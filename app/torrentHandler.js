@@ -56,6 +56,7 @@ function addTorrent(magnet) {
             }
         })
         video.src = `/webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
+        document.location.href = "#player"
     })
 }
 

@@ -1,22 +1,30 @@
 :root {
-    /* font-size: 15px; */
     font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    /* --nav-size: 5rem; */
     --accent-color: #e5204c;
     --volume-level: 100%;
     --progress: 0%;
     --buffer: 0%;
     color: #b6b6b6;
+    font-size: 62.5%;
+    --nav-size: 19rem
 }
 
-body{
-    background: #222 !important;
+.material-icons {
+    font-size: 18px
 }
-
-
+.close{
+    font-family: Arial;
+}
 /* NAVBAR */
 .page-wrapper.with-sidebar[data-sidebar-hidden]>.sidebar {
-    left: -26rem;
+    left: var(--nav-size);
+}
+.sidebar {
+    width: var(--nav-size);
+}
+.page-wrapper.with-sidebar>.content-wrapper {
+    left: var(--nav-size);
+    width: calc(100% - var(--nav-size));
 }
 
 /*PLAYER*/
@@ -40,7 +48,7 @@ body{
 }
 
 #player {
-    position: absolute;
+    position: fixed;
     display: flex;
     bottom: 2rem;
     right: 2rem;
@@ -165,4 +173,14 @@ body{
     -webkit-appearance: none;
     margin-top: 1px;
     transition: all .1s ease
+}
+.pointer {
+    cursor: pointer
+}
+
+section{
+    display: none;
+}
+section:target{
+    display: block;
 }

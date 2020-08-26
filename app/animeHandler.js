@@ -132,30 +132,33 @@ function handleData(data) {
     try {
         data.data.Page.media.forEach((media, index) => {
             let template = document.createElement("div")
-            template.classList.add("card", "bg-dark")
+            template.classList.add("card", "m-0", "p-0")
             template.innerHTML = `
-                        <div class="row no-gutters h-100">
-                            <div class="col-4 h-100">
-                                <img src="${media.coverImage.extraLarge}" class="cover-img">
-                                <div class="card-img-overlay d-flex align-content-end flex-wrap p-0">
-                                    <div class="bg-tp-dark d-flex flex-grow-1 px-3 py-2">
-                                        ${!!media.title.english ? media.title.english : media.title.romaji}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-8 h-100 card-grid">
-                                <div class="card-header px-3 pb-1">
-                                    <h5 class="m-0 text-capitalize">${(!!media.season ? media.season.toLowerCase() + " " : "") + (!!media.seasonYear ? media.seasonYear : "")}</h5>
-                                    <p class="card-text text-muted mb-0 text-capitalize"><small>${((!!media.format ? (media.format == "TV" ? media.format + " Show" : media.format) + " • " : "") + (!!media.episodes ? media.episodes + " Episodes • " : (!!media.duration ? media.duration + " Minutes • " : "")) + (!!media.status ? media.status.toLowerCase() : ""))}</small></p>
-                                </div>
-                                <div class="card-body ovf-y-scroll px-3 py-2">
-                                    <p class="card-text mb-0">${media.description}</p>
-                                </div>
-                                <div class="card-footer px-3 py-2">
-                                    ${media.genres.map(key => (`<span class="badge badge-pill badge-primary">${key}</span> `)).join('')}
-                                </div>
-                            </div>
-                        </div>
+
+    <div class="row h-full">
+        <div class="col-4">
+            <img src="${media.coverImage.extraLarge}"
+                class="cover-img">
+        </div>
+        <div class="col-8 h-full card-grid">
+            <div class="px-15 py-10">
+                <h5 class="m-0 text-capitalize font-weight-bold">${!!media.title.english ? media.title.english : media.title.romaji}</h5>
+                <p class="text-muted m-0 text-capitalize details">
+                ${(!!media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format):"") + "</span>"}
+                ${!!media.episodes ? "<span>" + media.episodes + " Episodes</span>" : (!!media.duration ? "<span>" + media.duration + " Minutes</span>" : "")}
+                ${!!media.status ? "<span>"+ media.status.toLowerCase() +"</span>" : ""}
+                ${"<span>"+(!!media.season ? media.season.toLowerCase() + " " : "") + (!!media.seasonYear ? media.seasonYear : "")+"</span>"}
+                 </p>
+            </div>
+            <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
+                ${media.description}
+            </div>
+            <div class="px-15 py-10">
+                ${media.genres.map(key => (`<span class="badge badge-pill badge-primary">${key}</span> `)).join('')}
+            </div>
+        </div>
+    </div>
+
             `
             template.onclick = function () {
                 viewAnime(index)
@@ -171,36 +174,31 @@ function handleData(data) {
     }
     document.querySelector(".gallery").appendChild(frag)
 }
-function hideAnime() {
-    document.querySelector(".view").setAttribute("hidden", "")
-}
 
 function viewAnime(index) {
     let media = request.data.Page.media[index]
     let details = ["title.english", "title.romaji", "status", "season", "seasonYear", "episodes", "duration", "format", "averageScore"]
-    document.querySelector(".view").removeAttribute("hidden")
+    halfmoon.toggleModal("view")
     document.querySelector(".view .banner img").src = media.bannerImage
     document.querySelector(".view .contain-img").src = media.coverImage.extraLarge
     document.querySelector(".view .contain-img").src = media.coverImage.extraLarge
     document.querySelector(".view .title").textContent = !!media.title.english ? media.title.english : media.title.romaji
     document.querySelector(".view .desc").innerHTML = !!media.description ? media.description : ""
-    tsearch(index, 1)
+    tsearch(!!media.title.english ? media.title.english : media.title.romaji, 1)
 }
 const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser()),
     searchTitle = document.querySelector("#title"),
     searchEpisode = document.querySelector("#ep")
 
 
-function tsearch(index, episode) {
-    let media = request.data.Page.media[index],
-        table = document.querySelector("tbody.tsearch")
-        searchTitle.value = !!media.title.english ? media.title.english : media.title.romaji
+function tsearch(title, episode) {
+    let table = document.querySelector("tbody.tsearch")
+        searchTitle.value = title
         searchEpisode.value = episode
     if (episode < 10) {
         episode = `0${episode}`
     }
-    let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${media.title.romaji}" ${episode} "`)
-    console.log(name)
+    let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}" ${episode} "`)
     let frag = document.createDocumentFragment(),
         hasBegun = true
     fetch(url).then((res) => {
@@ -217,7 +215,7 @@ function tsearch(index, episode) {
                                     <td>${i("seeders").textContent}</td>
                                     <td>${i("leechers").textContent}</td>
                                     <td>${i("downloads").textContent}</td>
-                                    <td onclick="addTorrent('${i('infoHash').textContent}')">Play</td>
+                                    <td onclick="addTorrent('${i('infoHash').textContent}')" class="pointer">Play</td>
                             `
                     frag.appendChild(template)
                 })
@@ -231,6 +229,9 @@ function tsearch(index, episode) {
             table.appendChild(frag)
         })
     }).catch(() => console.error("Error in fetching the RSS feed"))
+}
+function tsearchform() {
+    tsearch(searchTitle.value, searchEpisode.value)
 }
 
 

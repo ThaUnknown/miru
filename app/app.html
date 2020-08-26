@@ -13,22 +13,24 @@
     <link href="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.0.4/css/halfmoon.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="css2.css" rel="stylesheet">
+    <link href="css1.css" rel="stylesheet">
 </head>
 
 <body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars">
     <div class="modal" id="tsearch" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content w-auto">
-                <a href="#" class="close" role="button" aria-label="Close">
-                    <span aria-hidden="true" class="mb-5">&times;</span>
-                </a>
+                <button class="close" data-dismiss="modal" type="button" aria-label="Close">
+                    <span>&times;</span>
+                </button>
                 <div class="input-group mb-20">
-                    <input type="text" id="title" class="form-control" placeholder="Anime Name">
-                    <input type="number" id="ep" class="form-control flex-reset w-50" placeholder="#">
+                    <input type="text" id="title" class="form-control"
+                        placeholder="Anime Name, Magnet Link, Torrent File or Hash">
+                    <input type="number" id="ep" class="form-control flex-reset w-50" placeholder="#" min="1">
                     <div class="input-group-append">
-                      <button class="btn btn-primary" type="button">Search</button>
+                        <button class="btn btn-primary" type="button" onclick="tsearchform()">Search</button>
                     </div>
-                  </div>
+                </div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -47,6 +49,45 @@
             </div>
         </div>
     </div>
+    <div class="modal modal-full ie-scroll-fix" id="view" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="view modal-content m-0 p-0">
+                <div class="banner">
+                    <img class="cover-img">
+                    <button class="close bg-dark-light" data-dismiss="modal" type="button" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-3 mt-nc pb-20">
+                            <img class="contain-img rounded">
+                        </div>
+                        <div class="col-9 p-20">
+                            <h4 class="title font-weight-bold">
+                            </h4>
+                            <p class="text-muted desc overflow-y-scroll">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-very-dark">
+                    <div class="container">
+                        <div class="row py-4">
+                            <div class="col-md-3">
+                                <div class="card">
+                                    <div class="card-body text-muted details">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-9">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="page-wrapper with-sidebar" data-sidebar-type="overlayed-sm-and-down">
         <!-- Sticky alerts (toasts), empty container -->
         <!-- Reference: https://www.gethalfmoon.com/docs/sticky-alerts-toasts -->
@@ -60,17 +101,11 @@
                     Miru
                 </a>
                 <div class="sidebar-divider"></div>
-                <a href="#" class="sidebar-link sidebar-link-with-icon">
+                <a href="#releases" class="sidebar-link sidebar-link-with-icon">
                     <span class="sidebar-icon">
-                        <i class="material-icons" aria-hidden="true">home</i>
+                        <i class="material-icons" aria-hidden="true">schedule</i>
                     </span>
-                    Home
-                </a>
-                <a href="#player" class="sidebar-link sidebar-link-with-icon">
-                    <span class="sidebar-icon">
-                        <i class="material-icons" aria-hidden="true">play_arrow</i>
-                    </span>
-                    Play
+                    Latest Releases
                 </a>
                 <a href="#browse" class="sidebar-link sidebar-link-with-icon">
                     <span class="sidebar-icon">
@@ -78,11 +113,17 @@
                     </span>
                     Browse
                 </a>
-                <a href="#releases" class="sidebar-link sidebar-link-with-icon">
+                <a href="#browse" class="sidebar-link sidebar-link-with-icon">
                     <span class="sidebar-icon">
-                        <i class="material-icons" aria-hidden="true">schedule</i>
+                        <i class="material-icons" aria-hidden="true">list</i>
                     </span>
-                    Latest Releases
+                    Planning List
+                </a>
+                <a href="#browse" class="sidebar-link sidebar-link-with-icon">
+                    <span class="sidebar-icon">
+                        <i class="material-icons" aria-hidden="true">list</i>
+                    </span>
+                    Watching List
                 </a>
                 <a href="#settings" class="sidebar-link sidebar-link-with-icon mt-auto">
                     <span class="sidebar-icon">
@@ -95,7 +136,7 @@
         <div class="content-wrapper">
             <section id="player">
                 <a href="#player" class="w-full h-full"></a>
-                <video id="video" src="" type="video/mp4" class="w-full">
+                <video id="video" src="" type="video/mp4" class="w-full" autoPictureInPicture>
                 </video>
                 <div class="player d-none flex-column justify-content-between w-full h-full">
                     <div class="h-full" id="ptoggle">
@@ -145,6 +186,23 @@
                         <span class="material-icons ctrl" title="Fullscreen [F]" id="bfull">
                             fullscreen
                         </span>
+                    </div>
+                </div>
+            </section>
+            <section id="browse" class="py-10">
+                <div class="text-center pt-5">
+                    <div class="container">
+                        <form class="input-group mb-3" action="javascript:search()">
+                            <div class="input-group-prepend">
+                                <button class="btn btn-primary material-icons px-10" type="submit">search</button>
+                            </div>
+                            <input type="text" class="form-control search" placeholder="Search" id="search">
+                        </form>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="gallery">
                     </div>
                 </div>
             </section>

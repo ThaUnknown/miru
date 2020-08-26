@@ -1,10 +1,3 @@
-.bg-tp-dark {
-    background: rgba(48, 48, 48, 0.6)
-}
-.bg-black{
-    background: #222
-}
-
 .cover-img {
     object-fit: cover;
     height: 100%;
@@ -22,35 +15,26 @@
     margin-top: -150px
 }
 .view{
-    position: fixed;
-    z-index: 9;
-    height: 100vh;
-    width: 100%;
-    top: 0;
-    left: 0
+    min-height: 100%;
 }
 .desc {
-    max-height: 210px;
-    overflow: scroll
-}
-
-.ovf-y-scroll {
-    overflow-y: scroll
+    max-height: 210px
 }
 
 .card-grid {
     display: grid;
     grid-template-rows: auto 1fr auto;
 }
-
-.search {
-    background: #444 !important;
-    color: #ADB5BD !important;
-    border-color: #444;
+.card-desc p{
+    margin: 0
+}
+.gallery .details span + span::before{
+    content: " • "
 }
 
 .gallery .card {
     cursor: pointer;
+    overflow: hidden;
     transition: transform .2s ease;
 }
 .gallery .card:hover {
@@ -59,7 +43,7 @@
 
 .gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 540px);
+    grid-template-columns: repeat(auto-fill, 520px);
     grid-auto-rows: 280px;
     justify-content: center;
     grid-gap: 2rem;
