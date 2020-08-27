@@ -1,11 +1,8 @@
 .cover-img {
-    object-fit: cover;
-    height: 100%;
-    width: 100%
+    object-fit: cover
 }
 .contain-img {
-    object-fit: contain;
-    width: 100%
+    object-fit: contain
 }
 .banner {
     height: 400px;
@@ -23,7 +20,7 @@
 
 .card-grid {
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto 1fr auto
 }
 .card-desc p{
     margin: 0
@@ -35,7 +32,7 @@
 .gallery .card {
     cursor: pointer;
     overflow: hidden;
-    transition: transform .2s ease;
+    transition: transform .2s ease
 }
 .gallery .card:hover {
     transform: scale(1.05)
@@ -47,5 +44,5 @@
     grid-auto-rows: 280px;
     justify-content: center;
     grid-gap: 2rem;
-    padding: 2rem;
+    padding: 2rem
 }

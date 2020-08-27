@@ -17,7 +17,7 @@
 }
 /* NAVBAR */
 .page-wrapper.with-sidebar[data-sidebar-hidden]>.sidebar {
-    left: var(--nav-size);
+    left: calc(-1 *var(--nav-size));
 }
 .sidebar {
     width: var(--nav-size);
@@ -68,6 +68,9 @@
 
 #player:target .player {
     display: flex !important
+}
+video[src=""]{
+    display: none;
 }
 
 .controls {

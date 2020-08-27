@@ -138,30 +138,30 @@ function handleData(data) {
     <div class="row h-full">
         <div class="col-4">
             <img src="${media.coverImage.extraLarge}"
-                class="cover-img">
+                class="cover-img w-full h-full">
         </div>
         <div class="col-8 h-full card-grid">
             <div class="px-15 py-10">
                 <h5 class="m-0 text-capitalize font-weight-bold">${!!media.title.english ? media.title.english : media.title.romaji}</h5>
                 <p class="text-muted m-0 text-capitalize details">
-                ${(!!media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format):"") + "</span>"}
+                ${(!!media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format) : "") + "</span>"}
                 ${!!media.episodes ? "<span>" + media.episodes + " Episodes</span>" : (!!media.duration ? "<span>" + media.duration + " Minutes</span>" : "")}
-                ${!!media.status ? "<span>"+ media.status.toLowerCase() +"</span>" : ""}
-                ${"<span>"+(!!media.season ? media.season.toLowerCase() + " " : "") + (!!media.seasonYear ? media.seasonYear : "")+"</span>"}
+                ${!!media.status ? "<span>" + media.status.toLowerCase() + "</span>" : ""}
+                ${"<span>" + (!!media.season ? media.season.toLowerCase() + " " : "") + (!!media.seasonYear ? media.seasonYear : "") + "</span>"}
                  </p>
             </div>
             <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
                 ${media.description}
             </div>
-            <div class="px-15 py-10">
-                ${media.genres.map(key => (`<span class="badge badge-pill badge-primary">${key}</span> `)).join('')}
+            <div class="px-15 pb-10 pt-5">
+                ${media.genres.map(key => (`<span class="badge badge-pill badge-primary mt-5">${key}</span> `)).join('')}
             </div>
         </div>
     </div>
 
             `
             template.onclick = function () {
-                viewAnime(index)
+                viewAnime(request.data.Page.media[index])
             }
             frag.appendChild(template)
         })
@@ -174,27 +174,64 @@ function handleData(data) {
     }
     document.querySelector(".gallery").appendChild(frag)
 }
+let detailsfrag = document.createDocumentFragment(),
+    details = {
+        averageScore: "Average Score",
+        duration: "Episode Duration",
+        episodes: "Episodes",
+        format: "Format",
+        genres: "Genres",
+        season: "Season",
+        seasonYear: "Year",
+        status: "Status",
+        english: "English",
+        romaji: "Romaji",
+        native: "Native"
+    }
+function viewAnime(media) {
 
-function viewAnime(index) {
-    let media = request.data.Page.media[index]
-    let details = ["title.english", "title.romaji", "status", "season", "seasonYear", "episodes", "duration", "format", "averageScore"]
     halfmoon.toggleModal("view")
+    document.querySelector(".view .banner img").src = ""
     document.querySelector(".view .banner img").src = media.bannerImage
-    document.querySelector(".view .contain-img").src = media.coverImage.extraLarge
     document.querySelector(".view .contain-img").src = media.coverImage.extraLarge
     document.querySelector(".view .title").textContent = !!media.title.english ? media.title.english : media.title.romaji
     document.querySelector(".view .desc").innerHTML = !!media.description ? media.description : ""
-    tsearch(!!media.title.english ? media.title.english : media.title.romaji, 1)
+    document.querySelector(".view .details").innerHTML = ""
+    detailsCreator(media)
+    document.querySelector(".view .details").appendChild(detailsfrag)
+}
+function detailsCreator(entry) {
+    if (entry != undefined) {
+        Object.entries(entry).forEach(value => {
+            let template = document.createElement("p")
+            if (typeof value[1] == 'object') {
+                if (Array.isArray(value[1])) {
+                    if (details[value[0]]) {
+                        template.innerHTML = `<span class="font-weight-bold">${details[value[0]]}</span><br><span class="text-muted">${value[1].map(key => (key)).join(', ')}</span>`
+                        detailsfrag.appendChild(template)
+                    }
+                } else {
+                    detailsCreator(value[1])
+                }
+            } else {
+                if (details[value[0]]) {
+                    template.innerHTML = `<span class="font-weight-bold">${details[value[0]]}</span><br><span class="text-muted">${value[1].toString()}</span>`
+                    detailsfrag.appendChild(template)
+                }
+            }
+        })
+    }
 }
 const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser()),
     searchTitle = document.querySelector("#title"),
     searchEpisode = document.querySelector("#ep")
 
+// remake this shit
 
 function tsearch(title, episode) {
     let table = document.querySelector("tbody.tsearch")
-        searchTitle.value = title
-        searchEpisode.value = episode
+    searchTitle.value = title
+    searchEpisode.value = episode
     if (episode < 10) {
         episode = `0${episode}`
     }
