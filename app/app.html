@@ -23,14 +23,6 @@
                 <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close">
                     <span>&times;</span>
                 </button>
-                <div class="input-group mb-20">
-                    <input type="text" id="title" class="form-control"
-                        placeholder="Anime Name, Magnet Link, Torrent File or Hash">
-                    <input type="number" id="ep" class="form-control flex-reset w-50" placeholder="#" min="1">
-                    <div class="input-group-append">
-                        <button class="btn btn-primary" type="button" onclick="tsearchform()">Search</button>
-                    </div>
-                </div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -52,16 +44,23 @@
     <div class="modal modal-full ie-scroll-fix" id="view" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="view modal-content m-0 p-0">
+                <button class="close bg-dark-light pointer" data-dismiss="modal" type="button" aria-label="Close">
+                    <span>&times;</span>
+                </button>
                 <div class="banner">
                     <img class="cover-img w-full h-full">
-                    <button class="close bg-dark-light pointer" data-dismiss="modal" type="button" aria-label="Close">
-                        <span>&times;</span>
-                    </button>
+
                 </div>
                 <div class="container">
                     <div class="row">
-                        <div class="col-md-3 mt-nc pb-20">
+                        <div class="col-md-3 mt-nc pb-20 d-flex flex-column justify-content-between">
                             <img class="contain-img rounded w-full">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <button class="btn bg-primary pr-5 pl-10" type="button" id="play">Play Episode</button>
+                                </div>
+                                <input type="number" id="ep" class="form-control flex-reset w-28 bg-primary noarrow px-5 text-center" placeholder="#" value="1" min="1">
+                            </div>
                         </div>
                         <div class="col-9 p-20">
                             <h4 class="title font-weight-bold">
@@ -195,7 +194,9 @@
                             <div class="input-group-prepend">
                                 <button class="btn btn-primary material-icons px-10" type="submit">search</button>
                             </div>
-                            <input type="text" class="form-control search" placeholder="Anime Name, Image Link or Direct Magnet Link, Torrent File, Hash" id="search">
+                            <input type="text" class="form-control search"
+                                placeholder="Anime Name, Image Link or Direct Magnet Link, Torrent File, Hash"
+                                id="search">
                         </form>
                     </div>
                 </div>

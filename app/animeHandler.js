@@ -65,6 +65,7 @@ function alRequest(a) {
                 medium
             }
             bannerImage
+            synonyms
         }
     }
 }
@@ -104,6 +105,7 @@ function alRequest(a) {
                 extraLarge
             }
             bannerImage
+            synonyms
         }
     }
 }
@@ -186,7 +188,8 @@ let detailsfrag = document.createDocumentFragment(),
         status: "Status",
         english: "English",
         romaji: "Romaji",
-        native: "Native"
+        native: "Native",
+        synonyms: "Synonyms"
     }
 function viewAnime(media) {
 
@@ -197,6 +200,7 @@ function viewAnime(media) {
     document.querySelector(".view .title").textContent = !!media.title.english ? media.title.english : media.title.romaji
     document.querySelector(".view .desc").innerHTML = !!media.description ? media.description : ""
     document.querySelector(".view .details").innerHTML = ""
+    document.querySelector(".view #play").onclick = function () { nyaaSearch(media.title, document.querySelector(".view #ep").value, 0); halfmoon.toggleModal("view")}
     detailsCreator(media)
     document.querySelector(".view .details").appendChild(detailsfrag)
 }
@@ -206,7 +210,7 @@ function detailsCreator(entry) {
             let template = document.createElement("p")
             if (typeof value[1] == 'object') {
                 if (Array.isArray(value[1])) {
-                    if (details[value[0]]) {
+                    if (details[value[0]] && value[1].length > 0) {
                         template.innerHTML = `<span class="font-weight-bold">${details[value[0]]}</span><br><span class="text-muted">${value[1].map(key => (key)).join(', ')}</span>`
                         detailsfrag.appendChild(template)
                     }
@@ -226,46 +230,56 @@ const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser()),
     searchTitle = document.querySelector("#title"),
     searchEpisode = document.querySelector("#ep")
 
-// remake this shit
 
-function tsearch(title, episode) {
-    let table = document.querySelector("tbody.tsearch")
-    searchTitle.value = title
-    searchEpisode.value = episode
-    if (episode < 10) {
+function nyaaSearch(titles, episode, index) {
+    if (episode.length < 2) {
         episode = `0${episode}`
     }
-    let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}" ${episode} "`)
     let frag = document.createDocumentFragment(),
-        hasBegun = true
+        table = document.querySelector("tbody.tsearch"),
+        title = Object.values(titles)[index],
+        url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}" ${episode} "`)
+    table.textContent = "";
+    console.log(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}" ${episode} "`)
     fetch(url).then((res) => {
         res.text().then((xmlTxt) => {
             try {
                 let doc = DOMPARSER(xmlTxt, "text/xml")
-                doc.querySelectorAll("item").forEach((item, index) => {
-                    let i = item.querySelector.bind(item),
-                        template = document.createElement("tr")
-                    template.innerHTML = `
-                                    <th>${(index + 1)}</th>
-                                    <td>${i("title").textContent}</td>
-                                    <td>${i("size").textContent}</td>
-                                    <td>${i("seeders").textContent}</td>
-                                    <td>${i("leechers").textContent}</td>
-                                    <td>${i("downloads").textContent}</td>
-                                    <td onclick="addTorrent('${i('infoHash').textContent}')" class="pointer">Play</td>
-                            `
-                    frag.appendChild(template)
-                })
+                if (doc.querySelectorAll("item").length != 0) {
+                    doc.querySelectorAll("item").forEach((item, index) => {
+                        let i = item.querySelector.bind(item),
+                            template = document.createElement("tr")
+                        template.innerHTML = `
+                                <th>${(index + 1)}</th>
+                                <td>${i("title").textContent}</td>
+                                <td>${i("size").textContent}</td>
+                                <td>${i("seeders").textContent}</td>
+                                <td>${i("leechers").textContent}</td>
+                                <td>${i("downloads").textContent}</td>
+                                <td onclick="addTorrent('${i('infoHash').textContent}')" class="pointer">Play</td>
+                        `
+                        frag.appendChild(template)
+                    })
+                    halfmoon.toggleModal("tsearch")
+                } else {
+                    if (index < 2) {
+                        nyaaSearch(titles, episode, index + 1)
+                    } else {
+                        halfmoon.initStickyAlert({
+                            content: `Couldn't find torrent for ${!!titles.english ? titles.english : titles.romaji}! Try using a direct magnet link.`,
+                            title: "Search Failed",
+                            alertType: "alert-danger",
+                            fillType: ""
+                        });
+                    }
+                }
             } catch (e) {
                 console.error(e)
-            }
-            if (hasBegun) {
-                table.textContent = "";
-                hasBegun = false;
             }
             table.appendChild(frag)
         })
     }).catch(() => console.error("Error in fetching the RSS feed"))
+
 }
 function tsearchform() {
     tsearch(searchTitle.value, searchEpisode.value)

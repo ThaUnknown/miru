@@ -26,7 +26,12 @@
     left: var(--nav-size);
     width: calc(100% - var(--nav-size));
 }
-
+.w-28{
+    width: 2.8rem;
+}
+.noarrow::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
 /*PLAYER*/
 
 #player:target {
