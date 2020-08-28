@@ -66,7 +66,7 @@ let progresspercent,
 
 function updateDisplay() {
     progresspercent = (video.currentTime / duration * 100).toFixed(4)
-    bufferpercent = (video.buffered.end(video.buffered.length - 1) / duration * 100).toFixed(4)
+    bufferpercent = (video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / duration * 100).toFixed(4)
     remainingTime = duration - video.currentTime
     document.documentElement.style.setProperty("--progress", progresspercent + "%");
     document.documentElement.style.setProperty("--buffer", bufferpercent + "%");
