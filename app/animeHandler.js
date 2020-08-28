@@ -66,6 +66,10 @@ function alRequest(a) {
             }
             bannerImage
             synonyms
+            nextAiringEpisode {
+                timeUntilAiring
+                episode
+            }
         }
     }
 }
@@ -106,6 +110,10 @@ function alRequest(a) {
             }
             bannerImage
             synonyms
+            nextAiringEpisode {
+                timeUntilAiring
+                episode
+            }
         }
     }
 }
@@ -200,7 +208,7 @@ function viewAnime(media) {
     document.querySelector(".view .title").textContent = !!media.title.english ? media.title.english : media.title.romaji
     document.querySelector(".view .desc").innerHTML = !!media.description ? media.description : ""
     document.querySelector(".view .details").innerHTML = ""
-    document.querySelector(".view #play").onclick = function () { nyaaSearch(media.title, document.querySelector(".view #ep").value, 0); halfmoon.toggleModal("view")}
+    document.querySelector(".view #play").onclick = function () { nyaaSearch(media, document.querySelector(".view #ep").value); halfmoon.toggleModal("view") }
     detailsCreator(media)
     document.querySelector(".view .details").appendChild(detailsfrag)
 }
@@ -231,16 +239,40 @@ const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser()),
     searchEpisode = document.querySelector("#ep")
 
 
-function nyaaSearch(titles, episode, index) {
+function nyaaSearch(media, episode) {
     if (episode.length < 2) {
         episode = `0${episode}`
     }
-    let frag = document.createDocumentFragment(),
+    let titles = Object.values(media.title).concat(media.synonyms).filter(name => name != null),
         table = document.querySelector("tbody.tsearch"),
-        title = Object.values(titles)[index],
-        url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}" ${episode} "`)
-    table.textContent = "";
-    console.log(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}" ${episode} "`)
+        results = document.createDocumentFragment()
+
+    titles.forEach(title => {
+        console.log(results.childNodes)
+        console.log(results.childNodes.length)
+        if (results.children.length == 0) {
+            let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}" ${episode} "`)
+            rssFetch(url, (frag) => {
+                results = frag
+            })
+        }
+    })
+    if (results.children.length == 0) {
+        halfmoon.initStickyAlert({
+            content: `Couldn't find torrent for ${!!media.title.english ? media.title.english : media.title.romaji}! Try specifying a torrent manually.`,
+            title: "Search Failed",
+            alertType: "alert-danger",
+            fillType: ""
+        });
+        console.log("F")
+    } else {
+        table.textContent = "";
+        table.appendChild(results)
+        halfmoon.toggleModal("tsearch")
+    }
+}
+function rssFetch(url, callback) {
+    let frag = document.createDocumentFragment()
     fetch(url).then((res) => {
         res.text().then((xmlTxt) => {
             try {
@@ -260,30 +292,15 @@ function nyaaSearch(titles, episode, index) {
                         `
                         frag.appendChild(template)
                     })
-                    halfmoon.toggleModal("tsearch")
-                } else {
-                    if (index < 2) {
-                        nyaaSearch(titles, episode, index + 1)
-                    } else {
-                        halfmoon.initStickyAlert({
-                            content: `Couldn't find torrent for ${!!titles.english ? titles.english : titles.romaji}! Try using a direct magnet link.`,
-                            title: "Search Failed",
-                            alertType: "alert-danger",
-                            fillType: ""
-                        });
-                    }
                 }
             } catch (e) {
                 console.error(e)
             }
-            table.appendChild(frag)
         })
     }).catch(() => console.error("Error in fetching the RSS feed"))
-
+    if (callback) {
+        callback(frag)
+    }
 }
-function tsearchform() {
-    tsearch(searchTitle.value, searchEpisode.value)
-}
-
 
 alRequest()
