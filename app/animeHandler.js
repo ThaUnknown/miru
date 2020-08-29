@@ -243,17 +243,19 @@ async function nyaaSearch(media, episode) {
         episode = `0${episode}`
     }
     let titles = Object.values(media.title).concat(media.synonyms).filter(name => name != null),
-        table = document.querySelector("tbody.tsearch"),
-        results
+        table = document.querySelector("table.results"),
+        results = document.createElement("tbody")
 
     for (let title of titles) {
-        if (results == undefined) {
+        console.log(results == "")
+        if (results.innerHTML == "") {
             let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}" ${episode} "`)
             results = await rssFetch(url)
+            console.log(results)
         }
 
     };
-    if (results == undefined) {
+    if (results.innerHTML == "") {
         halfmoon.initStickyAlert({
             content: `Couldn't find torrent for ${!!media.title.english ? media.title.english : media.title.romaji}! Try specifying a torrent manually.`,
             title: "Search Failed",
@@ -261,32 +263,30 @@ async function nyaaSearch(media, episode) {
             fillType: ""
         });
     } else {
-        table.textContent = "";
+        console.log(results)
         table.appendChild(results)
         halfmoon.toggleModal("tsearch")
     }
 }
 async function rssFetch(url) {
-    var frag
+    let template = document.createElement("tbody")
     await fetch(url).then((res) => {
         res.text().then((xmlTxt) => {
             try {
                 let doc = DOMPARSER(xmlTxt, "text/xml")
                 if (doc.querySelectorAll("item").length != 0) {
-                    frag = document.createDocumentFragment()
                     doc.querySelectorAll("item").forEach((item, index) => {
-                        let i = item.querySelector.bind(item),
-                            template = document.createElement("tr")
-                        template.innerHTML = `
-                                <th>${(index + 1)}</th>
-                                <td>${i("title").textContent}</td>
-                                <td>${i("size").textContent}</td>
-                                <td>${i("seeders").textContent}</td>
-                                <td>${i("leechers").textContent}</td>
-                                <td>${i("downloads").textContent}</td>
-                                <td onclick="addTorrent('${i('infoHash').textContent}')" class="pointer">Play</td>
-                        `
-                        frag.appendChild(template)
+                        let i = item.querySelector.bind(item)
+                        template.innerHTML += `
+                        <tr>
+                            <th>${(index + 1)}</th>
+                            <td>${i("title").textContent}</td>
+                            <td>${i("size").textContent}</td>
+                            <td>${i("seeders").textContent}</td>
+                            <td>${i("leechers").textContent}</td>
+                            <td>${i("downloads").textContent}</td>
+                            <td onclick="addTorrent('${i('infoHash').textContent}')" class="pointer">Play</td>
+                        </tr>`
                     })
                 }
             } catch (e) {
@@ -294,8 +294,8 @@ async function rssFetch(url) {
             }
         })
     }).catch(() => console.error("Error in fetching the RSS feed"))
-    console.log(frag)
-    return frag
+    console.log(template)
+    return template
 }
 
 alRequest()
