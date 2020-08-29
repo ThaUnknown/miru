@@ -238,46 +238,42 @@ const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser()),
     searchTitle = document.querySelector("#title"),
     searchEpisode = document.querySelector("#ep")
 
-
-function nyaaSearch(media, episode) {
+async function nyaaSearch(media, episode) {
     if (episode.length < 2) {
         episode = `0${episode}`
     }
     let titles = Object.values(media.title).concat(media.synonyms).filter(name => name != null),
         table = document.querySelector("tbody.tsearch"),
-        results = document.createDocumentFragment()
+        results
 
-    titles.forEach(title => {
-        console.log(results.childNodes)
-        console.log(results.childNodes.length)
-        if (results.children.length == 0) {
+    for (let title of titles) {
+        if (results == undefined) {
             let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}" ${episode} "`)
-            rssFetch(url, (frag) => {
-                results = frag
-            })
+            results = await rssFetch(url)
         }
-    })
-    if (results.children.length == 0) {
+
+    };
+    if (results == undefined) {
         halfmoon.initStickyAlert({
             content: `Couldn't find torrent for ${!!media.title.english ? media.title.english : media.title.romaji}! Try specifying a torrent manually.`,
             title: "Search Failed",
             alertType: "alert-danger",
             fillType: ""
         });
-        console.log("F")
     } else {
         table.textContent = "";
         table.appendChild(results)
         halfmoon.toggleModal("tsearch")
     }
 }
-function rssFetch(url, callback) {
-    let frag = document.createDocumentFragment()
-    fetch(url).then((res) => {
+async function rssFetch(url) {
+    var frag
+    await fetch(url).then((res) => {
         res.text().then((xmlTxt) => {
             try {
                 let doc = DOMPARSER(xmlTxt, "text/xml")
                 if (doc.querySelectorAll("item").length != 0) {
+                    frag = document.createDocumentFragment()
                     doc.querySelectorAll("item").forEach((item, index) => {
                         let i = item.querySelector.bind(item),
                             template = document.createElement("tr")
@@ -298,9 +294,8 @@ function rssFetch(url, callback) {
             }
         })
     }).catch(() => console.error("Error in fetching the RSS feed"))
-    if (callback) {
-        callback(frag)
-    }
+    console.log(frag)
+    return frag
 }
 
 alRequest()
