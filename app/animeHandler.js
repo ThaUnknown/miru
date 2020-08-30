@@ -238,24 +238,21 @@ const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser()),
     searchTitle = document.querySelector("#title"),
     searchEpisode = document.querySelector("#ep")
 
+
 async function nyaaSearch(media, episode) {
     if (episode.length < 2) {
         episode = `0${episode}`
     }
     let titles = Object.values(media.title).concat(media.synonyms).filter(name => name != null),
-        table = document.querySelector("table.results"),
-        results = document.createElement("tbody")
-
+        table = document.querySelector("tbody.results"),
+        results = document.createDocumentFragment()
     for (let title of titles) {
-        console.log(results == "")
-        if (results.innerHTML == "") {
+        if (results.children.length == 0) {
             let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}" ${episode} "`)
             results = await rssFetch(url)
-            console.log(results)
         }
-
     };
-    if (results.innerHTML == "") {
+    if (results.children.length == 0) {
         halfmoon.initStickyAlert({
             content: `Couldn't find torrent for ${!!media.title.english ? media.title.english : media.title.romaji}! Try specifying a torrent manually.`,
             title: "Search Failed",
@@ -263,39 +260,36 @@ async function nyaaSearch(media, episode) {
             fillType: ""
         });
     } else {
-        console.log(results)
+        table.textContent = ""
         table.appendChild(results)
         halfmoon.toggleModal("tsearch")
     }
 }
+
 async function rssFetch(url) {
-    let template = document.createElement("tbody")
-    await fetch(url).then((res) => {
-        res.text().then((xmlTxt) => {
-            try {
-                let doc = DOMPARSER(xmlTxt, "text/xml")
-                if (doc.querySelectorAll("item").length != 0) {
-                    doc.querySelectorAll("item").forEach((item, index) => {
-                        let i = item.querySelector.bind(item)
-                        template.innerHTML += `
-                        <tr>
+    let frag = document.createDocumentFragment()
+    res = await fetch(url)
+    await res.text().then((xmlTxt) => {
+        try {
+            let doc = DOMPARSER(xmlTxt, "text/xml")
+            doc.querySelectorAll("item").forEach((item, index) => {
+                let i = item.querySelector.bind(item),
+                    template = document.createElement("tr")
+                template.innerHTML += `
                             <th>${(index + 1)}</th>
                             <td>${i("title").textContent}</td>
                             <td>${i("size").textContent}</td>
                             <td>${i("seeders").textContent}</td>
                             <td>${i("leechers").textContent}</td>
                             <td>${i("downloads").textContent}</td>
-                            <td onclick="addTorrent('${i('infoHash').textContent}')" class="pointer">Play</td>
-                        </tr>`
-                    })
-                }
-            } catch (e) {
-                console.error(e)
-            }
-        })
-    }).catch(() => console.error("Error in fetching the RSS feed"))
-    console.log(template)
-    return template
+                            <td onclick="addTorrent('${i('infoHash').textContent}')" class="pointer">Play</td>`
+                frag.appendChild(template)
+            })
+        } catch (e) {
+            console.error(e)
+        }
+    })
+    return frag
 }
 
 alRequest()
