@@ -11,18 +11,21 @@ const controls = document.getElementsByClassName('ctrl'),
     btnm = document.querySelector("#bmute"),
     btnfull = document.querySelector('#bfull'),
     elapsed = document.querySelector("#elapsed"),
-    remaining = document.querySelector("#remaining")
+    remaining = document.querySelector("#remaining"),
+    buffering = document.querySelector("#buffering")
 
 volume.addEventListener("input", function () {
     updateVolume()
 });
 progress.addEventListener("input", setProgress);
 video.addEventListener("playing", playCheck);
+video.addEventListener("playing", resetBuffer);
 video.addEventListener("canplay", updateDisplay);
 video.addEventListener("loadedmetadata", setDuration);
 video.addEventListener("ended", bnext);
+video.addEventListener("waiting", isBuffering);
 playPause.addEventListener("click", bpp);
-immerse();
+
 
 for (let i = 0; i < controls.length; i++) {
     controls[i].addEventListener("click", function () {
@@ -30,22 +33,39 @@ for (let i = 0; i < controls.length; i++) {
         window[func]()
     })
 }
-//immerse timeout
-let immersetime;
 
-function immerse() {
-    document.onmousemove = resetTimer;
-    document.onkeypress = resetTimer;
-    function immerseplayer() {
-        player.classList.add('immersed')
-    }
-
-    function resetTimer() {
-        clearTimeout(immersetime);
-        player.classList.remove('immersed')
-        immersetime = setTimeout(immerseplayer, 3000)
+let buffer;
+function resetBuffer(){
+    if (!!buffer){
+        clearTimeout(buffer)
+        buffer = undefined
+        buffering.classList.add('hidden')
     }
 }
+
+function isBuffering() {
+    buffer = setTimeout(displayBuffer, 150)
+}
+function displayBuffer (){
+    buffering.classList.remove('hidden')
+    resetTimer()
+}
+//immerse timeout
+let immerseTime;
+
+
+document.onmousemove = resetTimer;
+document.onkeypress = resetTimer;
+function immersePlayer() {
+    player.classList.add('immersed')
+}
+
+function resetTimer() {
+    clearTimeout(immerseTime);
+    player.classList.remove('immersed')
+    immerseTime = setTimeout(immersePlayer, 3000)
+}
+
 
 //set duration
 let duration;
@@ -196,7 +216,7 @@ function seek(a) {
 //keybinds
 
 document.onkeydown = function (a) {
-    if (document.location.href.endsWith("#player")){
+    if (document.location.href.endsWith("#player")) {
         switch (a.key) {
             case " ":
                 bpp();

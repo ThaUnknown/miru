@@ -138,7 +138,7 @@
                 <video id="video" src="" type="video/mp4" class="w-full" autoPictureInPicture>
                 </video>
                 <div class="player d-none flex-column justify-content-between w-full h-full">
-                    <div class="h-full" id="ptoggle">
+                    <div class="h-full w-full d-flex flex-column justify-content-between" id="ptoggle">
                         <div class="stats d-flex justify-content-center">
                             <div class="d-flex">
                                 <span class="material-icons">
@@ -158,6 +158,10 @@
                                 </span>
                                 <span class="ts" id="up">-</span>
                             </div>
+                        </div>
+                        <div id="buffering" class="align-self-center hidden">
+                        </div>
+                        <div>
                         </div>
                     </div>
                     <div class="controls d-flex">

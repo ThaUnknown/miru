@@ -12,26 +12,33 @@
 .material-icons {
     font-size: 18px
 }
-.close{
+
+.close {
     font-family: Arial;
 }
+
 /* NAVBAR */
 .page-wrapper.with-sidebar[data-sidebar-hidden]>.sidebar {
     left: calc(-1 *var(--nav-size));
 }
+
 .sidebar {
     width: var(--nav-size);
 }
+
 .page-wrapper.with-sidebar>.content-wrapper {
     left: var(--nav-size);
     width: calc(100% - var(--nav-size));
 }
-.w-28{
+
+.w-28 {
     width: 2.8rem;
 }
+
 .noarrow::-webkit-inner-spin-button {
     -webkit-appearance: none;
-  }
+}
+
 /*PLAYER*/
 
 #player:target {
@@ -74,16 +81,19 @@
 #player:target .player {
     display: flex !important
 }
-video[src=""]{
+
+video[src=""] {
     display: none;
 }
 
 .controls {
     background: linear-gradient(to top, rgba(0, 0, 0, .8), rgba(0, 0, 0, .4) 25%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .1) 75%, transparent);
 }
+
 .stats {
     background: linear-gradient(to bottom, rgba(0, 0, 0, .8), rgba(0, 0, 0, .4) 25%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .1) 75%, transparent);
 }
+
 .player {
     position: absolute;
     user-select: none;
@@ -95,10 +105,12 @@ video[src=""]{
 .controls>*:hover {
     filter: drop-shadow(0 0 8px #000)
 }
-.controls span{
+
+.controls span {
     cursor: pointer
 }
-.stats .ts{
+
+.stats .ts {
     padding: 0 1.2rem 0 0 !important
 }
 
@@ -182,13 +194,39 @@ video[src=""]{
     margin-top: 1px;
     transition: all .1s ease
 }
+
+#buffering{
+    border: 4px solid #FFFFFF00;
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    opacity: 1;
+    transition: .5s opacity ease;
+}
+#buffering.hidden{
+    opacity: 0
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .pointer {
     cursor: pointer
 }
 
-section{
+section {
     display: none;
 }
-section:target{
+
+section:target {
     display: block;
 }
