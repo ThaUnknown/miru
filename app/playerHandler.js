@@ -14,12 +14,13 @@ const controls = document.getElementsByClassName('ctrl'),
     remaining = document.querySelector("#remaining")
 
 volume.addEventListener("input", function () {
-    updatevolume()
+    updateVolume()
 });
-progress.addEventListener("input", setprogress);
-video.addEventListener("playing", playcheck);
+progress.addEventListener("input", setProgress);
+video.addEventListener("playing", playCheck);
 video.addEventListener("canplay", updateDisplay);
-video.addEventListener("loadedmetadata", setduration);
+video.addEventListener("loadedmetadata", setDuration);
+video.addEventListener("ended", bnext);
 playPause.addEventListener("click", bpp);
 immerse();
 
@@ -49,30 +50,30 @@ function immerse() {
 //set duration
 let duration;
 
-function setduration() {
+function setDuration() {
     duration = video.duration;
 }
 
 //progress
 
-function setprogress() {
+function setProgress() {
     video.currentTime = progress.value / 1000 * duration;
     updateDisplay();
 }
 
-let progresspercent,
-    bufferpercent,
+let progressPercent,
+    bufferPercent,
     remainingTime
 
 function updateDisplay() {
-    progresspercent = (video.currentTime / duration * 100).toFixed(4)
-    bufferpercent = (video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / duration * 100).toFixed(4)
+    progressPercent = (video.currentTime / duration * 100).toFixed(4)
+    bufferPercent = (video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / duration * 100).toFixed(4)
     remainingTime = duration - video.currentTime
-    document.documentElement.style.setProperty("--progress", progresspercent + "%");
-    document.documentElement.style.setProperty("--buffer", bufferpercent + "%");
+    document.documentElement.style.setProperty("--progress", progressPercent + "%");
+    document.documentElement.style.setProperty("--buffer", bufferPercent + "%");
     elapsed.innerHTML = toTS(video.currentTime);
     remaining.innerHTML = toTS(remainingTime);
-    progress.value = Math.floor(progresspercent * 10)
+    progress.value = Math.floor(progressPercent * 10)
 }
 
 function toTS(sec) {
@@ -94,13 +95,13 @@ function toTS(sec) {
 
 let islooped;
 
-function playcheck() {
+function playCheck() {
     if (!islooped && !video.paused) {
         islooped = true;
         updateDisplay();
         setTimeout(function () {
             islooped = false;
-            playcheck();
+            playCheck();
         }, 50)
     }
 }
@@ -134,16 +135,16 @@ let oldlevel;
 
 function bmute() {
     if (video.volume == 0) {
-        updatevolume(oldlevel)
+        updateVolume(oldlevel)
     } else {
         oldlevel = video.volume * 100
-        updatevolume(0)
+        updateVolume(0)
     }
 }
 
 let level;
 
-function updatevolume(a) {
+function updateVolume(a) {
     if (a == null) {
         level = volume.value;
     } else {
