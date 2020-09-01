@@ -46,7 +46,7 @@ function addTorrent(magnet) {
         setInterval(onProgress, 5000)
         torrent.on('done', function () {
             halfmoon.initStickyAlert({
-                content: `<div class="text-break>${torrent.infoHash} has finished downloading, now seeding.</div>`,
+                content: `<div class="text-break">${torrent.infoHash} has finished downloading, now seeding.</div>`,
                 title: "Download Complete",
                 alertType: "alert-success",
                 fillType: ""
