@@ -41,6 +41,25 @@ function addTorrent(magnet) {
 
         torrent.on('download', onProgress)
         torrent.on('upload', onProgress)
+        torrent.on('warning', console.log)
+        torrent.on('error', console.log)
+        setInterval(onProgress, 5000)
+        torrent.on('done', function () {
+            halfmoon.initStickyAlert({
+                content: `<div class="text-break>${torrent.infoHash} has finished downloading, now seeding.</div>`,
+                title: "Download Complete",
+                alertType: "alert-success",
+                fillType: ""
+            });
+        })
+        torrent.on('noPeers', function () {
+            halfmoon.initStickyAlert({
+                content: `Couldn't find peers for ${magnet}! Try a torrent with more seeders.`,
+                title: "Search Failed",
+                alertType: "alert-danger",
+                fillType: ""
+            });
+        })
 
         function onProgress() {
             peers.textContent = torrent.numPeers
