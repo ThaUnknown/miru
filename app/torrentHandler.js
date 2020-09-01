@@ -46,7 +46,7 @@ function addTorrent(magnet) {
         torrent.on('done', function () {
             setInterval(onProgress, 5000)
             halfmoon.initStickyAlert({
-                content: `<div class="text-break">${torrent.infoHash} has finished downloading, now seeding.</div>`,
+                content: `<div class="text-break">${torrent.infoHash} has finished downloading. Now seeding.</div>`,
                 title: "Download Complete",
                 alertType: "alert-success",
                 fillType: ""
@@ -196,27 +196,24 @@ torrentPrototype.createServer = function (requestListener) {
     })
 
     const res = {
-        listen(port) {
+        async listen(port) {
             const scope = `./`
             res.scope = scope
-            return navigator.serviceWorker.getRegistration(scope).then(swReg => {
-                return swReg || navigator.serviceWorker.register('sw.js', {
-                    scope
-                })
-            }).then(swReg => {
-                registration = swReg
-                res.scope = registration.scope
-                res.registration = registration
-                let swRegTmp = swReg.installing || swReg.waiting
-
-                if (swReg.active)
-                    return
-
-                return new Promise(rs => {
-                    swRegTmp.onstatechange = () => {
-                        if (swRegTmp.state === 'activated') rs()
-                    }
-                })
+            const swReg = await navigator.serviceWorker.getRegistration(scope)
+            const swReg_1 = swReg || navigator.serviceWorker.register('sw.js', {
+                scope
+            })
+            registration = swReg_1
+            res.scope = registration.scope
+            res.registration = registration
+            let swRegTmp = swReg_1.installing || swReg_1.waiting
+            if (swReg_1.active)
+                return
+            return new Promise(rs => {
+                swRegTmp.onstatechange = () => {
+                    if (swRegTmp.state === 'activated')
+                        rs()
+                }
             })
         },
         close() {
