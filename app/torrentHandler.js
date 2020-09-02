@@ -2,9 +2,9 @@ const client = new WebTorrent(),
     dummyTorrent = client.add('06d67cc41f44fd57241551b6d95c2d1de38121ae'),
     torrentPrototype = Object.getPrototypeOf(dummyTorrent),
     announceList = [
-        ['wss://tracker.webtorrent.io'],
-        ['wss://tracker.btorrent.xyz'],
         ['wss://tracker.openwebtorrent.com'],
+        ['wss://tracker.btorrent.xyz'],
+        ['wss://tracker.webtorrent.io'],
         ['wss://tracker.fastcast.nz'],
         ['wss://video.blender.org:443/tracker/socket'],
         ['wss://tube.privacytools.io:443/tracker/socket'],
@@ -31,6 +31,7 @@ WEBTORRENT_ANNOUNCE = announceList
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
 
+    var nowPlaying
 function addTorrent(magnet) {
     if (client.torrents[0]) {
         client.remove(client.torrents[0].infoHash)
@@ -41,7 +42,7 @@ function addTorrent(magnet) {
 
         torrent.on('download', onProgress)
         torrent.on('upload', onProgress)
-        // torrent.on('warning', console.log) too spammy for now
+        // torrent.on('warning', console.log) // too spammy for now
         // torrent.on('error', console.log)
         torrent.on('done', function () {
             setInterval(onProgress, 5000)
@@ -76,6 +77,7 @@ function addTorrent(magnet) {
         })
         video.src = `/webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
         document.location.href = "#player"
+        nowPlaying = [selected[0], selected[1]]
         halfmoon.toggleModal("tsearch")
     })
 }

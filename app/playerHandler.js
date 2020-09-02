@@ -145,8 +145,7 @@ function bpp() {
 }
 
 function bnext() {
-    console.log("todo")
-    //    TODO: get magnet link of next current next episode [using search]
+    nyaaSearch(nowPlaying[0], nowPlaying[1]+1)
 }
 
 //volume shit

@@ -238,9 +238,10 @@ const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser()),
     searchTitle = document.querySelector("#title"),
     searchEpisode = document.querySelector("#ep")
 
+var selected
 
 async function nyaaSearch(media, episode) {
-    if (episode.length < 2) {
+    if (parseInt(episode) < 10) {
         episode = `0${episode}`
     }
     let titles = Object.values(media.title).concat(media.synonyms).filter(name => name != null),
@@ -254,7 +255,7 @@ async function nyaaSearch(media, episode) {
     };
     if (results.children.length == 0) {
         halfmoon.initStickyAlert({
-            content: `Couldn't find torrent for ${!!media.title.english ? media.title.english : media.title.romaji}! Try specifying a torrent manually.`,
+            content: `Couldn't find torrent for ${!!media.title.english ? media.title.english : media.title.romaji} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
             title: "Search Failed",
             alertType: "alert-danger",
             fillType: ""
@@ -263,6 +264,7 @@ async function nyaaSearch(media, episode) {
         table.textContent = ""
         table.appendChild(results)
         halfmoon.toggleModal("tsearch")
+        selected = [media,parseInt(episode)]
     }
 }
 
