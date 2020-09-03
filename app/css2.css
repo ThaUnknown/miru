@@ -4,9 +4,11 @@
     --volume-level: 100%;
     --progress: 0%;
     --buffer: 0%;
+    --height: 0;
     color: #b6b6b6;
     font-size: 62.5%;
-    --nav-size: 19rem
+    --nav-size: 19rem;
+    --ts: "";
 }
 
 .material-icons {
@@ -178,6 +180,36 @@ video[src=""] {
     background: linear-gradient(90deg, #e5204c var(--progress), rgba(255, 255, 255, .4) var(--progress), rgba(255, 255, 255, .4) var(--buffer), rgba(255, 255, 255, .2) var(--buffer))
 }
 
+
+.controls input#prog[type=range]::after,
+.controls input#prog[type=range]::before{
+    pointer-events: none;
+    display: none;
+    position: absolute;
+    transform: translate(-50%,-100%);
+    font-family: Roboto, monospace;
+    color: #ececec;
+    white-space: nowrap;
+    align-self: center;
+    padding: 0 1.2rem;
+    left: var(--left);
+    font-weight: 600;
+}
+.controls input#prog[type=range]::after{
+    width: 150px;
+    background: var(--background);
+    content: "";
+    height: var(--height);
+    top: -2rem;
+}
+.controls input#prog[type=range]::before{
+    top: 0rem;
+    content: attr(data-ts);
+}
+.controls input#prog[type=range]:active::after,
+.controls input#prog[type=range]:active::before{
+    display: block
+}
 .controls input[type=range]:hover::-webkit-slider-thumb {
     height: 12px;
     width: 12px;

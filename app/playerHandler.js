@@ -20,14 +20,15 @@ const controls = document.getElementsByClassName('ctrl'),
 volume.addEventListener("input", function () {
     updateVolume()
 });
-progress.addEventListener("input", setProgress);
-video.addEventListener("playing", playCheck);
+progress.addEventListener("input", dragBar);
+progress.addEventListener("mouseup", dragBarEnd);
+progress.addEventListener("mousedown", dragBarStart);
 video.addEventListener("playing", resetBuffer);
-video.addEventListener("canplay", updateDisplay);
-video.addEventListener("loadedmetadata", setDuration);
-video.addEventListener("loadedmetadata", initThumbnail);
+video.addEventListener("loadeddata", initThumbnail);
+video.addEventListener("loadedmetadata", updateDisplay);
 video.addEventListener("ended", bnext);
 video.addEventListener("waiting", isBuffering);
+video.addEventListener("timeupdate", updateDisplay);
 playPause.addEventListener("click", bpp);
 
 
@@ -38,27 +39,81 @@ for (let i = 0; i < controls.length; i++) {
     })
 }
 
+// progress bar and display
+
+function updateDisplay() {
+    let progressPercent = (video.currentTime / video.duration * 100),
+        bufferPercent = video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100
+    progress.style.setProperty("--buffer", bufferPercent + "%");
+    updateBar(progressPercent || progress.value / 10);
+    createThumbnail(video);
+}
+function dragBar(){
+    updateBar(progress.value / 10)
+}
+function dragBarEnd(){
+    video.currentTime = currentTime || 0
+    playVideo()
+}
+function dragBarStart(){
+    video.pause()
+}
+let currentTime
+function updateBar(progressPercent) {
+    currentTime = video.duration * progressPercent / 100
+    progress.style.setProperty("--progress", progressPercent + "%");
+    elapsed.innerHTML = toTS(currentTime);
+    remaining.innerHTML = toTS(video.duration - currentTime);
+    progress.value = progressPercent * 10
+    let bg = thumbnails.length == 0 ? "" : thumbnails[Math.floor(currentTime / 5)||0]
+    progress.style.setProperty("--background", "url("+(bg||"")+")")
+    progress.style.setProperty("--left", progressPercent + "%")
+    progress.setAttribute("data-ts", toTS(currentTime))
+}
+
 // dynamic thumbnails 
-let thumbnails,
+let thumbnails = [],
     ratio,
     canvas = document.createElement("canvas"),
-    context = canvas.getContext('2d');
+    context = canvas.getContext('2d'),
+    w = 150,
+    h
+
 function initThumbnail() {
     thumbnails = []
     ratio = video.videoWidth / video.videoHeight;
-    w = 150
     h = parseInt(w / ratio)
     canvas.width = w;
     canvas.height = h;
+    progress.style.setProperty("--height", h + "px");
 }
-function createThumbnail() { 
-    let index = Math.floor(video.currentTime / 5)
-    if(thumbnails[index] == undefined){
+function createThumbnail(vid) {
+    let index = Math.floor(vid.currentTime / 5)
+    if (!thumbnails[index] && h) {
         context.fillRect(0, 0, w, h);
-        context.drawImage(video, 0, 0, w, h);
+        context.drawImage(vid, 0, 0, w, h);
         thumbnails[index] = canvas.toDataURL("image/jpeg")
-        thumbnail.src = canvas.toDataURL("image/jpeg")
     }
+}
+function finishThumbnails(){
+    let thumbVid = document.createElement("video")
+    thumbVid.src = video.src
+    thumbVid.addEventListener('loadeddata', function (e) {
+        loadTime();
+    }, false);
+    
+    thumbVid.addEventListener('seeked', function() {
+        createThumbnail(thumbVid);
+        loadTime();
+    }, false);
+    
+    function loadTime() {
+        if (thumbVid.ended == false) {
+            thumbVid.currentTime = thumbVid.currentTime + 5;
+        } else {
+            thumbVid.remove()
+        }
+    };
 }
 
 
@@ -95,38 +150,13 @@ function resetTimer() {
     player.classList.remove('immersed')
     immerseTime = setTimeout(immersePlayer, 3000)
 }
+let islooped;
 
-
-//set duration
-let duration;
-
-function setDuration() {
-    duration = video.duration;
-}
-
-//progress
-
-function setProgress() {
-    video.currentTime = progress.value / 1000 * duration;
-    updateDisplay();
-}
-
-let progressPercent,
-    bufferPercent,
-    remainingTime
-
-function updateDisplay() {
-    progressPercent = (video.currentTime / duration * 100).toFixed(4)
-    bufferPercent = (video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / duration * 100).toFixed(4)
-    remainingTime = duration - video.currentTime
-    document.documentElement.style.setProperty("--progress", progressPercent + "%");
-    document.documentElement.style.setProperty("--buffer", bufferPercent + "%");
-    elapsed.innerHTML = toTS(video.currentTime);
-    remaining.innerHTML = toTS(remainingTime);
-    progress.value = Math.floor(progressPercent * 10)
-}
 
 function toTS(sec) {
+    if (Number.isNaN(sec)){
+        return "--:--";
+    }
     let hours = Math.floor(sec / 3600),
         minutes = Math.floor((sec - (hours * 3600)) / 60),
         seconds = Math.floor(sec - (hours * 3600) - (minutes * 60));
@@ -140,20 +170,6 @@ function toTS(sec) {
         return `${hours}:${minutes}:${seconds}`;
     } else {
         return `${minutes}:${seconds}`;
-    }
-}
-
-let islooped;
-
-function playCheck() {
-    if (!islooped && !video.paused) {
-        islooped = true;
-        updateDisplay();
-        createThumbnail();
-        setTimeout(function () {
-            islooped = false;
-            playCheck();
-        }, 50)
     }
 }
 

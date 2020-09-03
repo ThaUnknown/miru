@@ -42,8 +42,8 @@ function addTorrent(magnet) {
 
         torrent.on('download', onProgress)
         torrent.on('upload', onProgress)
-        torrent.on('warning', console.warn) // too spammy for now
-        torrent.on('error', console.error)
+        // torrent.on('warning', console.warn) // too spammy for now
+        // torrent.on('error', console.error)
         torrent.on('done', function () {
             setInterval(onProgress, 5000)
             halfmoon.initStickyAlert({
@@ -52,6 +52,7 @@ function addTorrent(magnet) {
                 alertType: "alert-success",
                 fillType: ""
             });
+            finishThumbnails();
         })
         torrent.on('noPeers', function () {
             halfmoon.initStickyAlert({
