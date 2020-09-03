@@ -31,7 +31,7 @@ WEBTORRENT_ANNOUNCE = announceList
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
 
-    var nowPlaying
+var nowPlaying
 function addTorrent(magnet) {
     if (client.torrents[0]) {
         client.remove(client.torrents[0].infoHash)
@@ -42,8 +42,8 @@ function addTorrent(magnet) {
 
         torrent.on('download', onProgress)
         torrent.on('upload', onProgress)
-        // torrent.on('warning', console.log) // too spammy for now
-        // torrent.on('error', console.log)
+        torrent.on('warning', console.warn) // too spammy for now
+        torrent.on('error', console.error)
         torrent.on('done', function () {
             setInterval(onProgress, 5000)
             halfmoon.initStickyAlert({

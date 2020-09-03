@@ -6,7 +6,7 @@
  */
 'use strict'
 
-function rangeParser (size, str, options) {
+function rangeParser(size, str, options) {
   if (typeof str !== 'string') {
     throw new TypeError('argument str must be a string')
   }
@@ -34,7 +34,7 @@ function rangeParser (size, str, options) {
     if (isNaN(start)) {
       start = size - end
       end = size - 1
-    // nnn-
+      // nnn-
     } else if (isNaN(end)) {
       end = size - 1
     }
@@ -66,7 +66,7 @@ function rangeParser (size, str, options) {
     : ranges
 }
 
-function combineRanges (ranges) {
+function combineRanges(ranges) {
   var ordered = ranges.map(mapWithIndex).sort(sortByRangeStart)
 
   for (var j = 0, i = 1; i < ordered.length; i++) {
@@ -95,7 +95,7 @@ function combineRanges (ranges) {
   return combined
 }
 
-function mapWithIndex (range, index) {
+function mapWithIndex(range, index) {
   return {
     start: range.start,
     end: range.end,
@@ -103,17 +103,17 @@ function mapWithIndex (range, index) {
   }
 }
 
-function mapWithoutIndex (range) {
+function mapWithoutIndex(range) {
   return {
     start: range.start,
     end: range.end
   }
 }
 
-function sortByRangeIndex (a, b) {
+function sortByRangeIndex(a, b) {
   return a.index - b.index
 }
 
-function sortByRangeStart (a, b) {
+function sortByRangeStart(a, b) {
   return a.start - b.start
 }

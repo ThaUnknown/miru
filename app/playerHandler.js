@@ -12,8 +12,11 @@ const controls = document.getElementsByClassName('ctrl'),
     btnfull = document.querySelector('#bfull'),
     elapsed = document.querySelector("#elapsed"),
     remaining = document.querySelector("#remaining"),
-    buffering = document.querySelector("#buffering")
+    buffering = document.querySelector("#buffering"),
+    thumbnail = document.querySelector("#dThumb")
 
+
+//event listeners
 volume.addEventListener("input", function () {
     updateVolume()
 });
@@ -22,6 +25,7 @@ video.addEventListener("playing", playCheck);
 video.addEventListener("playing", resetBuffer);
 video.addEventListener("canplay", updateDisplay);
 video.addEventListener("loadedmetadata", setDuration);
+video.addEventListener("loadedmetadata", initThumbnail);
 video.addEventListener("ended", bnext);
 video.addEventListener("waiting", isBuffering);
 playPause.addEventListener("click", bpp);
@@ -34,9 +38,35 @@ for (let i = 0; i < controls.length; i++) {
     })
 }
 
+// dynamic thumbnails 
+let thumbnails,
+    ratio,
+    canvas = document.createElement("canvas"),
+    context = canvas.getContext('2d');
+function initThumbnail() {
+    thumbnails = []
+    ratio = video.videoWidth / video.videoHeight;
+    w = 150
+    h = parseInt(w / ratio)
+    canvas.width = w;
+    canvas.height = h;
+}
+function createThumbnail() { 
+    let index = Math.floor(video.currentTime / 5)
+    if(thumbnails[index] == undefined){
+        context.fillRect(0, 0, w, h);
+        context.drawImage(video, 0, 0, w, h);
+        thumbnails[index] = canvas.toDataURL("image/jpeg")
+        thumbnail.src = canvas.toDataURL("image/jpeg")
+    }
+}
+
+
+//bufering spinner
+
 let buffer;
-function resetBuffer(){
-    if (!!buffer){
+function resetBuffer() {
+    if (!!buffer) {
         clearTimeout(buffer)
         buffer = undefined
         buffering.classList.add('hidden')
@@ -46,7 +76,7 @@ function resetBuffer(){
 function isBuffering() {
     buffer = setTimeout(displayBuffer, 150)
 }
-function displayBuffer (){
+function displayBuffer() {
     buffering.classList.remove('hidden')
     resetTimer()
 }
@@ -119,6 +149,7 @@ function playCheck() {
     if (!islooped && !video.paused) {
         islooped = true;
         updateDisplay();
+        createThumbnail();
         setTimeout(function () {
             islooped = false;
             playCheck();
@@ -145,7 +176,7 @@ function bpp() {
 }
 
 function bnext() {
-    nyaaSearch(nowPlaying[0], nowPlaying[1]+1)
+    nyaaSearch(nowPlaying[0], nowPlaying[1] + 1)
 }
 
 //volume shit

@@ -264,7 +264,7 @@ async function nyaaSearch(media, episode) {
         table.textContent = ""
         table.appendChild(results)
         halfmoon.toggleModal("tsearch")
-        selected = [media,parseInt(episode)]
+        selected = [media, parseInt(episode)]
     }
 }
 
