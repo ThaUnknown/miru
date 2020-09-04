@@ -184,7 +184,7 @@ video[src=""] {
 .controls input#prog[type=range]::after,
 .controls input#prog[type=range]::before{
     pointer-events: none;
-    display: none;
+    opacity: 0;
     position: absolute;
     transform: translate(-50%,-100%);
     font-family: Roboto, monospace;
@@ -194,6 +194,7 @@ video[src=""] {
     padding: 0 1.2rem;
     left: var(--left);
     font-weight: 600;
+    transition: .2s opacity ease;
 }
 .controls input#prog[type=range]::after{
     width: 150px;
@@ -208,7 +209,7 @@ video[src=""] {
 }
 .controls input#prog[type=range]:active::after,
 .controls input#prog[type=range]:active::before{
-    display: block
+    opacity: 1;
 }
 .controls input[type=range]:hover::-webkit-slider-thumb {
     height: 12px;

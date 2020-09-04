@@ -19,6 +19,10 @@ const client = new WebTorrent(),
         ['ws://tracker.files.fm:7072/announce'],
         ['ws://tracker.btsync.cf:6969/announce'],
         ['ws://hub.bugout.link:80/announce']
+    ],
+    videoExtensions = [
+        '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg',
+        '.ogv', '.webm', '.wmv', '.m2ts'
     ]
 client.remove('06d67cc41f44fd57241551b6d95c2d1de38121ae')
 
@@ -78,7 +82,7 @@ function addTorrent(magnet) {
         })
         video.src = `/webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
         document.location.href = "#player"
-        nowPlaying = [selected[0], selected[1]]
+        nowPlaying(selected)
         halfmoon.toggleModal("tsearch")
     })
 }

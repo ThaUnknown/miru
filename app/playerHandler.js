@@ -22,6 +22,7 @@ volume.addEventListener("input", function () {
 });
 progress.addEventListener("input", dragBar);
 progress.addEventListener("mouseup", dragBarEnd);
+progress.addEventListener("click", dragBarEnd);
 progress.addEventListener("mousedown", dragBarStart);
 video.addEventListener("playing", resetBuffer);
 video.addEventListener("loadeddata", initThumbnail);
@@ -48,15 +49,17 @@ function updateDisplay() {
     updateBar(progressPercent || progress.value / 10);
     createThumbnail(video);
 }
-function dragBar(){
+function dragBar() {
+    video.pause()
     updateBar(progress.value / 10)
 }
-function dragBarEnd(){
+function dragBarEnd() {
     video.currentTime = currentTime || 0
     playVideo()
 }
-function dragBarStart(){
-    video.pause()
+async function dragBarStart() {
+    await video.pause()
+    updateBar(progress.value / 10)
 }
 let currentTime
 function updateBar(progressPercent) {
@@ -65,8 +68,8 @@ function updateBar(progressPercent) {
     elapsed.innerHTML = toTS(currentTime);
     remaining.innerHTML = toTS(video.duration - currentTime);
     progress.value = progressPercent * 10
-    let bg = thumbnails.length == 0 ? "" : thumbnails[Math.floor(currentTime / 5)||0]
-    progress.style.setProperty("--background", "url("+(bg||"")+")")
+    let bg = thumbnails.length == 0 ? "" : thumbnails[Math.floor(currentTime / 5) || 0]
+    progress.style.setProperty("--background", "url(" + (bg || "") + ")")
     progress.style.setProperty("--left", progressPercent + "%")
     progress.setAttribute("data-ts", toTS(currentTime))
 }
@@ -95,18 +98,18 @@ function createThumbnail(vid) {
         thumbnails[index] = canvas.toDataURL("image/jpeg")
     }
 }
-function finishThumbnails(){
+function finishThumbnails() {
     let thumbVid = document.createElement("video")
     thumbVid.src = video.src
     thumbVid.addEventListener('loadeddata', function (e) {
         loadTime();
     }, false);
-    
-    thumbVid.addEventListener('seeked', function() {
+
+    thumbVid.addEventListener('seeked', function () {
         createThumbnail(thumbVid);
         loadTime();
     }, false);
-    
+
     function loadTime() {
         if (thumbVid.ended == false) {
             thumbVid.currentTime = thumbVid.currentTime + 5;
@@ -154,7 +157,7 @@ let islooped;
 
 
 function toTS(sec) {
-    if (Number.isNaN(sec)){
+    if (Number.isNaN(sec)) {
         return "--:--";
     }
     let hours = Math.floor(sec / 3600),
@@ -294,20 +297,24 @@ document.onkeydown = function (a) {
     }
 }
 //media session
+function nowPlaying(sel) {
+    nowPlaying = sel
+    if ('mediaSession' in navigator) {
+
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: !!nowPlaying[0].title.english ? nowPlaying[0].title.english : nowPlaying[0].title.romaji,
+            artist: 'Miru',
+            artwork: [
+                {
+                    src: nowPlaying[0].coverImage.medium,
+                    sizes: '128x128',
+                    type: 'image/png'
+                }
+            ]
+        });
+    }
+}
 if ('mediaSession' in navigator) {
-
-    navigator.mediaSession.metadata = new MediaMetadata({
-        title: 'THE GOD OF HIGH SCHOOL',
-        artist: 'Miru',
-        artwork: [
-            {
-                src: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/small/bx116006-XasdW0bB4n18.png',
-                sizes: '128x128',
-                type: 'image/png'
-            }
-        ]
-    });
-
     navigator.mediaSession.setActionHandler('play', bpp);
     navigator.mediaSession.setActionHandler('pause', bpp);
     navigator.mediaSession.setActionHandler('seekbackward', function () {
