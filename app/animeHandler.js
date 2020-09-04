@@ -107,6 +107,7 @@ function alRequest(a) {
             genres
             coverImage {
                 extraLarge
+                medium
             }
             bannerImage
             synonyms

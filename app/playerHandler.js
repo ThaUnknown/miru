@@ -30,6 +30,7 @@ video.addEventListener("loadedmetadata", updateDisplay);
 video.addEventListener("ended", bnext);
 video.addEventListener("waiting", isBuffering);
 video.addEventListener("timeupdate", updateDisplay);
+video.addEventListener("timeupdate", updatePositionState);
 playPause.addEventListener("click", bpp);
 
 
@@ -286,7 +287,7 @@ document.onkeydown = function (a) {
                 bfull();
                 break;
             case "s":
-                seek(89);
+                seek(85);
                 break;
             case "ArrowLeft":
                 seek(-2);
@@ -300,10 +301,10 @@ document.onkeydown = function (a) {
 function nowPlaying(sel) {
     nowPlaying = sel
     if ('mediaSession' in navigator) {
-
         navigator.mediaSession.metadata = new MediaMetadata({
             title: !!nowPlaying[0].title.english ? nowPlaying[0].title.english : nowPlaying[0].title.romaji,
-            artist: 'Miru',
+            artist: "Episode " + nowPlaying[1],
+            album: "Miru",
             artwork: [
                 {
                     src: nowPlaying[0].coverImage.medium,
@@ -311,6 +312,15 @@ function nowPlaying(sel) {
                     type: 'image/png'
                 }
             ]
+        });
+    }
+}
+function updatePositionState() {
+    if ('setPositionState' in navigator.mediaSession) {
+        navigator.mediaSession.setPositionState({
+            duration: video.duration || 0,
+            playbackRate: video.playbackRate || 0,
+            position: video.currentTime || 0
         });
     }
 }
