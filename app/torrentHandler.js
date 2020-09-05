@@ -26,7 +26,17 @@ const client = new WebTorrent(),
     ]
 client.remove('06d67cc41f44fd57241551b6d95c2d1de38121ae')
 
-
+//for debugging
+function t(a) {
+    switch (a) {
+        case 1:
+            addTorrent("https://webtorrent.io/torrents/sintel.torrent")
+            break;
+        case 2:
+            addTorrent("https://webtorrent.io/torrents/tears-of-steel.torrent")
+            break;
+    }
+}
 WEBTORRENT_ANNOUNCE = announceList
     .map(function (arr) {
         return arr[0]
@@ -81,6 +91,7 @@ function addTorrent(magnet) {
             }
         })
         video.src = `/webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
+        torrent.files[0].createReadStream().pipe(parser)
         document.location.href = "#player"
         nowPlaying(selected)
         halfmoon.toggleModal("tsearch")

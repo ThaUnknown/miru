@@ -136,6 +136,7 @@ video[src=""] {
     width: 100%;
     align-self: center;
     padding: 1rem 0;
+    position: relative;
 }
 
 .volume {
