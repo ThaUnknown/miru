@@ -22,8 +22,8 @@ const client = new WebTorrent(),
         '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg',
         '.ogv', '.webm', '.wmv', '.m2ts'
     ],
-    scope = '/',
-    sw = navigator.serviceWorker.register('/sw.js', { scope })
+    scope = '/app/',
+    sw = navigator.serviceWorker.register('sw.js', { scope })
 
 //for debugging
 function t(a) {
@@ -83,7 +83,7 @@ function addTorrent(magnet) {
                 videoFile = file
             }
         })
-        video.src = `/webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
+        video.src = `/app/webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
         // torrent.files[0].createReadStream().pipe(parser)
         document.location.href = "#player"
         nowPlaying(selected)
