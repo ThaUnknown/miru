@@ -44,7 +44,8 @@ WEBTORRENT_ANNOUNCE = announceList
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
 var nowPlaying,
-    maxTorrents = 3
+    maxTorrents = 3,
+    subStream
 function addTorrent(magnet) {
     if (client.torrents.length >= maxTorrents) {
         client.remove(client.torrents[0].infoHash)
@@ -85,7 +86,11 @@ function addTorrent(magnet) {
             }
         })
         video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
-        videoFile.createReadStream().pipe(parser)
+        createSubParser()
+        if (subStream){
+            subStream.destroy()
+        } 
+        subStream = videoFile.createReadStream().pipe(parser)
         document.location.href = "#player"
         nowPlaying(selected)
         halfmoon.toggleModal("tsearch")

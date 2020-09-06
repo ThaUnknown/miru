@@ -1,3 +1,6 @@
+function createSubParser(){
+
+parser = new MatroskaSubtitles()
 parser.once('tracks', function (tracks) {
     console.log(tracks)
   })
@@ -6,3 +9,4 @@ parser.once('tracks', function (tracks) {
   parser.on('subtitle', function (subtitle, trackNumber) {
     console.log('Track ' + trackNumber + ':', subtitle)
   })
+}
