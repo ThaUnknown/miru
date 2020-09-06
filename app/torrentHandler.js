@@ -62,7 +62,7 @@ function addTorrent(magnet) {
         torrent.on('done', function () {
             setInterval(onProgress, 5000)
             halfmoon.initStickyAlert({
-                content: `<div class="text-break">${torrent.infoHash} has finished downloading. Now seeding.</div>`,
+                content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
                 title: "Download Complete",
                 alertType: "alert-success",
                 fillType: ""
@@ -71,7 +71,7 @@ function addTorrent(magnet) {
         })
         torrent.on('noPeers', function () {
             halfmoon.initStickyAlert({
-                content: `Couldn't find peers for ${magnet}! Try a torrent with more seeders.`,
+                content: `Couldn't find peers for <span class="text-break">${magnet}</span>! Try a torrent with more seeders.`,
                 title: "Search Failed",
                 alertType: "alert-danger",
                 fillType: ""
@@ -83,8 +83,8 @@ function addTorrent(magnet) {
                 videoFile = file
             }
         })
-        video.src = `/app/webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
-        // torrent.files[0].createReadStream().pipe(parser)
+        video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
+        videoFile.createReadStream().pipe(parser)
         document.location.href = "#player"
         nowPlaying(selected)
         halfmoon.toggleModal("tsearch")
@@ -145,7 +145,6 @@ navigator.serviceWorker.addEventListener('message', evt => {
 
     const [response, stream] = serveFile(file, request)
     const asyncIterator = stream && stream[Symbol.asyncIterator]()
-
     respondWith(response)
 
     async function pull() {
