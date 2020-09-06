@@ -43,11 +43,12 @@ WEBTORRENT_ANNOUNCE = announceList
     .filter(function (url) {
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
-var nowPlaying
+var nowPlaying,
+    maxTorrents = 3
 function addTorrent(magnet) {
-    // if (client.torrents[0]) {
-    //     client.remove(client.torrents[0].infoHash)
-    // }
+    if (client.torrents.length >= maxTorrents) {
+        client.remove(client.torrents[0].infoHash)
+    }
     client.add(magnet, async function (torrent) {
         await sw
         function onProgress() {
