@@ -86,11 +86,11 @@ function addTorrent(magnet) {
             }
         })
         video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
-        createSubParser()
-        if (subStream){
-            subStream.destroy()
-        } 
-        subStream = videoFile.createReadStream().pipe(parser)
+        // createSubParser()
+        // if (subStream){
+        //     subStream.destroy()
+        // } 
+        // subStream = videoFile.createReadStream().pipe(parser)
         document.location.href = "#player"
         nowPlaying(selected)
         halfmoon.toggleModal("tsearch")
@@ -128,6 +128,8 @@ function serveFile(file, req) {
 
     res.body = req.method === 'HEAD' ? '' : 'stream'
 
+    parseSubtitles(file.createReadStream(range))
+    
     return [res, req.method === 'GET' && file.createReadStream(range)]
 }
 
@@ -152,7 +154,6 @@ navigator.serviceWorker.addEventListener('message', evt => {
     const [response, stream] = serveFile(file, request)
     const asyncIterator = stream && stream[Symbol.asyncIterator]()
     respondWith(response)
-
     async function pull() {
         respondWith((await asyncIterator.next()).value)
     }
