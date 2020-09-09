@@ -88,6 +88,21 @@ video[src=""] {
     display: none;
 }
 
+video::cue {
+    font-family: Roboto, monospace;
+    color: #fff;
+    text-shadow: 2px 2px 0 #000,
+        2px -2px 0 #000, 
+        -2px 2px 0 #000, 
+        -2px -2px 0 #000, 
+        2px 0px 0 #000, 
+        0px 2px 0 #000, 
+        -2px 0px 0 #000, 
+        0px -2px 0 #000, 
+        2px 2px 2px #000;
+    background: none;
+}
+
 .controls {
     background: linear-gradient(to top, rgba(0, 0, 0, .8), rgba(0, 0, 0, .4) 25%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .1) 75%, transparent);
 }
@@ -183,11 +198,11 @@ video[src=""] {
 
 
 .controls input#prog[type=range]::after,
-.controls input#prog[type=range]::before{
+.controls input#prog[type=range]::before {
     pointer-events: none;
     opacity: 0;
     position: absolute;
-    transform: translate(-50%,-100%);
+    transform: translate(-50%, -100%);
     font-family: Roboto, monospace;
     color: #ececec;
     white-space: nowrap;
@@ -197,21 +212,25 @@ video[src=""] {
     font-weight: 600;
     transition: .2s opacity ease;
 }
-.controls input#prog[type=range]::after{
+
+.controls input#prog[type=range]::after {
     width: 150px;
     background: var(--background);
     content: "";
     height: var(--height);
     top: -2rem;
 }
-.controls input#prog[type=range]::before{
+
+.controls input#prog[type=range]::before {
     top: 0rem;
     content: attr(data-ts);
 }
+
 .controls input#prog[type=range]:active::after,
-.controls input#prog[type=range]:active::before{
+.controls input#prog[type=range]:active::before {
     opacity: 1;
 }
+
 .controls input[type=range]:hover::-webkit-slider-thumb {
     height: 12px;
     width: 12px;
@@ -229,7 +248,7 @@ video[src=""] {
     transition: all .1s ease
 }
 
-#buffering{
+#buffering {
     border: 4px solid #FFFFFF00;
     border-top: 4px solid #fff;
     border-radius: 50%;
@@ -239,7 +258,8 @@ video[src=""] {
     opacity: 1;
     transition: .5s opacity ease;
 }
-#buffering.hidden{
+
+#buffering.hidden {
     opacity: 0
 }
 

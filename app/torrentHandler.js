@@ -34,6 +34,9 @@ function t(a) {
         case 2:
             addTorrent("https://webtorrent.io/torrents/tears-of-steel.torrent")
             break;
+        case 3:
+            addTorrent("magnet:?xt=urn:btih:CE9156EB497762F8B7577B71C0647A4B0C3423E1&dn=Inception+%282010%29+720p+-+mkv+-+1.0GB+-+YIFY&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2920%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.pirateparty.gr%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.cyberia.is%3A6969%2Fannounce")
+            break;
     }
 }
 WEBTORRENT_ANNOUNCE = announceList
@@ -87,10 +90,10 @@ function addTorrent(magnet) {
         })
         video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
         // createSubParser()
-        // if (subStream){
-        //     subStream.destroy()
-        // } 
-        // subStream = videoFile.createReadStream().pipe(parser)
+        if (subStream){
+            subStream.destroy()
+        } 
+        subStream = videoFile.createReadStream().pipe(parser)
         document.location.href = "#player"
         nowPlaying(selected)
         halfmoon.toggleModal("tsearch")
@@ -128,8 +131,8 @@ function serveFile(file, req) {
 
     res.body = req.method === 'HEAD' ? '' : 'stream'
 
-    parseSubtitles(file.createReadStream(range))
-    
+    // file.createReadStream(range).pipe(parser)
+
     return [res, req.method === 'GET' && file.createReadStream(range)]
 }
 
