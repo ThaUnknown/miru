@@ -1,26 +1,31 @@
 var parser = new MatroskaSubtitles()
-let track
+let tracks
 
-parser.once('tracks', function (tracks) {
-  track = video.addTextTrack('captions', tracks[0].type, tracks[0].language)
-  track.mode = "showing";
+parser.once('tracks', function (pTracks) {
+  tracks = []
+  pTracks.forEach(track => {
+    if (track.type == "ass") {
+      tracks[track.number] = video.addTextTrack('captions', track.number, !!track.language ? track.language : track.number)
+    }
+  })
+  if (video.textTracks[0]) {
+    video.textTracks[0].mode = "showing"
+  }
 })
 parser.on('subtitle', function (subtitle, trackNumber) {
-  subConvt(subtitle)
+  subConvt(subtitle, trackNumber)
 })
 
-var re_newline = /\\N/g; // replace \N with newline
-var re_softbreak = /\\n/g;    // There's no equivalent function in WebVTT.
-var re_hardspace = /\\h/g;    // Replace with &nbsp;
-var re_style = /\{([^}]+)\}/; // replace style
-function subConvt(result) {
+let re_newline = /\\N/g, // replace \N with newline
+  re_softbreak = /\\n/g,   // There's no equivalent function in WebVTT.
+  re_hardspace = /\\h/g,    // Replace with &nbsp;
+  re_style = /\{([^}]+)\}/; // replace style
+function subConvt(result, trackNumber) {
   let cue = new VTTCue(result.time / 1000, (result.time + result.duration) / 1000, ""),
     text = result.text;
-
   // Support for special characters in WebVTT.
   // For obvious reasons, the ampersand one *must* be first.
   text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
   let style, tagsToClose = []; // Places to stash style info.
   // Subtitles may contain any number of override tags, so we'll loop through
   // to find them all.
@@ -33,7 +38,6 @@ function subConvt(result) {
         let tagCommand = style[j].match(/[a-zA-Z]+/)[0];
         // Give special reckognition to one-letter tags.
         let oneLetter = (tagCommand.length == 1) ? tagCommand : "";
-
         // "New" position commands. It is assumed that bottom center position is the default.
         if (tagCommand === "an") {
           let posNum = Number(style[j].substring(2, 3));
@@ -102,7 +106,6 @@ function subConvt(result) {
             replaceString += '</' + tagsToClose.pop() + '>';
           }
         }
-
         // Insert open-tags for tags in the to-open list.
         while (tagsToOpen.length > 0) {
           let nowOpening = tagsToOpen.pop();
@@ -113,7 +116,6 @@ function subConvt(result) {
     }
     text = text.replace(re_style, replaceString); // Replace override tag.
   }
-
   text = text.replace(re_newline, "\r\n").replace(re_softbreak, " ").replace(
     re_hardspace, "&nbsp;");
   let content = "<v " + result.style + ">" + text
@@ -121,5 +123,5 @@ function subConvt(result) {
     content += '</' + tagsToClose.pop() + '>';
   }
   cue.text = `&nbsp;\r\n${content}\r\n&nbsp;`
-  track.addCue(cue)
+  tracks[trackNumber].addCue(cue)
 }

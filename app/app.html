@@ -7,7 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
     <meta name="viewport" content="width=device-width">
 
-    <link rel="icon" href="logofinal small.png">
+    <link rel="icon" href="logo.png">
     <title>Miru</title>
 
     <link href="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.0.4/css/halfmoon.min.css" rel="stylesheet">
@@ -58,9 +58,12 @@
                             <img class="contain-img rounded w-full">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <button class="btn bg-primary pr-5 pl-10" type="button" id="play">Play Episode</button>
+                                    <button class="btn bg-primary pr-5 pl-10" type="button" id="play">Play
+                                        Episode</button>
                                 </div>
-                                <input type="number" id="ep" class="form-control flex-reset w-28 bg-primary noarrow px-5 text-center" placeholder="#" value="1" min="1">
+                                <input type="number" id="ep"
+                                    class="form-control flex-reset w-28 bg-primary noarrow px-5 text-center"
+                                    placeholder="#" value="1" min="1">
                             </div>
                         </div>
                         <div class="col-9 p-20">
@@ -96,7 +99,7 @@
         <div class="sidebar d-flex">
             <div class="sidebar-menu d-flex flex-column justify-content-end flex-grow-1">
                 <a href="#" class="sidebar-brand">
-                    <img src="logofinal small.png" alt="logo">
+                    <img src="logo.png" alt="logo">
                     Miru
                 </a>
                 <div class="sidebar-divider"></div>
@@ -132,10 +135,10 @@
                 </a>
             </div>
         </div>
-        <div class="content-wrapper">
+        <div class="overflow-y-hidden content-wrapper">
             <section id="player">
                 <a href="#player" class="w-full h-full"></a>
-                <video id="video" src="" type="video/mp4" class="w-full" autoPictureInPicture>
+                <video id="video" src="" class="w-full" autoPictureInPicture>
                 </video>
                 <div class="player d-none flex-column justify-content-between w-full h-full">
                     <div class="h-full w-full d-flex flex-column justify-content-between" id="ptoggle">
@@ -180,6 +183,14 @@
                         <span class="ts" id="elapsed">--:--</span>
                         <input type="range" min="0" max="1000" value="0" id="prog">
                         <span class="ts" id="remaining">--:--</span>
+                        <div class="subtitles dropdown dropup with-arrow">
+                            <span class="material-icons ctrl" title="Subtitles [S]" id="bcap" data-toggle="dropdown"
+                                id="subtitle-popover" aria-haspopup="true" aria-expanded="false">
+                                subtitles
+                            </span>
+                            <div class="dropdown-menu dropdown-menu-center" aria-labelledby="subtitle-popover" id="subMenu">
+                            </div>
+                        </div>
                         <span class="material-icons ctrl" title="Popout Window [P]" id="bpip">
                             picture_in_picture
                         </span>

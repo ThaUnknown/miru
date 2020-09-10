@@ -32,6 +32,7 @@ video.addEventListener("waiting", isBuffering);
 video.addEventListener("timeupdate", updateDisplay);
 video.addEventListener("timeupdate", updatePositionState);
 playPause.addEventListener("click", bpp);
+playPause.addEventListener("dblclick", bfull);
 
 
 for (let i = 0; i < controls.length; i++) {
@@ -229,13 +230,11 @@ function updateVolume(a) {
 
 //PiP
 
-function bpip() {
-    if (!document.pictureInPictureElement) {
-        video.requestPictureInPicture();
-
-    } else if (document.pictureInPictureElement) {
-        document.exitPictureInPicture();
-
+async function bpip() {
+    if (video !== document.pictureInPictureElement) {
+        await video.requestPictureInPicture();
+    } else {
+        await document.exitPictureInPicture();
     }
 }
 
@@ -262,7 +261,49 @@ function seek(a) {
     video.currentTime += a;
     updateDisplay()
 }
+//subtitles button, generates content every single time its opened because fuck knows when the parser will find new shit
+let off
+function bcap() {
+    let frag = document.createDocumentFragment()
+    off = document.createElement("a")
+    off.classList.add("dropdown-item", "pointer", "text-white")
+    off.innerHTML = "OFF"
+    off.onclick = function () {
+        selectLang("OFF")
+    }
+    frag.appendChild(off)
 
+    for (let i = 0; i < video.textTracks.length; i++) {
+        let template = document.createElement("a")
+        template.classList.add("dropdown-item", "pointer")
+        template.innerHTML = video.textTracks[i].language
+        if (video.textTracks[i].mode == "showing") {
+            template.classList.add("text-white")
+            off.classList.add("text-muted")
+            off.classList.remove("text-white")
+        } else {
+            template.classList.add("text-muted")
+        }
+        template.onclick = function () {
+            selectLang(video.textTracks[i].language)
+        }
+        frag.appendChild(template)
+    }
+
+    document.querySelector("#subMenu").textContent = '';
+    document.querySelector("#subMenu").appendChild(frag)
+}
+function selectLang(lang) {
+    for (let i = 0; i < video.textTracks.length; i++) {
+        if (video.textTracks[i].language == lang) {
+            video.textTracks[i].mode = 'showing';
+        }
+        else {
+            video.textTracks[i].mode = 'hidden';
+        }
+    }
+    bcap()
+}
 //keybinds
 
 document.onkeydown = function (a) {
@@ -282,6 +323,9 @@ document.onkeydown = function (a) {
                 break;
             case "t":
                 btheatre();
+                break;
+            case "s":
+                bcap();
                 break;
             case "f":
                 bfull();

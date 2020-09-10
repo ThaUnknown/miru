@@ -71,11 +71,11 @@
     z-index: 10
 }
 
-#player:target a {
+#player:target > a {
     display: none;
 }
 
-#player a {
+#player > a {
     position: absolute;
     z-index: 10
 }
@@ -89,16 +89,16 @@ video[src=""] {
 }
 
 video::cue {
-    font-family: Roboto, monospace;
+    font-family: "Open Sans", sans-serif;
     color: #fff;
     text-shadow: 2px 2px 0 #000,
-        2px -2px 0 #000, 
-        -2px 2px 0 #000, 
-        -2px -2px 0 #000, 
-        2px 0px 0 #000, 
-        0px 2px 0 #000, 
-        -2px 0px 0 #000, 
-        0px -2px 0 #000, 
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px 0px 0 #000,
+        0px 2px 0 #000,
+        -2px 0px 0 #000,
+        0px -2px 0 #000,
         2px 2px 2px #000;
     background: none;
 }

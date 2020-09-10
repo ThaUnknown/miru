@@ -1,0 +1,22 @@
+{
+  "name": "Miru",
+  "short_name": "Miru",
+  "start_url": "/app/app.html",
+  "display": "standalone",
+  "categories": [
+    "entertainment"
+  ],
+  "lang": "en-US",
+  "orientation": "landscape",
+  "background_color": "#25282c",
+  "theme_color": "#25282c",
+  "scope": "/app/",
+  "description": "Way too high quality anime for streaming, ad free in a simple solution.",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "768x768",
+      "type": "image/png"
+    }
+  ]
+}

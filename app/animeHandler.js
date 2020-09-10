@@ -250,7 +250,8 @@ async function nyaaSearch(media, episode) {
         results = document.createDocumentFragment()
     for (let title of titles) {
         if (results.children.length == 0) {
-            let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}" ${episode} "`)
+            title = title.replace(/ /g, "+")
+            let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}"+${episode}+"`)
             results = await rssFetch(url)
         }
     };
@@ -272,6 +273,7 @@ async function nyaaSearch(media, episode) {
 async function rssFetch(url) {
     let frag = document.createDocumentFragment()
     res = await fetch(url)
+    console.log(res)
     await res.text().then((xmlTxt) => {
         try {
             let doc = DOMPARSER(xmlTxt, "text/xml")
