@@ -15,7 +15,6 @@ parser.once('tracks', function (pTracks) {
 parser.on('subtitle', function (subtitle, trackNumber) {
   subConvt(subtitle, trackNumber)
 })
-
 let re_newline = /\\N/g, // replace \N with newline
   re_softbreak = /\\n/g,   // There's no equivalent function in WebVTT.
   re_hardspace = /\\h/g,    // Replace with &nbsp;
@@ -48,6 +47,7 @@ function subConvt(result, trackNumber) {
           }
           if (posNum % 3 == 1) {
             cue.align = "start";
+            cue.text = "&nbsp;\r\n"
           } else if (posNum % 3 == 0) {
             cue.align = "end";
           }
@@ -122,6 +122,6 @@ function subConvt(result, trackNumber) {
   while (tagsToClose.length > 0) {
     content += '</' + tagsToClose.pop() + '>';
   }
-  cue.text = `&nbsp;\r\n${content}\r\n&nbsp;`
+  cue.text += `${content}\r\n&nbsp;`
   tracks[trackNumber].addCue(cue)
 }

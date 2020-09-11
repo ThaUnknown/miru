@@ -24,7 +24,6 @@ const client = new WebTorrent(),
     ],
     scope = '/app/',
     sw = navigator.serviceWorker.register('sw.js', { scope })
-
 //for debugging
 function t(a) {
     switch (a) {
@@ -89,10 +88,9 @@ function addTorrent(magnet) {
             }
         })
         video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
-        // createSubParser()
-        if (subStream){
+        if (subStream) {
             subStream.destroy()
-        } 
+        }
         subStream = videoFile.createReadStream().pipe(parser)
         document.location.href = "#player"
         nowPlaying(selected)

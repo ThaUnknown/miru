@@ -273,7 +273,6 @@ async function nyaaSearch(media, episode) {
 async function rssFetch(url) {
     let frag = document.createDocumentFragment()
     res = await fetch(url)
-    console.log(res)
     await res.text().then((xmlTxt) => {
         try {
             let doc = DOMPARSER(xmlTxt, "text/xml")
@@ -298,3 +297,5 @@ async function rssFetch(url) {
 }
 
 alRequest()
+
+search = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/
