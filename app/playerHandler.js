@@ -16,7 +16,7 @@ const controls = document.getElementsByClassName('ctrl'),
     thumbnail = document.querySelector("#dThumb")
 
 
-//event listeners
+// event listeners
 volume.addEventListener("input", function () {
     updateVolume()
 });
@@ -45,25 +45,29 @@ for (let i = 0; i < controls.length; i++) {
 // progress bar and display
 
 function updateDisplay() {
-    let progressPercent = (video.currentTime / video.duration * 100),
-        bufferPercent = video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100
+    let progressPercent = (video.currentTime / video.duration * 100)
+    let bufferPercent = video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100
     progress.style.setProperty("--buffer", bufferPercent + "%");
     updateBar(progressPercent || progress.value / 10);
     createThumbnail(video);
 }
+
 function dragBar() {
     video.pause()
     updateBar(progress.value / 10)
 }
+
 function dragBarEnd() {
     video.currentTime = currentTime || 0
     playVideo()
 }
+
 async function dragBarStart() {
     await video.pause()
     updateBar(progress.value / 10)
 }
-let currentTime
+
+let currentTime;
 function updateBar(progressPercent) {
     currentTime = video.duration * progressPercent / 100
     progress.style.setProperty("--progress", progressPercent + "%");
@@ -77,12 +81,11 @@ function updateBar(progressPercent) {
 }
 
 // dynamic thumbnails 
-let thumbnails = [],
-    ratio,
-    canvas = document.createElement("canvas"),
-    context = canvas.getContext('2d'),
-    w = 150,
-    h
+let thumbnails = []
+let ratio
+let canvas = document.createElement("canvas")
+let context = canvas.getContext('2d')
+let w = 150, h
 
 function initThumbnail() {
     thumbnails = []
@@ -92,6 +95,7 @@ function initThumbnail() {
     canvas.height = h;
     progress.style.setProperty("--height", h + "px");
 }
+
 function createThumbnail(vid) {
     let index = Math.floor(vid.currentTime / 5)
     if (!thumbnails[index] && h) {
@@ -100,6 +104,7 @@ function createThumbnail(vid) {
         thumbnails[index] = canvas.toDataURL("image/jpeg")
     }
 }
+
 function finishThumbnails() {
     let thumbVid = document.createElement("video")
     thumbVid.src = video.src
@@ -122,7 +127,7 @@ function finishThumbnails() {
 }
 
 
-//bufering spinner
+// bufering spinner
 
 let buffer;
 function resetBuffer() {
@@ -136,13 +141,14 @@ function resetBuffer() {
 function isBuffering() {
     buffer = setTimeout(displayBuffer, 150)
 }
+
 function displayBuffer() {
     buffering.classList.remove('hidden')
     resetTimer()
 }
-//immerse timeout
-let immerseTime;
 
+// immerse timeout
+let immerseTime;
 
 document.onmousemove = resetTimer;
 document.onkeypress = resetTimer;
@@ -155,22 +161,26 @@ function resetTimer() {
     player.classList.remove('immersed')
     immerseTime = setTimeout(immersePlayer, 3000)
 }
-let islooped;
 
+let islooped;
 
 function toTS(sec) {
     if (Number.isNaN(sec)) {
         return "--:--";
     }
-    let hours = Math.floor(sec / 3600),
-        minutes = Math.floor((sec - (hours * 3600)) / 60),
-        seconds = Math.floor(sec - (hours * 3600) - (minutes * 60));
+
+    let hours = Math.floor(sec / 3600)
+    let minutes = Math.floor((sec - (hours * 3600)) / 60)
+    let seconds = Math.floor(sec - (hours * 3600) - (minutes * 60));
+
     if (minutes < 10) {
         minutes = `0${minutes}`;
     }
+
     if (seconds < 10) {
         seconds = `0${seconds}`;
     }
+
     if (hours > 0) {
         return `${hours}:${minutes}:${seconds}`;
     } else {
@@ -178,7 +188,7 @@ function toTS(sec) {
     }
 }
 
-//play/pause button
+// play/pause button
 async function playVideo() {
     try {
         await video.play();
@@ -187,6 +197,7 @@ async function playVideo() {
         btnpp.innerHTML = "play_arrow";
     }
 }
+
 function bpp() {
     if (video.paused) {
         playVideo();
@@ -200,7 +211,7 @@ function bnext() {
     nyaaSearch(nowPlaying[0], nowPlaying[1] + 1)
 }
 
-//volume shit
+// volume shit
 
 let oldlevel;
 
@@ -228,7 +239,7 @@ function updateVolume(a) {
 }
 
 
-//PiP
+// PiP
 
 async function bpip() {
     if (video !== document.pictureInPictureElement) {
@@ -238,13 +249,13 @@ async function bpip() {
     }
 }
 
-//theathe mode
+// theathe mode
 
 function btheatre() {
     halfmoon.toggleSidebar();
 }
 
-//fullscreen
+// fullscreen
 
 function bfull() {
     if (!document.fullscreenElement) {
@@ -261,7 +272,7 @@ function seek(a) {
     video.currentTime += a;
     updateDisplay()
 }
-//subtitles button, generates content every single time its opened because fuck knows when the parser will find new shit
+// subtitles button, generates content every single time its opened because fuck knows when the parser will find new shit
 let off
 function bcap() {
     let frag = document.createDocumentFragment()
@@ -304,7 +315,7 @@ function selectLang(lang) {
     }
     bcap()
 }
-//keybinds
+// keybinds
 
 document.onkeydown = function (a) {
     if (document.location.href.endsWith("#player")) {
@@ -341,7 +352,8 @@ document.onkeydown = function (a) {
         }
     }
 }
-//media session
+
+// media session
 function nowPlaying(sel) {
     nowPlaying = sel
     if ('mediaSession' in navigator) {
@@ -359,6 +371,7 @@ function nowPlaying(sel) {
         });
     }
 }
+
 function updatePositionState() {
     if ('setPositionState' in navigator.mediaSession) {
         navigator.mediaSession.setPositionState({
@@ -368,6 +381,7 @@ function updatePositionState() {
         });
     }
 }
+
 if ('mediaSession' in navigator) {
     navigator.mediaSession.setActionHandler('play', bpp);
     navigator.mediaSession.setActionHandler('pause', bpp);
