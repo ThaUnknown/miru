@@ -74,7 +74,7 @@ function addTorrent(magnet) {
                 alertType: "alert-success",
                 fillType: ""
             });
-            finishThumbnails();
+            // finishThumbnails(); //disabled for performance and testing reasons
         })
         torrent.on('noPeers', function () {
             halfmoon.initStickyAlert({
@@ -130,6 +130,7 @@ function serveFile(file, req) {
 
     res.headers['Cache-Control'] = 'no-store'
     res.body = req.method === 'HEAD' ? '' : 'stream'
+    console.log('set parser', range)
 
     parser = new MatroskaSubtitles({ prevInstance: parser, offset: range.start })
 

@@ -89,6 +89,7 @@ video[src=""] {
 }
 
 video::cue {
+    background: none;
     font-family: "Open Sans", sans-serif;
     color: #fff;
     text-shadow: 2px 2px 0 #000,
@@ -100,7 +101,6 @@ video::cue {
         -2px 0px 0 #000,
         0px -2px 0 #000,
         2px 2px 2px #000;
-    background: none;
 }
 
 .controls {
