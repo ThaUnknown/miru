@@ -24,6 +24,7 @@ const client = new WebTorrent(),
     ],
     scope = '/app/',
     sw = navigator.serviceWorker.register('sw.js', { scope })
+let parser
 //for debugging
 function t(a) {
     switch (a) {
@@ -52,6 +53,8 @@ function addTorrent(magnet) {
     if (client.torrents.length >= maxTorrents) {
         client.remove(client.torrents[0].infoHash)
     }
+    halfmoon.toggleModal("tsearch")
+    document.location.href = "#player"
     client.add(magnet, async function (torrent) {
         await sw
         function onProgress() {
@@ -91,10 +94,7 @@ function addTorrent(magnet) {
         if (subStream) {
             subStream.destroy()
         }
-        subStream = videoFile.createReadStream().pipe(parser)
-        document.location.href = "#player"
         nowPlaying(selected)
-        halfmoon.toggleModal("tsearch")
     })
 
 }
@@ -127,11 +127,36 @@ function serveFile(file, req) {
         res.headers['Content-Length'] = file.length
     }
 
+
+    res.headers['Cache-Control'] = 'no-store'
     res.body = req.method === 'HEAD' ? '' : 'stream'
 
-    // file.createReadStream(range).pipe(parser)
+    parser = new MatroskaSubtitles({ prevInstance: parser, offset: range.start })
 
-    return [res, req.method === 'GET' && file.createReadStream(range)]
+    parser.once('tracks', function (pTracks) {
+        tracks = []
+        pTracks.forEach(track => {
+            if (track.type == "ass") {
+                tracks[track.number] = video.addTextTrack('captions', track.number, !!track.language ? track.language : track.number)
+            }
+        })
+        if (video.textTracks[0]) {
+            video.textTracks[0].mode = "showing"
+        }
+    })
+
+    parser.once('cues', function () {
+        console.log('seeking ready')
+    })
+
+    parser.on('subtitle', function (subtitle, trackNumber) {
+        subConvt(subtitle, trackNumber)
+    })
+
+    // parser is really a passthrough mkv stream now
+    file.createReadStream(range).pipe(parser)
+
+    return [res, req.method === 'GET' && parser]
 }
 
 // kind of a fetch event from service worker but for the main thread.

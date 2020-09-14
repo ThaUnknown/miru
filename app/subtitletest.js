@@ -1,20 +1,5 @@
-var parser = new MatroskaSubtitles()
-let tracks
+let tracks = []
 
-parser.once('tracks', function (pTracks) {
-  tracks = []
-  pTracks.forEach(track => {
-    if (track.type == "ass") {
-      tracks[track.number] = video.addTextTrack('captions', track.number, !!track.language ? track.language : track.number)
-    }
-  })
-  if (video.textTracks[0]) {
-    video.textTracks[0].mode = "showing"
-  }
-})
-parser.on('subtitle', function (subtitle, trackNumber) {
-  subConvt(subtitle, trackNumber)
-})
 let re_newline = /\\N/g, // replace \N with newline
   re_softbreak = /\\n/g,   // There's no equivalent function in WebVTT.
   re_hardspace = /\\h/g,    // Replace with &nbsp;
@@ -61,6 +46,7 @@ function subConvt(result, trackNumber) {
           }
           if ((posNum - 1) % 4 == 0) {
             cue.align = "start";
+            cue.text = "&nbsp;\r\n"
           } else if ((posNum - 1) % 4 == 2) {
             cue.align = "end";
           }
@@ -123,5 +109,7 @@ function subConvt(result, trackNumber) {
     content += '</' + tagsToClose.pop() + '>';
   }
   cue.text += `${content}\r\n&nbsp;`
-  tracks[trackNumber].addCue(cue)
+  if (!Object.values(tracks[trackNumber].cues).some(c => c.text == cue.text)) {
+    tracks[trackNumber].addCue(cue)
+  }
 }

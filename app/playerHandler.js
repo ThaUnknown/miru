@@ -324,7 +324,7 @@ document.onkeydown = function (a) {
             case "t":
                 btheatre();
                 break;
-            case "s":
+            case "c":
                 bcap();
                 break;
             case "f":
