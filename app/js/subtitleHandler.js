@@ -9,7 +9,6 @@ function parseSubs(range, stream) {
     parser = new MatroskaSubtitles({ prevInstance: parser, offset: range.start })
 
     parser.once('tracks', function (pTracks) {
-      console.log(pTracks)
       tracks = []
       pTracks.forEach(track => {
         tracks[track.number] = video.addTextTrack('captions', track.type, track.language || track.number)

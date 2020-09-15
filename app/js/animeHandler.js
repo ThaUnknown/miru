@@ -122,21 +122,20 @@ async function alRequest(a, b) {
     })
 
     let res = await fetch(url, options).catch((error) => console.error(error)),
-    json = await res.json();
+        json = await res.json();
     return json
 }
-
+let alResponse
 async function searchAnime(a) {
-    let request = await alRequest(a)
-    console.log(request);
+    alResponse = await alRequest(a)
+    console.log(alResponse);
     let frag = document.createDocumentFragment()
     document.querySelector(".browse").textContent = '';
     try {
-        request.data.Page.media.forEach((media, index) => {
+        alResponse.data.Page.media.forEach(media => {
             let template = document.createElement("div")
             template.classList.add("card", "m-0", "p-0")
             template.innerHTML = `
-
             <div class="row h-full">
                 <div class="col-4">
                     <img src="${media.coverImage.extraLarge}"
@@ -160,10 +159,9 @@ async function searchAnime(a) {
                     </div>
                 </div>
             </div>
-
             `
             template.onclick = function () {
-                viewAnime(request.data.Page.media[index])
+                viewAnime(media)
             }
             frag.appendChild(template)
         })
@@ -294,4 +292,21 @@ async function nyaaRss(url) {
 }
 
 
-// rx = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/
+let regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/,
+    str = `[HorribleSubs] Black Clover - 143 [1080p].mkv`,
+    m,
+    store = {};
+function regtest() {
+    if ((m = regex.exec(str)) !== null) {
+        if (m[2].endsWith(" - ")) {
+            m[2] = m[2].slice(0, -3)
+        }
+        if (!store[m[2]] && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(m[2]) && ((store[m[2]] = media) && true)))) {
+            //shit not found, lookup
+        }
+
+        m.forEach((match, groupIndex) => {
+            console.log(`Found match, group ${groupIndex}: ${match}`);
+        });
+    }
+}
