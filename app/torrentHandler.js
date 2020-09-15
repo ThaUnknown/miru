@@ -52,7 +52,7 @@ function addTorrent(magnet) {
     if (client.torrents.length >= maxTorrents) {
         client.remove(client.torrents[0].infoHash)
     }
-    halfmoon.toggleModal("tsearch")
+    halfmoon.hideModal("tsearch")
     document.location.href = "#player"
     client.add(magnet, async function (torrent) {
         video.src = ""
