@@ -24,7 +24,6 @@ const client = new WebTorrent(),
     ],
     scope = '/app/',
     sw = navigator.serviceWorker.register('sw.js', { scope })
-let parser
 //for debugging
 function t(a) {
     switch (a) {
@@ -47,7 +46,7 @@ WEBTORRENT_ANNOUNCE = announceList
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
 var nowPlaying,
-    maxTorrents = 3,
+    maxTorrents = 1,
     subStream
 function addTorrent(magnet) {
     if (client.torrents.length >= maxTorrents) {
@@ -56,6 +55,7 @@ function addTorrent(magnet) {
     halfmoon.toggleModal("tsearch")
     document.location.href = "#player"
     client.add(magnet, async function (torrent) {
+        video.src = ""
         await sw
         function onProgress() {
             peers.textContent = torrent.numPeers
@@ -90,6 +90,7 @@ function addTorrent(magnet) {
                 videoFile = file
             }
         })
+        parser = undefined
         video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
         if (subStream) {
             subStream.destroy()
@@ -128,36 +129,14 @@ function serveFile(file, req) {
     }
 
 
-    res.headers['Cache-Control'] = 'no-store'
+    res.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+    res.headers['Expires'] = '0'
     res.body = req.method === 'HEAD' ? '' : 'stream'
-    console.log('set parser', range)
-
-    parser = new MatroskaSubtitles({ prevInstance: parser, offset: range.start })
-
-    parser.once('tracks', function (pTracks) {
-        tracks = []
-        pTracks.forEach(track => {
-            if (track.type == "ass") {
-                tracks[track.number] = video.addTextTrack('captions', track.number, !!track.language ? track.language : track.number)
-            }
-        })
-        if (video.textTracks[0]) {
-            video.textTracks[0].mode = "showing"
-        }
-    })
-
-    parser.once('cues', function () {
-        console.log('seeking ready')
-    })
-
-    parser.on('subtitle', function (subtitle, trackNumber) {
-        subConvt(subtitle, trackNumber)
-    })
-
     // parser is really a passthrough mkv stream now
-    file.createReadStream(range).pipe(parser)
+    let stream = file.createReadStream(range)
+    parseSubs(range, stream)
 
-    return [res, req.method === 'GET' && parser]
+    return [res, req.method === 'GET' && parser || stream]
 }
 
 // kind of a fetch event from service worker but for the main thread.

@@ -207,11 +207,13 @@ function viewAnime(media) {
     document.querySelector(".view .banner img").src = ""
     document.querySelector(".view .banner img").src = media.bannerImage
     document.querySelector(".view .contain-img").src = media.coverImage.extraLarge
-    document.querySelector(".view .title").textContent = !!media.title.english ? media.title.english : media.title.romaji
-    document.querySelector(".view .desc").innerHTML = !!media.description ? media.description : ""
+    document.querySelector(".view .title").textContent = media.title.english || media.title.romaji
+    document.querySelector(".view .desc").innerHTML = media.description || ""
     document.querySelector(".view .details").innerHTML = ""
     document.querySelector(".view #play").onclick = function () { nyaaSearch(media, document.querySelector(".view #ep").value); halfmoon.toggleModal("view") }
     detailsCreator(media)
+    document.querySelector(".view #ep").value = 1
+    document.querySelector(".view #ep").max = media.episodes || 999
     document.querySelector(".view .details").appendChild(detailsfrag)
 }
 

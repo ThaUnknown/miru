@@ -283,4 +283,5 @@ section {
 
 section:target {
     display: block;
+    height: 100%
 }
