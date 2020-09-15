@@ -349,6 +349,7 @@ document.onkeydown = function (a) {
                 break;
             case "ArrowRight":
                 seek(2);
+                break;
         }
     }
 }

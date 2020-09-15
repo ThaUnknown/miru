@@ -20,10 +20,10 @@ var options = {
 }
 
 function search() {
-    alRequest(document.querySelector("#search").value)
+    searchAnime(document.querySelector("#search").value)
 }
 
-function alRequest(a, b) {
+async function alRequest(a, b) {
     if (!a) {
         variables.sort = "TRENDING_DESC"
         delete variables.search
@@ -120,18 +120,14 @@ function alRequest(a, b) {
         query: query,
         variables: variables
     })
-    fetch(url, options).then((handleResponse))
-        .then(handleData)
-        .catch((error) => console.error(error));
 
-    function handleResponse(response) {
-        return response.json().then(function (json) {
-            return response.ok ? json : Promise.reject(json);
-        });
-    }
+    let res = await fetch(url, options).catch((error) => console.error(error)),
+    json = await res.json();
+    return json
 }
 
-function handleData(request) {
+async function searchAnime(a) {
+    let request = await alRequest(a)
     console.log(request);
     let frag = document.createDocumentFragment()
     document.querySelector(".gallery").textContent = '';
@@ -297,6 +293,6 @@ async function rssFetch(url) {
     return frag
 }
 
-alRequest()
+searchAnime()
 
 // search = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/
