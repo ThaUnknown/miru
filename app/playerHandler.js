@@ -358,7 +358,7 @@ function nowPlaying(sel) {
     nowPlaying = sel
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: !!nowPlaying[0].title.english ? nowPlaying[0].title.english : nowPlaying[0].title.romaji,
+            title: nowPlaying[0].title.english || nowPlaying[0].title.romaji,
             artist: "Episode " + nowPlaying[1],
             album: "Miru",
             artwork: [

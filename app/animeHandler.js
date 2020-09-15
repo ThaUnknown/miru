@@ -20,16 +20,11 @@ var options = {
 }
 
 function search() {
-    let search = document.querySelector("#search").value
-    if (search == "") {
-        alRequest()
-    } else {
-        alRequest(search)
-    }
+    alRequest(document.querySelector("#search").value)
 }
 
-function alRequest(a) {
-    if (a == undefined) {
+function alRequest(a, b) {
+    if (!a) {
         variables.sort = "TRENDING_DESC"
         delete variables.search
         query = `
@@ -76,6 +71,7 @@ function alRequest(a) {
         `
     } else {
         variables.search = a
+        variables.perPage = b || 50
         delete variables.sort
         query = `
         query ($page: Int, $perPage: Int, $search: String, $type: MediaType) {
@@ -135,13 +131,12 @@ function alRequest(a) {
     }
 }
 
-function handleData(data) {
-    request = data
+function handleData(request) {
     console.log(request);
     let frag = document.createDocumentFragment()
-    let hasBegun = true
+    document.querySelector(".gallery").textContent = '';
     try {
-        data.data.Page.media.forEach((media, index) => {
+        request.data.Page.media.forEach((media, index) => {
             let template = document.createElement("div")
             template.classList.add("card", "m-0", "p-0")
             template.innerHTML = `
@@ -153,12 +148,12 @@ function handleData(data) {
                 </div>
                 <div class="col-8 h-full card-grid">
                     <div class="px-15 py-10">
-                        <h5 class="m-0 text-capitalize font-weight-bold">${!!media.title.english ? media.title.english : media.title.romaji}</h5>
+                        <h5 class="m-0 text-capitalize font-weight-bold">${media.title.english || media.title.romaji}</h5>
                         <p class="text-muted m-0 text-capitalize details">
                         ${(!!media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format) : "") + "</span>"}
                         ${!!media.episodes ? "<span>" + media.episodes + " Episodes</span>" : (!!media.duration ? "<span>" + media.duration + " Minutes</span>" : "")}
                         ${!!media.status ? "<span>" + media.status.toLowerCase() + "</span>" : ""}
-                        ${"<span>" + (!!media.season ? media.season.toLowerCase() + " " : "") + (!!media.seasonYear ? media.seasonYear : "") + "</span>"}
+                        ${"<span>" + (!!media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear || "") + "</span>"}
                         </p>
                     </div>
                     <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
@@ -178,10 +173,6 @@ function handleData(data) {
         })
     } catch (e) {
         console.error(e)
-    }
-    if (hasBegun) {
-        document.querySelector(".gallery").textContent = '';
-        hasBegun = false;
     }
     document.querySelector(".gallery").appendChild(frag)
 }
@@ -265,7 +256,7 @@ async function nyaaSearch(media, episode) {
 
     if (results.children.length == 0) {
         halfmoon.initStickyAlert({
-            content: `Couldn't find torrent for ${!!media.title.english ? media.title.english : media.title.romaji} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
+            content: `Couldn't find torrent for ${media.title.english || media.title.romaji} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
             title: "Search Failed",
             alertType: "alert-danger",
             fillType: ""
