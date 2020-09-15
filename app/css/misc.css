@@ -46,3 +46,31 @@
     grid-gap: 2rem;
     padding: 2rem
 }
+
+.pointer {
+    cursor: pointer
+}
+
+section {
+    display: none;
+}
+
+section:target {
+    display: block;
+    height: 100%
+}
+
+.w-28 {
+    width: 2.8rem;
+}
+
+.noarrow::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+.material-icons {
+    font-size: 18px
+}
+
+.close {
+    font-family: Arial;
+}

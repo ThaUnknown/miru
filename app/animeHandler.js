@@ -130,7 +130,7 @@ async function searchAnime(a) {
     let request = await alRequest(a)
     console.log(request);
     let frag = document.createDocumentFragment()
-    document.querySelector(".gallery").textContent = '';
+    document.querySelector(".browse").textContent = '';
     try {
         request.data.Page.media.forEach((media, index) => {
             let template = document.createElement("div")
@@ -170,8 +170,10 @@ async function searchAnime(a) {
     } catch (e) {
         console.error(e)
     }
-    document.querySelector(".gallery").appendChild(frag)
+    document.querySelector(".browse").appendChild(frag)
 }
+
+searchAnime()
 
 let detailsfrag = document.createDocumentFragment()
 let details = {
@@ -246,7 +248,7 @@ async function nyaaSearch(media, episode) {
         if (results.children.length == 0) {
             title = title.replace(/ /g, "+")
             let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=${title}"+${episode}+"`)
-            results = await rssFetch(url)
+            results = await nyaaRss(url)
         }
     }
 
@@ -265,9 +267,8 @@ async function nyaaSearch(media, episode) {
     }
 }
 
-async function rssFetch(url) {
+async function nyaaRss(url) {
     let frag = document.createDocumentFragment()
-
     res = await fetch(url)
     await res.text().then((xmlTxt) => {
         try {
@@ -289,10 +290,8 @@ async function rssFetch(url) {
             console.error(e)
         }
     })
-
     return frag
 }
 
-searchAnime()
 
-// search = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/
+// rx = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/

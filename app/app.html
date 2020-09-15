@@ -12,8 +12,8 @@
 
     <link href="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.0.4/css/halfmoon.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="css2.css" rel="stylesheet">
-    <link href="css1.css" rel="stylesheet">
+    <link href="css/misc.css" rel="stylesheet">
+    <link href="css/player.css" rel="stylesheet">
 </head>
 
 <body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars">
@@ -115,18 +115,6 @@
                     </span>
                     Browse
                 </a>
-                <a href="#browse" class="sidebar-link sidebar-link-with-icon">
-                    <span class="sidebar-icon">
-                        <i class="material-icons" aria-hidden="true">list</i>
-                    </span>
-                    Planning List
-                </a>
-                <a href="#browse" class="sidebar-link sidebar-link-with-icon">
-                    <span class="sidebar-icon">
-                        <i class="material-icons" aria-hidden="true">list</i>
-                    </span>
-                    Watching List
-                </a>
                 <a href="#settings" class="sidebar-link sidebar-link-with-icon mt-auto">
                     <span class="sidebar-icon">
                         <i class="material-icons" aria-hidden="true">settings</i>
@@ -216,19 +204,23 @@
                         </form>
                     </div>
                 </div>
-                    <div class="gallery h-full overflow-y-scroll">
+                    <div class="gallery browse h-full overflow-y-scroll">
                     </div>
+            </section>
+            <section id="releases">
+                <div class="gallery releases h-full overflow-y-scroll">
+                </div>
             </section>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.0.4/js/halfmoon.min.js"></script>
-    <script src="animeHandler.js"></script>
-    <script src="playerHandler.js"></script>
+    <script src="js/animeHandler.js"></script>
+    <script src="js/playerHandler.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js" defer></script>
-    <script src="torrentHandler.js" defer></script>
-    <script src="rangeParser.js" defer></script>
-    <script src="bundle.js"></script>
-    <script src="subtitletest.js"></script>
+    <script src="js/torrentHandler.js" defer></script>
+    <script src="js/rangeParser.js" defer></script>
+    <script src="js/bundle.js"></script>
+    <script src="js/subtitleHandler.js"></script>
 </body>
 
 </html>
