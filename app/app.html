@@ -1,16 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="auto-scaling-disabled">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-    <meta name="viewport" content="width=device-width">
-
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Miru">
+    <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
+    <meta name="theme-color" content="#111417" />
     <link rel="icon" href="logo.png">
-    <title>Miru</title>
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Miru - Torrent streaming made simple!</title>
 
-    <link href="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.0.4/css/halfmoon.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="css/misc.css" rel="stylesheet">
     <link href="css/player.css" rel="stylesheet">
@@ -126,7 +131,7 @@
         <div class="overflow-y-hidden content-wrapper">
             <section id="player">
                 <a href="#player" class="w-full h-full"></a>
-                <video id="video" class="w-full" autoPictureInPicture>
+                <video id="video" class="w-full" autoPictureInPicture src="">
                 </video>
                 <div class="player d-none flex-column justify-content-between w-full h-full">
                     <div class="h-full w-full d-flex flex-column justify-content-between" id="ptoggle">
@@ -191,7 +196,7 @@
                     </div>
                 </div>
             </section>
-            <section id="browse">
+            <section id="browse" class="d-flex flex-column">
                 <div class="text-center pt-20">
                     <div class="container">
                         <form class="input-group mb-15" action="javascript:search()">
@@ -207,13 +212,13 @@
                     <div class="gallery browse h-full overflow-y-scroll">
                     </div>
             </section>
-            <section id="releases">
+            <section id="releases" class="d-flex flex-column">
                 <div class="gallery releases h-full overflow-y-scroll">
                 </div>
             </section>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.0.4/js/halfmoon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.0/js/halfmoon.min.js"></script>
     <script src="js/util.js"></script>
     <script src="js/animeHandler.js"></script>
     <script src="js/playerHandler.js"></script>

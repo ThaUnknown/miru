@@ -1,34 +1,36 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en" class="auto-scaling-disabled">
 <head>
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Miru">
-    <meta name="description" content="Way too high quality anime for streaming, ad free in a simple solution.">
-    <meta name="theme-color" content="#25282c" />
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Miru">
+  <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
+  <meta name="theme-color" content="#111417" />
 
-    <link rel="icon" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+  <meta name="viewport" content="width=device-width" />
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="apple-touch-icon" href="logo.png">
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((reg) => {
-                        console.log('Service worker registered.', reg);
-                    });
-            });
-        }
-    </script>
+  <link rel="icon" href="logo.png">
+  <title>Miru - Torrent streaming made simple!</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css" rel="stylesheet" />
 </head>
-
-<body>
-    test
+<body class="with-custom-webkit-scrollbars with-custom-css-scrollbars">
+  <div class="page-wrapper">
+    <div class="content-wrapper">
+        test
+      <!--
+        Add your page's main content here
+        Examples:
+        1. https://www.gethalfmoon.com/docs/content-and-cards/#building-a-page
+        2. https://www.gethalfmoon.com/docs/grid-system/#building-a-dashboard
+      -->
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/js/halfmoon.min.js"></script>
 </body>
-
 </html>

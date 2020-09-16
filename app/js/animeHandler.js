@@ -292,10 +292,8 @@ async function nyaaRss(url) {
 }
 
 
-let regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/,
-    str = `[HorribleSubs] Black Clover - 143 [1080p].mkv`,
-    m,
-    store = {};
+const regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/;
+let store = {};
 async function regtest() {
     if ((m = regex.exec(str)) !== null) {
         if (m[2].endsWith(" - ")) {
@@ -312,7 +310,7 @@ async function regtest() {
     }
 }
 async function hsRss(url) {
-    let frag = document.createDocumentFragment()
+    document.querySelector(".releases").innerHTML = ""
     res = await fetch(url)
     await res.text().then(async (xmlTxt) => {
         try {
@@ -320,7 +318,7 @@ async function hsRss(url) {
             let items = doc.querySelectorAll("item")
             for (let item of items) {
                 let i = item.querySelector.bind(item),
-                regexParse = regex.exec(i("title").textContent)
+                    regexParse = regex.exec(i("title").textContent)
                 if (regexParse[2].endsWith(" - ")) {
                     regexParse[2] = regexParse[2].slice(0, -3)
                 }
@@ -332,10 +330,11 @@ async function hsRss(url) {
                 let media = store[regexParse[2]]
                 let template = document.createElement("div")
                 template.classList.add("card", "m-0", "p-0")
-                template.innerHTML = `
+                if (media) {
+                    template.innerHTML = `
                 <div class="row h-full">
                     <div class="col-4">
-                        <img src="${media.coverImage.extraLarge}"
+                        <img src="${media.coverImage.extraLarge || ""}"
                             class="cover-img w-full h-full">
                     </div>
                     <div class="col-8 h-full card-grid">
@@ -357,15 +356,36 @@ async function hsRss(url) {
                     </div>
                 </div>
                 `
+                } else {
+                    template.innerHTML = `
+                    <div class="row h-full">
+                        <div class="col-4">
+                            <img src=""
+                                class="cover-img w-full h-full">
+                        </div>
+                        <div class="col-8 h-full card-grid">
+                            <div class="px-15 py-10">
+                                <h5 class="m-0 text-capitalize font-weight-bold">${regexParse[2]} - ${regexParse[3]}</h5>
+                            </div>
+                            <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
+                            </div>
+                            <div class="px-15 pb-10 pt-5">
+                            </div>
+                        </div>
+                    </div>
+                    `
+                }
                 template.onclick = function () {
                     selected = [store[regexParse[2]], regexParse[3]]
                     addTorrent(i('link').textContent)
                 }
-                frag.appendChild(template)
+                document.querySelector(".releases").appendChild(template)
             }
         } catch (e) {
             console.error(e)
         }
     })
-    document.querySelector(".releases").appendChild(frag)
 }
+// setTimeout(() => {
+//     hsRss("http://www.horriblesubs.info/rss.php?res=1080")
+// }, 4000);

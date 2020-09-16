@@ -1,5 +1,5 @@
 {
-  "name": "Miru",
+  "name": "Miru - Torrent streaming made simple!",
   "short_name": "Miru",
   "start_url": "/app/app.html",
   "display": "standalone",
@@ -8,15 +8,20 @@
   ],
   "lang": "en-US",
   "orientation": "landscape",
-  "background_color": "#25282c",
-  "theme_color": "#25282c",
+  "background_color": "#111417",
+  "theme_color": "#111417",
   "scope": "/app/",
-  "description": "Way too high quality anime for streaming, ad free in a simple solution.",
+  "description": "Anime torrent streaming, ad free in a simple solution.",
   "icons": [
     {
       "src": "/logo.png",
       "sizes": "768x768",
       "type": "image/png"
     }
-  ]
+  ],
+  "intent_filters": {
+    "scope_url_scheme": "https",
+    "scope_url_host": "miru.moe",
+    "scope_url_path": "/app/"
+  }
 }

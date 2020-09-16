@@ -208,7 +208,7 @@ function bpp() {
 }
 
 function bnext() {
-    nyaaSearch(nowPlaying[0], nowPlaying[1] + 1)
+    nyaaSearch(nowPlaying[0], parseInt(nowPlaying[1]) + 1)
 }
 
 // volume shit

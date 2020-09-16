@@ -48,15 +48,15 @@ WEBTORRENT_ANNOUNCE = announceList
 var nowPlaying,
     maxTorrents = 1,
     subStream
-function addTorrent(magnet) {
+async function addTorrent(magnet) {
     if (client.torrents.length >= maxTorrents) {
         client.remove(client.torrents[0].infoHash)
     }
     halfmoon.hideModal("tsearch")
     document.location.href = "#player"
+    video.src = ""
+    await sw
     client.add(magnet, async function (torrent) {
-        video.src = ""
-        await sw
         function onProgress() {
             peers.textContent = torrent.numPeers
             downSpeed.textContent = prettyBytes(torrent.downloadSpeed) + '/s'

@@ -1,15 +1,12 @@
 let tracks = [],
   parser
 
-
 function parseSubs(range, stream) {
   if (video.src.endsWith(".mkv")) {
-    console.log('set parser', range)
-
     parser = new MatroskaSubtitles({ prevInstance: parser, offset: range.start })
-
     parser.once('tracks', function (pTracks) {
       tracks = []
+      video.textTracks = {}
       pTracks.forEach(track => {
         tracks[track.number] = video.addTextTrack('captions', track.type, track.language || track.number)
       })
@@ -17,11 +14,9 @@ function parseSubs(range, stream) {
         video.textTracks[0].mode = "showing"
       }
     })
-
     parser.once('cues', function () {
       console.log('seeking ready')
     })
-
     parser.on('subtitle', function (subtitle, trackNumber) {
       subConvt(subtitle, trackNumber)
     })
@@ -58,10 +53,10 @@ function subConvt(result, trackNumber) {
               cue.line = 0.5;
             } else if (Math.floor((posNum - 1) / 3) == 2) {
               cue.line = 0;
+              cue.text = "&nbsp;\r\n"
             }
             if (posNum % 3 == 1) {
               cue.align = "start";
-              cue.text = "&nbsp;\r\n"
             } else if (posNum % 3 == 0) {
               cue.align = "end";
             }
@@ -72,10 +67,10 @@ function subConvt(result, trackNumber) {
               cue.line = 0.5;
             } else if (posNum > 4) {
               cue.line = 0;
+              cue.text = "&nbsp;\r\n"
             }
             if ((posNum - 1) % 4 == 0) {
               cue.align = "start";
-              cue.text = "&nbsp;\r\n"
             } else if ((posNum - 1) % 4 == 2) {
               cue.align = "end";
             }
