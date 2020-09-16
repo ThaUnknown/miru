@@ -1,36 +1,77 @@
 <!DOCTYPE html>
 <html lang="en" class="auto-scaling-disabled">
+
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Miru">
-  <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
-  <meta name="theme-color" content="#111417" />
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Miru">
+    <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
+    <meta name="theme-color" content="#111417" />
 
-  <link rel="apple-touch-icon" href="logo.png">
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-  <meta name="viewport" content="width=device-width" />
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="viewport" content="width=device-width" />
 
-  <link rel="icon" href="logo.png">
-  <title>Miru - Torrent streaming made simple!</title>
+    <link rel="icon" href="logo.png">
+    <title>Miru - Torrent streaming made simple!</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css" rel="stylesheet" />
+    <script>
+        window.onload = ()=> {
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+        document.querySelector(".btn").addEventListener('click', (e) => {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+            });
+        });
+    }
+    </script>
 </head>
+
 <body class="with-custom-webkit-scrollbars with-custom-css-scrollbars">
-  <div class="page-wrapper">
-    <div class="content-wrapper">
-        test
-      <!--
-        Add your page's main content here
-        Examples:
-        1. https://www.gethalfmoon.com/docs/content-and-cards/#building-a-page
-        2. https://www.gethalfmoon.com/docs/grid-system/#building-a-dashboard
-      -->
+    <div class="page-wrapper">
+        <div class="content-wrapper">
+            <div class="content-wrapper d-lg-flex align-items-lg-center">
+                <div class="container-lg">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="content">
+                                <h1 class="font-weight-medium">
+                                    Miru - Anime torrent streaming, ad free in a simple solution.
+                                </h1>
+                                <p class="font-size-18">
+                                    Miru is an otaku's dream, a website which allows you to stream anime torrents
+                                    directly in the browser as soon as they are released. Anime in original quality with
+                                    no buffering, no ads, no delays, everything done client-side for free.
+                                </p>
+                                <div class="mt-20">
+                                    <div class="btn btn-primary" role="button">
+                                        Add app
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 d-flex align-items-center justify-content-center">
+                            <img class="w-400" alt="char" src="/char.png">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/js/halfmoon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/js/halfmoon.min.js"></script>
 </body>
+
 </html>
