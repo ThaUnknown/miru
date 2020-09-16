@@ -128,7 +128,7 @@ async function alRequest(a, b) {
 let alResponse
 async function searchAnime(a) {
     alResponse = await alRequest(a)
-    console.log(alResponse);
+    // console.log(alResponse);
     let frag = document.createDocumentFragment()
     document.querySelector(".browse").textContent = '';
     try {
@@ -296,17 +296,76 @@ let regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)
     str = `[HorribleSubs] Black Clover - 143 [1080p].mkv`,
     m,
     store = {};
-function regtest() {
+async function regtest() {
     if ((m = regex.exec(str)) !== null) {
         if (m[2].endsWith(" - ")) {
             m[2] = m[2].slice(0, -3)
         }
         if (!store[m[2]] && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(m[2]) && ((store[m[2]] = media) && true)))) {
             //shit not found, lookup
+            store[m[2]] = await alRequest(m[2], 1)
         }
 
         m.forEach((match, groupIndex) => {
             console.log(`Found match, group ${groupIndex}: ${match}`);
         });
     }
+}
+async function hsRss(url) {
+    let frag = document.createDocumentFragment()
+    res = await fetch(url)
+    await res.text().then(async (xmlTxt) => {
+        try {
+            let doc = DOMPARSER(xmlTxt, "text/xml")
+            let items = doc.querySelectorAll("item")
+            for (let item of items) {
+                let i = item.querySelector.bind(item),
+                regexParse = regex.exec(i("title").textContent)
+                if (regexParse[2].endsWith(" - ")) {
+                    regexParse[2] = regexParse[2].slice(0, -3)
+                }
+                if (!store[regexParse[2]] && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
+                    //shit not found, lookup
+                    let res = await alRequest(regexParse[2], 1)
+                    store[regexParse[2]] = res.data.Page.media[0]
+                }
+                let media = store[regexParse[2]]
+                let template = document.createElement("div")
+                template.classList.add("card", "m-0", "p-0")
+                template.innerHTML = `
+                <div class="row h-full">
+                    <div class="col-4">
+                        <img src="${media.coverImage.extraLarge}"
+                            class="cover-img w-full h-full">
+                    </div>
+                    <div class="col-8 h-full card-grid">
+                        <div class="px-15 py-10">
+                            <h5 class="m-0 text-capitalize font-weight-bold">${media.title.english || media.title.romaji} - ${regexParse[3]}</h5>
+                            <p class="text-muted m-0 text-capitalize details">
+                            ${(!!media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format) : "") + "</span>"}
+                            ${!!media.episodes ? "<span>" + media.episodes + " Episodes</span>" : (!!media.duration ? "<span>" + media.duration + " Minutes</span>" : "")}
+                            ${!!media.status ? "<span>" + media.status.toLowerCase() + "</span>" : ""}
+                            ${"<span>" + (!!media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear || "") + "</span>"}
+                            </p>
+                        </div>
+                        <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
+                            ${media.description}
+                        </div>
+                        <div class="px-15 pb-10 pt-5">
+                            ${media.genres.map(key => (`<span class="badge badge-pill badge-primary mt-5">${key}</span> `)).join('')}
+                        </div>
+                    </div>
+                </div>
+                `
+                template.onclick = function () {
+                    selected = [store[regexParse[2]], regexParse[3]]
+                    addTorrent(i('link').textContent)
+                }
+                frag.appendChild(template)
+            }
+        } catch (e) {
+            console.error(e)
+        }
+    })
+    document.querySelector(".releases").appendChild(frag)
 }
