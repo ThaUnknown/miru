@@ -6,7 +6,7 @@
     --buffer: 0%;
     --height: 0;
     color: #b6b6b6;
-    --nav-size: 19rem;
+    --sidebar-width: 19rem;
     --ts: "";
 }
 
@@ -14,16 +14,7 @@
 
 /* NAVBAR */
 .page-wrapper.with-sidebar[data-sidebar-hidden]>.sidebar {
-    left: calc(-1 *var(--nav-size));
-}
-
-.sidebar {
-    width: var(--nav-size);
-}
-
-.page-wrapper.with-sidebar>.content-wrapper {
-    left: var(--nav-size);
-    width: calc(100% - var(--nav-size));
+    left: calc(-1 *var(--sidebar-width));
 }
 
 /*PLAYER*/

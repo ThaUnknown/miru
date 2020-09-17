@@ -101,7 +101,7 @@
         <div class="sidebar-overlay" onclick="halfmoon.toggleSidebar()"></div>
         <div class="sidebar d-flex">
             <div class="sidebar-menu d-flex flex-column justify-content-end flex-grow-1">
-                <a href="#" class="sidebar-brand">
+                <a href="#player" class="sidebar-brand">
                     <img src="logo.png" alt="logo">
                     Miru
                 </a>
@@ -230,7 +230,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Volume</span>
                         </div>
-                        <input id="player-1" type="number" value="100" min="0" max="100" class="form-control">
+                        <input id="player1" type="number" value="100" min="0" max="100" class="form-control">
                         <div class="input-group-append">
                             <span class="input-group-text">%</span>
                         </div>
@@ -239,7 +239,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Immerse After</span>
                         </div>
-                        <input id="player-5" type="number" value="3" min="1" max="30" class="form-control">
+                        <input id="player2" type="number" value="3" min="1" max="30" class="form-control">
                         <div class="input-group-append">
                             <span class="input-group-text">sec</span>
                         </div>
@@ -248,26 +248,26 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Seek</span>
                         </div>
-                        <input id="player-6" type="number" value="2" min="1" max="30" class="form-control">
+                        <input id="player3" type="number" value="2" min="1" max="30" class="form-control">
                         <div class="input-group-append">
                             <span class="input-group-text">sec</span>
                         </div>
                     </div>
                     <div class="custom-switch mb-10">
-                        <input type="checkbox" id="player-2">
-                        <label for="player-2">Miniplayer</label>
+                        <input type="checkbox" id="player4">
+                        <label for="player4">Miniplayer</label>
                     </div>
                     <div class="custom-switch mb-10">
-                        <input type="checkbox" id="player-3">
-                        <label for="player-3">Seek Previews [High Performance Impact]</label>
+                        <input type="checkbox" id="player5">
+                        <label for="player5">Seek Previews [High Performance Impact]</label>
                     </div>
                     <div class="custom-switch mb-10">
-                        <input type="checkbox" id="player-4">
-                        <label for="player-4">Autoplay Next Episode</label>
+                        <input type="checkbox" id="player6">
+                        <label for="player6">Autoplay Next Episode</label>
                     </div>
                     <div class="custom-switch mb-20">
-                        <input type="checkbox" id="player-7">
-                        <label for="player-7">Picture In Picture</label>
+                        <input type="checkbox" id="player7">
+                        <label for="player7">Picture In Picture</label>
                     </div>
 
 
@@ -278,7 +278,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Font</span>
                         </div>
-                        <select class="form-control" id="subtitle-1">
+                        <select class="form-control" id="subtitle1">
                             <option value="'Open Sans', sans-serif">Open Sans</option>
                             <option value="'Roboto', sans-serif">Roboto</option>
                         </select>
@@ -292,26 +292,31 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Quality</span>
                         </div>
-                        <select class="form-control" id="torrent-1">
+                        <select class="form-control" id="torrent1">
                             <option value="1080">1080p</option>
                             <option value="720">720p</option>
                             <option value="480">480p</option>
                         </select>
                     </div>
                     <div class="custom-switch mb-10">
-                        <input type="checkbox" id="torrent-2">
-                        <label for="torrent-2">Autoplay</label>
+                        <input type="checkbox" id="torrent2">
+                        <label for="torrent2">Autoplay</label>
                     </div>
-                    <div class="custom-switch mb-10">
-                        <input type="checkbox" id="torrent-3">
-                        <label for="torrent-3">Trusted Only</label>
+                    <div class="custom-switch mb-20">
+                        <input type="checkbox" id="torrent3">
+                        <label for="torrent3">Trusted Only</label>
                     </div>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-primary" type="button" id="setApply">Apply Settings</button>
+                        <button class="btn btn-danger" type="button" id="setRes">Restore Defaults</button>
+                      </div>
                 </div>
         </div>
         </section>
     </div>
     </div>
     <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.0/js/halfmoon.min.js"></script>
+    <script src="js/settingsHandler.js"></script>
     <script src="js/util.js"></script>
     <script src="js/animeHandler.js"></script>
     <script src="js/playerHandler.js"></script>

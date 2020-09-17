@@ -387,5 +387,5 @@ async function hsRss(url) {
     })
 }
 document.querySelector("#refRel").onclick = function(){
-    hsRss("http://www.horriblesubs.info/rss.php?res=1080")
+    hsRss(`http://www.horriblesubs.info/rss.php?res=${localStorage.getItem('torRes')}`)
 }

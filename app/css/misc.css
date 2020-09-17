@@ -1,25 +1,34 @@
 @media all and (display-mode: browser) {
     body {
-      /* display: none; */
+        /* display: none; */
     }
-  }
+}
+.custom-switch input[type=checkbox]:checked~label:after,
+.custom-switch input[type=checkbox]~label:after{
+    transition: left .2s ease
+}
 
 .cover-img {
     object-fit: cover
 }
+
 .contain-img {
     object-fit: contain
 }
+
 .banner {
     height: 400px;
     opacity: 0.85
 }
-.mt-nc{
+
+.mt-nc {
     margin-top: -150px
 }
-.view{
+
+.view {
     min-height: 100%;
 }
+
 .desc {
     max-height: 210px
 }
@@ -28,10 +37,12 @@
     display: grid;
     grid-template-rows: auto 1fr auto
 }
-.card-desc p{
+
+.card-desc p {
     margin: 0
 }
-.gallery .details span + span::before{
+
+.gallery .details span+span::before {
     content: " • "
 }
 
@@ -40,6 +51,7 @@
     overflow: hidden;
     transition: transform .2s ease
 }
+
 .gallery .card:hover {
     transform: scale(1.05)
 }
@@ -73,6 +85,7 @@ section:target {
 .noarrow::-webkit-inner-spin-button {
     -webkit-appearance: none;
 }
+
 .material-icons {
     font-size: 18px
 }

@@ -88,20 +88,24 @@ let context = canvas.getContext('2d')
 let w = 150, h
 
 function initThumbnail() {
-    thumbnails = []
-    ratio = video.videoWidth / video.videoHeight;
-    h = parseInt(w / ratio)
-    canvas.width = w;
-    canvas.height = h;
-    progress.style.setProperty("--height", h + "px");
+    if (settings.player5) {
+        thumbnails = []
+        ratio = video.videoWidth / video.videoHeight;
+        h = parseInt(w / ratio)
+        canvas.width = w;
+        canvas.height = h;
+        progress.style.setProperty("--height", h + "px");
+    }
 }
 
 function createThumbnail(vid) {
-    let index = Math.floor(vid.currentTime / 5)
-    if (!thumbnails[index] && h) {
-        context.fillRect(0, 0, w, h);
-        context.drawImage(vid, 0, 0, w, h);
-        thumbnails[index] = canvas.toDataURL("image/jpeg")
+    if (settings.player5) {
+        let index = Math.floor(vid.currentTime / 5)
+        if (!thumbnails[index] && h) {
+            context.fillRect(0, 0, w, h);
+            context.drawImage(vid, 0, 0, w, h);
+            thumbnails[index] = canvas.toDataURL("image/jpeg")
+        }
     }
 }
 
@@ -159,7 +163,7 @@ function immersePlayer() {
 function resetTimer() {
     clearTimeout(immerseTime);
     player.classList.remove('immersed')
-    immerseTime = setTimeout(immersePlayer, 3000)
+    immerseTime = setTimeout(immersePlayer, parseInt(settings.player2) * 1000)
 }
 
 let islooped;
@@ -208,7 +212,9 @@ function bpp() {
 }
 
 function bnext() {
-    nyaaSearch(nowPlaying[0], parseInt(nowPlaying[1]) + 1)
+    if (settings.player6) {
+        nyaaSearch(nowPlaying[0], parseInt(nowPlaying[1]) + 1)
+    }
 }
 
 // volume shit
@@ -224,7 +230,7 @@ function bmute() {
     }
 }
 
-let level;
+let level
 
 function updateVolume(a) {
     if (a == null) {
@@ -237,6 +243,7 @@ function updateVolume(a) {
     btnm.innerHTML = (level == 0) ? "volume_off" : "volume_up";
     video.volume = level / 100
 }
+updateVolume(parseInt(settings.player1))
 
 
 // PiP
@@ -345,10 +352,10 @@ document.onkeydown = function (a) {
                 seek(85);
                 break;
             case "ArrowLeft":
-                seek(-2);
+                seek(-parseInt(settings.player3));
                 break;
             case "ArrowRight":
-                seek(2);
+                seek(parseInt(settings.player3));
                 break;
         }
     }
