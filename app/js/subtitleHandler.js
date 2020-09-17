@@ -1,26 +1,27 @@
 let tracks = [],
-  parser
+  subtitleStream
 
 function parseSubs(range, stream) {
   if (video.src.endsWith(".mkv")) {
-    parser = new MatroskaSubtitles({ prevInstance: parser, offset: range.start })
-    parser.once('tracks', function (pTracks) {
-      tracks = []
-      video.textTracks = {}
-      pTracks.forEach(track => {
-        tracks[track.number] = video.addTextTrack('captions', track.type, track.language || track.number)
+    if (subtitleStream) {
+      subtitleStream = subtitleStream.seekTo(range.start)
+    } else {  
+      subtitleStream = new SubtitleStream() 
+      subtitleStream.once('tracks', function (pTracks) {
+        tracks = []
+        video.textTracks = {}
+        pTracks.forEach(track => {
+          tracks[track.number] = video.addTextTrack('captions', track.type, track.language || track.number)
+        })
+        if (video.textTracks[0]) {
+          video.textTracks[0].mode = "showing"
+        }
       })
-      if (video.textTracks[0]) {
-        video.textTracks[0].mode = "showing"
-      }
-    })
-    parser.once('cues', function () {
-      console.log('seeking ready')
-    })
-    parser.on('subtitle', function (subtitle, trackNumber) {
+    }
+    subtitleStream.on('subtitle', function (subtitle, trackNumber) {
       subConvt(subtitle, trackNumber)
     })
-    stream.pipe(parser)
+    stream.pipe(subtitleStream)
   }
 }
 const re_newline = /\\N/g, // replace \N with newline

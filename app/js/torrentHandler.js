@@ -45,9 +45,8 @@ WEBTORRENT_ANNOUNCE = announceList
     .filter(function (url) {
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
-var nowPlaying,
-    maxTorrents = 1,
-    subStream
+let nowPlaying,
+    maxTorrents = 1
 async function addTorrent(magnet) {
     if (client.torrents.length >= maxTorrents) {
         client.remove(client.torrents[0].infoHash)
@@ -90,12 +89,9 @@ async function addTorrent(magnet) {
                 videoFile = file
             }
         })
-        parser = undefined
+        subtitleStream = undefined
         video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
-        if (subStream) {
-            subStream.destroy()
-        }
-        nowPlaying(selected)
+        selPlaying(selected)
     })
 
 }
@@ -136,7 +132,7 @@ function serveFile(file, req) {
     let stream = file.createReadStream(range)
     parseSubs(range, stream)
 
-    return [res, req.method === 'GET' && parser || stream]
+    return [res, req.method === 'GET' && subtitleStream || stream]
 }
 
 // kind of a fetch event from service worker but for the main thread.

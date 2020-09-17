@@ -355,7 +355,7 @@ document.onkeydown = function (a) {
 }
 
 // media session
-function nowPlaying(sel) {
+function selPlaying(sel) {
     nowPlaying = sel
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({

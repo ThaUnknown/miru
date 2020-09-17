@@ -96,8 +96,6 @@
         </div>
     </div>
     <div class="page-wrapper with-sidebar" data-sidebar-type="overlayed-sm-and-down">
-        <!-- Sticky alerts (toasts), empty container -->
-        <!-- Reference: https://www.gethalfmoon.com/docs/sticky-alerts-toasts -->
         <div class="sticky-alerts"></div>
 
         <div class="sidebar-overlay" onclick="halfmoon.toggleSidebar()"></div>
@@ -124,7 +122,7 @@
                     <span class="sidebar-icon bg-transparent justify-content-start mr-0">
                         <i class="material-icons" aria-hidden="true">settings</i>
                     </span>
-                    Settings
+                    Settings [WIP]
                 </a>
             </div>
         </div>
@@ -181,7 +179,8 @@
                                 id="subtitle-popover" aria-haspopup="true" aria-expanded="false">
                                 subtitles
                             </span>
-                            <div class="dropdown-menu dropdown-menu-center" aria-labelledby="subtitle-popover" id="subMenu">
+                            <div class="dropdown-menu dropdown-menu-center" aria-labelledby="subtitle-popover"
+                                id="subMenu">
                             </div>
                         </div>
                         <span class="material-icons ctrl" title="Popout Window [P]" id="bpip">
@@ -196,7 +195,7 @@
                     </div>
                 </div>
             </section>
-            <section id="browse" class="d-flex flex-column">
+            <section id="browse" class="flex-column">
                 <div class="text-center pt-20">
                     <div class="container">
                         <form class="input-group mb-15" action="javascript:search()">
@@ -209,14 +208,108 @@
                         </form>
                     </div>
                 </div>
-                    <div class="gallery browse h-full overflow-y-scroll">
-                    </div>
+                <div class="gallery browse h-full overflow-y-scroll">
+                </div>
             </section>
-            <section id="releases" class="d-flex flex-column">
+            <section id="releases" class="flex-column">
+                <div class="position-relative">
+                    <button class="position-absolute m-20 btn btn-primary material-icons px-10 z-10"
+                        id="refRel">refresh</button>
+                </div>
                 <div class="gallery releases h-full overflow-y-scroll">
                 </div>
             </section>
+            <section id="settings" >
+                <div class="content">
+
+
+                    <h1 class="content-title font-size-22">
+                        Player Settings
+                    </h1>
+                    <div class="input-group w-200 mb-10">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Volume</span>
+                        </div>
+                        <input id="player-1" type="number" value="100" min="0" max="100" class="form-control">
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group w-200 mb-10">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Immerse After</span>
+                        </div>
+                        <input id="player-5" type="number" value="3" min="1" max="30" class="form-control">
+                        <div class="input-group-append">
+                            <span class="input-group-text">sec</span>
+                        </div>
+                    </div>
+                    <div class="input-group w-200 mb-10">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Seek</span>
+                        </div>
+                        <input id="player-6" type="number" value="2" min="1" max="30" class="form-control">
+                        <div class="input-group-append">
+                            <span class="input-group-text">sec</span>
+                        </div>
+                    </div>
+                    <div class="custom-switch mb-10">
+                        <input type="checkbox" id="player-2">
+                        <label for="player-2">Miniplayer</label>
+                    </div>
+                    <div class="custom-switch mb-10">
+                        <input type="checkbox" id="player-3">
+                        <label for="player-3">Seek Previews [High Performance Impact]</label>
+                    </div>
+                    <div class="custom-switch mb-10">
+                        <input type="checkbox" id="player-4">
+                        <label for="player-4">Autoplay Next Episode</label>
+                    </div>
+                    <div class="custom-switch mb-20">
+                        <input type="checkbox" id="player-7">
+                        <label for="player-7">Picture In Picture</label>
+                    </div>
+
+
+                    <h1 class="content-title font-size-22">
+                        Subtitle Settings
+                    </h1>
+                    <div class="input-group w-200 mb-20">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Font</span>
+                        </div>
+                        <select class="form-control" id="subtitle-1">
+                            <option value="'Open Sans', sans-serif">Open Sans</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                        </select>
+                    </div>
+
+
+                    <h1 class="content-title font-size-22">
+                        Torrent Settings
+                    </h1>
+                    <div class="input-group mb-10 w-200">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Quality</span>
+                        </div>
+                        <select class="form-control" id="torrent-1">
+                            <option value="1080">1080p</option>
+                            <option value="720">720p</option>
+                            <option value="480">480p</option>
+                        </select>
+                    </div>
+                    <div class="custom-switch mb-10">
+                        <input type="checkbox" id="torrent-2">
+                        <label for="torrent-2">Autoplay</label>
+                    </div>
+                    <div class="custom-switch mb-10">
+                        <input type="checkbox" id="torrent-3">
+                        <label for="torrent-3">Trusted Only</label>
+                    </div>
+                </div>
         </div>
+        </section>
+    </div>
     </div>
     <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.0/js/halfmoon.min.js"></script>
     <script src="js/util.js"></script>
@@ -225,7 +318,7 @@
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js" defer></script>
     <script src="js/torrentHandler.js" defer></script>
     <script src="js/rangeParser.js" defer></script>
-    <script src="js/bundle.js"></script>
+    <script src="js/bundle.min.js"></script>
     <script src="js/subtitleHandler.js"></script>
 </body>
 

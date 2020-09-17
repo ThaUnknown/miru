@@ -386,6 +386,6 @@ async function hsRss(url) {
         }
     })
 }
-// setTimeout(() => {
-//     hsRss("http://www.horriblesubs.info/rss.php?res=1080")
-// }, 4000);
+document.querySelector("#refRel").onclick = function(){
+    hsRss("http://www.horriblesubs.info/rss.php?res=1080")
+}
