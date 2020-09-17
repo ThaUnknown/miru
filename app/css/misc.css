@@ -1,3 +1,9 @@
+@media all and (display-mode: browser) {
+    body {
+      /* display: none; */
+    }
+  }
+
 .cover-img {
     object-fit: cover
 }

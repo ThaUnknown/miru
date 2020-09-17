@@ -1,5 +1,5 @@
 {
-  "name": "Miru - Torrent streaming made simple!",
+  "name": "Miru",
   "short_name": "Miru",
   "start_url": "/app/app.html",
   "display": "standalone",
