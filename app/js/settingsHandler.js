@@ -53,7 +53,6 @@ function renderSettings() {
 
 if (!localStorage.getItem("settings")) {
     restoreDefaults()
-    renderSettings()
 }
 let settings = JSON.parse(localStorage.getItem("settings"))
 renderSettings()
