@@ -10,6 +10,7 @@ const controls = document.getElementsByClassName('ctrl'),
     btnpp = document.querySelector('#bpp'),
     btnm = document.querySelector("#bmute"),
     btnfull = document.querySelector('#bfull'),
+    btnpip = document.querySelector('#bpip'),
     elapsed = document.querySelector("#elapsed"),
     remaining = document.querySelector("#remaining"),
     buffering = document.querySelector("#buffering"),
@@ -256,6 +257,17 @@ async function bpip() {
     }
 }
 
+if (settings.player7){
+    video.setAttribute("autoPictureInPicture", "");
+} else {
+    video.setAttribute("disablePictureInPicture", "");
+    btnpip.setAttribute("disabled", "");
+}
+
+//miniplayer
+if (!settings.player4){
+    document.documentElement.style.setProperty("--miniplayer-display", "none");
+}
 // theathe mode
 
 function btheatre() {
@@ -279,7 +291,9 @@ function seek(a) {
     video.currentTime += a;
     updateDisplay()
 }
-// subtitles button, generates content every single time its opened because fuck knows when the parser will find new shit
+
+// subtitles, generates content every single time its opened because fuck knows when the parser will find new shit
+
 let off
 function bcap() {
     let frag = document.createDocumentFragment()
@@ -322,6 +336,8 @@ function selectLang(lang) {
     }
     bcap()
 }
+
+document.documentElement.style.setProperty("--sub-font", `"${settings.subtitle1}"`);
 // keybinds
 
 document.onkeydown = function (a) {

@@ -8,6 +8,7 @@
     color: #b6b6b6;
     --sidebar-width: 19rem;
     --ts: "";
+    --miniplayer-display: flex;
 }
 
 
@@ -39,7 +40,7 @@
 
 #player {
     position: fixed;
-    display: flex;
+    display: var(--miniplayer-display);
     bottom: 2rem;
     right: 2rem;
     width: 25%;
@@ -66,7 +67,7 @@ video[src=""] {
 
 video::cue {
     background: none;
-    font-family: "Open Sans", sans-serif;
+    font-family: var(--sub-font);
     color: #fff;
     text-shadow: 2px 2px 0 #000,
         2px -2px 0 #000,
@@ -196,7 +197,9 @@ video::cue {
     height: var(--height);
     top: -2rem;
 }
-
+.ctrl[disabled]{
+    display: none;
+}
 .controls input#prog[type=range]::before {
     top: 0rem;
     content: attr(data-ts);
