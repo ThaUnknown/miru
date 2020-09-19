@@ -34,7 +34,6 @@ let applyTimeout
 function applySettings() {
     clearTimeout(applyTimeout)
     applyTimeout = setTimeout(() => {
-        console.log("applying")
         Object.entries(settings).forEach(setting => {
             if (settingsElements[setting[0]].type == "checkbox") {
                 settings[setting[0]] = settingsElements[setting[0]].checked
