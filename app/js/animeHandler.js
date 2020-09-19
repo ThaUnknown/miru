@@ -315,6 +315,7 @@ async function regtest() {
     }
 }
 async function hsRss(url) {
+    let frag = document.createDocumentFragment()
     document.querySelector(".releases").innerHTML = ""
     res = await fetch(url)
     await res.text().then(async (xmlTxt) => {
@@ -384,8 +385,10 @@ async function hsRss(url) {
                     selected = [store[regexParse[2]], regexParse[3]]
                     addTorrent(i('link').textContent)
                 }
-                document.querySelector(".releases").appendChild(template)
+                frag.appendChild(template)
             }
+            
+            document.querySelector(".releases").appendChild(frag)
         } catch (e) {
             console.error(e)
         }
