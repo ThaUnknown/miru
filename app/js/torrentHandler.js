@@ -54,6 +54,8 @@ async function addTorrent(magnet) {
     halfmoon.hideModal("tsearch")
     document.location.href = "#player"
     video.src = ""
+    tracks = []
+    video.textTracks = {}
     await sw
     client.add(magnet, async function (torrent) {
         function onProgress() {
@@ -65,16 +67,6 @@ async function addTorrent(magnet) {
         torrent.on('upload', onProgress)
         // torrent.on('warning', console.warn) // too spammy for now
         // torrent.on('error', console.error)
-        torrent.on('done', function () {
-            setInterval(onProgress, 5000)
-            halfmoon.initStickyAlert({
-                content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
-                title: "Download Complete",
-                alertType: "alert-success",
-                fillType: ""
-            });
-            // finishThumbnails(); //disabled for performance and testing reasons
-        })
         torrent.on('noPeers', function () {
             halfmoon.initStickyAlert({
                 content: `Couldn't find peers for <span class="text-break">${magnet}</span>! Try a torrent with more seeders.`,
@@ -88,6 +80,16 @@ async function addTorrent(magnet) {
             if (file.length > videoFile.length) {
                 videoFile = file
             }
+        })
+        torrent.on('done', function () {
+            setInterval(onProgress, 5000)
+            halfmoon.initStickyAlert({
+                content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
+                title: "Download Complete",
+                alertType: "alert-success",
+                fillType: ""
+            });
+            finishThumbnails(videoFile);
         })
         subtitleStream = undefined
         video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`

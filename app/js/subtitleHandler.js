@@ -8,8 +8,6 @@ function parseSubs(range, stream) {
     } else {  
       subtitleStream = new SubtitleStream() 
       subtitleStream.once('tracks', function (pTracks) {
-        tracks = []
-        video.textTracks = {}
         pTracks.forEach(track => {
           tracks[track.number] = video.addTextTrack('captions', track.type, track.language || track.number)
         })

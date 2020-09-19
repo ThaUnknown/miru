@@ -110,25 +110,29 @@ function createThumbnail(vid) {
     }
 }
 
-function finishThumbnails() {
-    let thumbVid = document.createElement("video")
-    thumbVid.src = video.src
-    thumbVid.addEventListener('loadeddata', function (e) {
-        loadTime();
-    }, false);
+function finishThumbnails(file) {
+    if (settings.player5) {
+        let thumbVid = document.createElement("video")
+        file.getBlobURL((err, url) => {
+            thumbVid.src = url
+        })
+        thumbVid.addEventListener('loadeddata', function (e) {
+            loadTime();
+        }, false)
 
-    thumbVid.addEventListener('seeked', function () {
-        createThumbnail(thumbVid);
-        loadTime();
-    }, false);
+        thumbVid.addEventListener('seeked', function () {
+            createThumbnail(thumbVid);
+            loadTime();
+        }, false)
 
-    function loadTime() {
-        if (thumbVid.ended == false) {
-            thumbVid.currentTime = thumbVid.currentTime + 5;
-        } else {
-            thumbVid.remove()
+        function loadTime() {
+            if (thumbVid.ended == false) {
+                thumbVid.currentTime = thumbVid.currentTime + 5;
+            } else {
+                thumbVid.remove()
+            }
         }
-    };
+    }
 }
 
 
@@ -257,7 +261,7 @@ async function bpip() {
     }
 }
 
-if (settings.player7){
+if (settings.player7) {
     video.setAttribute("autoPictureInPicture", "");
 } else {
     video.setAttribute("disablePictureInPicture", "");
@@ -265,7 +269,7 @@ if (settings.player7){
 }
 
 //miniplayer
-if (!settings.player4){
+if (!settings.player4) {
     document.documentElement.style.setProperty("--miniplayer-display", "none");
 }
 // theathe mode
@@ -337,7 +341,7 @@ function selectLang(lang) {
     bcap()
 }
 
-document.documentElement.style.setProperty("--sub-font", `"${settings.subtitle1}"`);
+document.documentElement.style.setProperty("--sub-font", settings.subtitle1);
 // keybinds
 
 document.onkeydown = function (a) {
