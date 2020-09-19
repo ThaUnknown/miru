@@ -30,15 +30,20 @@ function restoreDefaults() {
     localStorage.setItem("settings", JSON.stringify(settings))
     renderSettings()
 }
+let applyTimeout
 function applySettings() {
-    Object.entries(settings).forEach(setting => {
-        if (settingsElements[setting[0]].type == "checkbox") {
-            settings[setting[0]] = settingsElements[setting[0]].checked
-        } else {
-            settings[setting[0]] = settingsElements[setting[0]].value
-        }
-    })
-    localStorage.setItem("settings", JSON.stringify(settings))
+    clearTimeout(applyTimeout)
+    applyTimeout = setTimeout(() => {
+        console.log("applying")
+        Object.entries(settings).forEach(setting => {
+            if (settingsElements[setting[0]].type == "checkbox") {
+                settings[setting[0]] = settingsElements[setting[0]].checked
+            } else {
+                settings[setting[0]] = settingsElements[setting[0]].value
+            }
+        })
+        localStorage.setItem("settings", JSON.stringify(settings))
+    }, 3000)
 }
 
 function renderSettings() {
@@ -56,5 +61,5 @@ if (!localStorage.getItem("settings")) {
 }
 let settings = JSON.parse(localStorage.getItem("settings"))
 renderSettings()
-document.querySelector("#setApply").addEventListener("click", applySettings)
 document.querySelector("#setRes").addEventListener("click", restoreDefaults)
+document.querySelector("#settings").addEventListener("click", applySettings)
