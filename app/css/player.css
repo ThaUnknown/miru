@@ -34,7 +34,8 @@
     cursor: none;
 }
 
-.immersed .player {
+.immersed .controls,
+.immersed .stats {
     opacity: 0;
 }
 
@@ -82,17 +83,18 @@ video::cue {
 
 .controls {
     background: linear-gradient(to top, rgba(0, 0, 0, .8), rgba(0, 0, 0, .4) 25%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .1) 75%, transparent);
+    transition: .5s opacity ease;
 }
 
 .stats {
     background: linear-gradient(to bottom, rgba(0, 0, 0, .8), rgba(0, 0, 0, .4) 25%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .1) 75%, transparent);
+    transition: .5s opacity ease;
 }
 
 .player {
     position: absolute;
     user-select: none;
     opacity: 1;
-    transition: .5s opacity ease;
     font-family: Roboto, monospace
 }
 
