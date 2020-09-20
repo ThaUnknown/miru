@@ -1,21 +1,20 @@
 const controls = document.getElementsByClassName('ctrl')
-    // video = document.querySelector('#video'),
-    // player = document.querySelector('#player'),
-    // volume = document.querySelector('#vol'),
-    // progress = document.querySelector('#prog'),
-    // peers = document.querySelector('#peers'),
-    // downSpeed = document.querySelector('#down'),
-    // upSpeed = document.querySelector('#up'),
-    // playPause = document.querySelector('#ptoggle'),
-    // btnpp = document.querySelector('#bpp'),
-    // btnm = document.querySelector("#bmute"),
-    // btnfull = document.querySelector('#bfull'),
-    // btnpip = document.querySelector('#bpip'),
-    // elapsed = document.querySelector("#elapsed"),
-    // remaining = document.querySelector("#remaining"),
-    // buffering = document.querySelector("#buffering"),
-    // nowPlayingDisplay = document.querySelector("#nowPlayingDisplay")
-    // dl = document.querySelector("#dl")
+// player = document.querySelector('#player'),
+// volume = document.querySelector('#vol'),
+// progress = document.querySelector('#prog'),
+// peers = document.querySelector('#peers'),
+// downSpeed = document.querySelector('#down'),
+// upSpeed = document.querySelector('#up'),
+// playPause = document.querySelector('#ptoggle'),
+// btnpp = document.querySelector('#bpp'),
+// btnm = document.querySelector("#bmute"),
+// btnfull = document.querySelector('#bfull'),
+// btnpip = document.querySelector('#bpip'),
+// elapsed = document.querySelector("#elapsed"),
+// remaining = document.querySelector("#remaining"),
+// buffering = document.querySelector("#buffering"),
+// nowPlayingDisplay = document.querySelector("#nowPlayingDisplay")
+// dl = document.querySelector("#dl")
 
 
 // event listeners
@@ -26,23 +25,36 @@ progress.addEventListener("input", dragBar);
 progress.addEventListener("mouseup", dragBarEnd);
 progress.addEventListener("click", dragBarEnd);
 progress.addEventListener("mousedown", dragBarStart);
-video.addEventListener("playing", resetBuffer);
-video.addEventListener("loadeddata", initThumbnail);
-video.addEventListener("loadedmetadata", updateDisplay);
-video.addEventListener("ended", bnext);
-video.addEventListener("waiting", isBuffering);
-video.addEventListener("timeupdate", updateDisplay);
-video.addEventListener("timeupdate", updatePositionState);
 ptoggle.addEventListener("click", bpp);
 ptoggle.addEventListener("dblclick", bfull);
 
-for (let item of controls){
+for (let item of controls) {
     item.addEventListener("click", function () {
         let func = this.id;
         window[func]()
     })
 }
-
+function resetVideo() {
+    nowPlayingDisplay.textContent = ""
+    tracks = []
+    dl.removeAttribute("href")
+    dl.removeAttribute("download")
+    video.remove()
+    video = document.createElement("video")
+    settings.player7 ? video.setAttribute("autoPictureInPicture", "") : video.setAttribute("disablePictureInPicture", "") && bpip.setAttribute("disabled", "");
+    video.classList.add("w-full")
+    video.src = ""
+    video.id = "video"
+    video.addEventListener("playing", resetBuffer);
+    video.addEventListener("loadeddata", initThumbnail);
+    video.addEventListener("loadedmetadata", updateDisplay);
+    video.addEventListener("ended", bnext);
+    video.addEventListener("waiting", isBuffering);
+    video.addEventListener("timeupdate", updateDisplay);
+    video.addEventListener("timeupdate", updatePositionState);
+    player.prepend(video)
+}
+resetVideo()
 // progress bar and display
 
 function updateDisplay() {
@@ -268,13 +280,6 @@ async function bpip() {
     }
 }
 
-if (settings.player7) {
-    video.setAttribute("autoPictureInPicture", "");
-} else {
-    video.setAttribute("disablePictureInPicture", "");
-    bpip.setAttribute("disabled", "");
-}
-
 //miniplayer
 if (!settings.player4) {
     document.documentElement.style.setProperty("--miniplayer-display", "none");
@@ -390,7 +395,6 @@ document.onkeydown = function (a) {
 
 // media session
 function selPlaying(sel) {
-    nowPlayingDisplay.textContent = ""
     nowPlaying = sel
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({

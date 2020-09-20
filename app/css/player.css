@@ -237,7 +237,7 @@ video::cue {
     transition: all .1s ease
 }
 
-#nowPlaying {
+#nowPlayingDisplay {
     padding-left: 1.2rem !important;
 }
 
