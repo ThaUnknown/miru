@@ -24,6 +24,7 @@ volume.addEventListener("input", function () {
 });
 progress.addEventListener("input", dragBar);
 progress.addEventListener("mouseup", dragBarEnd);
+progress.addEventListener("touchend", dragBarEnd);
 progress.addEventListener("click", dragBarEnd);
 progress.addEventListener("mousedown", dragBarStart);
 ptoggle.addEventListener("click", bpp);
@@ -195,7 +196,7 @@ let islooped;
 
 function toTS(sec) {
     if (Number.isNaN(sec)) {
-        return "--:--";
+        return "00:00";
     }
 
     let hours = Math.floor(sec / 3600)

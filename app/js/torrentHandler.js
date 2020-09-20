@@ -68,7 +68,7 @@ async function addTorrent(magnet) {
         // torrent.on('error', console.error)
         torrent.on('noPeers', function () {
             halfmoon.initStickyAlert({
-                content: `Couldn't find peers for <span class="text-break">${magnet}</span>! Try a torrent with more seeders.`,
+                content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
                 title: "Search Failed",
                 alertType: "alert-danger",
                 fillType: ""

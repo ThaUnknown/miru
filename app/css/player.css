@@ -101,7 +101,7 @@ video::cue {
     position: absolute;
     user-select: none;
     opacity: 1;
-    font-family: Roboto, monospace
+    font-family: Roboto,Arial,Helvetica,sans-serif
 }
 
 .controls>*:hover {
@@ -124,7 +124,7 @@ video::cue {
 }
 
 .player .ts {
-    font-size: 2rem !important;
+    font-size: 1.8rem !important;
     white-space: nowrap;
     align-self: center;
     cursor: default;
@@ -134,8 +134,6 @@ video::cue {
 
 #progress {
     width: 100%;
-    align-self: center;
-    padding: 1rem 0;
     position: relative;
 }
 
@@ -188,7 +186,7 @@ video::cue {
     opacity: 0;
     position: absolute;
     transform: translate(-50%, -100%);
-    font-family: Roboto, monospace;
+    font-family: Roboto,Arial,Helvetica,sans-serif;
     color: #ececec;
     white-space: nowrap;
     align-self: center;
@@ -211,7 +209,7 @@ video::cue {
 }
 
 .controls input#progress[type=range]::before {
-    top: 0rem;
+    top: .5rem;
     content: attr(data-ts);
 }
 
