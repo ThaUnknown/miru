@@ -1,4 +1,6 @@
-const controls = document.getElementsByClassName('ctrl')
+const controls = document.getElementsByClassName('ctrl'),
+btnfull = document.querySelector('#bfull'),
+btnpp = document.querySelector('#bpp')
 // player = document.querySelector('#player'),
 // volume = document.querySelector('#vol'),
 // progress = document.querySelector('#prog'),
@@ -8,7 +10,6 @@ const controls = document.getElementsByClassName('ctrl')
 // playPause = document.querySelector('#ptoggle'),
 // btnpp = document.querySelector('#bpp'),
 // btnm = document.querySelector("#bmute"),
-// btnfull = document.querySelector('#bfull'),
 // btnpip = document.querySelector('#bpip'),
 // elapsed = document.querySelector("#elapsed"),
 // remaining = document.querySelector("#remaining"),
@@ -220,9 +221,9 @@ function toTS(sec) {
 async function playVideo() {
     try {
         await video.play();
-        bpp.innerHTML = "pause";
+        btnpp.innerHTML = "pause";
     } catch (err) {
-        bpp.innerHTML = "play_arrow";
+        btnpp.innerHTML = "play_arrow";
     }
 }
 
@@ -230,7 +231,7 @@ function bpp() {
     if (video.paused) {
         playVideo();
     } else {
-        bpp.innerHTML = "play_arrow";
+        btnpp.innerHTML = "play_arrow";
         video.pause();
     }
 }
@@ -295,19 +296,26 @@ function btheatre() {
 function bfull() {
     if (!document.fullscreenElement) {
         player.requestFullscreen();
-        bfull.innerHTML = "fullscreen_exit"
+        btnfull.innerHTML = "fullscreen_exit"
     } else if (document.exitFullscreen) {
         document.exitFullscreen();
-        bfull.innerHTML = "fullscreen"
+        btnfull.innerHTML = "fullscreen"
 
     }
 }
 
+//seeking and skipping
+
 function seek(a) {
-    video.currentTime += a;
+    if (a == 85 && video.currentTime < 10) {
+        video.currentTime = 90
+    } else if (a == 85 && (video.duration - video.currentTime) < 90) {
+        video.currentTime = video.duration
+    } else {
+        video.currentTime += a;
+    }
     updateDisplay()
 }
-
 // subtitles, generates content every single time its opened because fuck knows when the parser will find new shit
 
 let off

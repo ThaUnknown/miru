@@ -18,11 +18,15 @@ var options = {
         variables: variables
     })
 }
-
+const searchRx = /(magnet:)?([A-F\d]{8,40})?(.*\.torrent)?/i;
 function search() {
-    searchAnime(document.querySelector("#search").value)
+    let regexParse = searchRx.exec(document.querySelector("#search").value)
+    if (regexParse[1] || regexParse[2] || regexParse[3]) {
+        addTorrent(document.querySelector("#search").value)
+    } else {
+        searchAnime(document.querySelector("#search").value)
+    }
 }
-
 async function alRequest(a, b) {
     if (!a) {
         variables.sort = "TRENDING_DESC"
@@ -297,23 +301,9 @@ async function nyaaRss(url) {
 }
 
 
-const regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/;
+const regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i;
 let store = {};
-async function regtest() {
-    if ((m = regex.exec(str)) !== null) {
-        if (m[2].endsWith(" - ")) {
-            m[2] = m[2].slice(0, -3)
-        }
-        if (!store[m[2]] && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(m[2]) && ((store[m[2]] = media) && true)))) {
-            //shit not found, lookup
-            store[m[2]] = await alRequest(m[2], 1)
-        }
 
-        m.forEach((match, groupIndex) => {
-            console.log(`Found match, group ${groupIndex}: ${match}`);
-        });
-    }
-}
 async function hsRss(url) {
     let frag = document.createDocumentFragment()
     document.querySelector(".releases").innerHTML = ""
@@ -387,7 +377,7 @@ async function hsRss(url) {
                 }
                 frag.appendChild(template)
             }
-            
+
             document.querySelector(".releases").appendChild(frag)
         } catch (e) {
             console.error(e)
