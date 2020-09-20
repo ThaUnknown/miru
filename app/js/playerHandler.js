@@ -1,20 +1,21 @@
-const controls = document.getElementsByClassName('ctrl'),
-    video = document.querySelector('#video'),
-    player = document.querySelector('#player'),
-    volume = document.querySelector('#vol'),
-    progress = document.querySelector('#prog'),
-    peers = document.querySelector('#peers'),
-    downSpeed = document.querySelector('#down'),
-    upSpeed = document.querySelector('#up'),
-    playPause = document.querySelector('#ptoggle'),
-    btnpp = document.querySelector('#bpp'),
-    btnm = document.querySelector("#bmute"),
-    btnfull = document.querySelector('#bfull'),
-    btnpip = document.querySelector('#bpip'),
-    elapsed = document.querySelector("#elapsed"),
-    remaining = document.querySelector("#remaining"),
-    buffering = document.querySelector("#buffering"),
-    thumbnail = document.querySelector("#dThumb")
+const controls = document.getElementsByClassName('ctrl')
+    // video = document.querySelector('#video'),
+    // player = document.querySelector('#player'),
+    // volume = document.querySelector('#vol'),
+    // progress = document.querySelector('#prog'),
+    // peers = document.querySelector('#peers'),
+    // downSpeed = document.querySelector('#down'),
+    // upSpeed = document.querySelector('#up'),
+    // playPause = document.querySelector('#ptoggle'),
+    // btnpp = document.querySelector('#bpp'),
+    // btnm = document.querySelector("#bmute"),
+    // btnfull = document.querySelector('#bfull'),
+    // btnpip = document.querySelector('#bpip'),
+    // elapsed = document.querySelector("#elapsed"),
+    // remaining = document.querySelector("#remaining"),
+    // buffering = document.querySelector("#buffering"),
+    // nowPlayingDisplay = document.querySelector("#nowPlayingDisplay")
+    // dl = document.querySelector("#dl")
 
 
 // event listeners
@@ -32,12 +33,11 @@ video.addEventListener("ended", bnext);
 video.addEventListener("waiting", isBuffering);
 video.addEventListener("timeupdate", updateDisplay);
 video.addEventListener("timeupdate", updatePositionState);
-playPause.addEventListener("click", bpp);
-playPause.addEventListener("dblclick", bfull);
+ptoggle.addEventListener("click", bpp);
+ptoggle.addEventListener("dblclick", bfull);
 
-
-for (let i = 0; i < controls.length; i++) {
-    controls[i].addEventListener("click", function () {
+for (let item of controls){
+    item.addEventListener("click", function () {
         let func = this.id;
         window[func]()
     })
@@ -135,6 +135,13 @@ function finishThumbnails(file) {
     }
 }
 
+//file download
+function downloadFile(file) {
+    file.getBlobURL((err, url) => {
+        dl.href = url
+        dl.download = file.name
+    })
+}
 
 // bufering spinner
 
@@ -201,9 +208,9 @@ function toTS(sec) {
 async function playVideo() {
     try {
         await video.play();
-        btnpp.innerHTML = "pause";
+        bpp.innerHTML = "pause";
     } catch (err) {
-        btnpp.innerHTML = "play_arrow";
+        bpp.innerHTML = "play_arrow";
     }
 }
 
@@ -211,7 +218,7 @@ function bpp() {
     if (video.paused) {
         playVideo();
     } else {
-        btnpp.innerHTML = "play_arrow";
+        bpp.innerHTML = "play_arrow";
         video.pause();
     }
 }
@@ -245,7 +252,7 @@ function updateVolume(a) {
         volume.value = a;
     }
     document.documentElement.style.setProperty("--volume-level", level + "%");
-    btnm.innerHTML = (level == 0) ? "volume_off" : "volume_up";
+    bmute.innerHTML = (level == 0) ? "volume_off" : "volume_up";
     video.volume = level / 100
 }
 updateVolume(parseInt(settings.player1))
@@ -265,7 +272,7 @@ if (settings.player7) {
     video.setAttribute("autoPictureInPicture", "");
 } else {
     video.setAttribute("disablePictureInPicture", "");
-    btnpip.setAttribute("disabled", "");
+    bpip.setAttribute("disabled", "");
 }
 
 //miniplayer
@@ -283,10 +290,10 @@ function btheatre() {
 function bfull() {
     if (!document.fullscreenElement) {
         player.requestFullscreen();
-        btnfull.innerHTML = "fullscreen_exit"
+        bfull.innerHTML = "fullscreen_exit"
     } else if (document.exitFullscreen) {
         document.exitFullscreen();
-        btnfull.innerHTML = "fullscreen"
+        bfull.innerHTML = "fullscreen"
 
     }
 }
@@ -383,6 +390,7 @@ document.onkeydown = function (a) {
 
 // media session
 function selPlaying(sel) {
+    nowPlayingDisplay.textContent = ""
     nowPlaying = sel
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
@@ -398,6 +406,7 @@ function selPlaying(sel) {
             ]
         });
     }
+    nowPlayingDisplay.textContent = `EP ${nowPlaying[1]}`
 }
 
 function updatePositionState() {

@@ -133,24 +133,35 @@
                 </video>
                 <div class="player d-none flex-column justify-content-between w-full h-full">
                     <div class="h-full w-full d-flex flex-column justify-content-between" id="ptoggle">
-                        <div class="stats d-flex justify-content-center">
-                            <div class="d-flex">
-                                <span class="material-icons">
-                                    people
-                                </span>
-                                <span class="ts" id="peers">-</span>
+                        <div class="stats row">
+                            <div id="nowPlayingDisplay" class="col ts">
                             </div>
-                            <div class="d-flex">
-                                <span class="material-icons">
-                                    arrow_downward
-                                </span>
-                                <span class="ts" id="down">-</span>
+                            <div class="d-flex col justify-content-center">
+                                <div class="d-flex">
+                                    <span class="material-icons">
+                                        people
+                                    </span>
+                                    <span class="ts" id="peers">-</span>
+                                </div>
+                                <div class="d-flex">
+                                    <span class="material-icons">
+                                        arrow_downward
+                                    </span>
+                                    <span class="ts" id="downSpeed">-</span>
+                                </div>
+                                <div class="d-flex">
+                                    <span class="material-icons">
+                                        arrow_upward
+                                    </span>
+                                    <span class="ts" id="upSpeed">-</span>
+                                </div>
                             </div>
-                            <div class="d-flex">
-                                <span class="material-icons">
-                                    arrow_upward
-                                </span>
-                                <span class="ts" id="up">-</span>
+                            <div class="col d-flex justify-content-end">
+                                <a id="dl">
+                                    <span class="material-icons">
+                                        get_app
+                                    </span>
+                                </a>
                             </div>
                         </div>
                         <div id="buffering" class="align-self-center hidden">
@@ -169,10 +180,10 @@
                             <span class="material-icons ctrl" title="Mute [M]" id="bmute">
                                 volume_up
                             </span>
-                            <input type="range" value="100" id="vol">
+                            <input type="range" value="100" id="volume">
                         </div>
                         <span class="ts" id="elapsed">--:--</span>
-                        <input type="range" min="0" max="1000" value="0" id="prog">
+                        <input type="range" min="0" max="1000" value="0" id="progress">
                         <span class="ts" id="remaining">--:--</span>
                         <div class="subtitles dropdown dropup with-arrow">
                             <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
@@ -221,8 +232,6 @@
             </section>
             <section id="settings">
                 <div class="content">
-
-
                     <h1 class="content-title font-size-22">
                         Player Settings
                     </h1>
@@ -321,9 +330,9 @@
     <script src="js/util.js"></script>
     <script src="js/animeHandler.js"></script>
     <script src="js/playerHandler.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js" defer></script>
-    <script src="js/torrentHandler.js" defer></script>
-    <script src="js/rangeParser.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
+    <script src="js/torrentHandler.js"></script>
+    <script src="js/rangeParser.js"></script>
     <script src="js/bundle.min.js"></script>
     <script src="js/subtitleHandler.js"></script>
 </body>

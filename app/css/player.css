@@ -49,13 +49,19 @@
     z-index: 10
 }
 
-#player:target > a {
+#player:target>a {
     display: none;
 }
 
-#player > a {
+#player>a {
     position: absolute;
     z-index: 10
+}
+#dl{
+    display: none
+}
+#dl[download]{
+    display: block
 }
 
 #player:target .player {
@@ -126,7 +132,7 @@ video::cue {
     font-weight: 600
 }
 
-#prog {
+#progress {
     width: 100%;
     align-self: center;
     padding: 1rem 0;
@@ -161,14 +167,14 @@ video::cue {
     outline: none;
 }
 
-.controls input#vol[type=range]::-webkit-slider-runnable-track {
+.controls input#volume[type=range]::-webkit-slider-runnable-track {
     width: 50%;
     height: 3px;
     cursor: pointer;
     background: linear-gradient(90deg, #e5204c var(--volume-level), rgba(255, 255, 255, .2) var(--volume-level))
 }
 
-.controls input#prog[type=range]::-webkit-slider-runnable-track {
+.controls input#progress[type=range]::-webkit-slider-runnable-track {
     width: 50%;
     height: 3px;
     cursor: pointer;
@@ -176,8 +182,8 @@ video::cue {
 }
 
 
-.controls input#prog[type=range]::after,
-.controls input#prog[type=range]::before {
+.controls input#progress[type=range]::after,
+.controls input#progress[type=range]::before {
     pointer-events: none;
     opacity: 0;
     position: absolute;
@@ -192,23 +198,25 @@ video::cue {
     transition: .2s opacity ease;
 }
 
-.controls input#prog[type=range]::after {
+.controls input#progress[type=range]::after {
     width: 150px;
     background: var(--background);
     content: "";
     height: var(--height);
     top: -2rem;
 }
-.ctrl[disabled]{
+
+.ctrl[disabled] {
     display: none;
 }
-.controls input#prog[type=range]::before {
+
+.controls input#progress[type=range]::before {
     top: 0rem;
     content: attr(data-ts);
 }
 
-.controls input#prog[type=range]:active::after,
-.controls input#prog[type=range]:active::before {
+.controls input#progress[type=range]:active::after,
+.controls input#progress[type=range]:active::before {
     opacity: 1;
 }
 
@@ -227,6 +235,10 @@ video::cue {
     -webkit-appearance: none;
     margin-top: 1px;
     transition: all .1s ease
+}
+
+#nowPlaying {
+    padding-left: 1.2rem !important;
 }
 
 #buffering {

@@ -53,7 +53,10 @@ async function addTorrent(magnet) {
     }
     halfmoon.hideModal("tsearch")
     document.location.href = "#player"
+    selected ? selPlaying(selected) : ""
     video.src = ""
+    dl.removeAttribute("href")
+    dl.removeAttribute("download")
     tracks = []
     video.textTracks = {}
     await sw
@@ -91,9 +94,9 @@ async function addTorrent(magnet) {
             });
             finishThumbnails(videoFile);
         })
+        downloadFile(videoFile)
         subtitleStream = undefined
         video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
-        selPlaying(selected)
     })
 
 }

@@ -87,7 +87,8 @@ section:target {
 }
 
 .material-icons {
-    font-size: 18px
+    font-size: 18px;
+    align-self: center
 }
 
 .close {
