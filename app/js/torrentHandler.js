@@ -19,8 +19,7 @@ const client = new WebTorrent(),
         ['ws://hub.bugout.link:80/announce']
     ],
     videoExtensions = [
-        '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg',
-        '.ogv', '.webm', '.wmv', '.m2ts'
+        '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg', '.ogv', '.webm', '.wmv', '.m2ts'
     ],
     scope = '/app/',
     sw = navigator.serviceWorker.register('sw.js', { scope })

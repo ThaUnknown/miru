@@ -73,9 +73,9 @@ video[src=""] {
 }
 
 video::cue {
-    background: none;
+    background: none !important;
     font-family: var(--sub-font);
-    color: #fff;
+    color: #fff !important;
     text-shadow: 2px 2px 0 #000,
         2px -2px 0 #000,
         -2px 2px 0 #000,

@@ -11,7 +11,7 @@ const settingsElements = {
     torrent2: document.querySelector("#torrent2"),
     torrent3: document.querySelector("#torrent3")
 }
-
+let settings 
 function restoreDefaults() {
     localStorage.clear();
     settings = {
@@ -58,7 +58,7 @@ function renderSettings() {
 if (!localStorage.getItem("settings")) {
     restoreDefaults()
 }
-let settings = JSON.parse(localStorage.getItem("settings"))
+settings = JSON.parse(localStorage.getItem("settings"))
 renderSettings()
 document.querySelector("#setRes").addEventListener("click", restoreDefaults)
 document.querySelector("#settings").addEventListener("click", applySettings)

@@ -2,7 +2,7 @@
   "name": "Miru",
   "short_name": "Miru",
   "start_url": "/app/app.html",
-  "display": "standalone",
+  "display": "fullscreen",
   "categories": [
     "entertainment"
   ],

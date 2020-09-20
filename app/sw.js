@@ -6,7 +6,7 @@ const FILES_TO_CACHE = [
   'offline.html',
   'app.html',
   'js/animeHandler.js',
-  'js/bundle.js',
+  'js/bundle.min.js',
   'js/playerHandler.js',
   'js/subtitleHandler.js',
   'js/torrentHandler.js',
