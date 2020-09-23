@@ -135,7 +135,7 @@ function subConvt(result, trackNumber) {
   } else {
     cue.text = `${text}\r\n&nbsp;`
   }
-  if (!Object.values(tracks[trackNumber].cues).some(c => c.text == cue.text)) {
+  if (!Object.values(tracks[trackNumber].cues).some(c => c.text == cue.text && c.startTime == cue.startTime && c.endTime == cue.endTime)) {
     tracks[trackNumber].addCue(cue)
   }
 }
