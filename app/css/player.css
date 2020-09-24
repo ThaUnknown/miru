@@ -225,14 +225,14 @@ video::cue {
 }
 
 .controls input[type=range]::-webkit-slider-thumb {
-    height: 0px;
-    width: 0px;
+    height: 0;
+    width: 0;
     border-radius: 50%;
     background: var(--accent-color);
     cursor: pointer;
     -webkit-appearance: none;
-    margin-top: 1px;
-    transition: all .1s ease
+    margin-top: 2px;
+    transition: all .1s ease;
 }
 
 #nowPlayingDisplay {

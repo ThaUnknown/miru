@@ -227,9 +227,9 @@ function toTS(sec) {
 async function playVideo() {
     try {
         await video.play();
-        btnpp.innerHTML = "pause";
+        bpp.innerHTML = "pause";
     } catch (err) {
-        btnpp.innerHTML = "play_arrow";
+        bpp.innerHTML = "play_arrow";
     }
 }
 
@@ -237,7 +237,7 @@ function btnpp() {
     if (video.paused) {
         playVideo();
     } else {
-        btnpp.innerHTML = "play_arrow";
+        bpp.innerHTML = "play_arrow";
         video.pause();
     }
 }

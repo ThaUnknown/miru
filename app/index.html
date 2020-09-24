@@ -132,41 +132,33 @@
                 </video>
                 <a href="#player" class="w-full h-full"></a>
                 <div class="player d-none flex-column justify-content-between w-full h-full">
-                    <div class="h-full w-full d-flex flex-column justify-content-between" id="ptoggle">
-                        <div class="stats row">
-                            <div id="nowPlayingDisplay" class="col ts">
-                            </div>
-                            <div class="d-flex col justify-content-center">
-                                <div class="d-flex">
-                                    <span class="material-icons">
-                                        people
-                                    </span>
-                                    <span class="ts" id="peers">-</span>
-                                </div>
-                                <div class="d-flex">
-                                    <span class="material-icons">
-                                        arrow_downward
-                                    </span>
-                                    <span class="ts" id="downSpeed">-</span>
-                                </div>
-                                <div class="d-flex">
-                                    <span class="material-icons">
-                                        arrow_upward
-                                    </span>
-                                    <span class="ts" id="upSpeed">-</span>
-                                </div>
-                            </div>
-                            <div class="col d-flex justify-content-end">
-                                <a id="dl">
-                                    <span class="material-icons">
-                                        get_app
-                                    </span>
-                                </a>
-                            </div>
+                    <div class="stats row">
+                        <div id="nowPlayingDisplay" class="col ts">
                         </div>
-                        <div id="buffering" class="align-self-center hidden">
+                        <div class="d-flex col justify-content-center">
+                            <span class="material-icons">
+                                people
+                            </span>
+                            <span class="ts" id="peers">-</span>
+                            <span class="material-icons">
+                                arrow_downward
+                            </span>
+                            <span class="ts" id="downSpeed">-</span>
+                            <span class="material-icons">
+                                arrow_upward
+                            </span>
+                            <span class="ts" id="upSpeed">-</span>
                         </div>
-                        <div>
+                        <div class="col d-flex justify-content-end">
+                            <a id="dl" class="material-icons">
+                                <span class="material-icons">
+                                    get_app
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div id="ptoggle" class="h-full d-flex justify-content-center align-items-center">
+                        <div id="buffering" class="hidden">
                         </div>
                     </div>
                     <div class="controls d-flex">
