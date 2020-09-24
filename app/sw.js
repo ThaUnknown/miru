@@ -90,15 +90,15 @@ self.addEventListener('fetch', evt => {
   )
 })
 
-self.addEventListener('fetch', (evt) => {
-  if (evt.request.mode !== 'navigate') {
-    return;
-  }
-  evt.respondWith(
-    fetch(evt.request)
-      .catch(async () => {
-        const cache = await caches.open(CACHE_NAME);
-        return cache.match('offline.html');
-      })
-  );
-});
+// self.addEventListener('fetch', (evt) => {
+//   if (evt.request.mode !== 'navigate') {
+//     return;
+//   }
+//   evt.respondWith(
+//     fetch(evt.request)
+//       .catch(async () => {
+//         const cache = await caches.open(CACHE_NAME);
+//         return cache.match('offline.html');
+//       })
+//   );
+// });

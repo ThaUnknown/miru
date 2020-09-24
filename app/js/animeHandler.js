@@ -364,4 +364,11 @@ async function hsRss(url) {
 document.querySelector("#refRel").onclick = function () {
     hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`)
 }
-searchAnime()
+setInterval(() => {
+    hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`) 
+}, 30000);
+async function loadAnime() {
+    await searchAnime()
+    hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`) 
+}
+loadAnime()
