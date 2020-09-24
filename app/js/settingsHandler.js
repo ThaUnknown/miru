@@ -42,7 +42,7 @@ function applySettings() {
             }
         })
         localStorage.setItem("settings", JSON.stringify(settings))
-    }, 3000)
+    }, 1000)
 }
 
 function renderSettings() {

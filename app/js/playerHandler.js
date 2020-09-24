@@ -1,6 +1,6 @@
-const controls = document.getElementsByClassName('ctrl'),
-btnfull = document.querySelector('#bfull'),
-btnpp = document.querySelector('#bpp')
+const controls = document.getElementsByClassName('ctrl')
+// btnfull = document.querySelector('#bfull'),
+// btnpp = document.querySelector('#bpp')
 // player = document.querySelector('#player'),
 // volume = document.querySelector('#vol'),
 // progress = document.querySelector('#prog'),
@@ -27,12 +27,13 @@ progress.addEventListener("mouseup", dragBarEnd);
 progress.addEventListener("touchend", dragBarEnd);
 progress.addEventListener("click", dragBarEnd);
 progress.addEventListener("mousedown", dragBarStart);
-ptoggle.addEventListener("click", bpp);
-ptoggle.addEventListener("dblclick", bfull);
+ptoggle.addEventListener("click", btnpp);
+ptoggle.addEventListener("dblclick", btnfull);
+player.addEventListener("fullscreenchange", updateFullscreen)
 
 for (let item of controls) {
     item.addEventListener("click", function () {
-        let func = this.id;
+        let func = this.dataset.name;
         window[func]()
     })
 }
@@ -43,20 +44,24 @@ function resetVideo() {
     dl.removeAttribute("download")
     video.remove()
     video = document.createElement("video")
-    settings.player7 ? video.setAttribute("autoPictureInPicture", "") : video.setAttribute("disablePictureInPicture", "") && bpip.setAttribute("disabled", "");
+    if(settings.player7){
+        video.setAttribute("autoPictureInPicture", "")
+    } else {
+        video.setAttribute("disablePictureInPicture", "")
+        bpip.setAttribute("disabled", "")
+    }
     video.classList.add("w-full")
     video.src = ""
     video.id = "video"
     video.addEventListener("playing", resetBuffer);
     video.addEventListener("loadeddata", initThumbnail);
     video.addEventListener("loadedmetadata", updateDisplay);
-    video.addEventListener("ended", bnext);
+    video.addEventListener("ended", btnnext);
     video.addEventListener("waiting", isBuffering);
     video.addEventListener("timeupdate", updateDisplay);
     video.addEventListener("timeupdate", updatePositionState);
     player.prepend(video)
 }
-resetVideo()
 // progress bar and display
 
 function updateDisplay() {
@@ -228,7 +233,7 @@ async function playVideo() {
     }
 }
 
-function bpp() {
+function btnpp() {
     if (video.paused) {
         playVideo();
     } else {
@@ -237,7 +242,7 @@ function bpp() {
     }
 }
 
-function bnext() {
+function btnnext() {
     if (settings.player6) {
         nyaaSearch(nowPlaying[0], parseInt(nowPlaying[1]) + 1)
     }
@@ -247,7 +252,7 @@ function bnext() {
 
 let oldlevel;
 
-function bmute() {
+function btnmute() {
     if (video.volume == 0) {
         updateVolume(oldlevel)
     } else {
@@ -274,7 +279,7 @@ updateVolume(parseInt(settings.player1))
 
 // PiP
 
-async function bpip() {
+async function btnpip() {
     if (video !== document.pictureInPictureElement) {
         await video.requestPictureInPicture();
     } else {
@@ -288,20 +293,28 @@ if (!settings.player4) {
 }
 // theathe mode
 
-function btheatre() {
+function btntheatre() {
     halfmoon.toggleSidebar();
 }
 
 // fullscreen
 
-function bfull() {
+function btnfull() {
     if (!document.fullscreenElement) {
         player.requestFullscreen();
-        btnfull.innerHTML = "fullscreen_exit"
     } else if (document.exitFullscreen) {
         document.exitFullscreen();
-        btnfull.innerHTML = "fullscreen"
-
+    }
+}
+function updateFullscreen() {
+    if (document.fullscreenElement) {
+        bfull.innerHTML = "fullscreen_exit"
+        bpip.setAttribute("disabled", "")
+        btheatre.setAttribute("disabled", "")
+    } else {
+        bfull.innerHTML = "fullscreen"
+        settings.player7 ? bpip.removeAttribute("disabled", "") : ""
+        btheatre.removeAttribute("disabled", "")
     }
 }
 
@@ -320,7 +333,7 @@ function seek(a) {
 // subtitles, generates content every single time its opened because fuck knows when the parser will find new shit
 
 let off
-function bcap() {
+function btncap() {
     let frag = document.createDocumentFragment()
     off = document.createElement("a")
     off.classList.add("dropdown-item", "pointer", "text-white")
@@ -433,13 +446,15 @@ function updatePositionState() {
 }
 
 if ('mediaSession' in navigator) {
-    navigator.mediaSession.setActionHandler('play', bpp);
-    navigator.mediaSession.setActionHandler('pause', bpp);
+    navigator.mediaSession.setActionHandler('play', btnpp);
+    navigator.mediaSession.setActionHandler('pause', btnpp);
     navigator.mediaSession.setActionHandler('seekbackward', function () {
         seek(-2);
     });
     navigator.mediaSession.setActionHandler('seekforward', function () {
         seek(2);
     });
-    navigator.mediaSession.setActionHandler('nexttrack', bnext);
+    navigator.mediaSession.setActionHandler('nexttrack', btnnext);
 }
+
+resetVideo()

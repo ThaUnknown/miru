@@ -1,8 +1,3 @@
-@media all and (display-mode: browser) {
-    body {
-        /* display: none; */
-    }
-}
 .custom-switch input[type=checkbox]:checked~label:after,
 .custom-switch input[type=checkbox]~label:after{
     transition: left .2s ease
