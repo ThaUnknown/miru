@@ -30,6 +30,7 @@ function search() {
 async function alRequest(a, b) {
     if (!a) {
         variables.sort = "TRENDING_DESC"
+        variables.perPage = 50
         delete variables.search
         query = `
         query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
