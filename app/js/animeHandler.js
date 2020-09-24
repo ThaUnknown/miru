@@ -137,33 +137,7 @@ async function searchAnime(a) {
     document.querySelector(".browse").textContent = '';
     try {
         alResponse.data.Page.media.forEach(media => {
-            let template = document.createElement("div")
-            template.classList.add("card", "m-0", "p-0")
-            template.innerHTML = `
-            <div class="row h-full">
-                <div class="col-4">
-                    <img src="${media.coverImage.extraLarge}"
-                        class="cover-img w-full h-full">
-                </div>
-                <div class="col-8 h-full card-grid">
-                    <div class="px-15 py-10">
-                        <h5 class="m-0 text-capitalize font-weight-bold">${media.title.english || media.title.romaji}</h5>
-                        <p class="text-muted m-0 text-capitalize details">
-                        ${(!!media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format) : "") + "</span>"}
-                        ${!!media.episodes ? "<span>" + media.episodes + " Episodes</span>" : (!!media.duration ? "<span>" + media.duration + " Minutes</span>" : "")}
-                        ${!!media.status ? "<span>" + media.status.toLowerCase() + "</span>" : ""}
-                        ${"<span>" + (!!media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear || "") + "</span>"}
-                        </p>
-                    </div>
-                    <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
-                        ${media.description}
-                    </div>
-                    <div class="px-15 pb-10 pt-5">
-                        ${media.genres.map(key => (`<span class="badge badge-pill badge-primary mt-5">${key}</span> `)).join('')}
-                    </div>
-                </div>
-            </div>
-            `
+            let template = cardCreator(media)
             template.onclick = function () {
                 viewAnime(media)
             }
@@ -230,6 +204,57 @@ function detailsCreator(entry) {
         })
     }
 }
+function cardCreator(media, regexParse) {
+    let template = document.createElement("div")
+    template.classList.add("card", "m-0", "p-0")
+    if (media) {
+        template.innerHTML = `
+    <div class="row h-full">
+        <div class="col-4">
+            <img src="${media.coverImage.extraLarge || ""}"
+                class="cover-img w-full h-full">
+        </div>
+        <div class="col-8 h-full card-grid">
+            <div class="px-15 py-10">
+                <h5 class="m-0 text-capitalize font-weight-bold">${media.title.english || media.title.romaji}${regexParse ? " - " + regexParse[3] : ""}</h5>
+                <p class="text-muted m-0 text-capitalize details">
+                ${(!!media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format) : "") + "</span>"}
+                ${!!media.episodes ? "<span>" + media.episodes + " Episodes</span>" : (!!media.duration ? "<span>" + media.duration + " Minutes</span>" : "")}
+                ${!!media.status ? "<span>" + media.status.toLowerCase() + "</span>" : ""}
+                ${"<span>" + (!!media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear || "") + "</span>"}
+                </p>
+            </div>
+            <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
+                ${media.description}
+            </div>
+            <div class="px-15 pb-10 pt-5">
+                ${media.genres.map(key => (`<span class="badge badge-pill badge-primary mt-5">${key}</span> `)).join('')}
+            </div>
+        </div>
+    </div>
+    `
+    } else {
+        template.innerHTML = `
+        <div class="row h-full">
+            <div class="col-4">
+                <img src=""
+                    class="cover-img w-full h-full">
+            </div>
+            <div class="col-8 h-full card-grid">
+                <div class="px-15 py-10">
+                    <h5 class="m-0 text-capitalize font-weight-bold">${regexParse ? regexParse[2] + " - " + regexParse[3] : ""}</h5>
+                </div>
+                <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
+                </div>
+                <div class="px-15 pb-10 pt-5">
+                </div>
+            </div>
+        </div>
+        `
+    }
+    return template
+}
+
 
 const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
 const searchTitle = document.querySelector("#title")
@@ -249,7 +274,7 @@ async function nyaaSearch(media, episode) {
     for (let title of titles) {
         if (results.children.length == 0) {
             title = title.replace(/ /g, "+")
-            let url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=${settings.torrent3 == true ? 2 : 0}&s=seeders&o=desc&q=${title}"+${episode}+"+${settings.torrent1}`)
+            let url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q=${title}"+${episode}+"+${settings.torrent1}`)
             results = await nyaaRss(url)
         }
     }
@@ -323,61 +348,14 @@ async function hsRss(url) {
                     let res = await alRequest(regexParse[2], 1)
                     store[regexParse[2]] = res.data.Page.media[0]
                 }
-                let media = store[regexParse[2]]
-                let template = document.createElement("div")
-                template.classList.add("card", "m-0", "p-0")
-                if (media) {
-                    template.innerHTML = `
-                <div class="row h-full">
-                    <div class="col-4">
-                        <img src="${media.coverImage.extraLarge || ""}"
-                            class="cover-img w-full h-full">
-                    </div>
-                    <div class="col-8 h-full card-grid">
-                        <div class="px-15 py-10">
-                            <h5 class="m-0 text-capitalize font-weight-bold">${media.title.english || media.title.romaji} - ${regexParse[3]}</h5>
-                            <p class="text-muted m-0 text-capitalize details">
-                            ${(!!media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format) : "") + "</span>"}
-                            ${!!media.episodes ? "<span>" + media.episodes + " Episodes</span>" : (!!media.duration ? "<span>" + media.duration + " Minutes</span>" : "")}
-                            ${!!media.status ? "<span>" + media.status.toLowerCase() + "</span>" : ""}
-                            ${"<span>" + (!!media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear || "") + "</span>"}
-                            </p>
-                        </div>
-                        <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
-                            ${media.description}
-                        </div>
-                        <div class="px-15 pb-10 pt-5">
-                            ${media.genres.map(key => (`<span class="badge badge-pill badge-primary mt-5">${key}</span> `)).join('')}
-                        </div>
-                    </div>
-                </div>
-                `
-                } else {
-                    template.innerHTML = `
-                    <div class="row h-full">
-                        <div class="col-4">
-                            <img src=""
-                                class="cover-img w-full h-full">
-                        </div>
-                        <div class="col-8 h-full card-grid">
-                            <div class="px-15 py-10">
-                                <h5 class="m-0 text-capitalize font-weight-bold">${regexParse[2]} - ${regexParse[3]}</h5>
-                            </div>
-                            <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
-                            </div>
-                            <div class="px-15 pb-10 pt-5">
-                            </div>
-                        </div>
-                    </div>
-                    `
-                }
+                let media = store[regexParse[2]],
+                    template = cardCreator(media, regexParse)
                 template.onclick = function () {
                     selected = [store[regexParse[2]], regexParse[3]]
                     addTorrent(i('link').textContent)
                 }
                 frag.appendChild(template)
             }
-
             document.querySelector(".releases").appendChild(frag)
         } catch (e) {
             console.error(e)
@@ -385,5 +363,5 @@ async function hsRss(url) {
     })
 }
 document.querySelector("#refRel").onclick = function () {
-    hsRss(`http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`)
+    hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`)
 }
