@@ -236,17 +236,11 @@ function cardCreator(media, regexParse) {
     } else {
         template.innerHTML = `
         <div class="row h-full">
-            <div class="col-4">
-                <img src=""
-                    class="cover-img w-full h-full">
+            <div class="col-4 w-full bg-very-dark skeloader">
             </div>
-            <div class="col-8 h-full card-grid">
+            <div class="col-8 h-full card-grid skeloader">
                 <div class="px-15 py-10">
                     <h5 class="m-0 text-capitalize font-weight-bold">${regexParse ? regexParse[2] + " - " + regexParse[3] : ""}</h5>
-                </div>
-                <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
-                </div>
-                <div class="px-15 pb-10 pt-5">
                 </div>
             </div>
         </div>
