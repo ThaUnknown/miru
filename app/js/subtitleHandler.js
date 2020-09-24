@@ -1,10 +1,10 @@
 let tracks = [],
   subtitleStream
 
-function parseSubs(range, stream) {
+function parseSubs(stream) {
   if (video.src.endsWith(".mkv")) {
     if (subtitleStream) {
-      subtitleStream = subtitleStream.seekTo(range.start)
+      subtitleStream = new SubtitleStream(subtitleStream)
     } else {  
       subtitleStream = new SubtitleStream() 
       subtitleStream.once('tracks', function (pTracks) {

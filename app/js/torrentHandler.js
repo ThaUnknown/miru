@@ -130,7 +130,7 @@ function serveFile(file, req) {
     res.body = req.method === 'HEAD' ? '' : 'stream'
     // parser is really a passthrough mkv stream now
     let stream = file.createReadStream(range)
-    parseSubs(range, stream)
+    parseSubs(stream)
 
     return [res, req.method === 'GET' && subtitleStream || stream]
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="auto-scaling-disabled">
+<html lang="en">
 
 <head>
     <link rel="manifest" href="manifest.json">
@@ -17,57 +17,71 @@
 
     <link rel="icon" href="logo.png">
     <title>Miru - Torrent streaming made simple!</title>
-
+    <link href="css.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css" rel="stylesheet" />
     <script>
-        window.onload = ()=> {
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
-        document.querySelector(".btn").addEventListener('click', (e) => {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    document.location.href = "/app/app.html"
-                }
+        window.onload = () => {
+            navigator.serviceWorker.register('sw.js')
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
             });
-        });
-    }
+            document.querySelector(".btn").addEventListener('click', (e) => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.location.href = "/app/#browse"
+                    }
+                });
+            });
+        }
     </script>
 </head>
 
 <body class="with-custom-webkit-scrollbars with-custom-css-scrollbars">
-    <div class="page-wrapper">
-        <div class="content-wrapper">
-            <div class="content-wrapper d-lg-flex align-items-lg-center">
-                <div class="container-lg">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div class="content">
-                                <h1 class="font-weight-medium">
-                                    Miru - Anime torrent streaming, ad free in a simple solution.
-                                </h1>
-                                <p class="font-size-18">
-                                    Miru is an otaku's dream, a website which allows you to stream and download anime torrents
-                                    directly in the browser as soon as they are released. Accessible on any platform and device. Anime in original quality with
-                                    no buffering, no ads, no delays, everything done client-side for free.
-                                </p>
-                                <div class="mt-20">
-                                    <div class="btn btn-primary" role="button">
-                                        Add app
-                                    </div>
+    <div class="page-wrapper with-navbar-fixed-bottom">
+        <div class="par particle-1"></div>
+        <div class="par particle-2"></div>
+        <div class="par particle-3"></div>
+        <div class="par particle-4"></div>
+        <div class="content-wrapper d-lg-flex align-items-lg-center">
+            <div class="container-lg">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="content">
+                            <h1 class="font-weight-medium">
+                                Miru - Anime torrent streaming, ad free in a simple solution.
+                            </h1>
+                            <p class="font-size-18">
+                                Miru is an otaku's dream, a website which allows you to stream and download anime
+                                torrents
+                                directly in the browser as soon as they are released. Accessible on any platform and
+                                device. Anime in original quality with
+                                no buffering, no ads, no delays, everything done client-side for free.
+                            </p>
+                            <div class="mt-20">
+                                <div class="btn btn-primary" role="button">
+                                    Add app
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 d-flex align-items-center justify-content-center">
-                            <img class="w-400" alt="char" src="/char.png">
-                        </div>
+                    </div>
+                    <div class="col-lg-4 d-flex align-items-center justify-content-center">
+                        <img class="w-400" alt="char" src="/char.png">
                     </div>
                 </div>
             </div>
         </div>
+        
+        <nav class="navbar navbar-fixed-bottom justify-content-center">
+            <a href="/faq.html">
+                FAQ
+            </a>
+            <span class="navbar-text">
+                © Copyright 2020, Miru
+            </span>
+        </nav>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/js/halfmoon.min.js"></script>
 </body>

@@ -1,7 +1,7 @@
 {
   "name": "Miru",
   "short_name": "Miru",
-  "start_url": "/app/app.html",
+  "start_url": "/app/#browse",
   "display": "fullscreen",
   "categories": [
     "entertainment"

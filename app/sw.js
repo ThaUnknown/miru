@@ -4,7 +4,7 @@ const CACHE_NAME = 'static-cache-v1';
 
 const FILES_TO_CACHE = [
   'offline.html',
-  'app.html',
+  'index.html',
   'js/animeHandler.js',
   'js/bundle.min.js',
   'js/playerHandler.js',

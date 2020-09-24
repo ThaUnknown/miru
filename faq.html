@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Miru">
+    <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
+    <meta name="theme-color" content="#111417" />
+
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="viewport" content="width=device-width" />
+
+    <link rel="icon" href="logo.png">
+    <title>Miru - FAQ</title>
+    <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css" rel="stylesheet" />
+</head>
+
+<body class="with-custom-webkit-scrollbars with-custom-css-scrollbars">
+    <div class="page-wrapper">
+        <div class="content-wrapper d-flex flex-column">
+            <a href="/" class="w-200 align-self-center"><img src="logo.png" class="w-200" alt="logo"></a>
+            <div class="container-lg">
+                <div class="content">
+                    <h2 class="content-title">
+                        How does it work?
+                    </h2>
+                    <p>
+                        Miru uses WebTorrent and black magic to turn your browser into a P2P client which allows you to
+                        stream existing torrents created by other people, without any third-party servers.
+                    </p>
+                </div>
+                <div class="content">
+                    <h2 class="content-title">
+                        Is it legal?
+                    </h2>
+                    <p>
+                        Miru only provides the tools for people to share anime with eachother. Miru doesn't host or
+                        transmit any data.
+                    </p>
+                </div>
+                <div class="content">
+                    <h2 class="content-title">
+                        Is it safe?
+                    </h2>
+                    <p>
+                        Since the user downloads and shares copyrighted content, in theory their ISP might be angry
+                        about, in practice streaming a single episode won't do much, however if you want to be safe you
+                        can use a VPN.
+                    </p>
+                </div>
+                <div class="content">
+                    <h2 class="content-title">
+                        Are there any limitations?
+                    </h2>
+                    <p>
+                        Yes, since this relies on P2P streaming, sharing content entirely depends on the download and
+                        upload speed of the user and how many available peers a torrent has. You can help increase the
+                        number of initial peers by upvoting *this* pull request on GitHub.
+                    </p>
+                </div>
+                <div class="content">
+                    <h2 class="content-title">
+                        What's your subtitle support?
+                    </h2>
+                    <p>
+                        Miru uses VTTCues inside the video element itself to display softcoded subtitles, meaning it
+                        should work on any platform and support many devices however it doesn't display subtitles inside
+                        PiP windows. Miru only supports subtitles embedded inside the video file [SSA, UTF8, VTT, SRT*]
+                        in almost any video format, but doesn't support external subtitle files [yet].
+                    </p>
+                </div>
+                <div class="content">
+                    <h2 class="content-title">
+                        How do you download?
+                    </h2>
+                    <p>
+                        As you select an anime to play it automatically starts downloading, then you need to wait for
+                        WebTorrent to download it fully to be able to save it to your drive.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/js/halfmoon.min.js"></script>
+</body>
+
+</html>
