@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'static-cache-v1';
+const CACHE_NAME = 'v1.0.0';
 
 const FILES_TO_CACHE = [
   'offline.html',
@@ -90,15 +90,15 @@ self.addEventListener('fetch', evt => {
   )
 })
 
-// self.addEventListener('fetch', (evt) => {
-//   if (evt.request.mode !== 'navigate') {
-//     return;
-//   }
-//   evt.respondWith(
-//     fetch(evt.request)
-//       .catch(async () => {
-//         const cache = await caches.open(CACHE_NAME);
-//         return cache.match('offline.html');
-//       })
-//   );
-// });
+self.addEventListener('fetch', (evt) => {
+  if (evt.request.mode !== 'navigate') {
+    return;
+  }
+  evt.respondWith(
+    fetch(evt.request)
+      .catch(async () => {
+        const cache = await caches.open(CACHE_NAME);
+        return cache.match('offline.html');
+      })
+  );
+});

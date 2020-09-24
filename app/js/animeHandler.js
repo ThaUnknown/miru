@@ -131,10 +131,11 @@ async function alRequest(a, b) {
 }
 let alResponse
 async function searchAnime(a) {
+    let frag = document.createDocumentFragment(),
+    browse = document.querySelector(".browse")
+    browse.textContent = '';
+    browse.appendChild(skeletonCard)
     alResponse = await alRequest(a)
-    // console.log(alResponse);
-    let frag = document.createDocumentFragment()
-    document.querySelector(".browse").textContent = '';
     try {
         alResponse.data.Page.media.forEach(media => {
             let template = cardCreator(media)
@@ -146,10 +147,10 @@ async function searchAnime(a) {
     } catch (e) {
         console.error(e)
     }
-    document.querySelector(".browse").appendChild(frag)
+    browse.textContent = '';
+    browse.appendChild(frag)
 }
 
-searchAnime()
 
 let detailsfrag = document.createDocumentFragment()
 let details = {
@@ -248,6 +249,7 @@ function cardCreator(media, regexParse) {
     }
     return template
 }
+let skeletonCard = cardCreator()
 
 
 const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
@@ -324,8 +326,10 @@ const regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E
 let store = {};
 
 async function hsRss(url) {
-    let frag = document.createDocumentFragment()
-    document.querySelector(".releases").innerHTML = ""
+    let frag = document.createDocumentFragment(),
+    releases = document.querySelector(".releases")
+    releases.textContent = '';
+    releases.appendChild(skeletonCard)
     res = await fetch(url)
     await res.text().then(async (xmlTxt) => {
         try {
@@ -350,7 +354,8 @@ async function hsRss(url) {
                 }
                 frag.appendChild(template)
             }
-            document.querySelector(".releases").appendChild(frag)
+            releases.textContent = '';
+            releases.appendChild(frag)
         } catch (e) {
             console.error(e)
         }
@@ -359,3 +364,4 @@ async function hsRss(url) {
 document.querySelector("#refRel").onclick = function () {
     hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`)
 }
+searchAnime()
