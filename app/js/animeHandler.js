@@ -19,12 +19,12 @@ var options = {
     })
 }
 const searchRx = /(magnet:)?([A-F\d]{8,40})?(.*\.torrent)?/i;
-function search() {
-    let regexParse = searchRx.exec(document.querySelector("#search").value)
+function searchBox() {
+    let regexParse = searchRx.exec(search.value)
     if (regexParse[1] || regexParse[2] || regexParse[3]) {
-        addTorrent(document.querySelector("#search").value)
+        addTorrent(search.value)
     } else {
-        searchAnime(document.querySelector("#search").value)
+        searchAnime(search.value)
     }
 }
 async function alRequest(a, b) {
@@ -220,10 +220,10 @@ function cardCreator(media, regexParse) {
             <div class="px-15 py-10">
                 <h5 class="m-0 text-capitalize font-weight-bold">${media.title.english || media.title.romaji}${regexParse ? " - " + regexParse[3] : ""}</h5>
                 <p class="text-muted m-0 text-capitalize details">
-                ${(!!media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format) : "") + "</span>"}
-                ${!!media.episodes ? "<span>" + media.episodes + " Episodes</span>" : (!!media.duration ? "<span>" + media.duration + " Minutes</span>" : "")}
-                ${!!media.status ? "<span>" + media.status.toLowerCase() + "</span>" : ""}
-                ${"<span>" + (!!media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear || "") + "</span>"}
+                ${(media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format) : "") + "</span>"}
+                ${media.episodes ? "<span>" + media.episodes + " Episodes</span>" : media.duration ? "<span>" + media.duration + " Minutes</span>" : ""}
+                ${media.status ? "<span>" + media.status.toLowerCase().replace(/_/g, " ") + "</span>" : ""}
+                ${media.season || media.seasonYear ? "<span>" + (!!media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear || "") + "</span>" : ""}
                 </p>
             </div>
             <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
@@ -254,8 +254,6 @@ let skeletonCard = cardCreator()
 
 
 const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
-const searchTitle = document.querySelector("#title")
-const searchEpisode = document.querySelector("#ep")
 
 var selected;
 
@@ -362,7 +360,7 @@ async function hsRss(url) {
         }
     })
 }
-document.querySelector("#refRel").onclick = function () {
+refRel.onclick = function () {
     hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`)
 }
 setInterval(() => {

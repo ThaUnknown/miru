@@ -101,7 +101,7 @@ function serveFile(file, req) {
     const res = {
         status: 200,
         headers: {
-            'Content-Type': file._getMimeType(),
+            'Content-Type': file._getMimeType() ? file._getMimeType() : 'video/webm',
             // Support range-requests
             'Accept-Ranges': 'bytes'
         }

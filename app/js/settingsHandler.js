@@ -1,15 +1,15 @@
 const settingsElements = {
-    player1: document.querySelector("#player1"),
-    player2: document.querySelector("#player2"),
-    player3: document.querySelector("#player3"),
-    player4: document.querySelector("#player4"),
-    player5: document.querySelector("#player5"),
-    player6: document.querySelector("#player6"),
-    player7: document.querySelector("#player7"),
-    subtitle1: document.querySelector("#subtitle1"),
-    torrent1: document.querySelector("#torrent1"),
-    torrent2: document.querySelector("#torrent2"),
-    torrent3: document.querySelector("#torrent3")
+    player1: player1,
+    player2: player2,
+    player3: player3,
+    player4: player4,
+    player5: player5,
+    player6: player6,
+    player7: player7,
+    subtitle1: subtitle1,
+    torrent1: torrent1,
+    torrent2: torrent2,
+    torrent3: torrent3
 }
 let settings 
 function restoreDefaults() {
@@ -60,5 +60,5 @@ if (!localStorage.getItem("settings")) {
 }
 settings = JSON.parse(localStorage.getItem("settings"))
 renderSettings()
-document.querySelector("#setRes").addEventListener("click", restoreDefaults)
-document.querySelector("#settings").addEventListener("click", applySettings)
+setRes.addEventListener("click", restoreDefaults)
+settingsTab.addEventListener("click", applySettings)

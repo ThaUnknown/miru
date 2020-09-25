@@ -360,8 +360,8 @@ function btncap() {
         frag.appendChild(template)
     }
 
-    document.querySelector("#subMenu").textContent = '';
-    document.querySelector("#subMenu").appendChild(frag)
+    subMenu.textContent = '';
+    subMenu.appendChild(frag)
 }
 function selectLang(lang) {
     for (let i = 0; i < video.textTracks.length; i++) {
