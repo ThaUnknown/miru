@@ -185,7 +185,7 @@ function viewAnime(media) {
 }
 
 function detailsCreator(entry) {
-    if (entry != undefined) {
+    if (entry) {
         Object.entries(entry).forEach(value => {
             let template = document.createElement("p")
             if (typeof value[1] == 'object') {

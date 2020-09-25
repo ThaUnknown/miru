@@ -20,7 +20,7 @@ function restoreDefaults() {
         player3: "3",
         player4: "2",
         player5: true,
-        player6: true,
+        player6: false,
         player7: true,
         subtitle1: "'Open Sans', sans-serif",
         torrent1: "1080",

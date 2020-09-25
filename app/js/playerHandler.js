@@ -38,25 +38,25 @@ for (let item of controls) {
     })
 }
 function resetVideo() {
+    video.remove()
     nowPlayingDisplay.textContent = ""
     tracks = []
     dl.removeAttribute("href")
     dl.removeAttribute("download")
-    video.remove()
     video = document.createElement("video")
-    if(settings.player7){
+    if (settings.player7) {
         video.setAttribute("autoPictureInPicture", "")
     } else {
         video.setAttribute("disablePictureInPicture", "")
         bpip.setAttribute("disabled", "")
     }
-    video.classList.add("w-full")
     video.src = ""
     video.id = "video"
+    video.style.setProperty("--sub-font", settings.subtitle1);
     video.addEventListener("playing", resetBuffer);
     video.addEventListener("loadeddata", initThumbnail);
     video.addEventListener("loadedmetadata", updateDisplay);
-    video.addEventListener("ended", btnnext);
+    video.addEventListener("ended", autoNext);
     video.addEventListener("waiting", isBuffering);
     video.addEventListener("timeupdate", updateDisplay);
     video.addEventListener("timeupdate", updatePositionState);
@@ -243,11 +243,11 @@ function btnpp() {
 }
 
 function btnnext() {
-    if (settings.player6) {
-        nyaaSearch(nowPlaying[0], parseInt(nowPlaying[1]) + 1)
-    }
+    nyaaSearch(nowPlaying[0], parseInt(nowPlaying[1]) + 1)
 }
-
+function autoNext() {
+    settings.player6 ? btnnext() : ""
+}
 // volume shit
 
 let oldlevel;
@@ -270,7 +270,7 @@ function updateVolume(a) {
         level = a;
         volume.value = a;
     }
-    document.documentElement.style.setProperty("--volume-level", level + "%");
+    volume.style.setProperty("--volume-level", level + "%");
     bmute.innerHTML = (level == 0) ? "volume_off" : "volume_up";
     video.volume = level / 100
 }
@@ -289,7 +289,7 @@ async function btnpip() {
 
 //miniplayer
 if (!settings.player4) {
-    document.documentElement.style.setProperty("--miniplayer-display", "none");
+    player.style.setProperty("--miniplayer-display", "none");
 }
 // theathe mode
 
@@ -343,11 +343,11 @@ function btncap() {
     }
     frag.appendChild(off)
 
-    for (let i = 0; i < video.textTracks.length; i++) {
+    for (let track of video.textTracks) {
         let template = document.createElement("a")
         template.classList.add("dropdown-item", "pointer")
-        template.innerHTML = video.textTracks[i].language
-        if (video.textTracks[i].mode == "showing") {
+        template.innerHTML = track.language
+        if (track.mode == "showing") {
             template.classList.add("text-white")
             off.classList.add("text-muted")
             off.classList.remove("text-white")
@@ -355,7 +355,7 @@ function btncap() {
             template.classList.add("text-muted")
         }
         template.onclick = function () {
-            selectLang(video.textTracks[i].language)
+            selectLang(track.language)
         }
         frag.appendChild(template)
     }
@@ -364,43 +364,42 @@ function btncap() {
     subMenu.appendChild(frag)
 }
 function selectLang(lang) {
-    for (let i = 0; i < video.textTracks.length; i++) {
-        if (video.textTracks[i].language == lang) {
-            video.textTracks[i].mode = 'showing';
+    for (let track of video.textTracks) {
+        if (track.language == lang) {
+            track.mode = 'showing';
         }
         else {
-            video.textTracks[i].mode = 'hidden';
+            track.mode = 'hidden';
         }
     }
     bcap()
 }
 
-document.documentElement.style.setProperty("--sub-font", settings.subtitle1);
 // keybinds
 
 document.onkeydown = function (a) {
     if (document.location.href.endsWith("#player")) {
         switch (a.key) {
             case " ":
-                bpp();
+                btnpp();
                 break;
             case "n":
-                bnext();
+                btnnext();
                 break;
             case "m":
-                bmute();
+                btnmute();
                 break;
             case "p":
-                bpip();
+                btnpip();
                 break;
             case "t":
-                btheatre();
+                btntheatre();
                 break;
             case "c":
-                bcap();
+                btncap();
                 break;
             case "f":
-                bfull();
+                btnfull();
                 break;
             case "s":
                 seek(85);
@@ -449,10 +448,10 @@ if ('mediaSession' in navigator) {
     navigator.mediaSession.setActionHandler('play', btnpp);
     navigator.mediaSession.setActionHandler('pause', btnpp);
     navigator.mediaSession.setActionHandler('seekbackward', function () {
-        seek(-2);
+        seek(-parseInt(settings.player3));
     });
     navigator.mediaSession.setActionHandler('seekforward', function () {
-        seek(2);
+        seek(parseInt(settings.player3));
     });
     navigator.mediaSession.setActionHandler('nexttrack', btnnext);
 }

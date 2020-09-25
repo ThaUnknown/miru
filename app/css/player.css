@@ -136,7 +136,9 @@ video::cue {
     width: 100%;
     position: relative;
 }
-
+#video {
+    width: 100%;
+}
 .volume {
     display: flex;
     width: auto

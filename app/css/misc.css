@@ -69,7 +69,7 @@ section {
 }
 
 section:target {
-    display: flex;
+    display: flex !important;
     height: 100%
 }
 

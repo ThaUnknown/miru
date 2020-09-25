@@ -63,8 +63,8 @@ async function addTorrent(magnet) {
         }
         torrent.on('download', onProgress)
         torrent.on('upload', onProgress)
-        // torrent.on('warning', console.warn) // too spammy for now
-        // torrent.on('error', console.error)
+        // torrent.on('warning', console.log) // too spammy for now
+        // torrent.on('error', console.log)
         torrent.on('noPeers', function () {
             halfmoon.initStickyAlert({
                 content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
