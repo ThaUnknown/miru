@@ -1,22 +1,4 @@
 const controls = document.getElementsByClassName('ctrl')
-// btnfull = document.querySelector('#bfull'),
-// btnpp = document.querySelector('#bpp')
-// player = document.querySelector('#player'),
-// volume = document.querySelector('#vol'),
-// progress = document.querySelector('#prog'),
-// peers = document.querySelector('#peers'),
-// downSpeed = document.querySelector('#down'),
-// upSpeed = document.querySelector('#up'),
-// playPause = document.querySelector('#ptoggle'),
-// btnpp = document.querySelector('#bpp'),
-// btnm = document.querySelector("#bmute"),
-// btnpip = document.querySelector('#bpip'),
-// elapsed = document.querySelector("#elapsed"),
-// remaining = document.querySelector("#remaining"),
-// buffering = document.querySelector("#buffering"),
-// nowPlayingDisplay = document.querySelector("#nowPlayingDisplay")
-// dl = document.querySelector("#dl")
-
 
 // event listeners
 volume.addEventListener("input", function () {
@@ -52,6 +34,7 @@ function resetVideo() {
     }
     video.src = ""
     video.id = "video"
+    video.volume = settings.player1 / 100
     video.style.setProperty("--sub-font", settings.subtitle1);
     video.addEventListener("playing", resetBuffer);
     video.addEventListener("loadeddata", initThumbnail);
@@ -75,6 +58,8 @@ function updateDisplay() {
 function dragBar() {
     video.pause()
     updateBar(progress.value / 10)
+    let bg = thumbnails.length == 0 ? "" : thumbnails[Math.floor(currentTime / 5) || 0]
+    thumb.src = bg || ""
 }
 
 function dragBarEnd() {
@@ -92,11 +77,10 @@ function updateBar(progressPercent) {
     if (document.location.href.endsWith("#player")) {
         currentTime = video.duration * progressPercent / 100
         progress.style.setProperty("--progress", progressPercent + "%");
+        thumb.style.setProperty("--progress", progressPercent + "%");
         elapsed.innerHTML = toTS(currentTime);
         remaining.innerHTML = toTS(video.duration - currentTime);
         progress.value = progressPercent * 10
-        let bg = thumbnails.length == 0 ? "" : thumbnails[Math.floor(currentTime / 5) || 0]
-        progress.style.setProperty("--background", "url(" + (bg || "") + ")")
         progress.setAttribute("data-ts", toTS(currentTime))
     }
 }
@@ -115,7 +99,7 @@ function initThumbnail() {
         h = parseInt(w / ratio)
         canvas.width = w;
         canvas.height = h;
-        progress.style.setProperty("--height", h + "px");
+        thumb.style.setProperty("--height", h + "px");
     }
 }
 

@@ -1,9 +1,14 @@
-const client = new WebTorrent(),
-    announceList = [
+var client = new WebTorrent()
+window.onbeforeunload = ()=>{
+    client.torrents[0].store.destroy()
+    client.torrents[0].destroy()
+    client.destroy()
+ }
+const announceList = [
         ['wss://tracker.openwebtorrent.com'],
         ['wss://tracker.btorrent.xyz'],
-        ['wss://tracker.webtorrent.io'],
-        ['wss://tracker.fastcast.nz'],
+        // ['wss://tracker.webtorrent.io'],
+        // ['wss://tracker.fastcast.nz'],
         ['wss://video.blender.org:443/tracker/socket'],
         ['wss://tube.privacytools.io:443/tracker/socket'],
         ['wss://tracker.sloppyta.co:443/announce'],
@@ -45,10 +50,12 @@ WEBTORRENT_ANNOUNCE = announceList
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
 let nowPlaying,
-    maxTorrents = 1
+    maxTorrents = 1,
+    selectedTorrent
 async function addTorrent(magnet) {
     if (client.torrents.length >= maxTorrents) {
-        client.remove(client.torrents[0].infoHash)
+        client.torrents[0].store.destroy()
+        client.torrents[0].destroy()
     }
     halfmoon.hideModal("tsearch")
     document.location.href = "#player"
@@ -56,19 +63,6 @@ async function addTorrent(magnet) {
     selected ? selPlaying(selected) : ""
     await sw
     client.add(magnet, async function (torrent) {
-        function onProgress() {
-            if (document.location.href.endsWith("#player")) {
-                player.style.setProperty("--download", torrent.progress * 100 + "%");
-                peers.textContent = torrent.numPeers
-                downSpeed.textContent = prettyBytes(torrent.downloadSpeed) + '/s'
-                upSpeed.textContent = prettyBytes(torrent.uploadSpeed) + '/s'
-            }
-        }
-        setInterval(onProgress, 100)
-        // torrent.on('download', onProgress)
-        // torrent.on('upload', onProgress)
-        // torrent.on('warning', console.log) // too spammy for now
-        // torrent.on('error', console.log)
         torrent.on('noPeers', function () {
             halfmoon.initStickyAlert({
                 content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
@@ -83,6 +77,7 @@ async function addTorrent(magnet) {
                 videoFile = file
             }
         })
+        selectedTorrent = torrent
         torrent.on('done', function () {
             halfmoon.initStickyAlert({
                 content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
@@ -98,6 +93,15 @@ async function addTorrent(magnet) {
     })
 
 }
+function onProgress() {
+    if (document.location.href.endsWith("#player") && selectedTorrent) {
+        player.style.setProperty("--download", selectedTorrent.progress * 100 + "%");
+        peers.textContent = selectedTorrent.numPeers
+        downSpeed.textContent = prettyBytes(selectedTorrent.downloadSpeed) + '/s'
+        upSpeed.textContent = prettyBytes(selectedTorrent.uploadSpeed) + '/s'
+    }
+}
+setInterval(onProgress, 100)
 
 
 function serveFile(file, req) {
