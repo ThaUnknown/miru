@@ -57,14 +57,16 @@ async function addTorrent(magnet) {
     await sw
     client.add(magnet, async function (torrent) {
         function onProgress() {
-            player.style.setProperty("--download", torrent.progress * 100 + "%");
-            peers.textContent = torrent.numPeers
-            downSpeed.textContent = prettyBytes(torrent.downloadSpeed) + '/s'
-            upSpeed.textContent = prettyBytes(torrent.uploadSpeed) + '/s'
+            if (document.location.href.endsWith("#player")) {
+                player.style.setProperty("--download", torrent.progress * 100 + "%");
+                peers.textContent = torrent.numPeers
+                downSpeed.textContent = prettyBytes(torrent.downloadSpeed) + '/s'
+                upSpeed.textContent = prettyBytes(torrent.uploadSpeed) + '/s'
+            }
         }
-        setInterval(onProgress, 500)
-        torrent.on('download', onProgress)
-        torrent.on('upload', onProgress)
+        setInterval(onProgress, 100)
+        // torrent.on('download', onProgress)
+        // torrent.on('upload', onProgress)
         // torrent.on('warning', console.log) // too spammy for now
         // torrent.on('error', console.log)
         torrent.on('noPeers', function () {

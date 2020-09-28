@@ -133,7 +133,7 @@ async function alRequest(a, b) {
 let alResponse
 async function searchAnime(a) {
     let frag = document.createDocumentFragment(),
-    browse = document.querySelector(".browse")
+        browse = document.querySelector(".browse")
     browse.textContent = '';
     browse.appendChild(skeletonCard)
     alResponse = await alRequest(a)
@@ -325,49 +325,51 @@ const regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E
 let store = {};
 
 async function hsRss(url) {
-    let frag = document.createDocumentFragment(),
-    releases = document.querySelector(".releases")
-    releases.textContent = '';
-    releases.appendChild(skeletonCard)
-    res = await fetch(url)
-    await res.text().then(async (xmlTxt) => {
-        try {
-            let doc = DOMPARSER(xmlTxt, "text/xml")
-            let items = doc.querySelectorAll("item")
-            for (let item of items) {
-                let i = item.querySelector.bind(item),
-                    regexParse = regex.exec(i("title").textContent)
-                if (regexParse[2].endsWith(" - ")) {
-                    regexParse[2] = regexParse[2].slice(0, -3)
+    if (document.location.href.endsWith("#releases")) {
+        let frag = document.createDocumentFragment(),
+            releases = document.querySelector(".releases")
+        releases.textContent = '';
+        releases.appendChild(skeletonCard)
+        res = await fetch(url)
+        await res.text().then(async (xmlTxt) => {
+            try {
+                let doc = DOMPARSER(xmlTxt, "text/xml")
+                let items = doc.querySelectorAll("item")
+                for (let item of items) {
+                    let i = item.querySelector.bind(item),
+                        regexParse = regex.exec(i("title").textContent)
+                    if (regexParse[2].endsWith(" - ")) {
+                        regexParse[2] = regexParse[2].slice(0, -3)
+                    }
+                    if (!store[regexParse[2]] && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
+                        //shit not found, lookup
+                        let res = await alRequest(regexParse[2], 1)
+                        store[regexParse[2]] = res.data.Page.media[0]
+                    }
+                    let media = store[regexParse[2]],
+                        template = cardCreator(media, regexParse)
+                    template.onclick = function () {
+                        selected = [store[regexParse[2]], regexParse[3]]
+                        addTorrent(i('link').textContent)
+                    }
+                    frag.appendChild(template)
                 }
-                if (!store[regexParse[2]] && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
-                    //shit not found, lookup
-                    let res = await alRequest(regexParse[2], 1)
-                    store[regexParse[2]] = res.data.Page.media[0]
-                }
-                let media = store[regexParse[2]],
-                    template = cardCreator(media, regexParse)
-                template.onclick = function () {
-                    selected = [store[regexParse[2]], regexParse[3]]
-                    addTorrent(i('link').textContent)
-                }
-                frag.appendChild(template)
+                releases.textContent = '';
+                releases.appendChild(frag)
+            } catch (e) {
+                console.error(e)
             }
-            releases.textContent = '';
-            releases.appendChild(frag)
-        } catch (e) {
-            console.error(e)
-        }
-    })
+        })
+    }
 }
 refRel.onclick = function () {
     hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`)
 }
 setInterval(() => {
-    hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`) 
+    hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`)
 }, 30000);
 async function loadAnime() {
     await searchAnime()
-    hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`) 
+    hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`)
 }
 loadAnime()

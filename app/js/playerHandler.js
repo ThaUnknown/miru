@@ -89,14 +89,16 @@ async function dragBarStart() {
 
 let currentTime;
 function updateBar(progressPercent) {
-    currentTime = video.duration * progressPercent / 100
-    progress.style.setProperty("--progress", progressPercent + "%");
-    elapsed.innerHTML = toTS(currentTime);
-    remaining.innerHTML = toTS(video.duration - currentTime);
-    progress.value = progressPercent * 10
-    let bg = thumbnails.length == 0 ? "" : thumbnails[Math.floor(currentTime / 5) || 0]
-    progress.style.setProperty("--background", "url(" + (bg || "") + ")")
-    progress.setAttribute("data-ts", toTS(currentTime))
+    if (document.location.href.endsWith("#player")) {
+        currentTime = video.duration * progressPercent / 100
+        progress.style.setProperty("--progress", progressPercent + "%");
+        elapsed.innerHTML = toTS(currentTime);
+        remaining.innerHTML = toTS(video.duration - currentTime);
+        progress.value = progressPercent * 10
+        let bg = thumbnails.length == 0 ? "" : thumbnails[Math.floor(currentTime / 5) || 0]
+        progress.style.setProperty("--background", "url(" + (bg || "") + ")")
+        progress.setAttribute("data-ts", toTS(currentTime))
+    }
 }
 
 // dynamic thumbnails 
