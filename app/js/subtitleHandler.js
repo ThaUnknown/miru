@@ -1,12 +1,13 @@
 let tracks = [],
   subtitleStream
+const { SubtitleStream } = MatroskaSubtitles
 
 function parseSubs(stream) {
   if (video.src.endsWith(".mkv")) {
     if (subtitleStream) {
       subtitleStream = new SubtitleStream(subtitleStream)
-    } else {  
-      subtitleStream = new SubtitleStream() 
+    } else {
+      subtitleStream = new SubtitleStream()
       subtitleStream.once('tracks', function (pTracks) {
         pTracks.forEach(track => {
           tracks[track.number] = video.addTextTrack('captions', track.type, track.language || track.number)

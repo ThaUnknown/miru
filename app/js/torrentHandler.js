@@ -57,10 +57,12 @@ async function addTorrent(magnet) {
     await sw
     client.add(magnet, async function (torrent) {
         function onProgress() {
+            player.style.setProperty("--download", torrent.progress * 100 + "%");
             peers.textContent = torrent.numPeers
             downSpeed.textContent = prettyBytes(torrent.downloadSpeed) + '/s'
             upSpeed.textContent = prettyBytes(torrent.uploadSpeed) + '/s'
         }
+        setInterval(onProgress, 500)
         torrent.on('download', onProgress)
         torrent.on('upload', onProgress)
         // torrent.on('warning', console.log) // too spammy for now
@@ -80,7 +82,6 @@ async function addTorrent(magnet) {
             }
         })
         torrent.on('done', function () {
-            setInterval(onProgress, 5000)
             halfmoon.initStickyAlert({
                 content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
                 title: "Download Complete",
@@ -101,7 +102,7 @@ function serveFile(file, req) {
     const res = {
         status: 200,
         headers: {
-            'Content-Type': file._getMimeType() ? file._getMimeType() : 'video/webm',
+            'Content-Type': file._getMimeType() || 'video/webm',
             // Support range-requests
             'Accept-Ranges': 'bytes'
         }

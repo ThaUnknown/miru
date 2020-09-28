@@ -5,6 +5,7 @@
     --progress: 0%;
     --buffer: 0%;
     --height: 0;
+    --download: 0%;
     color: #b6b6b6;
     --sidebar-width: 19rem;
     --ts: "";
@@ -32,6 +33,7 @@
 
 .immersed {
     cursor: none;
+    border: none !important;
 }
 
 .immersed .controls,
@@ -57,11 +59,12 @@
     position: absolute;
     z-index: 10
 }
-#dl{
-    display: none
-}
-#dl[download]{
-    display: block
+#player {
+    border-width: 0;
+    border-top-width: 1px;
+    border-image-slice: 1;
+    border-style: solid;
+    border-image-source: linear-gradient(90deg, #e5204c var(--download),  rgba(0, 0, 0, .8) var(--download))
 }
 
 #player:target .player {
@@ -193,7 +196,7 @@ video::cue {
     white-space: nowrap;
     align-self: center;
     padding: 0 1.2rem;
-    left: var(--left);
+    left: var(--progress);
     font-weight: 600;
     transition: .2s opacity ease;
 }
@@ -206,8 +209,15 @@ video::cue {
     top: -2rem;
 }
 
-.ctrl[disabled] {
+
+.ctrl[disabled],
+#player:fullscreen #bpip,
+#player:fullscreen #btheatre{
     display: none;
+}
+#dl:not([download]) > span{
+    cursor: not-allowed;
+    color: rgba(255,255,255,.4);
 }
 
 .controls input#progress[type=range]::before {

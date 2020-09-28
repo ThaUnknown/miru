@@ -95,7 +95,7 @@
             </div>
         </div>
     </div>
-    <div class="page-wrapper with-sidebar" data-sidebar-type="overlayed-sm-and-down">
+    <div class="page-wrapper with-sidebar" data-sidebar-type="full-height">
         <div class="sticky-alerts"></div>
 
         <div class="sidebar-overlay" onclick="halfmoon.toggleSidebar()"></div>
@@ -145,15 +145,15 @@
                             <span class="material-icons">
                                 people
                             </span>
-                            <span class="ts" id="peers">-</span>
+                            <span class="ts" id="peers">0</span>
                             <span class="material-icons">
                                 arrow_downward
                             </span>
-                            <span class="ts" id="downSpeed">-</span>
+                            <span class="ts" id="downSpeed">0 B/s</span>
                             <span class="material-icons">
                                 arrow_upward
                             </span>
-                            <span class="ts" id="upSpeed">-</span>
+                            <span class="ts" id="upSpeed">0 B/s</span>
                         </div>
                         <div class="col d-flex justify-content-end">
                             <a id="dl" class="material-icons">
@@ -340,9 +340,9 @@
     <script src="js/animeHandler.js"></script>
     <script src="js/playerHandler.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
-    <script src="js/torrentHandler.js"></script>
     <script src="js/rangeParser.js"></script>
-    <script src="js/bundle.min.js"></script>
+    <script src="js/torrentHandler.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@3.0.1/dist/matroska-subtitles.min.js"></script>
     <script src="js/subtitleHandler.js"></script>
 </body>
 

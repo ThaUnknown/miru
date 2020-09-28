@@ -96,7 +96,6 @@ function updateBar(progressPercent) {
     progress.value = progressPercent * 10
     let bg = thumbnails.length == 0 ? "" : thumbnails[Math.floor(currentTime / 5) || 0]
     progress.style.setProperty("--background", "url(" + (bg || "") + ")")
-    progress.style.setProperty("--left", progressPercent + "%")
     progress.setAttribute("data-ts", toTS(currentTime))
 }
 
@@ -135,7 +134,7 @@ function finishThumbnails(file) {
         file.getBlobURL((err, url) => {
             thumbVid.src = url
         })
-        thumbVid.addEventListener('loadeddata', function (e) {
+        thumbVid.addEventListener('loadeddata', function () {
             loadTime();
         }, false)
 
@@ -166,7 +165,7 @@ function downloadFile(file) {
 
 let buffer;
 function resetBuffer() {
-    if (!!buffer) {
+    if (buffer) {
         clearTimeout(buffer)
         buffer = undefined
         buffering.classList.add('hidden')
@@ -280,11 +279,7 @@ updateVolume(parseInt(settings.player1))
 // PiP
 
 async function btnpip() {
-    if (video !== document.pictureInPictureElement) {
-        await video.requestPictureInPicture();
-    } else {
-        await document.exitPictureInPicture();
-    }
+    video !== document.pictureInPictureElement ? await video.requestPictureInPicture() : await document.exitPictureInPicture();
 }
 
 //miniplayer
@@ -300,22 +295,10 @@ function btntheatre() {
 // fullscreen
 
 function btnfull() {
-    if (!document.fullscreenElement) {
-        player.requestFullscreen();
-    } else if (document.exitFullscreen) {
-        document.exitFullscreen();
-    }
+    document.fullscreenElement ? document.exitFullscreen() : player.requestFullscreen();
 }
 function updateFullscreen() {
-    if (document.fullscreenElement) {
-        bfull.innerHTML = "fullscreen_exit"
-        bpip.setAttribute("disabled", "")
-        btheatre.setAttribute("disabled", "")
-    } else {
-        bfull.innerHTML = "fullscreen"
-        settings.player7 ? bpip.removeAttribute("disabled", "") : ""
-        btheatre.removeAttribute("disabled", "")
-    }
+    document.fullscreenElement ? bfull.innerHTML = "fullscreen_exit" : bfull.innerHTML = "fullscreen"
 }
 
 //seeking and skipping
