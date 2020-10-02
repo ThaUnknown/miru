@@ -8,9 +8,9 @@ function parseSubs(stream) {
       subtitleStream = new SubtitleStream(subtitleStream)
     } else {
       subtitleStream = new SubtitleStream()
-      subtitleStream.once('tracks', function (pTracks) {
+      subtitleStream.once('tracks', pTracks => {
         pTracks.forEach(track => {
-          tracks[track.number] = video.addTextTrack('captions', track.type, track.language || track.number)
+          tracks[track.number] = video.addTextTrack('captions', track.type, track.language)
         })
         if (video.textTracks[0]) {
           video.textTracks[0].mode = "showing"

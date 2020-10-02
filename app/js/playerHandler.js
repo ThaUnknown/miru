@@ -314,8 +314,8 @@ function btncap() {
 
     for (let track of video.textTracks) {
         let template = document.createElement("a")
-        template.classList.add("dropdown-item", "pointer")
-        template.innerHTML = track.language
+        template.classList.add("dropdown-item", "pointer", "text-capitalize")
+        template.innerHTML = track.language || (!Object.values(video.textTracks).some(track => track.language == "eng" || track.language == "en") ? "eng" : track.label)
         if (track.mode == "showing") {
             template.classList.add("text-white")
             off.classList.add("text-muted")
@@ -341,7 +341,7 @@ function selectLang(lang) {
             track.mode = 'hidden';
         }
     }
-    bcap()
+    btncap()
 }
 
 // keybinds

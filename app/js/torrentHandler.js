@@ -1,28 +1,29 @@
-var client = new WebTorrent()
-window.onbeforeunload = ()=>{
-    client.torrents[0].store.destroy()
-    client.torrents[0].destroy()
+let client = new WebTorrent()
+window.onbeforeunload = () => {
+    client.torrents[0] ? client.torrents[0].store.destroy() : ""
+    client.torrents[0] ? client.torrents[0].destroy() : ""
     client.destroy()
- }
+}
+
 const announceList = [
-        ['wss://tracker.openwebtorrent.com'],
-        ['wss://tracker.btorrent.xyz'],
-        // ['wss://tracker.webtorrent.io'],
-        // ['wss://tracker.fastcast.nz'],
-        ['wss://video.blender.org:443/tracker/socket'],
-        ['wss://tube.privacytools.io:443/tracker/socket'],
-        ['wss://tracker.sloppyta.co:443/announce'],
-        ['wss://tracker.lab.vvc.niif.hu:443/announce'],
-        ['wss://tracker.files.fm:7073/announce'],
-        ['wss://open.tube:443/tracker/socket'],
-        ['wss://hub.bugout.link:443/announce'],
-        ['wss://peertube.cpy.re:443/tracker/socket'],
-        ['ws://tracker.sloppyta.co:80/announce'],
-        ['ws://tracker.lab.vvc.niif.hu:80/announce'],
-        ['ws://tracker.files.fm:7072/announce'],
-        ['ws://tracker.btsync.cf:6969/announce'],
-        ['ws://hub.bugout.link:80/announce']
-    ],
+    ['wss://tracker.openwebtorrent.com'],
+    ['wss://tracker.btorrent.xyz'],
+    // ['wss://tracker.webtorrent.io'],
+    // ['wss://tracker.fastcast.nz'],
+    // ['wss://video.blender.org:443/tracker/socket'],
+    // ['wss://tube.privacytools.io:443/tracker/socket'],
+    ['wss://tracker.sloppyta.co:443/announce'],
+    ['wss://tracker.lab.vvc.niif.hu:443/announce'],
+    ['wss://tracker.files.fm:7073/announce'],
+    ['wss://open.tube:443/tracker/socket'],
+    ['wss://hub.bugout.link:443/announce'],
+    // ['wss://peertube.cpy.re:443/tracker/socket'], 
+    ['ws://tracker.sloppyta.co:80/announce'],
+    ['ws://tracker.lab.vvc.niif.hu:80/announce'],
+    ['ws://tracker.files.fm:7072/announce'],
+    ['ws://tracker.btsync.cf:6969/announce'],
+    ['ws://hub.bugout.link:80/announce']
+],
     videoExtensions = [
         '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg', '.ogv', '.webm', '.wmv', '.m2ts'
     ],
@@ -54,7 +55,7 @@ let nowPlaying,
     selectedTorrent
 async function addTorrent(magnet) {
     if (client.torrents.length >= maxTorrents) {
-        client.torrents[0].store.destroy()
+        client.torrents[0].store ? client.torrents[0].store.destroy() : ""
         client.torrents[0].destroy()
     }
     halfmoon.hideModal("tsearch")
@@ -143,6 +144,7 @@ function serveFile(file, req) {
 }
 
 // kind of a fetch event from service worker but for the main thread.
+let lastport
 navigator.serviceWorker.addEventListener('message', evt => {
     const request = new Request(evt.data.url, {
         headers: evt.data.headers,
@@ -168,6 +170,10 @@ navigator.serviceWorker.addEventListener('message', evt => {
     }
 
     port.onmessage = pull
+    
+    // hack: stop hiding the old stream somewhere in memory land
+    if (lastport) lastport.onmessage = null
+    lastport = port
 })
 
 function prettyBytes(num) {

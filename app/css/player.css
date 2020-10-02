@@ -196,7 +196,6 @@ input#progress[type=range]::before {
     color: #ececec;
     white-space: nowrap;
     align-self: center;
-    padding: 0 1.2rem;
     left: var(--progress);
     font-weight: 600;
     transition: .2s opacity ease;

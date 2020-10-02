@@ -27,7 +27,7 @@
                 e.preventDefault();
                 deferredPrompt = e;
             });
-            document.querySelector(".btn").addEventListener('click', (e) => {
+            add.addEventListener('click', (e) => {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
@@ -61,9 +61,12 @@
                                 no buffering, no ads, no delays, everything done client-side for free.
                             </p>
                             <div class="mt-20">
-                                <div class="btn btn-primary" role="button">
-                                    Add app
+                                <div class="btn btn-primary" role="button" id="add">
+                                    Add App
                                 </div>
+                                <a class="btn" role="button" href="/app/">
+                                    Open In Browser
+                                </a>
                             </div>
                         </div>
                     </div>
