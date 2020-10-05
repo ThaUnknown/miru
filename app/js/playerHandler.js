@@ -58,8 +58,8 @@ function updateDisplay() {
 function dragBar() {
     video.pause()
     updateBar(progress.value / 10)
-    let bg = thumbnails.length == 0 ? "" : thumbnails[Math.floor(currentTime / 5) || 0]
-    thumb.src = bg || ""
+    let bg = thumbnails[Math.floor(currentTime / 5)]
+    thumb.src = bg || " "
 }
 
 function dragBarEnd() {

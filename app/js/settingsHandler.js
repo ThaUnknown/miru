@@ -7,6 +7,7 @@ const settingsElements = {
     player6: player6,
     player7: player7,
     subtitle1: subtitle1,
+    subtitle2: subtitle2,
     torrent1: torrent1,
     torrent2: torrent2,
     torrent3: torrent3
@@ -23,6 +24,7 @@ function restoreDefaults() {
         player6: false,
         player7: true,
         subtitle1: "'Open Sans', sans-serif",
+        subtitle2: true,
         torrent1: "1080",
         torrent2: false,
         torrent3: true

@@ -7,22 +7,22 @@ window.onbeforeunload = () => {
 
 const announceList = [
     ['wss://tracker.openwebtorrent.com'],
-    ['wss://tracker.btorrent.xyz'],
+    ['wss://tracker.btorrent.xyz']
     // ['wss://tracker.webtorrent.io'],
     // ['wss://tracker.fastcast.nz'],
     // ['wss://video.blender.org:443/tracker/socket'],
     // ['wss://tube.privacytools.io:443/tracker/socket'],
-    ['wss://tracker.sloppyta.co:443/announce'],
-    ['wss://tracker.lab.vvc.niif.hu:443/announce'],
-    ['wss://tracker.files.fm:7073/announce'],
-    ['wss://open.tube:443/tracker/socket'],
-    ['wss://hub.bugout.link:443/announce'],
+    // ['wss://tracker.sloppyta.co:443/announce'],
+    // ['wss://tracker.lab.vvc.niif.hu:443/announce'],
+    // ['wss://tracker.files.fm:7073/announce'],
+    // ['wss://open.tube:443/tracker/socket'],
+    // ['wss://hub.bugout.link:443/announce'],
     // ['wss://peertube.cpy.re:443/tracker/socket'], 
-    ['ws://tracker.sloppyta.co:80/announce'],
-    ['ws://tracker.lab.vvc.niif.hu:80/announce'],
-    ['ws://tracker.files.fm:7072/announce'],
-    ['ws://tracker.btsync.cf:6969/announce'],
-    ['ws://hub.bugout.link:80/announce']
+    // ['ws://tracker.sloppyta.co:80/announce'],
+    // ['ws://tracker.lab.vvc.niif.hu:80/announce'],
+    // ['ws://tracker.files.fm:7072/announce'],
+    // ['ws://tracker.btsync.cf:6969/announce'],
+    // ['ws://hub.bugout.link:80/announce']
 ],
     videoExtensions = [
         '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg', '.ogv', '.webm', '.wmv', '.m2ts'
@@ -65,12 +65,14 @@ async function addTorrent(magnet) {
     await sw
     client.add(magnet, async function (torrent) {
         torrent.on('noPeers', function () {
-            halfmoon.initStickyAlert({
-                content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
-                title: "Search Failed",
-                alertType: "alert-danger",
-                fillType: ""
-            });
+            if (selectedTorrent.progress != 1) {
+                halfmoon.initStickyAlert({
+                    content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
+                    title: "Search Failed",
+                    alertType: "alert-danger",
+                    fillType: ""
+                });
+            }
         })
         let videoFile = torrent.files[0]
         torrent.files.forEach(file => {
@@ -170,7 +172,7 @@ navigator.serviceWorker.addEventListener('message', evt => {
     }
 
     port.onmessage = pull
-    
+
     // hack: stop hiding the old stream somewhere in memory land
     if (lastport) lastport.onmessage = null
     lastport = port

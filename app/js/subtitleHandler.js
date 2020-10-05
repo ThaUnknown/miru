@@ -53,7 +53,7 @@ function subConvt(result, trackNumber) {
               cue.line = 0.5;
             } else if (Math.floor((posNum - 1) / 3) == 2) {
               cue.line = 0;
-              cue.text = "&nbsp;\r\n"
+              settings.subtitle2 ? cue.text = "&nbsp;\r\n" : cue.text = ""
             }
             if (posNum % 3 == 1) {
               cue.align = "start";
@@ -67,7 +67,7 @@ function subConvt(result, trackNumber) {
               cue.line = 0.5;
             } else if (posNum > 4) {
               cue.line = 0;
-              cue.text = "&nbsp;\r\n"
+              settings.subtitle2 ? cue.text = "&nbsp;\r\n" : cue.text = ""
             }
             if ((posNum - 1) % 4 == 0) {
               cue.align = "start";
@@ -132,9 +132,9 @@ function subConvt(result, trackNumber) {
     while (tagsToClose.length > 0) {
       content += '</' + tagsToClose.pop() + '>';
     }
-    cue.text += `${content}\r\n&nbsp;`
+    settings.subtitle2 ? cue.text += `${content}\r\n&nbsp;` : cue.text += content
   } else {
-    cue.text = `${text}\r\n&nbsp;`
+    settings.subtitle2 ? cue.text = `${text}\r\n&nbsp;` : cue.text = text
   }
   if (!Object.values(tracks[trackNumber].cues).some(c => c.text == cue.text && c.startTime == cue.startTime && c.endTime == cue.endTime)) {
     tracks[trackNumber].addCue(cue)

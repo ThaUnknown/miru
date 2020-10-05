@@ -338,8 +338,10 @@ async function hsRss(url) {
                 for (let item of items) {
                     let i = item.querySelector.bind(item),
                         regexParse = regex.exec(i("title").textContent)
-                    if (regexParse[2].endsWith(" - ")) {
-                        regexParse[2] = regexParse[2].slice(0, -3)
+                    if (regexParse[2]) {
+                        if (regexParse[2].endsWith(" - ")) {
+                            regexParse[2] = regexParse[2].slice(0, -3)
+                        }
                     }
                     if (!store[regexParse[2]] && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
                         //shit not found, lookup
@@ -363,13 +365,13 @@ async function hsRss(url) {
     }
 }
 refRel.onclick = function () {
-    hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`)
+    hsRss(`https://www.erai-rss.info/rss-${settings.torrent1}`)
 }
 setInterval(() => {
-    hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`)
+    hsRss(`https://www.erai-rss.info/rss-${settings.torrent1}`)
 }, 30000);
 async function loadAnime() {
     await searchAnime()
-    hsRss(`https://miru.kirdow.com/request/?url=http://www.horriblesubs.info/rss.php?res=${settings.torrent1}`)
+    hsRss(`https://www.erai-rss.info/rss-${settings.torrent1}`)
 }
 loadAnime()
