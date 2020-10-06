@@ -120,17 +120,17 @@ function finishThumbnails(file) {
         file.getBlobURL((err, url) => {
             thumbVid.src = url
         })
-        thumbVid.addEventListener('loadeddata', function () {
+        thumbVid.addEventListener('loadeddata', () => {
             loadTime();
-        }, false)
+        })
 
-        thumbVid.addEventListener('seeked', function () {
+        thumbVid.addEventListener('seeked', () => {
             createThumbnail(thumbVid);
             loadTime();
-        }, false)
+        })
 
         function loadTime() {
-            if (thumbVid.ended == false) {
+            if (thumbVid.currentTime != thumbVid.duration) {
                 thumbVid.currentTime = thumbVid.currentTime + 5;
             } else {
                 thumbVid.remove()
@@ -185,7 +185,7 @@ function resetTimer() {
 let islooped;
 
 function toTS(sec) {
-    if (Number.isNaN(sec)) {
+    if (Number.isNaN(sec) || sec < 0) {
         return "00:00";
     }
 
@@ -388,12 +388,12 @@ function selPlaying(sel) {
     nowPlaying = sel
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: nowPlaying[0].title.english || nowPlaying[0].title.romaji,
+            title: store[nowPlaying[0]] ? store[nowPlaying[0]].title.english || store[nowPlaying[0]].title.romaji : nowPlaying[0],
             artist: "Episode " + nowPlaying[1],
             album: "Miru",
             artwork: [
                 {
-                    src: nowPlaying[0].coverImage.medium,
+                    src: store[nowPlaying[0]] ? store[nowPlaying[0]].coverImage.medium : "",
                     sizes: '128x128',
                     type: 'image/png'
                 }

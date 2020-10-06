@@ -21,7 +21,7 @@ var options = {
 const searchRx = /(magnet:)?([A-F\d]{8,40})?(.*\.torrent)?/i;
 function searchBox() {
     let regexParse = searchRx.exec(search.value)
-    if (regexParse[1] || regexParse[2] || regexParse[3]) {
+    if (regexParse[1] || regexParse[2] || regexParse[4]) {
         addTorrent(search.value)
     } else {
         searchAnime(search.value)
@@ -218,7 +218,7 @@ function cardCreator(media, regexParse) {
         </div>
         <div class="col-8 h-full card-grid">
             <div class="px-15 py-10">
-                <h5 class="m-0 text-capitalize font-weight-bold">${media.title.english || media.title.romaji}${regexParse ? " - " + regexParse[3] : ""}</h5>
+                <h5 class="m-0 text-capitalize font-weight-bold">${media.title.english || media.title.romaji}${regexParse ? " - " + regexParse[4] : ""}</h5>
                 <p class="text-muted m-0 text-capitalize details">
                 ${(media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format.toLowerCase().replace(/_/g, " ")) : "") + "</span>"}
                 ${media.episodes ? "<span>" + media.episodes + " Episodes</span>" : media.duration ? "<span>" + media.duration + " Minutes</span>" : ""}
@@ -242,7 +242,7 @@ function cardCreator(media, regexParse) {
             </div>
             <div class="col-8 h-full card-grid skeloader">
                 <div class="px-15 py-10">
-                    <h5 class="m-0 text-capitalize font-weight-bold">${regexParse ? regexParse[2] + " - " + regexParse[3] : ""}</h5>
+                    <h5 class="m-0 text-capitalize font-weight-bold">${regexParse ? regexParse[2] + " - " + regexParse[4] : ""}</h5>
                 </div>
             </div>
         </div>
@@ -321,7 +321,8 @@ async function nyaaRss(url) {
 }
 
 
-const regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i;
+const regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i,
+    eregex = /(\[.*\]\ ?)?(.+?(?=\ \–\ \d))?(\ \–\ )?(\d+)?/i
 let store = {};
 
 async function hsRss(url) {
@@ -337,12 +338,7 @@ async function hsRss(url) {
                 let items = doc.querySelectorAll("item")
                 for (let item of items) {
                     let i = item.querySelector.bind(item),
-                        regexParse = regex.exec(i("title").textContent)
-                    if (regexParse[2]) {
-                        if (regexParse[2].endsWith(" - ")) {
-                            regexParse[2] = regexParse[2].slice(0, -3)
-                        }
-                    }
+                        regexParse = eregex.exec(i("title").textContent)
                     if (!store[regexParse[2]] && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
                         //shit not found, lookup
                         let res = await alRequest(regexParse[2], 1)
@@ -351,7 +347,7 @@ async function hsRss(url) {
                     let media = store[regexParse[2]],
                         template = cardCreator(media, regexParse)
                     template.onclick = function () {
-                        selected = [store[regexParse[2]], regexParse[3]]
+                        selected = [regexParse[2], regexParse[4]]
                         addTorrent(i('link').textContent)
                     }
                     frag.appendChild(template)
