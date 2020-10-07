@@ -117,6 +117,7 @@ function createThumbnail(vid) {
 function finishThumbnails(file) {
     if (settings.player5) {
         let thumbVid = document.createElement("video")
+        thumbnails = []
         file.getBlobURL((err, url) => {
             thumbVid.src = url
         })
