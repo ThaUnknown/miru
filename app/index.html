@@ -15,10 +15,12 @@
     <meta name="viewport" content="width=device-width" />
     <title>Miru</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/css/halfmoon-variables.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="css/misc.css" rel="stylesheet">
     <link href="css/player.css" rel="stylesheet">
+    <style id="substyles">
+    </style>
 </head>
 
 <body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars">
@@ -156,7 +158,8 @@
                             <span class="ts" id="upSpeed">0 B/s</span>
                         </div>
                         <div class="col d-flex justify-content-end">
-                            <a id="dl" class="material-icons" title="Wait For File To Fully Download Before Saving To Drive">
+                            <a id="dl" class="material-icons"
+                                title="Wait For File To Fully Download Before Saving To Drive">
                                 <span class="material-icons">
                                     get_app
                                 </span>
@@ -306,7 +309,8 @@
                     </div>
                     <div class="custom-switch mb-20">
                         <input type="checkbox" id="subtitle2">
-                        <label for="subtitle2">Edge Spacing [Has Issues With Displaying Multiple Subtitles At Once]</label>
+                        <label for="subtitle2">Edge Spacing [Has Issues With Displaying Multiple Subtitles At
+                            Once]</label>
                     </div>
 
 
@@ -341,7 +345,7 @@
         </section>
     </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.0/js/halfmoon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.1/js/halfmoon.min.js"></script>
     <script src="js/settingsHandler.js"></script>
     <script src="js/util.js"></script>
     <script src="js/animeHandler.js"></script>
@@ -349,7 +353,7 @@
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
     <script src="js/rangeParser.js"></script>
     <script src="js/torrentHandler.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@3.0.1/dist/matroska-subtitles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@3.1.0/dist/matroska-subtitles.min.js"></script>
     <script src="js/subtitleHandler.js"></script>
 </body>
 

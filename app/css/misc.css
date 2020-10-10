@@ -1,8 +1,7 @@
-.custom-switch input[type=checkbox]:checked~label:after,
-.custom-switch input[type=checkbox]~label:after{
-    transition: left .2s ease
+.badge-color{
+    background-color: var(--color) !important;
+    border-color: var(--color) !important;
 }
-
 .cover-img {
     object-fit: cover
 }

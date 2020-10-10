@@ -214,15 +214,15 @@ video[src=""] {
 }
 
 video::cue {
-    background: none !important;
+    background: none;
     font-family: var(--sub-font);
-    color: #fff !important;
+    color: #fff;
     text-shadow: 2px 2px 0 #000,
         2px -2px 0 #000,
         -2px 2px 0 #000,
         -2px -2px 0 #000,
         2px 0px 0 #000,
-        0px 2px 0 #000,
+        0px 2px 0#000,
         -2px 0px 0 #000,
         0px -2px 0 #000,
         2px 2px 2px #000;

@@ -63,6 +63,7 @@ async function alRequest(a, b) {
                     coverImage {
                         extraLarge
                         medium
+                        color
                     }
                     bannerImage
                     synonyms
@@ -109,6 +110,7 @@ async function alRequest(a, b) {
                     coverImage {
                         extraLarge
                         medium
+                        color
                     }
                     bannerImage
                     synonyms
@@ -211,7 +213,7 @@ function cardCreator(media, regexParse) {
     template.classList.add("card", "m-0", "p-0")
     if (media) {
         template.innerHTML = `
-    <div class="row h-full">
+    <div class="row h-full" style="--color:${media.coverImage.color || "#1890ff"};">
         <div class="col-4">
             <img src="${media.coverImage.extraLarge || ""}"
                 class="cover-img w-full h-full">
@@ -230,7 +232,7 @@ function cardCreator(media, regexParse) {
                 ${media.description}
             </div>
             <div class="px-15 pb-10 pt-5">
-                ${media.genres.map(key => (`<span class="badge badge-pill badge-primary mt-5">${key}</span> `)).join('')}
+                ${media.genres.map(key => (`<span class="badge badge-pill badge-color text-dark mt-5 font-weight-bold">${key}</span> `)).join('')}
             </div>
         </div>
     </div>
@@ -339,7 +341,7 @@ async function hsRss(url) {
                 for (let item of items) {
                     let i = item.querySelector.bind(item),
                         regexParse = eregex.exec(i("title").textContent)
-                    if (!store[regexParse[2]] && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
+                    if (!store.hasOwnProperty(regexParse[2]) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
                         //shit not found, lookup
                         let res = await alRequest(regexParse[2], 1)
                         if(!res.data.Page.media[0]){
