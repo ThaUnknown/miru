@@ -154,7 +154,7 @@ function parseHeader(header) {
   for (let style of styles) {
     style = style.replace(/\&h/gi, "").split(",")
     let bordCol
-    style[format.indexOf("BackColour")] ? bordCol = style[format.indexOf("BackColour")].split("").reverse().join("").slice(0, -2) : ""
+    style[format.indexOf("BackColour")] ? bordCol = style[format.indexOf("BackColour")].split("").reverse().join("").slice(0, -2) : "#000"
     substyles.innerHTML += `
 video::cue(.${style[format.indexOf("Name")]}) {
   color: #${style[format.indexOf("PrimaryColour")] ? style[format.indexOf("PrimaryColour")].split("").reverse().join("").slice(0, -2) : ""} !important;
