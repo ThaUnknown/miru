@@ -13,6 +13,9 @@ function parseSubs(stream) {
         pTracks.forEach(track => {
           tracks[track.number] = video.addTextTrack('captions', track.type, track.language);
           parseHeader(track.header, track.number);
+          let spacerCue = new VTTCue(0.1, 9999, "&nbsp;")
+          spacerCue.line = -1
+          tracks[track.number].addCue(spacerCue)
         })
         if (video.textTracks[0]) {
           video.textTracks[0].mode = "showing"
@@ -36,6 +39,7 @@ function subConvt(result, trackNumber) {
   let cue = new VTTCue(result.time / 1000, (result.time + result.duration) / 1000, ""),
     text = result.text,
     positioned
+    result.style = result.style.replace(/\ /g, "")
   if (tracks[trackNumber].label == "ass") {
     // Support for special characters in WebVTT.
     // For obvious reasons, the ampersand one *must* be first.
@@ -58,10 +62,11 @@ function subConvt(result, trackNumber) {
               let posNum = Number(style[j].substring(2, 3))
               positioned = 1
               if (Math.floor((posNum - 1) / 3) == 1) {
-                cue.line = 0.5;
+                cue.line = 8;
               } else if (Math.floor((posNum - 1) / 3) == 2) {
-                cue.line = 0;
-                settings.subtitle2 ? cue.text = "&nbsp;\r\n" : cue.text = ""
+                cue.line = 1;
+              } else {
+                cue.line = -1;
               }
               if (posNum % 3 == 1) {
                 cue.align = "start";
@@ -73,10 +78,11 @@ function subConvt(result, trackNumber) {
               let posNum = Number(style[j].substring(1, 2));
               positioned = 1
               if (posNum > 8) {
-                cue.line = 0.5;
+                cue.line = 8;
               } else if (posNum > 4) {
-                cue.line = 0;
-                settings.subtitle2 ? cue.text = "&nbsp;\r\n" : cue.text = ""
+                cue.line = 1;
+              } else {
+                cue.line = -1;
               }
               if ((posNum - 1) % 4 == 0) {
                 cue.align = "start";
@@ -142,13 +148,15 @@ function subConvt(result, trackNumber) {
     while (tagsToClose.length > 0) {
       content += '</' + tagsToClose.pop() + '>';
     }
-    settings.subtitle2 ? cue.text += `${content}\r\n&nbsp;` : cue.text += content
-    if (!positioned) {
+    console.log(result.style)
+    if (!positioned && headers[trackNumber].styles[result.style][headers[trackNumber].format.indexOf("Alignment")]) {
       let posNum = Number(headers[trackNumber].styles[result.style][headers[trackNumber].format.indexOf("Alignment")]);
       if (Math.floor((posNum - 1) / 3) == 1) {
-        cue.line = 0.5;
+        cue.line = 8;
       } else if (Math.floor((posNum - 1) / 3) == 2) {
-        cue.line = 0;
+        cue.line = 1;
+      } else {
+        cue.line = -1
       }
       if (posNum % 3 == 1) {
         cue.align = "start";
@@ -156,8 +164,10 @@ function subConvt(result, trackNumber) {
         cue.align = "end";
       }
     }
+    cue.text = content;
   } else {
-    settings.subtitle2 ? cue.text = `${text}\r\n&nbsp;` : cue.text = text
+    cue.text = text;
+    cue.line = -1
   }
   if (!Object.values(tracks[trackNumber].cues).some(c => c.text == cue.text && c.startTime == cue.startTime && c.endTime == cue.endTime)) {
     tracks[trackNumber].addCue(cue)
