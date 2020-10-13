@@ -12,11 +12,11 @@ function parseSubs(stream) {
       subtitleStream.once('tracks', pTracks => {
         pTracks.forEach(track => {
           tracks[track.number] = video.addTextTrack('captions', track.type, track.language);
-          headers[track.number] = track.header;
+          parseHeader(track.header, track.number);
         })
         if (video.textTracks[0]) {
           video.textTracks[0].mode = "showing"
-          parseHeader(headers[3])
+          displayHeader(headers[3])
         }
       })
     }
@@ -34,7 +34,8 @@ const re_newline = /\\N/g, // replace \N with newline
   re_header_style = /(?<=\[V4\+? Styles\][\s\S]*Style: [^\n]*)(.+)/ig;
 function subConvt(result, trackNumber) {
   let cue = new VTTCue(result.time / 1000, (result.time + result.duration) / 1000, ""),
-    text = result.text;
+    text = result.text,
+    positioned
   if (tracks[trackNumber].label == "ass") {
     // Support for special characters in WebVTT.
     // For obvious reasons, the ampersand one *must* be first.
@@ -54,7 +55,8 @@ function subConvt(result, trackNumber) {
             let oneLetter = (tagCommand.length == 1) ? tagCommand : "";
             // "New" position commands. It is assumed that bottom center position is the default.
             if (tagCommand === "an") {
-              let posNum = Number(style[j].substring(2, 3));
+              let posNum = Number(style[j].substring(2, 3))
+              positioned = 1
               if (Math.floor((posNum - 1) / 3) == 1) {
                 cue.line = 0.5;
               } else if (Math.floor((posNum - 1) / 3) == 2) {
@@ -69,6 +71,7 @@ function subConvt(result, trackNumber) {
               // Legacy position commands.
             } else if (oneLetter === "a" && !Number.isNaN(Number(style[j].substring(1, 2)))) {
               let posNum = Number(style[j].substring(1, 2));
+              positioned = 1
               if (posNum > 8) {
                 cue.line = 0.5;
               } else if (posNum > 4) {
@@ -140,6 +143,19 @@ function subConvt(result, trackNumber) {
       content += '</' + tagsToClose.pop() + '>';
     }
     settings.subtitle2 ? cue.text += `${content}\r\n&nbsp;` : cue.text += content
+    if (!positioned) {
+      let posNum = Number(headers[trackNumber].styles[result.style][headers[trackNumber].format.indexOf("Alignment")]);
+      if (Math.floor((posNum - 1) / 3) == 1) {
+        cue.line = 0.5;
+      } else if (Math.floor((posNum - 1) / 3) == 2) {
+        cue.line = 0;
+      }
+      if (posNum % 3 == 1) {
+        cue.align = "start";
+      } else if (posNum % 3 == 0) {
+        cue.align = "end";
+      }
+    }
   } else {
     settings.subtitle2 ? cue.text = `${text}\r\n&nbsp;` : cue.text = text
   }
@@ -147,17 +163,25 @@ function subConvt(result, trackNumber) {
     tracks[trackNumber].addCue(cue)
   }
 }
-function parseHeader(header) {
+function parseHeader(header, number) {
+  headers[number] = {
+    format: re_header_format.exec(header)[1].replace(/\ /g, "").split(","),
+    styles: {
+    }
+  }
+  header.match(re_header_style).forEach((item, index) => {
+    item = item.replace(/\&h/gi, "").replace(/\ /g, "").split(",")
+    headers[number].styles[item[headers[number].format.indexOf("Name")]] = item
+  })
+}
+function displayHeader(header) {
   substyles.innerHTML = ""
-  let format = re_header_format.exec(header)[1].split(","),
-    styles = header.match(re_header_style)
-  for (let style of styles) {
-    style = style.replace(/\&h/gi, "").split(",")
+  for (let style of Object.values(header.styles)) {
     let bordCol
-    style[format.indexOf("BackColour")] ? bordCol = style[format.indexOf("BackColour")].split("").reverse().join("").slice(0, -2) : "#000"
+    style[header.format.indexOf("BackColour")] ? bordCol = style[header.format.indexOf("BackColour")].split("").reverse().join("").slice(0, -2) : "#000"
     substyles.innerHTML += `
-video::cue(.${style[format.indexOf("Name")]}) {
-  color: #${style[format.indexOf("PrimaryColour")] ? style[format.indexOf("PrimaryColour")].split("").reverse().join("").slice(0, -2) : ""} !important;
+video::cue(.${style[header.format.indexOf("Name")]}) {
+  color: #${style[header.format.indexOf("PrimaryColour")] ? style[header.format.indexOf("PrimaryColour")].split("").reverse().join("").slice(0, -2) : ""} !important;
   text-shadow: 2px 2px 0 #${bordCol},
     2px -2px 0 #${bordCol},
     -2px 2px 0 #${bordCol},
@@ -167,9 +191,9 @@ video::cue(.${style[format.indexOf("Name")]}) {
     -2px 0px 0 #${bordCol},
     0px -2px 0 #${bordCol},
     2px 2px 2px #${bordCol};
-  font-weight: ${style[format.indexOf("Bold")] ? style[format.indexOf("Bold")] * -1 ? "bold" : "normal" : ""} !important;
-  font-style: ${style[format.indexOf("Italic")] ? style[format.indexOf("Italic")] * -1 ? "italic" : "normal" : ""} !important;
-  background: ${style[format.indexOf("BorderStyle")] ? style[format.indexOf("BorderStyle")] != 3 ? "none" : `#${bordCol}` : ""} !important;
+  font-weight: ${style[header.format.indexOf("Bold")] ? style[header.format.indexOf("Bold")] * -1 ? "bold" : "normal" : ""} !important;
+  font-style: ${style[header.format.indexOf("Italic")] ? style[header.format.indexOf("Italic")] * -1 ? "italic" : "normal" : ""} !important;
+  background: ${style[header.format.indexOf("BorderStyle")] ? style[header.format.indexOf("BorderStyle")] != 3 ? "none" : `#${bordCol}` : ""} !important;
 }`
   }
 }

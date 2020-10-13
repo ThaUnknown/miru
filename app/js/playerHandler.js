@@ -338,7 +338,7 @@ function selectLang(lang) {
     for (let track of video.textTracks) {
         if (track.language == lang) {
             track.mode = 'showing';
-            parseHeader(headers[tracks.indexOf(track)])
+            displayHeaderr(headers[tracks.indexOf(track)])
         }
         else {
             track.mode = 'hidden';

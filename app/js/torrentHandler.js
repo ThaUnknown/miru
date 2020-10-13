@@ -51,8 +51,7 @@ WEBTORRENT_ANNOUNCE = announceList
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
 let nowPlaying,
-    maxTorrents = 1,
-    selectedTorrent
+    maxTorrents = 1
 async function addTorrent(magnet) {
     if (client.torrents.length >= maxTorrents) {
         client.torrents[0].store ? client.torrents[0].store.destroy() : ""
@@ -65,7 +64,7 @@ async function addTorrent(magnet) {
     await sw
     client.add(magnet, async function (torrent) {
         torrent.on('noPeers', function () {
-            if (selectedTorrent.progress != 1) {
+            if (client.torrents[0].progress != 1) {
                 halfmoon.initStickyAlert({
                     content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
                     title: "Search Failed",
@@ -80,7 +79,6 @@ async function addTorrent(magnet) {
                 videoFile = file
             }
         })
-        selectedTorrent = torrent
         torrent.on('done', function () {
             halfmoon.initStickyAlert({
                 content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
@@ -97,11 +95,11 @@ async function addTorrent(magnet) {
 
 }
 function onProgress() {
-    if (document.location.href.endsWith("#player") && selectedTorrent) {
-        player.style.setProperty("--download", selectedTorrent.progress * 100 + "%");
-        peers.textContent = selectedTorrent.numPeers
-        downSpeed.textContent = prettyBytes(selectedTorrent.downloadSpeed) + '/s'
-        upSpeed.textContent = prettyBytes(selectedTorrent.uploadSpeed) + '/s'
+    if (document.location.href.endsWith("#player") && client.torrents[0]) {
+        player.style.setProperty("--download", client.torrents[0].progress * 100 + "%");
+        peers.textContent = client.torrents[0].numPeers
+        downSpeed.textContent = prettyBytes(client.torrents[0].downloadSpeed) + '/s'
+        upSpeed.textContent = prettyBytes(client.torrents[0].uploadSpeed) + '/s'
     }
 }
 setInterval(onProgress, 100)
