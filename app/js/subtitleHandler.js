@@ -9,22 +9,23 @@ function parseSubs(stream) {
       subtitleStream = new SubtitleStream(subtitleStream)
     } else {
       subtitleStream = new SubtitleStream()
-      subtitleStream.once('tracks', pTracks => {
-        pTracks.forEach(track => {
-          tracks[track.number] = video.addTextTrack('captions', track.type, track.language);
-          parseHeader(track.header, track.number);
-          let spacerCue = new VTTCue(0.1, 9999, "&nbsp;")
-          spacerCue.line = -1
-          tracks[track.number].addCue(spacerCue)
-        })
-        if (video.textTracks[0]) {
-          video.textTracks[0].mode = "showing"
-          displayHeader(headers[3])
-        }
-      })
+      // subtitleStream.once('tracks', pTracks => {
+      //   pTracks.forEach(track => {
+      //     tracks[track.number] = video.addTextTrack('captions', track.type, track.language);
+      //     parseHeader(track.header, track.number);
+      //     let spacerCue = new VTTCue(0.1, 9999, "&nbsp;")
+      //     spacerCue.line = -1
+      //     tracks[track.number].addCue(spacerCue)
+      //   })
+      //   if (video.textTracks[0]) {
+      //     video.textTracks[0].mode = "showing"
+      //     displayHeader(headers[3])
+      //   }
+      // })
     }
     subtitleStream.on('subtitle', function (subtitle, trackNumber) {
-      subConvt(subtitle, trackNumber)
+      // subConvt(subtitle, trackNumber)
+      console.log(subtitle)
     })
     stream.pipe(subtitleStream)
   }
@@ -148,7 +149,6 @@ function subConvt(result, trackNumber) {
     while (tagsToClose.length > 0) {
       content += '</' + tagsToClose.pop() + '>';
     }
-    console.log(result.style)
     if (!positioned && headers[trackNumber].styles[result.style][headers[trackNumber].format.indexOf("Alignment")]) {
       let posNum = Number(headers[trackNumber].styles[result.style][headers[trackNumber].format.indexOf("Alignment")]);
       if (Math.floor((posNum - 1) / 3) == 1) {
@@ -188,10 +188,10 @@ function displayHeader(header) {
   substyles.innerHTML = ""
   for (let style of Object.values(header.styles)) {
     let bordCol
-    style[header.format.indexOf("BackColour")] ? bordCol = style[header.format.indexOf("BackColour")].split("").reverse().join("").slice(0, -2) : "#000"
+    style[header.format.indexOf("OutlineColour")] ? bordCol = style[header.format.indexOf("OutlineColour")].match(/[\s\S]{1,2}/g).reverse().join("").slice(0, -2) : "#000"
     substyles.innerHTML += `
 video::cue(.${style[header.format.indexOf("Name")]}) {
-  color: #${style[header.format.indexOf("PrimaryColour")] ? style[header.format.indexOf("PrimaryColour")].split("").reverse().join("").slice(0, -2) : ""} !important;
+  color: #${style[header.format.indexOf("PrimaryColour")] ? style[header.format.indexOf("PrimaryColour")].match(/[\s\S]{1,2}/g).reverse().join("").slice(0, -2) : ""} !important;
   text-shadow: 2px 2px 0 #${bordCol},
     2px -2px 0 #${bordCol},
     -2px 2px 0 #${bordCol},
@@ -201,9 +201,11 @@ video::cue(.${style[header.format.indexOf("Name")]}) {
     -2px 0px 0 #${bordCol},
     0px -2px 0 #${bordCol},
     2px 2px 2px #${bordCol};
-  font-weight: ${style[header.format.indexOf("Bold")] ? style[header.format.indexOf("Bold")] * -1 ? "bold" : "normal" : ""} !important;
+  font-weight: ${style[header.format.indexOf("Bold")] ? style[header.format.indexOf("Bold")] * -1 ? "400" : "300" : ""} !important;
   font-style: ${style[header.format.indexOf("Italic")] ? style[header.format.indexOf("Italic")] * -1 ? "italic" : "normal" : ""} !important;
   background: ${style[header.format.indexOf("BorderStyle")] ? style[header.format.indexOf("BorderStyle")] != 3 ? "none" : `#${bordCol}` : ""} !important;
 }`
   }
 }
+
+// font-weight: ${style[header.format.indexOf("Bold")] ? style[header.format.indexOf("Bold")] * -1 ? "bold" : "normal" : ""} !important;

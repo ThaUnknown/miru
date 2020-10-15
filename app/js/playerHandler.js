@@ -23,7 +23,9 @@ function resetVideo() {
     video.remove()
     nowPlayingDisplay.textContent = ""
     tracks = []
-    headers = []
+    subtitles = []
+    headers = undefined
+    subtitleStream = undefined
     dl.removeAttribute("href")
     dl.removeAttribute("download")
     video = document.createElement("video")
@@ -338,7 +340,7 @@ function selectLang(lang) {
     for (let track of video.textTracks) {
         if (track.language == lang) {
             track.mode = 'showing';
-            displayHeaderr(headers[tracks.indexOf(track)])
+            displayHeader(headers[tracks.indexOf(track)])
         }
         else {
             track.mode = 'hidden';

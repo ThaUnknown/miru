@@ -1,4 +1,4 @@
-let client = new WebTorrent()
+client = new WebTorrent()
 window.onbeforeunload = () => {
     client.torrents[0] ? client.torrents[0].store.destroy() : ""
     client.torrents[0] ? client.torrents[0].destroy() : ""
@@ -62,7 +62,7 @@ async function addTorrent(magnet) {
     resetVideo()
     selected ? selPlaying(selected) : ""
     await sw
-    client.add(magnet, async function (torrent) {
+    client.add(magnet, function (torrent) {
         torrent.on('noPeers', function () {
             if (client.torrents[0].progress != 1) {
                 halfmoon.initStickyAlert({
@@ -138,7 +138,7 @@ function serveFile(file, req) {
     res.body = req.method === 'HEAD' ? '' : 'stream'
     // parser is really a passthrough mkv stream now
     let stream = file.createReadStream(range)
-    parseSubs(stream)
+    subStream(stream)
 
     return [res, req.method === 'GET' && subtitleStream || stream]
 }
