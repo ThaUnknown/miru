@@ -1,4 +1,4 @@
-client = new WebTorrent()
+let client = new WebTorrent()
 window.onbeforeunload = () => {
     client.torrents[0] ? client.torrents[0].store.destroy() : ""
     client.torrents[0] ? client.torrents[0].destroy() : ""
@@ -50,8 +50,7 @@ WEBTORRENT_ANNOUNCE = announceList
     .filter(function (url) {
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
-let nowPlaying,
-    maxTorrents = 1
+let maxTorrents = 1
 async function addTorrent(magnet) {
     if (client.torrents.length >= maxTorrents) {
         client.torrents[0].store ? client.torrents[0].store.destroy() : ""
@@ -89,8 +88,8 @@ async function addTorrent(magnet) {
             finishThumbnails(videoFile);
             downloadFile(videoFile)
         })
-        subtitleStream = undefined
         video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
+        video.load()
     })
 
 }
@@ -140,7 +139,7 @@ function serveFile(file, req) {
     let stream = file.createReadStream(range)
     subStream(stream)
 
-    return [res, req.method === 'GET' && subtitleStream || stream]
+    return [res, req.method === 'GET' && playerData.subtitleStream || stream]
 }
 
 // kind of a fetch event from service worker but for the main thread.

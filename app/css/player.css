@@ -231,7 +231,7 @@ video::cue {
         2px 2px 2px #000;
 }
 
-#dl:not([download])>span {
+#dl:not([href])>span {
     cursor: not-allowed;
     color: rgba(255, 255, 255, .4);
 }

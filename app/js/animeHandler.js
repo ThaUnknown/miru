@@ -324,7 +324,8 @@ async function nyaaRss(url) {
 
 
 const regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i,
-    eregex = /(\[.*\]\ ?)?(.+?(?=\ \–\ \d))?(\ \–\ )?(\d+)?/i
+    eregex = /(\[.*\]\ ?)?(.+?(?=\ \–\ \d))?(\ \–\ )?(\d+)?/i,
+    plsregex = /(\[.[^\]]*\]\ ?)?(.+?(?=\ \-\ \d))?(\ \-\ )?(\d+)?(.*)?/i
 let store = {};
 
 async function hsRss(url) {
@@ -340,7 +341,7 @@ async function hsRss(url) {
                 let items = doc.querySelectorAll("item")
                 for (let item of items) {
                     let i = item.querySelector.bind(item),
-                        regexParse = eregex.exec(i("title").textContent)
+                        regexParse = plsregex.exec(i("title").textContent)
                     if (!store.hasOwnProperty(regexParse[2]) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
                         //shit not found, lookup
                         let res = await alRequest(regexParse[2], 1)
@@ -366,13 +367,13 @@ async function hsRss(url) {
     }
 }
 refRel.onclick = function () {
-    hsRss(`https://www.erai-rss.info/rss-${settings.torrent1}`)
+    hsRss(`https://subsplease.org/rss/?r=${settings.torrent1}`)
 }
 setInterval(() => {
-    hsRss(`https://www.erai-rss.info/rss-${settings.torrent1}`)
+    hsRss(`https://subsplease.org/rss/?r=${settings.torrent1}`)
 }, 30000);
 async function loadAnime() {
     await searchAnime()
-    hsRss(`https://www.erai-rss.info/rss-${settings.torrent1}`)
+    hsRss(`https://subsplease.org/rss/?r=${settings.torrent1}`)
 }
 loadAnime()

@@ -19,15 +19,33 @@ for (let item of controls) {
         window[func]()
     })
 }
+let playerData = {
+    tracks: [],
+    headers: undefined,
+    subtitles: [],
+    subtitleStream: undefined,
+    octopusInstance: undefined,
+    nowPlaying: undefined
+}
+
 function resetVideo() {
+    !!playerData.octopusInstance ? playerData.octopusInstance.dispose() : ""
+    playerData = {
+        tracks: [],
+        headers: undefined,
+        subtitles: [],
+        subtitleStream: undefined,
+        octopusInstance: undefined,
+        nowPlaying: undefined
+    }
+    video.pause()
+    video.src = "";
+    video.load()
+    delete video
     video.remove()
-    nowPlayingDisplay.textContent = ""
-    tracks = []
-    subtitles = []
-    headers = undefined
-    subtitleStream = undefined
+    nowPlayingDisplay.textContent = playerData.nowPlaying || ""
+
     dl.removeAttribute("href")
-    dl.removeAttribute("download")
     video = document.createElement("video")
     if (settings.player7) {
         video.setAttribute("autoPictureInPicture", "")
@@ -37,9 +55,11 @@ function resetVideo() {
     }
     video.src = ""
     video.id = "video"
-    video.volume = settings.player1 / 100
+    video.setAttribute("preload", "none")
+    video.volume = volume.value / 100
     video.style.setProperty("--sub-font", settings.subtitle1);
     video.addEventListener("playing", resetBuffer);
+    video.addEventListener("canplay", resetBuffer);
     video.addEventListener("loadeddata", initThumbnail);
     video.addEventListener("loadedmetadata", updateDisplay);
     video.addEventListener("ended", autoNext);
@@ -232,7 +252,7 @@ function btnpp() {
 }
 
 function btnnext() {
-    nyaaSearch(nowPlaying[0], parseInt(nowPlaying[1]) + 1)
+    nyaaSearch(playerData.nowPlaying[0], parseInt(playerData.nowPlaying[1]) + 1)
 }
 function autoNext() {
     settings.player6 ? btnnext() : ""
@@ -340,7 +360,7 @@ function selectLang(lang) {
     for (let track of video.textTracks) {
         if (track.language == lang) {
             track.mode = 'showing';
-            displayHeader(headers[tracks.indexOf(track)])
+            displayHeader(playerData.headers[playerData.tracks.indexOf(track)])
         }
         else {
             track.mode = 'hidden';
@@ -390,22 +410,22 @@ document.onkeydown = function (a) {
 
 // media session
 function selPlaying(sel) {
-    nowPlaying = sel
+    playerData.nowPlaying = sel
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: store[nowPlaying[0]] ? store[nowPlaying[0]].title.english || store[nowPlaying[0]].title.romaji : nowPlaying[0],
-            artist: "Episode " + nowPlaying[1],
+            title: store[playerData.nowPlaying[0]] ? store[playerData.nowPlaying[0]].title.english || store[playerData.nowPlaying[0]].title.romaji : playerData.nowPlaying[0],
+            artist: "Episode " + playerData.nowPlaying[1],
             album: "Miru",
             artwork: [
                 {
-                    src: store[nowPlaying[0]] ? store[nowPlaying[0]].coverImage.medium : "",
+                    src: store[playerData.nowPlaying[0]] ? store[playerData.nowPlaying[0]].coverImage.medium : "",
                     sizes: '128x128',
                     type: 'image/png'
                 }
             ]
         });
     }
-    nowPlayingDisplay.textContent = `EP ${nowPlaying[1]}`
+    nowPlayingDisplay.textContent = `EP ${playerData.nowPlaying[1]}`
 }
 
 function updatePositionState() {
