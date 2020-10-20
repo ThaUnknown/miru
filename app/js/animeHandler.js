@@ -142,7 +142,7 @@ async function searchAnime(a) {
     try {
         alResponse.data.Page.media.forEach(media => {
             let template = cardCreator(media)
-            template.onclick = function () {
+            template.onclick = () => {
                 viewAnime(media)
             }
             frag.appendChild(template)
@@ -179,7 +179,7 @@ function viewAnime(media) {
     document.querySelector(".view .title").textContent = media.title.english || media.title.romaji
     document.querySelector(".view .desc").innerHTML = media.description || ""
     document.querySelector(".view .details").innerHTML = ""
-    document.querySelector(".view #play").onclick = function () { nyaaSearch(media, document.querySelector(".view #ep").value); halfmoon.toggleModal("view") }
+    document.querySelector(".view #play").onclick = () => { nyaaSearch(media, document.querySelector(".view #ep").value); halfmoon.toggleModal("view") }
     detailsCreator(media)
     document.querySelector(".view #ep").value = 1
     document.querySelector(".view #ep").max = media.episodes || 999
@@ -254,10 +254,7 @@ function cardCreator(media, regexParse) {
 }
 let skeletonCard = cardCreator()
 
-
 const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
-
-var selected;
 
 async function nyaaSearch(media, episode) {
     if (parseInt(episode) < 10) {
@@ -287,7 +284,7 @@ async function nyaaSearch(media, episode) {
         table.textContent = ""
         table.appendChild(results)
         halfmoon.toggleModal("tsearch")
-        selected = [media, parseInt(episode)]
+        playerData.selected = [media, parseInt(episode)]
     }
 }
 
@@ -352,8 +349,8 @@ async function hsRss(url) {
                     }
                     let media = store[regexParse[2]],
                         template = cardCreator(media, regexParse)
-                    template.onclick = function () {
-                        selected = [regexParse[2], regexParse[4]]
+                    template.onclick = () => {
+                        playerData.selected = [regexParse[2], regexParse[4]]
                         addTorrent(i('link').textContent)
                     }
                     frag.appendChild(template)
@@ -366,7 +363,7 @@ async function hsRss(url) {
         })
     }
 }
-refRel.onclick = function () {
+refRel.onclick = () => {
     hsRss(`https://subsplease.org/rss/?r=${settings.torrent1}`)
 }
 setInterval(() => {

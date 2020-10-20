@@ -59,10 +59,10 @@ async function addTorrent(magnet) {
     halfmoon.hideModal("tsearch")
     document.location.href = "#player"
     resetVideo()
-    selected ? selPlaying(selected) : ""
+    playerData.selected ? selPlaying(playerData.selected) : ""
     await sw
     client.add(magnet, function (torrent) {
-        torrent.on('noPeers', function () {
+        torrent.on('noPeers', () => {
             if (client.torrents[0].progress != 1) {
                 halfmoon.initStickyAlert({
                     content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
@@ -78,7 +78,7 @@ async function addTorrent(magnet) {
                 videoFile = file
             }
         })
-        torrent.on('done', function () {
+        torrent.on('done', () => {
             halfmoon.initStickyAlert({
                 content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
                 title: "Download Complete",

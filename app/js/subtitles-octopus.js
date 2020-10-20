@@ -9,7 +9,6 @@ var SubtitlesOctopus = function (options) {
         }
     } catch (e) {
     }
-    console.log("WebAssembly support detected: " + (supportsWebAssembly ? "yes" : "no"));
 
     var self = this;
     self.canvas = options.canvas; // HTML canvas element (optional if video specified)
@@ -36,7 +35,7 @@ var SubtitlesOctopus = function (options) {
 
     self.hasAlphaBug = false;
 
-    (function() {
+    (function () {
         if (typeof ImageData.prototype.constructor === 'function') {
             try {
                 // try actually calling ImageData, as on some browsers it's reported
@@ -384,8 +383,8 @@ var SubtitlesOctopus = function (options) {
                 break;
             }
             case 'get-styles': {
-                console.log(data.target);
                 console.log(data.styles);
+                playerData.styles = data.styles
                 break;
             }
             default:
@@ -414,10 +413,10 @@ var SubtitlesOctopus = function (options) {
 
 
         if (
-          self.canvas.width != width ||
-          self.canvas.height != height ||
-          self.canvas.style.top != top ||
-          self.canvas.style.left != left
+            self.canvas.width != width ||
+            self.canvas.height != height ||
+            self.canvas.style.top != top ||
+            self.canvas.style.left != left
         ) {
             self.canvas.width = width;
             self.canvas.height = height;

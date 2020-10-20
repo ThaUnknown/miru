@@ -1,9 +1,14 @@
 const controls = document.getElementsByClassName('ctrl')
 
+for (let item of controls) {
+    item.addEventListener("click", function () {
+        let func = this.dataset.name;
+        window[func]()
+    })
+}
+
 // event listeners
-volume.addEventListener("input", function () {
-    updateVolume()
-});
+volume.addEventListener("input", ()=> updateVolume());
 progress.addEventListener("input", dragBar);
 progress.addEventListener("mouseup", dragBarEnd);
 progress.addEventListener("touchend", dragBarEnd);
@@ -13,19 +18,8 @@ ptoggle.addEventListener("click", btnpp);
 ptoggle.addEventListener("dblclick", btnfull);
 player.addEventListener("fullscreenchange", updateFullscreen)
 
-for (let item of controls) {
-    item.addEventListener("click", function () {
-        let func = this.dataset.name;
-        window[func]()
-    })
-}
 let playerData = {
-    tracks: [],
-    headers: undefined,
-    subtitles: [],
-    subtitleStream: undefined,
-    octopusInstance: undefined,
-    nowPlaying: undefined
+    octopusInstance: undefined
 }
 
 function resetVideo() {
@@ -33,10 +27,13 @@ function resetVideo() {
     playerData = {
         tracks: [],
         headers: undefined,
+        styles: undefined,
         subtitles: [],
         subtitleStream: undefined,
         octopusInstance: undefined,
-        nowPlaying: undefined
+        nowPlaying: undefined,
+        selected: undefined,
+        thumbnails: []
     }
     video.pause()
     video.src = "";
@@ -81,7 +78,7 @@ function updateDisplay() {
 function dragBar() {
     video.pause()
     updateBar(progress.value / 10)
-    let bg = thumbnails[Math.floor(currentTime / 5)]
+    let bg = playerData.thumbnails[Math.floor(currentTime / 5)]
     thumb.src = bg || " "
 }
 
@@ -109,18 +106,14 @@ function updateBar(progressPercent) {
 }
 
 // dynamic thumbnails 
-let thumbnails = []
-let ratio
 let canvas = document.createElement("canvas")
 let context = canvas.getContext('2d')
-let w = 150, h
+let h
 
 function initThumbnail() {
     if (settings.player5) {
-        thumbnails = []
-        ratio = video.videoWidth / video.videoHeight;
-        h = parseInt(w / ratio)
-        canvas.width = w;
+        h = parseInt(150 / (video.videoWidth / video.videoHeight))
+        canvas.width = 150;
         canvas.height = h;
         thumb.style.setProperty("--height", h + "px");
     }
@@ -129,10 +122,10 @@ function initThumbnail() {
 function createThumbnail(vid) {
     if (settings.player5) {
         let index = Math.floor(vid.currentTime / 5)
-        if (!thumbnails[index] && h) {
-            context.fillRect(0, 0, w, h);
-            context.drawImage(vid, 0, 0, w, h);
-            thumbnails[index] = canvas.toDataURL("image/jpeg")
+        if (!playerData.thumbnails[index] && h) {
+            context.fillRect(0, 0, 150, h);
+            context.drawImage(vid, 0, 0, 150, h);
+            playerData.thumbnails[index] = canvas.toDataURL("image/jpeg")
         }
     }
 }
@@ -140,7 +133,7 @@ function createThumbnail(vid) {
 function finishThumbnails(file) {
     if (settings.player5) {
         let thumbVid = document.createElement("video")
-        thumbnails = []
+        playerData.thumbnails = []
         file.getBlobURL((err, url) => {
             thumbVid.src = url
         })
@@ -206,8 +199,6 @@ function resetTimer() {
     immerseTime = setTimeout(immersePlayer, parseInt(settings.player2) * 1000)
 }
 
-let islooped;
-
 function toTS(sec) {
     if (Number.isNaN(sec) || sec < 0) {
         return "00:00";
@@ -270,9 +261,9 @@ function btnmute() {
     }
 }
 
-let level
 
 function updateVolume(a) {
+    let level
     if (a == null) {
         level = volume.value;
     } else {
@@ -331,7 +322,7 @@ function btncap() {
     off = document.createElement("a")
     off.classList.add("dropdown-item", "pointer", "text-white")
     off.innerHTML = "OFF"
-    off.onclick = function () {
+    off.onclick = () => {
         selectLang("OFF")
     }
     frag.appendChild(off)
@@ -347,7 +338,7 @@ function btncap() {
         } else {
             template.classList.add("text-muted")
         }
-        template.onclick = function () {
+        template.onclick = () => {
             selectLang(track.language)
         }
         frag.appendChild(template)
@@ -371,7 +362,7 @@ function selectLang(lang) {
 
 // keybinds
 
-document.onkeydown = function (a) {
+document.onkeydown = (a) => {
     if (document.location.href.endsWith("#player")) {
         switch (a.key) {
             case " ":
@@ -403,6 +394,12 @@ document.onkeydown = function (a) {
                 break;
             case "ArrowRight":
                 seek(parseInt(settings.player3));
+                break;
+            case "ArrowUp":
+                updateVolume(parseInt(volume.value)+5)
+                break;
+            case "ArrowDown":
+                updateVolume(parseInt(volume.value)-5)
                 break;
         }
     }
@@ -441,10 +438,10 @@ function updatePositionState() {
 if ('mediaSession' in navigator) {
     navigator.mediaSession.setActionHandler('play', btnpp);
     navigator.mediaSession.setActionHandler('pause', btnpp);
-    navigator.mediaSession.setActionHandler('seekbackward', function () {
+    navigator.mediaSession.setActionHandler('seekbackward', () => {
         seek(-parseInt(settings.player3));
     });
-    navigator.mediaSession.setActionHandler('seekforward', function () {
+    navigator.mediaSession.setActionHandler('seekforward', () => {
         seek(parseInt(settings.player3));
     });
     navigator.mediaSession.setActionHandler('nexttrack', btnnext);
