@@ -29,7 +29,7 @@ function subStream(stream) {
         }
         playerData.subtitleStream.on('subtitle', function (subtitle, trackNumber) {
             if (playerData.headers) {
-                let formatSub = "Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0,-1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0,-1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text
+                let formatSub = "Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text
                 if (!playerData.subtitles[trackNumber].includes(formatSub)) {
                     playerData.subtitles[trackNumber].push(formatSub)
                     renderSubs.call(null, 3)
@@ -45,7 +45,7 @@ function subStream(stream) {
     }
 }
 function renderSubs(trackNumber) {
-    let trackContent = playerData.headers[trackNumber].slice(0,-1)+playerData.subtitles[trackNumber].join("\n")
+    let trackContent = playerData.headers[trackNumber].slice(0, -1) + playerData.subtitles[trackNumber].join("\n")
     if (!playerData.octopusInstance) {
         let options = {
             video: video,

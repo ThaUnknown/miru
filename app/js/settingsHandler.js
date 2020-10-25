@@ -14,7 +14,7 @@ const settingsElements = {
     torrent3: torrent3,
     torrent4: torrent4
 }
-let settings 
+let settings
 function restoreDefaults() {
     localStorage.clear();
     settings = {

@@ -321,10 +321,11 @@ const regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E
     plsregex = /(\[.[^\]]*\]\ ?)?(.+?(?=\ \-\ \d))?(\ \-\ )?(\d+)?(.*)?/i
 let store = {};
 
-async function hsRss(url) {
+async function hsRss() {
     if (document.location.href.endsWith("#releases")) {
         let frag = document.createDocumentFragment(),
-            releases = document.querySelector(".releases")
+            releases = document.querySelector(".releases"),
+            url = settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4 + settings.torrent1 + "-magnet" : settings.torrent4 + settings.torrent1
         releases.textContent = '';
         releases.appendChild(skeletonCard)
         res = await fetch(url)
@@ -339,7 +340,7 @@ async function hsRss(url) {
                         //shit not found, lookup
                         let res = await alRequest(regexParse[2], 1)
                         if (!res.data.Page.media[0]) {
-                            res = await alRequest(regexParse[2].replace(" (TV)", "").replace(" (2020)", ""), 1)
+                            res = await alRequest(regexParse[2].replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), 1)
                         }
                         store[regexParse[2]] = res.data.Page.media[0]
                     }
@@ -360,13 +361,13 @@ async function hsRss(url) {
     }
 }
 refRel.onclick = () => {
-    hsRss(settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4+settings.torrent1+"-magnet": settings.torrent4+settings.torrent1)
+    hsRss()
 }
 setInterval(() => {
-    hsRss(settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4+settings.torrent1+"-magnet": settings.torrent4+settings.torrent1)
+    hsRss()
 }, 30000);
 async function loadAnime() {
     await searchAnime()
-    hsRss(settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4+settings.torrent1+"-magnet": settings.torrent4+settings.torrent1)
+    hsRss()
 }
 loadAnime()

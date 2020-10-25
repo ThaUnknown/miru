@@ -25,7 +25,7 @@ const announceList = [
     // ['ws://hub.bugout.link:80/announce']
 ],
     videoExtensions = [
-        '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg', '.ogv', '.webm', '.wmv', '.m2ts'
+        '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg', '.ogv', '.wmv', '.m2ts'
     ],
     scope = '/app/',
     sw = navigator.serviceWorker.register('sw.js', { scope })
@@ -58,8 +58,9 @@ async function addTorrent(magnet) {
     }
     halfmoon.hideModal("tsearch")
     document.location.href = "#player"
+    let selected = playerData.selected
     resetVideo()
-    playerData.selected ? selPlaying(playerData.selected) : ""
+    selected ? selPlaying(selected) : ""
     await sw
     client.add(magnet, function (torrent) {
         torrent.on('noPeers', () => {
@@ -117,7 +118,7 @@ function postDownload(file) {
             renderSubs.call(null, 3)
             file.getBlobURL((err, url) => {
                 let time = video.currentTime,
-                playState = !video.paused
+                    playState = !video.paused
                 video.src = url
                 video.currentTime = time
                 playState ? video.play() : ""
