@@ -8,7 +8,7 @@ for (let item of controls) {
 }
 
 // event listeners
-volume.addEventListener("input", ()=> updateVolume());
+volume.addEventListener("input", () => updateVolume());
 progress.addEventListener("input", dragBar);
 progress.addEventListener("mouseup", dragBarEnd);
 progress.addEventListener("touchend", dragBarEnd);
@@ -130,13 +130,11 @@ function createThumbnail(vid) {
     }
 }
 
-function finishThumbnails(file) {
+function finishThumbnails(url) {
     if (settings.player5 && settings.player8) {
         let thumbVid = document.createElement("video")
-        playerData.thumbnails = []
-        file.getBlobURL((err, url) => {
-            thumbVid.src = url
-        })
+        thumbVid.src = url
+
         thumbVid.addEventListener('loadeddata', () => {
             loadTime();
         })
@@ -157,11 +155,9 @@ function finishThumbnails(file) {
 }
 
 //file download
-function downloadFile(file) {
-    file.getBlobURL((err, url) => {
-        dl.href = url
-        dl.download = file.name
-    })
+function downloadFile(url, name) {
+    dl.href = url
+    dl.download = name
 }
 
 // bufering spinner
@@ -396,10 +392,10 @@ document.onkeydown = (a) => {
                 seek(parseInt(settings.player3));
                 break;
             case "ArrowUp":
-                updateVolume(parseInt(volume.value)+5)
+                updateVolume(parseInt(volume.value) + 5)
                 break;
             case "ArrowDown":
-                updateVolume(parseInt(volume.value)-5)
+                updateVolume(parseInt(volume.value) - 5)
                 break;
         }
     }

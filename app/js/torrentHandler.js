@@ -86,16 +86,18 @@ async function addTorrent(magnet) {
                 alertType: "alert-success",
                 fillType: ""
             });
-            finishThumbnails(videoFile);
-            downloadFile(videoFile)
-            postDownload(videoFile)
+            videoFile.getBlobURL((err, url) => {
+                finishThumbnails(url);
+                downloadFile(url, videoFile.name)
+                postDownload(url, videoFile)
+            })
         })
         video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
         video.load()
     })
 
 }
-function postDownload(file) {
+function postDownload(url, file) {
     if (settings.player8) {
         let parser = new SubtitleParser(),
             subtitles = []
@@ -113,16 +115,13 @@ function postDownload(file) {
             }
         })
         parser.on('finish', () => {
-            console.log("finish")
             playerData.subtitles = subtitles
             renderSubs.call(null, 3)
-            file.getBlobURL((err, url) => {
-                let time = video.currentTime,
-                    playState = !video.paused
-                video.src = url
-                video.currentTime = time
-                playState ? video.play() : ""
-            })
+            let time = video.currentTime,
+                playState = !video.paused
+            video.src = url
+            video.currentTime = time
+            playState ? video.play() : ""
         });
         file.createReadStream().pipe(parser)
     }
