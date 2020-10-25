@@ -442,7 +442,6 @@ var SubtitlesOctopus = function (options) {
 
     self.resizeWithTimeout = function () {
         self.resize();
-        setTimeout(self.resize, 100);
     };
 
     self.runBenchmark = function () {

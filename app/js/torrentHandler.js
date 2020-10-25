@@ -87,11 +87,44 @@ async function addTorrent(magnet) {
             });
             finishThumbnails(videoFile);
             downloadFile(videoFile)
+            postDownload(videoFile)
         })
         video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
         video.load()
     })
 
+}
+function postDownload(file) {
+    if (settings.player8) {
+        let parser = new SubtitleParser(),
+            subtitles = []
+        parser.once('tracks', pTracks => {
+            pTracks.forEach(track => {
+                subtitles[track.number] = []
+            })
+        })
+        parser.on('subtitle', function (subtitle, trackNumber) {
+            if (playerData.headers) {
+                subtitles[trackNumber].push("Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text)
+            } else if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
+                let cue = new VTTCue(subtitle.time / 1000, (subtitle.time + subtitle.duration) / 1000, subtitle.text)
+                playerData.tracks[trackNumber].addCue(cue)
+            }
+        })
+        parser.on('finish', () => {
+            console.log("finish")
+            playerData.subtitles = subtitles
+            renderSubs.call(null, 3)
+            file.getBlobURL((err, url) => {
+                let time = video.currentTime,
+                playState = !video.paused
+                video.src = url
+                video.currentTime = time
+                playState ? video.play() : ""
+            })
+        });
+        file.createReadStream().pipe(parser)
+    }
 }
 function onProgress() {
     if (document.location.href.endsWith("#player") && client.torrents[0]) {

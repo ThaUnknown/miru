@@ -1,23 +1,3 @@
-var query;
-var variables = {
-    type: "ANIME",
-    page: 1,
-    perPage: 50
-}
-var request;
-
-var url = 'https://graphql.anilist.co'
-var options = {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    },
-    body: JSON.stringify({
-        query: query,
-        variables: variables
-    })
-}
 const searchRx = /(magnet:)?([A-F\d]{8,40})?(.*\.torrent)?/i;
 function searchBox() {
     let regexParse = searchRx.exec(search.value)
@@ -28,10 +8,26 @@ function searchBox() {
     }
 }
 async function alRequest(a, b) {
+    let query,
+        variables = {
+            type: "ANIME",
+            page: 1,
+            perPage: 50
+        },
+        options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                query: query,
+                variables: variables
+            })
+        }
     if (!a) {
         variables.sort = "TRENDING_DESC"
         variables.perPage = 50
-        delete variables.search
         query = `
         query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
             Page (page: $page, perPage: $perPage) {
@@ -78,9 +74,9 @@ async function alRequest(a, b) {
     } else {
         variables.search = a
         variables.perPage = b || 50
-        delete variables.sort
+        variables.status = "RELEASING"
         query = `
-        query ($page: Int, $perPage: Int, $search: String, $type: MediaType) {
+        query ($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $type: MediaType, $status: MediaStatus) {
             Page (page: $page, perPage: $perPage) {
                 pageInfo {
                     total
@@ -89,7 +85,7 @@ async function alRequest(a, b) {
                     hasNextPage
                     perPage
                 }
-                media (type: $type, search: $search) {
+                media (type: $type, search: $search, sort: $sort, status: $status) {
                     id
                     title {
                         romaji
@@ -128,7 +124,7 @@ async function alRequest(a, b) {
         variables: variables
     })
 
-    let res = await fetch(url, options).catch((error) => console.error(error)),
+    let res = await fetch('https://graphql.anilist.co', options).catch((error) => console.error(error)),
         json = await res.json();
     return json
 }
@@ -342,8 +338,8 @@ async function hsRss(url) {
                     if (!store.hasOwnProperty(regexParse[2]) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
                         //shit not found, lookup
                         let res = await alRequest(regexParse[2], 1)
-                        if(!res.data.Page.media[0]){
-                            res = await alRequest(regexParse[2].replace(" (TV)","").replace(" (2020)",""), 1)
+                        if (!res.data.Page.media[0]) {
+                            res = await alRequest(regexParse[2].replace(" (TV)", "").replace(" (2020)", ""), 1)
                         }
                         store[regexParse[2]] = res.data.Page.media[0]
                     }
@@ -364,13 +360,13 @@ async function hsRss(url) {
     }
 }
 refRel.onclick = () => {
-    hsRss(`https://subsplease.org/rss/?r=${settings.torrent1}`)
+    hsRss(settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4+settings.torrent1+"-magnet": settings.torrent4+settings.torrent1)
 }
 setInterval(() => {
-    hsRss(`https://subsplease.org/rss/?r=${settings.torrent1}`)
+    hsRss(settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4+settings.torrent1+"-magnet": settings.torrent4+settings.torrent1)
 }, 30000);
 async function loadAnime() {
     await searchAnime()
-    hsRss(`https://subsplease.org/rss/?r=${settings.torrent1}`)
+    hsRss(settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4+settings.torrent1+"-magnet": settings.torrent4+settings.torrent1)
 }
 loadAnime()

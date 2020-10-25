@@ -232,14 +232,6 @@
                         <button class="btn btn-primary px-10 d-flex align-items-center" id="refRel">
                             <div class="material-icons">refresh</div>&nbsp;Refresh
                         </button>
-                        <div class="input-group w-200 ml-20">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Feed</span>
-                            </div>
-                            <select class="form-control" disabled>
-                                <option value="HS" selected="selected">SubsPlease</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
                 <div class="gallery releases h-full overflow-y-scroll border-left border-top">
@@ -289,16 +281,20 @@
                         <input type="checkbox" id="player6">
                         <label for="player6">Autoplay Next Episode</label>
                     </div>
-                    <div class="custom-switch mb-20">
+                    <div class="custom-switch mb-10">
                         <input type="checkbox" id="player7">
                         <label for="player7">Picture In Picture</label>
+                    </div>
+                    <div class="custom-switch mb-20">
+                        <input type="checkbox" id="player8">
+                        <label for="player8">Post-Download Processing [Improves UX and performance after a download finishes, initially CPU intensive]</label>
                     </div>
 
 
                     <h1 class="content-title font-size-22">
                         Subtitle Settings
                     </h1>
-                    <div class="input-group w-200 mb-20">
+                    <div class="input-group w-200 mb-10">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Font Fallback</span>
                         </div>
@@ -306,6 +302,10 @@
                             <option value="'Open Sans', sans-serif">Open Sans</option>
                             <option value="Roboto,Arial,Helvetica,sans-serif">Roboto</option>
                         </select>
+                    </div>
+                    <div class="custom-switch mb-20">
+                        <input type="checkbox" id="subtitle2">
+                        <label for="subtitle2">Async Rendering [Might cause desync on low end devices but greatly improves performance]</label>
                     </div>
 
 
@@ -322,14 +322,23 @@
                             <option value="480">480p</option>
                         </select>
                     </div>
+                    <div class="input-group mb-10 w-200">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Feed</span>
+                        </div>
+                        <select class="form-control" id="torrent4">
+                            <option value="https://subsplease.org/rss/?r=">SubsPlease</option>
+                            <option value="https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-">Erai-raws</option>
+                        </select>
+                    </div>
                     <div class="custom-switch mb-10">
                         <input type="checkbox" id="torrent2">
-                        <label for="torrent2">Auto-Play Torrents [This Might Lead To Wrong Torrents Being
-                            Played]</label>
+                        <label for="torrent2">Auto-Play Torrents [This might lead to wrong torrents being
+                            played]</label>
                     </div>
                     <div class="custom-switch mb-20">
                         <input type="checkbox" id="torrent3">
-                        <label for="torrent3">Trusted Only [Less Results But Higher Quality And More Seeders]</label>
+                        <label for="torrent3">Trusted Only [Less results but higher quality and more seeders]</label>
                     </div>
                     <button class="btn btn-danger" type="button" id="setRes">Restore Defaults</button>
                     <p class="text-muted">

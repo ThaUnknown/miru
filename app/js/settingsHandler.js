@@ -6,10 +6,13 @@ const settingsElements = {
     player5: player5,
     player6: player6,
     player7: player7,
+    player8: player8,
     subtitle1: subtitle1,
+    subtitle2: subtitle2,
     torrent1: torrent1,
     torrent2: torrent2,
-    torrent3: torrent3
+    torrent3: torrent3,
+    torrent4: torrent4
 }
 let settings 
 function restoreDefaults() {
@@ -22,10 +25,13 @@ function restoreDefaults() {
         player5: true,
         player6: false,
         player7: true,
+        player8: true,
         subtitle1: "'Open Sans', sans-serif",
+        subtitle2: true,
         torrent1: "1080",
         torrent2: false,
-        torrent3: true
+        torrent3: true,
+        torrent4: "https://subsplease.org/rss/?r="
     }
     localStorage.setItem("settings", JSON.stringify(settings))
     renderSettings()
@@ -34,7 +40,7 @@ let applyTimeout
 function applySettings() {
     clearTimeout(applyTimeout)
     applyTimeout = setTimeout(() => {
-        Object.entries(settings).forEach(setting => {
+        Object.entries(settingsElements).forEach(setting => {
             if (settingsElements[setting[0]].type == "checkbox") {
                 settings[setting[0]] = settingsElements[setting[0]].checked
             } else {
@@ -42,7 +48,7 @@ function applySettings() {
             }
         })
         localStorage.setItem("settings", JSON.stringify(settings))
-    }, 1000)
+    }, 500)
 }
 
 function renderSettings() {

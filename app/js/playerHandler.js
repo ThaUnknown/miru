@@ -131,7 +131,7 @@ function createThumbnail(vid) {
 }
 
 function finishThumbnails(file) {
-    if (settings.player5) {
+    if (settings.player5 && settings.player8) {
         let thumbVid = document.createElement("video")
         playerData.thumbnails = []
         file.getBlobURL((err, url) => {
