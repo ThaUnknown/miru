@@ -128,6 +128,36 @@ async function alRequest(a, b) {
         json = await res.json();
     return json
 }
+function alEntry() {
+    if (store[playerData.nowPlaying[0]]) {
+        let query = `
+mutation ($id: Int, $status: MediaListStatus, $episode: Int) {
+    SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode) {
+        id
+        status
+        progress
+    }
+}`,
+            variables = {
+                id: parseInt(store[playerData.nowPlaying[0]].id),
+                status: "CURRENT",
+                episode: parseInt(playerData.nowPlaying[1])
+            },
+            options = {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("ALtoken"),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    query: query,
+                    variables: variables
+                })
+            }
+        fetch("https://graphql.anilist.co", options)
+    }
+}
 let alResponse
 async function searchAnime(a) {
     let frag = document.createDocumentFragment(),

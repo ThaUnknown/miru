@@ -13,7 +13,9 @@ const settingsElements = {
     torrent1: torrent1,
     torrent2: torrent2,
     torrent3: torrent3,
-    torrent4: torrent4
+    torrent4: torrent4,
+    other1: other1,
+    other2: other2
 }
 let settings
 function restoreDefaults() {
@@ -33,7 +35,9 @@ function restoreDefaults() {
         torrent1: "1080",
         torrent2: false,
         torrent3: true,
-        torrent4: "https://subsplease.org/rss/?r="
+        torrent4: "https://subsplease.org/rss/?r=",
+        other1: 100,
+        other2: true
     }
     localStorage.setItem("settings", JSON.stringify(settings))
     renderSettings()
@@ -70,3 +74,11 @@ settings = JSON.parse(localStorage.getItem("settings"))
 renderSettings()
 setRes.addEventListener("click", restoreDefaults)
 settingsTab.addEventListener("click", applySettings)
+
+let searchParams = new URLSearchParams(location.href)
+if (searchParams.get("access_token")) {
+    localStorage.setItem("ALtoken", searchParams.get("access_token"))
+    window.location = "/app/#settingsTab"
+}
+
+document.body.style.zoom = settings.other1 + "%"

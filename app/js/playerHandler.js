@@ -37,6 +37,7 @@ function resetVideo() {
         fonts: [],
         nowPlaying: undefined,
         selected: undefined,
+        completed: undefined,
         thumbnails: []
     }
     video.pause()
@@ -67,6 +68,7 @@ function resetVideo() {
     video.addEventListener("waiting", isBuffering);
     video.addEventListener("timeupdate", updateDisplay);
     video.addEventListener("timeupdate", updatePositionState);
+    video.addEventListener("timeupdate", checkCompletion);
     player.prepend(video)
 }
 // progress bar and display
@@ -496,6 +498,14 @@ if ('mediaSession' in navigator) {
         seek(parseInt(settings.player3));
     });
     navigator.mediaSession.setActionHandler('nexttrack', btnnext);
+}
+
+//AL entry auto add
+function checkCompletion(){
+    if(settings.other2 && video.duration - 120 < video.currentTime && !playerData.completed){
+        playerData.completed = true
+        alEntry()
+    }
 }
 
 resetVideo()

@@ -11,8 +11,7 @@
     <link rel="apple-touch-icon" href="logo.png">
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-    <meta name="viewport" content="width=device-width" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
     <title>Miru</title>
 
     <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/css/halfmoon-variables.min.css" rel="stylesheet">
@@ -349,6 +348,26 @@
                         <input type="checkbox" id="torrent3">
                         <label for="torrent3">Trusted Only [Less results but higher quality and more seeders]</label>
                     </div>
+                    
+                    <h1 class="content-title font-size-22">
+                        Other
+                    </h1>
+                    <div class="input-group w-200 mb-10">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">UI Scale</span>
+                        </div>
+                        <input id="other1" type="number" value="100" min="1" max="1000" class="form-control">
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="custom-switch mb-20">
+                        <input type="checkbox" id="other2">
+                        <label for="other2">AniList Sync [Requires <a href="https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token" target="_top">OAuth2 Login</a>]</label>
+                    </div>
+
+
+
                     <button class="btn btn-danger" type="button" id="setRes">Restore Defaults</button>
                     <p class="text-muted">
                         Restart may be required for some settings to take effect.
