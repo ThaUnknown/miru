@@ -27,7 +27,7 @@ function subStream(stream) {
                 }
             })
         }
-        playerData.subtitleStream.on('subtitle', function (subtitle, trackNumber) {
+        playerData.subtitleStream.on('subtitle', (subtitle, trackNumber) => {
             if (playerData.headers) {
                 let formatSub = "Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text
                 if (!playerData.subtitles[trackNumber].includes(formatSub)) {
@@ -41,6 +41,9 @@ function subStream(stream) {
                 }
             }
         })
+        playerData.subtitleStream.on('file', file => {
+            file.mimetype == ("application/x-truetype-font" || "application/font-woff") ? playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data],{type: file.mimetype}))) : ""
+        })
         stream.pipe(playerData.subtitleStream)
     }
 }
@@ -51,7 +54,7 @@ function renderSubs(trackNumber) {
             video: video,
             subContent: trackContent,
             lossyRender: settings.subtitle2,
-            fonts: ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"],
+            fonts: playerData.fonts.length == 0 ? ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"] : playerData.fonts,
             workerUrl: 'js/subtitles-octopus-worker.js'
         };
         playerData.octopusInstance = new SubtitlesOctopus(options);

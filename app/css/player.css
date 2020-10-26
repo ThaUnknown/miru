@@ -58,6 +58,9 @@
 #player:target .player {
     display: flex !important
 }
+#player.pip{
+    background: #000
+}
 
 .controls {
     background: linear-gradient(to top, rgba(0, 0, 0, .8), rgba(0, 0, 0, .4) 25%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .1) 75%, transparent);
@@ -212,8 +215,10 @@
 #player:fullscreen #btheatre,
 #player:target>a,
 #progress+img[src=" "],
-video[src=""] {
-    display: none
+video[src=""],
+#player.pip video,
+#player.pip canvas {
+    display: none !important
 }
 
 video::cue {

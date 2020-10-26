@@ -304,10 +304,16 @@
                             <option value="Roboto,Arial,Helvetica,sans-serif">Roboto</option>
                         </select>
                     </div>
-                    <div class="custom-switch mb-20">
+                    <div class="custom-switch mb-10">
                         <input type="checkbox" id="subtitle2">
                         <label for="subtitle2">Async Rendering [Might cause desync on low end devices but greatly
                             improves performance]</label>
+                    </div>
+                    <div class="custom-switch mb-20">
+                        <input type="checkbox" id="subtitle3">
+                        <label for="subtitle3">Video Canvas Merging [Displays subtitles in PiP and ChromeCast, requires
+                            <a href="chrome://flags/#disable-accelerated-2d-canvas"
+                                target="_blank">chrome://flags/#disable-accelerated-2d-canvas</a> set to Disabled]</label>
                     </div>
 
 
@@ -360,7 +366,7 @@
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
     <script src="js/rangeParser.js"></script>
     <script src="js/torrentHandler.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@3.1.0/dist/matroska-subtitles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@3.2.0/dist/matroska-subtitles.min.js"></script>
     <script src="js/subtitles-octopus.js"></script>
     <script src="js/subtitleOctopus.js"></script>
 </body>

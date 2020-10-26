@@ -24,6 +24,9 @@ let playerData = {
 
 function resetVideo() {
     !!playerData.octopusInstance ? playerData.octopusInstance.dispose() : ""
+    !!playerData.fonts ? playerData.fonts.forEach(file => {
+        URL.revokeObjectURL(file)
+    }) : ""
     playerData = {
         tracks: [],
         headers: undefined,
@@ -31,6 +34,7 @@ function resetVideo() {
         subtitles: [],
         subtitleStream: undefined,
         octopusInstance: undefined,
+        fonts: [],
         nowPlaying: undefined,
         selected: undefined,
         thumbnails: []
@@ -132,7 +136,8 @@ function createThumbnail(vid) {
 
 function finishThumbnails(url) {
     if (settings.player5 && settings.player8) {
-        let thumbVid = document.createElement("video")
+        let thumbVid = document.createElement("video"),
+            index = 0
         thumbVid.src = url
 
         thumbVid.addEventListener('loadeddata', () => {
@@ -145,11 +150,15 @@ function finishThumbnails(url) {
         })
 
         function loadTime() {
+            while (playerData.thumbnails[index] && index <= Math.floor(thumbVid.duration / 5)) {
+                index++
+            }
             if (thumbVid.currentTime != thumbVid.duration) {
-                thumbVid.currentTime = thumbVid.currentTime + 5;
+                thumbVid.currentTime = index * 5
             } else {
                 thumbVid.remove()
             }
+            index++
         }
     }
 }
@@ -276,7 +285,53 @@ updateVolume(parseInt(settings.player1))
 // PiP
 
 async function btnpip() {
-    video !== document.pictureInPictureElement ? await video.requestPictureInPicture() : await document.exitPictureInPicture();
+    if (!playerData.octopusInstance) {
+        video !== document.pictureInPictureElement ? await video.requestPictureInPicture() : await document.exitPictureInPicture();
+    } else {
+        if (document.pictureInPictureElement) {
+            await document.exitPictureInPicture()
+        } else {
+            let canvas = document.createElement("canvas"),
+                subtitleCanvas = document.querySelector(".libassjs-canvas"),
+                canvasVideo = document.createElement("video"),
+                context = canvas.getContext("2d", { alpha: false }),
+                running = true
+            canvas.width = subtitleCanvas.width
+            canvas.height = subtitleCanvas.height
+            player.classList.add("pip")
+
+            function renderFrame() {
+                if (running) {
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height)
+                    context.drawImage(subtitleCanvas, 0, 0)
+                    window.requestAnimationFrame(renderFrame)
+                }
+            }
+            window.requestAnimationFrame(renderFrame)
+            canvasVideo.srcObject = canvas.captureStream()
+            canvasVideo.onloadeddata = async function () {
+                canvasVideo.play()
+                await canvasVideo.requestPictureInPicture()
+            }
+            canvasVideo.onleavepictureinpicture = () => {
+                running = false
+                canvasVideo.remove()
+                canvas.remove()
+                player.classList.remove("pip")
+            }
+        }
+    }
+}
+
+function hardSub() {
+    let c1 = document.createElement("canvas"),
+        sub = document.querySelector(".libassjs-canvas")
+    c1.width = sub.width
+    c1.height = sub.height
+    let ctx1 = c1.getContext("2d")
+    ctx1.drawImage(video, 0, 0, c1.width, c1.height)
+    ctx1.drawImage(sub, 0, 0)
+    console.log(c1.toDataURL("image/jpeg"))
 }
 
 //miniplayer
@@ -422,7 +477,7 @@ function selPlaying(sel) {
 }
 
 function updatePositionState() {
-    if ('setPositionState' in navigator.mediaSession) {
+    if ('setPositionState' in navigator.mediaSession && video.duration) {
         navigator.mediaSession.setPositionState({
             duration: video.duration || 0,
             playbackRate: video.playbackRate || 0,
