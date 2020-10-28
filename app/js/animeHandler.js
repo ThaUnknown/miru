@@ -199,16 +199,21 @@ let details = {
 
 function viewAnime(media) {
     halfmoon.toggleModal("view")
-    document.querySelector(".view .banner img").src = ""
-    document.querySelector(".view .banner img").src = media.bannerImage
+    if (media.bannerImage != null) {
+        document.querySelector(".view .banner img").src = media.bannerImage
+        document.querySelector(".view .cover-wrapper").classList.add("mt-nc")
+    } else {
+        document.querySelector(".view .banner img").src = ""
+        document.querySelector(".view .cover-wrapper").classList.remove("mt-nc")
+    }
     document.querySelector(".view .contain-img").src = media.coverImage.extraLarge
     document.querySelector(".view .title").textContent = media.title.english || media.title.romaji
     document.querySelector(".view .desc").innerHTML = media.description || ""
     document.querySelector(".view .details").innerHTML = ""
-    document.querySelector(".view #play").onclick = () => { nyaaSearch(media, document.querySelector(".view #ep").value); halfmoon.toggleModal("view") }
+    play.onclick = () => { nyaaSearch(media, ep.value); halfmoon.toggleModal("view") }
     detailsCreator(media)
-    document.querySelector(".view #ep").value = 1
-    document.querySelector(".view #ep").max = media.episodes || 999
+    ep.value = 1
+    ep.max = media.episodes || 999
     document.querySelector(".view .details").appendChild(detailsfrag)
 }
 

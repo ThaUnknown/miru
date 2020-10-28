@@ -49,7 +49,7 @@ function resetVideo() {
 
     dl.removeAttribute("href")
     video = document.createElement("video")
-    if (settings.player7) {
+    if (settings.player7 && 'pictureInPictureEnabled' in document) {
         video.setAttribute("autoPictureInPicture", "")
     } else {
         video.setAttribute("disablePictureInPicture", "")
