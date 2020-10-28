@@ -344,7 +344,7 @@ const nameParseRegex = {
     "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-": /(\[.*\]\ ?)?(.+?(?=\ \–\ \d))?(\ \–\ )?(\d+)?/i,
     fallback: /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i
 }
-let store = {},
+let store = JSON.parse(localStorage.getItem("store")),
     lastResult
 
 async function hsRss() {
@@ -388,6 +388,7 @@ async function hsRss() {
             }
         })
     }
+    localStorage.setItem("store", JSON.stringify(store))
 }
 refRel.onclick = () => {
     hsRss()
