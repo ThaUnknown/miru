@@ -33,7 +33,11 @@ const announceList = [
             addTorrent(searchParams.get("m"))
         }
     }).catch(e => {
-        location.reload()
+        if (String(e) == "InvalidStateError: Failed to register a ServiceWorker: The document is in an invalid state.") {
+            location.reload()
+        } else {
+            throw e
+        }
     })
 //for debugging
 function t(a) {
