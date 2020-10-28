@@ -25,6 +25,9 @@ async function alRequest(a, b) {
                 variables: variables
             })
         }
+    if (localStorage.getItem("ALtoken")) {
+        options.headers['Authorization'] = localStorage.getItem("ALtoken")
+    }
     if (!a) {
         variables.sort = "TRENDING_DESC"
         variables.perPage = 50
@@ -44,6 +47,7 @@ async function alRequest(a, b) {
                         romaji
                         english
                         native
+                        userPreferred
                     }
                     description(
                         asHtml: true
@@ -73,24 +77,15 @@ async function alRequest(a, b) {
         `
     } else {
         variables.search = a
-        variables.perPage = b || 50
+        variables.perPage = b
         variables.status = "RELEASING"
         query = `
-        query ($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $type: MediaType, $status: MediaStatus) {
-            Page (page: $page, perPage: $perPage) {
-                pageInfo {
-                    total
-                    currentPage
-                    lastPage
-                    hasNextPage
-                    perPage
-                }
+        query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType, $status: MediaStatus) {
+            Page (page: $page) {
                 media (type: $type, search: $search, sort: $sort, status: $status) {
                     id
                     title {
-                        romaji
-                        english
-                        native
+                        userPreferred
                     }
                     description(
                         asHtml: true
@@ -101,18 +96,11 @@ async function alRequest(a, b) {
                     status
                     episodes
                     duration
-                    averageScore
                     genres
                     coverImage {
                         extraLarge
                         medium
                         color
-                    }
-                    bannerImage
-                    synonyms
-                    nextAiringEpisode {
-                        timeUntilAiring
-                        episode
                     }
                 }
             }
@@ -207,7 +195,7 @@ function viewAnime(media) {
         document.querySelector(".view .cover-wrapper").classList.remove("mt-nc")
     }
     document.querySelector(".view .contain-img").src = media.coverImage.extraLarge
-    document.querySelector(".view .title").textContent = media.title.english || media.title.romaji
+    document.querySelector(".view .title").textContent = media.title.userPreferred
     document.querySelector(".view .desc").innerHTML = media.description || ""
     document.querySelector(".view .details").innerHTML = ""
     play.onclick = () => { nyaaSearch(media, ep.value); halfmoon.toggleModal("view") }
@@ -251,7 +239,7 @@ function cardCreator(media, regexParse) {
         </div>
         <div class="col-8 h-full card-grid">
             <div class="px-15 py-10">
-                <h5 class="m-0 text-capitalize font-weight-bold">${media.title.english || media.title.romaji}${regexParse ? " - " + regexParse[4] : ""}</h5>
+                <h5 class="m-0 text-capitalize font-weight-bold">${media.title.userPreferred}${regexParse ? " - " + regexParse[4] : ""}</h5>
                 <p class="text-muted m-0 text-capitalize details">
                 ${(media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format.toLowerCase().replace(/_/g, " ")) : "") + "</span>"}
                 ${media.episodes ? "<span>" + media.episodes + " Episodes</span>" : media.duration ? "<span>" + media.duration + " Minutes</span>" : ""}
@@ -306,7 +294,7 @@ async function nyaaSearch(media, episode) {
 
     if (results.children.length == 0) {
         halfmoon.initStickyAlert({
-            content: `Couldn't find torrent for ${media.title.english || media.title.romaji} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
+            content: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
             title: "Search Failed",
             alertType: "alert-danger",
             fillType: ""

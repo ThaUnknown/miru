@@ -463,7 +463,7 @@ function selPlaying(sel) {
     playerData.nowPlaying = sel
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: store[playerData.nowPlaying[0]] ? store[playerData.nowPlaying[0]].title.english || store[playerData.nowPlaying[0]].title.romaji : playerData.nowPlaying[0],
+            title: store[playerData.nowPlaying[0]] ? store[playerData.nowPlaying[0]].title.userPreferred : playerData.nowPlaying[0],
             artist: "Episode " + playerData.nowPlaying[1],
             album: "Miru",
             artwork: [
