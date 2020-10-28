@@ -32,14 +32,14 @@ $url = str_replace("$", "&", $_GET['url']);
 			}
 		}
 	}
-    elseif (substr($url, 0, 30) === "https://www.erai-rss.info/rss-") {
-		$query = explode("https://www.erai-rss.info/", $url) [1];
+    elseif (substr($url, 0, 31) === "https://www.erai-raws.info/rss-") {
+		$query = explode("https://www.erai-raws.info/rss-", $url) [1];
 		$query_check = basename(realpath($query));
 		if ($query_check === "") {
 			if (strpos($query, '/') === false) {
 				$cache_file = './cache_erai/' . $query;
-				//echo $url.'\n';
-				//echo $cache_file.'\n';
+				// echo $url.'\n';
+				// echo $cache_file.'\n';
 					if (file_exists($cache_file) && (filemtime($cache_file) > (time() - 60 * 1))) {
 						// Cache file is less than five minutes old.
 						// Don't bother refreshing, just use the file as-is.

@@ -339,9 +339,11 @@ async function nyaaRss(url) {
 }
 
 
-const regex = /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i,
-    eregex = /(\[.*\]\ ?)?(.+?(?=\ \–\ \d))?(\ \–\ )?(\d+)?/i,
-    plsregex = /(\[.[^\]]*\]\ ?)?(.+?(?=\ \-\ \d))?(\ \-\ )?(\d+)?(.*)?/i
+const nameParseRegex = {
+    "https://subsplease.org/rss/?r=": /(\[.[^\]]*\]\ ?)?(.+?(?=\ \-\ \d))?(\ \-\ )?(\d+)?(.*)?/i,
+    "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-": /(\[.*\]\ ?)?(.+?(?=\ \–\ \d))?(\ \–\ )?(\d+)?/i,
+    fallback: /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i
+}
 let store = {},
     lastResult
 
@@ -361,7 +363,7 @@ async function hsRss() {
                     let items = doc.querySelectorAll("item")
                     for (let item of items) {
                         let i = item.querySelector.bind(item),
-                            regexParse = plsregex.exec(i("title").textContent)
+                            regexParse = (nameParseRegex[settings.torrent4]||nameParseRegex.parse).exec(i("title").textContent)
                         if (!store.hasOwnProperty(regexParse[2]) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
                             //shit not found, lookup
                             let res = await alRequest(regexParse[2], 1)
