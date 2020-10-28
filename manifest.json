@@ -23,5 +23,11 @@
     "scope_url_scheme": "https",
     "scope_url_host": "miru.moe",
     "scope_url_path": "/app/"
-  }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "magnet",
+      "url": "/app/#&m=%s"
+    }
+  ]
 }

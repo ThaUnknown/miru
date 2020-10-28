@@ -28,7 +28,13 @@ const announceList = [
         '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg', '.ogv', '.wmv', '.m2ts'
     ],
     scope = '/app/',
-    sw = navigator.serviceWorker.register('sw.js', { scope })
+    sw = navigator.serviceWorker.register('sw.js', { scope }).then(e => {
+        if (searchParams.get("m")) {
+            addTorrent(searchParams.get("m"))
+        }
+    }).catch(e => {
+        location.reload()
+    })
 //for debugging
 function t(a) {
     switch (a) {

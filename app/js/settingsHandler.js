@@ -66,6 +66,15 @@ function renderSettings() {
         }
     })
 }
+function registerProtocol() {
+    if ('registerProtocolHandler' in navigator) {
+        navigator.registerProtocolHandler(
+            'magnet',
+            `${location.href.replace(location.hash, '')}#&m=%s`,
+            'Miru'
+        );
+    }
+}
 
 if (!localStorage.getItem("settings")) {
     restoreDefaults()
@@ -74,6 +83,7 @@ settings = JSON.parse(localStorage.getItem("settings"))
 renderSettings()
 setRes.addEventListener("click", restoreDefaults)
 settingsTab.addEventListener("click", applySettings)
+regProtButton.addEventListener("click", registerProtocol)
 
 let searchParams = new URLSearchParams(location.href)
 if (searchParams.get("access_token")) {
