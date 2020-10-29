@@ -30,6 +30,7 @@ function resetVideo() {
     playerData = {
         tracks: [],
         headers: undefined,
+        selectedHeader: undefined,
         styles: undefined,
         subtitles: [],
         subtitleStream: undefined,
@@ -269,7 +270,7 @@ function btnmute() {
 
 function updateVolume(a) {
     let level
-    if (!a) {
+    if (a == null || a == NaN) {
         level = volume.value;
     } else {
         level = a;
@@ -358,34 +359,67 @@ function seek(a) {
 
 let off
 function btncap() {
-    let frag = document.createDocumentFragment()
-    off = document.createElement("a")
-    off.classList.add("dropdown-item", "pointer", "text-white")
-    off.innerHTML = "OFF"
-    off.onclick = () => {
-        selectLang("OFF")
-    }
-    frag.appendChild(off)
-
-    for (let track of video.textTracks) {
-        let template = document.createElement("a")
-        template.classList.add("dropdown-item", "pointer", "text-capitalize")
-        template.innerHTML = track.language || (!Object.values(video.textTracks).some(track => track.language == "eng" || track.language == "en") ? "eng" : track.label)
-        if (track.mode == "showing") {
-            template.classList.add("text-white")
-            off.classList.add("text-muted")
-            off.classList.remove("text-white")
-        } else {
-            template.classList.add("text-muted")
+    if (video.textTracks.length) {
+        let frag = document.createDocumentFragment()
+        off = document.createElement("a")
+        off.classList.add("dropdown-item", "pointer", "text-white")
+        off.innerHTML = "OFF"
+        off.onclick = () => {
+            selectLang("OFF")
         }
-        template.onclick = () => {
-            selectLang(track.language)
-        }
-        frag.appendChild(template)
-    }
+        frag.appendChild(off)
 
-    subMenu.textContent = '';
-    subMenu.appendChild(frag)
+        for (let track of video.textTracks) {
+            let template = document.createElement("a")
+            template.classList.add("dropdown-item", "pointer", "text-capitalize")
+            template.innerHTML = track.language || (!Object.values(video.textTracks).some(track => track.language == "eng" || track.language == "en") ? "eng" : track.label)
+            if (track.mode == "showing") {
+                template.classList.add("text-white")
+                off.classList.add("text-muted")
+                off.classList.remove("text-white")
+            } else {
+                template.classList.add("text-muted")
+            }
+            template.onclick = () => {
+                selectLang(track.language)
+            }
+            frag.appendChild(template)
+        }
+
+        subMenu.textContent = '';
+        subMenu.appendChild(frag)
+    } else if (playerData.headers) {
+        let frag = document.createDocumentFragment()
+        off = document.createElement("a")
+        off.classList.add("dropdown-item", "pointer")
+        playerData.selectedHeader ? off.classList.add("text-muted") : off.classList.add("text-white")
+        off.innerHTML = "OFF"
+        off.onclick = () => {
+            renderSubs.call(null)
+            playerData.selectedHeader = undefined
+        }
+        frag.appendChild(off)
+        for (let track of playerData.headers) {
+            if (track) {
+                let template = document.createElement("a")
+                template.classList.add("dropdown-item", "pointer", "text-capitalize")
+                template.innerHTML = track.language || (!Object.values(playerData.headers).some(header => header.language == "eng" || header.language == "en") ? "eng" : header.type)
+                if (playerData.selectedHeader == track.number) {
+                    template.classList.add("text-white")
+                } else {
+                    template.classList.add("text-muted")
+                }
+                template.onclick = () => {
+                    renderSubs.call(null, track.number)
+                    playerData.selectedHeader = track.number
+                    btncap()
+                }
+                frag.appendChild(template)
+            }
+        }
+        subMenu.textContent = '';
+        subMenu.appendChild(frag)
+    }
 }
 function selectLang(lang) {
     for (let track of video.textTracks) {

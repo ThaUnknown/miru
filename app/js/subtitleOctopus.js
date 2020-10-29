@@ -13,7 +13,7 @@ function subStream(stream) {
                         if (!playerData.headers) {
                             playerData.headers = []
                         }
-                        playerData.headers[track.number] = track.header
+                        playerData.headers[track.number] = track
                         playerData.subtitles[track.number] = []
                     } else {
                         playerData.tracks[track.number] = video.addTextTrack('captions', track.type, track.language);
@@ -32,7 +32,8 @@ function subStream(stream) {
                 let formatSub = "Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text
                 if (!playerData.subtitles[trackNumber].includes(formatSub)) {
                     playerData.subtitles[trackNumber].push(formatSub)
-                    renderSubs.call(null, 3)
+                    if (playerData.selectedHeader == trackNumber)
+                        renderSubs.call(null, trackNumber)
                 }
             } else {
                 if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
@@ -42,13 +43,17 @@ function subStream(stream) {
             }
         })
         playerData.subtitleStream.on('file', file => {
-            file.mimetype == ("application/x-truetype-font" || "application/font-woff") ? playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data],{type: file.mimetype}))) : ""
+            file.mimetype == ("application/x-truetype-font" || "application/font-woff") ? playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data], { type: file.mimetype }))) : ""
         })
         stream.pipe(playerData.subtitleStream)
     }
 }
 function renderSubs(trackNumber) {
-    let trackContent = playerData.headers[trackNumber].slice(0, -1) + playerData.subtitles[trackNumber].join("\n")
+    if (trackNumber) {
+        var trackContent = playerData.headers[trackNumber].header.slice(0, -1) + playerData.subtitles[trackNumber].join("\n")
+    } else {
+        var trackContent = playerData.headers[3].header.slice(0, -1)
+    }
     if (!playerData.octopusInstance) {
         let options = {
             video: video,

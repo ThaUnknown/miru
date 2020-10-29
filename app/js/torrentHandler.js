@@ -128,7 +128,7 @@ function postDownload(url, file) {
                     subtitles[track.number] = []
                 })
             })
-            parser.on('subtitle', function (subtitle, trackNumber) {
+            parser.on('subtitle', (subtitle, trackNumber) => {
                 if (playerData.headers) {
                     subtitles[trackNumber].push("Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text)
                 } else if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
@@ -138,7 +138,7 @@ function postDownload(url, file) {
             })
             parser.on('finish', () => {
                 playerData.subtitles = subtitles
-                renderSubs.call(null, 3)
+                renderSubs.call(null, playerData.selectedHeader)
                 let time = video.currentTime,
                     playState = !video.paused
                 video.src = url
