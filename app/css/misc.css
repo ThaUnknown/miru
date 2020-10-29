@@ -85,11 +85,11 @@ section:target {
     width: 6rem;
 }
 
-.arrow::-webkit-inner-spin-button {
+::-webkit-inner-spin-button {
     opacity: 1;
-    margin-left: 0.6rem;
-    margin-bottom: -0.2rem;
-    filter: invert(1);
+    margin-left: .4rem;
+    margin-right: -.5rem;
+    filter: invert(.84);
 }
 
 .material-icons {

@@ -325,17 +325,6 @@ async function btnpip() {
     }
 }
 
-function hardSub() {
-    let c1 = document.createElement("canvas"),
-        sub = document.querySelector(".libassjs-canvas")
-    c1.width = sub.width
-    c1.height = sub.height
-    let ctx1 = c1.getContext("2d")
-    ctx1.drawImage(video, 0, 0, c1.width, c1.height)
-    ctx1.drawImage(sub, 0, 0)
-    console.log(c1.toDataURL("image/jpeg"))
-}
-
 //miniplayer
 if (!settings.player4) {
     player.style.setProperty("--miniplayer-display", "none");
