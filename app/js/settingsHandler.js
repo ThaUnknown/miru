@@ -37,7 +37,7 @@ function restoreDefaults() {
         torrent2: false,
         torrent3: true,
         torrent4: "https://subsplease.org/rss/?r=",
-        torrent4: false,
+        torrent5: false,
         other1: 100,
         other2: true
     }
