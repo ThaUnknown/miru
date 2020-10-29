@@ -49,9 +49,7 @@ function resetVideo() {
 
     dl.removeAttribute("href")
     video = document.createElement("video")
-    if (settings.player7 && 'pictureInPictureEnabled' in document) {
-        video.setAttribute("autoPictureInPicture", "")
-    } else {
+    if (!settings.player7 || !'pictureInPictureEnabled' in document) {
         video.setAttribute("disablePictureInPicture", "")
         bpip.setAttribute("disabled", "")
     }
@@ -271,7 +269,7 @@ function btnmute() {
 
 function updateVolume(a) {
     let level
-    if (a == null) {
+    if (!a) {
         level = volume.value;
     } else {
         level = a;
@@ -489,8 +487,8 @@ if ('mediaSession' in navigator) {
 }
 
 //AL entry auto add
-function checkCompletion(){
-    if(settings.other2 && video.duration - 120 < video.currentTime && !playerData.completed){
+function checkCompletion() {
+    if (settings.other2 && video.duration - 120 < video.currentTime && !playerData.completed) {
         playerData.completed = true
         alEntry()
     }

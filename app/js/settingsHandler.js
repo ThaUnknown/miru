@@ -1,58 +1,20 @@
-const settingsElements = {
-    player1: player1,
-    player2: player2,
-    player3: player3,
-    player4: player4,
-    player5: player5,
-    player6: player6,
-    player7: player7,
-    player8: player8,
-    subtitle1: subtitle1,
-    subtitle2: subtitle2,
-    subtitle3: subtitle3,
-    torrent1: torrent1,
-    torrent2: torrent2,
-    torrent3: torrent3,
-    torrent4: torrent4,
-    torrent5: torrent5,
-    other1: other1,
-    other2: other2
-}
-let settings
+const settingsElements = [
+    player1, player2, player3, player4, player5, player6, player7, player8, subtitle1, subtitle2, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, other1, other2
+]
+let settings = {}
 function restoreDefaults() {
-    localStorage.clear();
-    settings = {
-        player1: "100",
-        player2: "4",
-        player3: "3",
-        player4: "2",
-        player5: true,
-        player6: false,
-        player7: true,
-        player8: true,
-        subtitle1: "'Open Sans', sans-serif",
-        subtitle2: true,
-        subtitle3: true,
-        torrent1: "1080",
-        torrent2: false,
-        torrent3: true,
-        torrent4: "https://subsplease.org/rss/?r=",
-        torrent5: false,
-        other1: 100,
-        other2: true
-    }
-    localStorage.setItem("settings", JSON.stringify(settings))
-    renderSettings()
+    localStorage.removeItem("settings");
+    location.reload()
 }
 let applyTimeout
 function applySettings() {
     clearTimeout(applyTimeout)
     applyTimeout = setTimeout(() => {
-        Object.entries(settingsElements).forEach(setting => {
-            if (settingsElements[setting[0]].type == "checkbox") {
-                settings[setting[0]] = settingsElements[setting[0]].checked
+        settingsElements.forEach(element => {
+            if (element.type == "checkbox") {
+                settings[element.id] = element.checked
             } else {
-                settings[setting[0]] = settingsElements[setting[0]].value
+                settings[element.id] = element.value
             }
         })
         localStorage.setItem("settings", JSON.stringify(settings))
@@ -61,10 +23,10 @@ function applySettings() {
 
 function renderSettings() {
     Object.entries(settings).forEach(setting => {
-        if (settingsElements[setting[0]].type == "checkbox") {
-            settingsElements[setting[0]].checked = setting[1]
+        if (settingsElements.filter(e => e.id == setting[0])[0].type == "checkbox") {
+            settingsElements.filter(e => e.id == setting[0])[0].checked = setting[1]
         } else {
-            settingsElements[setting[0]].value = setting[1]
+            settingsElements.filter(e => e.id == setting[0])[0].value = setting[1]
         }
     })
 }
@@ -79,9 +41,10 @@ function registerProtocol() {
 }
 
 if (!localStorage.getItem("settings")) {
-    restoreDefaults()
+    applySettings()
+} else {
+    settings = JSON.parse(localStorage.getItem("settings"))
 }
-settings = JSON.parse(localStorage.getItem("settings"))
 renderSettings()
 setRes.addEventListener("click", restoreDefaults)
 settingsTab.addEventListener("click", applySettings)
