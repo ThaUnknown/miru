@@ -348,50 +348,57 @@ let store = JSON.parse(localStorage.getItem("store")),
     lastResult
 
 async function hsRss() {
-    if (document.location.href.endsWith("#releases")) {
-        let frag = document.createDocumentFragment(),
-            releases = document.querySelector(".releases"),
-            url = settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4 + settings.torrent1 + "-magnet" : settings.torrent4 + settings.torrent1
-        res = await fetch(url)
-        await res.text().then(async (xmlTxt) => {
-            try {
-                let doc = DOMPARSER(xmlTxt, "text/xml")
-                if (lastResult != doc) {
-                    releases.textContent = '';
-                    releases.appendChild(skeletonCard)
-                    lastResult = doc
-                    let items = doc.querySelectorAll("item")
-                    for (let item of items) {
-                        let i = item.querySelector.bind(item),
-                            regexParse = (nameParseRegex[settings.torrent4]||nameParseRegex.parse).exec(i("title").textContent)
-                        if (!store.hasOwnProperty(regexParse[2]) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
-                            //shit not found, lookup
-                            let res = await alRequest(regexParse[2], 1)
-                            if (!res.data.Page.media[0]) {
-                                res = await alRequest(regexParse[2].replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), 1)
-                            }
-                            store[regexParse[2]] = res.data.Page.media[0]
+    let frag = document.createDocumentFragment(),
+        releases = document.querySelector(".releases"),
+        url = settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4 + settings.torrent1 + "-magnet" : settings.torrent4 + settings.torrent1
+    relFeed.value = torrent4.options[torrent4.selectedIndex].text
+    relQual.value = torrent1.options[torrent1.selectedIndex].text
+    let time = new Date
+    relTime.value = time.toISOString().slice(11, -1).slice(0, -7)
+    res = await fetch(url)
+    await res.text().then(async (xmlTxt) => {
+        try {
+            let doc = DOMPARSER(xmlTxt, "text/xml")
+            if (lastResult != doc) {
+                releases.textContent = '';
+                releases.appendChild(skeletonCard)
+                lastResult = doc
+                let items = doc.querySelectorAll("item")
+                for (let item of items) {
+                    let i = item.querySelector.bind(item),
+                        regexParse = (nameParseRegex[settings.torrent4] || nameParseRegex.parse).exec(i("title").textContent)
+                    if (!store.hasOwnProperty(regexParse[2]) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
+                        //shit not found, lookup
+                        let res = await alRequest(regexParse[2], 1)
+                        if (!res.data.Page.media[0]) {
+                            res = await alRequest(regexParse[2].replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), 1)
                         }
-                        let media = store[regexParse[2]],
-                            template = cardCreator(media, regexParse)
-                        template.onclick = () => {
-                            playerData.selected = [regexParse[2], regexParse[4]]
-                            addTorrent(i('link').textContent)
-                        }
-                        frag.appendChild(template)
+                        store[regexParse[2]] = res.data.Page.media[0]
                     }
-                    releases.textContent = '';
-                    releases.appendChild(frag)
+                    let media = store[regexParse[2]],
+                        template = cardCreator(media, regexParse)
+                    template.onclick = () => {
+                        playerData.selected = [regexParse[2], regexParse[4]]
+                        addTorrent(i('link').textContent)
+                    }
+                    frag.appendChild(template)
                 }
-            } catch (e) {
-                console.error(e)
+                releases.textContent = '';
+                releases.appendChild(frag)
             }
-        })
-    }
+        } catch (e) {
+            console.error(e)
+        }
+    })
+
     localStorage.setItem("store", JSON.stringify(store))
 }
-refRel.onclick = () => {
+refRel.onclick = () => 
     hsRss()
+
+clearRelCache.onclick = () =>{
+    localStorage.removeItem("store")
+    store = {}
 }
 setInterval(() => {
     hsRss()

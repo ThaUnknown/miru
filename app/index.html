@@ -60,7 +60,8 @@
                 </div>
                 <div class="bg-dark">
                     <div class="container row">
-                        <div class="col-md-3 mt-10 mt-nc pb-20 d-flex flex-column justify-content-between align-items-center cover-wrapper">
+                        <div
+                            class="col-md-3 mt-10 mt-nc pb-20 d-flex flex-column justify-content-between align-items-center cover-wrapper">
                             <img class="contain-img rounded w-full">
                             <div class="input-group pt-10">
                                 <div class="input-group-prepend flex-grow-1">
@@ -68,8 +69,8 @@
                                         Episode</button>
                                 </div>
                                 <input type="number" id="ep"
-                                    class="form-control flex-reset w-60 bg-primary px-5 text-right"
-                                    placeholder="#" value="1" min="1">
+                                    class="form-control flex-reset w-60 bg-primary px-5 text-right" placeholder="#"
+                                    value="1" min="1">
                             </div>
                         </div>
                         <div class="col-md-9 p-20 d-flex flex-column">
@@ -231,6 +232,27 @@
                         <button class="btn btn-primary px-10 d-flex align-items-center" id="refRel">
                             <div class="material-icons">refresh</div>&nbsp;Refresh
                         </button>
+                        <button class="btn btn-danger px-10 d-flex align-items-center ml-10" id="clearRelCache">
+                            <div class="material-icons">delete_forever</div>&nbsp;Clear Cache
+                        </button>
+                        <div class="input-group w-150 ml-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Quality</span>
+                            </div>
+                            <input type="text" class="form-control" disabled id="relQual">
+                        </div>
+                        <div class="input-group w-150 ml-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Feed</span>
+                            </div>
+                            <input type="text" class="form-control" disabled id="relFeed">
+                        </div>
+                        <div class="input-group w-200 ml-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Updated</span>
+                            </div>
+                            <input type="time" class="form-control" id="relTime" disabled>
+                        </div>
                     </div>
                 </div>
                 <div class="gallery releases h-full overflow-y-scroll border-left border-top">
@@ -345,14 +367,15 @@
                         <label for="torrent2">Auto-Play Torrents [This might lead to wrong torrents being
                             played]</label>
                     </div>
-                   <div class="custom-switch mb-10">
+                    <div class="custom-switch mb-10">
                         <input type="checkbox" id="torrent3">
                         <label for="torrent3">Trusted Only [Less results but higher quality and more seeders]</label>
-                    </div> 
+                    </div>
                     <div class="custom-switch mb-20">
                         <input type="checkbox" id="torrent5">
-                        <label for="torrent5">Drive Caching [Greatly reduces RAM usage, increases CPU and Drive usage, bad for SSDs]</label>
-                    </div> 
+                        <label for="torrent5">Drive Caching [Greatly reduces RAM usage, increases CPU and Drive usage,
+                            bad for SSDs]</label>
+                    </div>
 
                     <h1 class="content-title font-size-22">
                         Other Settings
@@ -376,7 +399,8 @@
 
 
                     <button class="btn btn-danger" type="button" id="setRes">Restore Defaults</button>
-                    <button class="btn btn-success" type="button" id="regProtButton">Set As Default For Magnet Links</button>
+                    <button class="btn btn-success" type="button" id="regProtButton">Set As Default For Magnet
+                        Links</button>
                     <p class="text-muted">
                         Restart may be required for some settings to take effect.
                     </p>
