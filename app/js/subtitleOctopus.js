@@ -15,6 +15,7 @@ function subStream(stream) {
                         }
                         playerData.headers[track.number] = track
                         playerData.subtitles[track.number] = []
+                        playerData.selectedHeader = 3
                     } else {
                         playerData.tracks[track.number] = video.addTextTrack('captions', track.type, track.language);
                         let spacerCue = new VTTCue(0.1, 9999, "&nbsp;")
