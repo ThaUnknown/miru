@@ -83,42 +83,37 @@ async function addTorrent(magnet) {
                 });
             }
         })
-        let videoFiles = []
-        torrent.files.forEach(file => {
-            videoExtensions.forEach(ext => {
-                file.name.endsWith(ext) ? videoFiles.push(file) : ""
-            })
-        })
+        let videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
         let selectedFile
         if (videoFiles.length) {
-            selectedFile = videoFiles.reduce((a, b) => { return a.length > b.length ? a : b; });
-            torrent.on('done', () => {
-                halfmoon.initStickyAlert({
-                    content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
-                    title: "Download Complete",
-                    alertType: "alert-success",
-                    fillType: ""
-                });
-                selectedFile.getBlobURL((err, url) => {
-                    finishThumbnails(url);
-                    downloadFile(url, selectedFile.name)
-                    postDownload(url, selectedFile)
-                })
-            })
-            video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
-            video.load()
-        } else {
+        selectedFile = videoFiles.reduce((a, b) => { return a.length > b.length ? a : b; });
+        torrent.on('done', () => {
             halfmoon.initStickyAlert({
-                content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
-                title: "Search Failed",
-                alertType: "alert-danger",
+                content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
+                title: "Download Complete",
+                alertType: "alert-success",
                 fillType: ""
             });
-            client.torrents[0].store ? client.torrents[0].store.destroy() : ""
-            client.torrents[0].destroy()
-        }
+            selectedFile.getBlobURL((err, url) => {
+                finishThumbnails(url);
+                downloadFile(url, selectedFile.name)
+                postDownload(url, selectedFile)
+            })
+        })
+        video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
+        video.load()
+    } else {
+        halfmoon.initStickyAlert({
+            content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
+            title: "Search Failed",
+            alertType: "alert-danger",
+            fillType: ""
+        });
+        client.torrents[0].store ? client.torrents[0].store.destroy() : ""
+        client.torrents[0].destroy()
+    }
 
-    })
+})
 
 }
 function postDownload(url, file) {
