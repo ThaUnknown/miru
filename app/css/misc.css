@@ -84,7 +84,9 @@ section:target {
 .w-60 {
     width: 6rem;
 }
-
+#ep::-webkit-inner-spin-button {
+    margin-right: 0 !important
+}
 ::-webkit-inner-spin-button {
     opacity: 1;
     margin-left: .4rem;

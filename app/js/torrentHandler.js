@@ -83,27 +83,41 @@ async function addTorrent(magnet) {
                 });
             }
         })
-        let videoFile = torrent.files[0]
+        let videoFiles = []
         torrent.files.forEach(file => {
-            if (file.length > videoFile.length) {
-                videoFile = file
-            }
-        })
-        torrent.on('done', () => {
-            halfmoon.initStickyAlert({
-                content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
-                title: "Download Complete",
-                alertType: "alert-success",
-                fillType: ""
-            });
-            videoFile.getBlobURL((err, url) => {
-                finishThumbnails(url);
-                downloadFile(url, videoFile.name)
-                postDownload(url, videoFile)
+            videoExtensions.forEach(ext => {
+                file.name.endsWith(ext) ? videoFiles.push(file) : ""
             })
         })
-        video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(videoFile.path)}`
-        video.load()
+        let selectedFile
+        if (videoFiles.length) {
+            selectedFile = videoFiles.reduce((a, b) => { return a.length > b.length ? a : b; });
+            torrent.on('done', () => {
+                halfmoon.initStickyAlert({
+                    content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
+                    title: "Download Complete",
+                    alertType: "alert-success",
+                    fillType: ""
+                });
+                selectedFile.getBlobURL((err, url) => {
+                    finishThumbnails(url);
+                    downloadFile(url, selectedFile.name)
+                    postDownload(url, selectedFile)
+                })
+            })
+            video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
+            video.load()
+        } else {
+            halfmoon.initStickyAlert({
+                content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
+                title: "Search Failed",
+                alertType: "alert-danger",
+                fillType: ""
+            });
+            client.torrents[0].store ? client.torrents[0].store.destroy() : ""
+            client.torrents[0].destroy()
+        }
+
     })
 
 }
