@@ -14,6 +14,7 @@ const settingsElements = {
     torrent2: torrent2,
     torrent3: torrent3,
     torrent4: torrent4,
+    torrent5: torrent5,
     other1: other1,
     other2: other2
 }
@@ -36,6 +37,7 @@ function restoreDefaults() {
         torrent2: false,
         torrent3: true,
         torrent4: "https://subsplease.org/rss/?r=",
+        torrent4: false,
         other1: 100,
         other2: true
     }
