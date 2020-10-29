@@ -23,10 +23,11 @@ function applySettings() {
 
 function renderSettings() {
     Object.entries(settings).forEach(setting => {
-        if (settingsElements.filter(e => e.id == setting[0])[0].type == "checkbox") {
-            settingsElements.filter(e => e.id == setting[0])[0].checked = setting[1]
+        let settingElement = settingsElements.filter(e => e.id == setting[0])[0]
+        if (settingElement.type == "checkbox") {
+            settingElement.checked = setting[1]
         } else {
-            settingsElements.filter(e => e.id == setting[0])[0].value = setting[1]
+            settingElement.value = setting[1]
         }
     })
 }
