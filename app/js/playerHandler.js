@@ -436,7 +436,7 @@ function selectLang(lang) {
 // keybinds
 
 document.onkeydown = (a) => {
-    if (document.location.href.endsWith("#player")) {
+    if (document.location.hash == "#player") {
         switch (a.key) {
             case " ":
                 btnpp();
@@ -473,6 +473,9 @@ document.onkeydown = (a) => {
                 break;
             case "ArrowDown":
                 updateVolume(parseInt(volume.value) - 5)
+                break;
+            case "Escape":
+                document.location.hash = "#browse"
                 break;
         }
     }

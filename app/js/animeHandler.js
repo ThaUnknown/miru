@@ -1,11 +1,7 @@
-const searchRx = /(magnet:)?([A-F\d]{8,40})?(.*\.torrent)?/i;
 function searchBox() {
-    let regexParse = searchRx.exec(search.value)
-    if (regexParse[1] || regexParse[2] || regexParse[4]) {
-        addTorrent(search.value)
-    } else {
-        searchAnime(search.value)
-    }
+    search.placeholder = search.value
+    searchAnime(search.value)
+    search.value = ""
 }
 async function alRequest(a, b) {
     let query,
@@ -29,6 +25,7 @@ async function alRequest(a, b) {
         options.headers['Authorization'] = localStorage.getItem("ALtoken")
     }
     if (!a) {
+        search.placeholder = "Anime Name, Image Link or Direct Magnet Link, Torrent File, Hash"
         variables.sort = "TRENDING_DESC"
         variables.perPage = 50
         query = `
@@ -215,18 +212,18 @@ function viewAnime(media) {
         document.querySelector(".view .details").prepend(temp)
     }
     trailer.src = ""
-    if(media.trailer){
-        switch(media.trailer.site){
+    if (media.trailer) {
+        switch (media.trailer.site) {
             case "youtube":
-                trailer.src = "https://www.youtube.com/embed/"+media.trailer.id
+                trailer.src = "https://www.youtube.com/embed/" + media.trailer.id
         }
     }
     episodes.innerHTML = ""
-    if(media.streamingEpisodes){
+    if (media.streamingEpisodes) {
         let frag = document.createDocumentFragment()
-        media.streamingEpisodes.forEach(episode =>{
+        media.streamingEpisodes.forEach(episode => {
             let temp = document.createElement("div")
-            temp.classList.add("position-relative","w-250","rounded","mr-10","overflow-hidden")
+            temp.classList.add("position-relative", "w-250", "rounded", "mr-10", "overflow-hidden")
             temp.innerHTML = `
             <img src="${episode.thumbnail}" class="w-full">
             <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">${episode.title}</div>`

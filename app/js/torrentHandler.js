@@ -39,6 +39,15 @@ const announceList = [
             throw e
         }
     })
+const torrentRx = /(magnet:)?([A-F\d]{8,40})?(.*\.torrent)?/i;
+window.addEventListener("paste", async (e) => {
+    let content = await navigator.clipboard.readText(),
+        regexParse = torrentRx.exec(content)
+    if(regexParse[1] || regexParse[2] || regexParse[3]){
+        e.preventDefault();
+        addTorrent(content);
+    }
+})
 //for debugging
 function t(a) {
     switch (a) {
