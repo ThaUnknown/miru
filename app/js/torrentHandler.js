@@ -76,7 +76,7 @@ async function addTorrent(magnet) {
         client.torrents[0].destroy()
     }
     halfmoon.hideModal("tsearch")
-    document.location.href = "#player"
+    document.location.hash = "#player"
     let selected = playerData.selected,
         store
     resetVideo()
@@ -166,7 +166,7 @@ function postDownload(url, file) {
     }
 }
 function onProgress() {
-    if (document.location.href.endsWith("#player") && client.torrents[0]) {
+    if (document.location.hash = "#player" && client.torrents[0]) {
         player.style.setProperty("--download", client.torrents[0].progress * 100 + "%");
         peers.textContent = client.torrents[0].numPeers
         downSpeed.textContent = prettyBytes(client.torrents[0].downloadSpeed) + '/s'

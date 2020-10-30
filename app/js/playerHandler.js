@@ -99,7 +99,7 @@ async function dragBarStart() {
 
 let currentTime;
 function updateBar(progressPercent) {
-    if (document.location.href.endsWith("#player")) {
+    if (document.location.hash = "#player") {
         currentTime = video.duration * progressPercent / 100
         progress.style.setProperty("--progress", progressPercent + "%");
         thumb.style.setProperty("--progress", progressPercent + "%");
