@@ -1,12 +1,14 @@
-.badge-color{
+.badge-color {
     background-color: var(--color) !important;
     border-color: var(--color) !important;
 }
+
 .cover-img {
     object-fit: cover;
     height: 400px;
 }
-.cover-img[src=""]{
+
+.cover-img[src=""] {
     display: none;
 }
 
@@ -17,7 +19,8 @@
 .banner {
     opacity: 0.85
 }
-.cover-wrapper:not(.mt-nc) + div {
+
+.cover-wrapper:not(.mt-nc)+div {
     justify-content: flex-end;
 }
 
@@ -32,10 +35,12 @@
 .desc {
     max-height: 250px
 }
-.desc > p {
+
+.desc>p {
     margin-bottom: 0;
     margin-top: 0;
 }
+
 .card-grid {
     display: grid;
     grid-template-rows: auto 1fr auto
@@ -84,9 +89,11 @@ section:target {
 .w-60 {
     width: 6rem;
 }
+
 #ep::-webkit-inner-spin-button {
     margin-right: 0 !important
 }
+
 ::-webkit-inner-spin-button {
     opacity: 1;
     margin-left: .4rem;
@@ -102,10 +109,12 @@ section:target {
 .close {
     font-family: Arial;
 }
-.skeloader{
+
+.skeloader {
     position: relative;
     overflow: hidden;
 }
+
 .skeloader::before {
     content: '';
     display: block;
@@ -116,13 +125,32 @@ section:target {
     width: 150px;
     background: linear-gradient(to right, transparent 0%, #25282c 50%, transparent 100%);
     animation: load 1s cubic-bezier(0.4, 0.0, 0.2, 1);
-    animation-iteration-count:infinite;
+    animation-iteration-count: infinite;
 }
+
+#trailer[src=""] {
+    display: none;
+}
+
+.trailer {
+    padding-bottom: 56.25%;
+}
+#episodes img{
+    max-height: 150px;
+}
+#episodes > div{
+    flex: none
+}
+.ep-title{
+    background: rgba(31, 38, 49, 0.7);
+}
+
 @keyframes load {
     from {
         left: -150px;
     }
-    to   {
+
+    to {
         left: 100%;
     }
 }

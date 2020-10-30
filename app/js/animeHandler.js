@@ -71,13 +71,21 @@ async function alRequest(a, b) {
                         timeUntilAiring
                         episode
                     }
+                    trailer {
+                        id
+                        site
+                    }
+                    streamingEpisodes {
+                        title
+                        thumbnail
+                    }
                 }
             }
         }
         `
     } else {
         variables.search = a
-        variables.perPage = b
+        variables.perPage = b || 50
         variables.status = "RELEASING"
         query = `
         query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType, $status: MediaStatus) {
@@ -186,6 +194,7 @@ let details = {
 }
 
 function viewAnime(media) {
+    console.log(media)
     halfmoon.toggleModal("view")
     if (media.bannerImage != null) {
         document.querySelector(".view .banner img").src = media.bannerImage
@@ -198,11 +207,36 @@ function viewAnime(media) {
     document.querySelector(".view .title").textContent = media.title.userPreferred
     document.querySelector(".view .desc").innerHTML = media.description || ""
     document.querySelector(".view .details").innerHTML = ""
-    play.onclick = () => { nyaaSearch(media, ep.value); halfmoon.toggleModal("view") }
     detailsCreator(media)
+    document.querySelector(".view .details").appendChild(detailsfrag)
+    if (media.nextAiringEpisode) {
+        let temp = document.createElement("p")
+        temp.innerHTML = `<span class="font-weight-bold">Airing</span><br><span class="text-muted"> Episode ${media.nextAiringEpisode.episode}: ${toTS(media.nextAiringEpisode.timeUntilAiring)}</span>`
+        document.querySelector(".view .details").prepend(temp)
+    }
+    trailer.src = ""
+    if(media.trailer){
+        switch(media.trailer.site){
+            case "youtube":
+                trailer.src = "https://www.youtube.com/embed/"+media.trailer.id
+        }
+    }
+    episodes.innerHTML = ""
+    if(media.streamingEpisodes){
+        let frag = document.createDocumentFragment()
+        media.streamingEpisodes.forEach(episode =>{
+            let temp = document.createElement("div")
+            temp.classList.add("position-relative","w-250","rounded","mr-10","overflow-hidden")
+            temp.innerHTML = `
+            <img src="${episode.thumbnail}" class="w-full">
+            <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">${episode.title}</div>`
+            frag.appendChild(temp)
+        })
+        episodes.appendChild(frag)
+    }
+    play.onclick = () => { nyaaSearch(media, ep.value); halfmoon.toggleModal("view") }
     ep.value = 1
     ep.max = media.episodes || 999
-    document.querySelector(".view .details").appendChild(detailsfrag)
 }
 
 function detailsCreator(entry) {
@@ -393,10 +427,10 @@ async function hsRss() {
 
     localStorage.setItem("store", JSON.stringify(store))
 }
-refRel.onclick = () => 
+refRel.onclick = () =>
     hsRss()
 
-clearRelCache.onclick = () =>{
+clearRelCache.onclick = () => {
     localStorage.removeItem("store")
     store = {}
 }
