@@ -105,7 +105,8 @@ async function addTorrent(magnet) {
                 }
             })
             video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
-            video.load()
+            video.load();
+            playVideo();
         } else {
             halfmoon.initStickyAlert({
                 content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,

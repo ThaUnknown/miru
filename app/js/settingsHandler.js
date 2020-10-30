@@ -56,5 +56,14 @@ if (searchParams.get("access_token")) {
     localStorage.setItem("ALtoken", searchParams.get("access_token"))
     window.location = "/app/#settingsTab"
 }
+torrent5.onclick = e => {
+    if (e.srcElement.checked)
+        player8.checked = false
+
+}
+player8.onclick = e => {
+    if (e.srcElement.checked)
+        torrent5.checked = false
+}
 
 document.body.style.zoom = settings.other1 + "%"
