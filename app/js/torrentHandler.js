@@ -69,7 +69,7 @@ async function addTorrent(magnet) {
     halfmoon.hideModal("tsearch")
     document.location.href = "#player"
     let selected = playerData.selected,
-    store
+        store
     resetVideo()
     selected ? selPlaying(selected) : ""
     await sw
@@ -96,11 +96,13 @@ async function addTorrent(magnet) {
                     alertType: "alert-success",
                     fillType: ""
                 });
-                selectedFile.getBlobURL((err, url) => {
-                    finishThumbnails(url);
-                    downloadFile(url, selectedFile.name)
-                    postDownload(url, selectedFile)
-                })
+                if (settings.player8 && !torrent5) {
+                    selectedFile.getBlobURL((err, url) => {
+                        finishThumbnails(url);
+                        downloadFile(url, selectedFile.name)
+                        postDownload(url, selectedFile)
+                    })
+                }
             })
             video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
             video.load()
@@ -119,40 +121,38 @@ async function addTorrent(magnet) {
 
 }
 function postDownload(url, file) {
-    if (settings.player8) {
-        if (playerData.subtitleStream) {
-            let parser = new SubtitleParser(),
-                subtitles = []
-            parser.once('tracks', pTracks => {
-                pTracks.forEach(track => {
-                    subtitles[track.number] = []
-                })
+    if (playerData.subtitleStream) {
+        let parser = new SubtitleParser(),
+            subtitles = []
+        parser.once('tracks', pTracks => {
+            pTracks.forEach(track => {
+                subtitles[track.number] = []
             })
-            parser.on('subtitle', (subtitle, trackNumber) => {
-                if (playerData.headers) {
-                    subtitles[trackNumber].push("Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text)
-                } else if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
-                    let cue = new VTTCue(subtitle.time / 1000, (subtitle.time + subtitle.duration) / 1000, subtitle.text)
-                    playerData.tracks[trackNumber].addCue(cue)
-                }
-            })
-            parser.on('finish', () => {
-                playerData.subtitles = subtitles
-                renderSubs.call(null, playerData.selectedHeader)
-                let time = video.currentTime,
-                    playState = !video.paused
-                video.src = url
-                video.currentTime = time
-                playState ? video.play() : ""
-            });
-            file.createReadStream().pipe(parser)
-        } else {
+        })
+        parser.on('subtitle', (subtitle, trackNumber) => {
+            if (playerData.headers) {
+                subtitles[trackNumber].push("Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text)
+            } else if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
+                let cue = new VTTCue(subtitle.time / 1000, (subtitle.time + subtitle.duration) / 1000, subtitle.text)
+                playerData.tracks[trackNumber].addCue(cue)
+            }
+        })
+        parser.on('finish', () => {
+            playerData.subtitles = subtitles
+            renderSubs.call(null, playerData.selectedHeader)
             let time = video.currentTime,
                 playState = !video.paused
             video.src = url
             video.currentTime = time
             playState ? video.play() : ""
-        }
+        });
+        file.createReadStream().pipe(parser)
+    } else {
+        let time = video.currentTime,
+            playState = !video.paused
+        video.src = url
+        video.currentTime = time
+        playState ? video.play() : ""
     }
 }
 function onProgress() {
