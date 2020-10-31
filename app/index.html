@@ -265,11 +265,12 @@
                 </div>
             </section>
             <section id="settingsTab" class="overflow-y-scroll border-left">
-                <div class="content">
+                <div class="content d-flex flex-column align-items-start">
                     <h1 class="content-title font-size-22">
                         Player Settings
                     </h1>
-                    <div class="input-group w-200 mb-10">
+                    <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="right"
+                        data-title="Volume Set When Launching The App">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Volume</span>
                         </div>
@@ -278,7 +279,8 @@
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
-                    <div class="input-group w-200 mb-10">
+                    <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="right"
+                        data-title="Time For Player Controls To Hide">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Immerse After</span>
                         </div>
@@ -287,7 +289,8 @@
                             <span class="input-group-text">sec</span>
                         </div>
                     </div>
-                    <div class="input-group w-200 mb-10">
+                    <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="right"
+                        data-title="How Much To Seek Video">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Seek</span>
                         </div>
@@ -296,33 +299,38 @@
                             <span class="input-group-text">sec</span>
                         </div>
                     </div>
-                    <div class="custom-switch mb-10">
+                    <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="right"
+                        data-title="Shows Miniplayer When Browsing">
                         <input type="checkbox" id="player4" checked>
                         <label for="player4">Miniplayer</label>
                     </div>
-                    <div class="custom-switch mb-10">
+                    <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="right"
+                        data-title="Shows Small Thumbnail Images When Using The Seek Bar">
                         <input type="checkbox" id="player5" checked>
-                        <label for="player5">Seek Previews</label>
+                        <label for="player5">Seek Bar Previews</label>
                     </div>
-                    <div class="custom-switch mb-10">
+                    <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="right"
+                        data-title="Automatically Starts Playing Next Episode When A Video Ends">
                         <input type="checkbox" id="player6">
                         <label for="player6">Autoplay Next Episode</label>
                     </div>
-                    <div class="custom-switch mb-10">
+                    <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="right"
+                        data-title="Enables Picture In Picture If Your Device Supports It">
                         <input type="checkbox" id="player7" checked>
                         <label for="player7">Picture In Picture</label>
                     </div>
-                    <div class="custom-switch mb-20">
+                    <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="right" data-title="Improves UX And Performance After A Download
+                    Finishes, Initially CPU Intensive">
                         <input type="checkbox" id="player8" checked>
-                        <label for="player8">Post-Download Processing [Improves UX and performance after a download
-                            finishes, initially CPU intensive]</label>
+                        <label for="player8">Post-Download Processing</label>
                     </div>
 
 
                     <h1 class="content-title font-size-22">
                         Subtitle Settings
                     </h1>
-                    <div class="input-group w-200 mb-10">
+                    <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="right"
+                        data-title="Fallback Font For When One Isn't Detected">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Font Fallback</span>
                         </div>
@@ -331,24 +339,23 @@
                             <option value="Roboto,Arial,Helvetica,sans-serif" selected>Roboto</option>
                         </select>
                     </div>
-                    <div class="custom-switch mb-10">
+                    <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="right"
+                        data-title="Greatly Improves Performance, Might Cause Desync On Very Low-End Devices">
                         <input type="checkbox" id="subtitle2" checked>
-                        <label for="subtitle2">Async Rendering [Might cause desync on low end devices but greatly
-                            improves performance]</label>
+                        <label for="subtitle2">Async Rendering</label>
                     </div>
-                    <div class="custom-switch mb-20">
+                    <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="right" data-title="Displays Subtitles In PiP And ChromeCast, Requires chrome://flags/#disable-accelerated-2d-canvas Set To
+                    Disabled, Very CPU Intensive">
                         <input type="checkbox" id="subtitle3" checked>
-                        <label for="subtitle3">Video Canvas Merging [Displays subtitles in PiP and ChromeCast, requires
-                            <a href="chrome://flags/#disable-accelerated-2d-canvas"
-                                target="_blank">chrome://flags/#disable-accelerated-2d-canvas</a> set to
-                            Disabled, CPU intensive]</label>
+                        <label for="subtitle3">Video Canvas Merging</label>
                     </div>
 
 
                     <h1 class="content-title font-size-22">
                         Torrent Settings
                     </h1>
-                    <div class="input-group mb-10 w-200">
+                    <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="right"
+                        data-title="What Quality To Find Torrents In">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Quality</span>
                         </div>
@@ -358,7 +365,8 @@
                             <option value="480">480p</option>
                         </select>
                     </div>
-                    <div class="input-group mb-10 w-200">
+                    <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="right"
+                        data-title="What Feed To Fetch Torrents From">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Feed</span>
                         </div>
@@ -368,25 +376,27 @@
                                 Erai-raws</option>
                         </select>
                     </div>
-                    <div class="custom-switch mb-10">
+                    <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="right" data-title="Skips The Torrent Selection Popup, Might Lead To Unwanted Videos Being
+                    Played">
                         <input type="checkbox" id="torrent2">
-                        <label for="torrent2">Auto-Play Torrents [This might lead to wrong torrents being
-                            played]</label>
+                        <label for="torrent2">Auto-Play Torrents</label>
                     </div>
-                    <div class="custom-switch mb-10">
+                    <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="right"
+                        data-title="Finds Only Trusted Torrents, Gives Less Results But Higher Quality And With More Seeders">
                         <input type="checkbox" id="torrent3" checked>
-                        <label for="torrent3">Trusted Only [Less results but higher quality and more seeders]</label>
+                        <label for="torrent3">Trusted Only</label>
                     </div>
-                    <div class="custom-switch mb-20">
+                    <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="right" data-title="Greatly Reduces RAM Usage By Caching Torrents On Drive, Increases CPU And Drive Usage,
+                    Bad For SSDs, Experimental">
                         <input type="checkbox" id="torrent5">
-                        <label for="torrent5">Drive Caching [Greatly reduces RAM usage, increases CPU and Drive usage,
-                            bad for SSDs, experimental]</label>
+                        <label for="torrent5">Drive Caching</label>
                     </div>
 
                     <h1 class="content-title font-size-22">
                         Other Settings
                     </h1>
-                    <div class="input-group w-200 mb-10">
+                    <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="right"
+                    data-title="Change The UI Scale Of The App">
                         <div class="input-group-prepend">
                             <span class="input-group-text">UI Scale</span>
                         </div>
@@ -395,7 +405,8 @@
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
-                    <div class="custom-switch mb-20">
+                    <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="right"
+                    data-title="Automatically Marks Episodes As Complete On AniList When You Complete Watching Them, Requires AniList Login">
                         <input type="checkbox" id="other2">
                         <label for="other2">AniList Sync [Requires <a
                                 href="https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token"
@@ -404,9 +415,12 @@
 
 
 
-                    <button class="btn btn-danger" type="button" id="setRes">Restore Defaults</button>
-                    <button class="btn btn-success" type="button" id="regProtButton">Set As Default For Magnet
-                        Links</button>
+                    <div><button class="btn btn-danger" type="button" id="setRes" data-toggle="tooltip" data-placement="right"
+                        data-title="Restores All Settings Back To Their Recommended Defaults">Restore Defaults</button>
+                        <button class="btn btn-success" type="button" id="regProtButton" data-toggle="tooltip" data-placement="right"
+                        data-title="Sets The App As The Default Program To Launch When Opening Magnet Links On Other Sites, Automatically Downloads And Plays The Torrent">Set As Default For Magnet
+                            Links</button>
+                    </div>
                     <p class="text-muted">
                         Restart may be required for some settings to take effect.
                     </p>

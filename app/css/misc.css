@@ -1,3 +1,7 @@
+:root{
+    --tooltip-width: 250px;
+}
+
 .badge-color {
     background-color: var(--color) !important;
     border-color: var(--color) !important;
