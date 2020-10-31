@@ -70,8 +70,7 @@ async function alRequest(a, b) {
                     }
                 }
             }
-        }
-        `
+        }`
     } else if (b) {
         variables.search = a
         variables.perPage = b
@@ -99,10 +98,13 @@ async function alRequest(a, b) {
                         medium
                         color
                     }
+                    streamingEpisodes {
+                        title
+                        thumbnail
+                    }
                 }
             }
-        }
-        `
+        }`
     } else {
         variables.search = a
         variables.sort = "TRENDING_DESC"
@@ -149,8 +151,7 @@ async function alRequest(a, b) {
                     }
                 }
             }
-        }
-        `
+        }`
     }
     options.body = JSON.stringify({
         query: query,
@@ -229,9 +230,8 @@ let details = {
     native: "Native",
     synonyms: "Synonyms"
 }
-
+const episodeRx = /Episode (\d+) - (.*)/;
 function viewAnime(media) {
-    console.log(media)
     halfmoon.toggleModal("view")
     if (media.bannerImage != null) {
         document.querySelector(".view .banner img").src = media.bannerImage
@@ -256,6 +256,7 @@ function viewAnime(media) {
         switch (media.trailer.site) {
             case "youtube":
                 trailer.src = "https://www.youtube.com/embed/" + media.trailer.id
+                break;
         }
     }
     episodes.innerHTML = ""
@@ -263,10 +264,11 @@ function viewAnime(media) {
         let frag = document.createDocumentFragment()
         media.streamingEpisodes.forEach(episode => {
             let temp = document.createElement("div")
-            temp.classList.add("position-relative", "w-250", "rounded", "mr-10", "overflow-hidden")
+            temp.classList.add("position-relative", "w-250", "rounded", "mr-10", "overflow-hidden", "pointer")
             temp.innerHTML = `
             <img src="${episode.thumbnail}" class="w-full">
             <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">${episode.title}</div>`
+            temp.onclick = () => { nyaaSearch(media, episodeRx.exec(episode.title)[1]); halfmoon.toggleModal("view") }
             frag.appendChild(temp)
         })
         episodes.appendChild(frag)

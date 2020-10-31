@@ -46,7 +46,7 @@ function resetVideo() {
     video.load()
     delete video
     video.remove()
-    nowPlayingDisplay.textContent = playerData.nowPlaying || ""
+    nowPlayingDisplay.textContent = ""
 
     dl.removeAttribute("href")
     video = document.createElement("video")
@@ -487,7 +487,7 @@ function selPlaying(sel) {
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
             title: store[playerData.nowPlaying[0]] ? store[playerData.nowPlaying[0]].title.userPreferred : playerData.nowPlaying[0],
-            artist: "Episode " + playerData.nowPlaying[1],
+            artist: "Episode " + parseInt(playerData.nowPlaying[1]),
             album: "Miru",
             artwork: [
                 {
@@ -498,7 +498,7 @@ function selPlaying(sel) {
             ]
         });
     }
-    nowPlayingDisplay.textContent = `EP ${playerData.nowPlaying[1]}`
+    nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}`
 }
 
 function updatePositionState() {
