@@ -3,6 +3,11 @@ function searchBox() {
     searchAnime(search.value)
     search.value = ""
 }
+window.onhashchange = e => {
+    if (document.location.hash === "#browse") {
+        search.focus();
+    }
+}
 async function alRequest(a, b) {
     let query,
         variables = {
