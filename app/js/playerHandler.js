@@ -436,6 +436,9 @@ function selectLang(lang) {
 // keybinds
 
 document.onkeydown = (a) => {
+    if (a.key == "F5") {
+        a.preventDefault();
+    }
     if (document.location.hash == "#player") {
         switch (a.key) {
             case " ":
