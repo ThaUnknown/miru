@@ -7,6 +7,7 @@ async function alRequest(a, b) {
     let query,
         variables = {
             type: "ANIME",
+            sort: "TRENDING_DESC",
             page: 1,
             perPage: 50
         },
@@ -26,18 +27,9 @@ async function alRequest(a, b) {
     }
     if (!a) {
         search.placeholder = "Anime Name, Image Link or Direct Magnet Link, Torrent File, Hash"
-        variables.sort = "TRENDING_DESC"
-        variables.perPage = 50
         query = `
         query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
             Page (page: $page, perPage: $perPage) {
-                pageInfo {
-                    total
-                    currentPage
-                    lastPage
-                    hasNextPage
-                    perPage
-                }
                 media(type: $type, sort: $sort) {
                     id
                     title {
@@ -80,9 +72,9 @@ async function alRequest(a, b) {
             }
         }
         `
-    } else {
+    } else if (b) {
         variables.search = a
-        variables.perPage = b || 50
+        variables.perPage = b
         variables.status = "RELEASING"
         query = `
         query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType, $status: MediaStatus) {
@@ -106,6 +98,54 @@ async function alRequest(a, b) {
                         extraLarge
                         medium
                         color
+                    }
+                }
+            }
+        }
+        `
+    } else {
+        variables.search = a
+        variables.sort = "TRENDING_DESC"
+        query = `
+        query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String) {
+            Page (page: $page, perPage: $perPage) {
+                media(type: $type, search: $search, sort: $sort) {
+                    id
+                    title {
+                        romaji
+                        english
+                        native
+                        userPreferred
+                    }
+                    description(
+                        asHtml: true
+                    )
+                    season
+                    seasonYear
+                    format
+                    status
+                    episodes
+                    duration
+                    averageScore
+                    genres
+                    coverImage {
+                        extraLarge
+                        medium
+                        color
+                    }
+                    bannerImage
+                    synonyms
+                    nextAiringEpisode {
+                        timeUntilAiring
+                        episode
+                    }
+                    trailer {
+                        id
+                        site
+                    }
+                    streamingEpisodes {
+                        title
+                        thumbnail
                     }
                 }
             }

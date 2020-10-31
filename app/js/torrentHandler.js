@@ -105,7 +105,7 @@ async function addTorrent(magnet) {
                     alertType: "alert-success",
                     fillType: ""
                 });
-                if (settings.player8 && !torrent5) {
+                if (settings.player8 && !settings.torrent5) {
                     selectedFile.getBlobURL((err, url) => {
                         finishThumbnails(url);
                         downloadFile(url, selectedFile.name)
