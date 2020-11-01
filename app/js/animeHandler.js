@@ -4,6 +4,9 @@ function searchBox() {
     search.value = ""
     document.location.hash = "#browse"
 }
+navNew.onclick = () => {hsRss()}
+navTrending.onclick = () =>{searchAnime()}
+navList.onclick = () =>{searchAnime()}
 async function alRequest(a, b) {
     let query,
         variables = {
@@ -219,12 +222,12 @@ async function searchAnime(a) {
 let detailsfrag = document.createDocumentFragment()
 let details = {
     averageScore: "Average Score",
-    duration: "Episode Duration",
-    episodes: "Episodes",
-    format: "Format",
+    // duration: "Episode Duration",
+    // episodes: "Episodes",
+    // format: "Format",
     genres: "Genres",
-    season: "Season",
-    seasonYear: "Year",
+    // season: "Season",
+    // seasonYear: "Year",
     status: "Status",
     english: "English",
     romaji: "Romaji",
@@ -234,51 +237,60 @@ let details = {
 const episodeRx = /Episode (\d+) - (.*)/;
 function viewAnime(media) {
     halfmoon.toggleModal("view")
-    if (media.bannerImage != null) {
-        document.querySelector(".view .banner img").src = media.bannerImage
-        document.querySelector(".view .cover-wrapper").classList.add("mt-nc")
-    } else {
-        document.querySelector(".view .banner img").src = ""
-        document.querySelector(".view .cover-wrapper").classList.remove("mt-nc")
-    }
-    document.querySelector(".view .contain-img").src = media.coverImage.extraLarge
-    document.querySelector(".view .title").textContent = media.title.userPreferred
-    document.querySelector(".view .desc").innerHTML = media.description || ""
-    document.querySelector(".view .details").innerHTML = ""
+    view.setAttribute("style", `background-image: url(${media.bannerImage}) !important`)
+    viewImg.src = media.coverImage.extraLarge
+    viewTitle.textContent = media.title.userPreferred
+    viewDesc.innerHTML = media.description || ""
+
+    viewDetails.innerHTML = ""
     detailsCreator(media)
-    document.querySelector(".view .details").appendChild(detailsfrag)
+    viewDetails.appendChild(detailsfrag)
     if (media.nextAiringEpisode) {
         let temp = document.createElement("p")
         temp.innerHTML = `<span class="font-weight-bold">Airing</span><br><span class="text-muted"> Episode ${media.nextAiringEpisode.episode}: ${toTS(media.nextAiringEpisode.timeUntilAiring)}</span>`
-        document.querySelector(".view .details").prepend(temp)
+        viewDetails.prepend(temp)
     }
-    trailer.src = ""
+    viewSeason.innerHTML = `${(media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear ? media.seasonYear : "")}`
+    viewMediaInfo.innerHTML = `${media.format ? "<span>" + media.format + "</span>" : ""}${media.episodes ? "<span>" + media.episodes + " Episodes</span>" : ""}${media.duration ? "<span>" + media.duration + " Minutes</span>" : ""}`
+    viewPlay.onclick = () => { nyaaSearch(media, 1); halfmoon.toggleModal("view") }
     if (media.trailer) {
-        switch (media.trailer.site) {
-            case "youtube":
-                trailer.src = "https://www.youtube.com/embed/" + media.trailer.id
-                break;
-        }
+        viewTrailer.removeAttribute("disabled", "")
+        viewTrailer.onclick = () =>
+            trailerPopup(media.trailer)
+    } else {
+        viewTrailer.setAttribute("disabled", "")
+    }
+    viewEpisodes.onclick = () => {
+        viewEpisodesWrapper.classList.toggle("hidden")
     }
     episodes.innerHTML = ""
     if (media.streamingEpisodes) {
+        viewEpisodes.removeAttribute("disabled", "")
         let frag = document.createDocumentFragment()
         media.streamingEpisodes.forEach(episode => {
             let temp = document.createElement("div")
             temp.classList.add("position-relative", "w-250", "rounded", "mr-10", "overflow-hidden", "pointer")
             temp.innerHTML = `
-            <img src="${episode.thumbnail}" class="w-full">
+            <img src="${episode.thumbnail}" class="w-full h-full">
             <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">${episode.title}</div>`
             temp.onclick = () => { nyaaSearch(media, episodeRx.exec(episode.title)[1]); halfmoon.toggleModal("view") }
             frag.appendChild(temp)
         })
         episodes.appendChild(frag)
+    } else {
+        viewEpisodes.setAttribute("disabled", "")
     }
-    play.onclick = () => { nyaaSearch(media, ep.value); halfmoon.toggleModal("view") }
-    ep.value = 1
-    ep.max = media.episodes || 999
 }
+function trailerPopup(trailer) {
+    trailerVideo.src = ""
+    halfmoon.toggleModal("trailer")
+    switch (trailer.site) {
+        case "youtube":
+            trailerVideo.src = "https://www.youtube.com/embed/" + trailer.id
+            break;
+    }
 
+}
 function detailsCreator(entry) {
     if (entry) {
         Object.entries(entry).forEach(value => {
