@@ -2,11 +2,7 @@ function searchBox() {
     search.placeholder = search.value
     searchAnime(search.value)
     search.value = ""
-}
-window.onhashchange = e => {
-    if (document.location.hash === "#browse") {
-        search.focus();
-    }
+    document.location.hash = "#browse"
 }
 async function alRequest(a, b) {
     let query,
@@ -31,7 +27,7 @@ async function alRequest(a, b) {
         options.headers['Authorization'] = localStorage.getItem("ALtoken")
     }
     if (!a) {
-        search.placeholder = "Anime Name, Image Link or Direct Magnet Link, Torrent File, Hash"
+        search.placeholder = "Search"
         query = `
         query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
             Page (page: $page, perPage: $perPage) {
@@ -429,10 +425,6 @@ async function hsRss() {
     let frag = document.createDocumentFragment(),
         releases = document.querySelector(".releases"),
         url = settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4 + settings.torrent1 + "-magnet" : settings.torrent4 + settings.torrent1
-    relFeed.value = torrent4.options[torrent4.selectedIndex].text
-    relQual.value = torrent1.options[torrent1.selectedIndex].text
-    let time = new Date
-    relTime.value = time.toISOString().slice(11, -1).slice(0, -7)
     res = await fetch(url)
     await res.text().then(async (xmlTxt) => {
         try {
@@ -471,9 +463,6 @@ async function hsRss() {
 
     localStorage.setItem("store", JSON.stringify(store))
 }
-refRel.onclick = () =>
-    hsRss()
-
 clearRelCache.onclick = () => {
     localStorage.removeItem("store")
     store = {}

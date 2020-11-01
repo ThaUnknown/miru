@@ -331,7 +331,7 @@ if (!settings.player4) {
 // theathe mode
 
 function btntheatre() {
-    halfmoon.toggleSidebar();
+    pageWrapper.classList.toggle("nav-hidden")
 }
 
 // fullscreen

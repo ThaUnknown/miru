@@ -66,4 +66,4 @@ player8.onclick = e => {
         torrent5.checked = false
 }
 
-document.body.style.zoom = settings.other1 + "%"
+document.documentElement.style.setProperty("font-size", settings.other1 + "%")

@@ -248,7 +248,7 @@ navigator.serviceWorker.addEventListener('message', evt => {
 })
 
 function prettyBytes(num) {
-    var exponent, unit, neg = num < 0, units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    let exponent, unit, neg = num < 0, units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
     if (neg) num = -num
     if (num < 1) return (neg ? '-' : '') + num + ' B'
     exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1)

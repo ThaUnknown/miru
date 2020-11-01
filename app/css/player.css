@@ -7,9 +7,9 @@
     --height: 0;
     --download: 0%;
     color: #b6b6b6;
-    --sidebar-width: 19rem;
     --ts: "";
     --miniplayer-display: flex;
+    --tooltip-width: 250px;
 }
 
 /* NAVBAR */

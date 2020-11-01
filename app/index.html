@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Miru">
     <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
-    <meta name="theme-color" content="#111417" />
+    <meta name="theme-color" content="#11141700" />
     <link rel="icon" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     <meta charset="utf-8" />
@@ -109,37 +109,38 @@
             </div>
         </div>
     </div>
-    <div class="page-wrapper with-sidebar" data-sidebar-type="full-height">
+    <div id="pageWrapper" class="page-wrapper with-navbar">
         <div class="sticky-alerts"></div>
-
-        <div class="sidebar-overlay" onclick="halfmoon.toggleSidebar()"></div>
-        <div class="sidebar d-flex border-0">
-            <div class="sidebar-menu d-flex flex-column justify-content-end flex-grow-1">
-                <a href="#player" class="sidebar-brand">
-                    <img src="logo.png" alt="logo">
-                    Miru
-                </a>
-                <div class="sidebar-divider"></div>
-                <a href="#releases" class="sidebar-link sidebar-link-with-icon">
-                    <span class="sidebar-icon bg-transparent justify-content-start mr-0">
-                        <i class="material-icons" aria-hidden="true">schedule</i>
-                    </span>
-                    Latest Releases
-                </a>
-                <a href="#browse" class="sidebar-link sidebar-link-with-icon">
-                    <span class="sidebar-icon bg-transparent justify-content-start mr-0">
-                        <i class="material-icons" aria-hidden="true">list</i>
-                    </span>
-                    Browse
-                </a>
-                <a href="#settingsTab" class="sidebar-link sidebar-link-with-icon mt-auto">
-                    <span class="sidebar-icon bg-transparent justify-content-start mr-0">
-                        <i class="material-icons" aria-hidden="true">settings</i>
-                    </span>
-                    Settings
-                </a>
-            </div>
-        </div>
+        <nav class="navbar bg-dark">
+            <a href="#player" class="navbar-brand mt-5">
+                <img src="logo_cut.png" alt="logo">
+            </a>
+            <a href="#list" class="navbar-brand pointer ml-auto" data-toggle="tooltip" data-placement="bottom"
+                data-title="Anime Watch List">
+                <span class="material-icons font-size-20">list_alt</span>
+            </a>
+            </a>
+            <a href="#releases" class="navbar-brand pointer" data-toggle="tooltip" data-placement="bottom"
+                data-title="Latest Releases Feed">
+                <span class="material-icons font-size-20">fiber_new</span>
+            </a>
+            <a href="#browse" class="navbar-brand pointer" data-toggle="tooltip" data-placement="bottom"
+            data-title="Currently Trending Anime">
+                <span class="material-icons font-size-20">trending_up</span>
+            </a>
+            <form class="form-inline d-flex" action="javascript:searchBox()">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text d-flex material-icons bg-dark-light pr-0">search</span>
+                    </div>
+                    <input id="search" type="text" class="form-control bg-dark-light border-left-0"
+                        placeholder="Search" autocomplete="off">
+                </div>
+            </form>
+            <a href="#settingsTab" class="navbar-brand pointer font-size-20 mr-5">
+                <span class="material-icons font-size-20">settings</span>
+            </a>
+        </nav>
         <div class="overflow-y-hidden content-wrapper">
             <section id="player" class="overflow-hidden">
                 <video id="video">
@@ -216,56 +217,16 @@
                     </div>
                 </div>
             </section>
-            <section id="browse" class="flex-column">
-                <div class="bg-dark">
-                    <div class="text-center content my-15">
-                        <form class="input-group" action="javascript:searchBox()">
-                            <div class="input-group-prepend">
-                                <button class="btn btn-primary material-icons px-10" type="submit">search</button>
-                            </div>
-                            <input type="text" class="form-control search"
-                                placeholder="Anime Name, Image Link or Direct Magnet Link, Torrent File, Hash"
-                                id="search">
-                        </form>
-                    </div>
-                </div>
-                <div class="gallery browse h-full overflow-y-scroll border-left border-top">
+            <section id="browse" class="flex-column border-top">
+                <div class="gallery browse h-full overflow-y-scroll">
                 </div>
             </section>
-            <section id="releases" class="flex-column">
-                <div class="bg-dark">
-                    <div class="content my-15 d-flex">
-                        <button class="btn btn-primary px-10 d-flex align-items-center" id="refRel">
-                            <div class="material-icons">refresh</div>&nbsp;Refresh
-                        </button>
-                        <button class="btn btn-danger px-10 d-flex align-items-center ml-10" id="clearRelCache">
-                            <div class="material-icons">delete_forever</div>&nbsp;Clear Cache
-                        </button>
-                        <div class="input-group w-150 ml-10">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Quality</span>
-                            </div>
-                            <input type="text" class="form-control" disabled id="relQual">
-                        </div>
-                        <div class="input-group w-150 ml-10">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Feed</span>
-                            </div>
-                            <input type="text" class="form-control" disabled id="relFeed">
-                        </div>
-                        <div class="input-group w-200 ml-10">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Updated</span>
-                            </div>
-                            <input type="time" class="form-control" id="relTime" disabled>
-                        </div>
-                    </div>
-                </div>
-                <div class="gallery releases h-full overflow-y-scroll border-left border-top">
+            <section id="releases" class="flex-column border-top">
+                <div class="gallery releases h-full overflow-y-scroll">
                 </div>
             </section>
-            <section id="settingsTab" class="overflow-y-scroll border-left">
-                <div class="content d-flex flex-column align-items-start">
+            <section id="settingsTab" class="overflow-y-scroll">
+                <div class="content d-flex flex-column align-items-start mt-15">
                     <h1 class="content-title font-size-22">
                         Player Settings
                     </h1>
@@ -347,7 +308,7 @@
                     <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="right" data-title="Displays Subtitles In PiP And ChromeCast, Requires chrome://flags/#disable-accelerated-2d-canvas Set To
                     Disabled, Very CPU Intensive">
                         <input type="checkbox" id="subtitle3" checked>
-                        <label for="subtitle3">Video Canvas Merging</label>
+                        <label for="subtitle3">Burn In Subtitles</label>
                     </div>
 
 
@@ -396,17 +357,17 @@
                         Other Settings
                     </h1>
                     <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="right"
-                    data-title="Change The UI Scale Of The App">
+                        data-title="Change The UI Scale Of The App">
                         <div class="input-group-prepend">
                             <span class="input-group-text">UI Scale</span>
                         </div>
-                        <input id="other1" type="number" value="100" min="1" max="1000" class="form-control text-right">
+                        <input id="other1" type="number" value="75" min="1" max="1000" class="form-control text-right">
                         <div class="input-group-append">
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
                     <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="right"
-                    data-title="Automatically Marks Episodes As Complete On AniList When You Complete Watching Them, Requires AniList Login">
+                        data-title="Automatically Marks Episodes As Complete On AniList When You Complete Watching Them, Requires AniList Login">
                         <input type="checkbox" id="other2">
                         <label for="other2">AniList Sync [Requires <a
                                 href="https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token"
@@ -415,19 +376,27 @@
 
 
 
-                    <div><button class="btn btn-danger" type="button" id="setRes" data-toggle="tooltip" data-placement="right"
-                        data-title="Restores All Settings Back To Their Recommended Defaults">Restore Defaults</button>
-                        <button class="btn btn-success" type="button" id="regProtButton" data-toggle="tooltip" data-placement="right"
-                        data-title="Sets The App As The Default Program To Launch When Opening Magnet Links On Other Sites, Automatically Downloads And Plays The Torrent">Set As Default For Magnet
-                            Links</button>
+                    <div>
+                        <button class="btn btn-danger" type="button" id="setRes" data-toggle="tooltip"
+                            data-placement="right"
+                            data-title="Restores All Settings Back To Their Recommended Defaults">Restore
+                            Defaults
+                        </button>
+                        <button class="btn btn-danger" type="button" id="clearRelCache" data-toggle="tooltip"
+                            data-placement="right" data-title="Clears Anime Data Cache">Clear Cache
+                        </button>
+                        <button class="btn btn-success" type="button" id="regProtButton" data-toggle="tooltip"
+                            data-placement="right"
+                            data-title="Sets The App As The Default Program To Launch When Opening Magnet Links On Other Sites, Automatically Downloads And Plays The Torrent">Set
+                            As Default For Magnet Links
+                        </button>
                     </div>
-                    <p class="text-muted">
+                    <p class="text-muted mb-15">
                         Restart may be required for some settings to take effect.
                     </p>
                 </div>
+            </section>
         </div>
-        </section>
-    </div>
     </div>
     <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.1/js/halfmoon.min.js"></script>
     <script src="js/settingsHandler.js"></script>
