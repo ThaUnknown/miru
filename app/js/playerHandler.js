@@ -397,6 +397,7 @@ function btncap() {
         off.onclick = () => {
             renderSubs.call(null)
             playerData.selectedHeader = undefined
+            btncap()
         }
         frag.appendChild(off)
         for (let track of playerData.headers) {

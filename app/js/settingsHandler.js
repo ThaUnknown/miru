@@ -7,18 +7,19 @@ function restoreDefaults() {
     location.reload()
 }
 let applyTimeout
-function applySettings() {
+function applySettingsTimeout() {
     clearTimeout(applyTimeout)
-    applyTimeout = setTimeout(() => {
-        settingsElements.forEach(element => {
-            if (element.type == "checkbox") {
-                settings[element.id] = element.checked
-            } else {
-                settings[element.id] = element.value
-            }
-        })
-        localStorage.setItem("settings", JSON.stringify(settings))
-    }, 500)
+    applyTimeout = setTimeout(saveSettings, 500)
+}
+function saveSettings() {
+    settingsElements.forEach(element => {
+        if (element.type == "checkbox") {
+            settings[element.id] = element.checked
+        } else {
+            settings[element.id] = element.value
+        }
+    })
+    localStorage.setItem("settings", JSON.stringify(settings))
 }
 
 function renderSettings() {
@@ -42,13 +43,13 @@ function registerProtocol() {
 }
 
 if (!localStorage.getItem("settings")) {
-    applySettings()
+    saveSettings()
 } else {
     settings = JSON.parse(localStorage.getItem("settings"))
 }
 renderSettings()
 setRes.addEventListener("click", restoreDefaults)
-settingsTab.addEventListener("click", applySettings)
+settingsTab.addEventListener("click", applySettingsTimeout)
 regProtButton.addEventListener("click", registerProtocol)
 
 let searchParams = new URLSearchParams(location.href)

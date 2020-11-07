@@ -7,6 +7,13 @@
     object-fit: contain
 }
 
+::-webkit-inner-spin-button {
+    opacity: 1;
+    margin-left: .4rem;
+    margin-right: -.5rem;
+    filter: invert(.84);
+}
+
 .desc p {
     margin-bottom: 0;
     margin-top: 0;
@@ -22,7 +29,7 @@
 }
 
 .gallery .details span+span::before,
-#viewMediaInfo span+span::before{
+#viewMediaInfo span+span::before {
     content: " • "
 }
 
@@ -106,47 +113,58 @@ section:target {
 }
 
 #pageWrapper {
-    transition: top .4s cubic-bezier(.25,.8,.25,1);
+    transition: top .4s cubic-bezier(.25, .8, .25, 1);
 }
-.nav-hidden > nav {
+
+.nav-hidden>nav {
     top: calc(-1* var(--navbar-height)) !important;
 }
-.nav-hidden > .content-wrapper {
+
+.nav-hidden>.content-wrapper {
     top: 0 !important;
     height: 100% !important;
 }
+
 .content-wrapper {
-    transition: top .4s cubic-bezier(.25,.8,.25,1);
+    transition: top .4s cubic-bezier(.25, .8, .25, 1);
     transition-property: top, height;
 }
+
 nav {
-    transition: top .4s cubic-bezier(.25,.8,.25,1);
+    transition: top .4s cubic-bezier(.25, .8, .25, 1);
 }
+
 #view {
     background: no-repeat center center fixed;
     background-size: cover;
 }
-#view > div{
+
+#view>div {
     backdrop-filter: blur(10px) brightness(0.5);
 }
-#viewEpisodesWrapper.hidden{
+
+#viewEpisodesWrapper.hidden {
     opacity: 0;
     height: 0
 }
-#viewEpisodesWrapper{
+
+#viewEpisodesWrapper {
     opacity: 1;
     height: auto;
-    transition: opacity .2s cubic-bezier(.25,.8,.25,1);
+    transition: opacity .2s cubic-bezier(.25, .8, .25, 1);
     overflow: hidden;
 }
-#view .details{
+
+#view .details {
     background-color: var(--dm-button-bg-color) !important;
     background-image: var(--dm-button-bg-image) !important;
     box-shadow: var(--dm-button-box-shadow) !important;
 }
+
 .modal-dialog {
     top: 0 !important
 }
+
 @keyframes load {
     from {
         left: -150px;

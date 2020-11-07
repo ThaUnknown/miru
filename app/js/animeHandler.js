@@ -4,9 +4,9 @@ function searchBox() {
     search.value = ""
     document.location.hash = "#browse"
 }
-navNew.onclick = () => {hsRss()}
-navTrending.onclick = () =>{searchAnime()}
-navList.onclick = () =>{searchAnime()}
+navNew.onclick = () => { hsRss() }
+navTrending.onclick = () => { searchAnime() }
+navList.onclick = () => { searchAnime() }
 async function alRequest(a, b) {
     let query,
         variables = {
