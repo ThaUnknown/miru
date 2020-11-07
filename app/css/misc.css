@@ -7,6 +7,10 @@
     object-fit: contain
 }
 
+.cover-img {
+    object-fit: cover;
+}
+
 ::-webkit-inner-spin-button {
     opacity: 1;
     margin-left: .4rem;
