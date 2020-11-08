@@ -374,7 +374,7 @@ async function nyaaSearch(media, episode) {
         if (results.children.length == 0) {
             title = title.replace(/ /g, "+")
             let url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q=${title}"+${episode}+"+${settings.torrent1}`)
-            results = await nyaaRss(url)
+            results = await nyaaRss(url, media, parseInt(episode))
         }
     }
 
@@ -389,18 +389,17 @@ async function nyaaSearch(media, episode) {
         table.textContent = ""
         table.appendChild(results)
         halfmoon.toggleModal("tsearch")
-        playerData.selected = [media, parseInt(episode)]
     }
 }
 
-async function nyaaRss(url) {
+async function nyaaRss(url, media, episode) {
     let frag = document.createDocumentFragment()
     res = await fetch(url)
     await res.text().then((xmlTxt) => {
         try {
             let doc = DOMPARSER(xmlTxt, "text/xml")
             if (settings.torrent2 && doc.querySelectorAll("infoHash")[0]) {
-                addTorrent(doc.querySelectorAll("infoHash")[0].textContent)
+                addTorrent(doc.querySelectorAll("infoHash")[0].textContent, media, episode)
                 halfmoon.toggleModal("tsearch")
             }
             doc.querySelectorAll("item").forEach((item, index) => {
@@ -413,7 +412,7 @@ async function nyaaRss(url) {
                 <td>${i("seeders").textContent}</td>
                 <td>${i("leechers").textContent}</td>
                 <td>${i("downloads").textContent}</td>
-                <td onclick="addTorrent('${i('infoHash').textContent}')" class="pointer">Play</td>`
+                <td onclick="addTorrent('${i('infoHash').textContent},${media},${episode}')" class="pointer">Play</td>`
                 frag.appendChild(template)
             })
 
@@ -460,8 +459,7 @@ async function hsRss() {
                     let media = store[regexParse[2]],
                         template = cardCreator(media, regexParse)
                     template.onclick = () => {
-                        playerData.selected = [regexParse[2], regexParse[4]]
-                        addTorrent(i('link').textContent)
+                        addTorrent(i('link').textContent, media, regexParse[4])
                     }
                     frag.appendChild(template)
                 }

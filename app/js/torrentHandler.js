@@ -1,4 +1,4 @@
-let client = new WebTorrent({maxConns: settings.torrent6})
+let client = new WebTorrent({ maxConns: settings.torrent6 })
 window.onbeforeunload = () => {
     client.torrents[0] ? client.torrents[0].store.destroy() : ""
     client.torrents[0] ? client.torrents[0].destroy() : ""
@@ -71,17 +71,19 @@ WEBTORRENT_ANNOUNCE = announceList
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
 let maxTorrents = 1
-async function addTorrent(magnet) {
+async function addTorrent(magnet, media, episode) {
     if (client.torrents.length >= maxTorrents) {
         client.torrents[0].store ? client.torrents[0].store.destroy() : ""
         client.torrents[0].destroy()
     }
     halfmoon.hideModal("tsearch")
     document.location.hash = "#player"
-    let selected = playerData.selected,
-        store
+    let store
     resetVideo()
-    selected ? selPlaying(selected) : ""
+    if (media && episode) {
+        playerData.nowPlaying = [media, episode];
+        selPlaying()
+    }
     await sw
     settings.torrent5 ? store = { store: IdbkvChunkStore } : store = {}
     client.add(magnet, store, function (torrent) {

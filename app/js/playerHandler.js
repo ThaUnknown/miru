@@ -210,8 +210,8 @@ function toTS(sec) {
         return "00:00";
     }
 
-    let hours = Math.floor(sec / 3600)
-    let minutes = Math.floor((sec - (hours * 3600)) / 60)
+    let hours = Math.floor(sec / 3600);
+    let minutes = Math.floor((sec - (hours * 3600)) / 60);
     let seconds = Math.floor(sec - (hours * 3600) - (minutes * 60));
 
     if (minutes < 10) {
@@ -486,23 +486,22 @@ document.onkeydown = (a) => {
 }
 
 // media session
-function selPlaying(sel) {
-    playerData.nowPlaying = sel
-    if ('mediaSession' in navigator) {
+function selPlaying() {
+    if ('mediaSession' in navigator && playerData.nowPlaying) {
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: store[playerData.nowPlaying[0]] ? store[playerData.nowPlaying[0]].title.userPreferred : playerData.nowPlaying[0],
-            artist: "Episode " + parseInt(playerData.nowPlaying[1]),
+            title: playerData.nowPlaying[0].title.userPreferred,
+            artist: "Episode " + parseInt(playerData.nowPlaying[1]) + (playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""),
             album: "Miru",
             artwork: [
                 {
-                    src: store[playerData.nowPlaying[0]] ? store[playerData.nowPlaying[0]].coverImage.medium : "",
+                    src: playerData.nowPlaying[0].streamingEpisodes.length ? playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].thumbnail : playerData.nowPlaying[0].coverImage.medium,
                     sizes: '128x128',
                     type: 'image/png'
                 }
             ]
         });
     }
-    nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}`
+    nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}${playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""}`
 }
 
 function updatePositionState() {

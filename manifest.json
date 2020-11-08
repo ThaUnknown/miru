@@ -21,7 +21,7 @@
   ],
   "intent_filters": {
     "scope_url_scheme": "https",
-    "scope_url_host": "miru.moe",
+    "scope_url_host": "mirumoe.netlify.app",
     "scope_url_path": "/app/"
   },
   "protocol_handlers": [
