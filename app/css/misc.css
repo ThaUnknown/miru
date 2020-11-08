@@ -10,6 +10,9 @@
 .cover-img {
     object-fit: cover;
 }
+input:invalid{
+    box-shadow: 0 0 0 0.2rem var(--danger-color) !important
+}
 
 ::-webkit-inner-spin-button {
     opacity: 1;

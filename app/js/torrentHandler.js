@@ -1,4 +1,4 @@
-let client = new WebTorrent()
+let client = new WebTorrent({maxConns: settings.torrent6})
 window.onbeforeunload = () => {
     client.torrents[0] ? client.torrents[0].store.destroy() : ""
     client.torrents[0] ? client.torrents[0].destroy() : ""
