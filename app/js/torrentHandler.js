@@ -3,6 +3,7 @@ window.onbeforeunload = () => {
     client.torrents[0] ? client.torrents[0].store.destroy() : ""
     client.torrents[0] ? client.torrents[0].destroy() : ""
     client.destroy()
+    resetVideo()
 }
 
 const announceList = [
