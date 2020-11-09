@@ -367,12 +367,8 @@ async function nyaaSearch(media, episode) {
         episode = `0${episode}`
     }
 
-    let titles = Object.values(media.title).concat(media.synonyms).filter(name => name != null).join("\"|\"")
     let table = document.querySelector("tbody.results")
-    let results = document.createDocumentFragment()
-
-    let url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q="${titles}""+${episode}+"${settings.torrent1}`)
-    results = await nyaaRss(url, media, parseInt(episode))
+    let results = await nyaaRss(media, episode)
 
     if (results.children.length == 0) {
         halfmoon.initStickyAlert({
@@ -388,8 +384,9 @@ async function nyaaSearch(media, episode) {
     }
 }
 
-async function nyaaRss(url, media, episode) {
-    let frag = document.createDocumentFragment()
+async function nyaaRss(media, episode) {
+    let frag = document.createDocumentFragment(),
+        url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q="${Object.values(media.title).concat(media.synonyms).filter(name => name != null).join("\"|\"")}""+${episode}+"${settings.torrent1}`)
     res = await fetch(url)
     await res.text().then((xmlTxt) => {
         try {
