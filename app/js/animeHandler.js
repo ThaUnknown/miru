@@ -419,8 +419,8 @@ async function nyaaRss(media, episode) {
 
 
 const nameParseRegex = {
-    "https://subsplease.org/rss/?r=": /(\[.[^\]]*\]\ ?)?(.+?(?=\ \-\ \d))?(\ \-\ )?(\d+)?(.*)?/i,
-    "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-": /(\[.*\]\ ?)?(.+?(?=\ \–\ \d))?(\ \–\ )?(\d+)?/i,
+    "SubsPlease": /(\[.[^\]]*\]\ ?)?(.+?(?=\ \-\ \d))?(\ \-\ )?(\d+)?(.*)?/i,
+    "Erai-raws": /(\[.*\]\ ?)?(.+?(?=\ \–\ \d))?(\ \–\ )?(\d+)?/i,
     fallback: /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i
 }
 let store = JSON.parse(localStorage.getItem("store")) || {},
@@ -429,7 +429,7 @@ let store = JSON.parse(localStorage.getItem("store")) || {},
 async function releasesRss() {
     let frag = document.createDocumentFragment(),
         releases = document.querySelector(".releases"),
-        url = settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4 + settings.torrent1 + "-magnet" : settings.torrent4 + settings.torrent1
+        url = torrent4.options[torrent4.selectedIndex].text == "Erai-raws" ? settings.torrent4 + settings.torrent1 + "-magnet" : settings.torrent4 + settings.torrent1
     res = await fetch(url)
     await res.text().then(async (xmlTxt) => {
         try {
@@ -441,7 +441,7 @@ async function releasesRss() {
                 let items = doc.querySelectorAll("item")
                 for (let item of items) {
                     let i = item.querySelector.bind(item),
-                        regexParse = (nameParseRegex[settings.torrent4] || nameParseRegex.parse).exec(i("title").textContent)
+                        regexParse = (nameParseRegex[torrent4.options[torrent4.selectedIndex].text] || nameParseRegex.fallback).exec(i("title").textContent)
                     if (!store.hasOwnProperty(regexParse[2]) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
                         //shit not found, lookup
                         let res = await alRequest(regexParse[2], 1)
