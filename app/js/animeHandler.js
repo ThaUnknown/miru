@@ -366,17 +366,12 @@ async function nyaaSearch(media, episode) {
         episode = `0${episode}`
     }
 
-    let titles = Object.values(media.title).concat(media.synonyms).filter(name => name != null)
+    let titles = Object.values(media.title).concat(media.synonyms).filter(name => name != null).join("\"|\"")
     let table = document.querySelector("tbody.results")
     let results = document.createDocumentFragment()
 
-    for (let title of titles) {
-        if (results.children.length == 0) {
-            title = title.replace(/ /g, "+")
-            let url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q=${title}"+${episode}+"+${settings.torrent1}`)
-            results = await nyaaRss(url, media, parseInt(episode))
-        }
-    }
+    let url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q="${titles}""+${episode}+"${settings.torrent1}`)
+    results = await nyaaRss(url, media, parseInt(episode))
 
     if (results.children.length == 0) {
         halfmoon.initStickyAlert({

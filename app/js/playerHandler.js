@@ -37,7 +37,6 @@ function resetVideo() {
         octopusInstance: undefined,
         fonts: [],
         nowPlaying: undefined,
-        selected: undefined,
         completed: undefined,
         thumbnails: []
     }
@@ -528,7 +527,7 @@ if ('mediaSession' in navigator) {
 
 //AL entry auto add
 function checkCompletion() {
-    if (settings.other2 && video.duration - 120 < video.currentTime && !playerData.completed) {
+    if (settings.other2 && video.duration - 180 < video.currentTime && !playerData.completed) {
         playerData.completed = true
         alEntry()
     }
