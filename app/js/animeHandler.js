@@ -420,7 +420,7 @@ async function nyaaRss(media, episode) {
 
 const nameParseRegex = {
     "SubsPlease": /(\[.[^\]]*\]\ ?)?(.+?(?=\ \-\ \d))?(\ \-\ )?(\d+)?(.*)?/i,
-    "Erai-raws": /(\[.*\]\ ?)?(.+?(?=\ \–\ \d))?(\ \–\ )?(\d+)?/i,
+    "Erai-raws": /(\[.[^\]]*\]\ ?)?(.+?(?=\ \–\ \d))?(\ \–\ )?(\d+)?(.*)?/i,
     fallback: /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i
 }
 let store = JSON.parse(localStorage.getItem("store")) || {},
