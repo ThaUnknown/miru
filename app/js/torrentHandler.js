@@ -4,6 +4,9 @@ window.onbeforeunload = () => {
     client.torrents[0] ? client.torrents[0].destroy() : ""
     client.destroy()
     resetVideo()
+    !!playerData.fonts ? playerData.fonts.forEach(file => { //this might not be needed
+        URL.revokeObjectURL(file)
+    }) : ""
 }
 
 const announceList = [

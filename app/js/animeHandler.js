@@ -405,7 +405,8 @@ async function nyaaRss(media, episode) {
                 <td>${i("seeders").textContent}</td>
                 <td>${i("leechers").textContent}</td>
                 <td>${i("downloads").textContent}</td>
-                <td onclick="addTorrent('${i('infoHash').textContent},${media},${episode}')" class="pointer">Play</td>`
+                <td class="pointer">Play</td>`
+                template.onclick = () => { addTorrent(i('infoHash').textContent, media, episode) }
                 frag.appendChild(template)
             })
 
