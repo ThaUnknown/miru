@@ -4,7 +4,7 @@ function searchBox() {
     search.value = ""
     document.location.hash = "#browse"
 }
-navNew.onclick = () => { hsRss() }
+navNew.onclick = () => { releasesRss() }
 navTrending.onclick = () => { searchAnime() }
 navList.onclick = () => { searchAnime() }
 async function alRequest(a, b) {
@@ -264,7 +264,7 @@ function viewAnime(media) {
         viewEpisodesWrapper.classList.toggle("hidden")
     }
     episodes.innerHTML = ""
-    if (media.streamingEpisodes) {
+    if (media.streamingEpisodes.length) {
         viewEpisodes.removeAttribute("disabled", "")
         let frag = document.createDocumentFragment()
         media.streamingEpisodes.forEach(episode => {
@@ -278,6 +278,7 @@ function viewAnime(media) {
         })
         episodes.appendChild(frag)
     } else {
+        viewEpisodesWrapper.classList.add("hidden")
         viewEpisodes.setAttribute("disabled", "")
     }
 }
@@ -427,7 +428,7 @@ const nameParseRegex = {
 let store = JSON.parse(localStorage.getItem("store")) || {},
     lastResult
 
-async function hsRss() {
+async function releasesRss() {
     let frag = document.createDocumentFragment(),
         releases = document.querySelector(".releases"),
         url = settings.torrent4 == "https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-" ? settings.torrent4 + settings.torrent1 + "-magnet" : settings.torrent4 + settings.torrent1
@@ -473,10 +474,10 @@ clearRelCache.onclick = () => {
     store = {}
 }
 setInterval(() => {
-    hsRss()
+    releasesRss()
 }, 30000);
 async function loadAnime() {
     await searchAnime()
-    hsRss()
+    releasesRss()
 }
 loadAnime()
