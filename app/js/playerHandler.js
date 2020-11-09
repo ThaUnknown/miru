@@ -38,6 +38,7 @@ function resetVideo() {
         fonts: [],
         nowPlaying: undefined,
         completed: undefined,
+        videoFiles: undefined,
         thumbnails: []
     }
     video.pause()
@@ -46,12 +47,16 @@ function resetVideo() {
     delete video
     video.remove()
     nowPlayingDisplay.textContent = ""
-
+    if (dl.href){
+        URL.revokeObjectURL(dl.href)
+    }
     dl.removeAttribute("href")
     video = document.createElement("video")
     if (!settings.player7 || !'pictureInPictureEnabled' in document) {
         video.setAttribute("disablePictureInPicture", "")
         bpip.setAttribute("disabled", "")
+    }else{
+        bpip.removeAttribute("disabled")
     }
     video.src = ""
     video.id = "video"
@@ -226,6 +231,7 @@ function toTS(sec) {
     } else {
         return `${minutes}:${seconds}`;
     }
+    // return new Date(sec*1000).toISOString().slice(12, -1).slice(0, -4).replace(/^0:/,"")
 }
 
 // play/pause button
@@ -322,7 +328,11 @@ async function btnpip() {
         }
     }
 }
+//playlist
 
+function btnpl(){
+
+}
 //miniplayer
 if (!settings.player4) {
     player.style.setProperty("--miniplayer-display", "none");

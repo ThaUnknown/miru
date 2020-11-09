@@ -101,9 +101,17 @@ async function addTorrent(magnet, media, episode) {
             }
         })
         let videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
-        let selectedFile
         if (videoFiles.length) {
-            selectedFile = videoFiles.reduce((a, b) => { return a.length > b.length ? a : b; });
+            playerData.videoFiles = videoFiles.sort((a, b) => {
+                return parseInt(nameParseRegex.fallback.exec(a.name)[3]) - parseInt(nameParseRegex.fallback.exec(b.name)[3])
+            })
+            if (videoFiles.length > 1) {
+                bpl.removeAttribute("disabled")
+            } else {
+                bpl.setAttribute("disabled", "")
+            }
+
+            console.log(videoFiles)
             torrent.on('done', () => {
                 halfmoon.initStickyAlert({
                     content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
@@ -112,14 +120,14 @@ async function addTorrent(magnet, media, episode) {
                     fillType: ""
                 });
                 if (settings.player8 && !settings.torrent5) {
-                    selectedFile.getBlobURL((err, url) => {
+                    playerData.videoFiles[0].getBlobURL((err, url) => {
                         finishThumbnails(url);
-                        downloadFile(url, selectedFile.name)
-                        postDownload(url, selectedFile)
+                        downloadFile(url, playerData.videoFiles[0].name)
+                        postDownload(url, playerData.videoFiles[0])
                     })
                 }
             })
-            video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
+            video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(playerData.videoFiles[0].path)}`
             video.load();
             playVideo();
         } else {
