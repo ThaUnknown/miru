@@ -7,7 +7,7 @@ function searchBox() {
 navNew.onclick = () => { releasesRss() }
 navTrending.onclick = () => { searchAnime() }
 navList.onclick = () => { searchAnime() }
-async function alRequest(a, b) {
+async function alRequest(searchName, method) {
     let query,
         variables = {
             type: "ANIME",
@@ -29,7 +29,7 @@ async function alRequest(a, b) {
     if (localStorage.getItem("ALtoken")) {
         options.headers['Authorization'] = localStorage.getItem("ALtoken")
     }
-    if (!a) {
+    if (method == "Trending") {
         search.placeholder = "Search"
         query = `
         query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
@@ -75,9 +75,9 @@ async function alRequest(a, b) {
                 }
             }
         }`
-    } else if (b) {
-        variables.search = a
-        variables.perPage = b
+    } else if (method == "SearchReleasesSingle") {
+        variables.search = searchName
+        variables.perPage = 1
         variables.status = "RELEASING"
         query = `
         query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType, $status: MediaStatus) {
@@ -109,8 +109,8 @@ async function alRequest(a, b) {
                 }
             }
         }`
-    } else {
-        variables.search = a
+    } else if(method == "SearchName"){
+        variables.search = searchName
         variables.sort = "TRENDING_DESC"
         query = `
         query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String) {
@@ -148,6 +148,40 @@ async function alRequest(a, b) {
                     trailer {
                         id
                         site
+                    }
+                    streamingEpisodes {
+                        title
+                        thumbnail
+                    }
+                }
+            }
+        }`
+    } else if (method == "SearchAnySingle"){
+        variables.search = searchName
+        variables.perPage = 1
+        variables.sort = "TRENDING_DESC"
+        query = `
+        query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType) {
+            Page (page: $page) {
+                media (type: $type, search: $search, sort: $sort) {
+                    id
+                    title {
+                        userPreferred
+                    }
+                    description(
+                        asHtml: true
+                    )
+                    season
+                    seasonYear
+                    format
+                    status
+                    episodes
+                    duration
+                    genres
+                    coverImage {
+                        extraLarge
+                        medium
+                        color
                     }
                     streamingEpisodes {
                         title
@@ -202,7 +236,7 @@ async function searchAnime(a) {
         browse = document.querySelector(".browse")
     browse.textContent = '';
     browse.appendChild(skeletonCard)
-    alResponse = await alRequest(a)
+    a ? alResponse = await alRequest(a, "SearchName") : alResponse = await alRequest(a, "Trending")
     try {
         alResponse.data.Page.media.forEach(media => {
             let template = cardCreator(media)
@@ -416,7 +450,16 @@ async function nyaaRss(media, episode) {
     })
     return frag
 }
-
+async function resolveName(name, method){
+    if (!store.hasOwnProperty(name) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(name) && ((store[name] = media) && true)))) {
+        let res = await alRequest(name, method)
+        if (!res.data.Page.media[0]) {
+            res = await alRequest(name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), method)
+        }
+        store[name] = res.data.Page.media[0]
+    }
+    return store[name]
+}
 
 const nameParseRegex = {
     "SubsPlease": /(\[.[^\]]*\]\ ?)?(.+?(?=\ \-\ \d))?(\ \-\ )?(\d+)?(.*)?/i,
@@ -429,7 +472,7 @@ let store = JSON.parse(localStorage.getItem("store")) || {},
 async function releasesRss() {
     let frag = document.createDocumentFragment(),
         releases = document.querySelector(".releases"),
-        url = torrent4.options[torrent4.selectedIndex].text == "Erai-raws" ? settings.torrent4 + settings.torrent1 + "-magnet" : settings.torrent4 + settings.torrent1
+        url = torrent4.options[torrent4.selectedIndex].text == "Erai-raws" ? new URL(settings.torrent4 + settings.torrent1 + "-magnet") : new URL(settings.torrent4 + settings.torrent1)
     res = await fetch(url)
     await res.text().then(async (xmlTxt) => {
         try {
@@ -442,15 +485,7 @@ async function releasesRss() {
                 for (let item of items) {
                     let i = item.querySelector.bind(item),
                         regexParse = (nameParseRegex[torrent4.options[torrent4.selectedIndex].text] || nameParseRegex.fallback).exec(i("title").textContent)
-                    if (!store.hasOwnProperty(regexParse[2]) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(regexParse[2]) && ((store[regexParse[2]] = media) && true)))) {
-                        //shit not found, lookup
-                        let res = await alRequest(regexParse[2], 1)
-                        if (!res.data.Page.media[0]) {
-                            res = await alRequest(regexParse[2].replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), 1)
-                        }
-                        store[regexParse[2]] = res.data.Page.media[0]
-                    }
-                    let media = store[regexParse[2]],
+                    let media = await resolveName(regexParse[2], "SearchReleasesSingle"),
                         template = cardCreator(media, regexParse)
                     template.onclick = () => {
                         addTorrent(i('link').textContent, media, regexParse[4])

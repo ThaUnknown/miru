@@ -8,7 +8,6 @@ function subStream(stream) {
         } else {
             playerData.subtitleStream = new SubtitleStream()
             playerData.subtitleStream.once('tracks', pTracks => {
-                console.log(pTracks)
                 pTracks.forEach(track => {
                     if (track.type == "ass") {
                         if (!playerData.headers) {
@@ -30,7 +29,6 @@ function subStream(stream) {
             })
         }
         playerData.subtitleStream.on('subtitle', (subtitle, trackNumber) => {
-            console.log(trackNumber, subtitle)
             if (playerData.headers) {
                 let formatSub = "Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text
                 if (!playerData.subtitles[trackNumber].includes(formatSub)) {
@@ -46,7 +44,6 @@ function subStream(stream) {
             }
         })
         playerData.subtitleStream.on('file', file => {
-            console.log(file)
             file.mimetype == ("application/x-truetype-font" || "application/font-woff") ? playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data], { type: file.mimetype }))) : ""
         })
         stream.pipe(playerData.subtitleStream)

@@ -4,9 +4,14 @@ window.onbeforeunload = () => {
     client.torrents[0] ? client.torrents[0].destroy() : ""
     client.destroy()
     resetVideo()
-    !!playerData.fonts ? playerData.fonts.forEach(file => { //this might not be needed
-        URL.revokeObjectURL(file)
-    }) : ""
+    if (playerData.fonts) {
+        playerData.fonts.forEach(file => {
+            URL.revokeObjectURL(file)
+        })
+    }
+    if (dl.href) {
+        URL.revokeObjectURL(dl.href)
+    }
 }
 
 const announceList = [
@@ -31,7 +36,7 @@ const announceList = [
     videoExtensions = [
         '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg', '.ogv', '.wmv', '.m2ts'
     ],
-    scope = '/app/',
+    scope = window.location.pathname,
     sw = navigator.serviceWorker.register('sw.js', { scope }).then(e => {
         if (searchParams.get("m")) {
             addTorrent(searchParams.get("m"))
@@ -73,7 +78,8 @@ WEBTORRENT_ANNOUNCE = announceList
     .filter(function (url) {
         return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
     })
-let maxTorrents = 1
+let maxTorrents = 1,
+    videoFiles
 async function addTorrent(magnet, media, episode) {
     if (client.torrents.length >= maxTorrents) {
         client.torrents[0].store ? client.torrents[0].store.destroy() : ""
@@ -82,14 +88,12 @@ async function addTorrent(magnet, media, episode) {
     halfmoon.hideModal("tsearch")
     document.location.hash = "#player"
     let store
-    resetVideo()
-    if (media && episode) {
-        playerData.nowPlaying = [media, episode];
-        selPlaying()
-    }
+    cleanupVideo()
     await sw
     settings.torrent5 ? store = { store: IdbkvChunkStore } : store = {}
     client.add(magnet, store, function (torrent) {
+        torrent.files.forEach(file => file.deselect());
+        torrent.deselect(0, torrent.pieces.length - 1, false);
         torrent.on('noPeers', () => {
             if (client.torrents[0].progress != 1) {
                 halfmoon.initStickyAlert({
@@ -100,9 +104,9 @@ async function addTorrent(magnet, media, episode) {
                 });
             }
         })
-        let videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
+        videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
         if (videoFiles.length) {
-            playerData.videoFiles = videoFiles.sort((a, b) => {
+            videoFiles.sort((a, b) => {
                 return parseInt(nameParseRegex.fallback.exec(a.name)[3]) - parseInt(nameParseRegex.fallback.exec(b.name)[3])
             })
             if (videoFiles.length > 1) {
@@ -110,26 +114,27 @@ async function addTorrent(magnet, media, episode) {
             } else {
                 bpl.setAttribute("disabled", "")
             }
-
-            console.log(videoFiles)
-            torrent.on('done', () => {
-                halfmoon.initStickyAlert({
-                    content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
-                    title: "Download Complete",
-                    alertType: "alert-success",
-                    fillType: ""
-                });
-                if (settings.player8 && !settings.torrent5) {
-                    playerData.videoFiles[0].getBlobURL((err, url) => {
-                        finishThumbnails(url);
-                        downloadFile(url, playerData.videoFiles[0].name)
-                        postDownload(url, playerData.videoFiles[0])
-                    })
-                }
-            })
-            video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(playerData.videoFiles[0].path)}`
-            video.load();
-            playVideo();
+            // torrent.on('done', () => {
+            //     halfmoon.initStickyAlert({
+            //         content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
+            //         title: "Download Complete",
+            //         alertType: "alert-success",
+            //         fillType: ""
+            //     });
+            //     if (settings.player8 && !settings.torrent5) {
+            //         videoFiles[0].getBlobURL((err, url) => {
+            //             finishThumbnails(url);
+            //             downloadFile(url, videoFiles[0].name)
+            //         })
+            //         postDownload(videoFiles[0])
+            //     }
+            // })
+            if (media && episode) {
+                buildVideo(videoFiles[0], [media, episode])
+            }
+            else {
+                buildVideo(videoFiles[0])
+            }
         } else {
             halfmoon.initStickyAlert({
                 content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
@@ -144,7 +149,7 @@ async function addTorrent(magnet, media, episode) {
     })
 
 }
-function postDownload(url, file) {
+function postDownload(file) {
     if (playerData.subtitleStream) {
         let parser = new SubtitleParser(),
             subtitles = []
@@ -164,31 +169,10 @@ function postDownload(url, file) {
         parser.on('finish', () => {
             playerData.subtitles = subtitles
             renderSubs.call(null, playerData.selectedHeader)
-            let time = video.currentTime,
-                playState = !video.paused
-            video.src = url
-            video.currentTime = time
-            playState ? video.play() : ""
         });
         file.createReadStream().pipe(parser)
-    } else {
-        let time = video.currentTime,
-            playState = !video.paused
-        video.src = url
-        video.currentTime = time
-        playState ? video.play() : ""
     }
 }
-function onProgress() {
-    if (document.location.hash == "#player" && client.torrents[0]) {
-        player.style.setProperty("--download", client.torrents[0].progress * 100 + "%");
-        peers.textContent = client.torrents[0].numPeers
-        downSpeed.textContent = prettyBytes(client.torrents[0].downloadSpeed) + '/s'
-        upSpeed.textContent = prettyBytes(client.torrents[0].uploadSpeed) + '/s'
-    }
-}
-setInterval(onProgress, 100)
-
 
 function serveFile(file, req) {
     const res = {

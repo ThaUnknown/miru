@@ -1,5 +1,5 @@
 const settingsElements = [
-    player1, player2, player3, player4, player5, player6, player7, player8, subtitle1, subtitle2, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent6, other1, other2
+    player1, player2, player3, player4, player5, player6, player7, player8, subtitle1, subtitle2, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent6, torrent7, other1, other2
 ]
 let settings = {}
 function restoreDefaults() {

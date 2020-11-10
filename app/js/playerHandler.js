@@ -22,11 +22,26 @@ let playerData = {
     octopusInstance: undefined
 }
 
-function resetVideo() {
-    !!playerData.octopusInstance ? playerData.octopusInstance.dispose() : ""
-    !!playerData.fonts ? playerData.fonts.forEach(file => {
-        URL.revokeObjectURL(file)
-    }) : ""
+function cleanupVideo() { // cleans up objects, attemps to clear as much video caching as possible
+    if (playerData.octopusInstance) {
+        playerData.octopusInstance.dispose()
+    }
+    if (playerData.fonts) {
+        playerData.fonts.forEach(file => {
+            URL.revokeObjectURL(file)
+        })
+    }
+    if (dl.href) {
+        URL.revokeObjectURL(dl.href)
+    }
+    dl.removeAttribute("href")
+    if (typeof video !== 'undefined') {
+        video.pause()
+        video.src = "";
+        video.load()
+        delete video
+        video.remove()
+    }
     playerData = {
         tracks: [],
         headers: undefined,
@@ -38,27 +53,20 @@ function resetVideo() {
         fonts: [],
         nowPlaying: undefined,
         completed: undefined,
-        videoFiles: undefined,
         thumbnails: []
     }
-    video.pause()
-    video.src = "";
-    video.load()
-    delete video
-    video.remove()
     nowPlayingDisplay.textContent = ""
-    if (dl.href){
-        URL.revokeObjectURL(dl.href)
-    }
-    dl.removeAttribute("href")
+    onProgress = undefined
+}
+async function buildVideo(file, nowPlaying) {
     video = document.createElement("video")
     if (!settings.player7 || !'pictureInPictureEnabled' in document) {
         video.setAttribute("disablePictureInPicture", "")
         bpip.setAttribute("disabled", "")
-    }else{
+    } else {
         bpip.removeAttribute("disabled")
     }
-    video.src = ""
+    file ? video.src = `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` : video.src = ""
     video.id = "video"
     video.setAttribute("preload", "none")
     video.volume = volume.value / 100
@@ -72,45 +80,93 @@ function resetVideo() {
     video.addEventListener("timeupdate", updateDisplay);
     video.addEventListener("timeupdate", updatePositionState);
     video.addEventListener("timeupdate", checkCompletion);
-    player.prepend(video)
+    player.prepend(video);
+    video.load();
+    playVideo();
+    if (file) {
+        onProgress = function () {
+            if (document.location.hash == "#player" && typeof video !== 'undefined') {
+                player.style.setProperty("--download", file.progress * 100 + "%");
+                peers.textContent = client.torrents[0].numPeers
+                downSpeed.textContent = prettyBytes(client.torrents[0].downloadSpeed) + '/s'
+                upSpeed.textContent = prettyBytes(client.torrents[0].uploadSpeed) + '/s'
+            }
+            setTimeout(onProgress, 100)
+        }
+        setTimeout(onProgress, 100)
+        if (nowPlaying) {
+            playerData.nowPlaying = nowPlaying
+        } else {
+            let regexParse = nameParseRegex.fallback.exec(file.name)
+            playerData.nowPlaying = [await resolveName(regexParse[2], "SearchAnySingle"), regexParse[3]]
+        }
+        if ('mediaSession' in navigator && playerData.nowPlaying) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: playerData.nowPlaying[0].title.userPreferred,
+                artist: "Episode " + parseInt(playerData.nowPlaying[1]) + (playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""),
+                album: "Miru",
+                artwork: [
+                    {
+                        src: playerData.nowPlaying[0].streamingEpisodes.length ? playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].thumbnail : playerData.nowPlaying[0].coverImage.medium,
+                        sizes: '128x128',
+                        type: 'image/png'
+                    }
+                ]
+            });
+        }
+    }
+
 }
+// download progress and status
+let onProgress
+
 // progress bar and display
 
 function updateDisplay() {
-    let progressPercent = (video.currentTime / video.duration * 100)
-    let bufferPercent = video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100
-    progress.style.setProperty("--buffer", bufferPercent + "%");
-    updateBar(progressPercent || progress.value / 10);
-    createThumbnail(video);
+    if (typeof video !== 'undefined') {
+        let progressPercent = (video.currentTime / video.duration * 100)
+        let bufferPercent = video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100
+        progress.style.setProperty("--buffer", bufferPercent + "%");
+        updateBar(progressPercent || progress.value / 10);
+        createThumbnail(video);
+    }
 }
 
 function dragBar() {
-    video.pause()
     updateBar(progress.value / 10)
-    let bg = playerData.thumbnails[Math.floor(currentTime / 5)]
-    thumb.src = bg || " "
+    if (typeof video !== 'undefined') {
+        video.pause()
+        let bg = playerData.thumbnails[Math.floor(currentTime / 5)]
+        thumb.src = bg || " "
+    }
 }
 
 function dragBarEnd() {
-    video.currentTime = currentTime || 0
-    playVideo()
+    if (typeof video !== 'undefined') {
+        video.currentTime = currentTime || 0
+        playVideo()
+    }
 }
 
 async function dragBarStart() {
-    await video.pause()
+    if (typeof video !== 'undefined') {
+        await video.pause()
+    }
     updateBar(progress.value / 10)
 }
 
-let currentTime;
+let currentTime = 0;
 function updateBar(progressPercent) {
     if (document.location.hash == "#player") {
-        currentTime = video.duration * progressPercent / 100
         progress.style.setProperty("--progress", progressPercent + "%");
         thumb.style.setProperty("--progress", progressPercent + "%");
-        elapsed.innerHTML = toTS(currentTime);
-        remaining.innerHTML = toTS(video.duration - currentTime);
-        progress.value = progressPercent * 10
-        progress.setAttribute("data-ts", toTS(currentTime))
+        if (typeof video !== 'undefined') {
+            currentTime = video.duration * progressPercent / 100
+            elapsed.innerHTML = toTS(currentTime);
+            remaining.innerHTML = toTS(video.duration - currentTime);
+            progress.value = progressPercent * 10
+            progress.setAttribute("data-ts", toTS(currentTime))
+        }
     }
 }
 
@@ -245,11 +301,13 @@ async function playVideo() {
 }
 
 function btnpp() {
-    if (video.paused) {
-        playVideo();
-    } else {
-        bpp.innerHTML = "play_arrow";
-        video.pause();
+    if (typeof video !== 'undefined') {
+        if (video.paused) {
+            playVideo();
+        } else {
+            bpp.innerHTML = "play_arrow";
+            video.pause();
+        }
     }
 }
 
@@ -264,11 +322,13 @@ function autoNext() {
 let oldlevel;
 
 function btnmute() {
-    if (video.volume == 0) {
-        updateVolume(oldlevel)
-    } else {
-        oldlevel = video.volume * 100
-        updateVolume(0)
+    if (typeof video !== 'undefined') {
+        if (video.volume == 0) {
+            updateVolume(oldlevel)
+        } else {
+            oldlevel = video.volume * 100
+            updateVolume(0)
+        }
     }
 }
 
@@ -283,7 +343,9 @@ function updateVolume(a) {
     }
     volume.style.setProperty("--volume-level", level + "%");
     bmute.innerHTML = (level == 0) ? "volume_off" : "volume_up";
-    video.volume = level / 100
+    if (typeof video !== 'undefined') {
+        video.volume = level / 100
+    }
 }
 updateVolume(parseInt(settings.player1))
 
@@ -291,46 +353,48 @@ updateVolume(parseInt(settings.player1))
 // PiP
 
 async function btnpip() {
-    if (!playerData.octopusInstance) {
-        video !== document.pictureInPictureElement ? await video.requestPictureInPicture() : await document.exitPictureInPicture();
-    } else {
-        if (document.pictureInPictureElement) {
-            await document.exitPictureInPicture()
+    if (typeof video !== 'undefined') {
+        if (!playerData.octopusInstance) {
+            video !== document.pictureInPictureElement ? await video.requestPictureInPicture() : await document.exitPictureInPicture();
         } else {
-            let canvas = document.createElement("canvas"),
-                subtitleCanvas = document.querySelector(".libassjs-canvas"),
-                canvasVideo = document.createElement("video"),
-                context = canvas.getContext("2d", { alpha: false }),
-                running = true
-            canvas.width = subtitleCanvas.width
-            canvas.height = subtitleCanvas.height
-            player.classList.add("pip")
+            if (document.pictureInPictureElement) {
+                await document.exitPictureInPicture()
+            } else {
+                let canvas = document.createElement("canvas"),
+                    subtitleCanvas = document.querySelector(".libassjs-canvas"),
+                    canvasVideo = document.createElement("video"),
+                    context = canvas.getContext("2d", { alpha: false }),
+                    running = true
+                canvas.width = subtitleCanvas.width
+                canvas.height = subtitleCanvas.height
+                player.classList.add("pip")
 
-            function renderFrame() {
-                if (running) {
-                    context.drawImage(video, 0, 0, canvas.width, canvas.height)
-                    context.drawImage(subtitleCanvas, 0, 0)
-                    window.requestAnimationFrame(renderFrame)
+                function renderFrame() {
+                    if (running) {
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height)
+                        context.drawImage(subtitleCanvas, 0, 0)
+                        window.requestAnimationFrame(renderFrame)
+                    }
                 }
-            }
-            window.requestAnimationFrame(renderFrame)
-            canvasVideo.srcObject = canvas.captureStream()
-            canvasVideo.onloadeddata = async function () {
-                canvasVideo.play()
-                await canvasVideo.requestPictureInPicture()
-            }
-            canvasVideo.onleavepictureinpicture = () => {
-                running = false
-                canvasVideo.remove()
-                canvas.remove()
-                player.classList.remove("pip")
+                window.requestAnimationFrame(renderFrame)
+                canvasVideo.srcObject = canvas.captureStream()
+                canvasVideo.onloadeddata = async function () {
+                    canvasVideo.play()
+                    await canvasVideo.requestPictureInPicture()
+                }
+                canvasVideo.onleavepictureinpicture = () => {
+                    running = false
+                    canvasVideo.remove()
+                    canvas.remove()
+                    player.classList.remove("pip")
+                }
             }
         }
     }
 }
 //playlist
 
-function btnpl(){
+function btnpl() {
 
 }
 //miniplayer
@@ -494,27 +558,8 @@ document.onkeydown = (a) => {
     }
 }
 
-// media session
-function selPlaying() {
-    if ('mediaSession' in navigator && playerData.nowPlaying) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: playerData.nowPlaying[0].title.userPreferred,
-            artist: "Episode " + parseInt(playerData.nowPlaying[1]) + (playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""),
-            album: "Miru",
-            artwork: [
-                {
-                    src: playerData.nowPlaying[0].streamingEpisodes.length ? playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].thumbnail : playerData.nowPlaying[0].coverImage.medium,
-                    sizes: '128x128',
-                    type: 'image/png'
-                }
-            ]
-        });
-    }
-    nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}${playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""}`
-}
-
 function updatePositionState() {
-    if ('setPositionState' in navigator.mediaSession && video.duration) {
+    if ('setPositionState' in navigator.mediaSession && typeof video !== 'undefined' && video.duration) {
         navigator.mediaSession.setPositionState({
             duration: video.duration || 0,
             playbackRate: video.playbackRate || 0,
@@ -537,10 +582,10 @@ if ('mediaSession' in navigator) {
 
 //AL entry auto add
 function checkCompletion() {
-    if (settings.other2 && video.duration - 180 < video.currentTime && !playerData.completed) {
+    if (settings.other2 && typeof video !== 'undefined' && video.duration - 180 < video.currentTime && !playerData.completed) {
         playerData.completed = true
         alEntry()
     }
 }
-
-resetVideo()
+cleanupVideo()
+// buildVideo()
