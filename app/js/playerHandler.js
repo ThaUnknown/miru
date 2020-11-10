@@ -106,8 +106,17 @@ async function buildVideo(file, nowPlaying) {
         let regexParse = nameParseRegex.fallback.exec(file.name)
         playerData.nowPlaying = [await resolveName(regexParse[2], "SearchAnySingle"), regexParse[3]]
     }
-    nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}${playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""}`
-    if ('mediaSession' in navigator && playerData.nowPlaying) {
+    if (playerData.nowPlaying && playerData.nowPlaying[0] && parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) {
+        bnext.setAttribute("disabled", "")
+    } else {
+        bnext.removeAttribute("disabled")
+    }
+    if (playerData.nowPlaying && playerData.nowPlaying[0]) {
+        nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}${playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""}`
+    } else if (playerData.nowPlaying && playerData.nowPlaying[1]) {
+        nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}`
+    }
+    if ('mediaSession' in navigator && playerData.nowPlaying && playerData.nowPlaying[0]) {
         navigator.mediaSession.metadata = new MediaMetadata({
             title: playerData.nowPlaying[0].title.userPreferred,
             artist: "Episode " + parseInt(playerData.nowPlaying[1]) + (playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""),
@@ -315,16 +324,29 @@ function btnpp() {
         }
     }
 }
-
+let nextCooldown
 function btnnext() {
-    if (videoFiles.length > 1) {
-        let file = videoFiles[videoFiles.indexOf(videoFiles.filter(file => `${window.location.origin}${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src)[0]) + 1],
-        nowPlaying = [playerData.nowPlaying[0], parseInt(playerData.nowPlaying[1]) + 1]
-        cleanupVideo()
-        buildVideo(file, nowPlaying)
-    } else {
-        nyaaSearch(playerData.nowPlaying[0], parseInt(playerData.nowPlaying[1]) + 1)
-    }
+    clearTimeout(nextCooldown)
+    nextCooldown = setTimeout(() => {
+        let currentFile = videoFiles.filter(file => `${window.location.origin}${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src)[0]
+        if (videoFiles.length > 1 && videoFiles.indexOf(currentFile) < videoFiles.length - 1) {
+            let fileIndex = videoFiles.indexOf(currentFile) + 1,
+                nowPlaying = [playerData.nowPlaying[0], parseInt(playerData.nowPlaying[1]) + 1]
+            cleanupVideo()
+            buildVideo(videoFiles[fileIndex], nowPlaying)
+        } else {
+            if (playerData.nowPlaying[0]) {
+                nyaaSearch(playerData.nowPlaying[0], parseInt(playerData.nowPlaying[1]) + 1)
+            } else {
+                halfmoon.initStickyAlert({
+                    content: `Couldn't find anime name! Try specifying a torrent manually.`,
+                    title: "Search Failed",
+                    alertType: "alert-danger",
+                    fillType: ""
+                })
+            }
+        }
+    }, 200)
 }
 function autoNext() {
     settings.player6 ? btnnext() : ""
