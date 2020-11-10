@@ -114,21 +114,6 @@ async function addTorrent(magnet, media, episode) {
             } else {
                 bpl.setAttribute("disabled", "")
             }
-            // torrent.on('done', () => {
-            //     halfmoon.initStickyAlert({
-            //         content: `<span class="text-break">${torrent.infoHash}</span> has finished downloading. Now seeding.`,
-            //         title: "Download Complete",
-            //         alertType: "alert-success",
-            //         fillType: ""
-            //     });
-            //     if (settings.player8 && !settings.torrent5) {
-            //         videoFiles[0].getBlobURL((err, url) => {
-            //             finishThumbnails(url);
-            //             downloadFile(url, videoFiles[0].name)
-            //         })
-            //         postDownload(videoFiles[0])
-            //     }
-            // })
             if (media && episode) {
                 buildVideo(videoFiles[0], [media, episode])
             }

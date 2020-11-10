@@ -35,19 +35,22 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
         URL.revokeObjectURL(dl.href)
     }
 
-    dl.removeAttribute("href")
-    if (typeof video !== 'undefined') {
-        if (video.src && client.torrents.length) {
-            client.torrents[0].files.forEach(file => file.deselect());
-            client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
-            // console.log(videoFiles.filter(file => `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src))
-            // look for file and delete its store
-        }
+    dl.setAttribute("disabled", "")
+    dl.onclick = null
+    if (typeof video !== 'undefined' && typeof client !== 'undefined') {
         video.pause()
         video.src = "";
         video.load()
         delete video
         video.remove()
+        if (client.torrents[0] && client.torrents[0].files.length > 1) {
+            client.torrents[0].files.forEach(file => {
+                file.deselect()
+            });
+            client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
+            // console.log(videoFiles.filter(file => `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src))
+            // look for file and delete its store
+        }
     }
     playerData = {
         tracks: [],
@@ -59,7 +62,7 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
         octopusInstance: undefined,
         fonts: [],
         nowPlaying: undefined,
-        completed: undefined,
+        watched: undefined,
         thumbnails: []
     }
     nowPlayingDisplay.textContent = ""
@@ -90,12 +93,27 @@ async function buildVideo(file, nowPlaying) {
     player.prepend(video);
     video.load();
     playVideo();
+    // file.on("done", () => { console.log("test") }) // this currently wont work
     onProgress = function () {
         if (document.location.hash == "#player" && typeof video !== 'undefined') {
             player.style.setProperty("--download", file.progress * 100 + "%");
             peers.textContent = client.torrents[0].numPeers
             downSpeed.textContent = prettyBytes(client.torrents[0].downloadSpeed) + '/s'
             upSpeed.textContent = prettyBytes(client.torrents[0].uploadSpeed) + '/s'
+            if (file.progress == 1 && !playerData.done) {
+                playerData.done = 1
+                halfmoon.initStickyAlert({
+                    content: `<span class="text-break">${file.name}</span> has finished downloading. Now seeding.`,
+                    title: "Download Complete",
+                    alertType: "alert-success",
+                    fillType: ""
+                });
+                if (settings.player8 && !settings.torrent5) {
+                    finishThumbnails(file);
+                    downloadFile(file)
+                    postDownload(videoFiles[0])
+                }
+            }
         }
         setTimeout(onProgress, 100)
     }
@@ -209,11 +227,13 @@ function createThumbnail(vid) {
     }
 }
 
-function finishThumbnails(url) {
+function finishThumbnails(file) {
     if (settings.player5 && settings.player8) {
         let thumbVid = document.createElement("video"),
             index = 0
-        thumbVid.src = url
+        file.getBlobURL((err, url) => {
+            thumbVid.src = url
+        })
 
         thumbVid.addEventListener('loadeddata', () => {
             loadTime();
@@ -231,6 +251,8 @@ function finishThumbnails(url) {
             if (thumbVid.currentTime != thumbVid.duration) {
                 thumbVid.currentTime = index * 5
             } else {
+                URL.revokeObjectURL(thumbVid.src)
+                delete thumbVid;
                 thumbVid.remove()
             }
             index++
@@ -239,9 +261,20 @@ function finishThumbnails(url) {
 }
 
 //file download
-function downloadFile(url, name) {
-    dl.href = url
-    dl.download = name
+function downloadFile(file) {
+    dl.removeAttribute("disabled")
+    dl.onclick = async (e) => {
+        await file.getBlobURL((err, url) => {
+            let a = document.createElement('a');
+            a.download = file.name;
+            a.href = url;
+            document.body.appendChild(a);
+            a.click(e);
+            window.URL.revokeObjectURL(a.href);
+            delete a
+            a.remove();
+        })
+    }
 }
 
 // bufering spinner
@@ -616,8 +649,8 @@ if ('mediaSession' in navigator) {
 
 //AL entry auto add
 function checkCompletion() {
-    if (settings.other2 && typeof video !== 'undefined' && video.duration - 180 < video.currentTime && !playerData.completed) {
-        playerData.completed = true
+    if (!playerData.watched && settings.other2 && typeof video !== 'undefined' && video.duration - 180 < video.currentTime) {
+        playerData.watched = true
         alEntry()
     }
 }

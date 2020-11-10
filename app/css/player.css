@@ -236,7 +236,7 @@ video::cue {
         2px 2px 2px #000;
 }
 
-#dl:not([href])>span {
+#dl[disabled] {
     cursor: not-allowed;
     color: rgba(255, 255, 255, .4);
 }
