@@ -93,7 +93,7 @@ async function buildVideo(file, nowPlaying) {
     player.prepend(video);
     video.load();
     playVideo();
-    // file.on("done", () => { console.log("test") }) // this currently wont work
+    // file.on("done", () => { console.log("test") }) // this currently wont work, idk how to remove old listeners
     onProgress = function () {
         if (document.location.hash == "#player" && typeof video !== 'undefined') {
             player.style.setProperty("--download", file.progress * 100 + "%");
@@ -459,11 +459,6 @@ async function btnpip() {
         }
     }
 }
-//playlist
-
-function btnpl() {
-
-}
 //miniplayer
 if (!settings.player4) {
     player.style.setProperty("--miniplayer-display", "none");
@@ -572,6 +567,25 @@ function selectLang(lang) {
         }
     }
     btncap()
+}
+//playlist
+
+function btnpl() {
+    let frag = document.createDocumentFragment()
+    videoFiles.forEach((file, index) => {
+        let template = document.createElement("a")
+        template.classList.add("dropdown-item", "pointer", "text-capitalize", "text-truncate", "text-white")
+        let regexParse = nameParseRegex.fallback.exec(file.name)
+        template.innerHTML = playerData.nowPlaying[0] ? playerData.nowPlaying.title.userPreferred + " - " + parseInt(regexParse[3]) : regexParse[2] + parseInt(regexParse[3])
+        template.onclick = () => {
+            cleanupVideo()
+            buildVideo(file, [playerData.nowPlaying ? playerData.nowPlaying[0] : undefined, parseInt(regexParse[3])])
+            btnpl()
+        }
+        frag.appendChild(template)
+    })
+    playlistMenu.textContent = '';
+    playlistMenu.appendChild(frag)
 }
 
 // keybinds
