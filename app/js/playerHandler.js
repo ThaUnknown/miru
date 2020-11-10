@@ -34,8 +34,15 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     if (dl.href) {
         URL.revokeObjectURL(dl.href)
     }
+
     dl.removeAttribute("href")
     if (typeof video !== 'undefined') {
+        if (video.src && client.torrents.length) {
+            client.torrents[0].files.forEach(file => file.deselect());
+            client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
+            // console.log(videoFiles.filter(file => `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src))
+            // look for file and delete its store
+        }
         video.pause()
         video.src = "";
         video.load()
@@ -66,7 +73,7 @@ async function buildVideo(file, nowPlaying) {
     } else {
         bpip.removeAttribute("disabled")
     }
-    file ? video.src = `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` : video.src = ""
+    video.src = `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}`
     video.id = "video"
     video.setAttribute("preload", "none")
     video.volume = volume.value / 100
@@ -83,39 +90,37 @@ async function buildVideo(file, nowPlaying) {
     player.prepend(video);
     video.load();
     playVideo();
-    if (file) {
-        onProgress = function () {
-            if (document.location.hash == "#player" && typeof video !== 'undefined') {
-                player.style.setProperty("--download", file.progress * 100 + "%");
-                peers.textContent = client.torrents[0].numPeers
-                downSpeed.textContent = prettyBytes(client.torrents[0].downloadSpeed) + '/s'
-                upSpeed.textContent = prettyBytes(client.torrents[0].uploadSpeed) + '/s'
-            }
-            setTimeout(onProgress, 100)
+    onProgress = function () {
+        if (document.location.hash == "#player" && typeof video !== 'undefined') {
+            player.style.setProperty("--download", file.progress * 100 + "%");
+            peers.textContent = client.torrents[0].numPeers
+            downSpeed.textContent = prettyBytes(client.torrents[0].downloadSpeed) + '/s'
+            upSpeed.textContent = prettyBytes(client.torrents[0].uploadSpeed) + '/s'
         }
         setTimeout(onProgress, 100)
-        if (nowPlaying) {
-            playerData.nowPlaying = nowPlaying
-        } else {
-            let regexParse = nameParseRegex.fallback.exec(file.name)
-            playerData.nowPlaying = [await resolveName(regexParse[2], "SearchAnySingle"), regexParse[3]]
-        }
-        if ('mediaSession' in navigator && playerData.nowPlaying) {
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: playerData.nowPlaying[0].title.userPreferred,
-                artist: "Episode " + parseInt(playerData.nowPlaying[1]) + (playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""),
-                album: "Miru",
-                artwork: [
-                    {
-                        src: playerData.nowPlaying[0].streamingEpisodes.length ? playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].thumbnail : playerData.nowPlaying[0].coverImage.medium,
-                        sizes: '128x128',
-                        type: 'image/png'
-                    }
-                ]
-            });
-        }
     }
-
+    setTimeout(onProgress, 100)
+    if (nowPlaying) {
+        playerData.nowPlaying = nowPlaying
+    } else {
+        let regexParse = nameParseRegex.fallback.exec(file.name)
+        playerData.nowPlaying = [await resolveName(regexParse[2], "SearchAnySingle"), regexParse[3]]
+    }
+    nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}${playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""}`
+    if ('mediaSession' in navigator && playerData.nowPlaying) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: playerData.nowPlaying[0].title.userPreferred,
+            artist: "Episode " + parseInt(playerData.nowPlaying[1]) + (playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""),
+            album: "Miru",
+            artwork: [
+                {
+                    src: playerData.nowPlaying[0].streamingEpisodes.length ? playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].thumbnail : playerData.nowPlaying[0].coverImage.medium,
+                    sizes: '128x128',
+                    type: 'image/png'
+                }
+            ]
+        });
+    }
 }
 // download progress and status
 let onProgress
@@ -312,7 +317,14 @@ function btnpp() {
 }
 
 function btnnext() {
-    nyaaSearch(playerData.nowPlaying[0], parseInt(playerData.nowPlaying[1]) + 1)
+    if (videoFiles.length > 1) {
+        let file = videoFiles[videoFiles.indexOf(videoFiles.filter(file => `${window.location.origin}${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src)[0]) + 1],
+        nowPlaying = [playerData.nowPlaying[0], parseInt(playerData.nowPlaying[1]) + 1]
+        cleanupVideo()
+        buildVideo(file, nowPlaying)
+    } else {
+        nyaaSearch(playerData.nowPlaying[0], parseInt(playerData.nowPlaying[1]) + 1)
+    }
 }
 function autoNext() {
     settings.player6 ? btnnext() : ""
@@ -588,4 +600,3 @@ function checkCompletion() {
     }
 }
 cleanupVideo()
-// buildVideo()
