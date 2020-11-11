@@ -129,7 +129,7 @@ async function buildVideo(file, nowPlaying) {
     } else {
         bnext.removeAttribute("disabled")
     }
-    if (playerData.nowPlaying && playerData.nowPlaying[0]) {
+    if (playerData.nowPlaying && playerData.nowPlaying[0].streamingEpisodes.length == parseInt(playerData.nowPlaying[1])) {
         nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}${playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""}`
     } else if (playerData.nowPlaying && playerData.nowPlaying[1]) {
         nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}`
@@ -137,11 +137,11 @@ async function buildVideo(file, nowPlaying) {
     if ('mediaSession' in navigator && playerData.nowPlaying && playerData.nowPlaying[0]) {
         navigator.mediaSession.metadata = new MediaMetadata({
             title: playerData.nowPlaying[0].title.userPreferred,
-            artist: "Episode " + parseInt(playerData.nowPlaying[1]) + (playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""),
+            artist: "Episode " + parseInt(playerData.nowPlaying[1]) + (playerData.nowPlaying[0].streamingEpisodes.length == parseInt(playerData.nowPlaying[1]) ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""),
             album: "Miru",
             artwork: [
                 {
-                    src: playerData.nowPlaying[0].streamingEpisodes.length ? playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].thumbnail : playerData.nowPlaying[0].coverImage.medium,
+                    src: playerData.nowPlaying[0].streamingEpisodes.length == parseInt(playerData.nowPlaying[1]) ? playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].thumbnail : playerData.nowPlaying[0].coverImage.medium,
                     sizes: '128x128',
                     type: 'image/png'
                 }
