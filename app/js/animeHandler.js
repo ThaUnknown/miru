@@ -456,6 +456,9 @@ async function resolveName(name, method){
         if (!res.data.Page.media[0]) {
             res = await alRequest(name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), method)
         }
+        if(settings.torrent7 && !res.data.Page.media[0] && method == "SearchReleasesSingle"){
+            res = await alRequest(name, "SearchAnySingle")
+        }
         store[name] = res.data.Page.media[0]
     }
     return store[name]

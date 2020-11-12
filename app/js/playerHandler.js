@@ -108,10 +108,14 @@ async function buildVideo(file, nowPlaying) {
                     alertType: "alert-success",
                     fillType: ""
                 });
-                if (settings.player8 && !settings.torrent5) {
-                    finishThumbnails(file);
+                if (settings.player8) {
+                    if (!settings.torrent5) {
+                        finishThumbnails(file);
+                    }
+                    postDownload(file)
+                }
+                if (!settings.torrent5) {
                     downloadFile(file)
-                    postDownload(videoFiles[0])
                 }
             }
         }
@@ -120,7 +124,7 @@ async function buildVideo(file, nowPlaying) {
     setTimeout(onProgress, 100)
     if (nowPlaying) {
         playerData.nowPlaying = nowPlaying
-    } else {
+    } else if (settings.torrent7) {
         let regexParse = nameParseRegex.fallback.exec(file.name)
         playerData.nowPlaying = [await resolveName(regexParse[2], "SearchAnySingle"), regexParse[3]]
     }
@@ -231,7 +235,7 @@ function finishThumbnails(file) {
     if (settings.player5 && settings.player8) {
         let thumbVid = document.createElement("video"),
             index = 0
-        file.getBlobURL((err, url) => {
+        thumbVid.src = file.getBlobURL((err, url) => {
             thumbVid.src = url
         })
 
