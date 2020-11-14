@@ -465,8 +465,7 @@ async function resolveName(name, method){
 }
 
 const nameParseRegex = {
-    "SubsPlease": /(\[.[^\]]*\]\ ?)?(.+?(?=\ \-\ \d))?(\ \-\ )?(\d+)?(.*)?/i,
-    "Erai-raws": /(\[.[^\]]*\]\ ?)?(.+?(?=\ \–\ \d))?(\ \–\ )?(\d+)?(.*)?/i,
+    simple: /(\[.[^\]]*\]\ ?|\(.[^\)]*\)\ ?)?(.+?(?=\ \-\ \d{2,}|\ \–\ \d{2,}))?(\ \-\ |\ \–\ )?(\d{2,})?(.*)?/i,
     fallback: /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i
 }
 let store = JSON.parse(localStorage.getItem("store")) || {},
@@ -487,7 +486,7 @@ async function releasesRss() {
                 let items = doc.querySelectorAll("item")
                 for (let item of items) {
                     let i = item.querySelector.bind(item),
-                        regexParse = (nameParseRegex[torrent4.options[torrent4.selectedIndex].text] || nameParseRegex.fallback).exec(i("title").textContent)
+                        regexParse = nameParseRegex.simple.exec(i("title").textContent)
                     let media = await resolveName(regexParse[2], "SearchReleasesSingle"),
                         template = cardCreator(media, regexParse)
                     template.onclick = () => {

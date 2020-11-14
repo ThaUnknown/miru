@@ -125,15 +125,16 @@ async function buildVideo(file, nowPlaying) {
     if (nowPlaying) {
         playerData.nowPlaying = nowPlaying
     } else if (settings.torrent7) {
-        let regexParse = nameParseRegex.fallback.exec(file.name)
-        playerData.nowPlaying = [await resolveName(regexParse[2], "SearchAnySingle"), regexParse[3]]
+        let regexParse = nameParseRegex.simple.exec(file.name)
+        playerData.nowPlaying = [await resolveName(regexParse[2], "SearchAnySingle"), regexParse[4]]
+        console.log(regexParse)
     }
     if (playerData.nowPlaying && playerData.nowPlaying[0] && parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) {
         bnext.setAttribute("disabled", "")
     } else {
         bnext.removeAttribute("disabled")
     }
-    if (playerData.nowPlaying && playerData.nowPlaying[0].streamingEpisodes.length == parseInt(playerData.nowPlaying[1])) {
+    if (playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[0].streamingEpisodes.length == parseInt(playerData.nowPlaying[1])) {
         nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}${playerData.nowPlaying[0].streamingEpisodes.length ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""}`
     } else if (playerData.nowPlaying && playerData.nowPlaying[1]) {
         nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}`
@@ -268,7 +269,7 @@ function finishThumbnails(file) {
 function downloadFile(file) {
     dl.removeAttribute("disabled")
     dl.onclick = async (e) => {
-        await file.getBlobURL((err, url) => {
+        file.getBlobURL((err, url) => {
             let a = document.createElement('a');
             a.download = file.name;
             a.href = url;
