@@ -109,7 +109,7 @@ async function alRequest(searchName, method) {
                 }
             }
         }`
-    } else if(method == "SearchName"){
+    } else if (method == "SearchName") {
         variables.search = searchName
         variables.sort = "TRENDING_DESC"
         query = `
@@ -156,7 +156,7 @@ async function alRequest(searchName, method) {
                 }
             }
         }`
-    } else if (method == "SearchAnySingle"){
+    } else if (method == "SearchAnySingle") {
         variables.search = searchName
         variables.perPage = 1
         variables.sort = "TRENDING_DESC"
@@ -450,13 +450,13 @@ async function nyaaRss(media, episode) {
     })
     return frag
 }
-async function resolveName(name, method){
+async function resolveName(name, method) {
     if (!store.hasOwnProperty(name) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(name) && ((store[name] = media) && true)))) {
         let res = await alRequest(name, method)
         if (!res.data.Page.media[0]) {
             res = await alRequest(name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), method)
         }
-        if(settings.torrent7 && !res.data.Page.media[0] && method == "SearchReleasesSingle"){
+        if (settings.torrent7 && !res.data.Page.media[0] && method == "SearchReleasesSingle") {
             res = await alRequest(name, "SearchAnySingle")
         }
         store[name] = res.data.Page.media[0]
@@ -509,7 +509,9 @@ clearRelCache.onclick = () => {
     store = {}
 }
 setInterval(() => {
-    releasesRss()
+    if (document.location.hash == "#releases") {
+        releasesRss()
+    }
 }, 30000);
 async function loadAnime() {
     await searchAnime()

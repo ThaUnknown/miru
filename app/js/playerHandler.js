@@ -581,7 +581,7 @@ function btnpl() {
         let template = document.createElement("a")
         template.classList.add("dropdown-item", "pointer", "text-capitalize", "text-truncate", "text-white")
         let regexParse = nameParseRegex.fallback.exec(file.name)
-        template.innerHTML = playerData.nowPlaying[0] ? playerData.nowPlaying.title.userPreferred + " - " + parseInt(regexParse[3]) : regexParse[2] + parseInt(regexParse[3])
+        template.innerHTML = playerData.nowPlaying[0] ? playerData.nowPlaying[0].title.userPreferred + " - " + parseInt(regexParse[3]) : regexParse[2] + parseInt(regexParse[3])
         template.onclick = () => {
             cleanupVideo()
             buildVideo(file, [playerData.nowPlaying ? playerData.nowPlaying[0] : undefined, parseInt(regexParse[3])])
