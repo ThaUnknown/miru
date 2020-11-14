@@ -222,7 +222,7 @@ function initThumbnail() {
 }
 
 function createThumbnail(vid) {
-    if (settings.player5) {
+    if (settings.player5 && vid.readyState >= 2) {
         let index = Math.floor(vid.currentTime / 5)
         if (!playerData.thumbnails[index] && h) {
             context.fillRect(0, 0, 150, h);
