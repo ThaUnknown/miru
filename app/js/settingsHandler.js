@@ -1,5 +1,5 @@
 const settingsElements = [
-    player1, player2, player3, player4, player5, player6, player7, player8, subtitle1, subtitle2, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent6, torrent7, other1, other2
+    player1, player2, player3, player4, player5, player6, player7, player8, subtitle1, subtitle2, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent6, torrent7, torrent8, other1, other2
 ]
 let settings = {}
 function restoreDefaults() {
@@ -56,6 +56,16 @@ let searchParams = new URLSearchParams(location.href)
 if (searchParams.get("access_token")) {
     localStorage.setItem("ALtoken", searchParams.get("access_token"))
     window.location = "/app/#settingsTab"
+}
+
+torrent5.onclick = e => {
+    if (!e.srcElement.checked)
+        torrent8.checked = false
+
+}
+torrent8.onclick = e => {
+    if (e.srcElement.checked)
+        torrent5.checked = true
 }
 
 document.documentElement.style.setProperty("font-size", settings.other1 + "%")

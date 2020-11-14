@@ -82,9 +82,12 @@ let maxTorrents = 1,
     videoFiles
 async function addTorrent(magnet, media, episode) {
     if (client.torrents.length >= maxTorrents) {
-        client.remove(client.torrents[0].infoHash)
-        // client.torrents[0].store ? client.torrents[0].store.destroy() : ""
-        // client.torrents[0].destroy()
+        if (settings.torrent8 && settings.torrent5) {
+            client.remove(client.torrents[0].infoHash)
+        } else {
+            client.torrents[0].store ? client.torrents[0].store.destroy() : ""
+            client.torrents[0].destroy()
+        }
     }
     halfmoon.hideModal("tsearch")
     document.location.hash = "#player"
