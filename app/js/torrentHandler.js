@@ -1,6 +1,13 @@
-let client = new WebTorrent({ maxConns: settings.torrent6 })
+let client = new WebTorrent({ maxConns: settings.torrent6 }),
+    mystore = class extends IdbkvChunkStore {
+        constructor(len, opts) {
+            super(len, { ...opts, batchInterval: 1000 });
+        }
+    }
 window.onbeforeunload = () => {
-    client.torrents[0] ? client.torrents[0].store.destroy() : ""
+    if (!settings.torrent8) {
+        client.torrents[0] ? client.torrents[0].store.destroy() : ""
+    }
     client.torrents[0] ? client.torrents[0].destroy() : ""
     client.destroy()
     resetVideo()
@@ -94,7 +101,7 @@ async function addTorrent(magnet, media, episode) {
     let store
     cleanupVideo()
     await sw
-    settings.torrent5 ? store = { store: IdbkvChunkStore } : store = {}
+    settings.torrent5 ? store = { store: mystore } : store = {}
     client.add(magnet, store, function (torrent) {
         torrent.files.forEach(file => file.deselect());
         torrent.deselect(0, torrent.pieces.length - 1, false);
