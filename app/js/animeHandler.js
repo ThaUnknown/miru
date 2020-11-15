@@ -294,6 +294,11 @@ function viewAnime(media) {
     } else {
         viewTrailer.setAttribute("disabled", "")
     }
+    if (media.status == "NOT_YET_RELEASED"){
+        viewPlay.setAttribute("disabled", "")
+    } else {
+        viewPlay.removeAttribute("disabled", "")
+    }
     viewEpisodes.onclick = () => {
         viewEpisodesWrapper.classList.toggle("hidden")
     }
