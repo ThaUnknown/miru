@@ -668,9 +668,19 @@ if ('mediaSession' in navigator) {
 
 //AL entry auto add
 function checkCompletion() {
-    if (!playerData.watched && settings.other2 && typeof video !== 'undefined' && video.duration - 180 < video.currentTime) {
+    if (!playerData.watched && typeof video !== 'undefined' && video.duration - 180 < video.currentTime && playerData.nowPlaying && playerData.nowPlaying[0]) {
+        if(settings.other2){
+            alEntry()
+        } else{
+            halfmoon.initStickyAlert({
+                content: `Do You Want To Mark <br><b>${playerData.nowPlaying[0].title.userPreferred}</b><br>Episode ${playerData.nowPlaying[1]} As Completed?<br>
+                <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()">✓</button>
+                <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
+                title: "Episode Complete",
+                timeShown: 180000
+              })
+        }
         playerData.watched = true
-        alEntry()
     }
 }
 cleanupVideo()

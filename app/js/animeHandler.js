@@ -201,7 +201,7 @@ async function alRequest(searchName, method) {
     return json
 }
 function alEntry() {
-    if (playerData.nowPlaying && localStorage.getItem("ALtoken")) {
+    if (playerData.nowPlaying && playerData.nowPlaying[0] && localStorage.getItem("ALtoken")) {
         let query = `
 mutation ($id: Int, $status: MediaListStatus, $episode: Int) {
     SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode) {
