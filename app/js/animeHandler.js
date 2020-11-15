@@ -302,6 +302,11 @@ function viewAnime(media) {
     viewEpisodes.onclick = () => {
         viewEpisodesWrapper.classList.toggle("hidden")
     }
+    viewSynonym.onclick = () => {
+        store[viewSynonymText.value] = media
+        viewSynonymText.value = ""
+        localStorage.setItem("store", JSON.stringify(store))
+    }
     episodes.innerHTML = ""
     if (media.streamingEpisodes.length) {
         viewEpisodesWrapper.classList.add("hidden")
