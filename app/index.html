@@ -353,16 +353,17 @@
                                 </select>
                             </div>
                             <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
-                                data-title="What Feed To Fetch Torrents From">
+                                data-title="What RSS Feed To Fetch Torrents From, Allows For Custom CORS Enabled Feeds, URL Is Automatically Followed By Resolution">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">Feed</span>
                                 </div>
-                                <select class="form-control" id="torrent4">
-                                    <option value="https://subsplease.org/rss/?r=" selected>SubsPlease</option>
-                                    <option
-                                        value="https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-">
-                                        Erai-raws</option>
-                                </select>
+                                <input id="torrent4" type="text" list="torrent4list" class="form-control"
+                                    autocomplete="off">
+                                <datalist id="torrent4list">
+                                    <option value="SubsPlease">https://subsplease.org/rss/?r=</option>
+                                    <option value="Erai-raws">
+                                        https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-</option>
+                                </datalist>
                             </div>
                             <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
                                 data-title="How Many Max Peers To Connect To, Higher Numbers Mean Higher Speeds And More CPU Usage">
@@ -392,10 +393,15 @@
                                 <input type="checkbox" id="torrent8">
                                 <label for="torrent8">Persistent Storing</label>
                             </div>
-                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
+                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
                                 data-title="Tries To Resolve Anime Names From Manually Added Torrent Names, Might Lead To Wrong Anime Being Detected">
                                 <input type="checkbox" id="torrent7" checked>
                                 <label for="torrent7">Resolve Names</label>
+                            </div>
+                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
+                                data-title="Tries To Find Batches For Finished Shows Instead Of Downloading 1 Episode At A Time">
+                                <input type="checkbox" id="torrent9" checked>
+                                <label for="torrent9">Batch Lookup</label>
                             </div>
                         </div>
                         <div class="p-5">
@@ -414,9 +420,9 @@
                                 </div>
                             </div>
                             <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
-                                data-title="Automatically Marks Episodes As Complete On AniList When You Complete Watching Them, Requires AniList Login">
+                                data-title="Automatically Marks Episodes As Complete On AniList When You Finish Watching Them, Requires AniList Login">
                                 <input type="checkbox" id="other2">
-                                <label for="other2">AniList Sync [Requires <a
+                                <label for="other2">Autocomplete Episodes [Requires <a
                                         href="https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token"
                                         target="_top">OAuth2 Login</a>]</label>
                             </div>

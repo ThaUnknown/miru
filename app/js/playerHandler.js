@@ -674,7 +674,7 @@ function checkCompletion() {
         } else{
             halfmoon.initStickyAlert({
                 content: `Do You Want To Mark <br><b>${playerData.nowPlaying[0].title.userPreferred}</b><br>Episode ${playerData.nowPlaying[1]} As Completed?<br>
-                <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()">✓</button>
+                <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
                 <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
                 title: "Episode Complete",
                 timeShown: 180000

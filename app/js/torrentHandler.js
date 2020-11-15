@@ -118,18 +118,22 @@ async function addTorrent(magnet, media, episode) {
         videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
         if (videoFiles.length) {
             videoFiles.sort((a, b) => {
-                return parseInt(nameParseRegex.fallback.exec(a.name)[3]) - parseInt(nameParseRegex.fallback.exec(b.name)[3])
+                return parseInt(nameParseRegex.simple.exec(a.name)[4]) - parseInt(nameParseRegex.simple.exec(b.name)[4])
             })
+            let videoFile
             if (videoFiles.length > 1) {
                 bpl.removeAttribute("disabled")
+                videoFile = videoFiles.filter(file => { parseInt(nameParseRegex.simple.exec(file.name)[4]) == parseInt(episode) })
             } else {
                 bpl.setAttribute("disabled", "")
+                videofile = videoFiles[0]
             }
+            console.log(videoFile)
             if (media && episode) {
-                buildVideo(videoFiles[0], [media, episode])
+                buildVideo(videoFile[0]||videoFiles[0], [media, episode])
             }
             else {
-                buildVideo(videoFiles[0])
+                buildVideo(videoFile[0])
             }
         } else {
             halfmoon.initStickyAlert({

@@ -294,7 +294,7 @@ function viewAnime(media) {
     } else {
         viewTrailer.setAttribute("disabled", "")
     }
-    if (media.status == "NOT_YET_RELEASED"){
+    if (media.status == "NOT_YET_RELEASED") {
         viewPlay.setAttribute("disabled", "")
     } else {
         viewPlay.removeAttribute("disabled", "")
@@ -304,6 +304,7 @@ function viewAnime(media) {
     }
     episodes.innerHTML = ""
     if (media.streamingEpisodes.length) {
+        viewEpisodesWrapper.classList.add("hidden")
         viewEpisodes.removeAttribute("disabled", "")
         let frag = document.createDocumentFragment()
         media.streamingEpisodes.forEach(episode => {
@@ -324,7 +325,7 @@ function viewAnime(media) {
 function trailerPopup(trailer) {
     trailerVideo.src = ""
     halfmoon.toggleModal("trailer")
-    switch (trailer.site) {
+    switch (trailer.site) { // should support the other possible sites too, but i cant find any examples
         case "youtube":
             trailerVideo.src = "https://www.youtube.com/embed/" + trailer.id
             break;
@@ -405,6 +406,9 @@ async function nyaaSearch(media, episode) {
     if (parseInt(episode) < 10) {
         episode = `0${episode}`
     }
+    if (media.status == "FINISHED") {
+
+    }
 
     let table = document.querySelector("tbody.results")
     let results = await nyaaRss(media, episode)
@@ -425,7 +429,8 @@ async function nyaaSearch(media, episode) {
 
 async function nyaaRss(media, episode) {
     let frag = document.createDocumentFragment(),
-        url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q="${Object.values(media.title).concat(media.synonyms).filter(name => name != null).join("\"|\"")}""+${episode}+"${settings.torrent1}`)
+        ep = (media.status == "FINISHED" && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"batch"|"Batch"|"complete"|"Complete"` : `"+${episode}+"`,
+        url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q="${Object.values(media.title).concat(media.synonyms).filter(name => name != null).join("\"|\"")}"${ep}"${settings.torrent1}"`)
     res = await fetch(url)
     await res.text().then((xmlTxt) => {
         try {
@@ -479,8 +484,13 @@ let store = JSON.parse(localStorage.getItem("store")) || {},
 async function releasesRss() {
     let frag = document.createDocumentFragment(),
         releases = document.querySelector(".releases"),
-        url = torrent4.options[torrent4.selectedIndex].text == "Erai-raws" ? new URL(settings.torrent4 + settings.torrent1 + "-magnet") : new URL(settings.torrent4 + settings.torrent1)
-    res = await fetch(url)
+        url
+    if (Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0]){
+        url = settings.torrent4 == "Erai-raws" ? new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerText + settings.torrent1 + "-magnet") : new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerText + settings.torrent1)
+    } else {
+        url = settings.torrent4 + settings.torrent1
+    }
+    let res = await fetch(url)
     await res.text().then(async (xmlTxt) => {
         try {
             let doc = DOMPARSER(xmlTxt, "text/xml")
