@@ -7,6 +7,7 @@ function searchBox() {
 navNew.onclick = () => { releasesRss() }
 navTrending.onclick = () => { searchAnime() }
 navList.onclick = () => { searchAnime() }
+navNowPlaying.onclick = () => {viewAnime(playerData.nowPlaying[0])}
 async function alRequest(searchName, method) {
     let query,
         variables = {

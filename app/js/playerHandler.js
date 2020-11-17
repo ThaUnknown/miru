@@ -66,7 +66,8 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
         thumbnails: []
     }
     nowPlayingDisplay.textContent = ""
-    onProgress = undefined
+    onProgress = undefined;
+    navNowPlaying.classList.add("d-none")
 }
 async function buildVideo(file, nowPlaying) {
     video = document.createElement("video")
@@ -121,12 +122,15 @@ async function buildVideo(file, nowPlaying) {
         }
         setTimeout(onProgress, 100)
     }
+
     setTimeout(onProgress, 100)
     if (nowPlaying && nowPlaying[0]) {
         playerData.nowPlaying = nowPlaying
+        navNowPlaying.classList.remove("d-none")
     } else if (settings.torrent7) {
         let regexParse = nameParseRegex.simple.exec(file.name)
         playerData.nowPlaying = [await resolveName(regexParse[2], "SearchAnySingle"), regexParse[4]]
+        navNowPlaying.classList.remove("d-none")
         console.log(regexParse)
     }
     if (playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[0].episodes && parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) {
