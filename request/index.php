@@ -1,4 +1,5 @@
 <?php
+error_reporting(0);
 header("Access-Control-Allow-Origin: https://mirumoe.netlify.app");
 $url = str_replace("$", "&", $_GET['url']);
     if (substr($url, 0, 25) === "https://nyaa.si/?page=rss")

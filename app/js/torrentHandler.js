@@ -161,10 +161,10 @@ async function addTorrent(magnet, media, episode) {
                 videofile = videoFiles[0]
             }
             if (media && episode) {
-                videoFile ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
+                videoFile.length ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
             }
             else {
-                videoFile ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
+                videoFile.length ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
             }
         } else {
             halfmoon.initStickyAlert({
