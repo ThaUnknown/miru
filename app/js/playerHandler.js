@@ -122,14 +122,14 @@ async function buildVideo(file, nowPlaying) {
         setTimeout(onProgress, 100)
     }
     setTimeout(onProgress, 100)
-    if (nowPlaying) {
+    if (nowPlaying && nowPlaying[0]) {
         playerData.nowPlaying = nowPlaying
     } else if (settings.torrent7) {
         let regexParse = nameParseRegex.simple.exec(file.name)
         playerData.nowPlaying = [await resolveName(regexParse[2], "SearchAnySingle"), regexParse[4]]
         console.log(regexParse)
     }
-    if (playerData.nowPlaying && playerData.nowPlaying[0] && parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) {
+    if (playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[0].episodes && parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) {
         bnext.setAttribute("disabled", "")
     } else {
         bnext.removeAttribute("disabled")
@@ -669,16 +669,16 @@ if ('mediaSession' in navigator) {
 //AL entry auto add
 function checkCompletion() {
     if (!playerData.watched && typeof video !== 'undefined' && video.duration - 180 < video.currentTime && playerData.nowPlaying && playerData.nowPlaying[0]) {
-        if(settings.other2){
+        if (settings.other2) {
             alEntry()
-        } else{
+        } else {
             halfmoon.initStickyAlert({
                 content: `Do You Want To Mark <br><b>${playerData.nowPlaying[0].title.userPreferred}</b><br>Episode ${playerData.nowPlaying[1]} As Completed?<br>
                 <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
                 <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
                 title: "Episode Complete",
                 timeShown: 180000
-              })
+            })
         }
         playerData.watched = true
     }

@@ -85,6 +85,9 @@ async function alRequest(searchName, method) {
                 media (type: $type, search: $search, sort: $sort, status: $status) {
                     id
                     title {
+                        romaji
+                        english
+                        native
                         userPreferred
                     }
                     description(
@@ -96,11 +99,22 @@ async function alRequest(searchName, method) {
                     status
                     episodes
                     duration
+                    averageScore
                     genres
                     coverImage {
                         extraLarge
                         medium
                         color
+                    }
+                    bannerImage
+                    synonyms
+                    nextAiringEpisode {
+                        timeUntilAiring
+                        episode
+                    }
+                    trailer {
+                        id
+                        site
                     }
                     streamingEpisodes {
                         title
@@ -166,6 +180,9 @@ async function alRequest(searchName, method) {
                 media (type: $type, search: $search, sort: $sort) {
                     id
                     title {
+                        romaji
+                        english
+                        native
                         userPreferred
                     }
                     description(
@@ -177,11 +194,22 @@ async function alRequest(searchName, method) {
                     status
                     episodes
                     duration
+                    averageScore
                     genres
                     coverImage {
                         extraLarge
                         medium
                         color
+                    }
+                    bannerImage
+                    synonyms
+                    nextAiringEpisode {
+                        timeUntilAiring
+                        episode
+                    }
+                    trailer {
+                        id
+                        site
                     }
                     streamingEpisodes {
                         title
@@ -190,19 +218,63 @@ async function alRequest(searchName, method) {
                 }
             }
         }`
+    } else if (method == "SearchIDSingle") {
+        variables.id = searchName
+        query = `
+        query ($id: Int, $type: MediaType) { 
+            Media (id: $id, type: $type){
+                id
+                title {
+                    romaji
+                    english
+                    native
+                    userPreferred
+                }
+                description(
+                    asHtml: true
+                )
+                season
+                seasonYear
+                format
+                status
+                episodes
+                duration
+                averageScore
+                genres
+                coverImage {
+                    extraLarge
+                    medium
+                    color
+                }
+                bannerImage
+                synonyms
+                nextAiringEpisode {
+                    timeUntilAiring
+                    episode
+                }
+                trailer {
+                    id
+                    site
+                }
+                streamingEpisodes {
+                    title
+                    thumbnail
+                }
+            }
+        }`
     }
-    options.body = JSON.stringify({
-        query: query,
-        variables: variables
-    })
+        options.body = JSON.stringify({
+            query: query,
+            variables: variables
+        })
 
-    let res = await fetch('https://graphql.anilist.co', options).catch((error) => console.error(error)),
-        json = await res.json();
-    return json
-}
-function alEntry() {
-    if (playerData.nowPlaying && playerData.nowPlaying[0] && localStorage.getItem("ALtoken")) {
-        let query = `
+        let res = await fetch('https://graphql.anilist.co', options).catch((error) => console.error(error)),
+            json = await res.json();
+        return json
+    }
+    function alEntry() {
+        if (playerData.nowPlaying && playerData.nowPlaying[0] && localStorage.getItem("ALtoken")) {
+            let query = `
 mutation ($id: Int, $status: MediaListStatus, $episode: Int) {
     SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode) {
         id
@@ -210,160 +282,160 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int) {
         progress
     }
 }`,
-            variables = {
-                id: playerData.nowPlaying[0].id,
-                status: "CURRENT",
-                episode: parseInt(playerData.nowPlaying[1])
-            },
-            options = {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem("ALtoken"),
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                variables = {
+                    id: playerData.nowPlaying[0].id,
+                    status: "CURRENT",
+                    episode: parseInt(playerData.nowPlaying[1])
                 },
-                body: JSON.stringify({
-                    query: query,
-                    variables: variables
-                })
-            }
-        fetch("https://graphql.anilist.co", options)
+                options = {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem("ALtoken"),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        variables: variables
+                    })
+                }
+            fetch("https://graphql.anilist.co", options)
+        }
     }
-}
-let alResponse
-async function searchAnime(a) {
-    let frag = document.createDocumentFragment(),
-        browse = document.querySelector(".browse")
-    browse.textContent = '';
-    browse.appendChild(skeletonCard)
-    a ? alResponse = await alRequest(a, "SearchName") : alResponse = await alRequest(a, "Trending")
-    try {
-        alResponse.data.Page.media.forEach(media => {
-            let template = cardCreator(media)
-            template.onclick = () => {
-                viewAnime(media)
-            }
-            frag.appendChild(template)
-        })
-    } catch (e) {
-        console.error(e)
+    let alResponse
+    async function searchAnime(a) {
+        let frag = document.createDocumentFragment(),
+            browse = document.querySelector(".browse")
+        browse.textContent = '';
+        browse.appendChild(skeletonCard)
+        a ? alResponse = await alRequest(a, "SearchName") : alResponse = await alRequest(a, "Trending")
+        try {
+            alResponse.data.Page.media.forEach(media => {
+                let template = cardCreator(media)
+                template.onclick = () => {
+                    viewAnime(media)
+                }
+                frag.appendChild(template)
+            })
+        } catch (e) {
+            console.error(e)
+        }
+        browse.textContent = '';
+        browse.appendChild(frag)
     }
-    browse.textContent = '';
-    browse.appendChild(frag)
-}
 
 
-let detailsfrag = document.createDocumentFragment()
-let details = {
-    averageScore: "Average Score",
-    // duration: "Episode Duration",
-    // episodes: "Episodes",
-    // format: "Format",
-    genres: "Genres",
-    // season: "Season",
-    // seasonYear: "Year",
-    status: "Status",
-    english: "English",
-    romaji: "Romaji",
-    native: "Native",
-    synonyms: "Synonyms"
-}
-const episodeRx = /Episode (\d+) - (.*)/;
-function viewAnime(media) {
-    halfmoon.toggleModal("view")
-    view.setAttribute("style", `background-image: url(${media.bannerImage}) !important`)
-    viewImg.src = media.coverImage.extraLarge
-    viewTitle.textContent = media.title.userPreferred
-    viewDesc.innerHTML = media.description || ""
+    let detailsfrag = document.createDocumentFragment()
+    let details = {
+        averageScore: "Average Score",
+        // duration: "Episode Duration",
+        // episodes: "Episodes",
+        // format: "Format",
+        genres: "Genres",
+        // season: "Season",
+        // seasonYear: "Year",
+        status: "Status",
+        english: "English",
+        romaji: "Romaji",
+        native: "Native",
+        synonyms: "Synonyms"
+    }
+    const episodeRx = /Episode (\d+) - (.*)/;
+    function viewAnime(media) {
+        halfmoon.toggleModal("view")
+        view.setAttribute("style", `background-image: url(${media.bannerImage}) !important`)
+        viewImg.src = media.coverImage.extraLarge
+        viewTitle.textContent = media.title.userPreferred
+        viewDesc.innerHTML = media.description || ""
 
-    viewDetails.innerHTML = ""
-    detailsCreator(media)
-    viewDetails.appendChild(detailsfrag)
-    if (media.nextAiringEpisode) {
-        let temp = document.createElement("p")
-        temp.innerHTML = `<span class="font-weight-bold">Airing</span><br><span class="text-muted"> Episode ${media.nextAiringEpisode.episode}: ${toTS(media.nextAiringEpisode.timeUntilAiring)}</span>`
-        viewDetails.prepend(temp)
-    }
-    viewSeason.innerHTML = `${(media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear ? media.seasonYear : "")}`
-    viewMediaInfo.innerHTML = `${media.format ? "<span>" + media.format + "</span>" : ""}${media.episodes ? "<span>" + media.episodes + " Episodes</span>" : ""}${media.duration ? "<span>" + media.duration + " Minutes</span>" : ""}`
-    viewPlay.onclick = () => { nyaaSearch(media, 1); halfmoon.toggleModal("view") }
-    if (media.trailer) {
-        viewTrailer.removeAttribute("disabled", "")
-        viewTrailer.onclick = () =>
-            trailerPopup(media.trailer)
-    } else {
-        viewTrailer.setAttribute("disabled", "")
-    }
-    if (media.status == "NOT_YET_RELEASED") {
-        viewPlay.setAttribute("disabled", "")
-    } else {
-        viewPlay.removeAttribute("disabled", "")
-    }
-    viewEpisodes.onclick = () => {
-        viewEpisodesWrapper.classList.toggle("hidden")
-    }
-    viewSynonym.onclick = () => {
-        store[viewSynonymText.value] = media
-        viewSynonymText.value = ""
-        localStorage.setItem("store", JSON.stringify(store))
-    }
-    episodes.innerHTML = ""
-    if (media.streamingEpisodes.length) {
-        viewEpisodesWrapper.classList.add("hidden")
-        viewEpisodes.removeAttribute("disabled", "")
-        let frag = document.createDocumentFragment()
-        media.streamingEpisodes.forEach(episode => {
-            let temp = document.createElement("div")
-            temp.classList.add("position-relative", "w-250", "rounded", "mr-10", "overflow-hidden", "pointer")
-            temp.innerHTML = `
+        viewDetails.innerHTML = ""
+        detailsCreator(media)
+        viewDetails.appendChild(detailsfrag)
+        if (media.nextAiringEpisode) {
+            let temp = document.createElement("p")
+            temp.innerHTML = `<span class="font-weight-bold">Airing</span><br><span class="text-muted"> Episode ${media.nextAiringEpisode.episode}: ${toTS(media.nextAiringEpisode.timeUntilAiring)}</span>`
+            viewDetails.prepend(temp)
+        }
+        viewSeason.innerHTML = `${(media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear ? media.seasonYear : "")}`
+        viewMediaInfo.innerHTML = `${media.format ? "<span>" + media.format + "</span>" : ""}${media.episodes ? "<span>" + media.episodes + " Episodes</span>" : ""}${media.duration ? "<span>" + media.duration + " Minutes</span>" : ""}`
+        viewPlay.onclick = () => { nyaaSearch(media, 1); halfmoon.toggleModal("view") }
+        if (media.trailer) {
+            viewTrailer.removeAttribute("disabled", "")
+            viewTrailer.onclick = () =>
+                trailerPopup(media.trailer)
+        } else {
+            viewTrailer.setAttribute("disabled", "")
+        }
+        if (media.status == "NOT_YET_RELEASED") {
+            viewPlay.setAttribute("disabled", "")
+        } else {
+            viewPlay.removeAttribute("disabled", "")
+        }
+        viewEpisodes.onclick = () => {
+            viewEpisodesWrapper.classList.toggle("hidden")
+        }
+        viewSynonym.onclick = () => {
+            store[viewSynonymText.value] = media
+            viewSynonymText.value = ""
+            localStorage.setItem("store", JSON.stringify(store))
+        }
+        episodes.innerHTML = ""
+        if (media.streamingEpisodes.length) {
+            viewEpisodesWrapper.classList.add("hidden")
+            viewEpisodes.removeAttribute("disabled", "")
+            let frag = document.createDocumentFragment()
+            media.streamingEpisodes.forEach(episode => {
+                let temp = document.createElement("div")
+                temp.classList.add("position-relative", "w-250", "rounded", "mr-10", "overflow-hidden", "pointer")
+                temp.innerHTML = `
             <img src="${episode.thumbnail}" class="w-full h-full">
             <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">${episode.title}</div>`
-            temp.onclick = () => { nyaaSearch(media, episodeRx.exec(episode.title)[1]); halfmoon.toggleModal("view") }
-            frag.appendChild(temp)
-        })
-        episodes.appendChild(frag)
-    } else {
-        viewEpisodesWrapper.classList.add("hidden")
-        viewEpisodes.setAttribute("disabled", "")
+                temp.onclick = () => { nyaaSearch(media, episodeRx.exec(episode.title)[1]); halfmoon.toggleModal("view") }
+                frag.appendChild(temp)
+            })
+            episodes.appendChild(frag)
+        } else {
+            viewEpisodesWrapper.classList.add("hidden")
+            viewEpisodes.setAttribute("disabled", "")
+        }
     }
-}
-function trailerPopup(trailer) {
-    trailerVideo.src = ""
-    halfmoon.toggleModal("trailer")
-    switch (trailer.site) { // should support the other possible sites too, but i cant find any examples
-        case "youtube":
-            trailerVideo.src = "https://www.youtube.com/embed/" + trailer.id
-            break;
-    }
+    function trailerPopup(trailer) {
+        trailerVideo.src = ""
+        halfmoon.toggleModal("trailer")
+        switch (trailer.site) { // should support the other possible sites too, but i cant find any examples
+            case "youtube":
+                trailerVideo.src = "https://www.youtube.com/embed/" + trailer.id
+                break;
+        }
 
-}
-function detailsCreator(entry) {
-    if (entry) {
-        Object.entries(entry).forEach(value => {
-            let template = document.createElement("p")
-            if (typeof value[1] == 'object') {
-                if (Array.isArray(value[1])) {
-                    if (details[value[0]] && value[1].length > 0) {
-                        template.innerHTML = `<span class="font-weight-bold">${details[value[0]]}</span><br><span class="text-muted">${value[1].map(key => (key)).join(', ')}</span>`
-                        detailsfrag.appendChild(template)
+    }
+    function detailsCreator(entry) {
+        if (entry) {
+            Object.entries(entry).forEach(value => {
+                let template = document.createElement("p")
+                if (typeof value[1] == 'object') {
+                    if (Array.isArray(value[1])) {
+                        if (details[value[0]] && value[1].length > 0) {
+                            template.innerHTML = `<span class="font-weight-bold">${details[value[0]]}</span><br><span class="text-muted">${value[1].map(key => (key)).join(', ')}</span>`
+                            detailsfrag.appendChild(template)
+                        }
+                    } else {
+                        detailsCreator(value[1])
                     }
                 } else {
-                    detailsCreator(value[1])
+                    if (details[value[0]]) {
+                        template.innerHTML = `<span class="font-weight-bold">${details[value[0]]}</span><br><span class="text-muted">${value[1].toString()}</span>`
+                        detailsfrag.appendChild(template)
+                    }
                 }
-            } else {
-                if (details[value[0]]) {
-                    template.innerHTML = `<span class="font-weight-bold">${details[value[0]]}</span><br><span class="text-muted">${value[1].toString()}</span>`
-                    detailsfrag.appendChild(template)
-                }
-            }
-        })
+            })
+        }
     }
-}
-function cardCreator(media, regexParse) {
-    let template = document.createElement("div")
-    template.classList.add("card", "m-0", "p-0")
-    if (media) {
-        template.innerHTML = `
+    function cardCreator(media, regexParse) {
+        let template = document.createElement("div")
+        template.classList.add("card", "m-0", "p-0")
+        if (media) {
+            template.innerHTML = `
     <div class="row h-full" style="--color:${media.coverImage.color || "#1890ff"};">
         <div class="col-4">
             <img src="${media.coverImage.extraLarge || ""}"
@@ -388,8 +460,8 @@ function cardCreator(media, regexParse) {
         </div>
     </div>
     `
-    } else {
-        template.innerHTML = `
+        } else {
+            template.innerHTML = `
         <div class="row h-full">
             <div class="col-4 w-full bg-very-dark skeloader">
             </div>
@@ -400,54 +472,54 @@ function cardCreator(media, regexParse) {
             </div>
         </div>
         `
+        }
+        return template
     }
-    return template
-}
-let skeletonCard = cardCreator()
+    let skeletonCard = cardCreator()
 
-const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
+    const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
 
-async function nyaaSearch(media, episode) {
-    if (parseInt(episode) < 10) {
-        episode = `0${episode}`
+    async function nyaaSearch(media, episode) {
+        if (parseInt(episode) < 10) {
+            episode = `0${episode}`
+        }
+        if (media.status == "FINISHED") {
+
+        }
+
+        let table = document.querySelector("tbody.results")
+        let results = await nyaaRss(media, episode)
+
+        if (results.children.length == 0) {
+            halfmoon.initStickyAlert({
+                content: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
+                title: "Search Failed",
+                alertType: "alert-danger",
+                fillType: ""
+            })
+        } else {
+            table.textContent = ""
+            table.appendChild(results)
+            halfmoon.toggleModal("tsearch")
+        }
     }
-    if (media.status == "FINISHED") {
 
-    }
-
-    let table = document.querySelector("tbody.results")
-    let results = await nyaaRss(media, episode)
-
-    if (results.children.length == 0) {
-        halfmoon.initStickyAlert({
-            content: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
-            title: "Search Failed",
-            alertType: "alert-danger",
-            fillType: ""
-        })
-    } else {
-        table.textContent = ""
-        table.appendChild(results)
-        halfmoon.toggleModal("tsearch")
-    }
-}
-
-async function nyaaRss(media, episode) {
-    let frag = document.createDocumentFragment(),
-        ep = (media.status == "FINISHED" && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"batch"|"Batch"|"complete"|"Complete"` : `"+${episode}+"`,
-        url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q="${Object.values(media.title).concat(media.synonyms).filter(name => name != null).join("\"|\"")}"${ep}"${settings.torrent1}"`)
-    res = await fetch(url)
-    await res.text().then((xmlTxt) => {
-        try {
-            let doc = DOMPARSER(xmlTxt, "text/xml")
-            if (settings.torrent2 && doc.querySelectorAll("infoHash")[0]) {
-                addTorrent(doc.querySelectorAll("infoHash")[0].textContent, media, episode)
-                halfmoon.toggleModal("tsearch")
-            }
-            doc.querySelectorAll("item").forEach((item, index) => {
-                let i = item.querySelector.bind(item)
-                let template = document.createElement("tr")
-                template.innerHTML += `
+    async function nyaaRss(media, episode) {
+        let frag = document.createDocumentFragment(),
+            ep = (media.status == "FINISHED" && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"batch"|"Batch"|"complete"|"Complete"` : `"+${episode}+"`,
+            url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q="${Object.values(media.title).concat(media.synonyms).filter(name => name != null).join("\"|\"")}"${ep}"${settings.torrent1}"`)
+        res = await fetch(url)
+        await res.text().then((xmlTxt) => {
+            try {
+                let doc = DOMPARSER(xmlTxt, "text/xml")
+                if (settings.torrent2 && doc.querySelectorAll("infoHash")[0]) {
+                    addTorrent(doc.querySelectorAll("infoHash")[0].textContent, media, episode)
+                    halfmoon.toggleModal("tsearch")
+                }
+                doc.querySelectorAll("item").forEach((item, index) => {
+                    let i = item.querySelector.bind(item)
+                    let template = document.createElement("tr")
+                    template.innerHTML += `
                 <th>${(index + 1)}</th>
                 <td>${i("title").textContent}</td>
                 <td>${i("size").textContent}</td>
@@ -455,86 +527,86 @@ async function nyaaRss(media, episode) {
                 <td>${i("leechers").textContent}</td>
                 <td>${i("downloads").textContent}</td>
                 <td class="pointer">Play</td>`
-                template.onclick = () => { addTorrent(i('infoHash').textContent, media, episode) }
-                frag.appendChild(template)
-            })
-
-        } catch (e) {
-            console.error(e)
-        }
-    })
-    return frag
-}
-async function resolveName(name, method) {
-    if (!store.hasOwnProperty(name) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(name) && ((store[name] = media) && true)))) {
-        let res = await alRequest(name, method)
-        if (!res.data.Page.media[0]) {
-            res = await alRequest(name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), method)
-        }
-        if (settings.torrent7 && !res.data.Page.media[0] && method == "SearchReleasesSingle") {
-            res = await alRequest(name, "SearchAnySingle")
-        }
-        store[name] = res.data.Page.media[0]
-    }
-    return store[name]
-}
-
-const nameParseRegex = {
-    simple: /(\[.[^\]]*\]\ ?|\(.[^\)]*\)\ ?)?(.+?(?=\ \-\ \d{2,}|\ \–\ \d{2,}))?(\ \-\ |\ \–\ )?(\d{2,})?(.*)?/i,
-    fallback: /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i
-}
-let store = JSON.parse(localStorage.getItem("store")) || {},
-    lastResult
-
-async function releasesRss() {
-    let frag = document.createDocumentFragment(),
-        releases = document.querySelector(".releases"),
-        url
-    if (Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0]){
-        url = settings.torrent4 == "Erai-raws" ? new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerText + settings.torrent1 + "-magnet") : new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerText + settings.torrent1)
-    } else {
-        url = settings.torrent4 + settings.torrent1
-    }
-    let res = await fetch(url)
-    await res.text().then(async (xmlTxt) => {
-        try {
-            let doc = DOMPARSER(xmlTxt, "text/xml")
-            if (lastResult != doc) {
-                releases.textContent = '';
-                releases.appendChild(skeletonCard)
-                lastResult = doc
-                let items = doc.querySelectorAll("item")
-                for (let item of items) {
-                    let i = item.querySelector.bind(item),
-                        regexParse = nameParseRegex.simple.exec(i("title").textContent)
-                    let media = await resolveName(regexParse[2], "SearchReleasesSingle"),
-                        template = cardCreator(media, regexParse)
-                    template.onclick = () => {
-                        addTorrent(i('link').textContent, media, regexParse[4])
-                    }
+                    template.onclick = () => { addTorrent(i('infoHash').textContent, media, episode) }
                     frag.appendChild(template)
-                }
-                releases.textContent = '';
-                releases.appendChild(frag)
-            }
-        } catch (e) {
-            console.error(e)
-        }
-    })
+                })
 
-    localStorage.setItem("store", JSON.stringify(store))
-}
-clearRelCache.onclick = () => {
-    localStorage.removeItem("store")
-    store = {}
-}
-setInterval(() => {
-    if (document.location.hash == "#releases") {
+            } catch (e) {
+                console.error(e)
+            }
+        })
+        return frag
+    }
+    async function resolveName(name, method) {
+        if (!store.hasOwnProperty(name) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(name) && ((store[name] = media) && true)))) {
+            let res = await alRequest(name, method)
+            if (!res.data.Page.media[0]) {
+                res = await alRequest(name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), method)
+            }
+            if (settings.torrent7 && !res.data.Page.media[0] && method == "SearchReleasesSingle") {
+                res = await alRequest(name, "SearchAnySingle")
+            }
+            store[name] = res.data.Page.media[0]
+        }
+        return store[name]
+    }
+
+    const nameParseRegex = {
+        simple: /(\[.[^\]]*\]\ ?|\(.[^\)]*\)\ ?)?(.+?(?=\ \-\ \d{2,}|\ \–\ \d{2,}))?(\ \-\ |\ \–\ )?(\d{2,})?(.*)?/i,
+        fallback: /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i
+    }
+    let store = JSON.parse(localStorage.getItem("store")) || {},
+        lastResult
+
+    async function releasesRss() {
+        let frag = document.createDocumentFragment(),
+            releases = document.querySelector(".releases"),
+            url
+        if (Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0]) {
+            url = settings.torrent4 == "Erai-raws" ? new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerText + settings.torrent1 + "-magnet") : new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerText + settings.torrent1)
+        } else {
+            url = settings.torrent4 + settings.torrent1
+        }
+        let res = await fetch(url)
+        await res.text().then(async (xmlTxt) => {
+            try {
+                let doc = DOMPARSER(xmlTxt, "text/xml")
+                if (lastResult != doc) {
+                    releases.textContent = '';
+                    releases.appendChild(skeletonCard)
+                    lastResult = doc
+                    let items = doc.querySelectorAll("item")
+                    for (let item of items) {
+                        let i = item.querySelector.bind(item),
+                            regexParse = nameParseRegex.simple.exec(i("title").textContent)
+                        let media = await resolveName(regexParse[2], "SearchReleasesSingle"),
+                            template = cardCreator(media, regexParse)
+                        template.onclick = () => {
+                            addTorrent(i('link').textContent, media, regexParse[4])
+                        }
+                        frag.appendChild(template)
+                    }
+                    releases.textContent = '';
+                    releases.appendChild(frag)
+                }
+            } catch (e) {
+                console.error(e)
+            }
+        })
+
+        localStorage.setItem("store", JSON.stringify(store))
+    }
+    clearRelCache.onclick = () => {
+        localStorage.removeItem("store")
+        store = {}
+    }
+    setInterval(() => {
+        if (document.location.hash == "#releases") {
+            releasesRss()
+        }
+    }, 30000);
+    async function loadAnime() {
+        await searchAnime()
         releasesRss()
     }
-}, 30000);
-async function loadAnime() {
-    await searchAnime()
-    releasesRss()
-}
-loadAnime()
+    loadAnime()

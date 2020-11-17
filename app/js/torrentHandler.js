@@ -56,13 +56,45 @@ const announceList = [
         }
     })
 const torrentRx = /(magnet:)?([A-F\d]{8,40})?(.*\.torrent)?/i;
-window.addEventListener("paste", async (e) => {
-    let content = await navigator.clipboard.readText(),
-        regexParse = torrentRx.exec(content)
-    if (regexParse[1] || regexParse[2] || regexParse[3]) {
+window.addEventListener("paste", async e => {
+    let item = e.clipboardData.items[0];
+    console.log(item)
+
+    if (item && item.type.indexOf("image") === 0) {
         e.preventDefault();
-        addTorrent(content);
+        let blob = item.getAsFile();
+
+        let reader = new FileReader();
+        reader.onload = e => {
+            console.log(e.target.result);
+            fetch("https://trace.moe/api/search", {
+                method: "POST",
+                body: JSON.stringify({ image: e.target.result }),
+                headers: { "Content-Type": "application/json" },
+            })
+                .then((res) => res.json())
+                .then(async (result) => {
+                    if (result.docs[0].similarity >= 0.85) {
+                        console.log(result.docs[0].anilist_id)
+                        let res = await alRequest(result.docs[0].anilist_id, "SearchIDSingle")
+                        viewAnime(res.data.Media)
+                    } else{
+                        console.log("no." + result.docs[0].similarity)
+                    }
+                });
+        };
+        reader.readAsDataURL(blob);
+    } else if (item && item.type.indexOf("text") === 0) {
+        item.getAsString(text => {
+            console.log(text)
+            let regexParse = torrentRx.exec(text)
+            if (regexParse[1] || regexParse[2] || regexParse[3]) {
+                e.preventDefault();
+                addTorrent(text);
+            }
+        })
     }
+
 })
 //for debugging
 function t(a) {
@@ -128,12 +160,11 @@ async function addTorrent(magnet, media, episode) {
                 bpl.setAttribute("disabled", "")
                 videofile = videoFiles[0]
             }
-            console.log(videoFile)
             if (media && episode) {
-                buildVideo(videoFile[0]||videoFiles[0], [media, episode])
+                videoFile ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
             }
             else {
-                buildVideo(videoFile[0])
+                videoFile ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
             }
         } else {
             halfmoon.initStickyAlert({
