@@ -22,8 +22,8 @@ window.onbeforeunload = () => {
 }
 
 const announceList = [
-    ['wss://tracker.openwebtorrent.com'],
-    ['wss://tracker.btorrent.xyz']
+    ['wss://tracker.openwebtorrent.com']
+    // ['wss://tracker.btorrent.xyz'] // for now disabled cuz broken
     // ['wss://tracker.webtorrent.io'],
     // ['wss://tracker.fastcast.nz'],
     // ['wss://video.blender.org:443/tracker/socket'],

@@ -26,7 +26,46 @@ async function alRequest(searchName, method) {
                 query: query,
                 variables: variables
             })
+        },
+        queryObjects = `
+        id
+        title {
+            romaji
+            english
+            native
+            userPreferred
         }
+        description(
+            asHtml: true
+        )
+        season
+        seasonYear
+        format
+        status
+        episodes
+        duration
+        averageScore
+        genres
+        coverImage {
+            extraLarge
+            medium
+            color
+        }
+        bannerImage
+        synonyms
+        nextAiringEpisode {
+            timeUntilAiring
+            episode
+        }
+        trailer {
+            id
+            site
+        }
+        streamingEpisodes {
+            title
+            thumbnail
+        }
+        `
     if (localStorage.getItem("ALtoken")) {
         options.headers['Authorization'] = localStorage.getItem("ALtoken")
     }
@@ -36,43 +75,7 @@ async function alRequest(searchName, method) {
         query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
             Page (page: $page, perPage: $perPage) {
                 media(type: $type, sort: $sort) {
-                    id
-                    title {
-                        romaji
-                        english
-                        native
-                        userPreferred
-                    }
-                    description(
-                        asHtml: true
-                    )
-                    season
-                    seasonYear
-                    format
-                    status
-                    episodes
-                    duration
-                    averageScore
-                    genres
-                    coverImage {
-                        extraLarge
-                        medium
-                        color
-                    }
-                    bannerImage
-                    synonyms
-                    nextAiringEpisode {
-                        timeUntilAiring
-                        episode
-                    }
-                    trailer {
-                        id
-                        site
-                    }
-                    streamingEpisodes {
-                        title
-                        thumbnail
-                    }
+                    ${queryObjects}
                 }
             }
         }`
@@ -84,43 +87,7 @@ async function alRequest(searchName, method) {
         query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType, $status: MediaStatus) {
             Page (page: $page) {
                 media (type: $type, search: $search, sort: $sort, status: $status) {
-                    id
-                    title {
-                        romaji
-                        english
-                        native
-                        userPreferred
-                    }
-                    description(
-                        asHtml: true
-                    )
-                    season
-                    seasonYear
-                    format
-                    status
-                    episodes
-                    duration
-                    averageScore
-                    genres
-                    coverImage {
-                        extraLarge
-                        medium
-                        color
-                    }
-                    bannerImage
-                    synonyms
-                    nextAiringEpisode {
-                        timeUntilAiring
-                        episode
-                    }
-                    trailer {
-                        id
-                        site
-                    }
-                    streamingEpisodes {
-                        title
-                        thumbnail
-                    }
+                    ${queryObjects}
                 }
             }
         }`
@@ -131,43 +98,7 @@ async function alRequest(searchName, method) {
         query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String) {
             Page (page: $page, perPage: $perPage) {
                 media(type: $type, search: $search, sort: $sort) {
-                    id
-                    title {
-                        romaji
-                        english
-                        native
-                        userPreferred
-                    }
-                    description(
-                        asHtml: true
-                    )
-                    season
-                    seasonYear
-                    format
-                    status
-                    episodes
-                    duration
-                    averageScore
-                    genres
-                    coverImage {
-                        extraLarge
-                        medium
-                        color
-                    }
-                    bannerImage
-                    synonyms
-                    nextAiringEpisode {
-                        timeUntilAiring
-                        episode
-                    }
-                    trailer {
-                        id
-                        site
-                    }
-                    streamingEpisodes {
-                        title
-                        thumbnail
-                    }
+                    ${queryObjects}
                 }
             }
         }`
@@ -179,43 +110,7 @@ async function alRequest(searchName, method) {
         query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType) {
             Page (page: $page) {
                 media (type: $type, search: $search, sort: $sort) {
-                    id
-                    title {
-                        romaji
-                        english
-                        native
-                        userPreferred
-                    }
-                    description(
-                        asHtml: true
-                    )
-                    season
-                    seasonYear
-                    format
-                    status
-                    episodes
-                    duration
-                    averageScore
-                    genres
-                    coverImage {
-                        extraLarge
-                        medium
-                        color
-                    }
-                    bannerImage
-                    synonyms
-                    nextAiringEpisode {
-                        timeUntilAiring
-                        episode
-                    }
-                    trailer {
-                        id
-                        site
-                    }
-                    streamingEpisodes {
-                        title
-                        thumbnail
-                    }
+                    ${queryObjects}
                 }
             }
         }`
@@ -224,43 +119,7 @@ async function alRequest(searchName, method) {
         query = `
         query ($id: Int, $type: MediaType) { 
             Media (id: $id, type: $type){
-                id
-                title {
-                    romaji
-                    english
-                    native
-                    userPreferred
-                }
-                description(
-                    asHtml: true
-                )
-                season
-                seasonYear
-                format
-                status
-                episodes
-                duration
-                averageScore
-                genres
-                coverImage {
-                    extraLarge
-                    medium
-                    color
-                }
-                bannerImage
-                synonyms
-                nextAiringEpisode {
-                    timeUntilAiring
-                    episode
-                }
-                trailer {
-                    id
-                    site
-                }
-                streamingEpisodes {
-                    title
-                    thumbnail
-                }
+                ${queryObjects}
             }
         }`
     }
