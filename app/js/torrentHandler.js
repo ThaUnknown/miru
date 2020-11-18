@@ -55,7 +55,7 @@ const announceList = [
             throw e
         }
     })
-    
+
 //for debugging
 function t(a) {
     switch (a) {
@@ -120,11 +120,12 @@ async function addTorrent(magnet, media, episode) {
                 bpl.setAttribute("disabled", "")
                 videofile = videoFiles[0]
             }
+            
             if (media && episode) {
-                videoFile.length ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
+                (videoFile && videoFile.length) ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
             }
             else {
-                videoFile.length ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
+                (videoFile && videoFile.length) ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
             }
         } else {
             halfmoon.initStickyAlert({

@@ -10,13 +10,11 @@ window.addEventListener("paste", async e => {
 
         let reader = new FileReader();
         reader.onload = e => {
-            console.log(e.target.result);
             traceAnime(e.target.result, "uri")
         };
         reader.readAsDataURL(blob);
     } else if (item && item.type.indexOf("text") === 0) {
         item.getAsString(text => {
-            console.log(text)
             if (torrentRx.exec(text)) {
                 e.preventDefault();
                 addTorrent(text);

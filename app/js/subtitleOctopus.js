@@ -8,7 +8,6 @@ function subStream(stream) {
         } else {
             playerData.subtitleStream = new SubtitleStream()
             playerData.subtitleStream.once('tracks', pTracks => {
-                console.log(pTracks)
                 pTracks.forEach(track => {
                     if (track.type == "ass") {
                         if (!playerData.headers) {

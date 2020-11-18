@@ -138,7 +138,6 @@ async function buildVideo(file, nowPlaying) {
     } else {
         bnext.removeAttribute("disabled")
     }
-    console.log(playerData.nowPlaying[0])
     if (playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1])) {
         nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}${(playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1])) ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""}`
     } else if (playerData.nowPlaying && playerData.nowPlaying[1]) {
