@@ -14,7 +14,7 @@ function subStream(stream) {
                             playerData.headers = []
                         }
                         playerData.headers[track.number] = track
-                        playerData.subtitles[track.number] = []
+                        playerData.subtitles[track.number] = new Set()
                         playerData.selectedHeader = 3
                     } else {
                         playerData.tracks[track.number] = video.addTextTrack('captions', track.type, track.language);
@@ -29,19 +29,21 @@ function subStream(stream) {
             })
         }
         playerData.subtitleStream.on('subtitle', (subtitle, trackNumber) => {
+            console.log("subtitle")
             if (playerData.headers) {
-                let formatSub = "Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text
-                if (!playerData.subtitles[trackNumber].includes(formatSub)) {
-                    playerData.subtitles[trackNumber].push(formatSub)
-                    if (playerData.selectedHeader == trackNumber)
-                        renderSubs.call(null, trackNumber)
-                }
-            } else {
-                if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
-                    let cue = new VTTCue(subtitle.time / 1000, (subtitle.time + subtitle.duration) / 1000, subtitle.text)
-                    playerData.tracks[trackNumber].addCue(cue)
+                if (!playerData.subtitles[trackNumber].has(subtitle)) {
+                    playerData.subtitles[trackNumber].add(subtitle)
+                    // if (playerData.selectedHeader == trackNumber){
+                    renderSubs(trackNumber, subtitle)
+                    // }
                 }
             }
+            // } else {
+            //     if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
+            //         let cue = new VTTCue(subtitle.time / 1000, (subtitle.time + subtitle.duration) / 1000, subtitle.text)
+            //         playerData.tracks[trackNumber].addCue(cue)
+            //     }
+            // }
         })
         playerData.subtitleStream.on('file', file => {
             file.mimetype == ("application/x-truetype-font" || "application/font-woff") ? playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data], { type: file.mimetype }))) : ""
@@ -49,13 +51,17 @@ function subStream(stream) {
         stream.pipe(playerData.subtitleStream)
     }
 }
-function renderSubs(trackNumber) {
+function renderSubs(trackNumber, subtitle) {
     if (trackNumber) {
-        var trackContent = playerData.headers[trackNumber].header.slice(0, -1) + playerData.subtitles[trackNumber].join("\n")
+        var trackContent = playerData.headers[trackNumber].header.slice(0, -1)
+        // playerData.subtitles[trackNumber].join("\n")
+        console.log("1")
     } else {
         var trackContent = playerData.headers[3].header.slice(0, -1)
+        console.log("2")
     }
     if (!playerData.octopusInstance) {
+        console.log("3")
         let options = {
             video: video,
             subContent: trackContent,
@@ -64,7 +70,25 @@ function renderSubs(trackNumber) {
             workerUrl: 'js/subtitles-octopus-worker.js'
         };
         playerData.octopusInstance = new SubtitlesOctopus(options);
-    } else {
-        playerData.octopusInstance.setTrack(trackContent)
+        playerData.octopusInstance.getStyles()
     }
+    console.log("4")
+    // playerData.octopusInstance.setTrack(trackContent)
+    let subObject = {
+        Start: subtitle.time,
+        Duration: subtitle.duration,
+        ReadOrder: playerData.subtitles[trackNumber].size - 1,
+        Layer: parseInt(subtitle.layer),
+        Style: 1, //playerData.styles.findIndex(style => style.Name == subtitle.style) + 1 ||
+        Name: subtitle.name || "",
+        MarginL: parseInt(subtitle.marginL),
+        MarginR: parseInt(subtitle.marginR),
+        MarginV: parseInt(subtitle.marginV),
+        Effect: subtitle.effect || "",
+        Text: subtitle.text
+    }
+    console.log(subObject)
+    playerData.octopusInstance.createEvent(subObject)
+    playerData.octopusInstance.getEvents()
+
 }
