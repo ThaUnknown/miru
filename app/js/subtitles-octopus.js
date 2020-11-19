@@ -19,7 +19,7 @@ var SubtitlesOctopus = function (options) {
     self.dropAllAnimations = options.dropAllAnimations || false;
     self.libassMemoryLimit = options.libassMemoryLimit || 0; // set libass bitmap cache memory limit in MiB (approximate)
     self.libassGlyphLimit = options.libassGlyphLimit || 0; // set libass glyph cache memory limit in MiB (approximate)
-    self.targetFps = options.targetFps || 60;
+    self.targetFps = options.targetFps || 30;
     self.prescaleTradeoff = options.prescaleTradeoff || null; // render subtitles less than viewport when less than 1.0 to improve speed, render to more than 1.0 to improve quality; set to null to disable scaling
     self.softHeightLimit = options.softHeightLimit || 1080; // don't apply prescaleTradeoff < 1 when viewport height is less that this limit
     self.hardHeightLimit = options.hardHeightLimit || 2160; // don't ever go above this limit
@@ -686,7 +686,6 @@ var SubtitlesOctopus = function (options) {
             case 'get-styles': {
                 console.log(data.target);
                 console.log(data.styles);
-                playerData.styles = data.styles
                 break;
             }
             default:

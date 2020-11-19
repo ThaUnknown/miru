@@ -31,19 +31,18 @@ function subStream(stream) {
         playerData.subtitleStream.on('subtitle', (subtitle, trackNumber) => {
             console.log("subtitle")
             if (playerData.headers) {
-                if (!playerData.subtitles[trackNumber].has(subtitle)) {
-                    playerData.subtitles[trackNumber].add(subtitle)
-                    // if (playerData.selectedHeader == trackNumber){
-                    renderSubs(trackNumber, subtitle)
-                    // }
+                let formatSub = "Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text
+                if (!playerData.subtitles[trackNumber].has(formatSub)) {
+                    playerData.subtitles[trackNumber].add(formatSub)
+                    if (playerData.selectedHeader == trackNumber)
+                        renderSubs.call(null, trackNumber)
+                }
+            } else {
+                if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
+                    let cue = new VTTCue(subtitle.time / 1000, (subtitle.time + subtitle.duration) / 1000, subtitle.text)
+                    playerData.tracks[trackNumber].addCue(cue)
                 }
             }
-            // } else {
-            //     if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
-            //         let cue = new VTTCue(subtitle.time / 1000, (subtitle.time + subtitle.duration) / 1000, subtitle.text)
-            //         playerData.tracks[trackNumber].addCue(cue)
-            //     }
-            // }
         })
         playerData.subtitleStream.on('file', file => {
             file.mimetype == ("application/x-truetype-font" || "application/font-woff") ? playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data], { type: file.mimetype }))) : ""
@@ -51,44 +50,28 @@ function subStream(stream) {
         stream.pipe(playerData.subtitleStream)
     }
 }
-function renderSubs(trackNumber, subtitle) {
-    if (trackNumber) {
-        var trackContent = playerData.headers[trackNumber].header.slice(0, -1)
-        // playerData.subtitles[trackNumber].join("\n")
-        console.log("1")
-    } else {
-        var trackContent = playerData.headers[3].header.slice(0, -1)
-        console.log("2")
-    }
+function renderSubs(trackNumber) {
     if (!playerData.octopusInstance) {
-        console.log("3")
         let options = {
             video: video,
-            subContent: trackContent,
+            subContent: trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1),
             lossyRender: settings.subtitle2,
             fonts: playerData.fonts.length == 0 ? ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"] : playerData.fonts,
             workerUrl: 'js/subtitles-octopus-worker.js'
         };
         playerData.octopusInstance = new SubtitlesOctopus(options);
-        playerData.octopusInstance.getStyles()
+    } else {
+        pushSub(trackNumber)
     }
-    console.log("4")
-    // playerData.octopusInstance.setTrack(trackContent)
-    let subObject = {
-        Start: subtitle.time,
-        Duration: subtitle.duration,
-        ReadOrder: playerData.subtitles[trackNumber].size - 1,
-        Layer: parseInt(subtitle.layer),
-        Style: 1, //playerData.styles.findIndex(style => style.Name == subtitle.style) + 1 ||
-        Name: subtitle.name || "",
-        MarginL: parseInt(subtitle.marginL),
-        MarginR: parseInt(subtitle.marginR),
-        MarginV: parseInt(subtitle.marginV),
-        Effect: subtitle.effect || "",
-        Text: subtitle.text
-    }
-    console.log(subObject)
-    playerData.octopusInstance.createEvent(subObject)
-    playerData.octopusInstance.getEvents()
+}
 
+let octopusTimeout
+function pushSub(trackNumber) {
+    if (!octopusTimeout) {
+        octopusTimeout = setTimeout(() => {
+            console.log("pushing sub data!")
+            octopusTimeout = undefined
+            playerData.octopusInstance.setTrack(trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1))
+        }, 1000)
+    }
 }
