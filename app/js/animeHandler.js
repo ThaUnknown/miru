@@ -2,8 +2,6 @@ const torrentRx = /(magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent){1}/i,
     imageRx = /\.(jpeg|jpg|gif|png|webp)/
 window.addEventListener("paste", async e => {
     let item = e.clipboardData.items[0];
-    console.log(item)
-
     if (item && item.type.indexOf("image") === 0) {
         e.preventDefault();
         let blob = item.getAsFile();
@@ -13,7 +11,7 @@ window.addEventListener("paste", async e => {
             traceAnime(e.target.result, "uri")
         };
         reader.readAsDataURL(blob);
-    } else if (item && item.type.indexOf("text") === 0) {
+    } else if (item && item.type === "text/plain") {
         item.getAsString(text => {
             if (torrentRx.exec(text)) {
                 e.preventDefault();
@@ -23,10 +21,23 @@ window.addEventListener("paste", async e => {
                 traceAnime(text)
             }
         })
+    } else if (item && item.type === "text/html") {
+        item.getAsString(text => {
+            let domparser = new DOMParser(),
+                doc = domparser.parseFromString(text, "text/html"),
+                img = doc.querySelectorAll("img")[0]
+            if (img) {
+                e.preventDefault();
+                traceAnime(img.src)
+            }
+        })
     }
 
 })
 function traceAnime(image, type) {
+    halfmoon.initStickyAlert({
+        content: `Looking Up Anime ${type == "uri" ? "" : `For <span class="text-break">${image}</span>`}`
+    })
     let options,
         url = `https://trace.moe/api/search?url=${image}`
     if (type == "uri") {
@@ -417,7 +428,7 @@ async function nyaaSearch(media, episode) {
 
 async function nyaaRss(media, episode) {
     let frag = document.createDocumentFragment(),
-        ep = (media.status == "FINISHED" && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"batch"|"Batch"|"complete"|"Complete"` : `"+${episode}+"`,
+        ep = (media.status == "FINISHED" && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"batch"|"Batch"|"complete"|"Complete"` : `"+${episode}+"|"+${episode}v"`,
         url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q="${Object.values(media.title).concat(media.synonyms).filter(name => name != null).join("\"|\"")}"${ep}"${settings.torrent1}"`)
     res = await fetch(url)
     await res.text().then((xmlTxt) => {

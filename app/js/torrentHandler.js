@@ -160,6 +160,7 @@ function postDownload(file) {
         })
         parser.on('finish', () => {
             playerData.subtitles = subtitles
+            playerData.parsed = 1
             renderSubs.call(null, playerData.selectedHeader)
         });
         file.createReadStream().pipe(parser)
