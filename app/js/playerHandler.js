@@ -118,15 +118,6 @@ async function buildVideo(file, nowPlaying) {
                 if (!settings.torrent5) {
                     downloadFile(file)
                 }
-                if (settings.player9) {
-                    file.getBlobURL((err, url) => {
-                        let time = video.currentTime,
-                            playState = !video.paused
-                        video.src = url
-                        video.currentTime = time
-                        playState ? video.play() : ""
-                    })
-                }
             }
         }
         setTimeout(onProgress, 100)

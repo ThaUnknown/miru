@@ -98,6 +98,17 @@ function postDownload(file) {
             playerData.subtitles = subtitles
             playerData.parsed = 1
             renderSubs.call(null, playerData.selectedHeader)
+            if (settings.player9) {
+                file.getBlobURL((err, url) => {
+                    setTimeout(() => {
+                        let time = video.currentTime,
+                            playState = !video.paused
+                        video.src = url
+                        video.currentTime = time
+                        playState ? video.play() : ""
+                    }, 5000);
+                })
+            }
         });
         file.createReadStream().pipe(parser)
     }
