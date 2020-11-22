@@ -96,7 +96,8 @@
                             data-title="Manually Add A Synonym To The Media, Case Sensitive">
                             <input type="text" class="form-control" placeholder="Add Synonym" id="viewSynonymText">
                             <div class="input-group-append">
-                                <button class="btn btn-primary btn-square" type="button" id="viewSynonym">&plus;</button>
+                                <button class="btn btn-primary btn-square" type="button"
+                                    id="viewSynonym">&plus;</button>
                             </div>
                         </div>
                     </div>
@@ -316,10 +317,15 @@
                                 <input type="checkbox" id="player7" checked>
                                 <label for="player7">Picture In Picture</label>
                             </div>
-                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top" data-title="Improves UX And Performance After A Download
+                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Improves UX And Performance After A Download
                     Finishes, Small Spike In CPU And RAM Usage For A Few Seconds">
                                 <input type="checkbox" id="player8" checked>
                                 <label for="player8">Post-Download Processing</label>
+                            </div>
+                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
+                                data-title="Renders The Video As A Blob When Available, Greatly Improves Playback Performance, DOUBLES RAM Usage.">
+                                <input type="checkbox" id="player9">
+                                <label for="player9">Render As Blob</label>
                             </div>
                         </div>
 
@@ -370,9 +376,9 @@
                                     <span class="input-group-text">Feed</span>
                                 </div>
                                 <input id="torrent4" type="text" list="torrent4list" class="form-control"
-                                    autocomplete="off">
+                                    autocomplete="off" value="SubsPlease">
                                 <datalist id="torrent4list">
-                                    <option value="SubsPlease">https://subsplease.org/rss/?r=</option>
+                                    <option value="SubsPlease" selected>https://subsplease.org/rss/?r=</option>
                                     <option value="Erai-raws">
                                         https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-</option>
                                 </datalist>

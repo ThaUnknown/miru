@@ -141,31 +141,6 @@ async function addTorrent(magnet, media, episode) {
     })
 
 }
-function postDownload(file) {
-    if (playerData.subtitleStream) {
-        let parser = new SubtitleParser(),
-            subtitles = []
-        parser.once('tracks', pTracks => {
-            pTracks.forEach(track => {
-                subtitles[track.number] = new Set()
-            })
-        })
-        parser.on('subtitle', (subtitle, trackNumber) => {
-            if (playerData.headers) {
-                subtitles[trackNumber].add("Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text)
-            } else if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
-                let cue = new VTTCue(subtitle.time / 1000, (subtitle.time + subtitle.duration) / 1000, subtitle.text)
-                playerData.tracks[trackNumber].addCue(cue)
-            }
-        })
-        parser.on('finish', () => {
-            playerData.subtitles = subtitles
-            playerData.parsed = 1
-            renderSubs.call(null, playerData.selectedHeader)
-        });
-        file.createReadStream().pipe(parser)
-    }
-}
 
 function serveFile(file, req) {
     const res = {
