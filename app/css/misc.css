@@ -1,6 +1,7 @@
-body { 
+body {
     overscroll-behavior: none
 }
+
 .badge-color {
     background-color: var(--color) !important;
     border-color: var(--color) !important;
@@ -13,7 +14,8 @@ body {
 .cover-img {
     object-fit: cover;
 }
-input:invalid{
+
+input:invalid {
     box-shadow: 0 0 0 0.2rem var(--danger-color) !important
 }
 
@@ -173,6 +175,10 @@ nav {
 
 .modal-dialog {
     top: 0 !important
+}
+
+#oauth::after {
+    white-space: pre !important
 }
 
 @keyframes load {

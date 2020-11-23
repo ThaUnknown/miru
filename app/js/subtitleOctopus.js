@@ -29,7 +29,6 @@ function subStream(stream) {
             })
         }
         playerData.subtitleStream.on('subtitle', (subtitle, trackNumber) => {
-            console.log("subtitle")
             if (!playerData.parsed) {
                 if (playerData.headers) {
                     let formatSub = "Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text
@@ -71,7 +70,6 @@ let octopusTimeout
 function pushSub(trackNumber) {
     if (!octopusTimeout) {
         octopusTimeout = setTimeout(() => {
-            console.log("pushing sub data!")
             octopusTimeout = undefined
             playerData.octopusInstance.setTrack(trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1))
         }, 1000)

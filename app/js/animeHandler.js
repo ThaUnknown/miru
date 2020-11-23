@@ -68,8 +68,28 @@ function searchBox() {
 }
 navNew.onclick = () => { releasesRss() }
 navTrending.onclick = () => { searchAnime() }
-navList.onclick = () => { searchAnime() }
 navNowPlaying.onclick = () => { viewAnime(playerData.nowPlaying[0]) }
+navList.onclick = async () => {
+    let browse = document.querySelector(".browse")
+    browse.textContent = '';
+    browse.appendChild(skeletonCard)
+    let res = await alRequest(alID, "UserLists"),
+        entries = res.data.MediaListCollection.lists[0].entries.concat(res.data.MediaListCollection.lists[1].entries),
+        frag = document.createDocumentFragment()
+    try {
+        entries.forEach(media => {
+            let template = cardCreator(media.media)
+            template.onclick = () => {
+                viewAnime(media.media)
+            }
+            frag.appendChild(template)
+        })
+    } catch (e) {
+        console.error(e)
+    }
+    browse.textContent = '';
+    browse.appendChild(frag)
+}
 async function alRequest(searchName, method) {
     let query,
         variables = {
@@ -184,6 +204,33 @@ async function alRequest(searchName, method) {
                 ${queryObjects}
             }
         }`
+    } else if (method == "Viewer") {
+        query = `
+        query {
+            Viewer {
+                avatar {
+                    medium
+                },
+                name,
+                id
+            }
+        }
+        `
+    } else if (method == "UserLists") {
+        variables.id = searchName
+        query = `
+        query ($id: Int, $type: MediaType){
+            MediaListCollection (userId: $id, type: $type, forceSingleCompletedList: true, status_in: [CURRENT,PLANNING]) {
+                lists {
+                    entries {
+                        media {
+                            ${queryObjects}
+                        }
+                    }
+                }
+            }
+        }
+        `
     }
     options.body = JSON.stringify({
         query: query,
@@ -532,3 +579,17 @@ async function loadAnime() {
     releasesRss()
 }
 loadAnime()
+
+let alID
+if (localStorage.getItem("ALtoken")) {
+    alRequest(undefined, "Viewer").then(result => {
+        oauth.removeAttribute("href")
+        oauth.setAttribute("data-title", `${result.data.Viewer.name}\nClick To Logout`)
+        oauth.innerHTML = `<img src="${result.data.Viewer.avatar.medium}" class="m-0">`
+        oauth.onclick = () => {
+            localStorage.removeItem("ALtoken");
+            location.reload()
+        }
+        alID = result.data.Viewer.id
+    })
+}

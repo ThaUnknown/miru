@@ -160,6 +160,10 @@
                         autocomplete="off">
                 </div>
             </form>
+            <a id="oauth" class="navbar-brand pointer font-size-20 mr-5" data-toggle="tooltip" data-placement="bottom"
+            data-title="Login With AniList" href="https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token">
+                <span class="material-icons font-size-20">login</span>
+            </a>
             <a href="#settingsTab" class="navbar-brand pointer font-size-20 mr-5">
                 <span class="material-icons font-size-20">settings</span>
             </a>
@@ -440,9 +444,7 @@
                             <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
                                 data-title="Automatically Marks Episodes As Complete On AniList When You Finish Watching Them, Requires AniList Login">
                                 <input type="checkbox" id="other2">
-                                <label for="other2">Autocomplete Episodes [Requires <a
-                                        href="https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token"
-                                        target="_top">OAuth2 Login</a>]</label>
+                                <label for="other2">Autocomplete Episodes</label>
                             </div>
                         </div>
                     </div>
