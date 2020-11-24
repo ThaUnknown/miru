@@ -279,9 +279,9 @@ function downloadFile(file) {
             a.href = url;
             document.body.appendChild(a);
             a.click(e);
-            window.URL.revokeObjectURL(a.href);
             delete a
             a.remove();
+            window.URL.revokeObjectURL(url);
         })
     }
 }
