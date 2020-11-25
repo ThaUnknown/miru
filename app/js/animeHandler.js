@@ -400,7 +400,7 @@ function detailsCreator(entry) {
         })
     }
 }
-function cardCreator(media, regexParse) {
+function cardCreator(media, name, episode) {
     let template = document.createElement("div")
     template.classList.add("card", "m-0", "p-0")
     if (media) {
@@ -412,7 +412,7 @@ function cardCreator(media, regexParse) {
         </div>
         <div class="col-8 h-full card-grid">
             <div class="px-15 py-10">
-                <h5 class="m-0 text-capitalize font-weight-bold">${media.title.userPreferred}${regexParse ? " - " + regexParse[4] : ""}</h5>
+                <h5 class="m-0 text-capitalize font-weight-bold">${media.title.userPreferred}${episode ? " - " + episode : ""}</h5>
                 <p class="text-muted m-0 text-capitalize details">
                 ${(media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format.toLowerCase().replace(/_/g, " ")) : "") + "</span>"}
                 ${media.episodes ? "<span>" + media.episodes + " Episodes</span>" : media.duration ? "<span>" + media.duration + " Minutes</span>" : ""}
@@ -436,7 +436,7 @@ function cardCreator(media, regexParse) {
             </div>
             <div class="col-8 h-full card-grid skeloader">
                 <div class="px-15 py-10">
-                    <h5 class="m-0 text-capitalize font-weight-bold">${regexParse ? regexParse[2] + " - " + regexParse[4] : ""}</h5>
+                    <h5 class="m-0 text-capitalize font-weight-bold">${name ? name + " - " + episode : ""}</h5>
                 </div>
             </div>
         </div>
@@ -477,7 +477,7 @@ async function nyaaRss(media, episode) {
     let frag = document.createDocumentFragment(),
         ep = (media.status == "FINISHED" && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"batch"|"Batch"|"complete"|"Complete"|"+01+"|"+01v"` : `"+${episode}+"|"+${episode}v"`,
         url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(")|(")})${ep}"${settings.torrent1}"`)
-        // console.log(`"${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join("\"|\"")}"${ep}"${settings.torrent1}"`)
+    // console.log(`"${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join("\"|\"")}"${ep}"${settings.torrent1}"`)
     res = await fetch(url)
     await res.text().then((xmlTxt) => {
         try {
@@ -548,11 +548,19 @@ async function releasesRss() {
                 let items = doc.querySelectorAll("item")
                 for (let item of items) {
                     let i = item.querySelector.bind(item),
-                        regexParse = nameParseRegex.simple.exec(i("title").textContent)
+                        regexParse = nameParseRegex.simple.exec(i("title").textContent),
+                        episode
+                    if (!regexParse[2]) {
+                        regexParse = nameParseRegex.fallback.exec(i("title").textContent)
+                        episode = regexParse[3]
+                    } else {
+                        episode = regexParse[4]
+                    }
+
                     let media = await resolveName(regexParse[2], "SearchReleasesSingle"),
-                        template = cardCreator(media, regexParse)
+                        template = cardCreator(media, regexParse[2], episode)
                     template.onclick = () => {
-                        addTorrent(i('link').textContent, media, regexParse[4])
+                        addTorrent(i('link').textContent, media, episode)
                     }
                     frag.appendChild(template)
                 }
