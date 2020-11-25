@@ -97,10 +97,12 @@ async function buildVideo(file, nowPlaying) {
     // file.on("done", () => { console.log("test") }) // this currently wont work, idk how to remove old listeners
     onProgress = function () {
         if (document.location.hash == "#player" && typeof video !== 'undefined') {
-            player.style.setProperty("--download", file.progress * 100 + "%");
-            peers.textContent = client.torrents[0].numPeers
-            downSpeed.textContent = prettyBytes(client.torrents[0].downloadSpeed) + '/s'
-            upSpeed.textContent = prettyBytes(client.torrents[0].uploadSpeed) + '/s'
+            if (!player.classList.contains('immersed')) {
+                player.style.setProperty("--download", file.progress * 100 + "%");
+                peers.textContent = client.torrents[0].numPeers
+                downSpeed.textContent = prettyBytes(client.torrents[0].downloadSpeed) + '/s'
+                upSpeed.textContent = prettyBytes(client.torrents[0].uploadSpeed) + '/s'
+            }
             if (file.progress == 1 && !playerData.done) {
                 playerData.done = 1
                 halfmoon.initStickyAlert({
@@ -198,7 +200,7 @@ async function dragBarStart() {
 
 let currentTime = 0;
 function updateBar(progressPercent) {
-    if (document.location.hash == "#player") {
+    if (document.location.hash == "#player" && !player.classList.contains('immersed')) {
         progress.style.setProperty("--progress", progressPercent + "%");
         thumb.style.setProperty("--progress", progressPercent + "%");
         if (typeof video !== 'undefined') {
