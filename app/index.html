@@ -301,6 +301,17 @@
                                     <span class="input-group-text">sec</span>
                                 </div>
                             </div>
+                            <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
+                                data-title="What Action To Take When The Video Looses Visibility">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Lost Visibility</span>
+                                </div>
+                                <select class="form-control" id="player10">
+                                    <option value="none" selected>Nothing</option>
+                                    <option value="pip">Enter PIP</option>
+                                    <option value="pause">Pause Playback</option>
+                                </select>
+                            </div>
                             <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
                                 data-title="Shows Miniplayer When Browsing">
                                 <input type="checkbox" id="player4" checked>
@@ -481,7 +492,7 @@
     <script src="js/rangeParser.js"></script>
     <script src="js/idbkv-chunk-store.js"></script>
     <script src="js/torrentHandler.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@3.2.3/dist/matroska-subtitles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@3/dist/matroska-subtitles.min.js"></script>
     <script src="js/subtitles-octopus.js"></script>
     <script src="js/subtitleOctopus.js"></script>
 </body>

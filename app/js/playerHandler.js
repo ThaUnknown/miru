@@ -76,6 +76,11 @@ async function buildVideo(file, nowPlaying) {
         bpip.setAttribute("disabled", "")
     } else {
         bpip.removeAttribute("disabled")
+        video.setAttribute("autopictureinpicture", "")
+        video.addEventListener("enterpictureinpicture", () => {
+            if (playerData.octopusInstance)
+                btnpip()
+        })
     }
     video.src = `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}`
     video.id = "video"
@@ -162,6 +167,29 @@ async function buildVideo(file, nowPlaying) {
 }
 // download progress and status
 let onProgress
+
+// visibility loss
+document.addEventListener("visibilitychange", () => {
+    switch (settings.player10) {
+        case "pip":
+            // if (document.visibilityState === "hidden") {
+            //     if (!document.pictureInPictureElement)
+            //         btnpip()
+            // } else {
+            //     if (document.pictureInPictureElement)
+            //         btnpip()
+            // }
+            console.log("not supported")
+            break;
+        case "pause":
+            if (document.visibilityState === "hidden") {
+                video.pause()
+            } else {
+                playVideo();
+            }
+            break;
+    }
+})
 
 // progress bar and display
 
@@ -435,7 +463,7 @@ async function btnpip() {
         if (!playerData.octopusInstance) {
             video !== document.pictureInPictureElement ? await video.requestPictureInPicture() : await document.exitPictureInPicture();
         } else {
-            if (document.pictureInPictureElement) {
+            if (document.pictureInPictureElement && !document.pictureInPictureElement.id) {
                 await document.exitPictureInPicture()
             } else {
                 let canvas = document.createElement("canvas"),
