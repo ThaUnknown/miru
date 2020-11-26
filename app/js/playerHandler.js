@@ -76,7 +76,8 @@ async function buildVideo(file, nowPlaying) {
         bpip.setAttribute("disabled", "")
     } else {
         bpip.removeAttribute("disabled")
-        video.setAttribute("autopictureinpicture", "")
+        if (settings.player10 === "pip")
+            video.setAttribute("autopictureinpicture", "") // this is not supported yet, but will be in the future
         video.addEventListener("enterpictureinpicture", () => {
             if (playerData.octopusInstance)
                 btnpip()
@@ -170,25 +171,8 @@ let onProgress
 
 // visibility loss
 document.addEventListener("visibilitychange", () => {
-    switch (settings.player10) {
-        case "pip":
-            // if (document.visibilityState === "hidden") {
-            //     if (!document.pictureInPictureElement)
-            //         btnpip()
-            // } else {
-            //     if (document.pictureInPictureElement)
-            //         btnpip()
-            // }
-            console.log("not supported")
-            break;
-        case "pause":
-            if (document.visibilityState === "hidden") {
-                video.pause()
-            } else {
-                playVideo();
-            }
-            break;
-    }
+    if (settings.player10 === "pause")
+        document.visibilityState === "hidden" ? video.pause() : playVideo();
 })
 
 // progress bar and display
