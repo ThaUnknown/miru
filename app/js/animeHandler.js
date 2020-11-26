@@ -15,9 +15,11 @@ window.addEventListener("paste", async e => {
         item.getAsString(text => {
             if (torrentRx.exec(text)) {
                 e.preventDefault();
+                search.value = ""
                 addTorrent(text);
             } else if (imageRx.exec(text)) {
                 e.preventDefault();
+                search.value = ""
                 traceAnime(text)
             }
         })
@@ -28,6 +30,7 @@ window.addEventListener("paste", async e => {
                 img = doc.querySelectorAll("img")[0]
             if (img) {
                 e.preventDefault();
+                search.value = ""
                 traceAnime(img.src)
             }
         })
