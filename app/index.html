@@ -301,17 +301,6 @@
                                     <span class="input-group-text">sec</span>
                                 </div>
                             </div>
-                            <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
-                                data-title="What Action To Take When The Video Looses Visibility">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Lost Visibility</span>
-                                </div>
-                                <select class="form-control" id="player10">
-                                    <option value="none" selected>Nothing</option>
-                                    <option value="pip">Enter PIP</option>
-                                    <option value="pause">Pause Playback</option>
-                                </select>
-                            </div>
                             <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
                                 data-title="Shows Miniplayer When Browsing">
                                 <input type="checkbox" id="player4" checked>
@@ -337,10 +326,16 @@
                                 <input type="checkbox" id="player8" checked>
                                 <label for="player8">Post-Download Processing</label>
                             </div>
-                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
+                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
                                 data-title="Renders The Video As A Blob When Available, Greatly Improves Playback Performance, DOUBLES RAM Usage.">
                                 <input type="checkbox" id="player9">
                                 <label for="player9">Render As Blob</label>
+                            </div>
+                            </div>
+                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
+                                data-title="Pauses/Resumes Video Playback When Tabbing In/Out Of The App.">
+                                <input type="checkbox" id="player10">
+                                <label for="player10">Pause When Tabbing Out</label>
                             </div>
                         </div>
 

@@ -76,8 +76,6 @@ async function buildVideo(file, nowPlaying) {
         bpip.setAttribute("disabled", "")
     } else {
         bpip.removeAttribute("disabled")
-        if (settings.player10 === "pip")
-            video.setAttribute("autopictureinpicture", "") // this is not supported yet, but will be in the future
         video.addEventListener("enterpictureinpicture", () => {
             if (playerData.octopusInstance)
                 btnpip()
@@ -171,7 +169,7 @@ let onProgress
 
 // visibility loss
 document.addEventListener("visibilitychange", () => {
-    if (settings.player10 === "pause")
+    if (settings.player10)
         document.visibilityState === "hidden" ? video.pause() : playVideo();
 })
 
@@ -457,7 +455,6 @@ async function btnpip() {
                     running = true
                 canvas.width = subtitleCanvas.width
                 canvas.height = subtitleCanvas.height
-                player.classList.add("pip")
 
                 function renderFrame() {
                     if (running) {
@@ -466,11 +463,18 @@ async function btnpip() {
                         window.requestAnimationFrame(renderFrame)
                     }
                 }
-                window.requestAnimationFrame(renderFrame)
                 canvasVideo.srcObject = canvas.captureStream()
-                canvasVideo.onloadeddata = async function () {
+                canvasVideo.onloadedmetadata = async () => {
                     canvasVideo.play()
-                    await canvasVideo.requestPictureInPicture()
+                    await canvasVideo.requestPictureInPicture().then(
+                        player.classList.add("pip")
+                    ).catch(e => {
+                        console.warn("Failed To Burn In Subtitles" + e)
+                        running = false
+                        canvasVideo.remove()
+                        canvas.remove()
+                        player.classList.remove("pip")
+                    })
                 }
                 canvasVideo.onleavepictureinpicture = () => {
                     running = false
@@ -478,6 +482,7 @@ async function btnpip() {
                     canvas.remove()
                     player.classList.remove("pip")
                 }
+                window.requestAnimationFrame(renderFrame)
             }
         }
     }
