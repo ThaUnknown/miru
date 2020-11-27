@@ -99,7 +99,7 @@ async function buildVideo(file, nowPlaying) {
     video.load();
     playVideo();
     // file.on("done", () => { console.log("test") }) // this currently wont work, idk how to remove old listeners
-    onProgress = function () {
+    onProgress = () => {
         if (document.location.hash == "#player" && typeof video !== 'undefined') {
             if (!player.classList.contains('immersed')) {
                 player.style.setProperty("--download", file.progress * 100 + "%");
@@ -169,7 +169,7 @@ let onProgress
 
 // visibility loss
 document.addEventListener("visibilitychange", () => {
-    if (settings.player10)
+    if (settings.player10 && typeof video !== 'undefined')
         document.visibilityState === "hidden" ? video.pause() : playVideo();
 })
 
@@ -177,10 +177,12 @@ document.addEventListener("visibilitychange", () => {
 
 function updateDisplay() {
     if (typeof video !== 'undefined') {
-        let progressPercent = (video.currentTime / video.duration * 100)
-        let bufferPercent = video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100
-        progress.style.setProperty("--buffer", bufferPercent + "%");
-        updateBar(progressPercent || progress.value / 10);
+        if (!player.classList.contains('immersed')) {
+            let progressPercent = (video.currentTime / video.duration * 100)
+            let bufferPercent = video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100
+            progress.style.setProperty("--buffer", bufferPercent + "%");
+            updateBar(progressPercent || progress.value / 10);
+        }
         createThumbnail(video);
     }
 }
@@ -210,7 +212,7 @@ async function dragBarStart() {
 
 let currentTime = 0;
 function updateBar(progressPercent) {
-    if (document.location.hash == "#player" && !player.classList.contains('immersed')) {
+    if (document.location.hash == "#player") {
         progress.style.setProperty("--progress", progressPercent + "%");
         thumb.style.setProperty("--progress", progressPercent + "%");
         if (typeof video !== 'undefined') {
@@ -403,6 +405,7 @@ function btnnext() {
     }, 200)
 }
 function autoNext() {
+    updateBar(video.currentTime / video.duration * 100)
     settings.player6 ? btnnext() : ""
 }
 // volume shit
@@ -516,7 +519,7 @@ function seek(a) {
     } else {
         video.currentTime += a;
     }
-    updateDisplay()
+    updateBar(video.currentTime / video.duration * 100)
 }
 // subtitles, generates content every single time its opened because fuck knows when the parser will find new shit
 

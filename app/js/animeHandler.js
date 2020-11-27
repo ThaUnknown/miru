@@ -150,6 +150,22 @@ async function alRequest(searchName, method) {
             title
             thumbnail
         }
+        relations {
+            edges {
+                relationType
+                node {
+                    id
+                    title {
+                        userPreferred
+                    }
+                    coverImage {
+                        medium
+                    }
+                    type
+                    status
+                }
+            }
+        }
         `
     if (localStorage.getItem("ALtoken")) {
         options.headers['Authorization'] = localStorage.getItem("ALtoken")
