@@ -373,16 +373,16 @@ function viewAnime(media) {
             </div>
             <div class="col-8 h-full card-grid">
                 <div class="px-15 py-10">
-                    <p class="m-0 text-capitalize font-weight-bold font-size-16">
+                    <p class="m-0 text-capitalize font-weight-bold font-size-14">
                         ${edge.node.title.userPreferred}
                     </p>
-                    <p class="m-0 text-capitalize">
+                    <p class="m-0 text-capitalize font-size-12">
                         ${edge.relationType.toLowerCase()}
                     </p>
                 </div>
                 <span>
                 </span>
-                <div class="px-15 pb-10 pt-5 details text-capitalize">
+                <div class="px-15 pb-10 pt-5 details text-capitalize font-size-12">
                     <span>${edge.node.type.toLowerCase()}</span><span>${edge.node.status.toLowerCase()}</span>
                 </div>
             </div>
