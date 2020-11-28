@@ -54,7 +54,6 @@ function traceAnime(image, type) {
     fetch(url, options).then((res) => res.json())
         .then(async (result) => {
             if (result.docs[0].similarity >= 0.85) {
-                console.log(result.docs[0].anilist_id)
                 let res = await alRequest(result.docs[0].anilist_id, "SearchIDSingle")
                 viewAnime(res.data.Media)
             } else {
@@ -152,7 +151,7 @@ async function alRequest(searchName, method) {
         }
         relations {
             edges {
-                relationType
+                relationType(version:2)
                 node {
                     id
                     title {
@@ -359,6 +358,46 @@ function viewAnime(media) {
     } else {
         viewPlay.removeAttribute("disabled", "")
     }
+    if (media.relations.edges.length) {
+        viewRelationsGallery.classList.remove("d-none")
+        viewRelationsGallery.innerHTML = ""
+        let frag = document.createDocumentFragment()
+        media.relations.edges.forEach(edge => {
+            let template = document.createElement("div")
+            template.classList.add("card", "m-0", "p-0")
+            template.innerHTML = `
+            <div class="row h-full">
+            <div class="col-4">
+                <img src="${edge.node.coverImage.medium}"
+                    class="cover-img w-full h-full">
+            </div>
+            <div class="col-8 h-full card-grid">
+                <div class="px-15 py-10">
+                    <p class="m-0 text-capitalize font-weight-bold font-size-16">
+                        ${edge.node.title.userPreferred}
+                    </p>
+                    <p class="m-0 text-capitalize">
+                        ${edge.relationType.toLowerCase()}
+                    </p>
+                </div>
+                <span>
+                </span>
+                <div class="px-15 pb-10 pt-5 details text-capitalize">
+                    <span>${edge.node.type.toLowerCase()}</span><span>${edge.node.status.toLowerCase()}</span>
+                </div>
+            </div>
+        </div>`
+            template.onclick = async () => {
+                halfmoon.hideModal("view")
+                let res = await alRequest(edge.node.id, "SearchIDSingle")
+                viewAnime(res.data.Media)
+            }
+            frag.appendChild(template)
+        })
+        viewRelationsGallery.appendChild(frag)
+    } else {
+        viewRelationsGallery.classList.add("d-none")
+    }
     viewEpisodes.onclick = () => {
         viewEpisodesWrapper.classList.toggle("hidden")
     }
@@ -439,7 +478,7 @@ function cardCreator(media, name, episode) {
                 ${media.season || media.seasonYear ? "<span>" + (!!media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear || "") + "</span>" : ""}
                 </p>
             </div>
-            <div class="overflow-y-scroll px-15 py-10 bg-very-dark card-desc">
+            <div class="overflow-y-auto px-15 py-10 bg-very-dark card-desc">
                 ${media.description}
             </div>
             <div class="px-15 pb-10 pt-5">

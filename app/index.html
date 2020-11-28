@@ -84,13 +84,13 @@
                             <span class="title font-weight-bold font-size-24 text-white pb-5" id="viewTitle"></span>
                             <span id="viewSeason" class="text-capitalize"></span>
                             <span id="viewMediaInfo" class="text-capitalize"></span>
-                            <p class="text-muted desc overflow-y-scroll my-0 font-size-12 pt-20" id="viewDesc">
+                            <p class="text-muted desc overflow-y-auto my-0 font-size-12 pt-20" id="viewDesc">
                             </p>
                         </div>
                     </div>
 
                     <div class="col-md-2">
-                        <div class="card m-0 py-5 details font-size-12" id="viewDetails">
+                        <div class="card m-0 py-5 font-size-12" id="viewDetails">
                         </div>
                         <div class="input-group mt-5" data-toggle="tooltip" data-placement="top"
                             data-title="Manually Add A Synonym To The Media, Case Sensitive">
@@ -102,13 +102,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="row pt-20">
-                    <div class="col-12 px-20">
-                        <div class="hidden" id="viewEpisodesWrapper">
-                            <span class="font-weight-bold font-size-22">Episodes</span>
-                            <div id="episodes" class="pt-10 d-flex overflow-x-auto justify-content-between">
-                            </div>
-                        </div>
+                <div id="viewRelations" class="pt-20">
+                    <span class="font-weight-bold font-size-22 text-white">Relations</span>
+                    <div class="gallery gallery-sm" id="viewRelationsGallery">
+                    </div>
+                </div>
+                <div class="hidden pt-20" id="viewEpisodesWrapper">
+                    <span class="font-weight-bold font-size-22 text-white">Episodes</span>
+                    <div id="episodes" class="pt-10 d-flex overflow-x-auto justify-content-start">
                     </div>
                 </div>
             </div>
@@ -161,7 +162,8 @@
                 </div>
             </form>
             <a id="oauth" class="navbar-brand pointer font-size-20 mr-5" data-toggle="tooltip" data-placement="bottom"
-            data-title="Login With AniList" href="https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token">
+                data-title="Login With AniList"
+                href="https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token">
                 <span class="material-icons font-size-20">login</span>
             </a>
             <a href="#settingsTab" class="navbar-brand pointer font-size-20 mr-5">
@@ -209,14 +211,13 @@
                         <span class="material-icons ctrl" title="Next [N]" id="bnext" data-name="btnnext">
                             skip_next
                         </span>
-                        <div class="playlist dropdown dropup with-arrow">
+                        <div class="playlist dropdown dropup">
                             <span class="material-icons ctrl" title="Playlist [P]" id="bpl" data-toggle="dropdown"
                                 id="playlist-popover" aria-haspopup="true" aria-expanded="false" data-name="btnpl"
                                 disabled>
                                 playlist_play
                             </span>
-                            <div class="dropdown-menu dropdown-menu-center" aria-labelledby="playlist-popover"
-                                id="playlistMenu">
+                            <div class="dropdown-menu" aria-labelledby="playlist-popover" id="playlistMenu">
                             </div>
                         </div>
                         <div class="volume">

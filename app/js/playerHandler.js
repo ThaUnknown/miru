@@ -286,7 +286,7 @@ function finishThumbnails(file) {
 //file download
 function downloadFile(file) {
     dl.removeAttribute("disabled")
-    dl.onclick = async (e) => {
+    dl.onclick = async e => {
         file.getBlobURL((err, url) => {
             let a = document.createElement('a');
             a.download = file.name;

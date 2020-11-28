@@ -63,6 +63,13 @@ input:invalid {
     grid-gap: 2rem;
     padding: 2rem
 }
+.gallery-sm{
+    grid-template-columns: repeat(auto-fill, 30rem);
+    grid-auto-rows: 16.2rem;
+    grid-gap: 1rem;
+    padding: 1rem 0;
+    justify-content: start;
+}
 
 .pointer {
     cursor: pointer
@@ -167,7 +174,7 @@ nav {
     overflow: hidden;
 }
 
-#view .details {
+#viewDetails, #view .card {
     background-color: var(--dm-button-bg-color) !important;
     background-image: var(--dm-button-bg-image) !important;
     box-shadow: var(--dm-button-box-shadow) !important;
