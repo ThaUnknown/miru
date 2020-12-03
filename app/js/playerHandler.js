@@ -60,7 +60,10 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     }
     nowPlayingDisplay.textContent = ""
     onProgress = undefined;
+    bnext.removeAttribute("disabled")
     navNowPlaying.classList.add("d-none")
+    if ('mediaSession' in navigator)
+        navigator.mediaSession.metadata = null
 }
 async function buildVideo(file, nowPlaying) {
     video = document.createElement("video")
@@ -86,7 +89,8 @@ async function buildVideo(file, nowPlaying) {
     video.addEventListener("ended", autoNext);
     video.addEventListener("waiting", isBuffering);
     video.addEventListener("timeupdate", updateDisplay);
-    video.addEventListener("timeupdate", updatePositionState);
+    if ('setPositionState' in navigator.mediaSession)
+        video.addEventListener("timeupdate", updatePositionState);
     video.addEventListener("timeupdate", checkCompletion);
     player.prepend(video);
     video.load();
@@ -132,32 +136,36 @@ async function buildVideo(file, nowPlaying) {
         navNowPlaying.classList.remove("d-none")
         console.log(regexParse)
     }
-    if (playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[0].episodes && parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) {
-        bnext.setAttribute("disabled", "")
-    } else {
-        bnext.removeAttribute("disabled")
-    }
-    if (playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1])) {
-        let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0]
-        video.poster = streamingEpisode.thumbnail
-        nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}${(playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1])) ? " - " + episodeRx.exec(streamingEpisode.title)[2] : ""}`
-    } else if (playerData.nowPlaying && playerData.nowPlaying[1]) {
-        nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}`
-    }
-    if ('mediaSession' in navigator && playerData.nowPlaying && playerData.nowPlaying[0]) {
-        navigator.mediaSession.metadata = new MediaMetadata({
+    let mediaMetadata
+    if (playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[1]) {
+        mediaMetadata = new MediaMetadata({
             title: playerData.nowPlaying[0].title.userPreferred,
-            artist: "Episode " + parseInt(playerData.nowPlaying[1]) + (playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1]) ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""),
+            artist: `Episode ${parseInt(playerData.nowPlaying[1])}`,
             album: "Miru",
-            artwork: [
-                {
-                    src: playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1]) ? playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].thumbnail : playerData.nowPlaying[0].coverImage.medium,
-                    sizes: '128x128',
-                    type: 'image/png'
-                }
-            ]
+            artwork: [{
+                src: playerData.nowPlaying[0].coverImage.medium,
+                sizes: '256x256',
+                type: 'image/jpg'
+            }]
         });
+        nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}`
+        if (parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes)
+            bnext.setAttribute("disabled", "")
+        if (playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1])) {
+            let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0]
+            video.poster = streamingEpisode.thumbnail
+            mediaMetadata.artist = `Episode ${parseInt(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+            mediaMetadata.artwork = [{
+                src: streamingEpisode.thumbnail,
+                sizes: '256x256',
+                type: 'image/jpg'
+            }]
+            nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+        }
     }
+    if ('mediaSession' in navigator && mediaMetadata)
+        navigator.mediaSession.metadata = mediaMetadata
+
 }
 // download progress and status
 let onProgress
@@ -664,13 +672,12 @@ document.onkeydown = (a) => {
 }
 
 function updatePositionState() {
-    if ('setPositionState' in navigator.mediaSession && typeof video !== 'undefined' && video.duration) {
+    if (typeof video !== 'undefined' && video.duration)
         navigator.mediaSession.setPositionState({
             duration: video.duration || 0,
             playbackRate: video.playbackRate || 0,
             position: video.currentTime || 0
         });
-    }
 }
 
 if ('mediaSession' in navigator) {

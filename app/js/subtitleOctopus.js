@@ -68,7 +68,7 @@ function renderSubs(trackNumber) {
 
 let octopusTimeout
 function pushSub(trackNumber) {
-    if (!octopusTimeout) {
+    if (!octopusTimeout && playerData.octopusInstance) {
         octopusTimeout = setTimeout(() => {
             octopusTimeout = undefined
             playerData.octopusInstance.setTrack(trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1))
