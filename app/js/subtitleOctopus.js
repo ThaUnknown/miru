@@ -2,7 +2,7 @@ const { SubtitleStream } = MatroskaSubtitles
 const { SubtitleParser } = MatroskaSubtitles
 
 function subStream(stream) {
-    if (video.src.endsWith(".mkv")) {
+    if (video.src.endsWith(".mkv") || video.src.endsWith(".webm")) {
         if (playerData.subtitleStream) {
             playerData.subtitleStream = new SubtitleStream(playerData.subtitleStream)
         } else {

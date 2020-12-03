@@ -54,15 +54,8 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     }
     playerData = {
         tracks: [],
-        headers: undefined,
-        selectedHeader: undefined,
-        styles: undefined,
         subtitles: [],
-        subtitleStream: undefined,
-        octopusInstance: undefined,
         fonts: [],
-        nowPlaying: undefined,
-        watched: undefined,
         thumbnails: []
     }
     nowPlayingDisplay.textContent = ""
@@ -145,7 +138,9 @@ async function buildVideo(file, nowPlaying) {
         bnext.removeAttribute("disabled")
     }
     if (playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1])) {
-        nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}${(playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1])) ? " - " + episodeRx.exec(playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0].title)[2] : ""}`
+        let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0]
+        video.poster = streamingEpisode.thumbnail
+        nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}${(playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1])) ? " - " + episodeRx.exec(streamingEpisode.title)[2] : ""}`
     } else if (playerData.nowPlaying && playerData.nowPlaying[1]) {
         nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}`
     }
@@ -177,7 +172,7 @@ document.addEventListener("visibilitychange", () => {
 
 function updateDisplay() {
     if (typeof video !== 'undefined') {
-        if (!player.classList.contains('immersed')) {
+        if (!player.classList.contains('immersed') && document.location.hash == "#player") {
             let progressPercent = (video.currentTime / video.duration * 100)
             let bufferPercent = video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100
             progress.style.setProperty("--buffer", bufferPercent + "%");
@@ -212,16 +207,14 @@ async function dragBarStart() {
 
 let currentTime = 0;
 function updateBar(progressPercent) {
-    if (document.location.hash == "#player") {
-        progress.style.setProperty("--progress", progressPercent + "%");
-        thumb.style.setProperty("--progress", progressPercent + "%");
-        if (typeof video !== 'undefined') {
-            currentTime = video.duration * progressPercent / 100
-            elapsed.innerHTML = toTS(currentTime);
-            remaining.innerHTML = toTS(video.duration - currentTime);
-            progress.value = progressPercent * 10
-            progress.setAttribute("data-ts", toTS(currentTime))
-        }
+    progress.style.setProperty("--progress", progressPercent + "%");
+    thumb.style.setProperty("--progress", progressPercent + "%");
+    if (typeof video !== 'undefined') {
+        currentTime = video.duration * progressPercent / 100
+        elapsed.innerHTML = toTS(currentTime);
+        remaining.innerHTML = toTS(video.duration - currentTime);
+        progress.value = progressPercent * 10
+        progress.setAttribute("data-ts", toTS(currentTime))
     }
 }
 
