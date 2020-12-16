@@ -60,6 +60,7 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     }
     nowPlayingDisplay.textContent = ""
     onProgress = undefined;
+    bcap.setAttribute("disabled", "")
     bnext.removeAttribute("disabled")
     navNowPlaying.classList.add("d-none")
     if ('mediaSession' in navigator)
@@ -86,6 +87,11 @@ async function buildVideo(file, nowPlaying) {
     video.addEventListener("canplay", resetBuffer);
     video.addEventListener("loadeddata", initThumbnail);
     video.addEventListener("loadedmetadata", updateDisplay);
+    video.onloadedmetadata = () => {
+        updateDisplay();
+        if (video.audioTracks && video.audioTracks.length > 1)
+            baudio.removeAttribute("disabled")
+    }
     video.addEventListener("ended", autoNext);
     video.addEventListener("waiting", isBuffering);
     video.addEventListener("timeupdate", updateDisplay);
@@ -172,7 +178,7 @@ let onProgress
 
 // visibility loss
 document.addEventListener("visibilitychange", () => {
-    if (settings.player10 && typeof video !== 'undefined')
+    if (settings.player10 && typeof video !== 'undefined' && !video.ended)
         document.visibilityState === "hidden" ? video.pause() : playVideo();
 })
 
@@ -445,7 +451,7 @@ updateVolume(parseInt(settings.player1))
 // PiP
 
 async function btnpip() {
-    if (typeof video !== 'undefined') {
+    if (typeof video !== 'undefined' && video.readyState) {
         if (!playerData.octopusInstance) {
             video !== document.pictureInPictureElement ? await video.requestPictureInPicture() : await document.exitPictureInPicture();
         } else {
@@ -591,12 +597,7 @@ function btncap() {
 }
 function selectLang(lang) {
     for (let track of video.textTracks) {
-        if (track.language == lang) {
-            track.mode = 'showing';
-        }
-        else {
-            track.mode = 'hidden';
-        }
+        track.language == lang ? track.mode = 'showing' : track.mode = 'hidden';
     }
     btncap()
 }
@@ -620,6 +621,31 @@ function btnpl() {
     playlistMenu.appendChild(frag)
 }
 
+// audio tracks
+
+function btnaudio() {
+    let frag = document.createDocumentFragment()
+    for (let track of video.audioTracks) {
+        let template = document.createElement("a")
+        template.classList.add("dropdown-item", "pointer", "text-capitalize")
+        template.innerHTML = track.language || (!Object.values(video.audioTracks).some(track => track.language == "eng" || track.language == "en") ? "eng" : track.label)
+        track.enabled == true ? template.classList.add("text-white") : template.classList.add("text-muted")
+        template.onclick = () => {
+            selectAudio(track.id)
+        }
+        frag.appendChild(template)
+    }
+
+    audioTracksMenu.textContent = '';
+    audioTracksMenu.appendChild(frag)
+}
+function selectAudio(id) {
+    for (let track of video.audioTracks) {
+        track.id == id ? track.enabled = true : track.enabled = false;
+    }
+    seek(-1); // stupid fix because video freezes up when chaging tracks
+    btnaudio()
+}
 // keybinds
 
 document.onkeydown = (a) => {

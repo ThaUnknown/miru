@@ -8,6 +8,7 @@ function subStream(stream) {
         } else {
             playerData.subtitleStream = new SubtitleStream()
             playerData.subtitleStream.once('tracks', pTracks => {
+                bcap.removeAttribute("disabled")
                 pTracks.forEach(track => {
                     if (track.type == "ass") {
                         if (!playerData.headers) {

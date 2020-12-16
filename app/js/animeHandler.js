@@ -510,9 +510,6 @@ async function nyaaSearch(media, episode) {
     if (parseInt(episode) < 10) {
         episode = `0${episode}`
     }
-    if (media.status == "FINISHED") {
-
-    }
 
     let table = document.querySelector("tbody.results")
     let results = await nyaaRss(media, episode)
@@ -617,8 +614,10 @@ async function releasesRss() {
 
                     let media = await resolveName(regexParse[2], "SearchReleasesSingle"),
                         template = cardCreator(media, regexParse[2], episode)
-                    template.onclick = () => {
+                    template.onclick = async () => {
                         addTorrent(i('link').textContent, media, episode)
+                        let res = await alRequest(media.id, "SearchIDSingle")
+                        store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
                     }
                     frag.appendChild(template)
                 }

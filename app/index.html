@@ -195,7 +195,7 @@
                         </div>
                         <div class="col-4 d-flex justify-content-end">
                             <span id="dl" class="material-icons pointer"
-                                title="Wait For File To Fully Download Before Saving To Drive">
+                                title="Wait For File To Fully Download Before Saving To Drive" disabled>
                                 get_app
                             </span>
                         </div>
@@ -213,11 +213,10 @@
                         </span>
                         <div class="playlist dropdown dropup">
                             <span class="material-icons ctrl" title="Playlist [P]" id="bpl" data-toggle="dropdown"
-                                id="playlist-popover" aria-haspopup="true" aria-expanded="false" data-name="btnpl"
-                                disabled>
+                                aria-haspopup="true" aria-expanded="false" data-name="btnpl" disabled>
                                 playlist_play
                             </span>
-                            <div class="dropdown-menu" aria-labelledby="playlist-popover" id="playlistMenu">
+                            <div class="dropdown-menu" aria-labelledby="bpl" id="playlistMenu">
                             </div>
                         </div>
                         <div class="volume">
@@ -225,6 +224,15 @@
                                 volume_up
                             </span>
                             <input type="range" value="100" id="volume">
+                        </div>
+                        <div class="audio-tracks dropdown dropup">
+                            <span class="material-icons ctrl" title="Audio Tracks [T]" id="baudio"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="btnaudio"
+                                disabled>
+                                queue_music
+                            </span>
+                            <div class="dropdown-menu" aria-labelledby="baudio" id="audioTracksMenu">
+                            </div>
                         </div>
                         <span class="ts" id="elapsed">00:00</span>
                         <div class="prog">
@@ -234,11 +242,10 @@
                         <span class="ts" id="remaining">00:00</span>
                         <div class="subtitles dropdown dropup with-arrow">
                             <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
-                                id="subtitle-popover" aria-haspopup="true" aria-expanded="false" data-name="btncap">
+                                aria-haspopup="true" aria-expanded="false" data-name="btncap" disabled>
                                 subtitles
                             </span>
-                            <div class="dropdown-menu dropdown-menu-center" aria-labelledby="subtitle-popover"
-                                id="subMenu">
+                            <div class="dropdown-menu dropdown-menu-center" aria-labelledby="bcap" id="subMenu">
                             </div>
                         </div>
                         <span class="material-icons ctrl" title="Popout Window [P]" id="bpip" data-name="btnpip">
@@ -334,7 +341,7 @@
                             </div>
                             <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
                                 data-title="Pauses/Resumes Video Playback When Tabbing In/Out Of The App.">
-                                <input type="checkbox" id="player10">
+                                <input type="checkbox" id="player10" checked>
                                 <label for="player10">Pause When Tabbing Out</label>
                             </div>
                         </div>

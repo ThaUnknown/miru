@@ -44,6 +44,7 @@ function registerProtocol() {
 
 if (!localStorage.getItem("settings")) {
     saveSettings()
+    location.reload()
 } else {
     settings = JSON.parse(localStorage.getItem("settings"))
 }

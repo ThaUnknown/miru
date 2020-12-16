@@ -10,7 +10,7 @@ window.onbeforeunload = () => {
     }
     client.torrents[0] ? client.torrents[0].destroy() : ""
     client.destroy()
-    resetVideo()
+    cleanupVideo()
     if (playerData.fonts) {
         playerData.fonts.forEach(file => {
             URL.revokeObjectURL(file)
