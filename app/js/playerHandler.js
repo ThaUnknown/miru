@@ -34,9 +34,8 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     if (dl.href) {
         URL.revokeObjectURL(dl.href)
     }
-
     dl.setAttribute("disabled", "")
-    dl.onclick = null
+    dl.onclick = undefined
     if (typeof video !== 'undefined' && typeof client !== 'undefined') {
         video.pause()
         video.src = "";
@@ -66,7 +65,8 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     if ('mediaSession' in navigator)
         navigator.mediaSession.metadata = null
 }
-async function buildVideo(file, nowPlaying) {
+
+async function buildVideo(file, nowPlaying) { //creates a new video element and adds listeners... this needs to go
     video = document.createElement("video")
     if (!settings.player7 || !'pictureInPictureEnabled' in document) {
         video.setAttribute("disablePictureInPicture", "")
@@ -136,13 +136,14 @@ async function buildVideo(file, nowPlaying) {
     if (nowPlaying && nowPlaying[0]) {
         playerData.nowPlaying = nowPlaying
         navNowPlaying.classList.remove("d-none")
-    } else if (settings.torrent7) {
+    } else if (settings.torrent7) { // try to resolve name
         let regexParse = nameParseRegex.simple.exec(file.name)
         playerData.nowPlaying = [await resolveName(regexParse[2], "SearchAnySingle"), regexParse[4]]
         navNowPlaying.classList.remove("d-none")
         console.log(regexParse)
     }
     let mediaMetadata
+    // only set mediasession and other shit if the playerdata is parsed correctly
     if (playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[1]) {
         mediaMetadata = new MediaMetadata({
             title: playerData.nowPlaying[0].title.userPreferred,
@@ -176,13 +177,13 @@ async function buildVideo(file, nowPlaying) {
 // download progress and status
 let onProgress
 
-// visibility loss
+// visibility loss pause
 document.addEventListener("visibilitychange", () => {
     if (settings.player10 && typeof video !== 'undefined' && !video.ended)
         document.visibilityState === "hidden" ? video.pause() : playVideo();
 })
 
-// progress bar and display
+// progress seek bar and display
 
 function updateDisplay() {
     if (typeof video !== 'undefined') {
@@ -232,7 +233,7 @@ function updateBar(progressPercent) {
     }
 }
 
-// dynamic thumbnails 
+// dynamic thumbnail previews
 let canvas = document.createElement("canvas")
 let context = canvas.getContext('2d')
 let h
@@ -275,7 +276,7 @@ function finishThumbnails(file) {
         })
 
         function loadTime() {
-            while (playerData.thumbnails[index] && index <= Math.floor(thumbVid.duration / 5)) {
+            while (playerData.thumbnails[index] && index <= Math.floor(thumbVid.duration / 5)) { // only create thumbnails that are missing
                 index++
             }
             if (thumbVid.currentTime != thumbVid.duration) {
@@ -364,7 +365,7 @@ function toTS(sec) {
     } else {
         return `${minutes}:${seconds}`;
     }
-    // return new Date(sec*1000).toISOString().slice(12, -1).slice(0, -4).replace(/^0:/,"")
+    // return new Date(sec*1000).toISOString().slice(12, -1).slice(0, -4).replace(/^0:/,"") // laggy :/
 }
 
 // play/pause button
@@ -387,6 +388,7 @@ function btnpp() {
         }
     }
 }
+// next video button
 let nextCooldown
 function btnnext() {
     clearTimeout(nextCooldown)
@@ -455,7 +457,7 @@ async function btnpip() {
         if (!playerData.octopusInstance) {
             video !== document.pictureInPictureElement ? await video.requestPictureInPicture() : await document.exitPictureInPicture();
         } else {
-            if (document.pictureInPictureElement && !document.pictureInPictureElement.id) {
+            if (document.pictureInPictureElement && !document.pictureInPictureElement.id) { //only exit if pip is the custom one, else overwrite existing pip with custom
                 await document.exitPictureInPicture()
             } else {
                 let canvas = document.createElement("canvas"),
@@ -529,7 +531,7 @@ function seek(a) {
     updateBar(video.currentTime / video.duration * 100)
 }
 // subtitles, generates content every single time its opened because fuck knows when the parser will find new shit
-
+// this needs to go.... really badly
 let off
 function btncap() {
     if (video.textTracks.length) {
@@ -696,6 +698,7 @@ document.onkeydown = (a) => {
         }
     }
 }
+//media session shit
 
 function updatePositionState() {
     if (typeof video !== 'undefined' && video.duration)

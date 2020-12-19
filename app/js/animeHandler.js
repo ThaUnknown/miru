@@ -1,6 +1,6 @@
 const torrentRx = /(magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent){1}/i,
     imageRx = /\.(jpeg|jpg|gif|png|webp)/
-window.addEventListener("paste", async e => {
+window.addEventListener("paste", async e => { //WAIT image lookup on paste, or add torrent on paste
     let item = e.clipboardData.items[0];
     if (item && item.type.indexOf("image") === 0) {
         e.preventDefault();
@@ -37,7 +37,7 @@ window.addEventListener("paste", async e => {
     }
 
 })
-function traceAnime(image, type) {
+function traceAnime(image, type) { //WAIT lookup logic
     halfmoon.initStickyAlert({
         content: `Looking Up Anime ${type == "uri" ? "" : `For <span class="text-break">${image}</span>`}`
     })
@@ -62,16 +62,17 @@ function traceAnime(image, type) {
         });
 
 }
-function searchBox() {
+function searchBox() { // make searchbox behave nicely
     search.placeholder = search.value
     searchAnime(search.value)
     search.value = ""
     document.location.hash = "#browse"
 }
+//events
 navNew.onclick = () => { releasesRss() }
 navTrending.onclick = () => { searchAnime() }
 navNowPlaying.onclick = () => { viewAnime(playerData.nowPlaying[0]) }
-navList.onclick = async () => {
+navList.onclick = async () => { //user watchlist
     let browse = document.querySelector(".browse")
     browse.textContent = '';
     browse.appendChild(skeletonCard)
@@ -92,6 +93,7 @@ navList.onclick = async () => {
     browse.textContent = '';
     browse.appendChild(frag)
 }
+//AL lookup logic
 async function alRequest(searchName, method) {
     let query,
         variables = {
@@ -290,7 +292,7 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int) {
     }
 }
 let alResponse
-async function searchAnime(a) {
+async function searchAnime(a) { //search bar functionality
     let frag = document.createDocumentFragment(),
         browse = document.querySelector(".browse")
     browse.textContent = '';
@@ -311,7 +313,7 @@ async function searchAnime(a) {
     browse.appendChild(frag)
 }
 
-
+//these really shouldnt be global
 let detailsfrag = document.createDocumentFragment()
 let details = {
     averageScore: "Average Score",
@@ -328,6 +330,7 @@ let details = {
     synonyms: "Synonyms"
 }
 const episodeRx = /Episode (\d+) - (.*)/;
+// this is fucked beyond belief, this is why you use frameworks
 function viewAnime(media) {
     halfmoon.showModal("view")
     view.setAttribute("style", `background-image: url(${media.bannerImage}) !important`)
@@ -436,6 +439,7 @@ function trailerPopup(trailer) {
     }
 
 }
+//details list factory
 function detailsCreator(entry) {
     if (entry) {
         Object.entries(entry).forEach(value => {
@@ -562,6 +566,7 @@ async function nyaaRss(media, episode) {
     })
     return frag
 }
+//resolve anime name based on torrent name and store it
 async function resolveName(name, method) {
     if (!store.hasOwnProperty(name) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(name) && ((store[name] = media) && true)))) {
         let res = await alRequest(name, method)
@@ -588,9 +593,10 @@ async function releasesRss() {
         releases = document.querySelector(".releases"),
         url
     if (Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0]) {
+        //add my own cors proxy for erai
         url = settings.torrent4 == "Erai-raws" ? new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerText + settings.torrent1 + "-magnet") : new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerText + settings.torrent1)
     } else {
-        url = settings.torrent4 + settings.torrent1
+        url = settings.torrent4 + settings.torrent1 // add custom RSS
     }
     let res = await fetch(url)
     await res.text().then(async (xmlTxt) => {
@@ -631,10 +637,7 @@ async function releasesRss() {
 
     localStorage.setItem("store", JSON.stringify(store))
 }
-clearRelCache.onclick = () => {
-    localStorage.removeItem("store")
-    store = {}
-}
+//latest releases auto-update
 setInterval(() => {
     if (document.location.hash == "#releases") {
         releasesRss()
@@ -646,7 +649,7 @@ async function loadAnime() {
 }
 loadAnime()
 
-let alID
+let alID // login icon 
 if (localStorage.getItem("ALtoken")) {
     alRequest(undefined, "Viewer").then(result => {
         oauth.removeAttribute("href")

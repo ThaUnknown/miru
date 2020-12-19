@@ -4,7 +4,7 @@ let client = new WebTorrent({ maxConns: settings.torrent6 }),
             super(len, { ...opts, batchInterval: 1000 });
         }
     }
-window.onbeforeunload = () => {
+window.onbeforeunload = () => { //cleanup shit before unloading to free RAM/drive
     if (!settings.torrent8) {
         client.torrents[0] ? client.torrents[0].store.destroy() : ""
     }
@@ -45,12 +45,12 @@ const announceList = [
     ],
     scope = window.location.pathname,
     sw = navigator.serviceWorker.register('sw.js', { scope }).then(e => {
-        if (searchParams.get("m")) {
-            addTorrent(searchParams.get("m"))
+        if (searchParams.get("file")) {
+            addTorrent(searchParams.get("file")) // add a torrent if its in the link params
         }
     }).catch(e => {
         if (String(e) == "InvalidStateError: Failed to register a ServiceWorker: The document is in an invalid state.") {
-            location.reload()
+            location.reload() // weird workaround for a weird bug
         } else {
             throw e
         }
@@ -80,7 +80,7 @@ WEBTORRENT_ANNOUNCE = announceList
 let maxTorrents = 1,
     videoFiles
 async function addTorrent(magnet, media, episode) {
-    if (client.torrents.length >= maxTorrents) {
+    if (client.torrents.length >= maxTorrents) { // remove old torrents
         if (settings.torrent8 && settings.torrent5) {
             client.remove(client.torrents[0].infoHash)
         } else {
@@ -107,7 +107,7 @@ async function addTorrent(magnet, media, episode) {
                 });
             }
         })
-        videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
+        videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext))) //only allow playable video files
         if (videoFiles.length) {
             videoFiles.sort((a, b) => {
                 return parseInt(nameParseRegex.simple.exec(a.name)[4]) - parseInt(nameParseRegex.simple.exec(b.name)[4])
@@ -117,16 +117,10 @@ async function addTorrent(magnet, media, episode) {
                 bpl.removeAttribute("disabled")
                 videoFile = videoFiles.filter(file => { parseInt(nameParseRegex.simple.exec(file.name)[4]) == parseInt(episode) })
             } else {
-                bpl.setAttribute("disabled", "")
+                bpl.setAttribute("disabled", "")//playlist button hiding
                 videofile = videoFiles[0]
             }
-            
-            if (media && episode) {
-                (videoFile && videoFile.length) ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
-            }
-            else {
-                (videoFile && videoFile.length) ? buildVideo(videoFile[0], [media, episode]) : buildVideo(videoFiles[0], [media, episode])
-            }
+            buildVideo(videoFile[0], [media, episode])
         } else {
             halfmoon.initStickyAlert({
                 content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,

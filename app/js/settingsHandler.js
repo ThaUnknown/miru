@@ -36,7 +36,7 @@ function registerProtocol() {
     if ('registerProtocolHandler' in navigator) {
         navigator.registerProtocolHandler(
             'magnet',
-            `${location.href.replace(location.hash, '')}#&m=%s`,
+            `${location.href.replace(location.hash, '')}#&file=%s`,
             'Miru'
         );
     }
@@ -47,6 +47,10 @@ if (!localStorage.getItem("settings")) {
     location.reload()
 } else {
     settings = JSON.parse(localStorage.getItem("settings"))
+}
+clearRelCache.onclick = () => {
+    localStorage.removeItem("store")
+    store = {}
 }
 renderSettings()
 setRes.addEventListener("click", restoreDefaults)
