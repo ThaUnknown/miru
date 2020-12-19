@@ -70,17 +70,10 @@ function t(a) {
             break;
     }
 }
-WEBTORRENT_ANNOUNCE = announceList
-    .map(function (arr) {
-        return arr[0]
-    })
-    .filter(function (url) {
-        return url.indexOf('wss://') === 0 || url.indexOf('ws://') === 0
-    })
-let maxTorrents = 1,
-    videoFiles
+WEBTORRENT_ANNOUNCE = announceList.map(arr => { return arr[0] }).filter(url => { return url.indexOf('wss://') === 0 })
+let videoFiles
 async function addTorrent(magnet, media, episode) {
-    if (client.torrents.length >= maxTorrents) { // remove old torrents
+    if (client.torrents.length) { // remove old torrents
         if (settings.torrent8 && settings.torrent5) {
             client.remove(client.torrents[0].infoHash)
         } else {
@@ -109,12 +102,10 @@ async function addTorrent(magnet, media, episode) {
         })
         videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext))) //only allow playable video files
         if (videoFiles.length) {
-            videoFiles.sort((a, b) => {
-                return parseInt(nameParseRegex.simple.exec(a.name)[4]) - parseInt(nameParseRegex.simple.exec(b.name)[4])
-            })
+            videoFiles.sort((a, b) => { return parseInt(nameParseRegex.simple.exec(a.name)[4]) - parseInt(nameParseRegex.simple.exec(b.name)[4]) })
             if (videoFiles.length > 1) {
                 bpl.removeAttribute("disabled")
-                buildVideo(videoFiles.filter(file => { parseInt(nameParseRegex.simple.exec(file.name)[4]) == parseInt(episode) })[0], [media, episode])
+                buildVideo(videoFiles.filter(file => parseInt(nameParseRegex.simple.exec(file.name)[4]) == parseInt(episode))[0], [media, episode])
             } else {
                 bpl.setAttribute("disabled", "")//playlist button hiding
                 buildVideo(videoFiles[0], [media, episode])
