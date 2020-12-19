@@ -6,9 +6,9 @@ let client = new WebTorrent({ maxConns: settings.torrent6 }),
     }
 window.onbeforeunload = () => { //cleanup shit before unloading to free RAM/drive
     if (!settings.torrent8) {
-        client.torrents[0] ? client.torrents[0].store.destroy() : ""
+        if (client.torrents[0]) client.torrents[0].store.destroy()
     }
-    client.torrents[0] ? client.torrents[0].destroy() : ""
+    if (client.torrents[0]) client.torrents[0].destroy()
     client.destroy()
     cleanupVideo()
     if (playerData.fonts) {
@@ -77,7 +77,7 @@ async function addTorrent(magnet, media, episode) {
         if (settings.torrent8 && settings.torrent5) {
             client.remove(client.torrents[0].infoHash)
         } else {
-            client.torrents[0].store ? client.torrents[0].store.destroy() : ""
+            if (client.torrents[0].store) client.torrents[0].store.destroy()
             client.torrents[0].destroy()
         }
     }
@@ -117,7 +117,7 @@ async function addTorrent(magnet, media, episode) {
                 alertType: "alert-danger",
                 fillType: ""
             });
-            client.torrents[0].store ? client.torrents[0].store.destroy() : ""
+            if (client.torrents[0].store) client.torrents[0].store.destroy()
             client.torrents[0].destroy()
         }
 

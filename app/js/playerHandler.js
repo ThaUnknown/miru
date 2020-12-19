@@ -415,7 +415,7 @@ function btnnext() {
 }
 function autoNext() {
     updateBar(video.currentTime / video.duration * 100)
-    settings.player6 ? btnnext() : ""
+    if (settings.player6) btnnext()
 }
 // volume shit
 

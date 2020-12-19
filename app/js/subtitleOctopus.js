@@ -48,7 +48,7 @@ function subStream(stream) { // subtitle parsing with seeking support
             }
         })
         playerData.subtitleStream.on('file', file => {
-            file.mimetype == ("application/x-truetype-font" || "application/font-woff") ? playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data], { type: file.mimetype }))) : ""
+            if (file.mimetype == ("application/x-truetype-font" || "application/font-woff")) playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data], { type: file.mimetype })))
         })
         stream.pipe(playerData.subtitleStream)
     }
@@ -105,7 +105,7 @@ function postDownload(file) { // parse subtitles fully after a download is finis
                             playState = !video.paused
                         video.src = url
                         video.currentTime = time
-                        playState ? video.play() : ""
+                        if (playState) video.play()
                     }, 5000);
                 })
             }
