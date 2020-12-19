@@ -112,15 +112,13 @@ async function addTorrent(magnet, media, episode) {
             videoFiles.sort((a, b) => {
                 return parseInt(nameParseRegex.simple.exec(a.name)[4]) - parseInt(nameParseRegex.simple.exec(b.name)[4])
             })
-            let videoFile
             if (videoFiles.length > 1) {
                 bpl.removeAttribute("disabled")
-                videoFile = videoFiles.filter(file => { parseInt(nameParseRegex.simple.exec(file.name)[4]) == parseInt(episode) })
+                videoFiles.filter(file => { parseInt(nameParseRegex.simple.exec(file.name)[4]) == parseInt(episode) })
             } else {
                 bpl.setAttribute("disabled", "")//playlist button hiding
-                videofile = videoFiles[0]
             }
-            buildVideo(videoFile[0], [media, episode])
+            buildVideo(videoFiles[0], [media, episode])
         } else {
             halfmoon.initStickyAlert({
                 content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
