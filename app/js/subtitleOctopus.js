@@ -1,7 +1,7 @@
 const { SubtitleStream } = MatroskaSubtitles
 const { SubtitleParser } = MatroskaSubtitles
-
-function subStream(stream) {
+// this entire thing needs to go
+function subStream(stream) { // subtitle parsing with seeking support
     if (video.src.endsWith(".mkv") || video.src.endsWith(".webm")) {
         if (playerData.subtitleStream) {
             playerData.subtitleStream = new SubtitleStream(playerData.subtitleStream)
@@ -17,7 +17,7 @@ function subStream(stream) {
                         playerData.headers[track.number] = track
                         playerData.subtitles[track.number] = new Set()
                         playerData.selectedHeader = 3
-                    } else {
+                    } else { //fallback for VTT, needs to go!!!!
                         playerData.tracks[track.number] = video.addTextTrack('captions', track.type, track.language);
                         let spacerCue = new VTTCue(0.1, 9999, "&nbsp;")
                         spacerCue.line = -1
@@ -39,7 +39,7 @@ function subStream(stream) {
                         if (playerData.selectedHeader == trackNumber)
                             renderSubs.call(null, trackNumber)
                     }
-                } else {
+                } else { //fallback for VTT, needs to go!!!!
                     if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
                         let cue = new VTTCue(subtitle.time / 1000, (subtitle.time + subtitle.duration) / 1000, subtitle.text)
                         playerData.tracks[trackNumber].addCue(cue)
@@ -67,7 +67,7 @@ function renderSubs(trackNumber) {
         pushSub(trackNumber)
     }
 }
-
+// these 2 really need to go into a single function....
 let octopusTimeout
 function pushSub(trackNumber) {
     if (!octopusTimeout && playerData.octopusInstance) {
@@ -77,7 +77,7 @@ function pushSub(trackNumber) {
         }, 1000)
     }
 }
-function postDownload(file) {
+function postDownload(file) { // parse subtitles fully after a download is finished
     if (playerData.subtitleStream) {
         let parser = new SubtitleParser(),
             subtitles = []
@@ -98,7 +98,7 @@ function postDownload(file) {
             playerData.subtitles = subtitles
             playerData.parsed = 1
             renderSubs.call(null, playerData.selectedHeader)
-            if (settings.player9) {
+            if (settings.player9) { // render the video to a blob for faster playback and seeking, F RAM
                 file.getBlobURL((err, url) => {
                     setTimeout(() => {
                         let time = video.currentTime,
