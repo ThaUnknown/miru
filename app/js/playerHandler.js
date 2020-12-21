@@ -92,7 +92,10 @@ async function buildVideo(file, nowPlaying) { //creates a new video element and 
         if (video.audioTracks && video.audioTracks.length > 1)
             baudio.removeAttribute("disabled")
     }
-    video.addEventListener("ended", autoNext);
+    video.onended = () => {
+        updateBar(video.currentTime / video.duration * 100)
+        if (settings.player6 && !parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) btnnext()
+    }
     video.addEventListener("waiting", isBuffering);
     video.addEventListener("timeupdate", updateDisplay);
     if ('setPositionState' in navigator.mediaSession)
@@ -412,10 +415,6 @@ function btnnext() {
             }
         }
     }, 200)
-}
-function autoNext() {
-    updateBar(video.currentTime / video.duration * 100)
-    if (settings.player6) btnnext()
 }
 // volume shit
 
