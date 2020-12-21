@@ -722,7 +722,7 @@ if ('mediaSession' in navigator) {
 
 //AL entry auto add
 function checkCompletion() {
-    if (!playerData.watched && typeof video !== 'undefined' && video.duration - 180 < video.currentTime && playerData.nowPlaying && playerData.nowPlaying[0]) {
+    if (!playerData.watched && typeof video !== 'undefined' && video.duration - 180 < video.currentTime && playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[0].episodes <= parseInt(playerData.nowPlaying[1])) {
         if (settings.other2) {
             alEntry()
         } else {

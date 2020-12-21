@@ -234,8 +234,7 @@ async function alRequest(searchName, method) {
                 name,
                 id
             }
-        }
-        `
+        }`
     } else if (method == "UserLists") {
         variables.id = searchName
         query = `
@@ -249,8 +248,18 @@ async function alRequest(searchName, method) {
                     }
                 }
             }
-        }
-        `
+        }`
+    } else if (method == "SearchIDStatus") {
+        variables.id = alID
+        variables.mediaId = searchName
+        query = `
+        query ($id: Int, $mediaId: Int){
+            MediaList(userId: $id, mediaId: $mediaId) {
+                status
+                progress
+                repeat
+            }
+        }`
     }
     options.body = JSON.stringify({
         query: query,
@@ -261,22 +270,32 @@ async function alRequest(searchName, method) {
         json = await res.json();
     return json
 }
-function alEntry() {
+async function alEntry() {
     if (playerData.nowPlaying && playerData.nowPlaying[0] && localStorage.getItem("ALtoken")) {
-        let query = `
-mutation ($id: Int, $status: MediaListStatus, $episode: Int) {
-    SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode) {
+        let res = await alRequest(playerData.nowPlaying[0].id, "SearchIDStatus")
+        if (res.data.MediaList.progress <= parseInt(playerData.nowPlaying[1])) {
+            let query = `
+mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
+    SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
         id
         status
         progress
+        repeat
     }
 }`,
-            variables = {
-                id: playerData.nowPlaying[0].id,
-                status: "CURRENT",
-                episode: parseInt(playerData.nowPlaying[1])
-            },
-            options = {
+                variables = {
+                    repeat: 0,
+                    id: playerData.nowPlaying[0].id,
+                    status: "CURRENT",
+                    episode: parseInt(playerData.nowPlaying[1])
+                }
+            if (parseInt(playerData.nowPlaying[1]) == playerData.nowPlaying[0].episodes) {
+                variables.status = "COMPLETED"
+                if (res.data.MediaList.status == "COMPLETED") {
+                    variables.repeat = res.data.MediaList.repeat + 1
+                }
+            }
+            let options = {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("ALtoken"),
@@ -288,7 +307,8 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int) {
                     variables: variables
                 })
             }
-        fetch("https://graphql.anilist.co", options)
+            fetch("https://graphql.anilist.co", options).catch((error) => console.error(error))
+        }
     }
 }
 let alResponse
