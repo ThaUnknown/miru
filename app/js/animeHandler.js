@@ -114,152 +114,151 @@ async function alRequest(searchName, method) {
             })
         },
         queryObjects = `
-        id
-        title {
-            romaji
-            english
-            native
-            userPreferred
-        }
-        description(
-            asHtml: true
-        )
-        season
-        seasonYear
-        format
-        status
-        episodes
-        duration
-        averageScore
-        genres
-        coverImage {
-            extraLarge
-            medium
-            color
-        }
-        bannerImage
-        synonyms
-        nextAiringEpisode {
-            timeUntilAiring
-            episode
-        }
-        trailer {
+id
+title {
+    romaji
+    english
+    native
+    userPreferred
+}
+description(
+    asHtml: true
+)
+season
+seasonYear
+format
+status
+episodes
+duration
+averageScore
+genres
+coverImage {
+    extraLarge
+    medium
+    color
+}
+bannerImage
+synonyms
+nextAiringEpisode {
+    timeUntilAiring
+    episode
+}
+trailer {
+    id
+    site
+}
+streamingEpisodes {
+    title
+    thumbnail
+}
+relations {
+    edges {
+        relationType(version:2)
+        node {
             id
-            site
-        }
-        streamingEpisodes {
-            title
-            thumbnail
-        }
-        relations {
-            edges {
-                relationType(version:2)
-                node {
-                    id
-                    title {
-                        userPreferred
-                    }
-                    coverImage {
-                        medium
-                    }
-                    type
-                    status
-                }
+            title {
+                userPreferred
             }
+            coverImage {
+                medium
+            }
+            type
+            status
         }
-        `
+    }
+}`
     if (localStorage.getItem("ALtoken")) {
         options.headers['Authorization'] = localStorage.getItem("ALtoken")
     }
     if (method == "Trending") {
         search.placeholder = "Search"
         query = `
-        query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
-            Page (page: $page, perPage: $perPage) {
-                media(type: $type, sort: $sort) {
-                    ${queryObjects}
-                }
-            }
-        }`
+query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
+    Page (page: $page, perPage: $perPage) {
+        media(type: $type, sort: $sort) {
+            ${queryObjects}
+        }
+    }
+}`
     } else if (method == "SearchReleasesSingle") {
         variables.search = searchName
         variables.perPage = 1
         variables.status = "RELEASING"
         query = `
-        query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType, $status: MediaStatus) {
-            Page (page: $page) {
-                media (type: $type, search: $search, sort: $sort, status: $status) {
-                    ${queryObjects}
-                }
-            }
-        }`
+query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType, $status: MediaStatus) {
+    Page (page: $page) {
+        media (type: $type, search: $search, sort: $sort, status: $status) {
+            ${queryObjects}
+        }
+    }
+}`
     } else if (method == "SearchName") {
         variables.search = searchName
         variables.sort = "TRENDING_DESC"
         query = `
-        query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String) {
-            Page (page: $page, perPage: $perPage) {
-                media(type: $type, search: $search, sort: $sort) {
-                    ${queryObjects}
-                }
-            }
-        }`
+query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String) {
+    Page (page: $page, perPage: $perPage) {
+        media(type: $type, search: $search, sort: $sort) {
+            ${queryObjects}
+        }
+    }
+}`
     } else if (method == "SearchAnySingle") {
         variables.search = searchName
         variables.perPage = 1
         variables.sort = "TRENDING_DESC"
         query = `
-        query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType) {
-            Page (page: $page) {
-                media (type: $type, search: $search, sort: $sort) {
-                    ${queryObjects}
-                }
-            }
-        }`
+query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType) {
+    Page (page: $page) {
+        media (type: $type, search: $search, sort: $sort) {
+            ${queryObjects}
+        }
+    }
+}`
     } else if (method == "SearchIDSingle") {
         variables.id = searchName
         query = `
-        query ($id: Int, $type: MediaType) { 
-            Media (id: $id, type: $type){
-                ${queryObjects}
-            }
-        }`
+query ($id: Int, $type: MediaType) { 
+    Media (id: $id, type: $type){
+        ${queryObjects}
+    }
+}`
     } else if (method == "Viewer") {
         query = `
-        query {
-            Viewer {
-                avatar {
-                    medium
-                },
-                name,
-                id
-            }
-        }`
+query {
+    Viewer {
+        avatar {
+            medium
+        },
+        name,
+        id
+    }
+}`
     } else if (method == "UserLists") {
         variables.id = searchName
         query = `
-        query ($id: Int, $type: MediaType){
-            MediaListCollection (userId: $id, type: $type, forceSingleCompletedList: true, status_in: [CURRENT,PLANNING]) {
-                lists {
-                    entries {
-                        media {
-                            ${queryObjects}
-                        }
-                    }
+query ($id: Int, $type: MediaType){
+    MediaListCollection (userId: $id, type: $type, forceSingleCompletedList: true, status_in: [CURRENT,PLANNING]) {
+        lists {
+            entries {
+                media {
+                    ${queryObjects}
                 }
             }
-        }`
+        }
+    }
+}`
     } else if (method == "SearchIDStatus") {
         variables.id = alID
         variables.mediaId = searchName
         query = `
-        query ($id: Int, $mediaId: Int){
-            MediaList(userId: $id, mediaId: $mediaId) {
-                status
-                progress
-                repeat
-            }
-        }`
+query ($id: Int, $mediaId: Int){
+    MediaList(userId: $id, mediaId: $mediaId) {
+        status
+        progress
+        repeat
+    }
+}`
     }
     options.body = JSON.stringify({
         query: query,
