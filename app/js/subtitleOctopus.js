@@ -1,6 +1,6 @@
 const { SubtitleStream } = MatroskaSubtitles
 const { SubtitleParser } = MatroskaSubtitles
-// this entire thing needs to go
+
 function subStream(stream) { // subtitle parsing with seeking support
     if (video.src.endsWith(".mkv") || video.src.endsWith(".webm")) {
         if (playerData.subtitleStream) {
@@ -9,43 +9,45 @@ function subStream(stream) { // subtitle parsing with seeking support
             playerData.subtitleStream = new SubtitleStream()
             playerData.subtitleStream.once('tracks', pTracks => {
                 bcap.removeAttribute("disabled")
+                playerData.headers = []
                 pTracks.forEach(track => {
-                    if (track.type == "ass") {
-                        if (!playerData.headers) {
-                            playerData.headers = []
-                        }
-                        playerData.headers[track.number] = track
-                        playerData.subtitles[track.number] = new Set()
-                        playerData.selectedHeader = 3
-                    } else { //fallback for VTT, needs to go!!!!
-                        playerData.tracks[track.number] = video.addTextTrack('captions', track.type, track.language);
-                        let spacerCue = new VTTCue(0.1, 9999, "&nbsp;")
-                        spacerCue.line = -1
-                        playerData.tracks[track.number].addCue(spacerCue)
+                    if (track.type != "ass") { // overwrite webvtt header with custom one
+                        track.header = `[Script Info]
+Title: English
+ScriptType: v4.00+
+Collisions: Normal
+PlayDepth: 0
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+PlayResX: 640
+PlayResY: 360
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+
+`
                     }
+                    playerData.headers[track.number] = track
+                    playerData.subtitles[track.number] = new Set()
+                    if (!playerData.selectedHeader) playerData.selectedHeader = track.number
                 })
-                if (video.textTracks[0]) {
-                    video.textTracks[0].mode = "showing"
-                }
             })
         }
         playerData.subtitleStream.on('subtitle', (subtitle, trackNumber) => {
-            console.log(subtitle)
-            if (!playerData.parsed) {
-                if (playerData.headers) {
-                    let formatSub = "Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text
-                    if (!playerData.subtitles[trackNumber].has(formatSub)) {
-                        playerData.subtitles[trackNumber].add(formatSub)
-                        if (playerData.selectedHeader == trackNumber)
-                            renderSubs.call(null, trackNumber)
-                    }
-                } else { //fallback for VTT, needs to go!!!!
-                    if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
-                        let cue = new VTTCue(subtitle.time / 1000, (subtitle.time + subtitle.duration) / 1000, subtitle.text)
-                        playerData.tracks[trackNumber].addCue(cue)
-                    }
+            if (!playerData.parsed && playerData.headers) {
+                if (playerData.headers[trackNumber].type == "webvtt") convertSub(subtitle)
+                let formatSub = "Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text
+                if (!playerData.subtitles[trackNumber].has(formatSub)) {
+                    playerData.subtitles[trackNumber].add(formatSub)
+                    if (playerData.selectedHeader == trackNumber)
+                        renderSubs.call(null, trackNumber)
                 }
             }
+
         })
         playerData.subtitleStream.on('file', file => {
             if (file.mimetype == ("application/x-truetype-font" || "application/font-woff")) playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data], { type: file.mimetype })))
@@ -53,8 +55,10 @@ function subStream(stream) { // subtitle parsing with seeking support
         stream.pipe(playerData.subtitleStream)
     }
 }
+let octopusTimeout
 function renderSubs(trackNumber) {
     if (!playerData.octopusInstance) {
+        if (!playerData.headers[trackNumber].type == "webvtt") header = playerData.headers[trackNumber].header.slice(0, -1)
         let options = {
             video: video,
             subContent: trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1),
@@ -64,18 +68,26 @@ function renderSubs(trackNumber) {
         };
         playerData.octopusInstance = new SubtitlesOctopus(options);
     } else {
-        pushSub(trackNumber)
+        if (!octopusTimeout) {
+            octopusTimeout = setTimeout(() => {
+                octopusTimeout = undefined
+                playerData.octopusInstance.setTrack(trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1))
+            }, 1000)
+        }
     }
 }
-// these 2 really need to go into a single function....
-let octopusTimeout
-function pushSub(trackNumber) {
-    if (!octopusTimeout && playerData.octopusInstance) {
-        octopusTimeout = setTimeout(() => {
-            octopusTimeout = undefined
-            playerData.octopusInstance.setTrack(trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1))
-        }, 1000)
-    }
+function convertSub(subtitle) { // converts vtt subtitles to ssa ones
+    let matches = subtitle.text.match(/<[^>]+>/g); // create array of all tags
+    if (matches)
+        matches.forEach(match => {
+            if (/<\//.test(match)) { // check if its a closing tag
+                subtitle.text = subtitle.text.replace(match, match.replace("</", "{\\").replace(">", "0}"))
+            } else {
+                subtitle.text = subtitle.text.replace(match, match.replace("<", "{\\").replace(">", "1}"))
+            }
+        })
+    //replace all html special tags with normal ones
+    subtitle.text.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, "\\h")
 }
 function postDownload(file) { // parse subtitles fully after a download is finished
     if (playerData.subtitleStream) {
@@ -88,10 +100,7 @@ function postDownload(file) { // parse subtitles fully after a download is finis
         })
         parser.on('subtitle', (subtitle, trackNumber) => {
             if (playerData.headers) {
-                subtitles[trackNumber].add("Dialogue: " + subtitle.layer + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + subtitle.style + "," + subtitle.name + "," + subtitle.marginL + "," + subtitle.marginR + "," + subtitle.marginV + "," + subtitle.effect + "," + subtitle.text)
-            } else if (!Object.values(playerData.tracks[trackNumber].cues).some(c => c.text == subtitle.text && c.startTime == subtitle.time / 1000 && c.endTime == (subtitle.time + subtitle.duration) / 1000)) {
-                let cue = new VTTCue(subtitle.time / 1000, (subtitle.time + subtitle.duration) / 1000, subtitle.text)
-                playerData.tracks[trackNumber].addCue(cue)
+                subtitles[trackNumber].add("Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text)
             }
         })
         parser.on('finish', () => {

@@ -88,8 +88,6 @@ async function addTorrent(magnet, media, episode) {
     await sw
     settings.torrent5 ? store = { store: mystore } : store = {}
     client.add(magnet, store, function (torrent) {
-        torrent.files.forEach(file => file.deselect());
-        torrent.deselect(0, torrent.pieces.length - 1, false);
         torrent.on('noPeers', () => {
             if (client.torrents[0].progress != 1) {
                 halfmoon.initStickyAlert({
@@ -104,6 +102,8 @@ async function addTorrent(magnet, media, episode) {
         if (videoFiles.length) {
             videoFiles.sort((a, b) => { return parseInt(nameParseRegex.simple.exec(a.name)[4]) - parseInt(nameParseRegex.simple.exec(b.name)[4]) })
             if (videoFiles.length > 1) {
+                torrent.files.forEach(file => file.deselect());
+                torrent.deselect(0, torrent.pieces.length - 1, false);
                 bpl.removeAttribute("disabled")
                 buildVideo(videoFiles.filter(file => parseInt(nameParseRegex.simple.exec(file.name)[4]) == parseInt(episode))[0], [media, episode])
             } else {

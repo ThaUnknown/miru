@@ -18,6 +18,37 @@ ptoggle.addEventListener("click", btnpp);
 ptoggle.addEventListener("dblclick", btnfull);
 player.addEventListener("fullscreenchange", updateFullscreen)
 
+video.volume = volume.value / 100;
+video.style.setProperty("--sub-font", settings.subtitle1);
+video.addEventListener("playing", resetBuffer);
+video.addEventListener("canplay", resetBuffer);
+video.addEventListener("loadeddata", initThumbnail);
+video.addEventListener("loadedmetadata", updateDisplay);
+video.onloadedmetadata = () => {
+    updateDisplay();
+    (video.audioTracks && video.audioTracks.length > 1) ? baudio.removeAttribute("disabled") : baudio.setAttribute("disablePictureInPicture", "")
+}
+video.onended = () => {
+    updateBar(video.currentTime / video.duration * 100)
+    if (settings.player6 && !parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) btnnext()
+}
+video.addEventListener("waiting", isBuffering);
+video.addEventListener("timeupdate", updateDisplay);
+if ('setPositionState' in navigator.mediaSession)
+    video.addEventListener("timeupdate", updatePositionState);
+video.addEventListener("timeupdate", checkCompletion);
+if (!settings.player7 || !'pictureInPictureEnabled' in document) {
+    video.setAttribute("disablePictureInPicture", "")
+    bpip.setAttribute("disabled", "")
+} else {
+    bpip.removeAttribute("disabled")
+    video.addEventListener("enterpictureinpicture", () => {
+        if (playerData.octopusInstance)
+            btnpip()
+    })
+}
+
+
 let playerData = {
     octopusInstance: undefined
 }
@@ -36,20 +67,16 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     }
     dl.setAttribute("disabled", "")
     dl.onclick = undefined
-    if (typeof video !== 'undefined' && typeof client !== 'undefined') {
-        video.pause()
-        video.src = "";
-        video.load()
-        delete video
-        video.remove()
-        if (client.torrents[0] && client.torrents[0].files.length > 1) {
-            client.torrents[0].files.forEach(file => {
-                file.deselect()
-            });
-            client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
-            // console.log(videoFiles.filter(file => `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src))
-            // look for file and delete its store
-        }
+    video.pause()
+    video.src = "";
+    video.load()
+    if (typeof client !== 'undefined' && client.torrents[0] && client.torrents[0].files.length > 1) {
+        client.torrents[0].files.forEach(file => {
+            file.deselect()
+        });
+        client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
+        // console.log(videoFiles.filter(file => `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src))
+        // look for file and delete its store
     }
     playerData = {
         tracks: [],
@@ -67,41 +94,7 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
 }
 
 async function buildVideo(file, nowPlaying) { //creates a new video element and adds listeners... this needs to go
-    video = document.createElement("video")
-    if (!settings.player7 || !'pictureInPictureEnabled' in document) {
-        video.setAttribute("disablePictureInPicture", "")
-        bpip.setAttribute("disabled", "")
-    } else {
-        bpip.removeAttribute("disabled")
-        video.addEventListener("enterpictureinpicture", () => {
-            if (playerData.octopusInstance)
-                btnpip()
-        })
-    }
     video.src = `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}`
-    video.id = "video"
-    video.setAttribute("preload", "none")
-    video.volume = volume.value / 100
-    video.style.setProperty("--sub-font", settings.subtitle1);
-    video.addEventListener("playing", resetBuffer);
-    video.addEventListener("canplay", resetBuffer);
-    video.addEventListener("loadeddata", initThumbnail);
-    video.addEventListener("loadedmetadata", updateDisplay);
-    video.onloadedmetadata = () => {
-        updateDisplay();
-        if (video.audioTracks && video.audioTracks.length > 1)
-            baudio.removeAttribute("disabled")
-    }
-    video.onended = () => {
-        updateBar(video.currentTime / video.duration * 100)
-        if (settings.player6 && !parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) btnnext()
-    }
-    video.addEventListener("waiting", isBuffering);
-    video.addEventListener("timeupdate", updateDisplay);
-    if ('setPositionState' in navigator.mediaSession)
-        video.addEventListener("timeupdate", updatePositionState);
-    video.addEventListener("timeupdate", checkCompletion);
-    player.prepend(video);
     video.load();
     playVideo();
     // file.on("done", () => { console.log("test") }) // this currently wont work, idk how to remove old listeners
@@ -722,7 +715,7 @@ if ('mediaSession' in navigator) {
 
 //AL entry auto add
 function checkCompletion() {
-    if (!playerData.watched && typeof video !== 'undefined' && video.duration - 180 < video.currentTime && playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[0].episodes <= parseInt(playerData.nowPlaying[1])) {
+    if (!playerData.watched && typeof video !== 'undefined' && video.duration - 180 < video.currentTime && playerData.nowPlaying && playerData.nowPlaying[0]) {
         if (settings.other2) {
             alEntry()
         } else {
@@ -737,4 +730,3 @@ function checkCompletion() {
         playerData.watched = true
     }
 }
-cleanupVideo()
