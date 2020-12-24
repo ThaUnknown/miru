@@ -19,7 +19,6 @@ ptoggle.addEventListener("dblclick", btnfull);
 player.addEventListener("fullscreenchange", updateFullscreen)
 
 video.volume = volume.value / 100;
-video.style.setProperty("--sub-font", settings.subtitle1);
 video.addEventListener("playing", resetBuffer);
 video.addEventListener("canplay", resetBuffer);
 video.addEventListener("loadeddata", initThumbnail);
@@ -48,9 +47,7 @@ if (!settings.player7 || !'pictureInPictureEnabled' in document) {
     })
 }
 
-
 let playerData = {
-    octopusInstance: undefined
 }
 
 function cleanupVideo() { // cleans up objects, attemps to clear as much video caching as possible
@@ -79,10 +76,8 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
         // look for file and delete its store
     }
     playerData = {
-        tracks: [],
         subtitles: [],
-        fonts: [],
-        thumbnails: []
+        fonts: []
     }
     nowPlayingDisplay.textContent = ""
     onProgress = undefined;
@@ -236,6 +231,7 @@ let h
 
 function initThumbnail() {
     if (settings.player5) {
+        playerData.thumbnails = []
         h = parseInt(150 / (video.videoWidth / video.videoHeight))
         canvas.width = 150;
         canvas.height = h;
@@ -473,7 +469,7 @@ async function btnpip() {
                     await canvasVideo.requestPictureInPicture().then(
                         player.classList.add("pip")
                     ).catch(e => {
-                        console.warn("Failed To Burn In Subtitles" + e)
+                        console.warn("Failed To Burn In Subtitles " + e)
                         running = false
                         canvasVideo.remove()
                         canvas.remove()
@@ -524,39 +520,8 @@ function seek(a) {
 }
 // subtitles, generates content every single time its opened because fuck knows when the parser will find new shit
 // this needs to go.... really badly
-let off
 function btncap() {
-    if (video.textTracks.length) {
-        let frag = document.createDocumentFragment()
-        off = document.createElement("a")
-        off.classList.add("dropdown-item", "pointer", "text-white")
-        off.innerHTML = "OFF"
-        off.onclick = () => {
-            selectLang("OFF")
-        }
-        frag.appendChild(off)
-
-        for (let track of video.textTracks) {
-            let template = document.createElement("a")
-            template.classList.add("dropdown-item", "pointer", "text-capitalize")
-            template.innerHTML = track.language || (!Object.values(video.textTracks).some(track => track.language == "eng" || track.language == "en") ? "eng" : track.label)
-            if (track.mode == "showing") {
-                template.classList.add("text-white")
-                off.classList.add("text-muted")
-                off.classList.remove("text-white")
-            } else {
-                template.classList.add("text-muted")
-            }
-            template.onclick = () => {
-                selectLang(track.language)
-            }
-            frag.appendChild(template)
-        }
-
-        subMenu.textContent = '';
-        subMenu.appendChild(frag)
-    } else if (playerData.headers) {
-        let frag = document.createDocumentFragment()
+        let frag = document.createDocumentFragment(),
         off = document.createElement("a")
         off.classList.add("dropdown-item", "pointer")
         playerData.selectedHeader ? off.classList.add("text-muted") : off.classList.add("text-white")
@@ -587,19 +552,12 @@ function btncap() {
         }
         subMenu.textContent = '';
         subMenu.appendChild(frag)
-    }
-}
-function selectLang(lang) {
-    for (let track of video.textTracks) {
-        track.language == lang ? track.mode = 'showing' : track.mode = 'hidden';
-    }
-    btncap()
 }
 //playlist
 
 function btnpl() {
     let frag = document.createDocumentFragment()
-    videoFiles.forEach((file, index) => {
+    videoFiles.forEach(file => {
         let template = document.createElement("a")
         template.classList.add("dropdown-item", "pointer", "text-capitalize", "text-truncate", "text-white")
         let regexParse = nameParseRegex.fallback.exec(file.name)

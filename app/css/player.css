@@ -221,21 +221,6 @@ video[src=""],
     display: none !important
 }
 
-video::cue {
-    background: none;
-    font-family: var(--sub-font);
-    color: #fff;
-    text-shadow: 2px 2px 0 #000,
-        2px -2px 0 #000,
-        -2px 2px 0 #000,
-        -2px -2px 0 #000,
-        2px 0px 0 #000,
-        0px 2px 0#000,
-        -2px 0px 0 #000,
-        0px -2px 0 #000,
-        2px 2px 2px #000;
-}
-
 #dl[disabled] {
     cursor: not-allowed;
     color: rgba(255, 255, 255, .4);
