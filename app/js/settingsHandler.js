@@ -1,6 +1,9 @@
 const settingsElements = [
-    player1, player2, player3, player4, player5, player6, player7, player8, player9, player10, subtitle1, subtitle2, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent6, torrent7, torrent8, torrent9, other1, other2
+    player1, player2, player3, player4, player5, player6, player7, player8, player10, subtitle1, subtitle2, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent6, torrent7, torrent8, torrent9, other1, other2
 ]
+setRes.addEventListener("click", restoreDefaults)
+settingsTab.addEventListener("click", applySettingsTimeout)
+regProtButton.addEventListener("click", registerProtocol)
 let settings = {}
 function restoreDefaults() {
     localStorage.removeItem("settings");
@@ -53,9 +56,6 @@ clearRelCache.onclick = () => {
     store = {}
 }
 renderSettings()
-setRes.addEventListener("click", restoreDefaults)
-settingsTab.addEventListener("click", applySettingsTimeout)
-regProtButton.addEventListener("click", registerProtocol)
 
 let searchParams = new URLSearchParams(location.href)
 if (searchParams.get("access_token")) {

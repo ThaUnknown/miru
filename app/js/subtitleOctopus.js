@@ -2,17 +2,16 @@ const { SubtitleStream } = MatroskaSubtitles
 const { SubtitleParser } = MatroskaSubtitles
 
 function subStream(stream) { // subtitle parsing with seeking support
-    if (video.src.endsWith(".mkv") || video.src.endsWith(".webm")) {
-        if (playerData.subtitleStream) {
-            playerData.subtitleStream = new SubtitleStream(playerData.subtitleStream)
-        } else {
-            playerData.subtitleStream = new SubtitleStream()
-            playerData.subtitleStream.once('tracks', pTracks => {
-                bcap.removeAttribute("disabled")
-                playerData.headers = []
-                pTracks.forEach(track => {
-                    if (track.type != "ass") { // overwrite webvtt header with custom one
-                        track.header = `[Script Info]
+    if (playerData.subtitleStream) {
+        playerData.subtitleStream = new SubtitleStream(playerData.subtitleStream)
+    } else {
+        playerData.subtitleStream = new SubtitleStream()
+        playerData.subtitleStream.once('tracks', pTracks => {
+            bcap.removeAttribute("disabled")
+            playerData.headers = []
+            pTracks.forEach(track => {
+                if (track.type != "ass") { // overwrite webvtt header with custom one
+                    track.header = `[Script Info]
 Title: English
 ScriptType: v4.00+
 Collisions: Normal
@@ -30,30 +29,29 @@ Style: Default,Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
 `
-                    }
-                    playerData.headers[track.number] = track
-                    playerData.subtitles[track.number] = new Set()
-                    if (!playerData.selectedHeader) playerData.selectedHeader = track.number
-                })
-            })
-        }
-        playerData.subtitleStream.on('subtitle', (subtitle, trackNumber) => {
-            if (!playerData.parsed && playerData.headers) {
-                if (playerData.headers[trackNumber].type == "webvtt") convertSub(subtitle)
-                let formatSub = "Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text
-                if (!playerData.subtitles[trackNumber].has(formatSub)) {
-                    playerData.subtitles[trackNumber].add(formatSub)
-                    if (playerData.selectedHeader == trackNumber)
-                        renderSubs.call(null, trackNumber)
                 }
-            }
-
+                playerData.headers[track.number] = track
+                playerData.subtitles[track.number] = new Set()
+                if (!playerData.selectedHeader) playerData.selectedHeader = track.number
+            })
         })
-        playerData.subtitleStream.on('file', file => {
-            if (file.mimetype == ("application/x-truetype-font" || "application/font-woff")) playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data], { type: file.mimetype })))
-        })
-        stream.pipe(playerData.subtitleStream)
     }
+    playerData.subtitleStream.on('subtitle', (subtitle, trackNumber) => {
+        if (playerData.headers && !playerData.parsed) {
+            if (playerData.headers[trackNumber].type == "webvtt") convertSub(subtitle)
+            let formatSub = "Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text
+            if (!playerData.subtitles[trackNumber].has(formatSub)) {
+                playerData.subtitles[trackNumber].add(formatSub)
+                if (playerData.selectedHeader == trackNumber)
+                    renderSubs.call(null, trackNumber)
+            }
+        }
+
+    })
+    playerData.subtitleStream.on('file', file => {
+        if (file.mimetype == ("application/x-truetype-font" || "application/font-woff")) playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data], { type: file.mimetype })))
+    })
+    stream.pipe(playerData.subtitleStream)
 }
 let octopusTimeout
 function renderSubs(trackNumber) {
@@ -106,18 +104,8 @@ function postDownload(file) { // parse subtitles fully after a download is finis
         parser.on('finish', () => {
             playerData.subtitles = subtitles
             playerData.parsed = 1
+            playerData.subtitleStream = undefined
             renderSubs.call(null, playerData.selectedHeader)
-            if (settings.player9) { // render the video to a blob for faster playback and seeking, F RAM
-                file.getBlobURL((err, url) => {
-                    setTimeout(() => {
-                        let time = video.currentTime,
-                            playState = !video.paused
-                        video.src = url
-                        video.currentTime = time
-                        if (playState) video.play()
-                    }, 5000);
-                })
-            }
         });
         file.createReadStream().pipe(parser)
     }

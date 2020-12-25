@@ -158,7 +158,7 @@ function serveFile(file, req) {
     res.body = req.method === 'HEAD' ? '' : 'stream'
     // parser is really a passthrough mkv stream now
     let stream = file.createReadStream(range)
-    subStream(stream)
+    if ((file.name.endsWith(".mkv") || file.name.endsWith(".webm")) && !playerData.parsed) subStream(stream)
 
     return [res, req.method === 'GET' && playerData.subtitleStream || stream]
 }
