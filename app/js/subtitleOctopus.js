@@ -23,7 +23,7 @@ PlayResY: 360
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
+Style: Default,${Object.values(subtitle1list.options).filter(item => item.value == settings.subtitle1)[0].innerText}
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -98,6 +98,7 @@ function postDownload(file) { // parse subtitles fully after a download is finis
         })
         parser.on('subtitle', (subtitle, trackNumber) => {
             if (playerData.headers) {
+                if (playerData.headers[trackNumber].type == "webvtt") convertSub(subtitle)
                 subtitles[trackNumber].add("Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text)
             }
         })
