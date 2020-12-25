@@ -18,7 +18,6 @@ ptoggle.addEventListener("click", btnpp);
 ptoggle.addEventListener("dblclick", btnfull);
 player.addEventListener("fullscreenchange", updateFullscreen)
 
-video.volume = volume.value / 100;
 video.addEventListener("playing", resetBuffer);
 video.addEventListener("canplay", resetBuffer);
 video.addEventListener("loadeddata", initThumbnail);
@@ -435,7 +434,7 @@ function updateVolume(a) {
         video.volume = level / 100
     }
 }
-updateVolume(parseInt(settings.player1))
+updateVolume(parseInt(settings.volume))
 
 
 // PiP
