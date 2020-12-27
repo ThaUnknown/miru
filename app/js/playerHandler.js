@@ -63,6 +63,8 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     }
     dl.setAttribute("disabled", "")
     dl.onclick = undefined
+    video.poster = ""
+    //some attemt at cache clearing
     video.pause()
     video.src = "";
     video.load()
@@ -93,7 +95,7 @@ async function buildVideo(file, nowPlaying) { //creates a new video element and 
     playVideo();
     // file.on("done", () => { console.log("test") }) // this currently wont work, idk how to remove old listeners
     onProgress = () => {
-        if (document.location.hash == "#player" && typeof video !== 'undefined') {
+        if (document.location.hash == "#player") {
             if (!player.classList.contains('immersed')) {
                 player.style.setProperty("--download", file.progress * 100 + "%");
                 peers.textContent = client.torrents[0].numPeers
@@ -169,44 +171,36 @@ let onProgress
 
 // visibility loss pause
 document.addEventListener("visibilitychange", () => {
-    if (settings.player10 && typeof video !== 'undefined' && !video.ended)
+    if (settings.player10 && !video.ended)
         document.visibilityState === "hidden" ? video.pause() : playVideo();
 })
 
 // progress seek bar and display
 
 function updateDisplay() {
-    if (typeof video !== 'undefined') {
-        if (!player.classList.contains('immersed') && document.location.hash == "#player") {
-            let progressPercent = (video.currentTime / video.duration * 100)
-            let bufferPercent = video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100
-            progress.style.setProperty("--buffer", bufferPercent + "%");
-            updateBar(progressPercent || progress.value / 10);
-        }
-        createThumbnail(video);
+    if (!player.classList.contains('immersed') && document.location.hash == "#player") {
+        let progressPercent = (video.currentTime / video.duration * 100)
+        let bufferPercent = video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100
+        progress.style.setProperty("--buffer", bufferPercent + "%");
+        updateBar(progressPercent || progress.value / 10);
     }
+    createThumbnail(video);
 }
 
 function dragBar() {
     updateBar(progress.value / 10)
-    if (typeof video !== 'undefined') {
-        video.pause()
-        let bg = playerData.thumbnails[Math.floor(currentTime / 5)]
-        thumb.src = bg || " "
-    }
+    video.pause()
+    let bg = playerData.thumbnails[Math.floor(currentTime / 5)]
+    thumb.src = bg || " "
 }
 
 function dragBarEnd() {
-    if (typeof video !== 'undefined') {
-        video.currentTime = currentTime || 0
-        playVideo()
-    }
+    video.currentTime = currentTime || 0
+    playVideo()
 }
 
 async function dragBarStart() {
-    if (typeof video !== 'undefined') {
-        await video.pause()
-    }
+    await video.pause()
     updateBar(progress.value / 10)
 }
 
@@ -214,13 +208,11 @@ let currentTime = 0;
 function updateBar(progressPercent) {
     progress.style.setProperty("--progress", progressPercent + "%");
     thumb.style.setProperty("--progress", progressPercent + "%");
-    if (typeof video !== 'undefined') {
-        currentTime = video.duration * progressPercent / 100
-        elapsed.innerHTML = toTS(currentTime);
-        remaining.innerHTML = toTS(video.duration - currentTime);
-        progress.value = progressPercent * 10
-        progress.setAttribute("data-ts", toTS(currentTime))
-    }
+    currentTime = video.duration * progressPercent / 100
+    elapsed.innerHTML = toTS(currentTime);
+    remaining.innerHTML = toTS(video.duration - currentTime);
+    progress.value = progressPercent * 10
+    progress.setAttribute("data-ts", toTS(currentTime))
 }
 
 // dynamic thumbnail previews
@@ -370,13 +362,11 @@ async function playVideo() {
 }
 
 function btnpp() {
-    if (typeof video !== 'undefined') {
-        if (video.paused) {
-            playVideo();
-        } else {
-            bpp.innerHTML = "play_arrow";
-            video.pause();
-        }
+    if (video.paused) {
+        playVideo();
+    } else {
+        bpp.innerHTML = "play_arrow";
+        video.pause();
     }
 }
 // next video button
@@ -409,13 +399,11 @@ function btnnext() {
 let oldlevel;
 
 function btnmute() {
-    if (typeof video !== 'undefined') {
-        if (video.volume == 0) {
-            updateVolume(oldlevel)
-        } else {
-            oldlevel = video.volume * 100
-            updateVolume(0)
-        }
+    if (video.volume == 0) {
+        updateVolume(oldlevel)
+    } else {
+        oldlevel = video.volume * 100
+        updateVolume(0)
     }
 }
 
@@ -430,9 +418,7 @@ function updateVolume(a) {
     }
     volume.style.setProperty("--volume-level", level + "%");
     bmute.innerHTML = (level == 0) ? "volume_off" : "volume_up";
-    if (typeof video !== 'undefined') {
-        video.volume = level / 100
-    }
+    video.volume = level / 100
 }
 updateVolume(parseInt(settings.volume))
 
@@ -440,7 +426,7 @@ updateVolume(parseInt(settings.volume))
 // PiP
 
 async function btnpip() {
-    if (typeof video !== 'undefined' && video.readyState) {
+    if (video.readyState) {
         if (!playerData.octopusInstance) {
             video !== document.pictureInPictureElement ? await video.requestPictureInPicture() : await document.exitPictureInPicture();
         } else {
@@ -520,37 +506,37 @@ function seek(a) {
 // subtitles, generates content every single time its opened because fuck knows when the parser will find new shit
 // this needs to go.... really badly
 function btncap() {
-        let frag = document.createDocumentFragment(),
+    let frag = document.createDocumentFragment(),
         off = document.createElement("a")
-        off.classList.add("dropdown-item", "pointer")
-        playerData.selectedHeader ? off.classList.add("text-muted") : off.classList.add("text-white")
-        off.innerHTML = "OFF"
-        off.onclick = () => {
-            renderSubs.call(null)
-            playerData.selectedHeader = undefined
-            btncap()
-        }
-        frag.appendChild(off)
-        for (let track of playerData.headers) {
-            if (track) {
-                let template = document.createElement("a")
-                template.classList.add("dropdown-item", "pointer", "text-capitalize")
-                template.innerHTML = track.language || (!Object.values(playerData.headers).some(header => header.language == "eng" || header.language == "en") ? "eng" : header.type)
-                if (playerData.selectedHeader == track.number) {
-                    template.classList.add("text-white")
-                } else {
-                    template.classList.add("text-muted")
-                }
-                template.onclick = () => {
-                    renderSubs.call(null, track.number)
-                    playerData.selectedHeader = track.number
-                    btncap()
-                }
-                frag.appendChild(template)
+    off.classList.add("dropdown-item", "pointer")
+    playerData.selectedHeader ? off.classList.add("text-muted") : off.classList.add("text-white")
+    off.innerHTML = "OFF"
+    off.onclick = () => {
+        renderSubs.call(null)
+        playerData.selectedHeader = undefined
+        btncap()
+    }
+    frag.appendChild(off)
+    for (let track of playerData.headers) {
+        if (track) {
+            let template = document.createElement("a")
+            template.classList.add("dropdown-item", "pointer", "text-capitalize")
+            template.innerHTML = track.language || (!Object.values(playerData.headers).some(header => header.language == "eng" || header.language == "en") ? "eng" : header.type)
+            if (playerData.selectedHeader == track.number) {
+                template.classList.add("text-white")
+            } else {
+                template.classList.add("text-muted")
             }
+            template.onclick = () => {
+                renderSubs.call(null, track.number)
+                playerData.selectedHeader = track.number
+                btncap()
+            }
+            frag.appendChild(template)
         }
-        subMenu.textContent = '';
-        subMenu.appendChild(frag)
+    }
+    subMenu.textContent = '';
+    subMenu.appendChild(frag)
 }
 //playlist
 
@@ -650,7 +636,7 @@ document.onkeydown = (a) => {
 //media session shit
 
 function updatePositionState() {
-    if (typeof video !== 'undefined' && video.duration)
+    if (video.duration)
         navigator.mediaSession.setPositionState({
             duration: video.duration || 0,
             playbackRate: video.playbackRate || 0,
@@ -672,7 +658,7 @@ if ('mediaSession' in navigator) {
 
 //AL entry auto add
 function checkCompletion() {
-    if (!playerData.watched && typeof video !== 'undefined' && video.duration - 180 < video.currentTime && playerData.nowPlaying && playerData.nowPlaying[0]) {
+    if (!playerData.watched && video.duration - 180 < video.currentTime && playerData.nowPlaying && playerData.nowPlaying[0]) {
         if (settings.other2) {
             alEntry()
         } else {
