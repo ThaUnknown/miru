@@ -4,13 +4,11 @@ window.addEventListener("paste", async e => { //WAIT image lookup on paste, or a
     let item = e.clipboardData.items[0];
     if (item && item.type.indexOf("image") === 0) {
         e.preventDefault();
-        let blob = item.getAsFile();
-
         let reader = new FileReader();
         reader.onload = e => {
             traceAnime(e.target.result, "uri")
         };
-        reader.readAsDataURL(blob);
+        reader.readAsDataURL(item.getAsFile());
     } else if (item && item.type === "text/plain") {
         item.getAsString(text => {
             if (torrentRx.exec(text)) {
@@ -25,9 +23,7 @@ window.addEventListener("paste", async e => { //WAIT image lookup on paste, or a
         })
     } else if (item && item.type === "text/html") {
         item.getAsString(text => {
-            let domparser = new DOMParser(),
-                doc = domparser.parseFromString(text, "text/html"),
-                img = doc.querySelectorAll("img")[0]
+            let img = new DOMParser().parseFromString(text, "text/html").querySelectorAll("img")[0]
             if (img) {
                 e.preventDefault();
                 search.value = ""
@@ -56,11 +52,8 @@ function traceAnime(image, type) { //WAIT lookup logic
             if (result.docs[0].similarity >= 0.85) {
                 let res = await alRequest(result.docs[0].anilist_id, "SearchIDSingle")
                 viewAnime(res.data.Media)
-            } else {
-                console.log("no." + result.docs[0].similarity)
             }
         });
-
 }
 function searchBox() { // make searchbox behave nicely
     search.placeholder = search.value
