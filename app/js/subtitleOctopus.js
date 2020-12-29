@@ -69,7 +69,7 @@ function renderSubs(trackNumber) {
         if (!octopusTimeout) {
             octopusTimeout = setTimeout(() => {
                 octopusTimeout = undefined
-                playerData.octopusInstance.setTrack(trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1))
+                if (playerData.octopusInstance) playerData.octopusInstance.setTrack(trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1))
             }, 1000)
         }
     }

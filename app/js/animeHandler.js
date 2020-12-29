@@ -14,7 +14,7 @@ window.addEventListener("paste", async e => { //WAIT image lookup on paste, or a
             if (torrentRx.exec(text)) {
                 e.preventDefault();
                 search.value = ""
-                addTorrent(text);
+                addTorrent(text, {});
             } else if (imageRx.exec(text)) {
                 e.preventDefault();
                 search.value = ""
@@ -555,7 +555,7 @@ async function nyaaRss(media, episode) {
         try {
             let doc = DOMPARSER(xmlTxt, "text/xml")
             if (settings.torrent2 && doc.querySelectorAll("infoHash")[0]) {
-                addTorrent(doc.querySelectorAll("infoHash")[0].textContent, media, episode)
+                addTorrent(doc.querySelectorAll("infoHash")[0].textContent, { media: media, episode: episode })
                 halfmoon.toggleModal("tsearch")
             }
             doc.querySelectorAll("item").forEach((item, index) => {
@@ -569,7 +569,7 @@ async function nyaaRss(media, episode) {
                 <td>${i("leechers").textContent}</td>
                 <td>${i("downloads").textContent}</td>
                 <td class="pointer">Play</td>`
-                template.onclick = () => { addTorrent(i('infoHash').textContent, media, episode) }
+                template.onclick = () => { addTorrent(i('infoHash').textContent, { media: media, episode: episode }) }
                 frag.appendChild(template)
             })
 
@@ -634,7 +634,7 @@ async function releasesRss() {
                     let media = await resolveName(regexParse[2], "SearchReleasesSingle"),
                         template = cardCreator(media, regexParse[2], episode)
                     template.onclick = async () => {
-                        addTorrent(i('link').textContent, media, episode)
+                        addTorrent(i('link').textContent, {media: media, episode: episode})
                         let res = await alRequest(media.id, "SearchIDSingle")
                         store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
                     }

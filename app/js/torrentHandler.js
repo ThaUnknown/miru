@@ -1,5 +1,5 @@
 let client = new WebTorrent({ maxConns: settings.torrent6 }),
-    IDBStore = class extends IdbkvChunkStore {
+    indexedDBStore = class extends IdbkvChunkStore {
         constructor(len, opts) {
             super(len, { ...opts, batchInterval: 1000 });
         }
@@ -42,7 +42,7 @@ const announceList = [
     scope = window.location.pathname,
     sw = navigator.serviceWorker.register('sw.js', { scope }).then(e => {
         if (searchParams.get("file")) {
-            addTorrent(searchParams.get("file")) // add a torrent if its in the link params
+            addTorrent(searchParams.get("file"), {}) // add a torrent if its in the link params
         }
     }).catch(e => {
         if (String(e) == "InvalidStateError: Failed to register a ServiceWorker: The document is in an invalid state.") {
@@ -56,13 +56,13 @@ const announceList = [
 function t(a) {
     switch (a) {
         case 1:
-            addTorrent("https://webtorrent.io/torrents/sintel.torrent")
+            addTorrent("https://webtorrent.io/torrents/sintel.torrent", {})
             break;
         case 2:
-            addTorrent("https://webtorrent.io/torrents/tears-of-steel.torrent")
+            addTorrent("https://webtorrent.io/torrents/tears-of-steel.torrent", {})
             break;
         case 3:
-            addTorrent("magnet:?xt=urn:btih:CE9156EB497762F8B7577B71C0647A4B0C3423E1&dn=Inception+%282010%29+720p+-+mkv+-+1.0GB+-+YIFY&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2920%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.pirateparty.gr%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.cyberia.is%3A6969%2Fannounce")
+            addTorrent("magnet:?xt=urn:btih:CE9156EB497762F8B7577B71C0647A4B0C3423E1&dn=Inception+%282010%29+720p+-+mkv+-+1.0GB+-+YIFY&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2920%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.pirateparty.gr%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.cyberia.is%3A6969%2Fannounce", {})
             break;
     }
 }
@@ -70,16 +70,30 @@ function t(a) {
 let offlineTorrents
 async function loadOfflineStorage() {
     offlineTorrents = new Set(await indexedDB.databases());
-    [...offlineTorrents].forEach(object => client.add(object.name)) // adds all offline store torrents to the client
+    [...offlineTorrents].forEach(object => offlineDownload(object.name)) // adds all offline store torrents to the client
 }
-loadOfflineStorage()
 
 // add torrent for offline download
 function offlineDownload(torrent) {
-    client.add(torrent, { store: IDBStore }, function (torrent) {
+    client.add(torrent, { store: indexedDBStore }, function (torrent) {
         offlineTorrents.add(torrent.infoHash)
+        //TODO: make function that creates GUI for all torrents, for now, temp solution
+        let div = document.createElement("div")
+        div.onclick = () => {
+            cleanupVideo()
+            cleanupTorrents()
+            videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
+            buildVideo(torrent, {})
+        }
+        onProgress = () => {
+            div.innerHTML = `${torrent.name} %: ${torrent.progress}`
+            setTimeout(onProgress, 1000)
+        }
+        setTimeout(onProgress, 1000)
+        document.querySelector(".downloads").appendChild(div)
     })
 }
+loadOfflineStorage()
 
 // cleanup torrent and store
 function cleanupTorrents() {
@@ -93,15 +107,14 @@ function cleanupTorrents() {
 // manually add trackers
 WEBTORRENT_ANNOUNCE = announceList.map(arr => { return arr[0] }).filter(url => { return url.indexOf('wss://') === 0 })
 
-
 let videoFiles
-async function addTorrent(magnet, media, episode) {
+async function addTorrent(magnet, opts) {
     halfmoon.hideModal("tsearch")
     document.location.hash = "#player"
     cleanupVideo()
     cleanupTorrents()
     await sw
-    client.add(magnet, settings.torrent5 ? { store: IDBStore } : {}, function (torrent) {
+    client.add(magnet, settings.torrent5 ? { store: indexedDBStore } : {}, function (torrent) {
         torrent.on('noPeers', () => {
             if (torrent.progress != 1) {
                 halfmoon.initStickyAlert({
@@ -112,18 +125,9 @@ async function addTorrent(magnet, media, episode) {
                 });
             }
         })
-        videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext))) //only allow playable video files
-        if (videoFiles.length) {
-            videoFiles.sort((a, b) => { return parseInt(nameParseRegex.simple.exec(a.name)[4]) - parseInt(nameParseRegex.simple.exec(b.name)[4]) })
-            if (videoFiles.length > 1) {
-                torrent.files.forEach(file => file.deselect());
-                torrent.deselect(0, torrent.pieces.length - 1, false);
-                bpl.removeAttribute("disabled")
-                buildVideo(videoFiles.filter(file => parseInt(nameParseRegex.simple.exec(file.name)[4]) == parseInt(episode || "1"))[0], [media, episode])
-            } else {
-                bpl.setAttribute("disabled", "")//playlist button hiding
-                buildVideo(videoFiles[0], [media, episode])
-            }
+        videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
+        if (videoFiles) {
+            buildVideo(torrent, opts)
         } else {
             halfmoon.initStickyAlert({
                 content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
@@ -133,9 +137,7 @@ async function addTorrent(magnet, media, episode) {
             });
             cleanupTorrents()
         }
-
     })
-
 }
 
 function serveFile(file, req) {

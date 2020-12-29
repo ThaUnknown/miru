@@ -47,64 +47,70 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     video.pause()
     video.src = "";
     video.load()
-    if (typeof client !== 'undefined' && client.torrents[0] && client.torrents[0].files.length > 1) {
-        client.torrents[0].files.forEach(file => file.deselect());
-        client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
-        // console.log(videoFiles.filter(file => `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src))
-        // look for file and delete its store
-    }
+    // if (typeof client !== 'undefined' && client.torrents[0] && client.torrents[0].files.length > 1) {
+    //     client.torrents[0].files.forEach(file => file.deselect());
+    //     client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
+    // console.log(videoFiles.filter(file => `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src))
+    // look for file and delete its store
+    // }
     playerData = {
         subtitles: [],
         fonts: []
     }
     nowPlayingDisplay.textContent = ""
-    onProgress = undefined;
     bcap.setAttribute("disabled", "")
+    bpl.setAttribute("disabled", "")
     bnext.removeAttribute("disabled")
     navNowPlaying.classList.add("d-none")
     if ('mediaSession' in navigator) navigator.mediaSession.metadata = null
 }
 
-async function buildVideo(file, nowPlaying) { // sets video source and creates a bunch of other media stuff
-    video.src = `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}`
+async function buildVideo(torrent, opts) { // sets video source and creates a bunch of other media stuff
+    if (videoFiles.length > 1) {
+        torrent.files.forEach(file => file.deselect());
+        torrent.deselect(0, torrent.pieces.length - 1, false);
+        bpl.removeAttribute("disabled")
+    }
+    //play wanted episode from opts, or the 1st episode, or 1st file [batches: plays wanted episode, single: plays the only episode, manually added: plays first or only file]
+    let selectedFile = videoFiles.filter(file => parseInt(nameParseRegex.simple.exec(file.name)[4]) == opts.episode || 1)[0] || videoFiles[0]
+    video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
     video.load();
     playVideo();
-    // file.on("done", () => { console.log("test") }) // this currently wont work, idk how to remove old listeners
-    onProgress = () => {
+    playerData.onDone = selectedFile.on("done", () => {
+        halfmoon.initStickyAlert({
+            content: `<span class="text-break">${selectedFile.name}</span> has finished downloading. Now seeding.`,
+            title: "Download Complete",
+            alertType: "alert-success",
+            fillType: ""
+        });
+        if (settings.player8) {
+            if (!settings.torrent5) finishThumbnails(selectedFile);
+            postDownload(selectedFile)
+        }
+        if (!settings.torrent5) downloadFile(selectedFile)
+    })
+    playerData.onProgress = () => {
         if (document.location.hash == "#player") {
             if (!player.classList.contains('immersed')) {
-                player.style.setProperty("--download", file.progress * 100 + "%");
-                peers.textContent = client.torrents[0].numPeers
-                downSpeed.textContent = prettyBytes(client.torrents[0].downloadSpeed) + '/s'
-                upSpeed.textContent = prettyBytes(client.torrents[0].uploadSpeed) + '/s'
-            }
-            if (file.progress == 1 && !playerData.done) {
-                playerData.done = 1
-                halfmoon.initStickyAlert({
-                    content: `<span class="text-break">${file.name}</span> has finished downloading. Now seeding.`,
-                    title: "Download Complete",
-                    alertType: "alert-success",
-                    fillType: ""
-                });
-                if (settings.player8) {
-                    if (!settings.torrent5) finishThumbnails(file);
-                    postDownload(file)
-                }
-                if (!settings.torrent5) downloadFile(file)
+                player.style.setProperty("--download", selectedFile.progress * 100 + "%");
+                peers.textContent = torrent.numPeers
+                downSpeed.textContent = prettyBytes(torrent.downloadSpeed) + '/s'
+                upSpeed.textContent = prettyBytes(torrent.uploadSpeed) + '/s'
             }
         }
-        setTimeout(onProgress, 100)
+        setTimeout(playerData.onProgress, 100)
     }
 
-    setTimeout(onProgress, 100)
-    if (nowPlaying && nowPlaying[0]) {
-        playerData.nowPlaying = nowPlaying
-        navNowPlaying.classList.remove("d-none")
+    setTimeout(playerData.onProgress, 100)
+    if (opts.media) {
+        playerData.nowPlaying = [opts.media, opts.episode]
     } else if (settings.torrent7) { // try to resolve name
-        let regexParse = nameParseRegex.simple.exec(file.name)
-        playerData.nowPlaying = [await resolveName(regexParse[2], "SearchAnySingle"), regexParse[4]]
-        navNowPlaying.classList.remove("d-none")
-        console.log(regexParse)
+        let regexParse = nameParseRegex.simple.exec(selectedFile.name)
+        let media = await resolveName(regexParse[2], "SearchAnySingle")
+        if (media) {
+            playerData.nowPlaying = [media, regexParse[4]]
+            navNowPlaying.classList.remove("d-none")
+        }
     }
     let mediaMetadata
     // only set mediasession and other shit if the playerdata is parsed correctly
@@ -138,8 +144,6 @@ async function buildVideo(file, nowPlaying) { // sets video source and creates a
         navigator.mediaSession.metadata = mediaMetadata
 
 }
-// download progress and status
-let onProgress
 
 // visibility loss pause
 if (settings.player10) document.addEventListener("visibilitychange", () => {
