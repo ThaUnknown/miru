@@ -17,7 +17,7 @@ video.onloadedmetadata = () => {
 }
 video.onended = () => {
     updateBar(video.currentTime / video.duration * 100)
-    if (settings.player6 && parseInt(playerData.nowPlaying[1]) <= playerData.nowPlaying[0].episodes) btnnext()
+    if (settings.player6 && parseInt(playerData.nowPlaying[1]) < playerData.nowPlaying[0].episodes) btnnext()
 }
 video.addEventListener("waiting", isBuffering);
 video.ontimeupdate = () => {
@@ -76,19 +76,28 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
     video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
     video.load();
     playVideo();
-    playerData.onDone = selectedFile.on("done", () => {
+    function processFile() {
         halfmoon.initStickyAlert({
             content: `<span class="text-break">${selectedFile.name}</span> has finished downloading. Now seeding.`,
             title: "Download Complete",
             alertType: "alert-success",
             fillType: ""
         });
-        if (settings.player8) {
-            if (!settings.torrent5) finishThumbnails(selectedFile);
-            postDownload(selectedFile)
+        if (!torrent.store.store._idbkvStore) {
+            if (settings.player8) {
+                finishThumbnails(selectedFile);
+                postDownload(selectedFile)
+            }
+            downloadFile(selectedFile)
         }
-        if (!settings.torrent5) downloadFile(selectedFile)
-    })
+    }
+    if (selectedFile.done) {
+        processFile()
+    } else {
+        playerData.onDone = selectedFile.on("done", () => {
+            processFile()
+        })
+    }
     playerData.onProgress = () => {
         if (document.location.hash == "#player") {
             if (!player.classList.contains('immersed')) {

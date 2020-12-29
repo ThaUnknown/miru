@@ -82,8 +82,7 @@ function offlineDownload(torrent) {
         div.onclick = () => {
             cleanupVideo()
             cleanupTorrents()
-            videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
-            buildVideo(torrent, {})
+            playTorrent(torrent, {})
         }
         onProgress = () => {
             div.innerHTML = `${torrent.name} %: ${torrent.progress}`
@@ -108,36 +107,44 @@ function cleanupTorrents() {
 WEBTORRENT_ANNOUNCE = announceList.map(arr => { return arr[0] }).filter(url => { return url.indexOf('wss://') === 0 })
 
 let videoFiles
-async function addTorrent(magnet, opts) {
-    halfmoon.hideModal("tsearch")
-    document.location.hash = "#player"
-    cleanupVideo()
-    cleanupTorrents()
-    await sw
-    client.add(magnet, settings.torrent5 ? { store: indexedDBStore } : {}, function (torrent) {
-        torrent.on('noPeers', () => {
-            if (torrent.progress != 1) {
-                halfmoon.initStickyAlert({
-                    content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
-                    title: "Search Failed",
-                    alertType: "alert-danger",
-                    fillType: ""
-                });
-            }
-        })
-        videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
-        if (videoFiles) {
-            buildVideo(torrent, opts)
-        } else {
+async function playTorrent(torrent, opts) {
+    torrent.on('noPeers', () => {
+        if (torrent.progress != 1) {
             halfmoon.initStickyAlert({
-                content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
+                content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
                 title: "Search Failed",
                 alertType: "alert-danger",
                 fillType: ""
             });
-            cleanupTorrents()
         }
     })
+    await sw
+    videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
+    if (videoFiles) {
+        buildVideo(torrent, opts)
+    } else {
+        halfmoon.initStickyAlert({
+            content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
+            title: "Search Failed",
+            alertType: "alert-danger",
+            fillType: ""
+        });
+        cleanupTorrents()
+    }
+}
+
+function addTorrent(torrentID, opts) {
+    halfmoon.hideModal("tsearch")
+    document.location.hash = "#player"
+    cleanupVideo()
+    cleanupTorrents()
+    if (client.get(torrentID)) {
+        playTorrent(client.get(torrentID), {})
+    } else {
+        client.add(torrentID, settings.torrent5 ? { store: indexedDBStore } : {}, function (torrent) {
+            playTorrent(torrent, opts)
+        })
+    }
 }
 
 function serveFile(file, req) {

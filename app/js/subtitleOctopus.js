@@ -88,26 +88,48 @@ function convertSub(subtitle) { // converts vtt subtitles to ssa ones
     subtitle.text.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, "\\h")
 }
 function postDownload(file) { // parse subtitles fully after a download is finished
-    if (playerData.subtitleStream) {
+    if (file.name.endsWith(".mkv") || file.name.endsWith(".webm")) {\
         let parser = new SubtitleParser(),
-            subtitles = []
+            subtitles = [],
+            headers = []
         parser.once('tracks', pTracks => {
             pTracks.forEach(track => {
+                if (track.type != "ass") { // overwrite webvtt header with custom one
+                    track.header = `[Script Info]
+Title: English
+ScriptType: v4.00+
+Collisions: Normal
+PlayDepth: 0
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+PlayResX: 640
+PlayResY: 360
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,${Object.values(subtitle1list.options).filter(item => item.value == settings.subtitle1)[0].innerText}
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+
+`
+                }
+                headers[track.number] = track
                 subtitles[track.number] = new Set()
             })
         })
         parser.on('subtitle', (subtitle, trackNumber) => {
-            if (playerData.headers) {
-                if (playerData.headers[trackNumber].type == "webvtt") convertSub(subtitle)
-                subtitles[trackNumber].add("Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text)
-            }
+            if (headers[trackNumber].type == "webvtt") convertSub(subtitle)
+            subtitles[trackNumber].add("Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text)
         })
         parser.on('finish', () => {
             playerData.subtitles = subtitles
+            playerData.headers = headers
             playerData.parsed = 1
             playerData.subtitleStream = undefined
             renderSubs.call(null, playerData.selectedHeader)
         });
+        console.log("creating stream")
         file.createReadStream().pipe(parser)
     }
 }

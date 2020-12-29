@@ -1,0 +1,9 @@
+<script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
+<script src="js/idbkv-chunk-store.js"></script>
+<script>
+    let client = new WebTorrent()
+    client.add(
+        "https://webtorrent.io/torrents/tears-of-steel.torrent", {
+            store: IdbkvChunkStore
+        })
+</script>
