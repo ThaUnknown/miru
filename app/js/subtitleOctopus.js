@@ -88,7 +88,7 @@ function convertSub(subtitle) { // converts vtt subtitles to ssa ones
     subtitle.text.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, "\\h")
 }
 function postDownload(file) { // parse subtitles fully after a download is finished
-    if (file.name.endsWith(".mkv") || file.name.endsWith(".webm")) {\
+    if (file.name.endsWith(".mkv") || file.name.endsWith(".webm")) {
         let parser = new SubtitleParser(),
             subtitles = [],
             headers = []
