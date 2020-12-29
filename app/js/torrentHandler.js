@@ -1,16 +1,12 @@
 let client = new WebTorrent({ maxConns: settings.torrent6 }),
-    mystore = class extends IdbkvChunkStore {
+    IDBStore = class extends IdbkvChunkStore {
         constructor(len, opts) {
             super(len, { ...opts, batchInterval: 1000 });
         }
     }
 window.onbeforeunload = () => { //cleanup shit before unloading to free RAM/drive
-    if (!settings.torrent8) {
-        if (client.torrents[0]) client.torrents[0].store.destroy()
-    }
-    if (client.torrents[0]) client.torrents[0].destroy()
-    client.destroy()
     cleanupVideo()
+    cleanupTorrents()
     if (playerData.fonts) {
         playerData.fonts.forEach(file => {
             URL.revokeObjectURL(file)
@@ -56,7 +52,7 @@ const announceList = [
         }
     })
 
-//for debugging
+// for debugging
 function t(a) {
     switch (a) {
         case 1:
@@ -70,26 +66,44 @@ function t(a) {
             break;
     }
 }
+// offline storage initial load
+let offlineTorrents
+async function loadOfflineStorage() {
+    offlineTorrents = new Set(await indexedDB.databases());
+    [...offlineTorrents].forEach(object => client.add(object.name)) // adds all offline store torrents to the client
+}
+loadOfflineStorage()
+
+// add torrent for offline download
+function offlineDownload(torrent) {
+    client.add(torrent, { store: IDBStore }, function (torrent) {
+        offlineTorrents.add(torrent.infoHash)
+    })
+}
+
+// cleanup torrent and store
+function cleanupTorrents() {
+    client.torrents.filter(torrent => {
+        return !(offlineTorrents.has(torrent.infoHash)) // creates an array of all non-offline store torrents and removes them
+    }).forEach(torrent => {
+        torrent.destroy({ destroyStore: true })
+    })
+}
+
+// manually add trackers
 WEBTORRENT_ANNOUNCE = announceList.map(arr => { return arr[0] }).filter(url => { return url.indexOf('wss://') === 0 })
+
+
 let videoFiles
 async function addTorrent(magnet, media, episode) {
-    if (client.torrents.length) { // remove old torrents
-        if (settings.torrent8 && settings.torrent5) {
-            client.remove(client.torrents[0].infoHash)
-        } else {
-            if (client.torrents[0].store) client.torrents[0].store.destroy()
-            client.torrents[0].destroy()
-        }
-    }
     halfmoon.hideModal("tsearch")
     document.location.hash = "#player"
-    let store
     cleanupVideo()
+    cleanupTorrents()
     await sw
-    settings.torrent5 ? store = { store: mystore } : store = {}
-    client.add(magnet, store, function (torrent) {
+    client.add(magnet, settings.torrent5 ? { store: IDBStore } : {}, function (torrent) {
         torrent.on('noPeers', () => {
-            if (client.torrents[0].progress != 1) {
+            if (torrent.progress != 1) {
                 halfmoon.initStickyAlert({
                     content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
                     title: "Search Failed",
@@ -105,7 +119,7 @@ async function addTorrent(magnet, media, episode) {
                 torrent.files.forEach(file => file.deselect());
                 torrent.deselect(0, torrent.pieces.length - 1, false);
                 bpl.removeAttribute("disabled")
-                buildVideo(videoFiles.filter(file => parseInt(nameParseRegex.simple.exec(file.name)[4]) == parseInt(episode))[0], [media, episode])
+                buildVideo(videoFiles.filter(file => parseInt(nameParseRegex.simple.exec(file.name)[4]) == parseInt(episode || "1"))[0], [media, episode])
             } else {
                 bpl.setAttribute("disabled", "")//playlist button hiding
                 buildVideo(videoFiles[0], [media, episode])
@@ -117,8 +131,7 @@ async function addTorrent(magnet, media, episode) {
                 alertType: "alert-danger",
                 fillType: ""
             });
-            if (client.torrents[0].store) client.torrents[0].store.destroy()
-            client.torrents[0].destroy()
+            cleanupTorrents()
         }
 
     })

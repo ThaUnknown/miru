@@ -60,7 +60,7 @@ function renderSubs(trackNumber) {
         let options = {
             video: video,
             subContent: trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1),
-            lossyRender: settings.subtitle2,
+            lossyRender: true,
             fonts: playerData.fonts.length == 0 ? ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"] : playerData.fonts,
             workerUrl: 'js/subtitles-octopus-worker.js'
         };

@@ -7,60 +7,39 @@ for (let item of controls) {
     })
 }
 
-// event listeners
-volume.addEventListener("input", () => updateVolume());
-progress.addEventListener("input", dragBar);
-progress.addEventListener("mouseup", dragBarEnd);
-progress.addEventListener("touchend", dragBarEnd);
-progress.addEventListener("click", dragBarEnd);
-progress.addEventListener("mousedown", dragBarStart);
-ptoggle.addEventListener("click", btnpp);
-ptoggle.addEventListener("dblclick", btnfull);
-player.addEventListener("fullscreenchange", updateFullscreen)
-
+// video element shit
 video.addEventListener("playing", resetBuffer);
 video.addEventListener("canplay", resetBuffer);
 video.addEventListener("loadeddata", initThumbnail);
-video.addEventListener("loadedmetadata", updateDisplay);
 video.onloadedmetadata = () => {
     updateDisplay();
     (video.audioTracks && video.audioTracks.length > 1) ? baudio.removeAttribute("disabled") : baudio.setAttribute("disablePictureInPicture", "")
 }
 video.onended = () => {
     updateBar(video.currentTime / video.duration * 100)
-    if (settings.player6 && !parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) btnnext()
+    if (settings.player6 && parseInt(playerData.nowPlaying[1]) <= playerData.nowPlaying[0].episodes) btnnext()
 }
 video.addEventListener("waiting", isBuffering);
-video.addEventListener("timeupdate", updateDisplay);
-if ('setPositionState' in navigator.mediaSession)
-    video.addEventListener("timeupdate", updatePositionState);
-video.addEventListener("timeupdate", checkCompletion);
-if (!settings.player7 || !'pictureInPictureEnabled' in document) {
+video.ontimeupdate = () => {
+    updateDisplay();
+    checkCompletion();
+    if ('setPositionState' in navigator.mediaSession) updatePositionState();
+}
+
+if (!'pictureInPictureEnabled' in document) {
     video.setAttribute("disablePictureInPicture", "")
     bpip.setAttribute("disabled", "")
 } else {
     bpip.removeAttribute("disabled")
-    video.addEventListener("enterpictureinpicture", () => {
-        if (playerData.octopusInstance)
-            btnpip()
-    })
+    video.addEventListener("enterpictureinpicture", () => { if (playerData.octopusInstance) btnpip() })
 }
 
-let playerData = {
-}
+let playerData = {}
 
 function cleanupVideo() { // cleans up objects, attemps to clear as much video caching as possible
-    if (playerData.octopusInstance) {
-        playerData.octopusInstance.dispose()
-    }
-    if (playerData.fonts) {
-        playerData.fonts.forEach(file => {
-            URL.revokeObjectURL(file)
-        })
-    }
-    if (dl.href) {
-        URL.revokeObjectURL(dl.href)
-    }
+    if (playerData.octopusInstance) playerData.octopusInstance.dispose()
+    if (playerData.fonts) playerData.fonts.forEach(file => URL.revokeObjectURL(file))
+    if (dl.href) URL.revokeObjectURL(dl.href)
     dl.setAttribute("disabled", "")
     dl.onclick = undefined
     video.poster = ""
@@ -69,9 +48,7 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     video.src = "";
     video.load()
     if (typeof client !== 'undefined' && client.torrents[0] && client.torrents[0].files.length > 1) {
-        client.torrents[0].files.forEach(file => {
-            file.deselect()
-        });
+        client.torrents[0].files.forEach(file => file.deselect());
         client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
         // console.log(videoFiles.filter(file => `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src))
         // look for file and delete its store
@@ -85,11 +62,10 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     bcap.setAttribute("disabled", "")
     bnext.removeAttribute("disabled")
     navNowPlaying.classList.add("d-none")
-    if ('mediaSession' in navigator)
-        navigator.mediaSession.metadata = null
+    if ('mediaSession' in navigator) navigator.mediaSession.metadata = null
 }
 
-async function buildVideo(file, nowPlaying) { //creates a new video element and adds listeners... this needs to go
+async function buildVideo(file, nowPlaying) { // sets video source and creates a bunch of other media stuff
     video.src = `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}`
     video.load();
     playVideo();
@@ -111,14 +87,10 @@ async function buildVideo(file, nowPlaying) { //creates a new video element and 
                     fillType: ""
                 });
                 if (settings.player8) {
-                    if (!settings.torrent5) {
-                        finishThumbnails(file);
-                    }
+                    if (!settings.torrent5) finishThumbnails(file);
                     postDownload(file)
                 }
-                if (!settings.torrent5) {
-                    downloadFile(file)
-                }
+                if (!settings.torrent5) downloadFile(file)
             }
         }
         setTimeout(onProgress, 100)
@@ -170,19 +142,22 @@ async function buildVideo(file, nowPlaying) { //creates a new video element and 
 let onProgress
 
 // visibility loss pause
-document.addEventListener("visibilitychange", () => {
-    if (settings.player10 && !video.ended)
-        document.visibilityState === "hidden" ? video.pause() : playVideo();
+if (settings.player10) document.addEventListener("visibilitychange", () => {
+    if (!video.ended) document.visibilityState === "hidden" ? video.pause() : playVideo();
 })
 
 // progress seek bar and display
 
+progress.addEventListener("input", dragBar);
+progress.addEventListener("mouseup", dragBarEnd);
+progress.addEventListener("touchend", dragBarEnd);
+progress.addEventListener("click", dragBarEnd);
+progress.addEventListener("mousedown", dragBarStart);
+
 function updateDisplay() {
     if (!player.classList.contains('immersed') && document.location.hash == "#player") {
-        let progressPercent = (video.currentTime / video.duration * 100)
-        let bufferPercent = video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100
-        progress.style.setProperty("--buffer", bufferPercent + "%");
-        updateBar(progressPercent || progress.value / 10);
+        progress.style.setProperty("--buffer", video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100 + "%");
+        updateBar((video.currentTime / video.duration * 100) || progress.value / 10);
     }
     createThumbnail(video);
 }
@@ -190,8 +165,7 @@ function updateDisplay() {
 function dragBar() {
     updateBar(progress.value / 10)
     video.pause()
-    let bg = playerData.thumbnails[Math.floor(currentTime / 5)]
-    thumb.src = bg || " "
+    thumb.src = playerData.thumbnails[Math.floor(currentTime / 5)] || " "
 }
 
 function dragBarEnd() {
@@ -352,6 +326,7 @@ function toTS(sec) {
 }
 
 // play/pause button
+ptoggle.addEventListener("click", btnpp);
 async function playVideo() {
     try {
         await video.play();
@@ -395,7 +370,7 @@ function btnnext() {
     }, 200)
 }
 // volume shit
-
+volume.addEventListener("input", () => updateVolume());
 let oldlevel;
 
 function btnmute() {
@@ -472,10 +447,7 @@ async function btnpip() {
         }
     }
 }
-//miniplayer
-if (!settings.player4) {
-    player.style.setProperty("--miniplayer-display", "none");
-}
+
 // theathe mode
 
 function btntheatre() {
@@ -483,7 +455,8 @@ function btntheatre() {
 }
 
 // fullscreen
-
+player.addEventListener("fullscreenchange", updateFullscreen)
+ptoggle.addEventListener("dblclick", btnfull);
 function btnfull() {
     document.fullscreenElement ? document.exitFullscreen() : player.requestFullscreen();
 }
@@ -585,7 +558,7 @@ function selectAudio(id) {
 }
 // keybinds
 
-document.onkeydown = (a) => {
+document.onkeydown = a => {
     if (a.key == "F5") {
         a.preventDefault();
     }

@@ -143,7 +143,6 @@
                 data-title="Anime Watch List" id="navList">
                 <span class="material-icons font-size-20">list_alt</span>
             </a>
-            </a>
             <a href="#releases" class="navbar-brand pointer" data-toggle="tooltip" data-placement="bottom"
                 data-title="Latest Releases Feed" id="navNew">
                 <span class="material-icons font-size-20">fiber_new</span>
@@ -152,6 +151,13 @@
                 data-title="Currently Trending Anime" id="navTrending">
                 <span class="material-icons font-size-20">trending_up</span>
             </a>
+            <a href="#downloads" class="navbar-brand pointer" data-toggle="tooltip" data-placement="bottom"
+                data-title="Your Downloads" id="navDownloads">
+                <span class="material-icons font-size-20">get_app</span>
+            </a>
+            <a href="#home" class="navbar-brand pointer" data-toggle="tooltip" data-placement="bottom"
+                data-title="Home Page" id="navHome">
+                <span class="material-icons font-size-20">home</span>
             </a>
             <a class="navbar-brand pointer d-none" data-toggle="tooltip" data-placement="bottom"
                 data-title="Currently Playing Anime" id="navNowPlaying">
@@ -273,6 +279,10 @@
                 <div class="gallery releases h-full overflow-y-scroll">
                 </div>
             </section>
+            <section id="downloads" class="flex-column border-top">
+                <div class="gallery downloads h-full overflow-y-scroll">
+                </div>
+            </section>
             <section id="settingsTab" class="overflow-y-auto">
                 <div class="content d-flex flex-column align-items-start mt-15">
 
@@ -304,11 +314,6 @@
                                 </div>
                             </div>
                             <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Shows Miniplayer When Browsing">
-                                <input type="checkbox" id="player4" checked>
-                                <label for="player4">Miniplayer</label>
-                            </div>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
                                 data-title="Shows Small Thumbnail Images When Using The Seek Bar">
                                 <input type="checkbox" id="player5" checked>
                                 <label for="player5">Seek Bar Previews</label>
@@ -317,11 +322,6 @@
                                 data-title="Automatically Starts Playing Next Episode When A Video Ends">
                                 <input type="checkbox" id="player6">
                                 <label for="player6">Autoplay Next Episode</label>
-                            </div>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Enables Picture In Picture If Your Device Supports It">
-                                <input type="checkbox" id="player7" checked>
-                                <label for="player7">Picture In Picture</label>
                             </div>
                             <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Improves UX And Performance After A Download
                     Finishes, Small Spike In CPU And RAM Usage For A Few Seconds">
@@ -350,11 +350,6 @@
                                     <option value="SubsPlease">Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1</option>
                                     <option value="Erai-raws">Open Sans Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1</option>
                                 </datalist>
-                            </div>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Greatly Improves Performance, Might Cause Desync On Very Low-End Devices">
-                                <input type="checkbox" id="subtitle2" checked>
-                                <label for="subtitle2">Async Rendering</label>
                             </div>
                             <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top" data-title="Displays Subtitles In PiP And ChromeCast, Requires chrome://flags/#disable-accelerated-2d-canvas Set To
                     Disabled, Very CPU Intensive">
@@ -413,11 +408,6 @@
                     Bad For SSDs, Disables Downloading">
                                 <input type="checkbox" id="torrent5">
                                 <label for="torrent5">Drive Caching</label>
-                            </div>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Stores Torrent Data On Drive Across Sessions Allowing To Re-Play Torrents Without Re-Downloading Them, Uses A LOT Of Drive Space">
-                                <input type="checkbox" id="torrent8">
-                                <label for="torrent8">Persistent Storing</label>
                             </div>
                             <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
                                 data-title="Tries To Resolve Anime Names From Manually Added Torrent Names, Might Lead To Wrong Anime Being Detected">
