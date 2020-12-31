@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="auto-scaling-disabled">
+<html lang="en">
 
 <head>
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -280,7 +280,7 @@
                 </div>
             </section>
             <section id="downloads" class="flex-column border-top">
-                <div class="downloads h-full overflow-y-auto">
+                <div class="gallery downloads h-full overflow-y-auto">
                 </div>
             </section>
             <section id="settingsTab" class="overflow-y-auto">
@@ -424,17 +424,6 @@
                             <h1 class="content-title font-size-22">
                                 Other Settings
                             </h1>
-                            <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Change The UI Scale Of The App">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">UI Scale</span>
-                                </div>
-                                <input id="other1" type="number" value="75" min="1" max="1000"
-                                    class="form-control text-right">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">%</span>
-                                </div>
-                            </div>
                             <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
                                 data-title="Automatically Marks Episodes As Complete On AniList When You Finish Watching Them, Requires AniList Login">
                                 <input type="checkbox" id="other2">
@@ -471,7 +460,7 @@
     <script src="js/util.js"></script>
     <script src="js/animeHandler.js"></script>
     <script src="js/playerHandler.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/mathiasvr/webtorrent@dev/webtorrent.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
     <script src="js/rangeParser.js"></script>
     <script src="js/idbkv-chunk-store.js"></script>
     <script src="js/torrentHandler.js"></script>

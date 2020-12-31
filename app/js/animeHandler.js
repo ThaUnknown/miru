@@ -485,13 +485,13 @@ function cardCreator(media, name, episode) {
                 class="cover-img w-full h-full">
         </div>
         <div class="col-8 h-full card-grid">
-            <div class="px-15 py-10">
+            <div class="px-15 py-10 bg-very-dark">
                 <h5 class="m-0 text-capitalize font-weight-bold">${media.title.userPreferred}${episode ? " - " + episode : ""}</h5>
                 <p class="text-muted m-0 text-capitalize details">
                 ${(media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format.toLowerCase().replace(/_/g, " ")) : "") + "</span>"}
                 ${media.episodes ? "<span>" + media.episodes + " Episodes</span>" : media.duration ? "<span>" + media.duration + " Minutes</span>" : ""}
                 ${media.status ? "<span>" + media.status.toLowerCase().replace(/_/g, " ") + "</span>" : ""}
-                ${media.season || media.seasonYear ? "<span>" + (!!media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear || "") + "</span>" : ""}
+                ${media.season || media.seasonYear ? "<span>" + ((media.season.toLowerCase() || "") + " ") + (media.seasonYear || "") + "</span>" : ""}
                 </p>
             </div>
             <div class="overflow-y-auto px-15 py-10 bg-very-dark card-desc">

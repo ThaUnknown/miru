@@ -129,7 +129,6 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             playerData.subtitleStream = undefined
             renderSubs.call(null, playerData.selectedHeader)
         });
-        console.log("creating stream")
         file.createReadStream().pipe(parser)
     }
 }

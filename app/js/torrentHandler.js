@@ -69,27 +69,35 @@ function t(a) {
 // offline storage initial load
 let offlineTorrents
 async function loadOfflineStorage() {
-    offlineTorrents = new Set(await indexedDB.databases());
-    [...offlineTorrents].forEach(object => offlineDownload(object.name)) // adds all offline store torrents to the client
+    offlineTorrents = new Set([...await indexedDB.databases()].map(object => { return object.name }));
+    [...offlineTorrents].forEach(torrentID => offlineDownload(torrentID, true)) // adds all offline store torrents to the client
 }
 
 // add torrent for offline download
-function offlineDownload(torrent) {
-    client.add(torrent, { store: indexedDBStore }, function (torrent) {
+function offlineDownload(torrentID, skipVerify) {
+    let torrent = client.add(torrentID, {
+        store: indexedDBStore,
+        skipVerify: skipVerify
+    })
+    torrent.on("metadata", async () => {
         offlineTorrents.add(torrent.infoHash)
-        //TODO: make function that creates GUI for all torrents, for now, temp solution
-        let div = document.createElement("div")
-        div.onclick = () => {
-            cleanupVideo()
-            cleanupTorrents()
-            playTorrent(torrent, {})
+        let regexParse = nameParseRegex.simple.exec(torrent.name),
+            episode
+        if (!regexParse[2]) {
+            regexParse = nameParseRegex.fallback.exec(torrent.name)
+            episode = regexParse[3]
+        } else {
+            episode = regexParse[4]
         }
-        onProgress = () => {
-            div.innerHTML = `${torrent.name} %: ${torrent.progress}`
-            setTimeout(onProgress, 1000)
+
+        let media = await resolveName(regexParse[2], "SearchReleasesSingle"),
+            template = cardCreator(media, regexParse[2], episode)
+        template.onclick = async () => {
+            addTorrent(torrent, { media: media, episode: episode })
+            let res = await alRequest(media.id, "SearchIDSingle")
+            store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
         }
-        setTimeout(onProgress, 1000)
-        document.querySelector(".downloads").appendChild(div)
+        document.querySelector(".downloads").appendChild(template)
     })
 }
 loadOfflineStorage()
@@ -97,7 +105,7 @@ loadOfflineStorage()
 // cleanup torrent and store
 function cleanupTorrents() {
     client.torrents.filter(torrent => {
-        return !(offlineTorrents.has(torrent.infoHash)) // creates an array of all non-offline store torrents and removes them
+        return !offlineTorrents.has(torrent.infoHash) // creates an array of all non-offline store torrents and removes them
     }).forEach(torrent => {
         torrent.destroy({ destroyStore: true })
     })
