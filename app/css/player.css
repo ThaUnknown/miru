@@ -216,6 +216,7 @@
 .ctrl[disabled],
 #player:fullscreen #bpip,
 #player:fullscreen #btheatre,
+#player:fullscreen #bpl,
 #player:target>a,
 #progress+img[src=" "],
 video[src=""],

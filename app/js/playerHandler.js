@@ -60,6 +60,7 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     nowPlayingDisplay.textContent = ""
     bcap.setAttribute("disabled", "")
     bpl.setAttribute("disabled", "")
+    document.querySelector(".playlist").textContent = '';
     bnext.removeAttribute("disabled")
     navNowPlaying.classList.add("d-none")
     if ('mediaSession' in navigator) navigator.mediaSession.metadata = null
@@ -70,9 +71,33 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         torrent.files.forEach(file => file.deselect());
         torrent.deselect(0, torrent.pieces.length - 1, false);
         bpl.removeAttribute("disabled")
+
+        let frag = document.createDocumentFragment()
+        for(let file of videoFiles){
+            let regexParse = nameParseRegex.simple.exec(file.name),
+                episode
+            if (!regexParse[2]) {
+                regexParse = nameParseRegex.fallback.exec(file.name)
+                episode = regexParse[3]
+            } else {
+                episode = regexParse[4]
+            }
+
+            let media = await resolveName(regexParse[2], "SearchAnySingle"),
+                template = cardCreator(media, regexParse[2], episode)
+            template.onclick = async () => {
+                addTorrent(torrent, { media: media, episode: episode, file: file})
+                let res = await alRequest(media.id, "SearchIDSingle")
+                store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
+            }
+            console.log(template)
+            frag.appendChild(template)
+        }
+        document.querySelector(".playlist").appendChild(frag)
     }
+    console.log(opts.file)
     //play wanted episode from opts, or the 1st episode, or 1st file [batches: plays wanted episode, single: plays the only episode, manually added: plays first or only file]
-    let selectedFile = videoFiles.filter(file => parseInt(nameParseRegex.simple.exec(file.name)[4]) == opts.episode || 1)[0] || videoFiles[0]
+    let selectedFile = opts.file || videoFiles.filter(file => parseInt(nameParseRegex.simple.exec(file.name)[4]) == opts.episode || 1)[0] || videoFiles[0]
     video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
     video.load();
     playVideo();
@@ -527,21 +552,7 @@ function btncap() {
 //playlist
 
 function btnpl() {
-    let frag = document.createDocumentFragment()
-    videoFiles.forEach(file => {
-        let template = document.createElement("a")
-        template.classList.add("dropdown-item", "pointer", "text-capitalize", "text-truncate", "text-white")
-        let regexParse = nameParseRegex.fallback.exec(file.name)
-        template.innerHTML = playerData.nowPlaying[0] ? playerData.nowPlaying[0].title.userPreferred + " - " + parseInt(regexParse[3]) : regexParse[2] + parseInt(regexParse[3])
-        template.onclick = () => {
-            cleanupVideo()
-            buildVideo(file, [playerData.nowPlaying ? playerData.nowPlaying[0] : undefined, parseInt(regexParse[3])])
-            btnpl()
-        }
-        frag.appendChild(template)
-    })
-    playlistMenu.textContent = '';
-    playlistMenu.appendChild(frag)
+    window.location.hash = "#playlist"
 }
 
 // audio tracks

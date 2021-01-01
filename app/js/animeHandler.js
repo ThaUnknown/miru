@@ -265,7 +265,7 @@ query ($id: Int, $mediaId: Int){
 async function alEntry() {
     if (playerData.nowPlaying && playerData.nowPlaying[0] && localStorage.getItem("ALtoken")) {
         let res = await alRequest(playerData.nowPlaying[0].id, "SearchIDStatus")
-        if (res.data.MediaList.progress <= parseInt(playerData.nowPlaying[1])) {
+        if (res.errors[0].status === 404 || res.data.MediaList.progress <= parseInt(playerData.nowPlaying[1])) {
             let query = `
 mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
     SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
@@ -658,6 +658,7 @@ setInterval(() => {
 }, 30000);
 async function loadAnime() {
     await searchAnime()
+    loadOfflineStorage()
     releasesRss()
 }
 loadAnime()

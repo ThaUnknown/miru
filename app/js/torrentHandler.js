@@ -90,17 +90,18 @@ function offlineDownload(torrentID, skipVerify) {
             episode = regexParse[4]
         }
 
-        let media = await resolveName(regexParse[2], "SearchReleasesSingle"),
+        let media = await resolveName(regexParse[2], "SearchAnySingle"),
             template = cardCreator(media, regexParse[2], episode)
         template.onclick = async () => {
             addTorrent(torrent, { media: media, episode: episode })
-            let res = await alRequest(media.id, "SearchIDSingle")
-            store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
+            if (media) {
+                let res = await alRequest(media.id, "SearchIDSingle")
+                store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
+            }
         }
         document.querySelector(".downloads").appendChild(template)
     })
 }
-loadOfflineStorage()
 
 // cleanup torrent and store
 function cleanupTorrents() {
@@ -147,7 +148,7 @@ function addTorrent(torrentID, opts) {
     cleanupVideo()
     cleanupTorrents()
     if (client.get(torrentID)) {
-        playTorrent(client.get(torrentID), {})
+        playTorrent(client.get(torrentID), opts)
     } else {
         client.add(torrentID, settings.torrent5 ? { store: indexedDBStore } : {}, function (torrent) {
             playTorrent(torrent, opts)
