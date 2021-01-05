@@ -1,33 +1,40 @@
-async function loadHomePage() {
-    let homeLoadElements = [homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore],
-        homePreviewElements = [homeContinue, homeReleases, homePlanning, homeTrending],
+async function loadHomePage(reload) {
+    let homeLoadElements = [homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore],
+        homePreviewElements = [homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction],
+        browseGallery = document.querySelector(".browse"),
         homeLoadFunctions = {
             continue: async function (page) {
-                let gallery = document.querySelector(".browse")
-                if (!page) gallerySkeleton(gallery)
+                if (!page) gallerySkeleton(browseGallery)
                 let res = await alRequest({ method: "UserLists", status_in: "CURRENT", id: alID, page: page || 1 })
-                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: gallery, method: "continue", page: page || 1 })
+                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: "continue", page: page || 1 })
             },
             releases: async function () {
-                let gallery = document.querySelector(".browse")
                 gallerySkeleton(gallery)
                 let frag = await releasesRss()
-                gallery.textContent = ''
+                browseGallery.textContent = ''
                 browse.classList.remove("loading")
-                gallery.appendChild(frag)
-                opts.gallery.scrollTop = 0
+                browseGallery.appendChild(frag)
+                browseGallery.scrollTop = 0
             },
             planning: async function (page) {
-                let gallery = document.querySelector(".browse")
-                if (!page) gallerySkeleton(gallery)
+                if (!page) gallerySkeleton(browseGallery)
                 let res = await alRequest({ method: "UserLists", status_in: "PLANNING", id: alID, page: page || 1 })
-                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: document.querySelector(".browse"), method: "planning", page: page || 1 })
+                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), browseGallery, method: "planning", page: page || 1 })
             },
             trending: async function (page) {
-                let gallery = document.querySelector(".browse")
-                if (!page) gallerySkeleton(gallery)
+                if (!page) gallerySkeleton(browseGallery)
                 let res = await alRequest({ method: "Trending", id: alID, page: page || 1 })
-                galleryAppend({ media: res.data.Page.media, gallery: document.querySelector(".browse"), method: "trending", page: page || 1 })
+                galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: "trending", page: page || 1 })
+            },
+            romance: async function (page) {
+                if (!page) gallerySkeleton(browseGallery)
+                let res = await alRequest({ method: "Genre", genre: "Romance", page: page || 1 })
+                galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: "romance", page: page || 1 })
+            },
+            action: async function (page) {
+                if (!page) gallerySkeleton(browseGallery)
+                let res = await alRequest({ method: "Genre", genre: "Action", page: page || 1 })
+                galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: "action", page: page || 1 })
             }
         },
         homePreviewFunctions = {
@@ -47,24 +54,30 @@ async function loadHomePage() {
             trending: async function () {
                 let res = await alRequest({ method: "Trending", id: alID, perPage: 4 })
                 galleryAppend({ media: res.data.Page.media, gallery: homeTrending })
+            },
+            romance: async function () {
+                let res = await alRequest({ method: "Genre", genre: "Romance", perPage: 4 })
+                galleryAppend({ media: res.data.Page.media, gallery: homeRomance })
+            },
+            action: async function () {
+                let res = await alRequest({ method: "Genre", genre: "Action", perPage: 4 })
+                galleryAppend({ media: res.data.Page.media, gallery: homeAction })
             }
         },
         loadTimeout,
-        gallerySkeletonFrag = function(){
+        gallerySkeletonFrag = function (limit) {
             let frag = document.createDocumentFragment()
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < limit; i++) {
                 frag.appendChild(cardCreator())
             }
             return frag
         }
 
     function gallerySkeleton(gallery) {
-        gallery.textContent = ''
         browse.classList.add("loading")
-        gallery.appendChild(gallerySkeletonFrag())
+        gallery.appendChild(gallerySkeletonFrag(10))
     }
     function galleryAppend(opts) {
-        //TODO: add skeleton loading
         function appendFrag(media) {
             let frag = document.createDocumentFragment()
             media.forEach(media => {
@@ -74,27 +87,37 @@ async function loadHomePage() {
             })
             opts.gallery.appendChild(frag)
         }
-        if (opts.method) opts.gallery.addEventListener("scroll", function () {
+        if (opts.method) opts.gallery.onscroll = function () {
             if (this.scrollTop + this.clientHeight > this.scrollHeight - 800 && !loadTimeout) {
                 loadTimeout = setTimeout(function () { loadTimeout = undefined }, 1000)
                 homeLoadFunctions[opts.method](opts.page + 1)
             }
-        })
+        }
+
         if (!opts.page || opts.page == 1) {
             opts.gallery.textContent = '';
-            browse.classList.remove("loading")
         }
         appendFrag(opts.media)
-        opts.gallery.scrollTop = 0
+        if (opts.page == 1) {
+            opts.gallery.scrollTop = 0
+            browse.classList.remove("loading")
+        }
     }
 
+    if (reload) for (let item of homePreviewElements) {
+        item.textContent = ''
+        item.appendChild(gallerySkeletonFrag(4))
+    }
     for (let item of homePreviewElements) {
         homePreviewFunctions[item.dataset.function]()
     }
     for (let item of homeLoadElements) {
-        item.addEventListener("click", function () {
+        item.onclick = function () {
             homeLoadFunctions[this.dataset.function]()
-        })
+        }
     }
-
+}
+navHome.onclick = () => {
+    loadHomePage(true)
+    document.querySelector(".browse").textContent = ''
 }

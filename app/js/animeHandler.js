@@ -204,6 +204,16 @@ query ($id: Int, $mediaId: Int){
         repeat
     }
 }`
+    } else if (opts.method == "Genre") {
+        variables.genre = opts.genre
+        query = `
+query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $genre: String) {
+    Page (page: $page, perPage: $perPage) {
+        media(type: $type, sort: $sort, genre: $genre) {
+            ${queryObjects}
+        }
+    }
+}`
     }
     options.body = JSON.stringify({
         query: query,
