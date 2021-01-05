@@ -62,30 +62,7 @@ function searchBox() { // make searchbox behave nicely
     document.location.hash = "#browse"
 }
 //events
-navNew.onclick = () => { releasesRss() }
-navTrending.onclick = () => { searchAnime() }
 navNowPlaying.onclick = () => { viewAnime(playerData.nowPlaying[0]) }
-navList.onclick = async () => { //user watchlist
-    let browse = document.querySelector(".browse")
-    browse.textContent = '';
-    browse.appendChild(skeletonCard)
-    let res = await alRequest({ method: "UserLists", id: alID }),
-        entries = res.data.MediaListCollection.lists[0].entries.concat(res.data.MediaListCollection.lists[1].entries),
-        frag = document.createDocumentFragment()
-    try {
-        entries.forEach(media => {
-            let template = cardCreator(media.media)
-            template.onclick = () => {
-                viewAnime(media.media)
-            }
-            frag.appendChild(template)
-        })
-    } catch (e) {
-        console.error(e)
-    }
-    browse.textContent = '';
-    browse.appendChild(frag)
-}
 //AL lookup logic
 async function alRequest(opts) {
     let query,
@@ -358,7 +335,7 @@ function viewAnime(media) {
             template.innerHTML = `
             <div class="row h-full">
             <div class="col-4">
-                <img src="${edge.node.coverImage.medium}"
+                <img loading="lazy" src="${edge.node.coverImage.medium}"
                     class="cover-img w-full h-full">
             </div>
             <div class="col-8 h-full card-grid">
@@ -405,7 +382,7 @@ function viewAnime(media) {
             let temp = document.createElement("div")
             temp.classList.add("position-relative", "w-250", "rounded", "mr-10", "overflow-hidden", "pointer")
             temp.innerHTML = `
-            <img src="${episode.thumbnail}" class="w-full h-full">
+            <img loading="lazy" src="${episode.thumbnail}" class="w-full h-full">
             <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">${episode.title}</div>`
             temp.onclick = () => { nyaaSearch(media, episodeRx.exec(episode.title)[1]); halfmoon.toggleModal("view") }
             frag.appendChild(temp)
@@ -456,7 +433,7 @@ function cardCreator(media, name, episode) {
         template.innerHTML = `
     <div class="row h-full" style="--color:${media.coverImage.color || "#1890ff"};">
         <div class="col-4">
-            <img src="${media.coverImage.extraLarge || ""}"
+            <img loading="lazy" src="${media.coverImage.extraLarge || ""}"
                 class="cover-img w-full h-full">
         </div>
         <div class="col-8 h-full card-grid">
@@ -481,12 +458,14 @@ function cardCreator(media, name, episode) {
     } else {
         template.innerHTML = `
         <div class="row h-full">
-            <div class="col-4 w-full bg-very-dark skeloader">
+            <div class="col-4 skeloader">
             </div>
-            <div class="col-8 h-full card-grid skeloader">
-                <div class="px-15 py-10">
-                    <h5 class="m-0 text-capitalize font-weight-bold">${name ? name + " - " + episode : ""}</h5>
-                </div>
+            <div class="col-8 bg-very-dark px-15 py-10">
+                ${name ? `<h5 class="m-0 text-capitalize font-weight-bold pb-10">${name + " - " + episode}</h5>` : 
+                `<p class="skeloader w-300 h-25 rounded bg-dark">`}
+                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                </p>
             </div>
         </div>
         `
@@ -523,8 +502,6 @@ async function nyaaRss(media, episode) {
     let frag = document.createDocumentFragment(),
         ep = (media.status == "FINISHED" && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"batch"|"Batch"|"complete"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`,
         url = new URL(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(")|(")})${ep}"${settings.torrent1}"`)
-    // console.log(`"${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join("\"|\"")}"${ep}"${settings.torrent1}"`)
-    // console.log(`https://miru.kirdow.com/request/?url=https://nyaa.si/?page=rss$c=1_2$f=${settings.torrent3 == true ? 2 : 0}$s=seeders$o=desc$q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(")|(")})${ep}"${settings.torrent1}"`)
     res = await fetch(url)
     await res.text().then((xmlTxt) => {
         try {
@@ -576,9 +553,8 @@ const nameParseRegex = {
 let store = JSON.parse(localStorage.getItem("store")) || {},
     lastResult
 
-async function releasesRss() {
+async function releasesRss(limit) {
     let frag = document.createDocumentFragment(),
-        releases = document.querySelector(".releases"),
         url
     if (Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0]) {
         //add my own cors proxy for erai
@@ -591,12 +567,10 @@ async function releasesRss() {
         try {
             let doc = DOMPARSER(xmlTxt, "text/xml")
             if (lastResult != doc) {
-                releases.textContent = '';
-                releases.appendChild(skeletonCard)
                 lastResult = doc
                 let items = doc.querySelectorAll("item")
-                for (let item of items) {
-                    let i = item.querySelector.bind(item),
+                for (let l = 0; l < (limit || items.length); l++) {
+                    let i = items[l].querySelector.bind(items[l]),
                         regexParse = nameParseRegex.simple.exec(i("title").textContent),
                         episode
                     if (!regexParse[2]) {
@@ -615,43 +589,40 @@ async function releasesRss() {
                     }
                     frag.appendChild(template)
                 }
-                releases.textContent = '';
-                releases.appendChild(frag)
             }
         } catch (e) {
             console.error(e)
         }
     })
-
     localStorage.setItem("store", JSON.stringify(store))
+    return frag
 }
 //latest releases auto-update
-setInterval(() => {
-    if (document.location.hash == "#releases") {
-        releasesRss()
-    }
-}, 30000);
+// setInterval(() => {
+//     if (document.location.hash == "#releases") {
+//         releasesRss()
+//     }
+// }, 30000);
+let alID // login icon 
 async function loadAnime() {
     await searchAnime()
     loadOfflineStorage()
-    releasesRss()
+    if (localStorage.getItem("ALtoken")) {
+        alRequest({ method: "Viewer" }).then(result => {
+            oauth.removeAttribute("href")
+            oauth.setAttribute("data-title", `${result.data.Viewer.name}\nClick To Logout`)
+            oauth.innerHTML = `<img src="${result.data.Viewer.avatar.medium}" class="m-0">`
+            oauth.onclick = () => {
+                localStorage.removeItem("ALtoken");
+                location.reload()
+            }
+            alID = result.data.Viewer.id
+            loadHomePage()
+        })
+    } else {
+        loadHomePage()
+        home.classList.add("noauth")
+    }
+
 }
 loadAnime()
-
-let alID // login icon 
-if (localStorage.getItem("ALtoken")) {
-    alRequest({ method: "Viewer" }).then(result => {
-        oauth.removeAttribute("href")
-        oauth.setAttribute("data-title", `${result.data.Viewer.name}\nClick To Logout`)
-        oauth.innerHTML = `<img src="${result.data.Viewer.avatar.medium}" class="m-0">`
-        home.classList.add("auth")
-        oauth.onclick = () => {
-            localStorage.removeItem("ALtoken");
-            location.reload()
-        }
-        alID = result.data.Viewer.id
-        loadHomePage()
-    })
-} else {
-    loadHomePage()
-}
