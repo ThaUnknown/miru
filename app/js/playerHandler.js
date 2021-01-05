@@ -68,12 +68,13 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
 
 async function buildVideo(torrent, opts) { // sets video source and creates a bunch of other media stuff
     if (videoFiles.length > 1) {
-        torrent.files.forEach(file => file.deselect());
-        torrent.deselect(0, torrent.pieces.length - 1, false);
+        if (!torrent.store.store._idbkvStore) {
+            torrent.files.forEach(file => file.deselect());
+            torrent.deselect(0, torrent.pieces.length - 1, false);
+        }
         bpl.removeAttribute("disabled")
-
         let frag = document.createDocumentFragment()
-        for(let file of videoFiles){
+        for (let file of videoFiles) {
             let regexParse = nameParseRegex.simple.exec(file.name),
                 episode
             if (!regexParse[2]) {
@@ -86,8 +87,8 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
             let media = await resolveName(regexParse[2], "SearchAnySingle"),
                 template = cardCreator(media, regexParse[2], episode)
             template.onclick = async () => {
-                addTorrent(torrent, { media: media, episode: episode, file: file})
-                let res = await alRequest(media.id, "SearchIDSingle")
+                addTorrent(torrent, { media: media, episode: episode, file: file })
+                let res = await alRequest(media.id, "SearchIDSingle", {})
                 store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
             }
             console.log(template)

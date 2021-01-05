@@ -1,3 +1,12 @@
+:root{
+    --dm-link-text-color: var(--dm-muted-text-color)!important;
+    --dm-link-text-color-hover: var(--dm-text-color)!important;
+    --base-html-font-size: 50%;
+    --base-html-font-size-1600: 62.5%;
+    --base-html-font-size-1920: 70%;
+    --tooltip-width: 17rem;
+}
+
 body {
     overscroll-behavior: none
 }
@@ -55,15 +64,40 @@ input:invalid {
     transform: scale(1.05)
 }
 
+#home .gallery {
+    padding: .7rem 4rem;
+    grid-template-columns: repeat(5, 50rem);
+    justify-content: unset;
+}
+
+#home .gallery:after {
+    content: "";
+    position: absolute;
+    right: 0;
+    height: 100%;
+    width: 10rem;
+    background: linear-gradient(270deg, rgba(37, 40, 44, 1) 0%, rgba(37, 40, 44, 1) 15%, rgba(37, 40, 44, .45) 70%, rgba(37, 40, 44, 0) 100%);
+}
+
+#home.auth #homeContinue,
+#home.auth #homePlanning {
+    display: grid !important;
+}
+#home.auth #homeContinueMore,
+#home.auth #homePlanningMore {
+    display: flex !important;
+}
+
 .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, 50rem);
     grid-auto-rows: 27rem;
     justify-content: center;
     grid-gap: 2rem;
-    padding: 2rem
+    padding: 4rem
 }
-.gallery-sm{
+
+.gallery-sm {
     grid-template-columns: repeat(auto-fill, 30rem);
     grid-auto-rows: 16.2rem;
     grid-gap: .6rem;
@@ -174,7 +208,8 @@ nav {
     overflow: hidden;
 }
 
-#viewDetails, #view .card {
+#viewDetails,
+#view .card {
     background-color: var(--dm-button-bg-color) !important;
     background-image: var(--dm-button-bg-image) !important;
     box-shadow: var(--dm-button-box-shadow) !important;

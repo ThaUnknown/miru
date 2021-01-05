@@ -11,23 +11,9 @@ function subStream(stream) { // subtitle parsing with seeking support
             playerData.headers = []
             pTracks.forEach(track => {
                 if (track.type != "ass") { // overwrite webvtt header with custom one
-                    track.header = `[Script Info]
-Title: English
-ScriptType: v4.00+
-Collisions: Normal
-PlayDepth: 0
-WrapStyle: 0
-ScaledBorderAndShadow: yes
-PlayResX: 640
-PlayResY: 360
-
-[V4+ Styles]
+                    track.header = `[V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Default,${Object.values(subtitle1list.options).filter(item => item.value == settings.subtitle1)[0].innerText}
-
-[Events]
-Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-
 `
                 }
                 playerData.headers[track.number] = track
@@ -56,13 +42,13 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 let octopusTimeout
 function renderSubs(trackNumber) {
     if (!playerData.octopusInstance) {
-        if (!playerData.headers[trackNumber].type == "webvtt") header = playerData.headers[trackNumber].header.slice(0, -1)
         let options = {
             video: video,
             subContent: trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1),
             lossyRender: true,
             fonts: playerData.fonts.length == 0 ? ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"] : playerData.fonts,
-            workerUrl: 'js/subtitles-octopus-worker.js'
+            workerUrl: 'js/subtitles-octopus-worker.js',
+            debug: true
         };
         playerData.octopusInstance = new SubtitlesOctopus(options);
     } else {
@@ -95,23 +81,9 @@ function postDownload(file) { // parse subtitles fully after a download is finis
         parser.once('tracks', pTracks => {
             pTracks.forEach(track => {
                 if (track.type != "ass") { // overwrite webvtt header with custom one
-                    track.header = `[Script Info]
-Title: English
-ScriptType: v4.00+
-Collisions: Normal
-PlayDepth: 0
-WrapStyle: 0
-ScaledBorderAndShadow: yes
-PlayResX: 640
-PlayResY: 360
-
-[V4+ Styles]
+                    track.header = `[V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Default,${Object.values(subtitle1list.options).filter(item => item.value == settings.subtitle1)[0].innerText}
-
-[Events]
-Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-
 `
                 }
                 headers[track.number] = track

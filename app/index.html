@@ -270,6 +270,34 @@
                 <div class="gallery browse h-full overflow-y-auto">
                 </div>
             </section>
+            <section id="home" class="flex-column border-top">
+                <div class="h-full overflow-y-auto">
+                    <a class="d-none p-20 pb-5 pt-10 align-items-end pointer text-decoration-none" id="homeContinueMore" data-function="continue" href="#browse">
+                        <div class="pl-10 font-size-24 font-weight-semi-bold">Continue Watching</div>
+                        <div class="pr-10 ml-auto font-size-16">View More</div>
+                    </a>
+                    <div class="gallery d-none w-full overflow-x-hidden position-relative" id="homeContinue" data-function="continue">
+                    </div>
+                    <a class="d-flex p-20 pb-5 pt-10 align-items-end pointer text-decoration-none" id="homeReleasesMore" data-function="releases" href="#browse">
+                        <div class="pl-10 font-size-24 font-weight-semi-bold">New Releases</div>
+                        <div class="pr-10 ml-auto font-size-16">View More</div>
+                    </a>
+                    <div class="gallery w-full overflow-x-hidden position-relative" id="homeReleases" data-function="releases">
+                    </div>
+                    <a class="d-none p-20 pb-5 pt-10 align-items-end pointer text-decoration-none" id="homePlanningMore" data-function="planning" href="#browse">
+                        <div class="pl-10 font-size-24 font-weight-semi-bold">Your List</div>
+                        <div class="pr-10 ml-auto font-size-16">View More</div>
+                    </a>
+                    <div class="gallery d-none w-full overflow-x-hidden position-relative" id="homePlanning" data-function="planning">
+                    </div>
+                    <a class="d-flex p-20 pb-5 pt-10 align-items-end pointer text-decoration-none" id="homeTrendingMore" data-function="trending" href="#browse">
+                        <div class="pl-10 font-size-24 font-weight-semi-bold">Trending Now</div>
+                        <div class="pr-10 ml-auto font-size-16">View More</div>
+                    </a>
+                    <div class="gallery w-full overflow-x-hidden position-relative" id="homeTrending" data-function="trending">
+                    </div>
+                </div>
+            </section>
             <section id="releases" class="flex-column border-top">
                 <div class="gallery releases h-full overflow-y-auto">
                 </div>
@@ -373,7 +401,7 @@
                                 <select class="form-control" id="torrent1">
                                     <option value="1080" selected>1080p</option>
                                     <option value="720">720p</option>
-                                    <option value="480">480p</option>
+                                    <option value='480"||"540'>SD</option>
                                 </select>
                             </div>
                             <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
@@ -459,15 +487,16 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.1/js/halfmoon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@latest/dist/matroska-subtitles.min.js"></script>
     <script src="js/settingsHandler.js"></script>
     <script src="js/util.js"></script>
     <script src="js/animeHandler.js"></script>
+    <script src="js/interface.js"></script>
     <script src="js/playerHandler.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
     <script src="js/rangeParser.js"></script>
     <script src="js/idbkv-chunk-store.js"></script>
     <script src="js/torrentHandler.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@latest/dist/matroska-subtitles.min.js"></script>
     <script src="js/subtitles-octopus.js"></script>
     <script src="js/subtitleOctopus.js"></script>
 </body>

@@ -50,7 +50,7 @@ function traceAnime(image, type) { //WAIT lookup logic
     fetch(url, options).then((res) => res.json())
         .then(async (result) => {
             if (result.docs[0].similarity >= 0.85) {
-                let res = await alRequest(result.docs[0].anilist_id, "SearchIDSingle")
+                let res = await alRequest({ method: "SearchIDSingle", id: result.docs[0].anilist_id })
                 viewAnime(res.data.Media)
             }
         });
@@ -69,7 +69,7 @@ navList.onclick = async () => { //user watchlist
     let browse = document.querySelector(".browse")
     browse.textContent = '';
     browse.appendChild(skeletonCard)
-    let res = await alRequest(alID, "UserLists"),
+    let res = await alRequest({ method: "UserLists", id: alID }),
         entries = res.data.MediaListCollection.lists[0].entries.concat(res.data.MediaListCollection.lists[1].entries),
         frag = document.createDocumentFragment()
     try {
@@ -87,13 +87,16 @@ navList.onclick = async () => { //user watchlist
     browse.appendChild(frag)
 }
 //AL lookup logic
-async function alRequest(searchName, method) {
+async function alRequest(opts) {
     let query,
         variables = {
             type: "ANIME",
             sort: "TRENDING_DESC",
-            page: 1,
-            perPage: 50
+            page: opts.page || 1,
+            perPage: opts.perPage || 30,
+            status_in: opts.status_in || "[CURRENT,PLANNING]",
+            chunk: opts.chunk || 1,
+            perchunk: opts.perChunk || 30
         },
         options = {
             method: 'POST',
@@ -160,10 +163,9 @@ relations {
         }
     }
 }`
-    if (localStorage.getItem("ALtoken")) {
-        options.headers['Authorization'] = localStorage.getItem("ALtoken")
-    }
-    if (method == "Trending") {
+    if (opts.status) variables.status = opts.status
+    if (localStorage.getItem("ALtoken")) options.headers['Authorization'] = localStorage.getItem("ALtoken")
+    if (opts.method == "Trending") {
         search.placeholder = "Search"
         query = `
 query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
@@ -173,50 +175,25 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
         }
     }
 }`
-    } else if (method == "SearchReleasesSingle") {
-        variables.search = searchName
-        variables.perPage = 1
-        variables.status = "RELEASING"
+    } else if (opts.method == "SearchName") {
+        variables.search = opts.name
         query = `
-query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType, $status: MediaStatus) {
-    Page (page: $page) {
-        media (type: $type, search: $search, sort: $sort, status: $status) {
-            ${queryObjects}
-        }
-    }
-}`
-    } else if (method == "SearchName") {
-        variables.search = searchName
-        variables.sort = "TRENDING_DESC"
-        query = `
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String) {
+query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus) {
     Page (page: $page, perPage: $perPage) {
-        media(type: $type, search: $search, sort: $sort) {
+        media(type: $type, search: $search, sort: $sort, status: $status) {
             ${queryObjects}
         }
     }
 }`
-    } else if (method == "SearchAnySingle") {
-        variables.search = searchName
-        variables.perPage = 1
-        variables.sort = "TRENDING_DESC"
-        query = `
-query ($page: Int, $sort: [MediaSort], $search: String, $type: MediaType) {
-    Page (page: $page) {
-        media (type: $type, search: $search, sort: $sort) {
-            ${queryObjects}
-        }
-    }
-}`
-    } else if (method == "SearchIDSingle") {
-        variables.id = searchName
+    } else if (opts.method == "SearchIDSingle") {
+        variables.id = opts.id
         query = `
 query ($id: Int, $type: MediaType) { 
     Media (id: $id, type: $type){
         ${queryObjects}
     }
 }`
-    } else if (method == "Viewer") {
+    } else if (opts.method == "Viewer") {
         query = `
 query {
     Viewer {
@@ -227,23 +204,21 @@ query {
         id
     }
 }`
-    } else if (method == "UserLists") {
-        variables.id = searchName
+    } else if (opts.method == "UserLists") {
+        variables.id = opts.id
         query = `
-query ($id: Int, $type: MediaType){
-    MediaListCollection (userId: $id, type: $type, forceSingleCompletedList: true, status_in: [CURRENT,PLANNING]) {
-        lists {
-            entries {
-                media {
-                    ${queryObjects}
-                }
+query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [MediaListStatus]){
+    Page (page: $page, perPage: $perPage) {
+        mediaList (userId: $id, type: $type, status_in: $status_in) {
+            media {
+                ${queryObjects}
             }
         }
     }
 }`
-    } else if (method == "SearchIDStatus") {
+    } else if (opts.method == "SearchIDStatus") {
         variables.id = alID
-        variables.mediaId = searchName
+        variables.mediaId = opts.id
         query = `
 query ($id: Int, $mediaId: Int){
     MediaList(userId: $id, mediaId: $mediaId) {
@@ -264,8 +239,8 @@ query ($id: Int, $mediaId: Int){
 }
 async function alEntry() {
     if (playerData.nowPlaying && playerData.nowPlaying[0] && localStorage.getItem("ALtoken")) {
-        let res = await alRequest(playerData.nowPlaying[0].id, "SearchIDStatus")
-        if (res.errors[0].status === 404 || res.data.MediaList.progress <= parseInt(playerData.nowPlaying[1])) {
+        let res = await alRequest({ method: "SearchIDStatus", id: playerData.nowPlaying[0].id })
+        if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= parseInt(playerData.nowPlaying[1])) {
             let query = `
 mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
     SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
@@ -309,7 +284,7 @@ async function searchAnime(a) { //search bar functionality
         browse = document.querySelector(".browse")
     browse.textContent = '';
     browse.appendChild(skeletonCard)
-    a ? alResponse = await alRequest(a, "SearchName") : alResponse = await alRequest(a, "Trending")
+    a ? alResponse = await alRequest({ method: "SearchName", name: a }) : alResponse = await alRequest({ method: "Trending" })
     try {
         alResponse.data.Page.media.forEach(media => {
             let template = cardCreator(media)
@@ -404,7 +379,7 @@ function viewAnime(media) {
         </div>`
             template.onclick = async () => {
                 halfmoon.hideModal("view")
-                let res = await alRequest(edge.node.id, "SearchIDSingle")
+                let res = await alRequest({ method: "SearchIDSingle", id: edge.node.id })
                 viewAnime(res.data.Media)
             }
             frag.appendChild(template)
@@ -580,14 +555,14 @@ async function nyaaRss(media, episode) {
     return frag
 }
 //resolve anime name based on torrent name and store it
-async function resolveName(name, method) {
+async function resolveName(name, method, release) {
     if (!store.hasOwnProperty(name) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(name) && ((store[name] = media) && true)))) {
-        let res = await alRequest(name, method)
+        let res = await alRequest({ perPage: 1, name: name, method: method })
         if (!res.data.Page.media[0]) {
-            res = await alRequest(name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), method)
+            res = await alRequest({ name: name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), method: method, perPage: 1 })
         }
-        if (settings.torrent7 && !res.data.Page.media[0] && method == "SearchReleasesSingle") {
-            res = await alRequest(name, "SearchAnySingle")
+        if (settings.torrent7 && !res.data.Page.media[0] && release) {
+            res = await alRequest({ name: name, method: "SearchName", perPage: 1, status: "RELEASING" })
         }
         store[name] = res.data.Page.media[0]
     }
@@ -631,11 +606,11 @@ async function releasesRss() {
                         episode = regexParse[4]
                     }
 
-                    let media = await resolveName(regexParse[2], "SearchReleasesSingle"),
+                    let media = await resolveName(regexParse[2], "SearchName", true),
                         template = cardCreator(media, regexParse[2], episode)
                     template.onclick = async () => {
-                        addTorrent(i('link').textContent, {media: media, episode: episode})
-                        let res = await alRequest(media.id, "SearchIDSingle")
+                        addTorrent(i('link').textContent, { media: media, episode: episode })
+                        let res = await alRequest({ id: media.id, method: "SearchIDSingle" })
                         store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
                     }
                     frag.appendChild(template)
@@ -665,14 +640,18 @@ loadAnime()
 
 let alID // login icon 
 if (localStorage.getItem("ALtoken")) {
-    alRequest(undefined, "Viewer").then(result => {
+    alRequest({ method: "Viewer" }).then(result => {
         oauth.removeAttribute("href")
         oauth.setAttribute("data-title", `${result.data.Viewer.name}\nClick To Logout`)
         oauth.innerHTML = `<img src="${result.data.Viewer.avatar.medium}" class="m-0">`
+        home.classList.add("auth")
         oauth.onclick = () => {
             localStorage.removeItem("ALtoken");
             location.reload()
         }
         alID = result.data.Viewer.id
+        loadHomePage()
     })
+} else {
+    loadHomePage()
 }

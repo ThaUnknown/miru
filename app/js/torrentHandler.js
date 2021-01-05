@@ -95,7 +95,7 @@ function offlineDownload(torrentID, skipVerify) {
         template.onclick = async () => {
             addTorrent(torrent, { media: media, episode: episode })
             if (media) {
-                let res = await alRequest(media.id, "SearchIDSingle")
+                let res = await alRequest(media.id, "SearchIDSingle", {})
                 store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
             }
         }

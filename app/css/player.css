@@ -9,15 +9,6 @@
     color: #b6b6b6;
     --ts: "";
     --miniplayer-display: flex;
-    --tooltip-width: 17rem;
-    --base-html-font-size: 50%;
-    --base-html-font-size-1600: 62.5%;
-    --base-html-font-size-1920: 75%;
-}
-
-/* NAVBAR */
-.page-wrapper.with-sidebar[data-sidebar-hidden]>.sidebar {
-    left: calc(-1 *var(--sidebar-width));
 }
 
 /*PLAYER*/
