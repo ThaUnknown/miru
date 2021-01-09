@@ -57,10 +57,10 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
         subtitles: [],
         fonts: []
     }
-    nowPlayingDisplay.textContent = ""
+    nowPlayingDisplay.innerHTML = ""
     bcap.setAttribute("disabled", "")
     bpl.setAttribute("disabled", "")
-    document.querySelector(".playlist").textContent = '';
+    document.querySelector(".playlist").innerHTML = '';
     bnext.removeAttribute("disabled")
     navNowPlaying.classList.add("d-none")
     if ('mediaSession' in navigator) navigator.mediaSession.metadata = null
@@ -128,9 +128,9 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         if (document.location.hash == "#player") {
             if (!player.classList.contains('immersed')) {
                 player.style.setProperty("--download", selectedFile.progress * 100 + "%");
-                peers.textContent = torrent.numPeers
-                downSpeed.textContent = prettyBytes(torrent.downloadSpeed) + '/s'
-                upSpeed.textContent = prettyBytes(torrent.uploadSpeed) + '/s'
+                peers.innerHTML = torrent.numPeers
+                downSpeed.innerHTML = prettyBytes(torrent.downloadSpeed) + '/s'
+                upSpeed.innerHTML = prettyBytes(torrent.uploadSpeed) + '/s'
             }
         }
         setTimeout(playerData.onProgress, 100)
@@ -160,7 +160,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
                 type: 'image/jpg'
             }]
         });
-        nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])}`
+        nowPlayingDisplay.innerHTML = `EP ${parseInt(playerData.nowPlaying[1])}`
         if (parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes)
             bnext.setAttribute("disabled", "")
         if (playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1])) {
@@ -172,7 +172,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
                 sizes: '256x256',
                 type: 'image/jpg'
             }]
-            nowPlayingDisplay.textContent = `EP ${parseInt(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+            nowPlayingDisplay.innerHTML = `EP ${parseInt(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
         }
     }
     if ('mediaSession' in navigator && mediaMetadata)
@@ -327,16 +327,19 @@ function displayBuffer() {
 // immerse timeout
 let immerseTime;
 
-document.onmousemove = resetTimer;
-document.onkeypress = resetTimer;
+player.onmousemove = resetTimer;
+player.onkeypress = resetTimer;
 function immersePlayer() {
     player.classList.add('immersed')
+    immerseTime = undefined
 }
 
 function resetTimer() {
-    clearTimeout(immerseTime);
-    player.classList.remove('immersed')
-    immerseTime = setTimeout(immersePlayer, parseInt(settings.player2) * 1000)
+    if (!immerseTime) {
+        clearTimeout(immerseTime);
+        player.classList.remove('immersed')
+        immerseTime = setTimeout(immersePlayer, parseInt(settings.player2) * 1000)
+    }
 }
 
 function toTS(sec) {
@@ -547,7 +550,7 @@ function btncap() {
             frag.appendChild(template)
         }
     }
-    subMenu.textContent = '';
+    subMenu.innerHTML = '';
     subMenu.appendChild(frag)
 }
 //playlist
@@ -571,7 +574,7 @@ function btnaudio() {
         frag.appendChild(template)
     }
 
-    audioTracksMenu.textContent = '';
+    audioTracksMenu.innerHTML = '';
     audioTracksMenu.appendChild(frag)
 }
 function selectAudio(id) {

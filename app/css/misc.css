@@ -165,7 +165,7 @@ section:target {
 
 @keyframes load {
     from {
-        left: -150px;
+        left: -100%;
     }
 
     to {
@@ -181,9 +181,8 @@ section:target {
 .skeloader::before {
     content: '';
     position: absolute;
-    left: -150px;
     height: 100%;
-    width: 150px;
+    width: 15rem;
     background: linear-gradient(to right, transparent 0%, #25282c 50%, transparent 100%);
     animation: load 1s infinite cubic-bezier(0.4, 0.0, 0.2, 1);
 }

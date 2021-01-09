@@ -19,6 +19,7 @@ window.onbeforeunload = () => { //cleanup shit before unloading to free RAM/driv
 
 const announceList = [
     ['wss://tracker.openwebtorrent.com']
+    // ['wss://tracker.novage.com.ua/']
     // ['wss://tracker.btorrent.xyz'] // for now disabled cuz broken
     // ['wss://tracker.webtorrent.io'],
     // ['wss://tracker.fastcast.nz'],

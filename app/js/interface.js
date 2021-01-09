@@ -9,17 +9,18 @@ async function loadHomePage(reload) {
                 galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: "continue", page: page || 1 })
             },
             releases: async function () {
-                gallerySkeleton(gallery)
+                gallerySkeleton(browseGallery)
                 let frag = await releasesRss()
-                browseGallery.textContent = ''
+                browseGallery.innerHTML = ''
                 browse.classList.remove("loading")
                 browseGallery.appendChild(frag)
                 browseGallery.scrollTop = 0
+                browseGallery.onscroll = undefined
             },
             planning: async function (page) {
                 if (!page) gallerySkeleton(browseGallery)
                 let res = await alRequest({ method: "UserLists", status_in: "PLANNING", id: alID, page: page || 1 })
-                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), browseGallery, method: "planning", page: page || 1 })
+                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: "planning", page: page || 1 })
             },
             trending: async function (page) {
                 if (!page) gallerySkeleton(browseGallery)
@@ -44,7 +45,7 @@ async function loadHomePage(reload) {
             },
             releases: async function () {
                 let frag = await releasesRss(4)
-                homeReleases.textContent = ''
+                homeReleases.innerHTML = ''
                 homeReleases.appendChild(frag)
             },
             planning: async function () {
@@ -75,6 +76,7 @@ async function loadHomePage(reload) {
 
     function gallerySkeleton(gallery) {
         browse.classList.add("loading")
+        gallery.innerHTML = ''
         gallery.appendChild(gallerySkeletonFrag(10))
     }
     function galleryAppend(opts) {
@@ -95,7 +97,7 @@ async function loadHomePage(reload) {
         }
 
         if (!opts.page || opts.page == 1) {
-            opts.gallery.textContent = '';
+            opts.gallery.innerHTML = '';
         }
         appendFrag(opts.media)
         if (opts.page == 1) {
@@ -105,7 +107,7 @@ async function loadHomePage(reload) {
     }
 
     if (reload) for (let item of homePreviewElements) {
-        item.textContent = ''
+        item.innerHTML = ''
         item.appendChild(gallerySkeletonFrag(4))
     }
     for (let item of homePreviewElements) {
@@ -115,9 +117,9 @@ async function loadHomePage(reload) {
         item.onclick = function () {
             homeLoadFunctions[this.dataset.function]()
         }
-    }
+    }   
 }
 navHome.onclick = () => {
     loadHomePage(true)
-    document.querySelector(".browse").textContent = ''
+    document.querySelector(".browse").innerHTML = ''
 }

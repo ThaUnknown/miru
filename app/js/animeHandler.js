@@ -222,6 +222,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $genre: 
 
     let res = await fetch('https://graphql.anilist.co', options).catch((error) => console.error(error)),
         json = await res.json();
+        console.log(json)
     return json
 }
 async function alEntry() {
@@ -269,7 +270,7 @@ let alResponse
 async function searchAnime(a) { //search bar functionality
     let frag = document.createDocumentFragment(),
         browse = document.querySelector(".browse")
-    browse.textContent = '';
+    browse.innerHTML = '';
     browse.appendChild(skeletonCard)
     a ? alResponse = await alRequest({ method: "SearchName", name: a }) : alResponse = await alRequest({ method: "Trending" })
     try {
@@ -283,7 +284,7 @@ async function searchAnime(a) { //search bar functionality
     } catch (e) {
         console.error(e)
     }
-    browse.textContent = '';
+    browse.innerHTML = '';
     browse.appendChild(frag)
 }
 
@@ -309,7 +310,7 @@ function viewAnime(media) {
     halfmoon.showModal("view")
     view.setAttribute("style", `background-image: url(${media.bannerImage}) !important`)
     viewImg.src = media.coverImage.extraLarge
-    viewTitle.textContent = media.title.userPreferred
+    viewTitle.innerHTML = media.title.userPreferred
     viewDesc.innerHTML = media.description || ""
 
     viewDetails.innerHTML = ""
@@ -502,7 +503,7 @@ async function nyaaSearch(media, episode) {
             fillType: ""
         })
     } else {
-        table.textContent = ""
+        table.innerHTML = ""
         table.appendChild(results)
         halfmoon.toggleModal("tsearch")
     }
@@ -517,7 +518,7 @@ async function nyaaRss(media, episode) {
         try {
             let doc = DOMPARSER(xmlTxt, "text/xml")
             if (settings.torrent2 && doc.querySelectorAll("infoHash")[0]) {
-                addTorrent(doc.querySelectorAll("infoHash")[0].textContent, { media: media, episode: episode })
+                addTorrent(doc.querySelectorAll("infoHash")[0].innerHTML, { media: media, episode: episode })
                 halfmoon.toggleModal("tsearch")
             }
             doc.querySelectorAll("item").forEach((item, index) => {
@@ -525,13 +526,13 @@ async function nyaaRss(media, episode) {
                 let template = document.createElement("tr")
                 template.innerHTML += `
                 <th>${(index + 1)}</th>
-                <td>${i("title").textContent}</td>
-                <td>${i("size").textContent}</td>
-                <td>${i("seeders").textContent}</td>
-                <td>${i("leechers").textContent}</td>
-                <td>${i("downloads").textContent}</td>
+                <td>${i("title").innerHTML}</td>
+                <td>${i("size").innerHTML}</td>
+                <td>${i("seeders").innerHTML}</td>
+                <td>${i("leechers").innerHTML}</td>
+                <td>${i("downloads").innerHTML}</td>
                 <td class="pointer">Play</td>`
-                template.onclick = () => { addTorrent(i('infoHash').textContent, { media: media, episode: episode }) }
+                template.onclick = () => { addTorrent(i('infoHash').innerHTML, { media: media, episode: episode }) }
                 frag.appendChild(template)
             })
 
@@ -543,11 +544,13 @@ async function nyaaRss(media, episode) {
 }
 //resolve anime name based on torrent name and store it
 async function resolveName(name, method, release) {
-    if (!store.hasOwnProperty(name) && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(name) && ((store[name] = media) && true)))) {
+    if (!store.hasOwnProperty(name) && !(alResponse && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(name) && ((store[name] = media) && true))))) {
         let res = await alRequest({ perPage: 1, name: name, method: method })
         if (!res.data.Page.media[0]) {
-            res = await alRequest({ name: name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, ""), method: method, perPage: 1 })
+            res = await alRequest({ name: name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", ""), method: method, perPage: 1 })
+            console.log(name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", ""))
         }
+        console.log(res)
         if (settings.torrent7 && !res.data.Page.media[0] && release) {
             res = await alRequest({ name: name, method: "SearchName", perPage: 1, status: "RELEASING" })
         }
@@ -568,7 +571,7 @@ async function releasesRss(limit) {
         url
     if (Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0]) {
         //add my own cors proxy for erai
-        url = settings.torrent4 == "Erai-raws" ? new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerText + settings.torrent1 + "-magnet") : new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerText + settings.torrent1)
+        url = settings.torrent4 == "Erai-raws" ? new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerHTML + settings.torrent1 + "-magnet") : new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerHTML + settings.torrent1)
     } else {
         url = settings.torrent4 + settings.torrent1 // add custom RSS
     }
@@ -581,10 +584,10 @@ async function releasesRss(limit) {
                 let items = doc.querySelectorAll("item")
                 for (let l = 0; l < (limit || items.length); l++) {
                     let i = items[l].querySelector.bind(items[l]),
-                        regexParse = nameParseRegex.simple.exec(i("title").textContent),
+                        regexParse = nameParseRegex.simple.exec(i("title").innerHTML),
                         episode
                     if (!regexParse[2]) {
-                        regexParse = nameParseRegex.fallback.exec(i("title").textContent)
+                        regexParse = nameParseRegex.fallback.exec(i("title").innerHTML)
                         episode = regexParse[3]
                     } else {
                         episode = regexParse[4]
@@ -592,8 +595,9 @@ async function releasesRss(limit) {
 
                     let media = await resolveName(regexParse[2], "SearchName", true),
                         template = cardCreator(media, regexParse[2], episode)
+                        console.log(regexParse[2])
                     template.onclick = async () => {
-                        addTorrent(i('link').textContent, { media: media, episode: episode })
+                        addTorrent(i('link').innerHTML, { media: media, episode: episode })
                         let res = await alRequest({ id: media.id, method: "SearchIDSingle" })
                         store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
                     }
@@ -615,7 +619,7 @@ async function releasesRss(limit) {
 // }, 30000);
 let alID // login icon 
 async function loadAnime() {
-    await searchAnime()
+    // await searchAnime()
     loadOfflineStorage()
     if (localStorage.getItem("ALtoken")) {
         alRequest({ method: "Viewer" }).then(result => {
