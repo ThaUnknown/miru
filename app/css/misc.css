@@ -68,6 +68,7 @@ input:invalid {
 }
 
 .gallery .card {
+    will-change: transform, bottom;
     animation: .3s ease 0s 1 load-in;
     cursor: pointer;
     overflow: hidden;
@@ -179,6 +180,7 @@ section:target {
 }
 
 .skeloader::before {
+    will-change: left;
     content: '';
     position: absolute;
     height: 100%;
