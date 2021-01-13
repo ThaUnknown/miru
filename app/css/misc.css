@@ -23,6 +23,7 @@ body {
 
 .cover-img {
     object-fit: cover;
+    background-color: var(--color) !important;
 }
 
 input:invalid {
