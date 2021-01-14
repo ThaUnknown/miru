@@ -376,9 +376,6 @@ function viewAnime(media) {
     } else {
         viewRelationsGallery.classList.add("d-none")
     }
-    viewEpisodes.onclick = () => {
-        viewEpisodesWrapper.classList.toggle("hidden")
-    }
     viewSynonym.onclick = () => {
         store[viewSynonymText.value] = media
         viewSynonymText.value = ""
@@ -386,8 +383,7 @@ function viewAnime(media) {
     }
     episodes.innerHTML = ""
     if (media.streamingEpisodes.length) {
-        viewEpisodesWrapper.classList.add("hidden")
-        viewEpisodes.removeAttribute("disabled", "")
+        viewEpisodesWrapper.classList.add("remove")
         let frag = document.createDocumentFragment()
         media.streamingEpisodes.forEach(episode => {
             let temp = document.createElement("div")
@@ -401,7 +397,6 @@ function viewAnime(media) {
         episodes.appendChild(frag)
     } else {
         viewEpisodesWrapper.classList.add("hidden")
-        viewEpisodes.setAttribute("disabled", "")
     }
 }
 function trailerPopup(trailer) {
@@ -620,7 +615,6 @@ async function releasesRss(limit) {
 let alID // login icon 
 async function loadAnime() {
     // await searchAnime()
-    loadOfflineStorage()
     if (localStorage.getItem("ALtoken")) {
         alRequest({ method: "Viewer" }).then(result => {
             oauth.removeAttribute("href")

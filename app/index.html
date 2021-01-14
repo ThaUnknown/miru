@@ -75,13 +75,6 @@
                                 </span>
                                 Trailer
                             </button>
-                            </button>
-                            <button class="btn d-flex align-items-end mb-20" type="button" id="viewEpisodes">
-                                <span class="material-icons mr-10 font-size-20">
-                                    video_library
-                                </span>
-                                Episodes
-                            </button>
                         </div>
                     </div>
                     <div class="col-md-7">
@@ -107,14 +100,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="pt-20" id="viewEpisodesWrapper">
+                    <span class="font-weight-bold font-size-22 text-white">Episodes</span>
+                    <div id="episodes" class="pt-10 d-flex overflow-x-auto justify-content-start">
+                    </div>
+                </div>
                 <div id="viewRelations" class="pt-20">
                     <span class="font-weight-bold font-size-22 text-white">Relations</span>
                     <div class="gallery gallery-sm" id="viewRelationsGallery">
-                    </div>
-                </div>
-                <div class="hidden pt-20" id="viewEpisodesWrapper">
-                    <span class="font-weight-bold font-size-22 text-white">Episodes</span>
-                    <div id="episodes" class="pt-10 d-flex overflow-x-auto justify-content-start">
                     </div>
                 </div>
             </div>
@@ -787,9 +780,9 @@
     <script src="js/settingsHandler.js"></script>
     <script src="js/rangeParser.js"></script>
     <script src="js/idbkv-chunk-store.js"></script>
-    <script src="js/torrentHandler.js"></script>
     <script src="js/util.js"></script>
     <script src="js/animeHandler.js"></script>
+    <script src="js/torrentHandler.js"></script>
     <script src="js/interface.js"></script>
     <script src="js/playerHandler.js"></script>
     <script src="js/subtitles-octopus.js"></script>

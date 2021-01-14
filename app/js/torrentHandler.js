@@ -40,7 +40,7 @@ const announceList = [
     videoExtensions = [
         '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg', '.ogv', '.wmv', '.m2ts'
     ],
-    scope = window.location.pathname,
+    scope = "/app/",
     sw = navigator.serviceWorker.register('sw.js', { scope }).then(e => {
         if (searchParams.get("file")) {
             addTorrent(searchParams.get("file"), {}) // add a torrent if its in the link params
@@ -103,6 +103,8 @@ function offlineDownload(torrentID, skipVerify) {
         document.querySelector(".downloads").appendChild(template)
     })
 }
+
+loadOfflineStorage()
 
 // cleanup torrent and store
 function cleanupTorrents() {
