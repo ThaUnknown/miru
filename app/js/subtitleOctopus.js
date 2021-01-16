@@ -48,7 +48,8 @@ function renderSubs(trackNumber) {
             lossyRender: true,
             fonts: playerData.fonts.length == 0 ? ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"] : playerData.fonts,
             workerUrl: 'js/subtitles-octopus-worker.js',
-            debug: true
+            debug: true,
+            timeOffset: 0
         };
         playerData.octopusInstance = new SubtitlesOctopus(options);
     } else {
@@ -100,6 +101,7 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
             playerData.parsed = 1
             playerData.subtitleStream = undefined
             renderSubs.call(null, playerData.selectedHeader)
+            parser = undefined
         });
         file.createReadStream().pipe(parser)
     }

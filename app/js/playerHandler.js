@@ -88,7 +88,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
                 template = cardCreator(media, regexParse[2], episode)
             template.onclick = async () => {
                 addTorrent(torrent, { media: media, episode: episode, file: file })
-                let res = await alRequest(media.id, "SearchIDSingle", {})
+                let res = await alRequest({ id: media.id, method: "SearchIDSingle" })
                 store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
             }
             console.log(template)
@@ -109,10 +109,10 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
             alertType: "alert-success",
             fillType: ""
         });
-        if (!torrent.store.store._idbkvStore) {
+        postDownload(selectedFile)
+        if (!torrent.store.store._store) {
             if (settings.player8) {
                 finishThumbnails(selectedFile);
-                postDownload(selectedFile)
             }
             downloadFile(selectedFile)
         }
@@ -139,6 +139,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
     setTimeout(playerData.onProgress, 100)
     if (opts.media) {
         playerData.nowPlaying = [opts.media, opts.episode]
+        navNowPlaying.classList.remove("d-none")
     } else if (settings.torrent7) { // try to resolve name
         let regexParse = nameParseRegex.simple.exec(selectedFile.name)
         let media = await resolveName(regexParse[2], "SearchAnySingle")
@@ -164,7 +165,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         if (parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes)
             bnext.setAttribute("disabled", "")
         if (playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1])) {
-            let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0]
+            let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0]
             video.poster = streamingEpisode.thumbnail
             mediaMetadata.artist = `Episode ${parseInt(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
             mediaMetadata.artwork = [{

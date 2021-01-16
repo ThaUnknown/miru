@@ -1,20 +1,9 @@
-let client = new WebTorrent({ maxConns: settings.torrent6 }),
-    indexedDBStore = class extends IdbkvChunkStore {
-        constructor(len, opts) {
-            super(len, { ...opts, batchInterval: 1000 });
-        }
-    }
+let client = new WebTorrent({ maxConns: settings.torrent6 })
 window.onbeforeunload = () => { //cleanup shit before unloading to free RAM/drive
     cleanupVideo()
     cleanupTorrents()
-    if (playerData.fonts) {
-        playerData.fonts.forEach(file => {
-            URL.revokeObjectURL(file)
-        })
-    }
-    if (dl.href) {
-        URL.revokeObjectURL(dl.href)
-    }
+    if (playerData.fonts) playerData.fonts.forEach(file => URL.revokeObjectURL(file))
+    if (dl.href) URL.revokeObjectURL(dl.href)
 }
 
 const announceList = [
@@ -42,9 +31,7 @@ const announceList = [
     ],
     scope = "/app/",
     sw = navigator.serviceWorker.register('sw.js', { scope }).then(e => {
-        if (searchParams.get("file")) {
-            addTorrent(searchParams.get("file"), {}) // add a torrent if its in the link params
-        }
+        if (searchParams.get("file")) addTorrent(searchParams.get("file"), {}) // add a torrent if its in the link params
     }).catch(e => {
         if (String(e) == "InvalidStateError: Failed to register a ServiceWorker: The document is in an invalid state.") {
             location.reload() // weird workaround for a weird bug
@@ -77,7 +64,7 @@ async function loadOfflineStorage() {
 // add torrent for offline download
 function offlineDownload(torrentID, skipVerify) {
     let torrent = client.add(torrentID, {
-        store: indexedDBStore,
+        store: IdbChunkStore,
         skipVerify: skipVerify
     })
     torrent.on("metadata", async () => {
@@ -91,12 +78,12 @@ function offlineDownload(torrentID, skipVerify) {
             episode = regexParse[4]
         }
 
-        let media = await resolveName(regexParse[2], "SearchAnySingle"),
+        let media = await resolveName(regexParse[2], "SearchName"),
             template = cardCreator(media, regexParse[2], episode)
         template.onclick = async () => {
             addTorrent(torrent, { media: media, episode: episode })
             if (media) {
-                let res = await alRequest(media.id, "SearchIDSingle", {})
+                let res = await alRequest(media.id, { id: media.id, method: "SearchIDSingle" })
                 store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
             }
         }
@@ -116,7 +103,7 @@ function cleanupTorrents() {
 }
 
 // manually add trackers
-WEBTORRENT_ANNOUNCE = announceList.map(arr => { return arr[0] }).filter(url => { return url.indexOf('wss://') === 0 })
+WEBTORRENT_ANNOUNCE = announceList.map(arr => arr[0]).filter(url => url.indexOf('wss://') === 0)
 
 let videoFiles
 async function playTorrent(torrent, opts) {
@@ -153,7 +140,7 @@ function addTorrent(torrentID, opts) {
     if (client.get(torrentID)) {
         playTorrent(client.get(torrentID), opts)
     } else {
-        client.add(torrentID, settings.torrent5 ? { store: indexedDBStore } : {}, function (torrent) {
+        client.add(torrentID, settings.torrent5 ? { store: IdbChunkStore } : {}, function (torrent) {
             playTorrent(torrent, opts)
         })
     }
