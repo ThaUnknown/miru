@@ -26,9 +26,7 @@ const announceList = [
     // ['ws://tracker.btsync.cf:6969/announce'],
     // ['ws://hub.bugout.link:80/announce']
 ],
-    videoExtensions = [
-        '.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg', '.ogv', '.wmv', '.m2ts'
-    ],
+    videoExtensions = ['.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg', '.ogv', '.wmv', '.m2ts'],
     scope = "/app/",
     sw = navigator.serviceWorker.register('sw.js', { scope }).then(e => {
         if (searchParams.get("file")) addTorrent(searchParams.get("file"), {}) // add a torrent if its in the link params
@@ -96,7 +94,7 @@ loadOfflineStorage()
 // cleanup torrent and store
 function cleanupTorrents() {
     client.torrents.filter(torrent => {
-        return !offlineTorrents.has(torrent.infoHash) // creates an array of all non-offline store torrents and removes them
+        return !offlineTorrents.has(torrent.infoHash) || torrent.progress != 1 // creates an array of all non-offline store torrents and removes them
     }).forEach(torrent => {
         torrent.destroy({ destroyStore: true })
     })

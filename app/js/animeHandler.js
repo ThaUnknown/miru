@@ -137,6 +137,8 @@ relations {
             }
             type
             status
+            format
+            episodes
         }
     }
 }`
@@ -222,7 +224,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $genre: 
 
     let res = await fetch('https://graphql.anilist.co', options).catch((error) => console.error(error)),
         json = await res.json();
-        console.log(json)
+    console.log(json)
     return json
 }
 async function alEntry() {
@@ -467,7 +469,7 @@ function cardCreator(media, name, episode) {
             <div class="col-4 skeloader">
             </div>
             <div class="col-8 bg-very-dark px-15 py-10">
-                ${name ? `<h5 class="m-0 text-capitalize font-weight-bold pb-10">${name + " - " + episode}</h5>` : 
+                ${name ? `<h5 class="m-0 text-capitalize font-weight-bold pb-10">${name + " - " + episode}</h5>` :
                 `<p class="skeloader w-300 h-25 rounded bg-dark">`}
                     <p class="skeloader w-150 h-10 rounded bg-dark"></p>
                     <p class="skeloader w-150 h-10 rounded bg-dark"></p>
@@ -554,6 +556,94 @@ async function resolveName(name, method, release) {
     return store[name]
 }
 
+async function resolveName2(opts) {
+    // opts.fileName opts.method opts.isRelease
+
+    let elems = await anitomyscript(opts.fileName);
+    if (!store[elems.anime_title]) {
+        //resolve name and shit
+        let method, res
+        if (opts.isRelease) {
+            method = { name: elems.anime_title, method: "SearchName", perPage: 1, status: "RELEASING" }
+        } else {
+            method = { name: elems.anime_title, method: opts.method, perPage: 1 }
+        }
+        res = await alRequest(method)
+        if (!res.data.Page.media[0]) {
+            method.name = method.name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", "")
+            res = await alRequest(method)
+        }
+        if (res.data.Page.media[0]) store[elems.anime_title] = res.data.Page.media[0]
+    }
+    let episode, media = store[elems.anime_title]
+    // resolve episode, if movie, dont.
+    if (media && media.format != "MOVIE" && elems.episode_number) {
+        async function resolveSeason(opts) {
+            // opts.media, opts.episode, opts.increment, opts.offset
+            if (opts.media.relations.edges.some(edge => edge.relationType == "PREQUEL" && (edge.node.format == "TV" || "TV_SHORT")) && !opts.increment) {
+                // media has prequel and we dont want to move up in the tree
+                let tempMedia = opts.media.relations.edges.filter(edge => edge.relationType == "PREQUEL" && (edge.node.format == "TV" || "TV_SHORT"))[0].node
+                if (tempMedia.episodes && opts.episode - (opts.offset + tempMedia.episodes) > media.episodes) {
+                    // episode is still out of bounds
+                    let nextEdge = await alRequest({ method: "SearchIDSingle", id: tempMedia.id })
+                    await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes })
+                } else if (tempMedia.episodes && opts.episode - (opts.offset + tempMedia.episodes) < media.episodes && opts.episode - (opts.offset + tempMedia.episodes) > 0) {
+                    // episode is in range, seems good!
+                    episode = opts.episode - (opts.offset + tempMedia.episodes)
+                } else {
+                    console.log("error in parsing!")
+                    // there was an issue in parsing :( forcing display
+                    episode = opts.episode
+                }
+            } else if (opts.media.relations.edges.some(edge => edge.relationType == "SEQUEL" && (edge.node.format == "TV" || "TV_SHORT"))) {
+                // media doesnt have prequel, or we want to move up in the tree
+                let tempMedia = opts.media.relations.edges.filter(edge => edge.relationType == "SEQUEL" && (edge.node.format == "TV" || "TV_SHORT"))[0].node
+                if (tempMedia.episodes && opts.episode - (opts.offset + tempMedia.episodes) > media.episodes) {
+                    // episode is still out of bounds
+                    let nextEdge = await alRequest({ method: "SearchIDSingle", id: tempMedia.id })
+                    await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes })
+                } else if (tempMedia.episodes && opts.episode - (opts.offset + tempMedia.episodes) < media.episodes && opts.episode - (opts.offset + tempMedia.episodes) > 0) {
+                    // episode is in range, seems good! overwriting media to count up "seasons"
+                    episode = opts.episode - (opts.offset + tempMedia.episodes)
+                    let nextEdge = await alRequest({ method: "SearchIDSingle", id: tempMedia.id })
+                    media = nextEdge.data.Media
+                } else {
+                    console.log("error in parsing!")
+                    // there was an issue in parsing :( forcing display
+                    episode = opts.episode
+                }
+            } else {
+                // something failed, most likely couldnt find an edge or processing failed, force episode number even if its invalid/out of bounds, better than nothing
+                episode = opts.episode
+            }
+        }
+        if (elems.episode_number.constructor == Array) {
+            // is an episode range
+            if (parseInt(elems.episode_number[0]) == 1) {
+                // if it starts with #1 and overflows then it includes more than 1 season in a batch, cant fix this cleanly, name is parsed per file basis so this shouldnt be an issue
+                episode = `${elems.episode_number[0]} - ${elems.episode_number[elems.episode_number.length - 1]}`
+            } else {
+                if (media.episodes && parseInt(elems.episode_number[elems.episode_number.length - 1]) > media.episodes) {
+                    // if highest value is bigger than episode count
+                    await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
+                } else {
+                    // cant find ep count or range seems fine
+                    episode = `${elems.episode_number[0]} - ${elems.episode_number[elems.episode_number.length - 1]}`
+                }
+            }
+        } else {
+            if (media.episodes && parseInt(elems.episode_number) > media.episodes) {
+                // value bigger than episode count
+                await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
+            } else {
+                // cant find ep count or episode seems fine
+                episode = elems.episode_number
+            }
+        }
+    }
+    return { media: media, episode: episode, parseObject: elems }
+}
+
 const nameParseRegex = {
     simple: /(\[.[^\]]*\]\ ?|\(.[^\)]*\)\ ?)?(.+?(?=\ \-\ \d{2,}|\ \–\ \d{2,}))?(\ \-\ |\ \–\ )?(\d{2,})?(.*)?/i,
     fallback: /((?:\[[^\]]*\])*)?\s*((?:[^\d\[\.](?!S\d))*)?\s*((?:S\d+[^\w\[]*E?)?[\d\-]*)\s*(.*)?/i
@@ -590,7 +680,7 @@ async function releasesRss(limit) {
 
                     let media = await resolveName(regexParse[2], "SearchName", true),
                         template = cardCreator(media, regexParse[2], episode)
-                        console.log(regexParse[2])
+                    console.log(regexParse[2])
                     template.onclick = async () => {
                         addTorrent(i('link').innerHTML, { media: media, episode: episode })
                         let res = await alRequest({ id: media.id, method: "SearchIDSingle" })

@@ -117,7 +117,7 @@ async function loadHomePage(reload) {
         item.onclick = function () {
             homeLoadFunctions[this.dataset.function]()
         }
-    }   
+    }
 }
 navHome.onclick = () => {
     loadHomePage(true)
