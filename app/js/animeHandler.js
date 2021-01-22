@@ -454,7 +454,7 @@ function cardCreator(media, name, episode) {
                 ${media.season || media.seasonYear ? "<span>" + ((media.season.toLowerCase() || "") + " ") + (media.seasonYear || "") + "</span>" : ""}
                 </p>
             </div>
-            <div class="overflow-y-auto px-15 py-10 bg-very-dark card-desc">
+            <div class="overflow-y-auto px-15 pb-5 bg-very-dark card-desc">
                 ${media.description}
             </div>
             <div class="px-15 pb-10 pt-5">
@@ -556,7 +556,7 @@ async function resolveName(name, method, release) {
     return store[name]
 }
 
-async function resolveName2(opts) {
+async function resolveFileMedia(opts) {
     // opts.fileName opts.method opts.isRelease
 
     let elems = await anitomyscript(opts.fileName);
@@ -570,7 +570,7 @@ async function resolveName2(opts) {
         }
         res = await alRequest(method)
         if (!res.data.Page.media[0]) {
-            method.name = method.name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", "")
+            method.name = method.name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", "") // this needs to be improved!!!
             res = await alRequest(method)
         }
         if (res.data.Page.media[0]) store[elems.anime_title] = res.data.Page.media[0]
@@ -580,41 +580,64 @@ async function resolveName2(opts) {
     if (media && media.format != "MOVIE" && elems.episode_number) {
         async function resolveSeason(opts) {
             // opts.media, opts.episode, opts.increment, opts.offset
+            let epMin, epMax
+            if (opts.episode.constructor == Array) { // support batch episode ranges
+                epMin = Number(opts.episode[0])
+                epMax = Number(opts.episode[opts.episode.length - 1])
+            } else {
+                epMin = epMax = Number(opts.episode)
+            }
             if (opts.media.relations.edges.some(edge => edge.relationType == "PREQUEL" && (edge.node.format == "TV" || "TV_SHORT")) && !opts.increment) {
                 // media has prequel and we dont want to move up in the tree
                 let tempMedia = opts.media.relations.edges.filter(edge => edge.relationType == "PREQUEL" && (edge.node.format == "TV" || "TV_SHORT"))[0].node
-                if (tempMedia.episodes && opts.episode - (opts.offset + tempMedia.episodes) > media.episodes) {
+                if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) > media.episodes) {
                     // episode is still out of bounds
                     let nextEdge = await alRequest({ method: "SearchIDSingle", id: tempMedia.id })
                     await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes })
-                } else if (tempMedia.episodes && opts.episode - (opts.offset + tempMedia.episodes) < media.episodes && opts.episode - (opts.offset + tempMedia.episodes) > 0) {
+                } else if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) < media.episodes && epMin - (opts.offset + tempMedia.episodes) > 0) {
                     // episode is in range, seems good!
-                    episode = opts.episode - (opts.offset + tempMedia.episodes)
+                    if (opts.episode.constructor == Array) {
+                        episode = `${elems.episode_number[0] - (opts.offset + tempMedia.episodes)} - ${elems.episode_number[elems.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
+                    } else {
+                        episode = opts.episode - (opts.offset + tempMedia.episodes)
+                    }
                 } else {
                     console.log("error in parsing!")
                     // there was an issue in parsing :( forcing display
-                    episode = opts.episode
+                    if (opts.episode.constructor == Array) {
+                        episode = `${Number(elems.episode_number[0])} - ${Number(elems.episode_number[elems.episode_number.length - 1])}`
+                    } else {
+                        episode = Number(opts.episode)
+                    }
                 }
             } else if (opts.media.relations.edges.some(edge => edge.relationType == "SEQUEL" && (edge.node.format == "TV" || "TV_SHORT"))) {
                 // media doesnt have prequel, or we want to move up in the tree
                 let tempMedia = opts.media.relations.edges.filter(edge => edge.relationType == "SEQUEL" && (edge.node.format == "TV" || "TV_SHORT"))[0].node
-                if (tempMedia.episodes && opts.episode - (opts.offset + tempMedia.episodes) > media.episodes) {
+                if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) > media.episodes) {
                     // episode is still out of bounds
                     let nextEdge = await alRequest({ method: "SearchIDSingle", id: tempMedia.id })
                     await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes })
-                } else if (tempMedia.episodes && opts.episode - (opts.offset + tempMedia.episodes) < media.episodes && opts.episode - (opts.offset + tempMedia.episodes) > 0) {
+                } else if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) < media.episodes && epMin - (opts.offset + tempMedia.episodes) > 0) {
                     // episode is in range, seems good! overwriting media to count up "seasons"
-                    episode = opts.episode - (opts.offset + tempMedia.episodes)
+                    if (opts.episode.constructor == Array) {
+                        episode = `${elems.episode_number[0] - (opts.offset + tempMedia.episodes)} - ${elems.episode_number[elems.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
+                    } else {
+                        episode = opts.episode - (opts.offset + tempMedia.episodes)
+                    }
                     let nextEdge = await alRequest({ method: "SearchIDSingle", id: tempMedia.id })
                     media = nextEdge.data.Media
                 } else {
                     console.log("error in parsing!")
                     // there was an issue in parsing :( forcing display
-                    episode = opts.episode
+                    if (opts.episode.constructor == Array) {
+                        episode = `${Number(elems.episode_number[0])} - ${Number(elems.episode_number[elems.episode_number.length - 1])}`
+                    } else {
+                        episode = Number(opts.episode)
+                    }
                 }
             } else {
                 // something failed, most likely couldnt find an edge or processing failed, force episode number even if its invalid/out of bounds, better than nothing
-                episode = opts.episode
+                episode = Number(opts.episode)
             }
         }
         if (elems.episode_number.constructor == Array) {
@@ -624,11 +647,11 @@ async function resolveName2(opts) {
                 episode = `${elems.episode_number[0]} - ${elems.episode_number[elems.episode_number.length - 1]}`
             } else {
                 if (media.episodes && parseInt(elems.episode_number[elems.episode_number.length - 1]) > media.episodes) {
-                    // if highest value is bigger than episode count
+                    // if highest value is bigger than episode count, parseint to math.floor a number like 12.5 - specials - in 1 go
                     await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
                 } else {
                     // cant find ep count or range seems fine
-                    episode = `${elems.episode_number[0]} - ${elems.episode_number[elems.episode_number.length - 1]}`
+                    episode = `${Number(elems.episode_number[0])} - ${Number(elems.episode_number[elems.episode_number.length - 1])}`
                 }
             }
         } else {
@@ -637,7 +660,7 @@ async function resolveName2(opts) {
                 await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
             } else {
                 // cant find ep count or episode seems fine
-                episode = elems.episode_number
+                episode = Number(elems.episode_number)
             }
         }
     }
