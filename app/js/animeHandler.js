@@ -277,7 +277,7 @@ async function searchAnime(a) { //search bar functionality
     a ? alResponse = await alRequest({ method: "SearchName", name: a }) : alResponse = await alRequest({ method: "Trending" })
     try {
         alResponse.data.Page.media.forEach(media => {
-            let template = cardCreator(media)
+            let template = cardCreator({ media: media })
             template.onclick = () => {
                 viewAnime(media)
             }
@@ -434,31 +434,31 @@ function detailsCreator(entry) {
         })
     }
 }
-function cardCreator(media, name, episode) {
+function cardCreator(opts) {
     let template = document.createElement("div")
     template.classList.add("card", "m-0", "p-0")
-    if (media) {
+    if (opts?.media) {
         template.innerHTML = `
-    <div class="row h-full" style="--color:${media.coverImage.color || "#1890ff"};">
+    <div class="row h-full" style="--color:${opts.media.coverImage.color || "#1890ff"};">
         <div class="col-4">
-            <img loading="lazy" src="${media.coverImage.extraLarge || ""}"
+            <img loading="lazy" src="${opts.media.coverImage.extraLarge || ""}"
                 class="cover-img w-full h-full">
         </div>
         <div class="col-8 h-full card-grid">
             <div class="px-15 py-10 bg-very-dark">
-                <h5 class="m-0 text-capitalize font-weight-bold">${media.title.userPreferred}${episode ? " - " + episode : ""}</h5>
+                <h5 class="m-0 text-capitalize font-weight-bold">${opts.media.title.userPreferred}${opts.episode ? " - " + opts.episode : ""}</h5>
                 <p class="text-muted m-0 text-capitalize details">
-                ${(media.format ? (media.format == "TV" ? "<span>" + media.format + " Show" : "<span>" + media.format.toLowerCase().replace(/_/g, " ")) : "") + "</span>"}
-                ${media.episodes ? "<span>" + media.episodes + " Episodes</span>" : media.duration ? "<span>" + media.duration + " Minutes</span>" : ""}
-                ${media.status ? "<span>" + media.status.toLowerCase().replace(/_/g, " ") + "</span>" : ""}
-                ${media.season || media.seasonYear ? "<span>" + ((media.season.toLowerCase() || "") + " ") + (media.seasonYear || "") + "</span>" : ""}
+                ${(opts.media.format ? (opts.media.format == "TV" ? "<span>" + opts.media.format + " Show" : "<span>" + opts.media.format.toLowerCase().replace(/_/g, " ")) : "") + "</span>"}
+                ${opts.media.episodes ? "<span>" + opts.media.episodes + " Episodes</span>" : opts.media.duration ? "<span>" + opts.media.duration + " Minutes</span>" : ""}
+                ${opts.media.status ? "<span>" + opts.media.status.toLowerCase().replace(/_/g, " ") + "</span>" : ""}
+                ${opts.media.season || opts.media.seasonYear ? "<span>" + ((opts.media.season.toLowerCase() || "") + " ") + (opts.media.seasonYear || "") + "</span>" : ""}
                 </p>
             </div>
             <div class="overflow-y-auto px-15 pb-5 bg-very-dark card-desc">
-                ${media.description}
+                ${opts.media.description}
             </div>
             <div class="px-15 pb-10 pt-5">
-                ${media.genres.map(key => (`<span class="badge badge-pill badge-color text-dark mt-5 font-weight-bold">${key}</span> `)).join('')}
+                ${opts.media.genres.map(key => (`<span class="badge badge-pill badge-color text-dark mt-5 font-weight-bold">${key}</span> `)).join('')}
             </div>
         </div>
     </div>
@@ -469,7 +469,7 @@ function cardCreator(media, name, episode) {
             <div class="col-4 skeloader">
             </div>
             <div class="col-8 bg-very-dark px-15 py-10">
-                ${name ? `<h5 class="m-0 text-capitalize font-weight-bold pb-10">${name + " - " + episode}</h5>` :
+                ${opts?.parseObject ? `<h5 class="m-0 text-capitalize font-weight-bold pb-10">${opts.parseObject.anime_title + " - " + opts.parseObject.episode_number}</h5>` :
                 `<p class="skeloader w-300 h-25 rounded bg-dark">`}
                     <p class="skeloader w-150 h-10 rounded bg-dark"></p>
                     <p class="skeloader w-150 h-10 rounded bg-dark"></p>
@@ -480,7 +480,7 @@ function cardCreator(media, name, episode) {
     }
     return template
 }
-let skeletonCard = cardCreator()
+let skeletonCard = cardCreator({})
 
 const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
 
@@ -587,57 +587,38 @@ async function resolveFileMedia(opts) {
             } else {
                 epMin = epMax = Number(opts.episode)
             }
+            let tempMedia, increment
             if (opts.media.relations.edges.some(edge => edge.relationType == "PREQUEL" && (edge.node.format == "TV" || "TV_SHORT")) && !opts.increment) {
                 // media has prequel and we dont want to move up in the tree
-                let tempMedia = opts.media.relations.edges.filter(edge => edge.relationType == "PREQUEL" && (edge.node.format == "TV" || "TV_SHORT"))[0].node
-                if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) > media.episodes) {
-                    // episode is still out of bounds
-                    let nextEdge = await alRequest({ method: "SearchIDSingle", id: tempMedia.id })
-                    await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes })
-                } else if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) < media.episodes && epMin - (opts.offset + tempMedia.episodes) > 0) {
-                    // episode is in range, seems good!
-                    if (opts.episode.constructor == Array) {
-                        episode = `${elems.episode_number[0] - (opts.offset + tempMedia.episodes)} - ${elems.episode_number[elems.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
-                    } else {
-                        episode = opts.episode - (opts.offset + tempMedia.episodes)
-                    }
-                } else {
-                    console.log("error in parsing!")
-                    // there was an issue in parsing :( forcing display
-                    if (opts.episode.constructor == Array) {
-                        episode = `${Number(elems.episode_number[0])} - ${Number(elems.episode_number[elems.episode_number.length - 1])}`
-                    } else {
-                        episode = Number(opts.episode)
-                    }
-                }
+                tempMedia = opts.media.relations.edges.filter(edge => edge.relationType == "PREQUEL" && (edge.node.format == "TV" || "TV_SHORT"))[0].node
             } else if (opts.media.relations.edges.some(edge => edge.relationType == "SEQUEL" && (edge.node.format == "TV" || "TV_SHORT"))) {
                 // media doesnt have prequel, or we want to move up in the tree
-                let tempMedia = opts.media.relations.edges.filter(edge => edge.relationType == "SEQUEL" && (edge.node.format == "TV" || "TV_SHORT"))[0].node
-                if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) > media.episodes) {
-                    // episode is still out of bounds
-                    let nextEdge = await alRequest({ method: "SearchIDSingle", id: tempMedia.id })
-                    await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes })
-                } else if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) < media.episodes && epMin - (opts.offset + tempMedia.episodes) > 0) {
-                    // episode is in range, seems good! overwriting media to count up "seasons"
-                    if (opts.episode.constructor == Array) {
-                        episode = `${elems.episode_number[0] - (opts.offset + tempMedia.episodes)} - ${elems.episode_number[elems.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
-                    } else {
-                        episode = opts.episode - (opts.offset + tempMedia.episodes)
-                    }
+                tempMedia = opts.media.relations.edges.filter(edge => edge.relationType == "SEQUEL" && (edge.node.format == "TV" || "TV_SHORT"))[0].node
+                increment = true
+            }
+            if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) > media.episodes) {
+                // episode is still out of bounds
+                let nextEdge = await alRequest({ method: "SearchIDSingle", id: tempMedia.id })
+                await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes, increment: increment })
+            } else if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) < media.episodes && epMin - (opts.offset + tempMedia.episodes) > 0) {
+                // episode is in range, seems good! overwriting media to count up "seasons"
+                if (opts.episode.constructor == Array) {
+                    episode = `${elems.episode_number[0] - (opts.offset + tempMedia.episodes)} - ${elems.episode_number[elems.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
+                } else {
+                    episode = opts.episode - (opts.offset + tempMedia.episodes)
+                }
+                if (opts.increment) {
                     let nextEdge = await alRequest({ method: "SearchIDSingle", id: tempMedia.id })
                     media = nextEdge.data.Media
-                } else {
-                    console.log("error in parsing!")
-                    // there was an issue in parsing :( forcing display
-                    if (opts.episode.constructor == Array) {
-                        episode = `${Number(elems.episode_number[0])} - ${Number(elems.episode_number[elems.episode_number.length - 1])}`
-                    } else {
-                        episode = Number(opts.episode)
-                    }
                 }
             } else {
+                console.log("error in parsing!")
                 // something failed, most likely couldnt find an edge or processing failed, force episode number even if its invalid/out of bounds, better than nothing
-                episode = Number(opts.episode)
+                if (opts.episode.constructor == Array) {
+                    episode = `${Number(elems.episode_number[0])} - ${Number(elems.episode_number[elems.episode_number.length - 1])}`
+                } else {
+                    episode = Number(opts.episode)
+                }
             }
         }
         if (elems.episode_number.constructor == Array) {
@@ -692,22 +673,12 @@ async function releasesRss(limit) {
                 let items = doc.querySelectorAll("item")
                 for (let l = 0; l < (limit || items.length); l++) {
                     let i = items[l].querySelector.bind(items[l]),
-                        regexParse = nameParseRegex.simple.exec(i("title").innerHTML),
-                        episode
-                    if (!regexParse[2]) {
-                        regexParse = nameParseRegex.fallback.exec(i("title").innerHTML)
-                        episode = regexParse[3]
-                    } else {
-                        episode = regexParse[4]
-                    }
-
-                    let media = await resolveName(regexParse[2], "SearchName", true),
-                        template = cardCreator(media, regexParse[2], episode)
-                    console.log(regexParse[2])
+                        mediaInformation = await resolveFileMedia({ fileName: i("title").innerHTML, method: "SearchName", isRelease: true })
+                    template = cardCreator(mediaInformation)
                     template.onclick = async () => {
-                        addTorrent(i('link').innerHTML, { media: media, episode: episode })
-                        let res = await alRequest({ id: media.id, method: "SearchIDSingle" })
-                        store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
+                        addTorrent(i('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
+                        let res = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" })
+                        store[mediaInformation.parseObject.anime_title] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
                     }
                     frag.appendChild(template)
                 }

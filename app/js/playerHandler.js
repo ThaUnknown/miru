@@ -75,23 +75,13 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         bpl.removeAttribute("disabled")
         let frag = document.createDocumentFragment()
         for (let file of videoFiles) {
-            let regexParse = nameParseRegex.simple.exec(file.name),
-                episode
-            if (!regexParse[2]) {
-                regexParse = nameParseRegex.fallback.exec(file.name)
-                episode = regexParse[3]
-            } else {
-                episode = regexParse[4]
-            }
-
-            let media = await resolveName(regexParse[2], "SearchAnySingle"),
-                template = cardCreator(media, regexParse[2], episode)
+            let mediaInformation = await resolveFileMedia({ fileName: file.name, method: "SearchName" })
+            template = cardCreator(mediaInformation)
             template.onclick = async () => {
-                addTorrent(torrent, { media: media, episode: episode, file: file })
-                let res = await alRequest({ id: media.id, method: "SearchIDSingle" })
-                store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
+                addTorrent(i('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode })
+                let res = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" })
+                store[mediaInformation.parseObject.anime_title] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
             }
-            console.log(template)
             frag.appendChild(template)
         }
         document.querySelector(".playlist").appendChild(frag)
@@ -140,11 +130,10 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
     if (opts.media) {
         playerData.nowPlaying = [opts.media, opts.episode]
         navNowPlaying.classList.remove("d-none")
-    } else if (settings.torrent7) { // try to resolve name
-        let regexParse = nameParseRegex.simple.exec(selectedFile.name)
-        let media = await resolveName(regexParse[2], "SearchAnySingle")
-        if (media) {
-            playerData.nowPlaying = [media, regexParse[4]]
+    } else { // try to resolve name
+        let mediaInformation = resolveFileMedia({ fileName: selectedFile.name, method: "SearchName" })
+        if (mediaInformation.media) {
+            playerData.nowPlaying = [mediaInformation.media, mediaInformation.parseObject.episode]
             navNowPlaying.classList.remove("d-none")
         }
     }

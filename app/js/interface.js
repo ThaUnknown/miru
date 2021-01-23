@@ -69,7 +69,7 @@ async function loadHomePage(reload) {
         gallerySkeletonFrag = function (limit) {
             let frag = document.createDocumentFragment()
             for (let i = 0; i < limit; i++) {
-                frag.appendChild(cardCreator())
+                frag.appendChild(cardCreator({}))
             }
             return frag
         }
@@ -83,7 +83,7 @@ async function loadHomePage(reload) {
         function appendFrag(media) {
             let frag = document.createDocumentFragment()
             media.forEach(media => {
-                let template = cardCreator(media)
+                let template = cardCreator({ media: media })
                 template.onclick = () => viewAnime(media)
                 frag.appendChild(template)
             })

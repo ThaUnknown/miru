@@ -67,23 +67,12 @@ function offlineDownload(torrentID, skipVerify) {
     })
     torrent.on("metadata", async () => {
         offlineTorrents.add(torrent.infoHash)
-        let regexParse = nameParseRegex.simple.exec(torrent.name),
-            episode
-        if (!regexParse[2]) {
-            regexParse = nameParseRegex.fallback.exec(torrent.name)
-            episode = regexParse[3]
-        } else {
-            episode = regexParse[4]
-        }
-
-        let media = await resolveName(regexParse[2], "SearchName"),
-            template = cardCreator(media, regexParse[2], episode)
+        let mediaInformation = await resolveFileMedia({ fileName: torrent.name, method: "SearchName" })
+        template = cardCreator(mediaInformation)
         template.onclick = async () => {
-            addTorrent(torrent, { media: media, episode: episode })
-            if (media) {
-                let res = await alRequest(media.id, { id: media.id, method: "SearchIDSingle" })
-                store[regexParse[2]] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
-            }
+            addTorrent(i('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode })
+            let res = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" })
+            store[mediaInformation.parseObject.anime_title] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
         }
         document.querySelector(".downloads").appendChild(template)
     })
