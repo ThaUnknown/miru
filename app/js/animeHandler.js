@@ -555,7 +555,7 @@ async function resolveFileMedia(opts) {
         }
         res = await alRequest(method)
         if (!res.data.Page.media[0]) {
-            method.name = method.name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", "").replace("S2","2") // this needs to be improved!!!
+            method.name = method.name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", "").replace("S2", "2") // this needs to be improved!!!
             method.status = undefined
             if (opts.isRelease) method.sort = "START_DATE_DESC"
             res = await alRequest(method)
@@ -623,7 +623,7 @@ async function resolveFileMedia(opts) {
                 }
             }
         } else {
-            if (media.episodes && parseInt(elems.episode_number) > media.episodes) {
+            if (media?.episodes && parseInt(elems.episode_number) > media.episodes) {
                 // value bigger than episode count
                 await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
             } else {
@@ -657,18 +657,24 @@ async function releasesRss(limit) {
             let doc = DOMPARSER(xmlTxt, "text/xml")
             if (lastResult != doc) {
                 lastResult = doc
-                let items = doc.querySelectorAll("item")
+                let items = doc.querySelectorAll("item"),
+                    mediaItems = []
                 for (let l = 0; l < (limit || items.length); l++) {
-                    let i = items[l].querySelector.bind(items[l]),
-                        mediaInformation = await resolveFileMedia({ fileName: i("title").innerHTML, method: "SearchName", isRelease: true })
-                    template = cardCreator(mediaInformation)
-                    template.onclick = async () => {
-                        addTorrent(i('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
-                        let res = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" })
-                        store[mediaInformation.parseObject.anime_title] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
-                    }
-                    frag.appendChild(template)
+                    let i = items[l].querySelector.bind(items[l])
+                    mediaItems.push(resolveFileMedia({ fileName: i("title").innerHTML, method: "SearchName", isRelease: true }))
                 }
+                await Promise.all(mediaItems).then(results => {
+                    results.forEach((mediaInformation,index) => {
+                        let o = items[index].querySelector.bind(items[index])
+                        template = cardCreator(mediaInformation)
+                        template.onclick = async () => {
+                            addTorrent(o('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
+                            let res = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" })
+                            store[mediaInformation.parseObject.anime_title] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
+                        }
+                        frag.appendChild(template)
+                    })
+                })
             }
         } catch (e) {
             console.error(e)

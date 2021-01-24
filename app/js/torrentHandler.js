@@ -70,8 +70,8 @@ function offlineDownload(torrentID, skipVerify) {
         let mediaInformation = await resolveFileMedia({ fileName: torrent.name, method: "SearchName" })
         template = cardCreator(mediaInformation)
         template.onclick = async () => {
-            addTorrent(i('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode })
-            let res = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" })
+            addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode })
+            let res = await alRequest({ id: mediaInformation.media?.id, method: "SearchIDSingle" })
             store[mediaInformation.parseObject.anime_title] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
         }
         document.querySelector(".downloads").appendChild(template)
