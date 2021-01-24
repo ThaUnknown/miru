@@ -68,7 +68,7 @@ async function alRequest(opts) {
     let query,
         variables = {
             type: "ANIME",
-            sort: "TRENDING_DESC",
+            sort: opts.sort || "TRENDING_DESC",
             page: opts.page || 1,
             perPage: opts.perPage || 30,
             status_in: opts.status_in || "[CURRENT,PLANNING]",
@@ -539,22 +539,7 @@ async function nyaaRss(media, episode) {
     })
     return frag
 }
-//resolve anime name based on torrent name and store it
-async function resolveName(name, method, release) {
-    if (!store.hasOwnProperty(name) && !(alResponse && !alResponse.data.Page.media.some(media => (Object.values(media.title).concat(media.synonyms).filter(name => name != null).includes(name) && ((store[name] = media) && true))))) {
-        let res = await alRequest({ perPage: 1, name: name, method: method })
-        if (!res.data.Page.media[0]) {
-            res = await alRequest({ name: name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", ""), method: method, perPage: 1 })
-            console.log(name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", ""))
-        }
-        console.log(res)
-        if (settings.torrent7 && !res.data.Page.media[0] && release) {
-            res = await alRequest({ name: name, method: "SearchName", perPage: 1, status: "RELEASING" })
-        }
-        store[name] = res.data.Page.media[0]
-    }
-    return store[name]
-}
+//resolve anime name based on file name and store it
 
 async function resolveFileMedia(opts) {
     // opts.fileName opts.method opts.isRelease
@@ -570,14 +555,16 @@ async function resolveFileMedia(opts) {
         }
         res = await alRequest(method)
         if (!res.data.Page.media[0]) {
-            method.name = method.name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", "") // this needs to be improved!!!
+            method.name = method.name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", "").replace("S2","2") // this needs to be improved!!!
+            method.status = undefined
+            if (opts.isRelease) method.sort = "START_DATE_DESC"
             res = await alRequest(method)
         }
         if (res.data.Page.media[0]) store[elems.anime_title] = res.data.Page.media[0]
     }
     let episode, media = store[elems.anime_title]
     // resolve episode, if movie, dont.
-    if (media && media.format != "MOVIE" && elems.episode_number) {
+    if ((media?.format != "MOVIE" || media.episodes) && elems.episode_number) {
         async function resolveSeason(opts) {
             // opts.media, opts.episode, opts.increment, opts.offset
             let epMin, epMax

@@ -84,9 +84,7 @@ loadOfflineStorage()
 function cleanupTorrents() {
     client.torrents.filter(torrent => {
         return !offlineTorrents.has(torrent.infoHash) || torrent.progress != 1 // creates an array of all non-offline store torrents and removes them
-    }).forEach(torrent => {
-        torrent.destroy({ destroyStore: true })
-    })
+    }).forEach(torrent => torrent.destroy({ destroyStore: true }))
 }
 
 // manually add trackers

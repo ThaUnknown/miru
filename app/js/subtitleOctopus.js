@@ -48,7 +48,6 @@ function renderSubs(trackNumber) {
             lossyRender: true,
             fonts: playerData.fonts.length == 0 ? ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"] : playerData.fonts,
             workerUrl: 'js/subtitles-octopus-worker.js',
-            debug: true,
             timeOffset: 0
         };
         playerData.octopusInstance = new SubtitlesOctopus(options);

@@ -649,9 +649,9 @@ if ('mediaSession' in navigator) {
 
 //AL entry auto add
 function checkCompletion() {
-    if (!playerData.watched && video.duration - 180 < video.currentTime && playerData.nowPlaying && playerData.nowPlaying[0]) {
-        if (settings.other2) {
-            if (parseInt(playerData.nowPlaying[1]) <= playerData.nowPlaying[0].episodes || !playerData.nowPlaying[0].episodes) alEntry()
+    if (!playerData.watched && video.duration - 180 < video.currentTime && playerData.nowPlaying && playerData.nowPlaying[0].episodes) {
+        if (settings.other2 && !(!playerData.nowPlaying[0].episodes && playerData.nowPlaying[0].streamingEpisodes.length)) {
+            if (parseInt(playerData.nowPlaying[1]) <= playerData.nowPlaying[0].episodes) alEntry()
         } else {
             halfmoon.initStickyAlert({
                 content: `Do You Want To Mark <br><b>${playerData.nowPlaying[0].title.userPreferred}</b><br>Episode ${playerData.nowPlaying[1]} As Completed?<br>
