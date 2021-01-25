@@ -1,5 +1,5 @@
-async function loadHomePage(reload) {
-    let homeLoadElements = [homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore],
+async function loadHomePage() {
+    let homeLoadElements = [navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore],
         homePreviewElements = [homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction],
         browseGallery = document.querySelector(".browse"),
         homeLoadFunctions = {
@@ -36,6 +36,11 @@ async function loadHomePage(reload) {
                 if (!page) gallerySkeleton(browseGallery)
                 let res = await alRequest({ method: "Genre", genre: "Action", page: page || 1 })
                 galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: "action", page: page || 1 })
+            },
+            schedule: async function (page) {
+                if (!page) gallerySkeleton(browseGallery)
+                let res = await alRequest({ method: "AiringSchedule", page: page || 1 }).then(res => res.data.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin != "CN" && entry.media.isAdult == false))
+                galleryAppend({ media: res.map(data => data.media), gallery: browseGallery, method: "schedule", page: page || 1, schedule: true })
             }
         },
         homePreviewFunctions = {
@@ -80,36 +85,29 @@ async function loadHomePage(reload) {
         gallery.appendChild(gallerySkeletonFrag(10))
     }
     function galleryAppend(opts) {
-        function appendFrag(media) {
-            let frag = document.createDocumentFragment()
-            media.forEach(media => {
-                let template = cardCreator({ media: media })
-                template.onclick = () => viewAnime(media)
-                frag.appendChild(template)
-            })
-            opts.gallery.appendChild(frag)
-        }
         if (opts.method) opts.gallery.onscroll = function () {
             if (this.scrollTop + this.clientHeight > this.scrollHeight - 800 && !loadTimeout) {
                 loadTimeout = setTimeout(function () { loadTimeout = undefined }, 1000)
                 homeLoadFunctions[opts.method](opts.page + 1)
             }
         }
-
         if (!opts.page || opts.page == 1) {
             opts.gallery.innerHTML = '';
         }
-        appendFrag(opts.media)
+        console.log(opts)
+        let frag = document.createDocumentFragment()
+        opts.media.forEach(media => {
+            let template = cardCreator({ media: media, schedule: opts.schedule })
+            template.onclick = () => viewAnime(media)
+            frag.appendChild(template)
+        })
+        opts.gallery.appendChild(frag)
         if (opts.page == 1) {
             opts.gallery.scrollTop = 0
             browse.classList.remove("loading")
         }
     }
 
-    if (reload) for (let item of homePreviewElements) {
-        item.innerHTML = ''
-        item.appendChild(gallerySkeletonFrag(4))
-    }
     for (let item of homePreviewElements) {
         homePreviewFunctions[item.dataset.function]()
     }
@@ -118,8 +116,12 @@ async function loadHomePage(reload) {
             homeLoadFunctions[this.dataset.function]()
         }
     }
-}
-navHome.onclick = () => {
-    loadHomePage(true)
-    document.querySelector(".browse").innerHTML = ''
+    navHome.onclick = () => {
+        for (let item of homePreviewElements) {
+            item.innerHTML = ''
+            item.appendChild(gallerySkeletonFrag(4))
+            homePreviewFunctions[item.dataset.function]()
+        }
+        document.querySelector(".browse").innerHTML = ''
+    }
 }

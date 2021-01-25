@@ -113,6 +113,8 @@ coverImage {
     medium
     color
 }
+countryOfOrigin
+isAdult
 bannerImage
 synonyms
 nextAiringEpisode {
@@ -216,6 +218,27 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $genre: 
     Page (page: $page, perPage: $perPage) {
         media(type: $type, sort: $sort, genre: $genre) {
             ${queryObjects}
+        }
+    }
+}`
+    } else if (opts.method == "AiringSchedule") {
+        let date = new Date(),
+            diff = date.getDay() >= 1 ? date.getDay() - 1 : 6 - date.getDay;
+        date.setDate(date.getDate() - diff)
+        date.setHours(0, 0, 0, 0)
+        variables.from = date.getTime() / 1000
+        variables.to = (date.getTime() + 7 * 24 * 60 * 60 * 1000) / 1000
+        console.log(variables)
+        query = `
+query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
+    Page (page: $page, perPage: $perPage) {
+        airingSchedules(airingAt_greater: $from, airingAt_lesser: $to) {
+            episode
+            timeUntilAiring
+            airingAt
+            media{
+                ${queryObjects}
+            }
         }
     }
 }`
@@ -323,7 +346,7 @@ function viewAnime(media) {
     viewDetails.appendChild(detailsfrag)
     if (media.nextAiringEpisode) {
         let temp = document.createElement("p")
-        temp.innerHTML = `<span class="font-weight-bold">Airing</span><br><span class="text-muted"> Episode ${media.nextAiringEpisode.episode}: ${toTS(media.nextAiringEpisode.timeUntilAiring)}</span>`
+        temp.innerHTML = `<span class="font-weight-bold">Airing</span><br><span class="text-muted"> Episode ${media.nextAiringEpisode.episode}: ${countdown(media.nextAiringEpisode.timeUntilAiring)}</span>`
         viewDetails.prepend(temp)
     }
     viewSeason.innerHTML = `${(media.season ? media.season.toLowerCase() + " " : "") + (media.seasonYear ? media.seasonYear : "")}`
@@ -437,6 +460,19 @@ function detailsCreator(entry) {
         })
     }
 }
+function countdown(s) {
+    const d = Math.floor(s / (3600 * 24));
+    s -= d * 3600 * 24;
+    const h = Math.floor(s / 3600);
+    s -= h * 3600;
+    const m = Math.floor(s / 60);
+    s -= m * 60;
+    const tmp = [];
+    (d) && tmp.push(d + 'd');
+    (d || h) && tmp.push(h + 'h');
+    (d || h || m) && tmp.push(m + 'm');
+    return tmp.join(' ');
+}
 function cardCreator(opts) {
     let template = document.createElement("div")
     template.classList.add("card", "m-0", "p-0")
@@ -456,6 +492,7 @@ function cardCreator(opts) {
                 ${opts.media.status ? "<span>" + opts.media.status.toLowerCase().replace(/_/g, " ") + "</span>" : ""}
                 ${opts.media.season || opts.media.seasonYear ? "<span>" + ((opts.media.season.toLowerCase() || "") + " ") + (opts.media.seasonYear || "") + "</span>" : ""}
                 </p>
+                ${opts.schedule && opts.media.nextAiringEpisode ? "<span class='text-muted'>EP " + opts.media.nextAiringEpisode.episode + " in " + countdown(opts.media.nextAiringEpisode.timeUntilAiring) + "</span>" : ""}
             </div>
             <div class="overflow-y-auto px-15 pb-5 bg-very-dark card-desc">
                 ${opts.media.description}
@@ -552,7 +589,7 @@ async function resolveFileMedia(opts) {
         //resolve name and shit
         let method, res
         if (opts.isRelease) {
-            method = { name: elems.anime_title, method: "SearchName", perPage: 1, status: "RELEASING" }
+            method = { name: elems.anime_title, method: "SearchName", perPage: 1, status: "RELEASING", sort: "START_DATE_DESC" }
         } else {
             method = { name: elems.anime_title, method: opts.method, perPage: 1 }
         }
@@ -560,7 +597,6 @@ async function resolveFileMedia(opts) {
         if (!res.data.Page.media[0]) {
             method.name = method.name.replace(" (TV)", "").replace(` (${new Date().getFullYear()})`, "").replace("-", "").replace("S2", "2") // this needs to be improved!!!
             method.status = undefined
-            if (opts.isRelease) method.sort = "START_DATE_DESC"
             res = await alRequest(method)
         }
         if (res.data.Page.media[0]) store[elems.anime_title] = res.data.Page.media[0]
@@ -663,12 +699,12 @@ async function releasesRss(limit) {
                     mediaItems.push(resolveFileMedia({ fileName: i("title").innerHTML, method: "SearchName", isRelease: true }))
                 }
                 await Promise.all(mediaItems).then(results => {
-                    results.forEach((mediaInformation,index) => {
+                    results.forEach((mediaInformation, index) => {
                         let o = items[index].querySelector.bind(items[index])
                         template = cardCreator(mediaInformation)
                         template.onclick = async () => {
                             addTorrent(o('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
-                            store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" }).then(res => res.data.Media) 
+                            store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" }).then(res => res.data.Media)
                             // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
                         }
                         frag.appendChild(template)
