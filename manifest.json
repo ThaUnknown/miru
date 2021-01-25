@@ -19,6 +19,12 @@
       "type": "image/png"
     }
   ],
+  "share_target": {
+    "action": "/app/#home",
+    "params": {
+      "url": "link"
+    }
+  },
   "intent_filters": {
     "scope_url_scheme": "https",
     "scope_url_host": "mirumoe.netlify.app",
@@ -27,7 +33,7 @@
   "protocol_handlers": [
     {
       "protocol": "magnet",
-      "url": "/app/#&m=%s"
+      "url": "/app/#home&file=%s"
     }
   ]
 }

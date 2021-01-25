@@ -78,9 +78,9 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
             let mediaInformation = await resolveFileMedia({ fileName: file.name, method: "SearchName" })
             template = cardCreator(mediaInformation)
             template.onclick = async () => {
-                addTorrent(i('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode })
-                let res = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" })
-                store[mediaInformation.parseObject.anime_title] = res.data.Media // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
+                addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode, file: file })
+                store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" }).then(res => res.data.Media)
+                // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
             }
             frag.appendChild(template)
         }
@@ -88,7 +88,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
     }
     console.log(opts.file)
     //play wanted episode from opts, or the 1st episode, or 1st file [batches: plays wanted episode, single: plays the only episode, manually added: plays first or only file]
-    let selectedFile = opts.file || videoFiles.filter(file => parseInt(nameParseRegex.simple.exec(file.name)[4]) == opts.episode || 1)[0] || videoFiles[0]
+    let selectedFile = opts.file || videoFiles.filter(async file => await anitomyscript(file.name).then(object => Number(object.episode_number) == opts.episode || 1))[0] || videoFiles[0]
     video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
     video.load();
     playVideo();
@@ -165,9 +165,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
             nowPlayingDisplay.innerHTML = `EP ${parseInt(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
         }
     }
-    if ('mediaSession' in navigator && mediaMetadata)
-        navigator.mediaSession.metadata = mediaMetadata
-
+    if ('mediaSession' in navigator && mediaMetadata) navigator.mediaSession.metadata = mediaMetadata
 }
 
 // visibility loss pause
@@ -540,6 +538,12 @@ function btncap() {
             frag.appendChild(template)
         }
     }
+    let timeOffset = document.createElement("div")
+    timeOffset.classList.add("btn-group", "w-full", "pt-5")
+    timeOffset.setAttribute("role", "group")
+    timeOffset.innerHTML = `<button class="btn" type="button" onclick="playerData.octopusInstance.timeOffset+=1">-1s</button>
+<button class="btn" type="button" onclick="playerData.octopusInstance.timeOffset-=1">+1s</button>`
+    frag.appendChild(timeOffset)
     subMenu.innerHTML = '';
     subMenu.appendChild(frag)
 }

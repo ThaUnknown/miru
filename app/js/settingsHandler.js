@@ -32,7 +32,7 @@ function registerProtocol() {
     if ('registerProtocolHandler' in navigator) {
         navigator.registerProtocolHandler(
             'magnet',
-            `${location.href.replace(location.hash, '')}#&file=%s`,
+            `${location.href.replace(location.hash, '')}#home&file=%s`,
             'Miru'
         );
     }
