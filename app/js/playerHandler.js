@@ -125,15 +125,16 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         }
         setTimeout(playerData.onProgress, 100)
     }
-
+    console.log(opts)
     setTimeout(playerData.onProgress, 100)
     if (opts.media) {
         playerData.nowPlaying = [opts.media, opts.episode]
         navNowPlaying.classList.remove("d-none")
     } else { // try to resolve name
-        let mediaInformation = resolveFileMedia({ fileName: selectedFile.name, method: "SearchName" })
+        let mediaInformation = await resolveFileMedia({ fileName: selectedFile.name, method: "SearchName" })
+        console.log(mediaInformation)
         if (mediaInformation.media) {
-            playerData.nowPlaying = [mediaInformation.media, mediaInformation.parseObject.episode]
+            playerData.nowPlaying = [mediaInformation.media, mediaInformation.parseObject.episode_number]
             navNowPlaying.classList.remove("d-none")
         }
     }
