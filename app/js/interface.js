@@ -6,7 +6,7 @@ async function loadHomePage() {
             continue: async function (page) {
                 if (!page) gallerySkeleton(browseGallery)
                 let res = await alRequest({ method: "UserLists", status_in: "CURRENT", id: alID, page: page || 1 })
-                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: "continue", page: page || 1 })
+                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: "continue", page: page || 1, schedule: true})
             },
             releases: async function () {
                 gallerySkeleton(browseGallery)
@@ -46,7 +46,7 @@ async function loadHomePage() {
         homePreviewFunctions = {
             continue: async function () {
                 let res = await alRequest({ method: "UserLists", status_in: "CURRENT", id: alID, perPage: 4 })
-                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homeContinue })
+                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homeContinue, schedule: true })
             },
             releases: async function () {
                 let frag = await releasesRss(4)
@@ -94,7 +94,6 @@ async function loadHomePage() {
         if (!opts.page || opts.page == 1) {
             opts.gallery.innerHTML = '';
         }
-        console.log(opts)
         let frag = document.createDocumentFragment()
         opts.media.forEach(media => {
             let template = cardCreator({ media: media, schedule: opts.schedule })

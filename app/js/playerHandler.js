@@ -132,9 +132,8 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         navNowPlaying.classList.remove("d-none")
     } else { // try to resolve name
         let mediaInformation = await resolveFileMedia({ fileName: selectedFile.name, method: "SearchName" })
-        console.log(mediaInformation)
+        playerData.nowPlaying = [mediaInformation.media, mediaInformation.parseObject.episode_number]
         if (mediaInformation.media) {
-            playerData.nowPlaying = [mediaInformation.media, mediaInformation.parseObject.episode_number]
             navNowPlaying.classList.remove("d-none")
         }
     }
@@ -654,9 +653,9 @@ if ('mediaSession' in navigator) {
 
 //AL entry auto add
 function checkCompletion() {
-    if (!playerData.watched && video.duration - 180 < video.currentTime && playerData.nowPlaying && playerData.nowPlaying[0].episodes) {
-        if (settings.other2 && !(!playerData.nowPlaying[0].episodes && playerData.nowPlaying[0].streamingEpisodes.length)) {
-            if (parseInt(playerData.nowPlaying[1]) <= playerData.nowPlaying[0].episodes) alEntry()
+    if (!playerData.watched && video.duration - 180 < video.currentTime && playerData.nowPlaying && (playerData.nowPlaying[0].episodes || playerData.nowPlaying[0].nextAiringEpisode.episode)) {
+        if (settings.other2 && !(!(playerData.nowPlaying[0].episodes || playerData.nowPlaying[0].nextAiringEpisode.episode) && playerData.nowPlaying[0].streamingEpisodes.length && parseInt(playerData.nowPlaying[1] > 12))) {
+            alEntry()
         } else {
             halfmoon.initStickyAlert({
                 content: `Do You Want To Mark <br><b>${playerData.nowPlaying[0].title.userPreferred}</b><br>Episode ${playerData.nowPlaying[1]} As Completed?<br>

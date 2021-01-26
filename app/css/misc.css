@@ -94,6 +94,7 @@ input:invalid {
     height: 100%;
     width: 10rem;
     background: linear-gradient(270deg, rgba(37, 40, 44, 1) 0%, rgba(37, 40, 44, 1) 15%, rgba(37, 40, 44, .45) 70%, rgba(37, 40, 44, 0) 100%);
+    /*this gradient looks like ass, need to find smth better*/
 }
 
 #home.noauth #homeContinue,

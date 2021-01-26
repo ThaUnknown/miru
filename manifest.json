@@ -21,6 +21,8 @@
   ],
   "share_target": {
     "action": "/app/#home",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
     "params": {
       "url": "link"
     }

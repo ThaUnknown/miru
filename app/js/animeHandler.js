@@ -486,13 +486,13 @@ function cardCreator(opts) {
         <div class="col-8 h-full card-grid">
             <div class="px-15 py-10 bg-very-dark">
                 <h5 class="m-0 text-capitalize font-weight-bold">${opts.media.title.userPreferred}${opts.episode ? " - " + opts.episode : ""}</h5>
+                ${opts.schedule && opts.media.nextAiringEpisode ? "<span class='text-muted font-weight-bold'>EP " + opts.media.nextAiringEpisode.episode + " in " + countdown(opts.media.nextAiringEpisode.timeUntilAiring) + "</span>" : ""}
                 <p class="text-muted m-0 text-capitalize details">
                 ${(opts.media.format ? (opts.media.format == "TV" ? "<span>" + opts.media.format + " Show" : "<span>" + opts.media.format.toLowerCase().replace(/_/g, " ")) : "") + "</span>"}
                 ${opts.media.episodes ? "<span>" + opts.media.episodes + " Episodes</span>" : opts.media.duration ? "<span>" + opts.media.duration + " Minutes</span>" : ""}
                 ${opts.media.status ? "<span>" + opts.media.status.toLowerCase().replace(/_/g, " ") + "</span>" : ""}
                 ${opts.media.season || opts.media.seasonYear ? "<span>" + ((opts.media.season.toLowerCase() || "") + " ") + (opts.media.seasonYear || "") + "</span>" : ""}
                 </p>
-                ${opts.schedule && opts.media.nextAiringEpisode ? "<span class='text-muted'>EP " + opts.media.nextAiringEpisode.episode + " in " + countdown(opts.media.nextAiringEpisode.timeUntilAiring) + "</span>" : ""}
             </div>
             <div class="overflow-y-auto px-15 pb-5 bg-very-dark card-desc">
                 ${opts.media.description}
@@ -589,7 +589,8 @@ async function resolveFileMedia(opts) {
         //resolve name and shit
         let method, res
         if (opts.isRelease) {
-            method = { name: elems.anime_title, method: "SearchName", perPage: 1, status: "RELEASING", sort: "START_DATE_DESC" }
+            method = { name: elems.anime_title, method: "SearchName", perPage: 1, status: "RELEASING", sort: "TRENDING_DESC" } //START_DATE_DESC
+            // maybe releases should include this and last season? idfk
         } else {
             method = { name: elems.anime_title, method: opts.method, perPage: 1 }
         }
@@ -603,7 +604,7 @@ async function resolveFileMedia(opts) {
     }
     let episode, media = store[elems.anime_title]
     // resolve episode, if movie, dont.
-    if ((media?.format != "MOVIE" || media.episodes) && elems.episode_number) {
+    if ((media?.format != "MOVIE" || (media.episodes || media.nextAiringEpisode.episode)) && elems.episode_number) {
         async function resolveSeason(opts) {
             // opts.media, opts.episode, opts.increment, opts.offset
             let epMin, epMax
@@ -622,11 +623,11 @@ async function resolveFileMedia(opts) {
                 tempMedia = opts.media.relations.edges.filter(edge => edge.relationType == "SEQUEL" && (edge.node.format == "TV" || "TV_SHORT"))[0].node
                 increment = true
             }
-            if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) > media.episodes) {
+            if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) > (media.episodes || media.nextAiringEpisode.episode)) {
                 // episode is still out of bounds
                 let nextEdge = await alRequest({ method: "SearchIDSingle", id: tempMedia.id })
                 await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes, increment: increment })
-            } else if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) < media.episodes && epMin - (opts.offset + tempMedia.episodes) > 0) {
+            } else if (tempMedia.episodes && epMax - (opts.offset + tempMedia.episodes) < (media.episodes || media.nextAiringEpisode.episode) && epMin - (opts.offset + tempMedia.episodes) > 0) {
                 // episode is in range, seems good! overwriting media to count up "seasons"
                 if (opts.episode.constructor == Array) {
                     episode = `${elems.episode_number[0] - (opts.offset + tempMedia.episodes)} - ${elems.episode_number[elems.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
@@ -653,8 +654,8 @@ async function resolveFileMedia(opts) {
                 // if it starts with #1 and overflows then it includes more than 1 season in a batch, cant fix this cleanly, name is parsed per file basis so this shouldnt be an issue
                 episode = `${elems.episode_number[0]} - ${elems.episode_number[elems.episode_number.length - 1]}`
             } else {
-                if (media.episodes && parseInt(elems.episode_number[elems.episode_number.length - 1]) > media.episodes) {
-                    // if highest value is bigger than episode count, parseint to math.floor a number like 12.5 - specials - in 1 go
+                if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(elems.episode_number[elems.episode_number.length - 1]) > (media.episodes || media.nextAiringEpisode.episode)) {
+                    // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
                     await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
                 } else {
                     // cant find ep count or range seems fine
@@ -662,7 +663,7 @@ async function resolveFileMedia(opts) {
                 }
             }
         } else {
-            if (media?.episodes && parseInt(elems.episode_number) > media.episodes) {
+            if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(elems.episode_number) > (media.episodes || media.nextAiringEpisode.episode)) {
                 // value bigger than episode count
                 await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
             } else {
