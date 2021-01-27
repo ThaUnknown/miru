@@ -74,11 +74,16 @@ input:invalid {
     cursor: pointer;
     overflow: hidden;
     transition: transform .2s ease;
+    height: 27rem !important;
     box-shadow: rgba(0, 4, 12, .3) 0px 7px 15px, rgba(0, 4, 12, .05) 0px 4px 4px;
 }
 
 .gallery .card:hover {
     transform: scale(1.05)
+}
+
+.gallery .day-row {
+    grid-column: 1 / -1;
 }
 
 #home .gallery {
@@ -110,19 +115,22 @@ input:invalid {
 .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, 50rem);
-    grid-auto-rows: 27rem;
+    grid-auto-rows: auto;
     justify-content: center;
     grid-gap: 2rem;
     padding: 4rem
 }
-#browse.loading .gallery{
+
+#browse.loading .gallery {
     overflow-y: initial !important;
 }
-#browse.loading{
+
+#browse.loading {
     height: 50rem !important;
     position: relative;
     overflow-y: hidden !important;
 }
+
 #browse.loading:after {
     content: "";
     position: absolute;
@@ -138,6 +146,9 @@ input:invalid {
     grid-gap: .6rem;
     padding: 1rem 0;
     justify-content: start;
+}
+.gallery-sm .card{
+    height: 16.2rem !important
 }
 
 .pointer {

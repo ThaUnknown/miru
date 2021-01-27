@@ -675,56 +675,50 @@ async function resolveFileMedia(opts) {
     return { media: media, episode: episode, parseObject: elems }
 }
 
-let store = JSON.parse(localStorage.getItem("store")) || {},
-    lastResult
+let store = JSON.parse(localStorage.getItem("store")) || {}
 
-async function releasesRss(limit) {
-    let frag = document.createDocumentFragment(),
-        url
+function getRSSurl() {
     if (Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0]) {
         //add my own cors proxy for erai
-        url = settings.torrent4 == "Erai-raws" ? new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerHTML + settings.torrent1 + "-magnet") : new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerHTML + settings.torrent1)
+        return settings.torrent4 == "Erai-raws" ? new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerHTML + settings.torrent1 + "-magnet") : new URL(Object.values(torrent4list.options).filter(item => item.value == settings.torrent4)[0].innerHTML + settings.torrent1)
     } else {
-        url = settings.torrent4 + settings.torrent1 // add custom RSS
+        return settings.torrent4 + settings.torrent1 // add custom RSS
     }
-    let res = await fetch(url)
-    await res.text().then(async (xmlTxt) => {
-        try {
-            let doc = DOMPARSER(xmlTxt, "text/xml")
-            if (lastResult != doc) {
-                lastResult = doc
-                let items = doc.querySelectorAll("item"),
-                    mediaItems = []
-                for (let l = 0; l < (limit || items.length); l++) {
-                    let i = items[l].querySelector.bind(items[l])
-                    mediaItems.push(resolveFileMedia({ fileName: i("title").innerHTML, method: "SearchName", isRelease: true }))
-                }
-                await Promise.all(mediaItems).then(results => {
-                    results.forEach((mediaInformation, index) => {
-                        let o = items[index].querySelector.bind(items[index])
-                        template = cardCreator(mediaInformation)
-                        template.onclick = async () => {
-                            addTorrent(o('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
-                            store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" }).then(res => res.data.Media)
-                            // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
-                        }
-                        frag.appendChild(template)
-                    })
-                })
+}
+async function releasesCards(items, frag, limit) {
+    console.log(items, frag, limit)
+    let mediaItems = []
+    for (let l = 0; l < (limit || items.length); l++) {
+        let i = items[l].querySelector.bind(items[l])
+        mediaItems.push(resolveFileMedia({ fileName: i("title").innerHTML, method: "SearchName", isRelease: true }))
+    }
+    await Promise.all(mediaItems).then(results => {
+        results.forEach((mediaInformation, index) => {
+            let o = items[index].querySelector.bind(items[index])
+            template = cardCreator(mediaInformation)
+            template.onclick = async () => {
+                addTorrent(o('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
+                store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" }).then(res => res.data.Media)
+                // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
             }
+            frag.appendChild(template)
+        })
+    })
+    localStorage.setItem("store", JSON.stringify(store))
+}
+async function releasesRss(limit) {
+    let frag = document.createDocumentFragment()
+    await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
+        try {
+            let doc = DOMPARSER(xmlTxt, "text/xml"),
+                items = doc.querySelectorAll("item")
+            await releasesCards(items, frag, limit)
         } catch (e) {
             console.error(e)
         }
-    })
-    localStorage.setItem("store", JSON.stringify(store))
+    }))
     return frag
 }
-//latest releases auto-update
-// setInterval(() => {
-//     if (document.location.hash == "#releases") {
-//         releasesRss()
-//     }
-// }, 30000);
 let alID // login icon 
 async function loadAnime() {
     // await searchAnime()

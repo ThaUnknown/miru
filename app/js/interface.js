@@ -6,7 +6,7 @@ async function loadHomePage() {
             continue: async function (page) {
                 if (!page) gallerySkeleton(browseGallery)
                 let res = await alRequest({ method: "UserLists", status_in: "CURRENT", id: alID, page: page || 1 })
-                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: "continue", page: page || 1, schedule: true})
+                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: "continue", page: page || 1 })
             },
             releases: async function () {
                 gallerySkeleton(browseGallery)
@@ -46,12 +46,36 @@ async function loadHomePage() {
         homePreviewFunctions = {
             continue: async function () {
                 let res = await alRequest({ method: "UserLists", status_in: "CURRENT", id: alID, perPage: 4 })
-                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homeContinue, schedule: true })
+                galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homeContinue })
             },
-            releases: async function () {
-                let frag = await releasesRss(4)
-                homeReleases.innerHTML = ''
-                homeReleases.appendChild(frag)
+            releases: async function () { // this could be cleaner, but oh well
+                await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
+                    let doc = DOMPARSER(xmlTxt, "text/xml"),
+                        pubDate = doc.querySelector("pubDate").innerHTML
+                    if (lastRSSDate != pubDate) {
+                        if (lastRSSDate) {
+                            homeReleases.innerHTML = ''
+                            homeReleases.appendChild(gallerySkeletonFrag(4))
+                            resolveFileMedia({ fileName: doc.querySelector("item").querySelector("title").innerHTML, method: "SearchName", isRelease: true }).then(mediaInformation => {
+                                let notification = new Notification('A New Episode Was Released!', {
+                                    body: `Episode ${mediaInformation.episode} of ${mediaInformation.media.title.userPrefered} Was Just Released!`,
+                                    icon: mediaInformation.media.coverImage.medium
+                                });
+                                notification.onclick = async () => {
+                                    window.parent.focus();
+                                    addTorrent(doc.querySelector("item").querySelector("link").innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
+                                    store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" }).then(res => res.data.Media)
+                                }
+                            })
+                        }
+                        let frag = document.createDocumentFragment()
+                        lastRSSDate = pubDate
+                        await releasesCards(doc.querySelectorAll("item"), frag, 4)
+                        homeReleases.innerHTML = ''
+                        homeReleases.appendChild(frag)
+                    }
+                }))
+                setTimeout(homePreviewFunctions["releases"], 30000)
             },
             planning: async function () {
                 let res = await alRequest({ method: "UserLists", status_in: "PLANNING", id: alID, perPage: 4 })
@@ -70,14 +94,16 @@ async function loadHomePage() {
                 galleryAppend({ media: res.data.Page.media, gallery: homeAction })
             }
         },
-        loadTimeout,
         gallerySkeletonFrag = function (limit) {
             let frag = document.createDocumentFragment()
             for (let i = 0; i < limit; i++) {
                 frag.appendChild(cardCreator({}))
             }
             return frag
-        }
+        },
+        loadTimeout,
+        lastDate,
+        lastRSSDate
 
     function gallerySkeleton(gallery) {
         browse.classList.add("loading")
@@ -94,8 +120,16 @@ async function loadHomePage() {
         if (!opts.page || opts.page == 1) {
             opts.gallery.innerHTML = '';
         }
-        let frag = document.createDocumentFragment()
+        let frag = document.createDocumentFragment(),
+            date = new Date()
         opts.media.forEach(media => {
+            if (opts.schedule && (!lastDate || (new Date(+date + media.nextAiringEpisode.timeUntilAiring * 1000).getDay() != lastDate.getDay()))) {
+                let div = document.createElement("div")
+                lastDate = new Date(+date + media.nextAiringEpisode.timeUntilAiring * 1000)
+                div.classList.add("day-row", "font-size-24", "font-weight-bold", "h-50", "d-flex", "align-items-end")
+                div.innerHTML = lastDate.toLocaleDateString("en-US", { weekday: 'long' })
+                frag.appendChild(div)
+            }
             let template = cardCreator({ media: media, schedule: opts.schedule })
             template.onclick = () => viewAnime(media)
             frag.appendChild(template)
@@ -116,6 +150,7 @@ async function loadHomePage() {
         }
     }
     navHome.onclick = () => {
+        lastRSSDate = undefined
         for (let item of homePreviewElements) {
             item.innerHTML = ''
             item.appendChild(gallerySkeletonFrag(4))

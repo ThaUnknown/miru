@@ -1,5 +1,5 @@
 const settingsElements = [
-    volume, player2, player3, player5, player6, player8, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent6, torrent9, other2
+    volume, player2, player3, player5, player6, player8, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent6, torrent9, other2, other3
 ]
 setRes.addEventListener("click", restoreDefaults)
 settingsTab.addEventListener("click", applySettingsTimeout)
@@ -49,6 +49,10 @@ clearRelCache.onclick = () => {
     store = {}
 }
 renderSettings()
+
+other3.onclick = () => {
+    Notification.requestPermission().then(perm => perm == "denied" ? other3.checked = false : "")
+}
 
 let searchParams = new URLSearchParams(location.href)
 if (searchParams.get("access_token")) {
