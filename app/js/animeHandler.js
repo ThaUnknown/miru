@@ -686,7 +686,6 @@ function getRSSurl() {
     }
 }
 async function releasesCards(items, frag, limit) {
-    console.log(items, frag, limit)
     let mediaItems = []
     for (let l = 0; l < (limit || items.length); l++) {
         let i = items[l].querySelector.bind(items[l])

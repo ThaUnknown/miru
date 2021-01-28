@@ -57,8 +57,8 @@ async function loadHomePage() {
                             homeReleases.innerHTML = ''
                             homeReleases.appendChild(gallerySkeletonFrag(4))
                             resolveFileMedia({ fileName: doc.querySelector("item").querySelector("title").innerHTML, method: "SearchName", isRelease: true }).then(mediaInformation => {
-                                let notification = new Notification('A New Episode Was Released!', {
-                                    body: `Episode ${mediaInformation.episode} of ${mediaInformation.media.title.userPrefered} Was Just Released!`,
+                                let notification = new Notification(mediaInformation.media.title.userPreferred, {
+                                    body: `Episode ${mediaInformation.episode} was just released!`,
                                     icon: mediaInformation.media.coverImage.medium
                                 });
                                 notification.onclick = async () => {

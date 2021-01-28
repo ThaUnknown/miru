@@ -1,0 +1,11 @@
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http:/www.mozilla.org/2006/browser/search/">
+<ShortName>Miru</ShortName>
+<Description>Search anime on Miru.</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="32" height="32" type="image/png">/logo.png</Image>
+<Url type="text/html" method="get" template="https://miru.moe/app/">
+<Param name="anime" value="{searchTerms}"/>
+</Url>
+<Url type="application/opensearchdescription+xml" rel="self" template="miru"/>
+<moz:SearchForm>https://miru.moe/</moz:SearchForm>
+</OpenSearchDescription>
