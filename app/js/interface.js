@@ -45,7 +45,7 @@ async function loadHomePage() {
         },
         homePreviewFunctions = {
             continue: async function () {
-                let res = await alRequest({ method: "UserLists", status_in: "CURRENT", id: alID, perPage: 4 })
+                let res = await alRequest({ method: "UserLists", status_in: "CURRENT", id: alID, perPage: 5 })
                 galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homeContinue })
             },
             releases: async function () { // this could be cleaner, but oh well
@@ -55,7 +55,7 @@ async function loadHomePage() {
                     if (lastRSSDate != pubDate) {
                         if (lastRSSDate) {
                             homeReleases.innerHTML = ''
-                            homeReleases.appendChild(gallerySkeletonFrag(4))
+                            homeReleases.appendChild(gallerySkeletonFrag(5))
                             resolveFileMedia({ fileName: doc.querySelector("item").querySelector("title").innerHTML, method: "SearchName", isRelease: true }).then(mediaInformation => {
                                 if (settings.other3) {
                                     let notification = new Notification(mediaInformation.media.title.userPreferred, {
@@ -72,7 +72,7 @@ async function loadHomePage() {
                         }
                         let frag = document.createDocumentFragment()
                         lastRSSDate = pubDate
-                        await releasesCards(doc.querySelectorAll("item"), frag, 4)
+                        await releasesCards(doc.querySelectorAll("item"), frag, 5)
                         homeReleases.innerHTML = ''
                         homeReleases.appendChild(frag)
                     }
@@ -80,19 +80,19 @@ async function loadHomePage() {
                 setTimeout(homePreviewFunctions["releases"], 30000)
             },
             planning: async function () {
-                let res = await alRequest({ method: "UserLists", status_in: "PLANNING", id: alID, perPage: 4 })
+                let res = await alRequest({ method: "UserLists", status_in: "PLANNING", id: alID, perPage: 5 })
                 galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homePlanning })
             },
             trending: async function () {
-                let res = await alRequest({ method: "Trending", id: alID, perPage: 4 })
+                let res = await alRequest({ method: "Trending", id: alID, perPage: 5 })
                 galleryAppend({ media: res.data.Page.media, gallery: homeTrending })
             },
             romance: async function () {
-                let res = await alRequest({ method: "Genre", genre: "Romance", perPage: 4 })
+                let res = await alRequest({ method: "Genre", genre: "Romance", perPage: 5 })
                 galleryAppend({ media: res.data.Page.media, gallery: homeRomance })
             },
             action: async function () {
-                let res = await alRequest({ method: "Genre", genre: "Action", perPage: 4 })
+                let res = await alRequest({ method: "Genre", genre: "Action", perPage: 5 })
                 galleryAppend({ media: res.data.Page.media, gallery: homeAction })
             }
         },
@@ -155,7 +155,7 @@ async function loadHomePage() {
         lastRSSDate = undefined
         for (let item of homePreviewElements) {
             item.innerHTML = ''
-            item.appendChild(gallerySkeletonFrag(4))
+            item.appendChild(gallerySkeletonFrag(5))
             homePreviewFunctions[item.dataset.function]()
         }
         document.querySelector(".browse").innerHTML = ''
