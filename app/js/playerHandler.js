@@ -47,6 +47,7 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     video.pause()
     video.src = "";
     video.load()
+    document.title = "Miru"
     // if (typeof client !== 'undefined' && client.torrents[0] && client.torrents[0].files.length > 1) {
     //     client.torrents[0].files.forEach(file => file.deselect());
     //     client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
@@ -142,7 +143,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
     if (playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[1]) {
         mediaMetadata = new MediaMetadata({
             title: playerData.nowPlaying[0].title.userPreferred,
-            artist: `Episode ${parseInt(playerData.nowPlaying[1])}`,
+            artist: `Episode ${Number(playerData.nowPlaying[1])}`,
             album: "Miru",
             artwork: [{
                 src: playerData.nowPlaying[0].coverImage.medium,
@@ -150,19 +151,22 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
                 type: 'image/jpg'
             }]
         });
-        nowPlayingDisplay.innerHTML = `EP ${parseInt(playerData.nowPlaying[1])}`
+        nowPlayingDisplay.innerHTML = `EP ${Number(playerData.nowPlaying[1])}`
         if (parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes)
             bnext.setAttribute("disabled", "")
-        if (playerData.nowPlaying[0].streamingEpisodes.length >= parseInt(playerData.nowPlaying[1])) {
-            let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && episodeRx.exec(episode.title)[1] == parseInt(playerData.nowPlaying[1]))[0]
+        if (playerData.nowPlaying[0].streamingEpisodes.length >= Number(playerData.nowPlaying[1])) {
+            let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && episodeRx.exec(episode.title)[1] == Number(playerData.nowPlaying[1]))[0]
             video.poster = streamingEpisode.thumbnail
-            mediaMetadata.artist = `Episode ${parseInt(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+            document.title = `${playerData.nowPlaying[0].title.userPreferred} - ${Number(playerData.nowPlaying[1])} - EP ${episodeRx.exec(streamingEpisode.title)[2]} - Miru`
+            mediaMetadata.artist = `Episode ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
             mediaMetadata.artwork = [{
                 src: streamingEpisode.thumbnail,
                 sizes: '256x256',
                 type: 'image/jpg'
             }]
-            nowPlayingDisplay.innerHTML = `EP ${parseInt(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+            nowPlayingDisplay.innerHTML = `EP ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+        } else {
+            document.title = `${playerData.nowPlaying[0].title.userPreferred} -  EP ${Number(playerData.nowPlaying[1])} - Miru`
         }
     }
     if ('mediaSession' in navigator && mediaMetadata) navigator.mediaSession.metadata = mediaMetadata
