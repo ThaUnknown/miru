@@ -132,7 +132,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         navNowPlaying.classList.remove("d-none")
     } else { // try to resolve name
         let mediaInformation = await resolveFileMedia({ fileName: selectedFile.name, method: "SearchName" })
-        playerData.nowPlaying = [mediaInformation.media, mediaInformation.parseObject.episode_number]
+        playerData.nowPlaying = [mediaInformation.media, mediaInformation.episode]
         if (mediaInformation.media) {
             navNowPlaying.classList.remove("d-none")
         }

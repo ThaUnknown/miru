@@ -116,7 +116,7 @@
     <div class="modal" id="trailer" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content w-three-quarter h-full bg-transparent d-flex justify-content-center flex-column">
-                <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close">
+                <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close" id="trailerClose">
                     <span>&times;</span>
                 </button>
                 <div class="trailer w-full position-relative">
@@ -250,11 +250,11 @@
                     </div>
                 </div>
             </section>
-            <section id="browse" class="flex-column border-top">
-                <div class="gallery browse h-full overflow-y-auto">
+            <section id="browse" class="flex-column">
+                <div class="gallery browse overflow-y-auto">
                 </div>
             </section>
-            <section id="home" class="flex-column border-top overflow-y-auto">
+            <section id="home" class="flex-column overflow-y-auto">
                 <div class="h-full p-10">
                     <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homeContinueMore"
                         data-function="continue" href="#browse">
@@ -594,11 +594,11 @@
                     </div>
                 </div>
             </section>
-            <section id="downloads" class="flex-column border-top">
+            <section id="downloads" class="flex-column">
                 <div class="gallery downloads h-full overflow-y-auto">
                 </div>
             </section>
-            <section id="playlist" class="flex-column border-top">
+            <section id="playlist" class="flex-column">
                 <div class="gallery playlist h-full overflow-y-auto">
                 </div>
             </section>

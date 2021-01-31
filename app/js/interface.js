@@ -57,14 +57,16 @@ async function loadHomePage() {
                             homeReleases.innerHTML = ''
                             homeReleases.appendChild(gallerySkeletonFrag(4))
                             resolveFileMedia({ fileName: doc.querySelector("item").querySelector("title").innerHTML, method: "SearchName", isRelease: true }).then(mediaInformation => {
-                                let notification = new Notification(mediaInformation.media.title.userPreferred, {
-                                    body: `Episode ${mediaInformation.episode} was just released!`,
-                                    icon: mediaInformation.media.coverImage.medium
-                                });
-                                notification.onclick = async () => {
-                                    window.parent.focus();
-                                    addTorrent(doc.querySelector("item").querySelector("link").innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
-                                    store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" }).then(res => res.data.Media)
+                                if (settings.other3) {
+                                    let notification = new Notification(mediaInformation.media.title.userPreferred, {
+                                        body: `Episode ${mediaInformation.episode} was just released!`,
+                                        icon: mediaInformation.media.coverImage.medium
+                                    });
+                                    notification.onclick = async () => {
+                                        window.parent.focus();
+                                        addTorrent(doc.querySelector("item").querySelector("link").innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
+                                        store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" }).then(res => res.data.Media)
+                                    }
                                 }
                             })
                         }
@@ -123,7 +125,7 @@ async function loadHomePage() {
         let frag = document.createDocumentFragment(),
             date = new Date()
         opts.media.forEach(media => {
-            if (opts.schedule && (!lastDate || (new Date(+date + media.nextAiringEpisode.timeUntilAiring * 1000).getDay() != lastDate.getDay()))) {
+            if (opts.schedule && media.nextAiringEpisode?.timeUntilAiring && (!lastDate || (new Date(+date + media.nextAiringEpisode.timeUntilAiring * 1000).getDay() != lastDate.getDay()))) {
                 let div = document.createElement("div")
                 lastDate = new Date(+date + media.nextAiringEpisode.timeUntilAiring * 1000)
                 div.classList.add("day-row", "font-size-24", "font-weight-bold", "h-50", "d-flex", "align-items-end")

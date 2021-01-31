@@ -427,6 +427,9 @@ function viewAnime(media) {
         viewEpisodesWrapper.classList.add("hidden")
     }
 }
+trailerClose.onclick = () => {
+    trailerVideo.src = ""
+}
 function trailerPopup(trailer) {
     trailerVideo.src = ""
     halfmoon.toggleModal("trailer")
@@ -435,7 +438,6 @@ function trailerPopup(trailer) {
             trailerVideo.src = "https://www.youtube.com/embed/" + trailer.id
             break;
     }
-
 }
 //details list factory
 function detailsCreator(entry) {
