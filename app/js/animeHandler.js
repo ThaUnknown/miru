@@ -223,7 +223,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $genre: 
 }`
     } else if (opts.method == "AiringSchedule") {
         let date = new Date(),
-            diff = date.getDay() >= 1 ? date.getDay() - 1 : 6 - date.getDay;
+            diff = date.getDay() >= 1 ? date.getDay() - 1 : 6 - date.getDay();
         date.setDate(date.getDate() - diff)
         date.setHours(0, 0, 0, 0)
         variables.from = date.getTime() / 1000
