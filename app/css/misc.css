@@ -9,7 +9,8 @@
 }
 
 body {
-    overscroll-behavior: none
+    overscroll-behavior: none;
+    user-select: none;
 }
 
 .badge-color {
@@ -18,12 +19,15 @@ body {
 }
 
 .contain-img {
-    object-fit: contain
+    object-fit: contain;
 }
 
 .cover-img {
     object-fit: cover;
     background-color: var(--color) !important;
+}
+img {
+    pointer-events: none;
 }
 
 input:invalid {

@@ -134,9 +134,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
     } else { // try to resolve name
         let mediaInformation = await resolveFileMedia({ fileName: selectedFile.name, method: "SearchName" })
         playerData.nowPlaying = [mediaInformation.media, mediaInformation.episode]
-        if (mediaInformation.media) {
-            navNowPlaying.classList.remove("d-none")
-        }
+        if (mediaInformation.media) navNowPlaying.classList.remove("d-none")
     }
     let mediaMetadata
     // only set mediasession and other shit if the playerdata is parsed correctly
@@ -152,8 +150,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
             }]
         });
         nowPlayingDisplay.innerHTML = `EP ${Number(playerData.nowPlaying[1])}`
-        if (parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes)
-            bnext.setAttribute("disabled", "")
+        if (parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) bnext.setAttribute("disabled", "")
         if (playerData.nowPlaying[0].streamingEpisodes.length >= Number(playerData.nowPlaying[1])) {
             let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && episodeRx.exec(episode.title)[1] == Number(playerData.nowPlaying[1]))[0]
             video.poster = streamingEpisode.thumbnail
