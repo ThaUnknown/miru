@@ -14,6 +14,8 @@ function subStream(stream) { // subtitle parsing with seeking support
                     track.header = `[V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Default,${Object.values(subtitle1list.options).filter(item => item.value == settings.subtitle1)[0].innerText}
+[Events]
+
 `
                 }
                 playerData.headers[track.number] = track
@@ -28,8 +30,7 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
             let formatSub = "Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text
             if (!playerData.subtitles[trackNumber].has(formatSub)) {
                 playerData.subtitles[trackNumber].add(formatSub)
-                if (playerData.selectedHeader == trackNumber)
-                    renderSubs.call(null, trackNumber)
+                if (playerData.selectedHeader == trackNumber) renderSubs(trackNumber)
             }
         }
 
@@ -46,7 +47,7 @@ function renderSubs(trackNumber) {
             video: video,
             subContent: trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1),
             lossyRender: true,
-            fonts: playerData.fonts.length == 0 ? ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"] : playerData.fonts,
+            fonts: playerData.fonts?.length != 0 ? playerData.fonts : ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"] ,
             workerUrl: 'js/subtitles-octopus-worker.js',
             timeOffset: 0
         };
@@ -84,6 +85,8 @@ function postDownload(file) { // parse subtitles fully after a download is finis
                     track.header = `[V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Default,${Object.values(subtitle1list.options).filter(item => item.value == settings.subtitle1)[0].innerText}
+[Events]
+
 `
                 }
                 headers[track.number] = track
@@ -99,8 +102,10 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
             playerData.headers = headers
             playerData.parsed = 1
             playerData.subtitleStream = undefined
-            renderSubs.call(null, playerData.selectedHeader)
+            renderSubs(playerData.selectedHeader)
             parser = undefined
+            video.pause();
+            playVideo();
         });
         file.createReadStream().pipe(parser)
     }

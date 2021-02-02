@@ -154,7 +154,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         if (playerData.nowPlaying[0].streamingEpisodes.length >= Number(playerData.nowPlaying[1])) {
             let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && episodeRx.exec(episode.title)[1] == Number(playerData.nowPlaying[1]))[0]
             video.poster = streamingEpisode.thumbnail
-            document.title = `${playerData.nowPlaying[0].title.userPreferred} - ${Number(playerData.nowPlaying[1])} - EP ${episodeRx.exec(streamingEpisode.title)[2]} - Miru`
+            document.title = `${playerData.nowPlaying[0].title.userPreferred} - EP ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]} - Miru`
             mediaMetadata.artist = `Episode ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
             mediaMetadata.artwork = [{
                 src: streamingEpisode.thumbnail,

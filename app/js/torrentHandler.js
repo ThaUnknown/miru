@@ -55,8 +55,8 @@ function t(a) {
 // offline storage initial load
 let offlineTorrents
 async function loadOfflineStorage() {
-    offlineTorrents = new Set([...await indexedDB.databases()].map(object => { return object.name }));
-    [...offlineTorrents].forEach(torrentID => offlineDownload(torrentID, true)) // adds all offline store torrents to the client
+    offlineTorrents = JSON.parse(localStorage.getItem("offlineTorrents")) || {};
+    Object.values(offlineTorrents).forEach(torrentID => offlineDownload(new Blob([new Uint8Array(torrentID)]), true)) // adds all offline store torrents to the client
 }
 
 // add torrent for offline download
@@ -66,12 +66,16 @@ function offlineDownload(torrentID, skipVerify) {
         skipVerify: skipVerify
     })
     torrent.on("metadata", async () => {
-        offlineTorrents.add(torrent.infoHash)
+        console.log(torrent)
+        if (!offlineTorrents[torrent.infoHash]) {
+            offlineTorrents[torrent.infoHash] = Array.from(torrent.torrentFile);
+            localStorage.setItem("offlineTorrents", JSON.stringify(offlineTorrents))
+        }
         let mediaInformation = await resolveFileMedia({ fileName: torrent.name, method: "SearchName" })
         template = cardCreator(mediaInformation)
         template.onclick = async () => {
             addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode })
-            store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media?.id, method: "SearchIDSingle" }).then(res => res.data.Media)  
+            store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media?.id, method: "SearchIDSingle" }).then(res => res.data.Media)
             // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
         }
         document.querySelector(".downloads").appendChild(template)
@@ -83,7 +87,7 @@ loadOfflineStorage()
 // cleanup torrent and store
 function cleanupTorrents() {
     client.torrents.filter(torrent => {
-        return !offlineTorrents.has(torrent.infoHash) || torrent.progress != 1 // creates an array of all non-offline store torrents and removes them
+        return !(offlineTorrents[torrent.infoHash] || torrent.progress == 1) // creates an array of all non-offline store torrents and removes them
     }).forEach(torrent => torrent.destroy({ destroyStore: true }))
 }
 
@@ -122,7 +126,9 @@ function addTorrent(torrentID, opts) {
     document.location.hash = "#player"
     cleanupVideo()
     cleanupTorrents()
-    if (client.get(torrentID)) {
+    if (torrentID instanceof Object) {
+        playTorrent(torrentID, opts)
+    } else if (client.get(torrentID)) {
         playTorrent(client.get(torrentID), opts)
     } else {
         client.add(torrentID, settings.torrent5 ? { store: IdbChunkStore } : {}, function (torrent) {
