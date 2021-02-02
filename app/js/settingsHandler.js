@@ -50,9 +50,7 @@ clearRelCache.onclick = () => {
 }
 renderSettings()
 
-other1.onclick = () => {
-    Notification.requestPermission().then(perm => perm == "denied" ? other1.checked = false : "")
-}
+other1.onclick = () => Notification.requestPermission().then(perm => perm == "denied" ? other1.checked = false : "")
 
 let searchParams = new URLSearchParams(location.href)
 if (searchParams.get("access_token")) {

@@ -41,17 +41,18 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
     stream.pipe(playerData.subtitleStream)
 }
 let octopusTimeout
-function renderSubs(trackNumber) {
+async function renderSubs(trackNumber) {
     if (!playerData.octopusInstance) {
         let options = {
             video: video,
+            targetFps: await playerData.fps,
             subContent: trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1),
             lossyRender: true,
             fonts: playerData.fonts?.length != 0 ? playerData.fonts : ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"],
             workerUrl: 'js/subtitles-octopus-worker.js',
             timeOffset: 0
         };
-        playerData.octopusInstance = new SubtitlesOctopus(options);
+        if (!playerData.octopusInstance) playerData.octopusInstance = new SubtitlesOctopus(options);
     } else {
         if (!octopusTimeout) {
             octopusTimeout = setTimeout(() => {

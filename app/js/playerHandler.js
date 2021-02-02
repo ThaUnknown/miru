@@ -92,6 +92,40 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
     let selectedFile = opts.file || videoFiles.filter(async file => await anitomyscript(file.name).then(object => Number(object.episode_number) == opts.episode || 1))[0] || videoFiles[0]
     video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
     video.load();
+    //"predict" video FPS for subtitle renderer
+    playerData.fps = new Promise(resolve => {
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+            let wasSeeked
+            video.onseeking = () => wasSeeked = true;
+            video.onplay = () => setTimeout(() => {
+                video.requestVideoFrameCallback((now, metadata) => {
+                    let rawFPS = metadata.presentedFrames / metadata.mediaTime
+                    console.log(rawFPS, metadata)
+                    if (!wasSeeked) {
+                        if (rawFPS >= 19 && rawFPS <= 26) {
+                            resolve(23.976)
+                        } else if (rawFPS > 26 && rawFPS <= 35) {
+                            resolve(29.97)
+                        } else if (rawFPS > 50 && rawFPS <= 70) {
+                            resolve(59.94)
+                        } else {
+                            //smth went VERY wrong XD
+                            resolve(23.976)
+                        }
+                    } else {
+                        //video was seeked, cant predict fps
+                        resolve(23.976)
+                    }
+                })
+                video.onseeking = undefined
+                video.onplay = undefined
+            }, 3000)
+        } else {
+            // can't predict fps, API unsupported, assume 24fps
+            resolve(23.976)
+        }
+
+    })
     playVideo();
     function processFile() {
         halfmoon.initStickyAlert({
