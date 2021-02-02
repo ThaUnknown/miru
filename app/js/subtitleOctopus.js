@@ -47,7 +47,7 @@ function renderSubs(trackNumber) {
             video: video,
             subContent: trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1),
             lossyRender: true,
-            fonts: playerData.fonts?.length != 0 ? playerData.fonts : ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"] ,
+            fonts: playerData.fonts?.length != 0 ? playerData.fonts : ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"],
             workerUrl: 'js/subtitles-octopus-worker.js',
             timeOffset: 0
         };
@@ -104,8 +104,10 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
             playerData.subtitleStream = undefined
             renderSubs(playerData.selectedHeader)
             parser = undefined
-            video.pause();
-            playVideo();
+            if (!video.paused) {
+                video.pause();
+                playVideo();
+            }
         });
         file.createReadStream().pipe(parser)
     }
