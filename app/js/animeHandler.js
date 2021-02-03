@@ -697,11 +697,7 @@ async function releasesCards(items, frag, limit) {
         results.forEach((mediaInformation, index) => {
             let o = items[index].querySelector.bind(items[index])
             template = cardCreator(mediaInformation)
-            template.onclick = async () => {
-                addTorrent(o('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
-                store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" }).then(res => res.data.Media)
-                // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
-            }
+            template.onclick = () => addTorrent(o('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
             frag.appendChild(template)
         })
     })

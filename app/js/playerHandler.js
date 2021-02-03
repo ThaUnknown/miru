@@ -64,10 +64,54 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     document.querySelector(".playlist").innerHTML = '';
     bnext.removeAttribute("disabled")
     navNowPlaying.classList.add("d-none")
-    if ('mediaSession' in navigator) navigator.mediaSession.metadata = null
+    if ('mediaSession' in navigator) navigator.mediaSession.metadata = undefined
 }
 
 async function buildVideo(torrent, opts) { // sets video source and creates a bunch of other media stuff
+    //play wanted episode from opts, or the 1st episode, or 1st file [batches: plays wanted episode, single: plays the only episode, manually added: plays first or only file]
+    let selectedFile = videoFiles[0]
+    if (opts.file) {
+        selectedFile = opts.file
+    } else if (videoFiles.length > 1) {
+        //TODO play selected media too!
+        selectedFile = videoFiles.filter(async file => await anitomyscript(file.name).then(object => Number(object.episode_number) == opts.episode || 1))[0] || videoFiles[0]
+    }
+    video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
+    video.load();
+    //"predict" video FPS for subtitle renderer
+    playerData.fps = new Promise(resolve => {
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+            let wasSeeked
+            video.onseeking = () => wasSeeked = true;
+            video.onplay = () => setTimeout(() => video.requestVideoFrameCallback((now, metadata) => {
+                let rawFPS = metadata.presentedFrames / metadata.mediaTime
+                console.log(rawFPS, metadata)
+                if (!wasSeeked) {
+                    if (rawFPS >= 19 && rawFPS <= 26) {
+                        resolve(23.976)
+                    } else if (rawFPS > 26 && rawFPS <= 35) {
+                        resolve(29.97)
+                    } else if (rawFPS > 50 && rawFPS <= 70) {
+                        resolve(59.94)
+                    } else {
+                        //smth went VERY wrong XD
+                        resolve(23.976)
+                    }
+                } else {
+                    //video was seeked, cant predict fps
+                    resolve(23.976)
+                }
+                video.onseeking = undefined
+                video.onplay = undefined
+            }), 3000)
+        } else {
+            // can't predict fps, API unsupported, assume 24fps
+            resolve(23.976)
+        }
+
+    })
+    playVideo();
+
     if (videoFiles.length > 1) {
         if (!torrent.store.store._idbkvStore) {
             torrent.files.forEach(file => file.deselect());
@@ -78,55 +122,12 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         for (let file of videoFiles) {
             let mediaInformation = await resolveFileMedia({ fileName: file.name, method: "SearchName" })
             template = cardCreator(mediaInformation)
-            template.onclick = async () => {
-                addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode, file: file })
-                store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: "SearchIDSingle" }).then(res => res.data.Media)
-                // force updates entry data on play in case its outdated, needs to be made cleaner and somewhere else...
-            }
+            template.onclick = () => addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode, file: file })
             frag.appendChild(template)
         }
         document.querySelector(".playlist").appendChild(frag)
     }
-    console.log(opts.file)
-    //play wanted episode from opts, or the 1st episode, or 1st file [batches: plays wanted episode, single: plays the only episode, manually added: plays first or only file]
-    let selectedFile = opts.file || videoFiles.filter(async file => await anitomyscript(file.name).then(object => Number(object.episode_number) == opts.episode || 1))[0] || videoFiles[0]
-    video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
-    video.load();
-    //"predict" video FPS for subtitle renderer
-    playerData.fps = new Promise(resolve => {
-        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
-            let wasSeeked
-            video.onseeking = () => wasSeeked = true;
-            video.onplay = () => setTimeout(() => {
-                video.requestVideoFrameCallback((now, metadata) => {
-                    let rawFPS = metadata.presentedFrames / metadata.mediaTime
-                    console.log(rawFPS, metadata)
-                    if (!wasSeeked) {
-                        if (rawFPS >= 19 && rawFPS <= 26) {
-                            resolve(23.976)
-                        } else if (rawFPS > 26 && rawFPS <= 35) {
-                            resolve(29.97)
-                        } else if (rawFPS > 50 && rawFPS <= 70) {
-                            resolve(59.94)
-                        } else {
-                            //smth went VERY wrong XD
-                            resolve(23.976)
-                        }
-                    } else {
-                        //video was seeked, cant predict fps
-                        resolve(23.976)
-                    }
-                })
-                video.onseeking = undefined
-                video.onplay = undefined
-            }, 3000)
-        } else {
-            // can't predict fps, API unsupported, assume 24fps
-            resolve(23.976)
-        }
 
-    })
-    playVideo();
     function processFile() {
         halfmoon.initStickyAlert({
             content: `<span class="text-break">${selectedFile.name}</span> has finished downloading. Now seeding.`,
@@ -160,19 +161,23 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         }
         setTimeout(playerData.onProgress, 100)
     }
-    console.log(opts)
     setTimeout(playerData.onProgress, 100)
-    if (opts.media) {
-        playerData.nowPlaying = [opts.media, opts.episode]
-        navNowPlaying.classList.remove("d-none")
-    } else { // try to resolve name
+
+
+    if (opts.media && videoFiles.length == 1) {
+        // if this is a single file, then the media is most likely accurate, just update it!
+        playerData.nowPlaying = [await alRequest({ id: opts.media?.id, method: "SearchIDSingle" }).then(res => res.data.Media), opts.episode || 0]
+        // update store with entry, but dont really do anything with it
+        resolveFileMedia({ fileName: selectedFile.name, method: "SearchName" })
+    } else {
+        // if this is a batch or single unresolved file, then resolve the single selected file, batches can include specials
         let mediaInformation = await resolveFileMedia({ fileName: selectedFile.name, method: "SearchName" })
-        playerData.nowPlaying = [mediaInformation.media, mediaInformation.episode]
-        if (mediaInformation.media) navNowPlaying.classList.remove("d-none")
+        playerData.nowPlaying = [mediaInformation.media, mediaInformation.episode || 0]
     }
     let mediaMetadata
     // only set mediasession and other shit if the playerdata is parsed correctly
-    if (playerData.nowPlaying && playerData.nowPlaying[0] && playerData.nowPlaying[1]) {
+    if (playerData.nowPlaying[0]) {
+        navNowPlaying.classList.remove("d-none")
         mediaMetadata = new MediaMetadata({
             title: playerData.nowPlaying[0].title.userPreferred,
             artist: `Episode ${Number(playerData.nowPlaying[1])}`,
@@ -183,21 +188,23 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
                 type: 'image/jpg'
             }]
         });
-        nowPlayingDisplay.innerHTML = `EP ${Number(playerData.nowPlaying[1])}`
         if (parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) bnext.setAttribute("disabled", "")
         if (playerData.nowPlaying[0].streamingEpisodes.length >= Number(playerData.nowPlaying[1])) {
             let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && episodeRx.exec(episode.title)[1] == Number(playerData.nowPlaying[1]))[0]
-            video.poster = streamingEpisode.thumbnail
-            document.title = `${playerData.nowPlaying[0].title.userPreferred} - EP ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]} - Miru`
-            mediaMetadata.artist = `Episode ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
-            mediaMetadata.artwork = [{
-                src: streamingEpisode.thumbnail,
-                sizes: '256x256',
-                type: 'image/jpg'
-            }]
-            nowPlayingDisplay.innerHTML = `EP ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
-        } else {
-            document.title = `${playerData.nowPlaying[0].title.userPreferred} -  EP ${Number(playerData.nowPlaying[1])} - Miru`
+            if (streamingEpisode) {
+                video.poster = streamingEpisode.thumbnail
+                document.title = `${playerData.nowPlaying[0].title.userPreferred} - EP ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]} - Miru`
+                mediaMetadata.artist = `Episode ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+                mediaMetadata.artwork = [{
+                    src: streamingEpisode.thumbnail,
+                    sizes: '256x256',
+                    type: 'image/jpg'
+                }]
+                nowPlayingDisplay.innerHTML = `EP ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+            } else {
+                document.title = `${playerData.nowPlaying[0].title.userPreferred} -  EP ${Number(playerData.nowPlaying[1])} - Miru`
+                nowPlayingDisplay.innerHTML = `EP ${Number(playerData.nowPlaying[1])}`
+            }
         }
     }
     if ('mediaSession' in navigator && mediaMetadata) navigator.mediaSession.metadata = mediaMetadata
