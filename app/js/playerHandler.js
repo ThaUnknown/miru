@@ -191,6 +191,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         if (parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) bnext.setAttribute("disabled", "")
         if (playerData.nowPlaying[0].streamingEpisodes.length >= Number(playerData.nowPlaying[1])) {
             let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && episodeRx.exec(episode.title)[1] == Number(playerData.nowPlaying[1]))[0]
+            //TODO: this should also use absolute episode numbers instead of relative but AL will change this anyways....
             if (streamingEpisode) {
                 video.poster = streamingEpisode.thumbnail
                 document.title = `${playerData.nowPlaying[0].title.userPreferred} - EP ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]} - Miru`
@@ -226,13 +227,13 @@ progress.addEventListener("mousedown", dragBarStart);
 function updateDisplay() {
     if (!player.classList.contains('immersed') && document.location.hash == "#player") {
         progress.style.setProperty("--buffer", video.buffered.length == 0 ? 0 : video.buffered.end(video.buffered.length - 1) / video.duration * 100 + "%");
-        updateBar((video.currentTime / video.duration * 100) || progress.value / 10);
+        updateBar((video.currentTime / video.duration * 100) || progress.value);
     }
     createThumbnail(video);
 }
 
 function dragBar() {
-    updateBar(progress.value / 10)
+    updateBar(progress.value)
     video.pause()
     thumb.src = playerData.thumbnails[Math.floor(currentTime / 5)] || " "
 }
@@ -244,7 +245,7 @@ function dragBarEnd() {
 
 async function dragBarStart() {
     await video.pause()
-    updateBar(progress.value / 10)
+    updateBar(progress.value)
 }
 
 let currentTime = 0;
@@ -254,7 +255,7 @@ function updateBar(progressPercent) {
     currentTime = video.duration * progressPercent / 100
     elapsed.innerHTML = toTS(currentTime);
     remaining.innerHTML = toTS(video.duration - currentTime);
-    progress.value = progressPercent * 10
+    progress.value = progressPercent
     progress.setAttribute("data-ts", toTS(currentTime))
 }
 
