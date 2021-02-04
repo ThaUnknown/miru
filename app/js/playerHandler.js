@@ -10,8 +10,8 @@ for (let item of controls) {
 // video element shit
 video.addEventListener("playing", resetBuffer);
 video.addEventListener("canplay", resetBuffer);
-video.addEventListener("loadeddata", initThumbnail);
 video.onloadedmetadata = () => {
+    initThumbnail();
     updateDisplay();
     (video.audioTracks && video.audioTracks.length > 1) ? baudio.removeAttribute("disabled") : baudio.setAttribute("disablePictureInPicture", "")
 }
@@ -56,7 +56,8 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     // }
     playerData = {
         subtitles: [],
-        fonts: []
+        fonts: [],
+        headers: []
     }
     nowPlayingDisplay.innerHTML = ""
     bcap.setAttribute("disabled", "")
@@ -79,7 +80,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
     video.src = `${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`
     video.load();
     //"predict" video FPS for subtitle renderer
-    playerData.fps = new Promise(resolve => {
+    playerData.fps = new Promise((resolve, reject) => {
         if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
             let wasSeeked
             video.onseeking = () => wasSeeked = true;
@@ -128,18 +129,18 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         document.querySelector(".playlist").appendChild(frag)
     }
 
-    function processFile() {
+    async function processFile() {
         halfmoon.initStickyAlert({
             content: `<span class="text-break">${selectedFile.name}</span> has finished downloading. Now seeding.`,
             title: "Download Complete",
             alertType: "alert-success",
             fillType: ""
         });
-        postDownload(selectedFile)
+        await postDownload(selectedFile)
+        if (settings.player5) {
+            finishThumbnails(selectedFile);
+        }
         if (!torrent.store.store._store) {
-            if (settings.player8) {
-                finishThumbnails(selectedFile);
-            }
             downloadFile(selectedFile)
         }
     }
@@ -274,9 +275,9 @@ function initThumbnail() {
     }
 }
 
-function createThumbnail(vid) {
+function createThumbnail(vid, delay) {
     if (settings.player5 && vid.readyState >= 2) {
-        let index = Math.floor(vid.currentTime / 5)
+        let index = Math.floor(vid.currentTime / delay)
         if (!playerData.thumbnails[index] && h) {
             context.fillRect(0, 0, 150, h);
             context.drawImage(vid, 0, 0, 150, h);
@@ -285,36 +286,34 @@ function createThumbnail(vid) {
     }
 }
 
-function finishThumbnails(file) {
+function finishThumbnails() {
     if (settings.player5 && settings.player8) {
         let thumbVid = document.createElement("video"),
-            index = 0
-        thumbVid.src = file.getBlobURL((err, url) => {
-            thumbVid.src = url
-        })
-
-        thumbVid.addEventListener('loadeddata', () => {
-            loadTime();
-        })
-
+            index = 0,
+            delay
+        video.duration / 300 < 5 ? delay = 5 : delay = video.duration / 300
+        thumbVid.src = video.src
+        thumbVid.preload = "none"
+        thumbVid.volume = 0
+        thumbVid.playbackRate = 0
+        thumbVid.addEventListener('loadeddata', loadTime)
         thumbVid.addEventListener('seeked', () => {
-            createThumbnail(thumbVid);
+            createThumbnail(thumbVid, delay);
             loadTime();
         })
-
         function loadTime() {
-            while (playerData.thumbnails[index] && index <= Math.floor(thumbVid.duration / 5)) { // only create thumbnails that are missing
+            while (playerData.thumbnails[index] && index <= Math.floor(thumbVid.duration / delay)) { // only create thumbnails that are missing
                 index++
             }
             if (thumbVid.currentTime != thumbVid.duration) {
-                thumbVid.currentTime = index * 5
+                thumbVid.currentTime = index * delay
             } else {
-                URL.revokeObjectURL(thumbVid.src)
                 delete thumbVid;
                 thumbVid.remove()
             }
             index++
         }
+        thumbVid.play()
     }
 }
 

@@ -34,13 +34,25 @@ self.addEventListener('fetch', evt => {
 		clients.matchAll({ type: 'window', includeUncontrolled: true })
 			.then(getConsumer)
 			.then(([data, mc]) => {
+				let tm = null
 				const body = data.body === 'stream' ? new ReadableStream({
 					pull(controller) {
+						clearTimeout(tm)
+
+						tm = setTimeout(() => {
+							controller.close()
+							mc.port1.postMessage(false)
+						}, 15000)
+
 						return new Promise(rs => {
 							mc.port1.onmessage = evt => {
-								evt.data
-									? controller.enqueue(evt.data) // evt.data is Uint8Array
-									: controller.close() // evt.data is null, means the stream ended
+								if (evt.data) {
+									controller.enqueue(evt.data) // evt.data is Uint8Array
+								} else {
+									clearTimeout(tm)
+									controller.close() // evt.data is null, means the stream ended
+									// mc.port1.postMessage(false)
+								}
 								rs()
 							}
 							mc.port1.postMessage(true) // send a pull request

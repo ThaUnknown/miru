@@ -25,13 +25,12 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
         })
     }
     playerData.subtitleStream.on('subtitle', (subtitle, trackNumber) => {
+        console.log(subtitle)
         if (playerData.headers && !playerData.parsed) {
             if (playerData.headers[trackNumber].type == "webvtt") convertSub(subtitle)
             let formatSub = "Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text
-            if (!playerData.subtitles[trackNumber].has(formatSub)) {
-                playerData.subtitles[trackNumber].add(formatSub)
-                if (playerData.selectedHeader == trackNumber) renderSubs(trackNumber)
-            }
+            playerData.subtitles[trackNumber].add(formatSub)
+            if (playerData.selectedHeader == trackNumber) renderSubs(trackNumber)
         }
 
     })
@@ -42,6 +41,7 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
 }
 let octopusTimeout
 async function renderSubs(trackNumber) {
+    console.log("test")
     if (!playerData.octopusInstance) {
         let options = {
             video: video,
@@ -52,6 +52,7 @@ async function renderSubs(trackNumber) {
             workerUrl: 'js/subtitles-octopus-worker.js',
             timeOffset: 0
         };
+        console.log("yes")
         if (!playerData.octopusInstance) playerData.octopusInstance = new SubtitlesOctopus(options);
     } else {
         if (!octopusTimeout) {
@@ -76,40 +77,40 @@ function convertSub(subtitle) { // converts vtt subtitles to ssa ones
     subtitle.text.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, "\\h")
 }
 function postDownload(file) { // parse subtitles fully after a download is finished
-    if (file.name.endsWith(".mkv") || file.name.endsWith(".webm")) {
-        let parser = new SubtitleParser(),
-            subtitles = [],
-            headers = []
-        parser.once('tracks', pTracks => {
-            pTracks.forEach(track => {
-                if (track.type != "ass") { // overwrite webvtt header with custom one
-                    track.header = `[V4+ Styles]
+    return new Promise((resolve, reject) => {
+        if (file.name.endsWith(".mkv") || file.name.endsWith(".webm")) {
+            let parser = new SubtitleParser()
+            parser.once('tracks', pTracks => {
+                pTracks.forEach(track => {
+                    if (track.type != "ass") { // overwrite webvtt header with custom one
+                        track.header = `[V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Default,${Object.values(subtitle1list.options).filter(item => item.value == settings.subtitle1)[0].innerText}
 [Events]
 
 `
-                }
-                headers[track.number] = track
-                subtitles[track.number] = new Set()
+                    }
+                    playerData.headers[track.number] = track
+                    if (!playerData.subtitles[track.number]) playerData.subtitles[track.number] = new Set()
+                })
             })
-        })
-        parser.on('subtitle', (subtitle, trackNumber) => {
-            if (headers[trackNumber].type == "webvtt") convertSub(subtitle)
-            subtitles[trackNumber].add("Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text)
-        })
-        parser.on('finish', () => {
-            playerData.subtitles = subtitles
-            playerData.headers = headers
-            playerData.parsed = 1
-            playerData.subtitleStream = undefined
-            renderSubs(playerData.selectedHeader)
-            parser = undefined
-            if (!video.paused) {
-                video.pause();
-                playVideo();
-            }
-        });
-        file.createReadStream().pipe(parser)
-    }
+            parser.on('subtitle', (subtitle, trackNumber) => {
+                if (playerData.headers[trackNumber].type == "webvtt") convertSub(subtitle)
+                playerData.subtitles[trackNumber].add("Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text)
+            })
+            parser.on('finish', () => {
+                console.log("Finished")
+                playerData.parsed = 1
+                playerData.subtitleStream = undefined
+                renderSubs(playerData.selectedHeader)
+                parser = undefined
+                if (!video.paused) {
+                    video.pause();
+                    playVideo();
+                }
+                resolve();
+            });
+            file.createReadStream().pipe(parser)
+        }
+    })
 }

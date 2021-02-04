@@ -83,7 +83,7 @@ loadOfflineStorage()
 // cleanup torrent and store
 function cleanupTorrents() {
     client.torrents.filter(torrent => {
-        return !(offlineTorrents[torrent.infoHash] || torrent.progress == 1) // creates an array of all non-offline store torrents and removes them
+        return !(offlineTorrents[torrent.infoHash]) // creates an array of all non-offline store torrents and removes them
     }).forEach(torrent => torrent.destroy({ destroyStore: true }))
 }
 
@@ -172,7 +172,6 @@ function serveFile(file, req) {
 }
 
 // kind of a fetch event from service worker but for the main thread.
-let lastport
 navigator.serviceWorker.addEventListener('message', evt => {
     const request = new Request(evt.data.url, {
         headers: evt.data.headers,
@@ -193,15 +192,17 @@ navigator.serviceWorker.addEventListener('message', evt => {
     const [response, stream] = serveFile(file, request)
     const asyncIterator = stream && stream[Symbol.asyncIterator]()
     respondWith(response)
-    async function pull() {
-        respondWith((await asyncIterator.next()).value)
+    async function pull(msg) {
+        if (msg.data) {
+            respondWith((await asyncIterator.next()).value)
+        } else {
+            console.log('Closing stream', stream)
+            stream.destroy()
+            port.onmessage = null
+        }
     }
 
     port.onmessage = pull
-
-    // hack: stop hiding the old stream somewhere in memory land
-    if (lastport) lastport.onmessage = null
-    lastport = port
 })
 
 function prettyBytes(num) {
