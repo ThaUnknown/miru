@@ -166,13 +166,13 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
 
     if (opts.media && videoFiles.length == 1) {
         // if this is a single file, then the media is most likely accurate, just update it!
-        playerData.nowPlaying = [await alRequest({ id: opts.media?.id, method: "SearchIDSingle" }).then(res => res.data.Media), opts.episode || 0]
+        playerData.nowPlaying = [await alRequest({ id: opts.media?.id, method: "SearchIDSingle" }).then(res => res.data.Media), opts.episode || 1]
         // update store with entry, but dont really do anything with it
         resolveFileMedia({ fileName: selectedFile.name, method: "SearchName" })
     } else {
         // if this is a batch or single unresolved file, then resolve the single selected file, batches can include specials
         let mediaInformation = await resolveFileMedia({ fileName: selectedFile.name, method: "SearchName" })
-        playerData.nowPlaying = [mediaInformation.media, mediaInformation.episode || 0]
+        playerData.nowPlaying = [mediaInformation.media, mediaInformation.episode || 1]
     }
     let mediaMetadata
     // only set mediasession and other shit if the playerdata is parsed correctly
@@ -567,7 +567,7 @@ function btncap() {
         if (track) {
             let template = document.createElement("a")
             template.classList.add("dropdown-item", "pointer", "text-capitalize")
-            template.innerHTML = track.language || (!Object.values(playerData.headers).some(header => header.language == "eng" || header.language == "en") ? "eng" : header.type)
+            template.innerHTML = (track.language || (!Object.values(playerData.headers).some(header => header.language == "eng" || header.language == "en") ? "eng" : header.type)) + (track.name ? " - " + track.name : "")
             if (playerData.selectedHeader == track.number) {
                 template.classList.add("text-white")
             } else {
@@ -603,7 +603,7 @@ function btnaudio() {
     for (let track of video.audioTracks) {
         let template = document.createElement("a")
         template.classList.add("dropdown-item", "pointer", "text-capitalize")
-        template.innerHTML = track.language || (!Object.values(video.audioTracks).some(track => track.language == "eng" || track.language == "en") ? "eng" : track.label)
+        template.innerHTML = (track.language || (!Object.values(video.audioTracks).some(track => track.language == "eng" || track.language == "en") ? "eng" : track.label)) + (track.label ? " - " + track.label : "")
         track.enabled == true ? template.classList.add("text-white") : template.classList.add("text-muted")
         template.onclick = () => {
             selectAudio(track.id)
