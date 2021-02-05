@@ -25,14 +25,12 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
         })
     }
     playerData.subtitleStream.on('subtitle', (subtitle, trackNumber) => {
-        console.log(subtitle)
         if (playerData.headers && !playerData.parsed) {
             if (playerData.headers[trackNumber].type == "webvtt") convertSub(subtitle)
             let formatSub = "Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text
             playerData.subtitles[trackNumber].add(formatSub)
             if (playerData.selectedHeader == trackNumber) renderSubs(trackNumber)
         }
-
     })
     playerData.subtitleStream.on('file', file => {
         if (file.mimetype == ("application/x-truetype-font" || "application/font-woff")) playerData.fonts.push(window.URL.createObjectURL(new Blob([file.data], { type: file.mimetype })))
@@ -41,7 +39,6 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
 }
 let octopusTimeout
 async function renderSubs(trackNumber) {
-    console.log("test")
     if (!playerData.octopusInstance) {
         let options = {
             video: video,
@@ -52,7 +49,6 @@ async function renderSubs(trackNumber) {
             workerUrl: 'js/subtitles-octopus-worker.js',
             timeOffset: 0
         };
-        console.log("yes")
         if (!playerData.octopusInstance) playerData.octopusInstance = new SubtitlesOctopus(options);
     } else {
         if (!octopusTimeout) {
@@ -99,7 +95,7 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
                 playerData.subtitles[trackNumber].add("Dialogue: " + (subtitle.layer || 0) + "," + new Date(subtitle.time).toISOString().slice(12, -1).slice(0, -1) + "," + new Date(subtitle.time + subtitle.duration).toISOString().slice(12, -1).slice(0, -1) + "," + (subtitle.style || "Default") + "," + (subtitle.name || "") + "," + (subtitle.marginL || "0") + "," + (subtitle.marginR || "0") + "," + (subtitle.marginV || "0") + "," + (subtitle.effect || "") + "," + subtitle.text)
             })
             parser.on('finish', () => {
-                console.log("Finished")
+                console.log("Sub parsing finished")
                 playerData.parsed = 1
                 playerData.subtitleStream = undefined
                 renderSubs(playerData.selectedHeader)
@@ -110,6 +106,7 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
                 }
                 resolve();
             });
+            console.log("Sub parsing started")
             file.createReadStream().pipe(parser)
         }
     })

@@ -194,9 +194,11 @@ navigator.serviceWorker.addEventListener('message', evt => {
     respondWith(response)
     async function pull(msg) {
         if (msg.data) {
-            respondWith((await asyncIterator.next()).value)
+            const chunk = (await asyncIterator.next()).value
+            respondWith(chunk)
+            if (!chunk) port.onmessage = null
         } else {
-            console.log('Closing stream', stream)
+            console.log('Closing stream')
             stream.destroy()
             port.onmessage = null
         }

@@ -138,7 +138,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         });
         await postDownload(selectedFile)
         if (settings.player5) {
-            finishThumbnails(selectedFile);
+            finishThumbnails(`${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`);
         }
         if (!torrent.store.store._store) {
             downloadFile(selectedFile)
@@ -286,18 +286,16 @@ function createThumbnail(vid, delay) {
     }
 }
 
-function finishThumbnails() {
+function finishThumbnails(src) {
     if (settings.player5 && settings.player8) {
         let thumbVid = document.createElement("video"),
             index = 0,
-            delay
-        video.duration / 300 < 5 ? delay = 5 : delay = video.duration / 300
-        thumbVid.src = video.src
+            delay = video.duration / 300 < 5 ? 5 : video.duration / 300
+        thumbVid.src = src
         thumbVid.preload = "none"
         thumbVid.volume = 0
-        thumbVid.playbackRate = 0
         thumbVid.addEventListener('loadeddata', loadTime)
-        thumbVid.addEventListener('seeked', () => {
+        thumbVid.addEventListener('canplay', () => {
             createThumbnail(thumbVid, delay);
             loadTime();
         })
@@ -310,10 +308,12 @@ function finishThumbnails() {
             } else {
                 delete thumbVid;
                 thumbVid.remove()
+                console.log("Thumbnail creating finished", index)
             }
             index++
         }
-        thumbVid.play()
+        console.log("Thumbnail creating started", thumbVid)
+        thumbVid.load()
     }
 }
 

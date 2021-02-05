@@ -37,13 +37,6 @@ self.addEventListener('fetch', evt => {
 				let tm = null
 				const body = data.body === 'stream' ? new ReadableStream({
 					pull(controller) {
-						clearTimeout(tm)
-
-						tm = setTimeout(() => {
-							controller.close()
-							mc.port1.postMessage(false)
-						}, 15000)
-
 						return new Promise(rs => {
 							mc.port1.onmessage = evt => {
 								if (evt.data) {
@@ -51,10 +44,19 @@ self.addEventListener('fetch', evt => {
 								} else {
 									clearTimeout(tm)
 									controller.close() // evt.data is null, means the stream ended
-									// mc.port1.postMessage(false)
+									mc.port1.onmessage = null
 								}
 								rs()
 							}
+
+							clearTimeout(tm)
+							tm = setTimeout(() => {
+								controller.close()
+								mc.port1.postMessage(false) // send timeout
+								mc.port1.onmessage = null
+								rs()
+							}, 5000)
+
 							mc.port1.postMessage(true) // send a pull request
 						})
 					},
