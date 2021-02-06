@@ -190,23 +190,24 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
             }]
         });
         if (parseInt(playerData.nowPlaying[1]) >= playerData.nowPlaying[0].episodes) bnext.setAttribute("disabled", "")
+        let streamingEpisode
         if (playerData.nowPlaying[0].streamingEpisodes.length >= Number(playerData.nowPlaying[1])) {
-            let streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && episodeRx.exec(episode.title)[1] == Number(playerData.nowPlaying[1]))[0]
-            //TODO: this should also use absolute episode numbers instead of relative but AL will change this anyways....
-            if (streamingEpisode) {
-                video.poster = streamingEpisode.thumbnail
-                document.title = `${playerData.nowPlaying[0].title.userPreferred} - EP ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]} - Miru`
-                mediaMetadata.artist = `Episode ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
-                mediaMetadata.artwork = [{
-                    src: streamingEpisode.thumbnail,
-                    sizes: '256x256',
-                    type: 'image/jpg'
-                }]
-                nowPlayingDisplay.innerHTML = `EP ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
-            } else {
-                document.title = `${playerData.nowPlaying[0].title.userPreferred} -  EP ${Number(playerData.nowPlaying[1])} - Miru`
-                nowPlayingDisplay.innerHTML = `EP ${Number(playerData.nowPlaying[1])}`
-            }
+            streamingEpisode = playerData.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && episodeRx.exec(episode.title)[1] == Number(playerData.nowPlaying[1]))[0]
+        }
+        //TODO: this should also use absolute episode numbers instead of relative but AL will change this anyways....
+        if (streamingEpisode) {
+            video.poster = streamingEpisode.thumbnail
+            document.title = `${playerData.nowPlaying[0].title.userPreferred} - EP ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]} - Miru`
+            mediaMetadata.artist = `Episode ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+            mediaMetadata.artwork = [{
+                src: streamingEpisode.thumbnail,
+                sizes: '256x256',
+                type: 'image/jpg'
+            }]
+            nowPlayingDisplay.innerHTML = `EP ${Number(playerData.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+        } else {
+            document.title = `${playerData.nowPlaying[0].title.userPreferred} -  EP ${Number(playerData.nowPlaying[1])} - Miru`
+            nowPlayingDisplay.innerHTML = `EP ${Number(playerData.nowPlaying[1])}`
         }
     }
     if ('mediaSession' in navigator && mediaMetadata) navigator.mediaSession.metadata = mediaMetadata
@@ -235,8 +236,7 @@ function updateDisplay() {
 
 function dragBar() {
     updateBar(progress.value)
-    video.pause()
-    thumb.src = playerData.thumbnails[Math.floor(currentTime / 5)] || " "
+    if (settings.player5) thumb.src = playerData.thumbnails[Math.floor(currentTime / 5)] || " "
 }
 
 function dragBarEnd() {
@@ -291,9 +291,9 @@ function finishThumbnails(src) {
         let thumbVid = document.createElement("video"),
             index = 0,
             delay = video.duration / 300 < 5 ? 5 : video.duration / 300
-        thumbVid.src = src
         thumbVid.preload = "none"
         thumbVid.volume = 0
+        thumbVid.playbackRate = 0
         thumbVid.addEventListener('loadeddata', loadTime)
         thumbVid.addEventListener('canplay', () => {
             createThumbnail(thumbVid, delay);
@@ -306,14 +306,17 @@ function finishThumbnails(src) {
             if (thumbVid.currentTime != thumbVid.duration) {
                 thumbVid.currentTime = index * delay
             } else {
+                thumbVid.removeAttribute('src')
+                thumbVid.load()
                 delete thumbVid;
                 thumbVid.remove()
                 console.log("Thumbnail creating finished", index)
             }
             index++
         }
-        console.log("Thumbnail creating started", thumbVid)
-        thumbVid.load()
+        thumbVid.src = src
+        thumbVid.play()
+        console.log("Thumbnail creating started")
     }
 }
 
