@@ -109,7 +109,8 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
                 resolve();
             });
             console.log("Sub parsing started")
-            file.createReadStream().pipe(parser)
+            playerData.subtitlePraseStream = file.createReadStream().pipe(parser)
+            // when this gets overwritten the parser stays so it might "leak" some RAM???
         }
     })
 }

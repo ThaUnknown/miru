@@ -136,7 +136,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
             alertType: "alert-success",
             fillType: ""
         });
-        await postDownload(selectedFile)
+        await postDownload(selectedFile);
         if (settings.player5) {
             finishThumbnails(`${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`);
         }
@@ -276,8 +276,8 @@ function initThumbnail() {
     thumb.style.setProperty("--height", playerData.thumbnailData.height + "px");
 }
 
-function createThumbnail(vid, delay) {
-    if (vid.readyState >= 2) {
+function createThumbnail(vid) {
+    if (vid?.readyState >= 2) {
         let index = Math.floor(vid.currentTime / playerData.thumbnailData.interval)
         if (!playerData.thumbnailData.thumbnails[index]) {
             playerData.thumbnailData.context.fillRect(0, 0, 150, playerData.thumbnailData.height);
@@ -288,33 +288,33 @@ function createThumbnail(vid, delay) {
 }
 
 function finishThumbnails(src) {
-    let thumbVid = document.createElement("video"),
-        index = 0
-    thumbVid.preload = "none"
-    thumbVid.volume = 0
-    thumbVid.playbackRate = 0
-    thumbVid.addEventListener('loadeddata', loadTime)
-    thumbVid.addEventListener('canplay', () => {
-        createThumbnail(thumbVid);
+    playerData.thumbnailData.video = document.createElement("video")
+    let index = 0
+    playerData.thumbnailData.video.preload = "none"
+    playerData.thumbnailData.video.volume = 0
+    playerData.thumbnailData.video.playbackRate = 0
+    playerData.thumbnailData.video.addEventListener('loadeddata', loadTime)
+    playerData.thumbnailData.video.addEventListener('canplay', () => {
+        createThumbnail(playerData.thumbnailData?.video);
         loadTime();
     })
     function loadTime() {
-        while (playerData.thumbnailData.thumbnails[index] && index <= Math.floor(thumbVid.duration / playerData.thumbnailData.interval)) { // only create thumbnails that are missing
+        while (playerData.thumbnailData?.thumbnails[index] && index <= Math.floor(playerData.thumbnailData.video.duration / playerData.thumbnailData.interval)) { // only create thumbnails that are missing
             index++
         }
-        if (thumbVid.currentTime != thumbVid.duration) {
-            thumbVid.currentTime = index * playerData.thumbnailData.interval
+        if (playerData.thumbnailData?.video?.currentTime != playerData.thumbnailData?.video?.duration) {
+            playerData.thumbnailData.video.currentTime = index * playerData.thumbnailData.interval
         } else {
-            thumbVid.removeAttribute('src')
-            thumbVid.load()
-            delete thumbVid;
-            thumbVid.remove()
+            playerData.thumbnailData?.video?.removeAttribute('src')
+            playerData.thumbnailData?.video?.load()
+            playerData.thumbnailData?.video?.remove()
+            delete playerData.thumbnailData?.video;
             console.log("Thumbnail creating finished", index)
         }
         index++
     }
-    thumbVid.src = src
-    thumbVid.play()
+    playerData.thumbnailData.video.src = src
+    playerData.thumbnailData.video.play()
     console.log("Thumbnail creating started")
 }
 
