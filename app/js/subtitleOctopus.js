@@ -88,6 +88,7 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
                     }
                     playerData.headers[track.number] = track
                     if (!playerData.subtitles[track.number]) playerData.subtitles[track.number] = new Set()
+                    if (!playerData.selectedHeader) playerData.selectedHeader = track.number
                 })
             })
             parser.on('subtitle', (subtitle, trackNumber) => {
@@ -100,6 +101,7 @@ Style: Default,${Object.values(subtitle1list.options).filter(item => item.value 
                 playerData.subtitleStream = undefined
                 renderSubs(playerData.selectedHeader)
                 parser = undefined
+                bcap.removeAttribute("disabled")
                 if (!video.paused) {
                     video.pause();
                     playVideo();

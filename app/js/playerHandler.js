@@ -13,7 +13,7 @@ video.addEventListener("canplay", resetBuffer);
 video.onloadedmetadata = () => {
     initThumbnail();
     updateDisplay();
-    (video.audioTracks && video.audioTracks.length > 1) ? baudio.removeAttribute("disabled") : baudio.setAttribute("disablePictureInPicture", "")
+    (video.audioTracks && video.audioTracks.length > 1) ? baudio.removeAttribute("disabled") : baudio.setAttribute("disabled", "")
 }
 video.onended = () => {
     updateBar(video.currentTime / video.duration * 100)
@@ -140,7 +140,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
         if (settings.player5) {
             finishThumbnails(`${scope}webtorrent/${torrent.infoHash}/${encodeURI(selectedFile.path)}`);
         }
-        if (!torrent.store.store._store) {
+        if (!torrent.store.store._store) { //only allow download from RAM
             downloadFile(selectedFile)
         }
     }
@@ -236,7 +236,7 @@ function updateDisplay() {
 
 function dragBar() {
     updateBar(progress.value)
-    if (settings.player5) thumb.src = playerData.thumbnails[Math.floor(currentTime / 5)] || " "
+    thumb.src = playerData.thumbnailData.thumbnails[Math.floor(currentTime / playerData.thumbnailData.interval)] || " "
 }
 
 function dragBarEnd() {
@@ -261,63 +261,61 @@ function updateBar(progressPercent) {
 }
 
 // dynamic thumbnail previews
-let canvas = document.createElement("canvas")
-let context = canvas.getContext('2d')
-let h
 
 function initThumbnail() {
-    if (settings.player5) {
-        playerData.thumbnails = []
-        h = parseInt(150 / (video.videoWidth / video.videoHeight))
-        canvas.width = 150;
-        canvas.height = h;
-        thumb.style.setProperty("--height", h + "px");
+    let canvas = document.createElement("canvas")
+    playerData.thumbnailData = {
+        canvas: canvas,
+        context: canvas.getContext('2d'),
+        height: parseInt(150 / (video.videoWidth / video.videoHeight)),
+        thumbnails: [],
+        interval: video.duration / 300 < 5 ? 5 : video.duration / 300
     }
+    canvas.width = 150;
+    canvas.height = playerData.thumbnailData.height;
+    thumb.style.setProperty("--height", playerData.thumbnailData.height + "px");
 }
 
 function createThumbnail(vid, delay) {
-    if (settings.player5 && vid.readyState >= 2) {
-        let index = Math.floor(vid.currentTime / delay)
-        if (!playerData.thumbnails[index] && h) {
-            context.fillRect(0, 0, 150, h);
-            context.drawImage(vid, 0, 0, 150, h);
-            playerData.thumbnails[index] = canvas.toDataURL("image/jpeg")
+    if (vid.readyState >= 2) {
+        let index = Math.floor(vid.currentTime / playerData.thumbnailData.interval)
+        if (!playerData.thumbnailData.thumbnails[index]) {
+            playerData.thumbnailData.context.fillRect(0, 0, 150, playerData.thumbnailData.height);
+            playerData.thumbnailData.context.drawImage(vid, 0, 0, 150, playerData.thumbnailData.height);
+            playerData.thumbnailData.thumbnails[index] = playerData.thumbnailData.canvas.toDataURL("image/jpeg")
         }
     }
 }
 
 function finishThumbnails(src) {
-    if (settings.player5 && settings.player8) {
-        let thumbVid = document.createElement("video"),
-            index = 0,
-            delay = video.duration / 300 < 5 ? 5 : video.duration / 300
-        thumbVid.preload = "none"
-        thumbVid.volume = 0
-        thumbVid.playbackRate = 0
-        thumbVid.addEventListener('loadeddata', loadTime)
-        thumbVid.addEventListener('canplay', () => {
-            createThumbnail(thumbVid, delay);
-            loadTime();
-        })
-        function loadTime() {
-            while (playerData.thumbnails[index] && index <= Math.floor(thumbVid.duration / delay)) { // only create thumbnails that are missing
-                index++
-            }
-            if (thumbVid.currentTime != thumbVid.duration) {
-                thumbVid.currentTime = index * delay
-            } else {
-                thumbVid.removeAttribute('src')
-                thumbVid.load()
-                delete thumbVid;
-                thumbVid.remove()
-                console.log("Thumbnail creating finished", index)
-            }
+    let thumbVid = document.createElement("video"),
+        index = 0
+    thumbVid.preload = "none"
+    thumbVid.volume = 0
+    thumbVid.playbackRate = 0
+    thumbVid.addEventListener('loadeddata', loadTime)
+    thumbVid.addEventListener('canplay', () => {
+        createThumbnail(thumbVid);
+        loadTime();
+    })
+    function loadTime() {
+        while (playerData.thumbnailData.thumbnails[index] && index <= Math.floor(thumbVid.duration / playerData.thumbnailData.interval)) { // only create thumbnails that are missing
             index++
         }
-        thumbVid.src = src
-        thumbVid.play()
-        console.log("Thumbnail creating started")
+        if (thumbVid.currentTime != thumbVid.duration) {
+            thumbVid.currentTime = index * playerData.thumbnailData.interval
+        } else {
+            thumbVid.removeAttribute('src')
+            thumbVid.load()
+            delete thumbVid;
+            thumbVid.remove()
+            console.log("Thumbnail creating finished", index)
+        }
+        index++
     }
+    thumbVid.src = src
+    thumbVid.play()
+    console.log("Thumbnail creating started")
 }
 
 //file download
@@ -488,13 +486,13 @@ async function btnpip() {
                     canvasVideo = document.createElement("video"),
                     context = canvas.getContext("2d", { alpha: false }),
                     running = true
-                canvas.width = subtitleCanvas.width
-                canvas.height = subtitleCanvas.height
+                canvas.width = video.videoWidth
+                canvas.height = video.videoHeight
 
                 function renderFrame() {
                     if (running) {
-                        context.drawImage(video, 0, 0, canvas.width, canvas.height)
-                        context.drawImage(subtitleCanvas, 0, 0)
+                        context.drawImage(video, 0, 0)
+                        context.drawImage(subtitleCanvas, 0, 0, canvas.width, canvas.height)
                         window.requestAnimationFrame(renderFrame)
                     }
                 }
