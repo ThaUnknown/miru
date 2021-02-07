@@ -73,7 +73,7 @@ function offlineDownload(torrentID, skipVerify) {
         }
         let mediaInformation = await resolveFileMedia({ fileName: torrent.name, method: "SearchName" })
         template = cardCreator(mediaInformation)
-        template.onclick = () => addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode })
+        template.onclick = () => addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode_number })
         document.querySelector(".downloads").appendChild(template)
     })
 }
