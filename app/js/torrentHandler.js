@@ -1,4 +1,4 @@
-let client = new WebTorrent({ maxConns: settings.torrent6 })
+let client = new WebTorrent({ maxConns: settings.torrent6, downloadLimit: 10485760, uploadLimit: 10485760, storeMaxOutstandingPuts: -1})
 window.onbeforeunload = () => { //cleanup shit before unloading to free RAM/drive
     cleanupVideo()
     cleanupTorrents()
@@ -73,7 +73,7 @@ function offlineDownload(torrentID, skipVerify) {
         }
         let mediaInformation = await resolveFileMedia({ fileName: torrent.name, method: "SearchName" })
         template = cardCreator(mediaInformation)
-        template.onclick = () => addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode_number })
+        template.onclick = () => addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.episode })
         document.querySelector(".downloads").appendChild(template)
     })
 }
@@ -82,9 +82,8 @@ loadOfflineStorage()
 
 // cleanup torrent and store
 function cleanupTorrents() {
-    client.torrents.filter(torrent => {
-        return !(offlineTorrents[torrent.infoHash]) // creates an array of all non-offline store torrents and removes them
-    }).forEach(torrent => torrent.destroy({ destroyStore: true }))
+     // creates an array of all non-offline store torrents and removes them
+    client.torrents.filter(torrent => !offlineTorrents[torrent.infoHash]).forEach(torrent => torrent.destroy({ destroyStore: true }))
 }
 
 // manually add trackers

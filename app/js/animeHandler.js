@@ -658,7 +658,7 @@ async function resolveFileMedia(opts) {
             } else {
                 if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(elems.episode_number[elems.episode_number.length - 1]) > (media.episodes || media.nextAiringEpisode.episode)) {
                     // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
-                    await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
+                    await resolveSeason({ media: await alRequest({ id: media.id, method: "SearchIDSingle" }).then(res => res.data.Media), episode: elems.episode_number, offset: 0 })
                 } else {
                     // cant find ep count or range seems fine
                     episode = `${Number(elems.episode_number[0])} - ${Number(elems.episode_number[elems.episode_number.length - 1])}`
@@ -667,7 +667,7 @@ async function resolveFileMedia(opts) {
         } else {
             if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(elems.episode_number) > (media.episodes || media.nextAiringEpisode.episode)) {
                 // value bigger than episode count
-                await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
+                await resolveSeason({ media: await alRequest({ id: media.id, method: "SearchIDSingle" }).then(res => res.data.Media), episode: elems.episode_number, offset: 0 })
             } else {
                 // cant find ep count or episode seems fine
                 episode = Number(elems.episode_number)
@@ -697,7 +697,7 @@ async function releasesCards(items, frag, limit) {
         results.forEach((mediaInformation, index) => {
             let o = items[index].querySelector.bind(items[index])
             template = cardCreator(mediaInformation)
-            template.onclick = () => addTorrent(o('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode_number })
+            template.onclick = () => addTorrent(o('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
             frag.appendChild(template)
         })
     })

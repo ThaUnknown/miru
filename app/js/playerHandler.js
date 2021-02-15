@@ -288,6 +288,7 @@ function createThumbnail(vid) {
 }
 
 function finishThumbnails(src) {
+    let t0 = performance.now()
     playerData.thumbnailData.video = document.createElement("video")
     let index = 0
     playerData.thumbnailData.video.preload = "none"
@@ -309,7 +310,7 @@ function finishThumbnails(src) {
             playerData.thumbnailData?.video?.load()
             playerData.thumbnailData?.video?.remove()
             delete playerData.thumbnailData?.video;
-            console.log("Thumbnail creating finished", index)
+            console.log("Thumbnail creating finished", index, performance.now() - t0)
         }
         index++
     }
@@ -490,16 +491,16 @@ async function btnpip() {
                 canvas.height = video.videoHeight
 
                 function renderFrame() {
-                    if (running) {
+                    if (running === true) {
                         context.drawImage(video, 0, 0)
                         context.drawImage(subtitleCanvas, 0, 0, canvas.width, canvas.height)
                         window.requestAnimationFrame(renderFrame)
                     }
                 }
                 canvasVideo.srcObject = canvas.captureStream()
-                canvasVideo.onloadedmetadata = async () => {
+                canvasVideo.onloadedmetadata = () => {
                     canvasVideo.play()
-                    await canvasVideo.requestPictureInPicture().then(
+                    canvasVideo.requestPictureInPicture().then(
                         player.classList.add("pip")
                     ).catch(e => {
                         console.warn("Failed To Burn In Subtitles " + e)
