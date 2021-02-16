@@ -1,4 +1,4 @@
-let client = new WebTorrent({ maxConns: settings.torrent6, downloadLimit: 10485760, uploadLimit: 10485760, storeMaxOutstandingPuts: -1})
+let client = new WebTorrent({ maxConns: settings.torrent6, downloadLimit: settings.torrent7 * 1048576, uploadLimit: settings.torrent7 * 1572864 })
 window.onbeforeunload = () => { //cleanup shit before unloading to free RAM/drive
     cleanupVideo()
     cleanupTorrents()
@@ -7,18 +7,18 @@ window.onbeforeunload = () => { //cleanup shit before unloading to free RAM/driv
 }
 
 const announceList = [
-    ['wss://tracker.openwebtorrent.com']
+    ['wss://tracker.openwebtorrent.com'],
     // ['wss://tracker.novage.com.ua/']
     // ['wss://tracker.btorrent.xyz'] // for now disabled cuz broken
     // ['wss://tracker.webtorrent.io'],
     // ['wss://tracker.fastcast.nz'],
     // ['wss://video.blender.org:443/tracker/socket'],
     // ['wss://tube.privacytools.io:443/tracker/socket'],
-    // ['wss://tracker.sloppyta.co:443/announce'],
+    ['wss://tracker.sloppyta.co:443/announce'],
     // ['wss://tracker.lab.vvc.niif.hu:443/announce'],
     // ['wss://tracker.files.fm:7073/announce'],
     // ['wss://open.tube:443/tracker/socket'],
-    // ['wss://hub.bugout.link:443/announce'],
+    ['wss://hub.bugout.link:443/announce']
     // ['wss://peertube.cpy.re:443/tracker/socket'], 
     // ['ws://tracker.sloppyta.co:80/announce'],
     // ['ws://tracker.lab.vvc.niif.hu:80/announce'],

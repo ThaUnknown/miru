@@ -603,6 +603,8 @@ async function resolveFileMedia(opts) {
             res = await alRequest(method)
         }
         if (res.data.Page.media[0]) store[elems.anime_title] = res.data.Page.media[0]
+    } else {
+        store[elems.anime_title] = await alRequest({ id: store[elems.anime_title].id, method: "SearchIDSingle" }).then(res => res.data.Media)
     }
     let episode, media = store[elems.anime_title]
     // resolve episode, if movie, dont.
@@ -658,7 +660,7 @@ async function resolveFileMedia(opts) {
             } else {
                 if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(elems.episode_number[elems.episode_number.length - 1]) > (media.episodes || media.nextAiringEpisode.episode)) {
                     // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
-                    await resolveSeason({ media: await alRequest({ id: media.id, method: "SearchIDSingle" }).then(res => res.data.Media), episode: elems.episode_number, offset: 0 })
+                    await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
                 } else {
                     // cant find ep count or range seems fine
                     episode = `${Number(elems.episode_number[0])} - ${Number(elems.episode_number[elems.episode_number.length - 1])}`
@@ -667,7 +669,7 @@ async function resolveFileMedia(opts) {
         } else {
             if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(elems.episode_number) > (media.episodes || media.nextAiringEpisode.episode)) {
                 // value bigger than episode count
-                await resolveSeason({ media: await alRequest({ id: media.id, method: "SearchIDSingle" }).then(res => res.data.Media), episode: elems.episode_number, offset: 0 })
+                await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
             } else {
                 // cant find ep count or episode seems fine
                 episode = Number(elems.episode_number)
