@@ -82,7 +82,7 @@ loadOfflineStorage()
 
 // cleanup torrent and store
 function cleanupTorrents() {
-     // creates an array of all non-offline store torrents and removes them
+    // creates an array of all non-offline store torrents and removes them
     client.torrents.filter(torrent => !offlineTorrents[torrent.infoHash]).forEach(torrent => torrent.destroy({ destroyStore: true }))
 }
 

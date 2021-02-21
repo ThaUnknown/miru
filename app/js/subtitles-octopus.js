@@ -60,7 +60,7 @@ var SubtitlesOctopus = function (options) {
 
     self.hasAlphaBug = false;
 
-    (function() {
+    (function () {
         if (typeof ImageData.prototype.constructor === 'function') {
             try {
                 // try actually calling ImageData, as on some browsers it's reported
@@ -579,8 +579,8 @@ var SubtitlesOctopus = function (options) {
 
                         if (self.debug) {
                             console.info('oneshot received (start=' +
-                                    data.eventStart + ', empty=' + data.emptyFinish +
-                                    '), render: ' + Math.round(data.spentTime) + ' ms');
+                                data.eventStart + ', empty=' + data.emptyFinish +
+                                '), render: ' + Math.round(data.spentTime) + ' ms');
                         }
                         self.oneshotState.renderRequested = false;
                         if (Math.abs(data.lastRenderedTime - self.oneshotState.requestNextTimestamp) < 0.01) {
@@ -723,7 +723,7 @@ var SubtitlesOctopus = function (options) {
             }
         }
 
-        return {'width': width, 'height': height};
+        return { 'width': width, 'height': height };
     }
 
     self.resize = function (width, height, top, left) {
@@ -748,36 +748,52 @@ var SubtitlesOctopus = function (options) {
 
 
         if (
-          self.canvas.width != width ||
-          self.canvas.height != height ||
-          self.canvas.style.top != top ||
-          self.canvas.style.left != left
+            self.canvas.width != width ||
+            self.canvas.height != height ||
+            self.canvas.style.top != top ||
+            self.canvas.style.left != left
         ) {
-            self.canvas.width = width;
-            self.canvas.height = height;
 
             if (videoSize != null) {
                 self.canvasParent.style.position = 'relative';
                 self.canvas.style.display = 'block';
                 self.canvas.style.position = 'absolute';
-                self.canvas.style.width = videoSize.width + 'px';
-                self.canvas.style.height = videoSize.height + 'px';
                 self.canvas.style.top = top + 'px';
                 self.canvas.style.left = left + 'px';
                 self.canvas.style.pointerEvents = 'none';
             }
-
-            self.worker.postMessage({
-                target: 'canvas',
-                width: self.canvas.width,
-                height: self.canvas.height
-            });
-            self.resetRenderAheadCache(true);
+            if (!(self.canvas.width == width && self.canvas.height == height)) {
+                // only re-paint if dimensions actually changed
+                self.canvas.width = width;
+                self.canvas.height = height;
+                if (videoSize != null) {
+                    self.canvas.style.width = videoSize.width + 'px';
+                    self.canvas.style.height = videoSize.height + 'px';
+                }
+                self.worker.postMessage({
+                    target: 'canvas',
+                    width: self.canvas.width,
+                    height: self.canvas.height
+                });
+                self.resetRenderAheadCache(true);
+            }
         }
     };
 
     self.resizeWithTimeout = function () {
-        self.resize();
+        //dont spam re-paints like crazy when re-sizing with animations, but still update instantly without them
+        if (self.resizeTimeoutBuffer) {
+            clearTimeout(self.resizeTimeoutBuffer)
+            self.resizeTimeoutBuffer = setTimeout(() => {
+                self.resizeTimeoutBuffer = undefined
+                self.resize();
+            }, 50)
+        } else {
+            self.resize();
+            self.resizeTimeoutBuffer = setTimeout(() => {
+                self.resizeTimeoutBuffer = undefined
+            }, 50)
+        }
     };
 
     self.runBenchmark = function () {

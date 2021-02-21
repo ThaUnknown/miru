@@ -122,7 +122,7 @@ input:invalid {
     grid-auto-rows: auto;
     justify-content: center;
     grid-gap: 2rem;
-    padding: 4rem
+    padding: 2rem 4rem
 }
 
 #browse.loading .gallery {

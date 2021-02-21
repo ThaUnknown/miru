@@ -15,7 +15,7 @@ async function loadHomePage() {
                 browse.classList.remove("loading")
                 browseGallery.appendChild(frag)
                 browseGallery.scrollTop = 0
-                browseGallery.onscroll = undefined
+                browse.onscroll = undefined
             },
             planning: async function (page) {
                 if (!page) gallerySkeleton(browseGallery)
@@ -113,7 +113,7 @@ async function loadHomePage() {
         gallery.appendChild(gallerySkeletonFrag(10))
     }
     function galleryAppend(opts) {
-        if (opts.method) opts.gallery.onscroll = function () {
+        if (opts.method) browse.onscroll = function () {
             if (this.scrollTop + this.clientHeight > this.scrollHeight - 800 && !loadTimeout) {
                 loadTimeout = setTimeout(function () { loadTimeout = undefined }, 1000)
                 homeLoadFunctions[opts.method](opts.page + 1)

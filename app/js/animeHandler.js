@@ -38,7 +38,7 @@ if (searchParams.get("link")) {
 }
 function traceAnime(image, type) { //WAIT lookup logic
     halfmoon.initStickyAlert({
-        content: `Looking Up Anime ${type == "uri" ? "" : `For <span class="text-break">${image}</span>`}`
+        content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
     })
     let options,
         url = `https://trace.moe/api/search?url=${image}`
@@ -55,6 +55,13 @@ function traceAnime(image, type) { //WAIT lookup logic
             if (result.docs[0].similarity >= 0.85) {
                 let res = await alRequest({ method: "SearchIDSingle", id: result.docs[0].anilist_id })
                 viewAnime(res.data.Media)
+            } else {
+                halfmoon.initStickyAlert({
+                    content: `Couldn't find anime for specified image! Try to remove black bars, or use a more detailed image.`,
+                    title: "Search Failed",
+                    alertType: "alert-danger",
+                    fillType: ""
+                });
             }
         });
 }
