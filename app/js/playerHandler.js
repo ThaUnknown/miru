@@ -62,7 +62,6 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     nowPlayingDisplay.innerHTML = ""
     bcap.setAttribute("disabled", "")
     bpl.setAttribute("disabled", "")
-    document.querySelector(".playlist").innerHTML = '';
     bnext.removeAttribute("disabled")
     navNowPlaying.classList.add("d-none")
     if ('mediaSession' in navigator) navigator.mediaSession.metadata = undefined
@@ -113,21 +112,7 @@ async function buildVideo(torrent, opts) { // sets video source and creates a bu
     })
     playVideo();
 
-    if (videoFiles.length > 1) {
-        if (!torrent.store.store._idbkvStore) {
-            torrent.files.forEach(file => file.deselect());
-            torrent.deselect(0, torrent.pieces.length - 1, false);
-        }
-        bpl.removeAttribute("disabled")
-        let frag = document.createDocumentFragment()
-        for (let file of videoFiles) {
-            let mediaInformation = await resolveFileMedia({ fileName: file.name, method: "SearchName" })
-            template = cardCreator(mediaInformation)
-            template.onclick = () => addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode, file: file })
-            frag.appendChild(template)
-        }
-        document.querySelector(".playlist").appendChild(frag)
-    }
+    if (videoFiles.length > 1) bpl.removeAttribute("disabled")
 
     async function processFile() {
         halfmoon.initStickyAlert({
@@ -667,7 +652,7 @@ document.onkeydown = a => {
                 updateVolume(parseInt(volume.value) - 5)
                 break;
             case "Escape":
-                document.location.hash = "#browse"
+                document.location.hash = "#home"
                 break;
         }
     }
