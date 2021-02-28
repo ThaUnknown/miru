@@ -9026,19 +9026,19 @@ self.oneshotRender = function (lastRenderedTime, renderNow, iteration) {
 self.fastRender = function (force) {
     self.rafId = 0;
     self.renderPending = false;
-    // var startTime = performance.now();
+    var startTime = performance.now();
     var renderResult = self.octObj.renderImage(self.getCurrentTime() + self.delay, self.changed);
     var changed = Module.getValue(self.changed, "i32");
     if (changed != 0 || force) {
         var result = self.buildResult(renderResult);
-        // var newTime = performance.now();
-        // var libassTime = newTime - startTime;
+        var newTime = performance.now();
+        var libassTime = newTime - startTime;
         var promises = [];
         for (var i = 0; i < result[0].length; i++) {
             promises[i] = createImageBitmap(new ImageData(new Uint8ClampedArray(result[0][i].buffer), result[0][i].w, result[0][i].h), 0, 0, result[0][i].w, result[0][i].h)
         }
         Promise.all(promises).then(function (imgs) {
-            // var decodeTime = performance.now() - newTime;
+            var decodeTime = performance.now() - newTime;
             var bitmaps = [];
             for (var i = 0; i < imgs.length; i++) {
                 bitmaps[i] = {
@@ -9047,20 +9047,12 @@ self.fastRender = function (force) {
                     bitmap: imgs[i]
                 }
             }
-            // postMessage({
-            //     target: "canvas",
-            //     op: "renderFastCanvas",
-            //     time: Date.now(),
-            //     libassTime: libassTime,
-            //     decodeTime: decodeTime,
-            //     bitmaps: bitmaps
-            // }, imgs)
             postMessage({
                 target: "canvas",
                 op: "renderFastCanvas",
                 time: Date.now(),
-                libassTime: 0,
-                decodeTime: 0,
+                libassTime: libassTime,
+                decodeTime: decodeTime,
                 bitmaps: bitmaps
             }, imgs)
         })
@@ -9075,12 +9067,12 @@ self.offscreenRender = function (force) {
     var renderResult = self.octObj.renderImage(self.getCurrentTime() + self.delay, self.changed);
     var changed = Module.getValue(self.changed, "i32");
     if ((changed != 0 || force) && self.offscreenCanvas) {
-        var result = self.buildResult(renderResult);
+        var result = self.buildResultImage(renderResult);
         // var newTime = performance.now();
         // var libassTime = newTime - startTime;
         var promises = [];
         for (var i = 0; i < result[0].length; i++) {
-            promises[i] = createImageBitmap(new ImageData(result[0][i].buffer, result[0][i].w, result[0][i].h), 0, 0, result[0][i].w, result[0][i].h)
+            promises[i] = createImageBitmap(result[0][i].image, 0, 0, result[0][i].w, result[0][i].h)
         }
         Promise.all(promises).then(function (imgs) {
             // var decodeTime = performance.now() - newTime;
@@ -9106,15 +9098,69 @@ self.offscreenRender = function (force) {
         self.rafId = self.requestAnimationFrame(self.offscreenRender)
     }
 }
+self.buildResultImage = function (ptr) {
+    const items = [];
+    let item;
+    while (ptr.ptr != 0) {
+        item = self.buildResultImageItem(ptr);
+        if (item !== null) {
+            items.push(item);
+        }
+        ptr = ptr.next
+    }
+    return [items]
+};
+self.buildResultImageItem = function (ptr) {
+    const bitmap = ptr.bitmap,
+        stride = ptr.stride,
+        w = ptr.w,
+        h = ptr.h,
+        color = ptr.color;
+    if (w === 0 || h === 0) {
+        return null
+    }
+    const r = color >> 24 & 255,
+        g = color >> 16 & 255,
+        b = color >> 8 & 255,
+        a = (255 - (color & 255)) / 255;
+    if (a === 0) {
+        return null
+    }
+    const image = new ImageData(w, h);
+    let bitmapPosition = 0;
+    let imagePosition = 0;
+    for (var y = 0; y < h; ++y) {
+        for (var x = 0; x < w; ++x) {
+            const k = Module.HEAPU8[bitmap + bitmapPosition + x];
+            if (k !== 0) {
+                image.data[imagePosition] = r;
+                image.data[imagePosition + 1] = g;
+                image.data[imagePosition + 2] = b;
+                image.data[imagePosition + 3] = k * a;
+            }
+            imagePosition += 4;
+        }
+        bitmapPosition += stride;
+    }
+    x = ptr.dst_x;
+    y = ptr.dst_y;
+    return {
+        w: w,
+        h: h,
+        x: x,
+        y: y,
+        image: image
+    }
+};
 self.buildResult = function (ptr) {
     var items = [];
-    // var transferable = [];
+    var transferable = [];
     var item;
     while (ptr.ptr != 0) {
         item = self.buildResultItem(ptr);
         if (item !== null) {
             items.push(item);
-            // transferable.push(item.buffer)
+            transferable.push(item.buffer)
         }
         ptr = ptr.next
     }
@@ -9132,13 +9178,13 @@ self.buildResultItem = function (ptr) {
     var r = color >> 24 & 255,
         g = color >> 16 & 255,
         b = color >> 8 & 255,
-        a = 255 - (color & 255);
+        a = (255 - (color & 255)) / 255;
     var result = new Uint8ClampedArray(4 * w * h);
     var bitmapPosition = 0;
     var resultPosition = 0;
     for (var y = 0; y < h; ++y) {
         for (var x = 0; x < w; ++x) {
-            var k = Module.HEAPU8[bitmap + bitmapPosition + x] * a / 255;
+            var k = Module.HEAPU8[bitmap + bitmapPosition + x] * a;
             result[resultPosition] = r;
             result[resultPosition + 1] = g;
             result[resultPosition + 2] = b;
@@ -9218,21 +9264,21 @@ function parseAss(content) {
     }
     return sections
 }
-// self.requestAnimationFrame = function() {
-//     var nextRAF = 0;
-//     return function(func) {
-//         var now = Date.now();
-//         if (nextRAF === 0) {
-//             nextRAF = now + 1e3 / self.targetFps
-//         } else {
-//             while (now + 2 >= nextRAF) {
-//                 nextRAF += 1e3 / self.targetFps
-//             }
-//         }
-//         var delay = Math.max(nextRAF - now, 0);
-//         return setTimeout(func, delay)
-//     }
-// }();
+self.requestAnimationFrame = function() {
+    var nextRAF = 0;
+    return function(func) {
+        var now = Date.now();
+        if (nextRAF === 0) {
+            nextRAF = now + 1e3 / self.targetFps
+        } else {
+            while (now + 2 >= nextRAF) {
+                nextRAF += 1e3 / self.targetFps
+            }
+        }
+        var delay = Math.max(nextRAF - now, 0);
+        return setTimeout(func, delay)
+    }
+}();
 var screen = {
     width: 0,
     height: 0

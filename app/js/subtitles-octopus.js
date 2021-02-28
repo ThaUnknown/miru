@@ -171,7 +171,7 @@ var SubtitlesOctopus = function (options) {
                 self.workerError('Don\'t know where to render: you should give video or canvas in options.');
             }
         }
-        if (!self.renderMode === "offscreenCanvas") {
+        if (!(self.renderMode === "offscreenCanvas")) {
             self.ctx = self.canvas.getContext('2d');
         }
         if (!typeof self.hasAlphaBug == "boolean") {
@@ -561,7 +561,7 @@ var SubtitlesOctopus = function (options) {
             case 'canvas': {
                 switch (data.op) {
                     case 'getContext': {
-                        if (!self.renderMode === "offscreenCanvas") self.ctx = self.canvas.getContext(data.type, data.attributes);
+                        if (!(self.renderMode === "offscreenCanvas")) self.ctx = self.canvas.getContext(data.type, data.attributes);
                         break;
                     }
                     case 'resize': {
