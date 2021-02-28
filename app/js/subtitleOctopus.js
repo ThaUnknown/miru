@@ -44,7 +44,7 @@ async function renderSubs(trackNumber) {
             video: video,
             targetFps: await playerData.fps,
             subContent: trackNumber ? playerData.headers[trackNumber].header.slice(0, -1) + Array.from(playerData.subtitles[trackNumber]).join("\n") : playerData.headers[3].header.slice(0, -1),
-            lossyRender: true,
+            renderMode: "offscreenCanvas",
             fonts: playerData.fonts?.length != 0 ? playerData.fonts : ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"],
             workerUrl: 'js/subtitles-octopus-worker.js',
             timeOffset: 0

@@ -135,52 +135,69 @@ var SubtitlesOctopus = function (options) {
             renderOnDemand: self.renderAhead > 0,
             dropAllAnimations: self.dropAllAnimations
         });
+        if (self.renderMode === "offscreenCanvas") {
+            self.pushOffscreenCanvas()
+            self.initDone = true
+        }
     };
+    self.pushOffscreenCanvas = function () {
+        let canvasControl = self.canvas.transferControlToOffscreen()
+        self.worker.postMessage({
+            target: 'offscreenCanvas',
+            canvas: canvasControl
+        }, [canvasControl])
+    }
 
     self.createCanvas = function () {
-        if (!self.canvas) {
-            if (self.video) {
-                self.isOurCanvas = true;
-                self.canvas = document.createElement('canvas');
-                self.canvas.className = 'libassjs-canvas';
-                self.canvas.style.display = 'none';
+        if (self.video) {
+            self.isOurCanvas = true;
+            self.canvas = document.createElement('canvas');
+            self.canvas.className = 'libassjs-canvas';
+            self.canvas.style.display = 'none';
 
-                self.canvasParent = document.createElement('div');
-                self.canvasParent.className = 'libassjs-canvas-parent';
-                self.canvasParent.appendChild(self.canvas);
+            self.canvasParent = document.createElement('div');
+            self.canvasParent.className = 'libassjs-canvas-parent';
+            self.canvasParent.appendChild(self.canvas);
 
-                if (self.video.nextSibling) {
-                    self.video.parentNode.insertBefore(self.canvasParent, self.video.nextSibling);
-                }
-                else {
-                    self.video.parentNode.appendChild(self.canvasParent);
-                }
+            if (self.video.nextSibling) {
+                self.video.parentNode.insertBefore(self.canvasParent, self.video.nextSibling);
             }
             else {
-                if (!self.canvas) {
-                    self.workerError('Don\'t know where to render: you should give video or canvas in options.');
-                }
+                self.video.parentNode.appendChild(self.canvasParent);
             }
         }
-        self.ctx = self.canvas.getContext('2d');
-        self.bufferCanvas = document.createElement('canvas');
-        self.bufferCanvasCtx = self.bufferCanvas.getContext('2d');
+        else {
+            if (!self.canvas) {
+                self.workerError('Don\'t know where to render: you should give video or canvas in options.');
+            }
+        }
+        if (!self.renderMode === "offscreenCanvas") {
+            self.ctx = self.canvas.getContext('2d');
+        }
+        if (!typeof self.hasAlphaBug == "boolean") {
+            self.bufferCanvas = document.createElement('canvas');
+            self.bufferCanvasCtx = self.bufferCanvas.getContext('2d');
+            self.bufferCanvas2 = document.createElement('canvas');
+            self.bufferCanvasCtx2 = self.bufferCanvas.getContext('2d');
 
-        // test for alpha bug, where e.g. WebKit can render a transparent pixel
-        // (with alpha == 0) as non-black which then leads to visual artifacts
-        self.bufferCanvas.width = 1;
-        self.bufferCanvas.height = 1;
-        var testBuf = new Uint8ClampedArray([0, 255, 0, 0]);
-        var testImage = new ImageData(testBuf, 1, 1);
-        self.bufferCanvasCtx.clearRect(0, 0, 1, 1);
-        self.ctx.clearRect(0, 0, 1, 1);
-        var prePut = self.ctx.getImageData(0, 0, 1, 1).data;
-        self.bufferCanvasCtx.putImageData(testImage, 0, 0);
-        self.ctx.drawImage(self.bufferCanvas, 0, 0);
-        var postPut = self.ctx.getImageData(0, 0, 1, 1).data;
-        self.hasAlphaBug = prePut[1] != postPut[1];
-        if (self.hasAlphaBug) {
-            console.log("Detected a browser having issue with transparent pixels, applying workaround");
+            // test for alpha bug, where e.g. WebKit can render a transparent pixel
+            // (with alpha == 0) as non-black which then leads to visual artifacts
+            self.bufferCanvas.width = 1;
+            self.bufferCanvas.height = 1;
+            self.bufferCanvas2.width = 1;
+            self.bufferCanvas2.height = 1;
+            var testBuf = new Uint8ClampedArray([0, 255, 0, 0]);
+            var testImage = new ImageData(testBuf, 1, 1);
+            self.bufferCanvasCtx.clearRect(0, 0, 1, 1);
+            self.bufferCanvasCtx2.clearRect(0, 0, 1, 1);
+            var prePut = self.bufferCanvasCtx2.getImageData(0, 0, 1, 1).data;
+            self.bufferCanvasCtx.putImageData(testImage, 0, 0);
+            self.bufferCanvasCtx2.drawImage(self.bufferCanvas, 0, 0);
+            var postPut = self.bufferCanvasCtx2.getImageData(0, 0, 1, 1).data;
+            self.hasAlphaBug = prePut[1] != postPut[1];
+            if (self.hasAlphaBug) {
+                console.log("Detected a browser having issue with transparent pixels, applying workaround");
+            }
         }
     };
 
@@ -544,7 +561,7 @@ var SubtitlesOctopus = function (options) {
             case 'canvas': {
                 switch (data.op) {
                     case 'getContext': {
-                        self.ctx = self.canvas.getContext(data.type, data.attributes);
+                        if (!self.renderMode === "offscreenCanvas") self.ctx = self.canvas.getContext(data.type, data.attributes);
                         break;
                     }
                     case 'resize': {
@@ -754,6 +771,10 @@ var SubtitlesOctopus = function (options) {
             self.canvas.style.left != left
         ) {
 
+            if (self.renderMode == "offscreenCanvas" && self.initDone) {
+                self.canvasParent.remove()
+                self.createCanvas()
+            }
             if (videoSize != null) {
                 self.canvasParent.style.position = 'relative';
                 self.canvas.style.display = 'block';
@@ -769,6 +790,9 @@ var SubtitlesOctopus = function (options) {
                 if (videoSize != null) {
                     self.canvas.style.width = videoSize.width + 'px';
                     self.canvas.style.height = videoSize.height + 'px';
+                }
+                if (self.renderMode == "offscreenCanvas" && self.initDone) {
+                    self.pushOffscreenCanvas()
                 }
                 self.worker.postMessage({
                     target: 'canvas',

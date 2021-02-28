@@ -6,42 +6,47 @@ Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour,
 Style: Default,Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1`
     let options = {
         video: video,
-        lossyRender: true,
         fonts: ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"],
         workerUrl: 'js/subtitles-octopus-worker.js',
         subContent: header,
+        renderMode: "offscreenCanvas",
         onReady: ready,
         debug: true,
         onError: console.log
     };
-    let octopusInstance = new SubtitlesOctopus(options);
+    let octopusInstance
+    setTimeout(() => {
+        octopusInstance = new SubtitlesOctopus(options);
+    }, 1000)
 
     function ready() {
-        octopusInstance.createEvent({
-            Duration: 2960,
-            Effect: "",
-            Layer: 100,
-            MarginL: 0,
-            MarginR: 0,
-            MarginV: 0,
-            Name: "",
-            ReadOrder: 0,
-            Start: 180,
-            Style: 1,
-            Text: "Miss Kobayashi's Dragon Something!",
-        })
-        octopusInstance.createEvent({
-            Duration: 1750,
-            Effect: "",
-            Layer: 100,
-            MarginL: 0,
-            MarginR: 0,
-            MarginV: 0,
-            Name: "",
-            ReadOrder: 1,
-            Start: 1940,
-            Style: 1,
-            Text: "What's with the "
-        })
+        setTimeout(() => {
+            octopusInstance.createEvent({
+                Duration: 2960,
+                Effect: "",
+                Layer: 100,
+                MarginL: 0,
+                MarginR: 0,
+                MarginV: 0,
+                Name: "",
+                ReadOrder: 0,
+                Start: 180,
+                Style: 1,
+                Text: "Miss Kobayashi's Dragon Something!",
+            })
+            octopusInstance.createEvent({
+                Duration: 1750,
+                Effect: "",
+                Layer: 100,
+                MarginL: 0,
+                MarginR: 0,
+                MarginV: 0,
+                Name: "",
+                ReadOrder: 1,
+                Start: 1940,
+                Style: 1,
+                Text: "What's with the "
+            })
+        }, 1000)
     }
 </script>
