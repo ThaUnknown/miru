@@ -26,6 +26,7 @@ body {
     object-fit: cover;
     background-color: var(--color) !important;
 }
+
 img {
     pointer-events: none;
 }
@@ -101,8 +102,8 @@ input:invalid {
     position: absolute;
     right: 0;
     height: 100%;
-    width: 10rem;
-    background: linear-gradient(270deg, rgba(37, 40, 44, 1) 0%, rgba(37, 40, 44, 1) 15%, rgba(37, 40, 44, .45) 70%, rgba(37, 40, 44, 0) 100%);
+    width: 8rem;
+    background: linear-gradient(270deg, rgba(37, 40, 44, 1) 0%, rgba(37, 40, 44, 0) 100%);
     /*this gradient looks like ass, need to find smth better*/
 }
 
@@ -151,7 +152,8 @@ input:invalid {
     padding: 1rem 0;
     justify-content: start;
 }
-.gallery-sm .card{
+
+.gallery-sm .card {
     height: 16.2rem !important
 }
 

@@ -153,7 +153,7 @@ function serveFile(file, req) {
     const res = {
         status: 200,
         headers: {
-            'Content-Type': file._getMimeType() || 'video/webm',
+            'Content-Type': file._getMimeType() || 'video/webm', // lazy workaround for some browsers getting upset about no mime type
             // Support range-requests
             'Accept-Ranges': 'bytes'
         }

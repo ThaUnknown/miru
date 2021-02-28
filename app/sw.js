@@ -48,7 +48,9 @@ self.addEventListener('fetch', evt => {
 								}
 								rs()
 							}
-
+							// 'media player' does NOT signal a close on the stream and we cannot close it because it's locked to the reader, 
+							// so we just empty it after 5s of inactivity, 
+							// the browser will request another port anyways
 							clearTimeout(tm)
 							tm = setTimeout(() => {
 								controller.close()

@@ -48,6 +48,7 @@ function cleanupVideo() { // cleans up objects, attemps to clear as much video c
     video.src = "";
     video.load()
     document.title = "Miru"
+    progress.value = 0
     // if (typeof client !== 'undefined' && client.torrents[0] && client.torrents[0].files.length > 1) {
     //     client.torrents[0].files.forEach(file => file.deselect());
     //     client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
