@@ -9064,6 +9064,7 @@ self.fastRender = function (force) {
 self.offscreenRender = function (force) {
     self.rafId = 0;
     self.renderPending = false;
+    // var startTime = performance.now();
     var renderResult = self.octObj.renderImage(self.getCurrentTime() + self.delay, self.changed);
     var changed = Module.getValue(self.changed, "i32");
     if ((changed != 0 || force) && self.offscreenCanvas) {
@@ -9072,7 +9073,7 @@ self.offscreenRender = function (force) {
         // var libassTime = newTime - startTime;
         var promises = [];
         for (var i = 0; i < result[0].length; i++) {
-            promises[i] = createImageBitmap(result[0][i].image, 0, 0, result[0][i].w, result[0][i].h)
+            promises[i] = createImageBitmap(result[0][i].image)
         }
         Promise.all(promises).then(function (imgs) {
             // var decodeTime = performance.now() - newTime;
@@ -9085,10 +9086,13 @@ self.offscreenRender = function (force) {
                 }
             }
             function renderFastFrames() {
+                // var beforeDrawTime = performance.now();
                 self.offscreenCanvasCtx.clearRect(0, 0, self.offscreenCanvas.width, self.offscreenCanvas.height);
                 for (var i = 0; i < bitmaps.length; i++) {
                     var image = bitmaps[i];
                     self.offscreenCanvasCtx.drawImage(image.bitmap, image.x, image.y);
+                    // var drawTime = Math.round(performance.now() - beforeDrawTime);
+                    // console.log(bitmaps.length + ' bitmaps, libass: ' + Math.round(libassTime) + 'ms, decode: ' + Math.round(decodeTime) + 'ms, draw: ' + drawTime + 'ms');
                 }
             }
             self.requestAnimationFrame(renderFastFrames);
@@ -9117,36 +9121,32 @@ self.buildResultImageItem = function (ptr) {
         h = ptr.h,
         color = ptr.color;
     if (w === 0 || h === 0) {
-        return null
+        return null;
     }
-    const r = color >> 24 & 255,
-        g = color >> 16 & 255,
-        b = color >> 8 & 255,
-        a = (255 - (color & 255)) / 255;
+    const a = (255 - (color & 255)) / 255;
     if (a === 0) {
-        return null
+        return null;
     }
-    const image = new ImageData(w, h);
-    let bitmapPosition = 0;
-    let imagePosition = 0;
+    const c = (color >> 8 & 255) << 16 | (color >> 16 & 255) << 8 | (color >> 24 & 255),
+        buf = new ArrayBuffer(w * h * 4),
+        buf8 = new Uint8ClampedArray(buf),
+        data = new Uint32Array(buf);
+    let bitmapPosition = 0,
+        resultPosition = 0;
     for (var y = 0; y < h; ++y) {
         for (var x = 0; x < w; ++x) {
             const k = Module.HEAPU8[bitmap + bitmapPosition + x];
             if (k !== 0) {
-                image.data[imagePosition] = r;
-                image.data[imagePosition + 1] = g;
-                image.data[imagePosition + 2] = b;
-                image.data[imagePosition + 3] = k * a;
+                data[resultPosition] = a * k << 24 | c;
             }
-            imagePosition += 4;
+            resultPosition++;
         }
         bitmapPosition += stride;
     }
+    const image = new ImageData(buf8, w, h);
     x = ptr.dst_x;
     y = ptr.dst_y;
     return {
-        w: w,
-        h: h,
         x: x,
         y: y,
         image: image
@@ -9264,9 +9264,9 @@ function parseAss(content) {
     }
     return sections
 }
-self.requestAnimationFrame = function() {
+self.requestAnimationFrame = function () {
     var nextRAF = 0;
-    return function(func) {
+    return function (func) {
         var now = Date.now();
         if (nextRAF === 0) {
             nextRAF = now + 1e3 / self.targetFps

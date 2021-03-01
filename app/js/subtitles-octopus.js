@@ -174,30 +174,28 @@ var SubtitlesOctopus = function (options) {
         if (!(self.renderMode === "offscreenCanvas")) {
             self.ctx = self.canvas.getContext('2d');
         }
-        if (!typeof self.hasAlphaBug == "boolean") {
-            self.bufferCanvas = document.createElement('canvas');
-            self.bufferCanvasCtx = self.bufferCanvas.getContext('2d');
-            self.bufferCanvas2 = document.createElement('canvas');
-            self.bufferCanvasCtx2 = self.bufferCanvas.getContext('2d');
+        self.bufferCanvas = document.createElement('canvas');
+        self.bufferCanvasCtx = self.bufferCanvas.getContext('2d');
+        self.bufferCanvas2 = document.createElement('canvas');
+        self.bufferCanvasCtx2 = self.bufferCanvas.getContext('2d');
 
-            // test for alpha bug, where e.g. WebKit can render a transparent pixel
-            // (with alpha == 0) as non-black which then leads to visual artifacts
-            self.bufferCanvas.width = 1;
-            self.bufferCanvas.height = 1;
-            self.bufferCanvas2.width = 1;
-            self.bufferCanvas2.height = 1;
-            var testBuf = new Uint8ClampedArray([0, 255, 0, 0]);
-            var testImage = new ImageData(testBuf, 1, 1);
-            self.bufferCanvasCtx.clearRect(0, 0, 1, 1);
-            self.bufferCanvasCtx2.clearRect(0, 0, 1, 1);
-            var prePut = self.bufferCanvasCtx2.getImageData(0, 0, 1, 1).data;
-            self.bufferCanvasCtx.putImageData(testImage, 0, 0);
-            self.bufferCanvasCtx2.drawImage(self.bufferCanvas, 0, 0);
-            var postPut = self.bufferCanvasCtx2.getImageData(0, 0, 1, 1).data;
-            self.hasAlphaBug = prePut[1] != postPut[1];
-            if (self.hasAlphaBug) {
-                console.log("Detected a browser having issue with transparent pixels, applying workaround");
-            }
+        // test for alpha bug, where e.g. WebKit can render a transparent pixel
+        // (with alpha == 0) as non-black which then leads to visual artifacts
+        self.bufferCanvas.width = 1;
+        self.bufferCanvas.height = 1;
+        self.bufferCanvas2.width = 1;
+        self.bufferCanvas2.height = 1;
+        var testBuf = new Uint8ClampedArray([0, 255, 0, 0]);
+        var testImage = new ImageData(testBuf, 1, 1);
+        self.bufferCanvasCtx.clearRect(0, 0, 1, 1);
+        self.bufferCanvasCtx2.clearRect(0, 0, 1, 1);
+        var prePut = self.bufferCanvasCtx2.getImageData(0, 0, 1, 1).data;
+        self.bufferCanvasCtx.putImageData(testImage, 0, 0);
+        self.bufferCanvasCtx2.drawImage(self.bufferCanvas, 0, 0);
+        var postPut = self.bufferCanvasCtx2.getImageData(0, 0, 1, 1).data;
+        self.hasAlphaBug = prePut[1] != postPut[1];
+        if (self.hasAlphaBug) {
+            console.log("Detected a browser having issue with transparent pixels, applying workaround");
         }
     };
 
