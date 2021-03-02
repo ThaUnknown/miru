@@ -9065,32 +9065,23 @@ self.offscreenRender = function (force) {
     self.rafId = 0;
     self.renderPending = false;
     // var startTime = performance.now();
-    var renderResult = self.octObj.renderImage(self.getCurrentTime() + self.delay, self.changed);
-    var changed = Module.getValue(self.changed, "i32");
+    let result = self.octObj.renderImage(self.getCurrentTime() + self.delay, self.changed),
+        changed = Module.getValue(self.changed, "i32");
     if ((changed != 0 || force) && self.offscreenCanvas) {
-        var result = self.buildResultImage(renderResult);
+        let images = self.buildResultImage(result);
         // var newTime = performance.now();
         // var libassTime = newTime - startTime;
-        var promises = [];
-        for (var i = 0; i < result[0].length; i++) {
-            promises[i] = createImageBitmap(result[0][i].image)
+        let promises = [];
+        for (var i = 0; i < images.length; i++) {
+            promises[i] = createImageBitmap(images[i].image)
         }
-        Promise.all(promises).then(function (imgs) {
+        Promise.all(promises).then(function (bitmaps) {
             // var decodeTime = performance.now() - newTime;
-            var bitmaps = [];
-            for (var i = 0; i < imgs.length; i++) {
-                bitmaps[i] = {
-                    x: result[0][i].x,
-                    y: result[0][i].y,
-                    bitmap: imgs[i]
-                }
-            }
             function renderFastFrames() {
                 // var beforeDrawTime = performance.now();
                 self.offscreenCanvasCtx.clearRect(0, 0, self.offscreenCanvas.width, self.offscreenCanvas.height);
                 for (var i = 0; i < bitmaps.length; i++) {
-                    var image = bitmaps[i];
-                    self.offscreenCanvasCtx.drawImage(image.bitmap, image.x, image.y);
+                    self.offscreenCanvasCtx.drawImage(bitmaps[i], images[i].x, images[i].y);
                     // var drawTime = Math.round(performance.now() - beforeDrawTime);
                     // console.log(bitmaps.length + ' bitmaps, libass: ' + Math.round(libassTime) + 'ms, decode: ' + Math.round(decodeTime) + 'ms, draw: ' + drawTime + 'ms');
                 }
@@ -9112,7 +9103,7 @@ self.buildResultImage = function (ptr) {
         }
         ptr = ptr.next
     }
-    return [items]
+    return items
 };
 self.buildResultImageItem = function (ptr) {
     const bitmap = ptr.bitmap,
@@ -9127,7 +9118,7 @@ self.buildResultImageItem = function (ptr) {
     if (a === 0) {
         return null;
     }
-    const c = (color >> 8 & 255) << 16 | (color >> 16 & 255) << 8 | (color >> 24 & 255),
+    const c = (color << 8 & 0xFF0000) | (color >> 8 & 0xFF00) | (color >> 24 & 0xFF),
         buf = new ArrayBuffer(w * h * 4),
         buf8 = new Uint8ClampedArray(buf),
         data = new Uint32Array(buf);

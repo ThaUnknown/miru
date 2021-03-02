@@ -55,6 +55,9 @@
 #player.pip{
     background: #000
 }
+#player.pip canvas {
+    left: 99.9% !important /*hack to hide the canvas but still keep it updating*/
+}
 
 .controls {
     background: linear-gradient(to top, rgba(0, 0, 0, .8), rgba(0, 0, 0, .4) 25%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .1) 75%, transparent);
@@ -211,8 +214,7 @@
 #player:target>a,
 #progress+img[src=" "],
 video[src=""],
-#player.pip video,
-#player.pip canvas {
+#player.pip video {
     display: none !important
 }
 

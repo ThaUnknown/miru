@@ -469,7 +469,6 @@ async function btnpip() {
                 await document.exitPictureInPicture()
             } else {
                 let canvas = document.createElement("canvas"),
-                    subtitleCanvas = document.querySelector(".libassjs-canvas"),
                     canvasVideo = document.createElement("video"),
                     context = canvas.getContext("2d", { alpha: false }),
                     running = true

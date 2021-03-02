@@ -154,6 +154,7 @@ var SubtitlesOctopus = function (options) {
             self.canvas = document.createElement('canvas');
             self.canvas.className = 'libassjs-canvas';
             self.canvas.style.display = 'none';
+            self.canvas.id = "subtitleCanvas";
 
             self.canvasParent = document.createElement('div');
             self.canvasParent.className = 'libassjs-canvas-parent';
@@ -811,9 +812,9 @@ var SubtitlesOctopus = function (options) {
                 self.resize();
             }, 50)
         } else {
-            self.resize();
             self.resizeTimeoutBuffer = setTimeout(() => {
                 self.resizeTimeoutBuffer = undefined
+                self.resize();
             }, 50)
         }
     };
