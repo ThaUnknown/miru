@@ -50,10 +50,20 @@ clearRelCache.onclick = () => {
 }
 renderSettings()
 
-other1.onclick = () => Notification.requestPermission().then(perm => perm == "denied" ? other1.checked = false : "")
+other1.onclick = () => Notification.requestPermission().then(perm => perm == "denied" ? other1.checked = false : other1.checked = true)
 
 let searchParams = new URLSearchParams(location.href)
 if (searchParams.get("access_token")) {
     localStorage.setItem("ALtoken", searchParams.get("access_token"))
     window.location = "/app/#settingsTab"
 }
+let userBrowser = function () {
+    if (window.chrome) {
+        if (navigator.userAgent.indexOf("Edg") != -1) {
+            return "edge"
+        } else {
+            return "chromium"
+        }
+    }
+    if (typeof InstallTrigger !== 'undefined') return "firefox"
+}()
