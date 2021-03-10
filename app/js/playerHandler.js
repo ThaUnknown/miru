@@ -477,9 +477,9 @@ async function btnpip() {
 
                 function renderFrame() {
                     if (running === true) {
-                        context.drawImage(video, 0, 0)
-                        context.drawImage(subtitleCanvas, 0, 0, canvas.width, canvas.height)
-                        window.requestAnimationFrame(renderFrame)
+                        context.drawImage(video, 0, 0);
+                        context.drawImage(subtitleCanvas, 0, 0, canvas.width, canvas.height);
+                        window.requestAnimationFrame(renderFrame);
                     }
                 }
                 canvasVideo.srcObject = canvas.captureStream()

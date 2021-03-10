@@ -9064,27 +9064,27 @@ self.fastRender = function (force) {
 self.offscreenRender = function (force) {
     self.rafId = 0;
     self.renderPending = false;
-    // var startTime = performance.now();
+    // let startTime = performance.now();
     let result = self.octObj.renderImage(self.getCurrentTime() + self.delay, self.changed),
         changed = Module.getValue(self.changed, "i32");
     if ((changed != 0 || force) && self.offscreenCanvas) {
         let images = self.buildResultImage(result);
-        // var newTime = performance.now();
-        // var libassTime = newTime - startTime;
+        // let newTime = performance.now(),
+        //     libassTime = newTime - startTime;
         let promises = [];
         for (var i = 0; i < images.length; i++) {
             promises[i] = createImageBitmap(images[i].image)
         }
         Promise.all(promises).then(function (bitmaps) {
-            // var decodeTime = performance.now() - newTime;
+            // let decodeTime = performance.now() - newTime;
             function renderFastFrames() {
-                // var beforeDrawTime = performance.now();
+                // let beforeDrawTime = performance.now();
                 self.offscreenCanvasCtx.clearRect(0, 0, self.offscreenCanvas.width, self.offscreenCanvas.height);
                 for (var i = 0; i < bitmaps.length; i++) {
                     self.offscreenCanvasCtx.drawImage(bitmaps[i], images[i].x, images[i].y);
-                    // var drawTime = Math.round(performance.now() - beforeDrawTime);
-                    // console.log(bitmaps.length + ' bitmaps, libass: ' + Math.round(libassTime) + 'ms, decode: ' + Math.round(decodeTime) + 'ms, draw: ' + drawTime + 'ms');
                 }
+                // let drawTime = performance.now() - beforeDrawTime;
+                // console.log(bitmaps.length + ' bitmaps, libass: ' + libassTime + 'ms, decode: ' + decodeTime + 'ms, draw: ' + drawTime + 'ms');
             }
             self.requestAnimationFrame(renderFastFrames);
         })
@@ -9124,15 +9124,14 @@ self.buildResultImageItem = function (ptr) {
         data = new Uint32Array(buf);
     let bitmapPosition = 0,
         resultPosition = 0;
-    for (var y = 0; y < h; ++y) {
-        for (var x = 0; x < w; ++x) {
-            const k = Module.HEAPU8[bitmap + bitmapPosition + x];
+    for (let y = h; y--; bitmapPosition += stride) {
+        const offset = bitmap + bitmapPosition;
+        for (let x = 0, z = w; z--; ++x, resultPosition++) {
+            const k = Module.HEAPU8[offset + x];
             if (k !== 0) {
                 data[resultPosition] = a * k << 24 | c;
             }
-            resultPosition++;
         }
-        bitmapPosition += stride;
     }
     const image = new ImageData(buf8, w, h);
     x = ptr.dst_x;

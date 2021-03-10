@@ -26,7 +26,7 @@ const announceList = [
     // ['ws://tracker.btsync.cf:6969/announce'],
     // ['ws://hub.bugout.link:80/announce']
 ],
-    videoExtensions = ['.avi', '.mp4', '.m4v', '.webm', '.mov', '.mkv', '.mpg', '.mpeg', '.ogv', '.wmv', '.m2ts'],
+    videoExtensions = [".3g2", ".3gp", ".asf", ".avi", ".dv", ".flv", ".gxf", ".m2ts", ".m4a", ".m4b", ".m4p", ".m4r", ".m4v", ".mkv", ".mov", ".mp4", ".mpd", ".mpeg", ".mpg", ".mxf", ".nut", ".ogm", ".ogv", ".swf", ".ts", ".vob", ".webm", ".wmv", ".wtv"],
     scope = "/app/",
     sw = navigator.serviceWorker.register('sw.js', { scope }).then(e => {
         if (searchParams.get("file")) addTorrent(searchParams.get("file"), {}) // add a torrent if its in the link params
@@ -84,6 +84,7 @@ loadOfflineStorage()
 function cleanupTorrents() {
     // creates an array of all non-offline store torrents and removes them
     client.torrents.filter(torrent => !offlineTorrents[torrent.infoHash]).forEach(torrent => torrent.destroy({ destroyStore: true }))
+    document.querySelector(".playlist").innerHTML = ""
 }
 
 // manually add trackers
@@ -104,10 +105,8 @@ async function playTorrent(torrent, opts) {
     await sw
     videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
     if (videoFiles.length > 1) {
-        if (!torrent.store.store._idbkvStore) {
-            torrent.files.forEach(file => file.deselect());
-            torrent.deselect(0, torrent.pieces.length - 1, false);
-        }
+        torrent.files.forEach(file => file.deselect());
+        torrent.deselect(0, torrent.pieces.length - 1, false);
         let frag = document.createDocumentFragment()
         for (let file of videoFiles) {
             let mediaInformation = await resolveFileMedia({ fileName: file.name, method: "SearchName" })
@@ -153,7 +152,7 @@ function serveFile(file, req) {
     const res = {
         status: 200,
         headers: {
-            'Content-Type': file._getMimeType() || 'video/webm', // lazy workaround for some browsers getting upset about no mime type
+            'Content-Type': file._getMimeType(),
             // Support range-requests
             'Accept-Ranges': 'bytes'
         }
