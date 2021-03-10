@@ -106,7 +106,6 @@ async function playTorrent(torrent, opts) {
     videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
     if (videoFiles.length > 1) {
         torrent.files.forEach(file => file.deselect());
-        torrent.deselect(0, torrent.pieces.length - 1, false);
         let frag = document.createDocumentFragment()
         for (let file of videoFiles) {
             let mediaInformation = await resolveFileMedia({ fileName: file.name, method: "SearchName" })
@@ -144,6 +143,7 @@ function addTorrent(torrentID, opts) {
     } else {
         client.add(torrentID, settings.torrent5 ? { store: IdbChunkStore } : {}, function (torrent) {
             playTorrent(torrent, opts)
+            if (settings.torrent6) torrent.deselect(0, torrent.pieces.length - 1, false);
         })
     }
 }

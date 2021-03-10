@@ -603,7 +603,7 @@
                 </div>
             </section>
             <section id="settingsTab" class="overflow-y-auto">
-                <div class="content d-flex flex-column align-items-start mt-15">
+                <div class="content d-flex flex-column align-items-center w-full mt-15">
                     <div class="d-flex flex-row">
                         <div class="p-5">
                             <h1 class="content-title font-size-22">
@@ -694,8 +694,7 @@
                                     autocomplete="off" value="SubsPlease">
                                 <datalist id="torrent4list">
                                     <option value="SubsPlease">https://subsplease.org/rss/?r=</option>
-                                    <option value="Erai-raws">
-                                        https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-</option>
+                                    <option value="Erai-raws">https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-</option>
                                 </datalist>
                             </div>
                             <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
@@ -727,15 +726,19 @@
                                 <input type="checkbox" id="torrent3" checked>
                                 <label for="torrent3">Trusted Only</label>
                             </div>
+                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
+                                data-title="Tries To Find Batches For Finished Shows Instead Of Downloading 1 Episode At A Time">
+                                <input type="checkbox" id="torrent9">
+                                <label for="torrent9">Batch Lookup</label>
+                            </div>
                             <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Greatly Reduces RAM Usage By Caching Torrents On Drive, Increases CPU And Drive Usage,
                     Bad For SSDs, Disables Downloading">
                                 <input type="checkbox" id="torrent5">
                                 <label for="torrent5">Drive Caching</label>
                             </div>
-                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
-                                data-title="Tries To Find Batches For Finished Shows Instead Of Downloading 1 Episode At A Time">
-                                <input type="checkbox" id="torrent9">
-                                <label for="torrent9">Batch Lookup</label>
+                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top" data-title="Only Downloads Pieces Directly Required For Playback Instead Of The Entire File. Recommended Only For Low-End Devices">
+                                <input type="checkbox" id="torrent6">
+                                <label for="torrent6">Streamed Playback</label>
                             </div>
                         </div>
                         <div class="p-5">
