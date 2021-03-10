@@ -631,6 +631,22 @@
                                     <span class="input-group-text">sec</span>
                                 </div>
                             </div>
+                            <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
+                            data-title="The Default Styles For Subtitles That Don't Have Styles Specified">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Default Style</span>
+                            </div>
+                            <input id="subtitle1" type="text" list="subtitle1list" class="form-control"
+                                autocomplete="off" value="SubsPlease">
+                            <datalist id="subtitle1list">
+                                <option value="SubsPlease">Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1</option>
+                                <option value="Erai-raws">Open Sans Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1</option>
+                            </datalist>
+                        </div>
+                        <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Displays Subtitles In PiP And ChromeCast, CPU Intensive">
+                            <input type="checkbox" id="subtitle3" checked>
+                            <label for="subtitle3">Burn In Subtitles</label>
+                        </div>
                             <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
                                 data-title="Generates Small Thumbnail Images When Using The Seek Bar After A Video Finished Downloading, VERY CPU Intensive">
                                 <input type="checkbox" id="player5" checked>
@@ -647,29 +663,6 @@
                                 <label for="player10">Pause When Tabbing Out</label>
                             </div>
                         </div>
-
-                        <div class="p-5">
-                            <h1 class="content-title font-size-22">
-                                Subtitle Settings
-                            </h1>
-                            <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
-                                data-title="The Default Styles For Subtitles That Don't Have Styles Specified">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Default Style</span>
-                                </div>
-                                <input id="subtitle1" type="text" list="subtitle1list" class="form-control"
-                                    autocomplete="off" value="SubsPlease">
-                                <datalist id="subtitle1list">
-                                    <option value="SubsPlease">Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1</option>
-                                    <option value="Erai-raws">Open Sans Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1</option>
-                                </datalist>
-                            </div>
-                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top" data-title="Displays Subtitles In PiP And ChromeCast, CPU Intensive">
-                                <input type="checkbox" id="subtitle3" checked>
-                                <label for="subtitle3">Burn In Subtitles</label>
-                            </div>
-                        </div>
-
                         <div class="p-5">
                             <h1 class="content-title font-size-22">
                                 Torrent Settings
@@ -776,6 +769,9 @@
                     </div>
                     <p class="text-muted mb-15">
                         Restart may be required for some settings to take effect.
+                    </p>
+                    <p class="text-muted mb-15">
+                        If you don't know what shit does, use default settings.
                     </p>
                 </div>
             </section>

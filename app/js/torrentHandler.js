@@ -105,18 +105,20 @@ async function playTorrent(torrent, opts) {
     await sw
     videoFiles = torrent.files.filter(file => videoExtensions.some(ext => file.name.endsWith(ext)))
     if (videoFiles.length > 1) {
-        torrent.files.forEach(file => file.deselect());
-        let frag = document.createDocumentFragment()
-        for (let file of videoFiles) {
-            let mediaInformation = await resolveFileMedia({ fileName: file.name, method: "SearchName" })
-            template = cardCreator(mediaInformation)
-            template.onclick = () => {
-                cleanupVideo()
-                buildVideo(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode, file: file })
+        (async function () {
+            torrent.files.forEach(file => file.deselect());
+            let frag = document.createDocumentFragment()
+            for (let file of videoFiles) {
+                let mediaInformation = await resolveFileMedia({ fileName: file.name, method: "SearchName" })
+                template = cardCreator(mediaInformation)
+                template.onclick = () => {
+                    cleanupVideo()
+                    buildVideo(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode, file: file })
+                }
+                frag.appendChild(template)
             }
-            frag.appendChild(template)
-        }
-        document.querySelector(".playlist").appendChild(frag)
+            document.querySelector(".playlist").appendChild(frag)
+        }())
     }
     if (videoFiles) {
         buildVideo(torrent, opts)

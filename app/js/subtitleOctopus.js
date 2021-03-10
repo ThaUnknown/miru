@@ -47,7 +47,13 @@ async function renderSubs(trackNumber) {
             renderMode: "offscreenCanvas",
             fonts: playerData.fonts?.length != 0 ? playerData.fonts : ["https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2"],
             workerUrl: 'js/subtitles-octopus-worker.js',
-            timeOffset: 0
+            timeOffset: 0,
+            onReady: function () {
+                if (!video.paused) {
+                    video.pause();
+                    playVideo();
+                }
+            }
         };
         if (!playerData.octopusInstance) playerData.octopusInstance = new SubtitlesOctopus(options);
     } else {

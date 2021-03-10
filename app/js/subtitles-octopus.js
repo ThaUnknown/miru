@@ -557,6 +557,9 @@ var SubtitlesOctopus = function (options) {
                 window[data.method]();
                 break;
             }
+            case 'ready':{
+                break;
+            }
             case 'canvas': {
                 switch (data.op) {
                     case 'getContext': {
