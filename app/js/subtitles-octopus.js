@@ -783,8 +783,13 @@ var SubtitlesOctopus = function (options) {
             }
             if (!(self.canvas.width == width && self.canvas.height == height)) {
                 // only re-paint if dimensions actually changed
+                if (self.renderMode == "offscreenCanvas" && self.initDone) {
+                    self.canvasParent.remove()
+                    self.canvasParent = undefined;
+                    self.createCanvas()
+                }
                 function rePaint() {
-                    if (self.renderMode == "offscreenCanvas" && self.initDone) {
+                    if (self.canvasParent && self.renderMode == "offscreenCanvas" && self.initDone) {
                         self.canvasParent.remove()
                         self.createCanvas()
                     }
