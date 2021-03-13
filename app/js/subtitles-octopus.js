@@ -557,7 +557,7 @@ var SubtitlesOctopus = function (options) {
                 window[data.method]();
                 break;
             }
-            case 'ready':{
+            case 'ready': {
                 break;
             }
             case 'canvas': {
@@ -773,10 +773,6 @@ var SubtitlesOctopus = function (options) {
             self.canvas.style.left != left
         ) {
 
-            if (self.renderMode == "offscreenCanvas" && self.initDone) {
-                self.canvasParent.remove()
-                self.createCanvas()
-            }
             if (videoSize != null) {
                 self.canvasParent.style.position = 'relative';
                 self.canvas.style.display = 'block';
@@ -787,39 +783,50 @@ var SubtitlesOctopus = function (options) {
             }
             if (!(self.canvas.width == width && self.canvas.height == height)) {
                 // only re-paint if dimensions actually changed
-                self.canvas.width = width;
-                self.canvas.height = height;
-                if (videoSize != null) {
-                    self.canvas.style.width = videoSize.width + 'px';
-                    self.canvas.style.height = videoSize.height + 'px';
+                function rePaint() {
+                    if (self.renderMode == "offscreenCanvas" && self.initDone) {
+                        self.canvasParent.remove()
+                        self.createCanvas()
+                    }
+                    self.canvas.width = width;
+                    self.canvas.height = height;
+                    if (videoSize != null) {
+                        self.canvasParent.style.position = 'relative';
+                        self.canvas.style.display = 'block';
+                        self.canvas.style.position = 'absolute';
+                        self.canvas.style.top = top + 'px';
+                        self.canvas.style.left = left + 'px';
+                        self.canvas.style.pointerEvents = 'none';
+                    }
+                    if (self.renderMode == "offscreenCanvas" && self.initDone) {
+                        self.pushOffscreenCanvas()
+                    }
+                    self.worker.postMessage({
+                        target: 'canvas',
+                        width: self.canvas.width,
+                        height: self.canvas.height
+                    });
+                    self.resetRenderAheadCache(true);
                 }
-                if (self.renderMode == "offscreenCanvas" && self.initDone) {
-                    self.pushOffscreenCanvas()
+                //dont spam re-paints like crazy when re-sizing with animations, but still update instantly without them
+                if (self.resizeTimeoutBuffer) {
+                    clearTimeout(self.resizeTimeoutBuffer)
+                    self.resizeTimeoutBuffer = setTimeout(() => {
+                        self.resizeTimeoutBuffer = undefined
+                        rePaint()
+                    }, 50)
+                } else {
+                    rePaint()
+                    self.resizeTimeoutBuffer = setTimeout(() => {
+                        self.resizeTimeoutBuffer = undefined
+                    }, 50)
                 }
-                self.worker.postMessage({
-                    target: 'canvas',
-                    width: self.canvas.width,
-                    height: self.canvas.height
-                });
-                self.resetRenderAheadCache(true);
             }
         }
     };
 
     self.resizeWithTimeout = function () {
-        //dont spam re-paints like crazy when re-sizing with animations, but still update instantly without them
-        if (self.resizeTimeoutBuffer) {
-            clearTimeout(self.resizeTimeoutBuffer)
-            self.resizeTimeoutBuffer = setTimeout(() => {
-                self.resizeTimeoutBuffer = undefined
-                self.resize();
-            }, 50)
-        } else {
-            self.resizeTimeoutBuffer = setTimeout(() => {
-                self.resizeTimeoutBuffer = undefined
-                self.resize();
-            }, 50)
-        }
+        self.resize();
     };
 
     self.runBenchmark = function () {
