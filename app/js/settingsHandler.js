@@ -17,15 +17,15 @@ function applySettingsTimeout () {
 }
 function saveSettings () {
   settingsElements.forEach(element => {
-    element.type == 'checkbox' ? settings[element.id] = element.checked : settings[element.id] = element.value
+    element.type === 'checkbox' ? settings[element.id] = element.checked : settings[element.id] = element.value
   })
   localStorage.setItem('settings', JSON.stringify(settings))
 }
 
 function renderSettings () {
   Object.entries(settings).forEach(setting => {
-    const settingElement = settingsElements.filter(e => e.id == setting[0])[0]
-    if (settingElement) settingElement.type == 'checkbox' ? settingElement.checked = setting[1] : settingElement.value = setting[1]
+    const settingElement = settingsElements.filter(e => e.id === setting[0])[0]
+    if (settingElement) settingElement.type === 'checkbox' ? settingElement.checked = setting[1] : settingElement.value = setting[1]
   })
 }
 function registerProtocol () {
@@ -50,7 +50,7 @@ clearRelCache.onclick = () => {
 }
 renderSettings()
 
-other1.onclick = () => Notification.requestPermission().then(function (perm) { perm == 'denied' ? other1.checked = false : other1.checked = true })
+other1.onclick = () => Notification.requestPermission().then(function (perm) { perm === 'denied' ? other1.checked = false : other1.checked = true })
 
 const searchParams = new URLSearchParams(location.href)
 if (searchParams.get('access_token')) {
@@ -59,7 +59,7 @@ if (searchParams.get('access_token')) {
 }
 const userBrowser = (function () {
   if (window.chrome) {
-    if (navigator.userAgent.indexOf('Edg') != -1) {
+    if (navigator.userAgent.indexOf('Edg') !== -1) {
       return 'edge'
     } else {
       return 'chromium'
