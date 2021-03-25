@@ -1,3 +1,4 @@
+[![forthebadge](https://forthebadge.com/images/badges/it-works-why.svg)](https://forthebadge.com)[![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com)[![forthebadge](https://forthebadge.com/images/badges/works-on-my-machine.svg)](https://forthebadge.com)
 # Miru
 Miru is a simple anime torrent streaming client targetted at normies, meant as a replacement for shitty streaming sites with a lot of extra added functionality.
 # Functionality, performance and compatibility
