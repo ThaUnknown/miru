@@ -219,6 +219,7 @@ video[src=""],
 }
 
 #dl[disabled] {
+    display:block !important;
     cursor: not-allowed;
     color: rgba(255, 255, 255, .4);
 }

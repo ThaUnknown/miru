@@ -1,6 +1,7 @@
 <video src="https://openings.moe/video/Kobayashi-SanChiNoMaidDragon-OP01-NCBD.mp4" muted controls id="video"></video>
 <script src="js/subtitles-octopus.js"></script>
 <script>
+    video.addEventListener('timeupdate',(e)=>console.log(e.target.currentTime))
     let ready = function () {
         console.log("ready")
         octopusInstance.createEvent({

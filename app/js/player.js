@@ -1,0 +1,1061 @@
+class TorrentPlayer extends WebTorrent {
+  constructor (options = {}) {
+    super(options.WebTorrentOpts)
+
+    this.worker = navigator.serviceWorker.register('sw.js', { scope: '/app/' }).then(() => {
+      if (searchParams.get('file')) addTorrent(searchParams.get('file'), {}) // add a torrent if its in the link params
+    }).catch(e => {
+      if (String(e) === 'InvalidStateError: Failed to register a ServiceWorker: The document is in an invalid state.') {
+        location.reload() // weird workaround for a weird bug
+      } else {
+        throw e
+      }
+    })
+    window.addEventListener('beforeunload', () => {
+      this.cleanupVideo()
+      this.cleanupTorrents()
+    })
+    // kind of a fetch event from service worker but for the main thread.
+    navigator.serviceWorker.addEventListener('message', evt => {
+      const request = new Request(evt.data.url, {
+        headers: evt.data.headers,
+        method: evt.data.method
+      })
+
+      const [port] = evt.ports
+      const respondWith = msg => port.postMessage(msg)
+      const pathname = request.url.split(evt.data.scope + 'webtorrent/')[1]
+      let [infoHash, ...filePath] = pathname.split('/')
+      filePath = decodeURI(filePath.join('/'))
+
+      if (!infoHash || !filePath) return
+
+      const torrent = this.get(infoHash)
+      const file = torrent.files.find(file => file.path === filePath)
+
+      const [response, stream] = this.serveFile(file, request)
+      const asyncIterator = stream && stream[Symbol.asyncIterator]()
+      respondWith(response)
+      async function pull (msg) {
+        if (msg.data) {
+          const chunk = (await asyncIterator.next()).value
+          respondWith(chunk)
+          if (!chunk) port.onmessage = null
+        } else {
+          console.log('Closing stream')
+          stream.destroy()
+          port.onmessage = null
+        }
+      }
+
+      port.onmessage = pull
+    })
+
+    this.video = options.video
+    this.controls = options.controls // object of controls
+    // playPause, playNext, openPlaylist, toggleMute, setVolume, setProgress, showCaptions, showAudio, toggleTheatre, toggleFullscreen, togglePopout, downloadFile
+
+    this.controls.setVolume.addEventListener('input', (e) => this.setVolume(e.target.value))
+    this.setVolume()
+    ptoggle.addEventListener('click', () => this.playPause()) // non-tplayer specific // TODO: fix this
+    this.oldVolume = undefined
+
+    this.controls.setProgress.addEventListener('input', (e) => this.setProgress(e.target.value))
+    this.controls.setProgress.addEventListener('mouseup', (e) => this.dragBarEnd(e.target.value))
+    this.controls.setProgress.addEventListener('thouchend', (e) => this.dragBarEnd(e.target.value))
+    this.controls.setProgress.addEventListener('click', (e) => this.dragBarEnd(e.target.value))
+    this.controls.setProgress.addEventListener('mousedown', (e) => this.dragBarStart(e.target.value))
+    this.video.addEventListener('timeupdate', (e) => {
+      if (this.immerseTimeout && document.location.hash === '#player') this.setProgress(e.target.currentTime / e.target.duration * 100)
+    })
+
+    this.player = options.player
+    this.playerWrapper = options.playerWrapper
+    this.player.addEventListener('fullscreenchange', () => this.updateFullscreen())
+    ptoggle.addEventListener('dblclick', () => this.toggleFullscreen()) // non-tplayer specific // TODO: fix this
+
+    this.subtitleData = {
+      fonts: [],
+      headers: [],
+      tracks: [],
+      current: undefined,
+      renderer: undefined,
+      stream: undefined,
+      parser: undefined,
+      parsed: undefined,
+      timeout: undefined,
+      defaultHeader: `[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,${options.defaultSSAStyles}
+[Events]
+
+`
+    }
+
+    this.video.addEventListener('loadedmetadata', () => this.video.audioTracks?.length > 1 ? this.controls.showAudio.removeAttribute('disabled') : this.controls.showAudio.setAttribute('disabled', ''))
+
+    this.completed = undefined
+    this.onWatched = options.onWatched
+    if (this.onWatched) this.video.addEventListener('timeupdate', () => this.checkCompletion())
+
+    this.onPlaylist = options.onPlaylist
+
+    this.onNext = options.onNext
+    this.nextTimeout = undefined
+    if (this.onNext && options.autoNext) this.video.addEventListener('ended', () => this.onNext())
+
+    this.currentFile = undefined
+    this.videoFile = undefined
+
+    this.generateThumbnails = options.generateThumbnails
+    const thumbCanvas = document.createElement('canvas')
+    thumbCanvas.width = options.thumbnailWidth || 150
+    this.thumbnailData = {
+      thumbnails: [],
+      canvas: thumbCanvas,
+      context: thumbCanvas.getContext('2d'),
+      interval: undefined,
+      video: undefined
+    }
+    this.video.addEventListener('loadedmetadata', () => this.initThumbnail())
+    this.video.addEventListener('timeupdate', () => this.createThumbnail(this.video))
+
+    if (options.visibilityLossPause) {
+      document.addEventListener('visibilitychange', () => {
+        if (!this.video.ended) document.visibilityState === 'hidden' ? this.video.pause() : this.playPause()
+      })
+    }
+
+    this.onDownloadDone = options.onDownloadDone
+    this.onDone = undefined
+
+    this.immerseTimeout = undefined
+    this.immerseTime = options.immerseTime || 5
+    this.player.addEventListener('mousemove', () => requestAnimationFrame(() => this.resetImmerse()))
+    this.player.addEventListener('keypress', () => requestAnimationFrame(() => this.resetImmerse()))
+
+    this.bufferTimeout = undefined
+    this.video.addEventListener('playing', () => this.hideBuffering())
+    this.video.addEventListener('canplay', () => this.hideBuffering())
+    this.video.addEventListener('timeupdate', () => this.hideBuffering())
+    this.video.addEventListener('waiting', () => this.showBuffering())
+
+    if ('pictureInPictureEnabled' in document) {
+      this.burnIn = options.burnIn
+      this.controls.togglePopout.removeAttribute('disabled')
+      if (this.burnIn) this.video.addEventListener('enterpictureinpicture', () => { if (this.subtitleData.renderer) this.togglePopout() })
+    } else {
+      this.video.setAttribute('disablePictureInPicture', '')
+      this.controls.togglePopout.setAttribute('disabled', '')
+    }
+
+    this.seekTime = options.seekTime || 5
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('play', () => this.playPause())
+      navigator.mediaSession.setActionHandler('pause', () => this.playPause())
+      navigator.mediaSession.setActionHandler('seekbackward', () => this.seek(seekTime))
+      navigator.mediaSession.setActionHandler('seekforward', () => this.seek(seekTime))
+      navigator.mediaSession.setActionHandler('nexttrack', () => this.playNext())
+    }
+    if ('setPositionState' in navigator.mediaSession) video.addEventListener('timeupdate', () => this.updatePositionState())
+
+    this.videoExtensions = ['.3g2', '.3gp', '.asf', '.avi', '.dv', '.flv', '.gxf', '.m2ts', '.m4a', '.m4b', '.m4p', '.m4r', '.m4v', '.mkv', '.mov', '.mp4', '.mpd', '.mpeg', '.mpg', '.mxf', '.nut', '.ogm', '.ogv', '.swf', '.ts', '.vob', '.webm', '.wmv', '.wtv']
+    this.videoFiles = undefined
+
+    this.currentTorrent = undefined
+    this.offlineTorrents = JSON.parse(localStorage.getItem('offlineTorrents')) || {}
+    // adds all offline store torrents to the client
+    Object.values(this.offlineTorrents).forEach(torrentID => this.offlineDownload(new Blob([new Uint8Array(torrentID)]), true))
+
+    this.streamedDownload = options.streamedDownload
+
+    this.fps = 23.976
+    if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+      this.video.addEventListener('loadedmetadata', () => {
+        this.fps = new Promise((resolve, reject) => {
+          this.video.onplay = () => {
+            this.video.onplay = undefined
+            setTimeout(() => this.video.requestVideoFrameCallback((now, metaData) => {
+              let duration = 0
+              for (let index = this.video.played.length; index--;) {
+                duration += this.video.played.end(index) - this.video.played.start(index)
+              }
+              const rawFPS = metaData.presentedFrames / duration
+              console.log(rawFPS, metaData)
+              if (rawFPS < 28) {
+                resolve(23.976)
+              } else if (rawFPS <= 35) {
+                resolve(29.97)
+              } else if (rawFPS <= 70) {
+                resolve(59.94)
+              } else {
+                resolve(23.976) // smth went VERY wrong
+              }
+            }), 2000)
+          }
+          this.playVideo()
+        })
+      })
+    }
+
+    for (const [key, value] of Object.entries(this.controls)) {
+      value.addEventListener('click', (e) => {
+        this[key](e.target.value)
+      })
+    }
+    document.onkeydown = a => {
+      if (a.key === 'F5') {
+        a.preventDefault()
+      }
+      if (document.location.hash === '#player') {
+        switch (a.key) {
+          case ' ':
+            this.playPause()
+            break
+          case 'n':
+            this.playNext()
+            break
+          case 'm':
+            this.toggleMute()
+            break
+          case 'p':
+            this.togglePopout()
+            break
+          case 't':
+            this.toggleTheatre()
+            break
+          case 'c':
+            this.captions()
+            break
+          case 'f':
+            this.toggleFullscreen()
+            break
+          case 's':
+            this.seek(85)
+            break
+          case 'ArrowLeft':
+            this.seek(-this.seekTime)
+            break
+          case 'ArrowRight':
+            this.seek(this.seekTime)
+            break
+          case 'ArrowUp':
+            this.setVolume(Number(this.controls.setVolume.value) + 5)
+            break
+          case 'ArrowDown':
+            this.setVolume(Number(this.controls.setVolume.value) - 5)
+            break
+          case 'Escape':
+            document.location.hash = '#home'
+            break
+        }
+      }
+    }
+  }
+
+  serveFile (file, req) {
+    const res = {
+      status: 200,
+      headers: {
+        'Content-Type': file._getMimeType(),
+        // Support range-requests
+        'Accept-Ranges': 'bytes'
+      }
+    }
+
+    // `rangeParser` returns an array of ranges, or an error code (number) if
+    // there was an error parsing the range.
+    let range = rangeParser(file.length, req.headers.get('range') || '')
+
+    if (Array.isArray(range)) {
+      res.status = 206 // indicates that range-request was understood
+
+      // no support for multi-range request, just use the first range
+      range = range[0]
+
+      res.headers['Content-Range'] = `bytes ${range.start}-${range.end}/${file.length}`
+      res.headers['Content-Length'] = `${range.end - range.start + 1}`
+    } else {
+      range = null
+      res.headers['Content-Length'] = file.length
+    }
+
+    res.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+    res.headers.Expires = '0'
+    res.body = req.method === 'HEAD' ? '' : 'stream'
+    // parser is really a passthrough mkv stream now
+    const stream = file.createReadStream(range)
+    if ((file.name.endsWith('.mkv') || file.name.endsWith('.webm')) && !this.subtitleData.parsed) {
+      this.subtitleData.stream = new MatroskaSubtitles.SubtitleStream(this.subtitleData.stream)
+      this.handleSubtitleParser(this.subtitleData.stream)
+      stream.pipe(this.subtitleData.stream)
+    }
+
+    return [res, req.method === 'GET' && (this.subtitleData.stream || stream)]
+  }
+
+  async buildVideo (torrent, opts) { // sets video source and creates a bunch of other media stuff
+    // play wanted episode from opts, or the 1st episode, or 1st file [batches: plays wanted episode, single: plays the only episode, manually added: plays first or only file]
+    if (opts.file) {
+      this.currentFile = opts.file
+    } else if (this.videoFiles.length > 1) {
+      // TODO play selected media too!
+      this.currentFile = this.videoFiles.filter(async file => await anitomyscript(file.name).then(object => Number(object.episode_number) === Number(opts.episode || 1)))[0] || this.videoFiles[0]
+    } else {
+      this.currentFile = this.videoFiles[0]
+    }
+    this.currentTorrent = torrent
+    this.video.src = `/app/webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
+    this.video.load()
+
+    if (this.videoFiles.length > 1) bpl.removeAttribute('disabled')
+
+    if (this.currentFile.done) {
+      this.postDownload()
+    } else {
+      this.onDone = this.currentFile.on('done', () => {
+        this.postDownload()
+      })
+    }
+
+    if (opts.media && this.videoFiles.length === 1) {
+      // if this is a single file, then the media is most likely accurate, just update it!
+      this.nowPlaying = [await alRequest({ id: opts.media?.id, method: 'SearchIDSingle' }).then(res => res.data.Media), opts.episode || 1]
+      // update store with entry, but dont really do anything with it
+      resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' })
+    } else {
+      // if this is a batch or single unresolved file, then resolve the single selected file, batches can include specials
+      const mediaInformation = await resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' })
+      this.nowPlaying = [mediaInformation.media, mediaInformation.episode || 1]
+    }
+    let mediaMetadata
+    // only set mediasession and other shit if the playerdata is parsed correctly
+    if (this.nowPlaying[0]) { // TODO: fix!!!!!
+      navNowPlaying.classList.remove('d-none')
+      mediaMetadata = new MediaMetadata({
+        title: this.nowPlaying[0].title.userPreferred,
+        artist: `Episode ${Number(this.nowPlaying[1])}`,
+        album: 'Miru',
+        artwork: [{
+          src: this.nowPlaying[0].coverImage.medium,
+          sizes: '256x256',
+          type: 'image/jpg'
+        }]
+      })
+      if (parseInt(this.nowPlaying[1]) >= this.nowPlaying[0].episodes) bnext.setAttribute('disabled', '')
+      let streamingEpisode
+      if (this.nowPlaying[0].streamingEpisodes.length >= Number(this.nowPlaying[1])) {
+        streamingEpisode = this.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(this.nowPlaying[1]))[0]
+      }
+      // TODO: this should also use absolute episode numbers instead of relative but AL will change this anyways....
+      if (streamingEpisode) {
+        video.poster = streamingEpisode.thumbnail
+        document.title = `${this.nowPlaying[0].title.userPreferred} - EP ${Number(this.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]} - Miru`
+        mediaMetadata.artist = `Episode ${Number(this.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+        mediaMetadata.artwork = [{
+          src: streamingEpisode.thumbnail,
+          sizes: '256x256',
+          type: 'image/jpg'
+        }]
+        nowPlayingDisplay.innerHTML = `EP ${Number(this.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+      } else {
+        document.title = `${this.nowPlaying[0].title.userPreferred} -  EP ${Number(this.nowPlaying[1])} - Miru`
+        nowPlayingDisplay.innerHTML = `EP ${Number(this.nowPlaying[1])}`
+      }
+    }
+    if ('mediaSession' in navigator && mediaMetadata) navigator.mediaSession.metadata = mediaMetadata
+  }
+
+  cleanupVideo () { // cleans up objects, attemps to clear as much video caching as possible
+    if (this.subtitleData.renderer) this.subtitleData.renderer.dispose()
+    if (this.subtitleData.fonts) this.subtitleData.fonts.forEach(file => URL.revokeObjectURL(file)) // ideally this should clean up after its been downloaded by the sw renderer, but oh well
+    this.controls.downloadFile.setAttribute('disabled', '')
+    this.video.poster = ''
+    // some attemt at cache clearing
+    this.video.pause()
+    this.video.src = ''
+    this.video.load()
+    this.onDone = undefined
+    document.title = 'Miru'
+    this.setProgress(0)
+    // if (typeof client !== 'undefined' && client.torrents[0] && client.torrents[0].files.length > 1) {
+    //     client.torrents[0].files.forEach(file => file.deselect());
+    //     client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
+    // console.log(videoFiles.filter(file => `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src))
+    // look for file and delete its store
+    // }
+    this.subtitleData = {
+      fonts: [],
+      headers: [],
+      tracks: [],
+      current: undefined,
+      renderer: undefined,
+      stream: undefined,
+      parser: undefined,
+      parsed: undefined,
+      timeout: undefined,
+      defaultHeader: this.subtitleData.defaultHeader
+    }
+
+    this.thumbnailData = {
+      thumbnails: [],
+      canvas: this.thumbnailData.canvas,
+      context: this.thumbnailData.context,
+      interval: undefined,
+      video: undefined
+    }
+    nowPlayingDisplay.innerHTML = '' // TODO: fix
+    this.controls.showCaptions.setAttribute('disabled', '')
+    this.controls.openPlaylist.setAttribute('disabled', '')
+    this.controls.playNext.removeAttribute('disabled')
+    navNowPlaying.classList.add('d-none') // TODO: fix
+    if ('mediaSession' in navigator) navigator.mediaSession.metadata = undefined
+    this.fps = 23.976
+  }
+
+  async playVideo () {
+    try {
+      await this.video.play()
+      this.controls.playPause.innerHTML = 'pause'
+    } catch (err) {
+      this.controls.playPause.innerHTML = 'play_arrow'
+    }
+  }
+
+  playPause () {
+    if (this.video.paused) {
+      this.playVideo()
+    } else {
+      this.controls.playPause.innerHTML = 'play_arrow'
+      this.video.pause()
+    }
+  }
+
+  setVolume (volume) {
+    const level = volume === undefined ? Number(this.controls.setVolume.value) : volume
+    this.controls.setVolume.value = level
+    this.controls.setVolume.style.setProperty('--volume-level', level + '%')
+    this.controls.toggleMute.innerHTML = level === 0 ? 'volume_off' : 'volume_up'
+    this.video.volume = level / 100
+  }
+
+  toggleMute () {
+    if (this.video.volume === 0) {
+      this.setVolume(this.oldVolume)
+    } else {
+      this.oldVolume = this.video.volume * 100
+      this.setVolume(0)
+    }
+  }
+
+  toggleTheatre () {
+    this.playerWrapper.classList.toggle('nav-hidden')
+  }
+
+  toggleFullscreen () {
+    document.fullscreenElement ? document.exitFullscreen() : this.player.requestFullscreen()
+  }
+
+  updateFullscreen () {
+    document.fullscreenElement ? this.controls.toggleFullscreen.innerHTML = 'fullscreen_exit' : this.controls.toggleFullscreen.innerHTML = 'fullscreen'
+  }
+
+  openPlaylist () {
+    if (this.onPlaylist) this.onPlaylist()
+  }
+
+  playNext () {
+    clearTimeout(this.nextTimeout)
+    this.nextTimeout = setTimeout(() => {
+      if (this.videoFiles?.length > 1 && this.videoFiles.indexOf(this.currentFile) < this.videoFiles.length) {
+        const fileIndex = this.videoFiles.indexOf(this.currentFile) + 1
+        const nowPlaying = [this.nowPlaying[0], parseInt(this.nowPlaying[1]) + 1] // TODO: fix
+        cleanupVideo()
+        buildVideo(this.videoFiles[fileIndex], nowPlaying) // TODO: fix
+      } else {
+        if (this.onNext) this.onNext()
+      }
+    }, 200)
+  }
+
+  async togglePopout () {
+    if (this.video.readyState) {
+      if (!(this.burnIn && this.subtitleData.renderer)) {
+        this.video !== document.pictureInPictureElement ? await this.video.requestPictureInPicture() : await document.exitPictureInPicture()
+      } else {
+        if (document.pictureInPictureElement && !document.pictureInPictureElement.id) { // only exit if pip is the custom one, else overwrite existing pip with custom
+          await document.exitPictureInPicture()
+        } else {
+          const canvas = document.createElement('canvas')
+          const canvasVideo = document.createElement('video')
+          const context = canvas.getContext('2d', { alpha: false })
+          let running = true
+          canvas.width = this.video.videoWidth
+          canvas.height = this.video.videoHeight
+
+          const renderFrame = () => {
+            if (running === true) {
+              context.drawImage(this.video, 0, 0)
+              context.drawImage(subtitleCanvas, 0, 0, canvas.width, canvas.height) // TODO: reference SO canvas
+              window.requestAnimationFrame(renderFrame)
+            }
+          }
+          canvasVideo.srcObject = canvas.captureStream()
+          canvasVideo.onloadedmetadata = () => {
+            canvasVideo.play()
+            canvasVideo.requestPictureInPicture().then(
+              this.player.classList.add('pip')
+            ).catch(e => {
+              console.warn('Failed To Burn In Subtitles ' + e)
+              running = false
+              canvasVideo.remove()
+              canvas.remove()
+              this.player.classList.remove('pip')
+            })
+          }
+          canvasVideo.onleavepictureinpicture = () => {
+            running = false
+            canvasVideo.remove()
+            canvas.remove()
+            this.player.classList.remove('pip')
+          }
+          window.requestAnimationFrame(renderFrame)
+        }
+      }
+    }
+  }
+
+  toTS (sec, full) {
+    if (isNaN(sec) || sec < 0) {
+      return full ? '0:00:00.00' : '00:00'
+    }
+    const hours = Math.floor(sec / 3600)
+    let minutes = Math.floor(sec / 60) - (hours * 60)
+    let seconds = full ? (sec % 60).toFixed(2) : Math.floor(sec % 60)
+    if (minutes < 10) minutes = '0' + minutes
+    if (seconds < 10) seconds = '0' + seconds
+    return (hours > 0 || full) ? hours + ':' + minutes + ':' + seconds : minutes + ':' + seconds
+  }
+
+  prettyBytes (num) {
+    const neg = num < 0; const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    if (neg) num = -num
+    if (num < 1) return (neg ? '-' : '') + num + ' B'
+    const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1)
+    num = Number((num / Math.pow(1000, exponent)).toFixed(2))
+    const unit = units[exponent]
+    return (neg ? '-' : '') + num + ' ' + unit
+  }
+
+  seek (time) {
+    if (time === 85 && this.video.currentTime < 10) {
+      this.video.currentTime = 90
+    } else if (time === 85 && (this.video.duration - this.video.currentTime) < 90) {
+      this.video.currentTime = this.video.duration
+    } else {
+      this.video.currentTime += time
+    }
+    this.setProgress(this.video.currentTime / this.video.duration * 100)
+  }
+
+  immersePlayer () {
+    this.player.classList.add('immersed')
+    this.immerseTimeout = undefined
+  }
+
+  resetImmerse () {
+    if (!this.immerseTimeout) {
+      clearTimeout(this.immerseTimeout)
+      this.player.classList.remove('immersed')
+      this.immerseTimeout = setTimeout(() => this.immersePlayer(), this.immerseTime * 1000)
+    }
+  }
+
+  hideBuffering () {
+    if (this.bufferTimeout) {
+      clearTimeout(this.bufferTimeout)
+      this.bufferTimeout = undefined
+      buffering.classList.add('hidden') // non-tplayer specific // TODO: fix this
+    }
+  }
+
+  showBuffering () {
+    this.bufferTimeout = setTimeout(() => {
+      buffering.classList.remove('hidden') // non-tplayer specific // TODO: fix this
+      this.resetImmerse()
+    }, 150)
+  }
+
+  checkCompletion () {
+    if (!this.completed && video.duration - 180 < video.currentTime) {
+      this.onWatched()
+    } else {
+      this.completed = true
+    }
+  }
+
+  updatePositionState () {
+    if (this.video.duration) {
+      navigator.mediaSession.setPositionState({
+        duration: this.video.duration || 0,
+        playbackRate: this.video.playbackRate || 0,
+        position: this.video.currentTime || 0
+      })
+    }
+  }
+
+  initThumbnail () {
+    const height = this.thumbnailData.canvas.width / (this.video.videoWidth / this.video.videoHeight)
+    this.thumbnailData.interval = this.video.duration / 300 < 5 ? 5 : this.video.duration / 300
+    this.thumbnailData.canvas.height = height
+    thumb.style.setProperty('--height', height + 'px') // TODO: fix
+  }
+
+  createThumbnail (video) {
+    if (video?.readyState >= 2) {
+      const index = Math.floor(video.currentTime / this.thumbnailData.interval)
+      if (!this.thumbnailData.thumbnails[index]) {
+        this.thumbnailData.context.fillRect(0, 0, 150, this.thumbnailData.canvas.height)
+        this.thumbnailData.context.drawImage(video, 0, 0, 150, this.thumbnailData.canvas.height)
+        this.thumbnailData.thumbnails[index] = this.thumbnailData.canvas.toDataURL('image/jpeg')
+      }
+    }
+  }
+
+  finishThumbnails (src) {
+    const t0 = performance.now()
+    const video = document.createElement('video')
+    let index = 0
+    video.preload = 'none'
+    video.volume = 0
+    video.playbackRate = 0
+    video.addEventListener('loadeddata', () => loadTime())
+    video.addEventListener('canplay', () => {
+      this.createThumbnail(this.thumbnailData.video)
+      loadTime()
+    })
+    this.thumbnailData.video = video
+    const loadTime = () => {
+      while (this.thumbnailData.thumbnails[index] && index <= Math.floor(this.thumbnailData.video.duration / this.thumbnailData.interval)) { // only create thumbnails that are missing
+        index++
+      }
+      if (this.thumbnailData.video?.currentTime !== this.thumbnailData.video?.duration) {
+        this.thumbnailData.video.currentTime = index * this.thumbnailData.interval
+      } else {
+        this.thumbnailData.video?.removeAttribute('src')
+        this.thumbnailData.video?.load()
+        this.thumbnailData.video?.remove()
+        delete this.thumbnailData.video
+        console.log('Thumbnail creating finished', index, this.toTS((performance.now() - t0) / 1000))
+      }
+      index++
+    }
+    this.thumbnailData.video.src = src
+    this.thumbnailData.video.play()
+    console.log('Thumbnail creating started')
+  }
+
+  dragBarEnd (progressPercent) {
+    this.video.currentTime = this.video.duration * progressPercent / 100 || 0
+    this.playVideo()
+  }
+
+  async dragBarStart (progressPercent) {
+    await this.video.pause()
+    this.setProgress(progressPercent)
+  }
+
+  setProgress (progressPercent) {
+    progressPercent = progressPercent || 0
+    const currentTime = this.video.duration * progressPercent / 100 || 0
+    this.controls.setProgress.style.setProperty('--progress', progressPercent + '%')
+    thumb.src = this.thumbnailData.thumbnails[Math.floor(currentTime / this.thumbnailData.interval)] || ' ' // TODO: fix
+    thumb.style.setProperty('--progress', progressPercent + '%') // TODO: fix
+    elapsed.innerHTML = this.toTS(currentTime) // TODO: fix
+    remaining.innerHTML = this.toTS(this.video.duration - currentTime) // TODO: fix
+    this.controls.setProgress.value = progressPercent
+    this.controls.setProgress.setAttribute('data-ts', this.toTS(currentTime))
+  }
+
+  updateDisplay () {
+    this.player.style.setProperty('--download', this.selectedFile.progress * 100 + '%')
+    peers.innerHTML = this.selectedTorrent.numPeers
+    downSpeed.innerHTML = this.prettyBytes(this.selectedTorrent.downloadSpeed) + '/s'
+    upSpeed.innerHTML = this.prettyBytes(this.selectedTorrent.uploadSpeed) + '/s'
+  }
+
+  showAudio () {
+    const frag = document.createDocumentFragment()
+    for (const track of this.video.audioTracks) {
+      const template = document.createElement('a')
+      template.classList.add('dropdown-item', 'pointer', 'text-capitalize')
+      template.innerHTML = (track.language || (!Object.values(this.video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) + (track.label ? ' - ' + track.label : '')
+      track.enabled === true ? template.classList.add('text-white') : template.classList.add('text-muted')
+      template.onclick = () => this.selectAudio(track.id)
+      frag.appendChild(template)
+    }
+
+    audioTracksMenu.innerHTML = ''
+    audioTracksMenu.appendChild(frag)
+  }
+
+  selectAudio (id) {
+    for (const track of this.video.audioTracks) {
+      track.id === id ? track.enabled = true : track.enabled = false
+    }
+    this.seek(-0.5) // stupid fix because video freezes up when chaging tracks
+    this.showAudio()
+  }
+
+  // subtitles, generates content every single time its opened because fuck knows when the parser will find new shit
+  // this needs to go.... really badly
+  showCaptions () {
+    const frag = document.createDocumentFragment()
+    const off = document.createElement('a')
+    off.classList.add('dropdown-item', 'pointer')
+    this.subtitleData.current ? off.classList.add('text-muted') : off.classList.add('text-white')
+    off.innerHTML = 'OFF'
+    off.onclick = () => this.selectCaptions()
+    frag.appendChild(off)
+    for (const track of this.subtitleData.headers) {
+      if (track) {
+        const template = document.createElement('a')
+        template.classList.add('dropdown-item', 'pointer', 'text-capitalize')
+        template.innerHTML = (track.language || (!Object.values(this.subtitleData.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : header.type)) + (track.name ? ' - ' + track.name : '')
+        if (this.subtitleData.current === track.number) {
+          template.classList.add('text-white')
+        } else {
+          template.classList.add('text-muted')
+        }
+        template.onclick = () => this.selectCaptions(track.number)
+        frag.appendChild(template)
+      }
+    }
+    const timeOffset = document.createElement('div')
+    timeOffset.classList.add('btn-group', 'w-full', 'pt-5')
+    timeOffset.setAttribute('role', 'group')
+    timeOffset.innerHTML = `<button class="btn" type="button" onclick="client.subtitleData.renderer.timeOffset+=1">-1s</button>
+<button class="btn" type="button" onclick="client.subtitleData.renderer.timeOffset-=1">+1s</button>`
+    frag.appendChild(timeOffset)
+    subMenu.innerHTML = ''
+    subMenu.appendChild(frag)
+  }
+
+  selectCaptions (trackNumber) {
+    this.subtitleData.current = trackNumber
+    this.showCaptions()
+    if (!this.subtitleData.timeout) {
+      this.subtitleData.timeout = setTimeout(() => {
+        this.subtitleData.timeout = undefined
+        if (this.subtitleData.renderer) {
+          this.subtitleData.renderer.setTrack(trackNumber ? this.subtitleData.headers[trackNumber].header.slice(0, -1) + Array.from(this.subtitleData.tracks[trackNumber]).join('\n') : this.subtitleData.headers[3].header.slice(0, -1))
+        }
+      }, 1000)
+    }
+  }
+
+  constructSub (subtitle, isNotAss) {
+    if (isNotAss) { // converts VTT or other to SSA
+      const matches = subtitle.text.match(/<[^>]+>/g) // create array of all tags
+      if (matches) {
+        matches.forEach(match => {
+          if (/<\//.test(match)) { // check if its a closing tag
+            subtitle.text = subtitle.text.replace(match, match.replace('</', '{\\').replace('>', '0}'))
+          } else {
+            subtitle.text = subtitle.text.replace(match, match.replace('<', '{\\').replace('>', '1}'))
+          }
+        })
+      }
+      // replace all html special tags with normal ones
+      subtitle.text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, '\\h')
+    }
+    return 'Dialogue: ' +
+    (subtitle.layer || 0) + ',' +
+    this.toTS(subtitle.time / 1000, true) + ',' +
+    this.toTS((subtitle.time + subtitle.duration) / 1000, true) + ',' +
+    (subtitle.style || 'Default') + ',' +
+    (subtitle.name || '') + ',' +
+    (subtitle.marginL || '0') + ',' +
+    (subtitle.marginR || '0') + ',' +
+    (subtitle.marginV || '0') + ',' +
+    (subtitle.effect || '') + ',' +
+    subtitle.text
+  }
+
+  async parseSubtitles (file) { // parse subtitles fully after a download is finished
+    return new Promise((resolve, reject) => {
+      if (file.name.endsWith('.mkv') || file.name.endsWith('.webm')) {
+        let parser = new MatroskaSubtitles.SubtitleParser()
+        this.handleSubtitleParser(parser, true)
+        parser.on('finish', () => {
+          console.log('Sub parsing finished')
+          this.subtitleData.parsed = true
+          this.subtitleData.stream = undefined
+          this.selectCaptions(this.subtitleData.current)
+          parser = undefined
+          this.controls.showCaptions.removeAttribute('disabled')
+          if (!this.video.paused) {
+            this.video.pause()
+            this.playVideo()
+          }
+          resolve()
+        })
+        console.log('Sub parsing started')
+        this.subtitleData.parser = file.createReadStream().pipe(parser)
+        // when this gets overwritten the parser stays so it might "leak" some RAM???
+      } else {
+        resolve()
+      }
+    })
+  }
+
+  handleSubtitleParser (parser, skipFile) {
+    parser.once('tracks', tracks => {
+      this.controls.showCaptions.removeAttribute('disabled')
+      tracks.forEach(track => {
+        // overwrite webvtt or other header with custom one
+        if (track.type !== 'ass') track.header = this.subtitleData.defaultHeader
+        if (!this.subtitleData.current) this.subtitleData.current = track.number
+        if (!this.subtitleData.tracks[track.number]) this.subtitleData.tracks[track.number] = new Set()
+        this.subtitleData.headers[track.number] = track
+      })
+    })
+    parser.on('subtitle', (subtitle, trackNumber) => {
+      if (!this.subtitleData.parsed) {
+        if (!this.subtitleData.renderer) this.initSubtitleRenderer()
+        this.subtitleData.tracks[trackNumber].add(this.constructSub(subtitle, this.subtitleData.headers[trackNumber].type === 'webvtt'))
+        if (this.subtitleData.current === trackNumber) this.selectCaptions(trackNumber)
+      }
+    })
+    if (!skipFile) {
+      parser.on('file', file => {
+        if (file.mimetype === 'application/x-truetype-font' || file.mimetype === 'application/font-woff') {
+          this.subtitleData.fonts.push(window.URL.createObjectURL(new Blob([file.data], { type: file.mimetype })))
+        }
+      })
+    }
+  }
+
+  async initSubtitleRenderer () {
+    if (!this.subtitleData.renderer) {
+      const options = {
+        video: this.video,
+        targetFps: await this.fps,
+        subContent: this.subtitleData.headers[this.subtitleData.current].header.slice(0, -1),
+        renderMode: 'offscreenCanvas',
+        fonts: this.subtitleData.fonts.length ? this.subtitleData.fonts : ['https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2'],
+        workerUrl: 'js/subtitles-octopus-worker.js',
+        timeOffset: 0,
+        onReady: () => { // weird hack for laggy subtitles, this is some issue in SO
+          if (!this.video.paused) {
+            this.video.pause()
+            this.playVideo()
+          }
+        }
+      }
+      if (!this.subtitleData.renderer) {
+        console.log()
+        this.subtitleData.renderer = new SubtitlesOctopus(options)
+        this.selectCaptions(this.subtitleData.current)
+      }
+    }
+  }
+
+  async downloadFile () {
+    if (this.currentFile?.done && !this.currentTorrent.store.store._store) {
+      this.currentFile.getBlobURL((err, url) => {
+        if (err) throw err
+        const a = document.createElement('a')
+        a.download = this.currentFile.name
+        a.href = url
+        document.body.appendChild(a)
+        a.click(e)
+        a.remove()
+        window.URL.revokeObjectURL(url)
+      })
+    }
+  }
+
+  async postDownload () {
+    this.onDownloadDone(this.currentFile.name)
+    await this.parseSubtitles(this.currentFile)
+    if (this.generateThumbnails) {
+      this.finishThumbnails(this.video.src)
+    }
+    if (!this.currentTorrent.store.store._store) { // only allow download from RAM
+      this.controls.downloadFile.removeAttribute('disabled')
+    }
+  }
+
+  // this should be cleaned up
+  addTorrent (torrentID, opts) {
+    halfmoon.hideModal('tsearch')
+    document.location.hash = '#player'
+    this.cleanupVideo()
+    this.cleanupTorrents()
+    if (torrentID instanceof Object) {
+      this.playTorrent(torrentID, opts)
+    } else if (client.get(torrentID)) {
+      this.playTorrent(client.get(torrentID), opts)
+    } else {
+      this.add(torrentID, settings.torrent5 ? { store: IdbChunkStore } : {}, torrent => {
+        this.playTorrent(torrent, opts)
+        if (this.streamedDownload) torrent.deselect(0, torrent.pieces.length - 1, false)
+      })
+    }
+  }
+
+  async playTorrent (torrent, opts) {
+    torrent.on('noPeers', () => {
+      if (torrent.progress !== 1) {
+        halfmoon.initStickyAlert({
+          content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
+          title: 'Search Failed',
+          alertType: 'alert-danger',
+          fillType: ''
+        })
+      }
+    })
+    await this.worker
+    this.videoFiles = torrent.files.filter(file => this.videoExtensions.some(ext => file.name.endsWith(ext)))
+    if (this.videoFiles.length > 1) {
+      (async () => {
+        torrent.files.forEach(file => file.deselect())
+        const frag = document.createDocumentFragment()
+        for (const file of this.videoFiles) {
+          const mediaInformation = await resolveFileMedia({ fileName: file.name, method: 'SearchName' })
+          const template = cardCreator(mediaInformation)
+          template.onclick = () => {
+            this.cleanupVideo()
+            this.buildVideo(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode, file: file })
+          }
+          frag.appendChild(template)
+        }
+        document.querySelector('.playlist').appendChild(frag)
+      })()
+    }
+    if (this.videoFiles) {
+      this.buildVideo(torrent, opts)
+    } else {
+      halfmoon.initStickyAlert({
+        content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
+        title: 'Search Failed',
+        alertType: 'alert-danger',
+        fillType: ''
+      })
+      this.cleanupTorrents()
+    }
+  }
+
+  // cleanup torrent and store
+  cleanupTorrents () {
+  // creates an array of all non-offline store torrents and removes them
+    this.torrents.filter(torrent => !this.offlineTorrents[torrent.infoHash]).forEach(torrent => torrent.destroy({ destroyStore: true }))
+    document.querySelector('.playlist').innerHTML = ''
+  }
+
+  // add torrent for offline download
+  offlineDownload (torrentID, skipVerify) {
+    const torrent = this.add(torrentID, {
+      store: IdbChunkStore,
+      skipVerify: skipVerify
+    })
+    torrent.on('metadata', async () => {
+      console.log(torrent)
+      if (!this.offlineTorrents[torrent.infoHash]) {
+        this.offlineTorrents[torrent.infoHash] = Array.from(torrent.torrentFile)
+        localStorage.setItem('offlineTorrents', JSON.stringify(this.offlineTorrents))
+      }
+      const mediaInformation = await resolveFileMedia({ fileName: torrent.name, method: 'SearchName' })
+      const template = cardCreator(mediaInformation)
+      template.onclick = () => this.addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.episode })
+      document.querySelector('.downloads').appendChild(template)
+    })
+  }
+}
+
+const announceList = [
+  'wss://tracker.openwebtorrent.com',
+  'wss://tracker.sloppyta.co:443/announce',
+  'wss://hub.bugout.link:443/announce'
+]
+const playerControls = {}
+for (const item of document.getElementsByClassName('ctrl')) {
+  playerControls[item.dataset.name] = item
+}
+const client = new TorrentPlayer({
+  WebTorrentOpts: {
+    maxConns: settings.torrent6,
+    downloadLimit: settings.torrent7 * 1048576,
+    uploadLimit: settings.torrent7 * 1572864,
+    tracker: {
+      announce: announceList
+    }
+  },
+  controls: playerControls,
+  video: video,
+  player: player,
+  playerWrapper: pageWrapper,
+  burnIn: settings.subtitle3,
+  seekTime: Number(settings.player3),
+  immerseTime: Number(settings.player2),
+  visibilityLossPause: settings.player10,
+  autoNext: settings.player6,
+  streamedDownload: settings.torrent6,
+  generateThumbnails: settings.player5,
+  defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === settings.subtitle1)[0].innerText,
+  onDownloadDone: (name) => {
+    halfmoon.initStickyAlert({
+      content: `<span class="text-break">${name}</span> has finished downloading. Now seeding.`,
+      title: 'Download Complete',
+      alertType: 'alert-success',
+      fillType: ''
+    })
+  },
+  onWatched: () => { // TODO: fix
+    if (settings.other2 && !(!(playerData.nowPlaying[0].episodes || playerData.nowPlaying[0].nextAiringEpisode.episode) && playerData.nowPlaying[0].streamingEpisodes.length && parseInt(playerData.nowPlaying[1] > 12))) {
+      alEntry()
+    } else {
+      halfmoon.initStickyAlert({
+        content: `Do You Want To Mark <br><b>${playerData.nowPlaying[0].title.userPreferred}</b><br>Episode ${playerData.nowPlaying[1]} As Completed?<br>
+                <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
+                <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
+        title: 'Episode Complete',
+        timeShown: 180000
+      })
+    }
+  },
+  onPlaylist: () => {
+    window.location.hash = '#playlist'
+  },
+  onNext: () => {
+    if (playerData.nowPlaying[0]) {
+      nyaaSearch(playerData.nowPlaying[0], parseInt(playerData.nowPlaying[1]) + 1)
+    } else {
+      halfmoon.initStickyAlert({
+        content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
+        title: 'Search Failed',
+        alertType: 'alert-danger',
+        fillType: ''
+      })
+    }
+  }
+})
+
+window.onbeforeunload = function () {
+  return ''
+}
+
+function t (a) {
+  switch (a) {
+    case 1:
+      client.addTorrent('https://webtorrent.io/torrents/sintel.torrent', {})
+      break
+    case 2:
+      client.addTorrent('https://webtorrent.io/torrents/tears-of-steel.torrent', {})
+      break
+    case 3:
+      client.addTorrent('magnet:?xt=urn:btih:CE9156EB497762F8B7577B71C0647A4B0C3423E1&dn=Inception+%282010%29+720p+-+mkv+-+1.0GB+-+YIFY&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2920%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.pirateparty.gr%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.cyberia.is%3A6969%2Fannounce', {})
+      break
+  }
+}

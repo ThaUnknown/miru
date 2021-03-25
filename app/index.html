@@ -189,8 +189,8 @@
                             <span class="ts" id="upSpeed">0 B/s</span>
                         </div>
                         <div class="col-4 d-flex justify-content-end">
-                            <span id="dl" class="material-icons pointer"
-                                title="Wait For File To Fully Download Before Saving To Drive" disabled>
+                            <span id="dl" class="material-icons pointer ctrl"
+                                title="Wait For File To Fully Download Before Saving To Drive" disabled data-name="downloadFile">
                                 get_app
                             </span>
                         </div>
@@ -200,24 +200,24 @@
                         </div>
                     </div>
                     <div class="controls d-flex">
-                        <span class="material-icons ctrl" title="Play/Pause [Space]" id="bpp" data-name="btnpp">
+                        <span class="material-icons ctrl" title="Play/Pause [Space]" id="bpp" data-name="playPause">
                             play_arrow
                         </span>
-                        <span class="material-icons ctrl" title="Next [N]" id="bnext" data-name="btnnext">
+                        <span class="material-icons ctrl" title="Next [N]" id="bnext" data-name="playNext">
                             skip_next
                         </span>
-                        <span class="material-icons ctrl" title="Playlist [P]" id="bpl" data-name="btnpl">
+                        <span class="material-icons ctrl" title="Playlist [P]" id="bpl" data-name="openPlaylist">
                             playlist_play
                         </span>
                         <div class="volume">
-                            <span class="material-icons ctrl" title="Mute [M]" id="bmute" data-name="btnmute">
+                            <span class="material-icons ctrl" title="Mute [M]" id="bmute" data-name="toggleMute">
                                 volume_up
                             </span>
-                            <input type="range" value="100" id="volume" step="any">
+                            <input class="ctrl" type="range" value="100" id="volume" step="any" data-name="setVolume">
                         </div>
                         <div class="audio-tracks dropdown dropup with-arrow">
                             <span class="material-icons ctrl" title="Audio Tracks [T]" id="baudio"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="btnaudio"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="showAudio"
                                 disabled>
                                 queue_music
                             </span>
@@ -226,25 +226,25 @@
                         </div>
                         <span class="ts" id="elapsed">00:00</span>
                         <div class="prog">
-                            <input type="range" min="0" max="100" value="0" id="progress" step="any">
+                            <input class="ctrl" type="range" min="0" max="100" value="0" id="progress" step="any" data-name="setProgress">
                             <img id="thumb">
                         </div>
                         <span class="ts" id="remaining">00:00</span>
                         <div class="subtitles dropdown dropup with-arrow">
                             <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false" data-name="btncap" disabled>
+                                aria-haspopup="true" aria-expanded="false" data-name="showCaptions" disabled>
                                 subtitles
                             </span>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bcap" id="subMenu">
                             </div>
                         </div>
-                        <span class="material-icons ctrl" title="Popout Window [P]" id="bpip" data-name="btnpip">
+                        <span class="material-icons ctrl" title="Popout Window [P]" id="bpip" data-name="togglePopout">
                             picture_in_picture
                         </span>
-                        <span class="material-icons ctrl" title="Theatre Mode [T]" id="btheatre" data-name="btntheatre">
+                        <span class="material-icons ctrl" title="Theatre Mode [T]" id="btheatre" data-name="toggleTheatre">
                             crop_16_9
                         </span>
-                        <span class="material-icons ctrl" title="Fullscreen [F]" id="bfull" data-name="btnfull">
+                        <span class="material-icons ctrl" title="Fullscreen [F]" id="bfull" data-name="toggleFullscreen">
                             fullscreen
                         </span>
                     </div>
@@ -730,8 +730,8 @@
                                 <label for="torrent5">Drive Caching</label>
                             </div>
                             <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top" data-title="Only Downloads Pieces Directly Required For Playback Instead Of The Entire File. Recommended Only For Low-End Devices">
-                                <input type="checkbox" id="torrent6">
-                                <label for="torrent6">Streamed Download</label>
+                                <input type="checkbox" id="torrent8">
+                                <label for="torrent8">Streamed Download</label>
                             </div>
                         </div>
                         <div class="p-5">
@@ -786,13 +786,11 @@
     <script src="js/webtorrent.min.js"></script>
     <script src="js/settingsHandler.js"></script>
     <script src="js/rangeParser.js"></script>
+    <script src="js/subtitles-octopus.js"></script>
+    <script src="js/player.js"></script>
     <script src="js/util.js"></script>
     <script src="js/interface.js"></script>
     <script src="js/animeHandler.js"></script>
-    <script src="js/torrentHandler.js"></script>
-    <script src="js/playerHandler.js"></script>
-    <script src="js/subtitles-octopus.js"></script>
-    <script src="js/subtitleOctopus.js"></script>
 </body>
 
 </html>

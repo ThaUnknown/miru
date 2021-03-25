@@ -14,7 +14,7 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
       if (torrentRx.exec(text)) {
         e.preventDefault()
         search.value = ''
-        addTorrent(text, {})
+        client.addTorrent(text, {})
       } else if (imageRx.exec(text)) {
         e.preventDefault()
         search.value = ''
@@ -642,7 +642,7 @@ async function resolveFileMedia (opts) {
         // episode is still out of bounds
         const nextEdge = await alRequest({ method: 'SearchIDSingle', id: tempMedia.id })
         await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes, increment: increment })
-      } else if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) < (media.episodes || media.nextAiringEpisode.episode) && epMin - (opts.offset + tempMedia.episodes) > 0) {
+      } else if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) <= (media.episodes || media.nextAiringEpisode.episode) && epMin - (opts.offset + tempMedia.episodes) > 0) {
         // episode is in range, seems good! overwriting media to count up "seasons"
         if (opts.episode.constructor === Array) {
           episode = `${elems.episode_number[0] - (opts.offset + tempMedia.episodes)} - ${elems.episode_number[elems.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
@@ -654,7 +654,7 @@ async function resolveFileMedia (opts) {
           media = nextEdge.data.Media
         }
       } else {
-        console.log('error in parsing!')
+        console.log('error in parsing!', opts.media, tempMedia)
         // something failed, most likely couldnt find an edge or processing failed, force episode number even if its invalid/out of bounds, better than nothing
         if (opts.episode.constructor === Array) {
           episode = `${Number(elems.episode_number[0])} - ${Number(elems.episode_number[elems.episode_number.length - 1])}`
@@ -690,7 +690,8 @@ async function resolveFileMedia (opts) {
   return { media: media, episode: episode, parseObject: elems }
 }
 
-const store = JSON.parse(localStorage.getItem('store')) || {}
+let store = JSON.parse(localStorage.getItem('store')) || {}
+store = store || {}
 
 function getRSSurl () {
   if (Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0]) {
