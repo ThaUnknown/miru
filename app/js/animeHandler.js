@@ -711,7 +711,7 @@ async function releasesCards (items, frag, limit) {
     results.forEach((mediaInformation, index) => {
       const o = items[index].querySelector.bind(items[index])
       template = cardCreator(mediaInformation)
-      template.onclick = () => addTorrent(o('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
+      template.onclick = () => client.addTorrent(o('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
       frag.appendChild(template)
     })
   })

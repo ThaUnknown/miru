@@ -19,7 +19,7 @@
     <meta property="og:image" content="logo.png">
     <title>Miru</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/css/halfmoon-variables.min.css" rel="stylesheet">
+    <link href="css/halfmoon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="css/misc.css" rel="stylesheet">
     <link href="css/player.css" rel="stylesheet">
@@ -216,12 +216,11 @@
                             <input class="ctrl" type="range" value="100" id="volume" step="any" data-name="setVolume">
                         </div>
                         <div class="audio-tracks dropdown dropup with-arrow">
-                            <span class="material-icons ctrl" title="Audio Tracks [T]" id="baudio"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="showAudio"
-                                disabled>
+                            <span class="material-icons" title="Audio Tracks [T]" id="baudio" data-toggle="dropdown" 
+                            aria-haspopup="true" aria-expanded="false" disabled>
                                 queue_music
                             </span>
-                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="baudio" id="audioTracksMenu">
+                            <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize" aria-labelledby="baudio" data-name="selectAudio">
                             </div>
                         </div>
                         <span class="ts" id="elapsed">00:00</span>
@@ -231,11 +230,11 @@
                         </div>
                         <span class="ts" id="remaining">00:00</span>
                         <div class="subtitles dropdown dropup with-arrow">
-                            <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false" data-name="showCaptions" disabled>
+                            <span class="material-icons" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false" disabled>
                                 subtitles
                             </span>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bcap" id="subMenu">
+                            <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize" aria-labelledby="bcap" data-name="selectCaptions">
                             </div>
                         </div>
                         <span class="material-icons ctrl" title="Popout Window [P]" id="bpip" data-name="togglePopout">

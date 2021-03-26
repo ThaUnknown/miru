@@ -63,11 +63,11 @@ class TorrentPlayer extends WebTorrent {
     this.controls.setProgress.addEventListener('input', (e) => this.setProgress(e.target.value))
     this.controls.setProgress.addEventListener('mouseup', (e) => this.dragBarEnd(e.target.value))
     this.controls.setProgress.addEventListener('thouchend', (e) => this.dragBarEnd(e.target.value))
-    this.controls.setProgress.addEventListener('click', (e) => this.dragBarEnd(e.target.value))
     this.controls.setProgress.addEventListener('mousedown', (e) => this.dragBarStart(e.target.value))
     this.video.addEventListener('timeupdate', (e) => {
       if (this.immerseTimeout && document.location.hash === '#player') this.setProgress(e.target.currentTime / e.target.duration * 100)
     })
+    this.video.addEventListener('ended', (e) => this.setProgress(e.target.value))
 
     this.player = options.player
     this.playerWrapper = options.playerWrapper
@@ -92,7 +92,16 @@ Style: Default,${options.defaultSSAStyles}
 `
     }
 
-    this.video.addEventListener('loadedmetadata', () => this.video.audioTracks?.length > 1 ? this.controls.showAudio.removeAttribute('disabled') : this.controls.showAudio.setAttribute('disabled', ''))
+    this.video.addEventListener('loadedmetadata', () => {
+      if (this.video.audioTracks?.length > 1) {
+        baudio.removeAttribute('disabled') // TODO: fix
+        for (const track of this.video.audioTracks) {
+          this.createRadioElement(track, 'audio')
+        }
+      } else {
+        baudio.setAttribute('disabled', '') // TODO: fix
+      }
+    })
 
     this.completed = undefined
     this.onWatched = options.onWatched
@@ -162,6 +171,7 @@ Style: Default,${options.defaultSSAStyles}
     this.videoExtensions = ['.3g2', '.3gp', '.asf', '.avi', '.dv', '.flv', '.gxf', '.m2ts', '.m4a', '.m4b', '.m4p', '.m4r', '.m4v', '.mkv', '.mov', '.mp4', '.mpd', '.mpeg', '.mpg', '.mxf', '.nut', '.ogm', '.ogv', '.swf', '.ts', '.vob', '.webm', '.wmv', '.wtv']
     this.videoFiles = undefined
 
+    this.updateDisplay()
     this.currentTorrent = undefined
     this.offlineTorrents = JSON.parse(localStorage.getItem('offlineTorrents')) || {}
     // adds all offline store torrents to the client
@@ -308,7 +318,7 @@ Style: Default,${options.defaultSSAStyles}
     this.video.src = `/app/webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
     this.video.load()
 
-    if (this.videoFiles.length > 1) bpl.removeAttribute('disabled')
+    if (this.videoFiles.length > 1) bpl.removeAttribute('disabled') // TODO: fix
 
     if (this.currentFile.done) {
       this.postDownload()
@@ -342,7 +352,7 @@ Style: Default,${options.defaultSSAStyles}
           type: 'image/jpg'
         }]
       })
-      if (parseInt(this.nowPlaying[1]) >= this.nowPlaying[0].episodes) bnext.setAttribute('disabled', '')
+      if (parseInt(this.nowPlaying[1]) >= this.nowPlaying[0].episodes) bnext.setAttribute('disabled', '') // TODO: fix
       let streamingEpisode
       if (this.nowPlaying[0].streamingEpisodes.length >= Number(this.nowPlaying[1])) {
         streamingEpisode = this.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(this.nowPlaying[1]))[0]
@@ -405,7 +415,7 @@ Style: Default,${options.defaultSSAStyles}
       video: undefined
     }
     nowPlayingDisplay.innerHTML = '' // TODO: fix
-    this.controls.showCaptions.setAttribute('disabled', '')
+    bcap.setAttribute('disabled', '') // TODO: fix
     this.controls.openPlaylist.setAttribute('disabled', '')
     this.controls.playNext.removeAttribute('disabled')
     navNowPlaying.classList.add('d-none') // TODO: fix
@@ -678,79 +688,60 @@ Style: Default,${options.defaultSSAStyles}
   }
 
   updateDisplay () {
-    this.player.style.setProperty('--download', this.selectedFile.progress * 100 + '%')
-    peers.innerHTML = this.selectedTorrent.numPeers
-    downSpeed.innerHTML = this.prettyBytes(this.selectedTorrent.downloadSpeed) + '/s'
-    upSpeed.innerHTML = this.prettyBytes(this.selectedTorrent.uploadSpeed) + '/s'
+    if (this.currentTorrent && this.currentFile) {
+      this.player.style.setProperty('--download', this.currentFile.progress * 100 + '%')
+      peers.innerHTML = this.currentTorrent.numPeers
+      downSpeed.innerHTML = this.prettyBytes(this.currentTorrent.downloadSpeed) + '/s'
+      upSpeed.innerHTML = this.prettyBytes(this.currentTorrent.uploadSpeed) + '/s'
+    }
+    window.requestAnimationFrame(() => setTimeout(() => this.updateDisplay(), 200))
   }
 
-  showAudio () {
+  createRadioElement (track, type) {
+    // type: captions audio
     const frag = document.createDocumentFragment()
-    for (const track of this.video.audioTracks) {
-      const template = document.createElement('a')
-      template.classList.add('dropdown-item', 'pointer', 'text-capitalize')
-      template.innerHTML = (track.language || (!Object.values(this.video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) + (track.label ? ' - ' + track.label : '')
-      track.enabled === true ? template.classList.add('text-white') : template.classList.add('text-muted')
-      template.onclick = () => this.selectAudio(track.id)
-      frag.appendChild(template)
+    const input = document.createElement('input')
+    const label = document.createElement('label')
+    input.name = `${type}-radio-set`
+    input.type = 'radio'
+    input.id = type === 'captions' ? `${type}-${track?.number || 'off'}-radio` : `${type}-${track.id}-radio`
+    input.value = type === 'captions' ? track?.number || null : track.id
+    input.checked = type === 'captions' ? track?.number === this.subtitleData.current : track.enabled
+    label.htmlFor = type === 'captions' ? `${type}-${track?.number || 'off'}-radio` : `${type}-${track.id}-radio`
+    label.textContent = track
+      ? type === 'captions'
+          ? (track.language || (!Object.values(this.subtitleData.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : header.type)) + (track.name ? ' - ' + track.name : '')
+          : (track.language || (!Object.values(this.video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) + (track.label ? ' - ' + track.label : '')
+      : 'OFF'
+    frag.appendChild(input)
+    frag.appendChild(label)
+    if (type === 'captions') {
+      this.controls.selectCaptions.appendChild(frag)
+    } else {
+      this.controls.selectAudio.appendChild(frag)
     }
-
-    audioTracksMenu.innerHTML = ''
-    audioTracksMenu.appendChild(frag)
   }
 
   selectAudio (id) {
-    for (const track of this.video.audioTracks) {
-      track.id === id ? track.enabled = true : track.enabled = false
-    }
-    this.seek(-0.5) // stupid fix because video freezes up when chaging tracks
-    this.showAudio()
-  }
-
-  // subtitles, generates content every single time its opened because fuck knows when the parser will find new shit
-  // this needs to go.... really badly
-  showCaptions () {
-    const frag = document.createDocumentFragment()
-    const off = document.createElement('a')
-    off.classList.add('dropdown-item', 'pointer')
-    this.subtitleData.current ? off.classList.add('text-muted') : off.classList.add('text-white')
-    off.innerHTML = 'OFF'
-    off.onclick = () => this.selectCaptions()
-    frag.appendChild(off)
-    for (const track of this.subtitleData.headers) {
-      if (track) {
-        const template = document.createElement('a')
-        template.classList.add('dropdown-item', 'pointer', 'text-capitalize')
-        template.innerHTML = (track.language || (!Object.values(this.subtitleData.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : header.type)) + (track.name ? ' - ' + track.name : '')
-        if (this.subtitleData.current === track.number) {
-          template.classList.add('text-white')
-        } else {
-          template.classList.add('text-muted')
-        }
-        template.onclick = () => this.selectCaptions(track.number)
-        frag.appendChild(template)
+    if (id !== undefined) {
+      for (const track of this.video.audioTracks) {
+        track.id === id ? track.enabled = true : track.enabled = false
       }
+      this.seek(-0.5) // stupid fix because video freezes up when chaging tracks
     }
-    const timeOffset = document.createElement('div')
-    timeOffset.classList.add('btn-group', 'w-full', 'pt-5')
-    timeOffset.setAttribute('role', 'group')
-    timeOffset.innerHTML = `<button class="btn" type="button" onclick="client.subtitleData.renderer.timeOffset+=1">-1s</button>
-<button class="btn" type="button" onclick="client.subtitleData.renderer.timeOffset-=1">+1s</button>`
-    frag.appendChild(timeOffset)
-    subMenu.innerHTML = ''
-    subMenu.appendChild(frag)
   }
 
   selectCaptions (trackNumber) {
-    this.subtitleData.current = trackNumber
-    this.showCaptions()
-    if (!this.subtitleData.timeout) {
-      this.subtitleData.timeout = setTimeout(() => {
-        this.subtitleData.timeout = undefined
-        if (this.subtitleData.renderer) {
-          this.subtitleData.renderer.setTrack(trackNumber ? this.subtitleData.headers[trackNumber].header.slice(0, -1) + Array.from(this.subtitleData.tracks[trackNumber]).join('\n') : this.subtitleData.headers[3].header.slice(0, -1))
-        }
-      }, 1000)
+    if (trackNumber !== undefined) {
+      this.subtitleData.current = trackNumber
+      if (!this.subtitleData.timeout) {
+        this.subtitleData.timeout = setTimeout(() => {
+          this.subtitleData.timeout = undefined
+          if (this.subtitleData.renderer) {
+            this.subtitleData.renderer.setTrack(trackNumber ? this.subtitleData.headers[trackNumber].header.slice(0, -1) + Array.from(this.subtitleData.tracks[trackNumber]).join('\n') : this.subtitleData.headers[3].header.slice(0, -1))
+          }
+        }, 1000)
+      }
     }
   }
 
@@ -793,7 +784,7 @@ Style: Default,${options.defaultSSAStyles}
           this.subtitleData.stream = undefined
           this.selectCaptions(this.subtitleData.current)
           parser = undefined
-          this.controls.showCaptions.removeAttribute('disabled')
+          bcap.removeAttribute('disabled') // TODO: fix
           if (!this.video.paused) {
             this.video.pause()
             this.playVideo()
@@ -811,13 +802,19 @@ Style: Default,${options.defaultSSAStyles}
 
   handleSubtitleParser (parser, skipFile) {
     parser.once('tracks', tracks => {
-      this.controls.showCaptions.removeAttribute('disabled')
+      bcap.removeAttribute('disabled') // TODO: fix
       tracks.forEach(track => {
+        if (!this.subtitleData.tracks[track.number]) {
         // overwrite webvtt or other header with custom one
-        if (track.type !== 'ass') track.header = this.subtitleData.defaultHeader
-        if (!this.subtitleData.current) this.subtitleData.current = track.number
-        if (!this.subtitleData.tracks[track.number]) this.subtitleData.tracks[track.number] = new Set()
-        this.subtitleData.headers[track.number] = track
+          if (track.type !== 'ass') track.header = this.subtitleData.defaultHeader
+          if (!this.subtitleData.current) {
+            this.subtitleData.current = track.number
+            this.createRadioElement(undefined, 'captions')
+          }
+          this.subtitleData.tracks[track.number] = new Set()
+          this.subtitleData.headers[track.number] = track
+          this.createRadioElement(track, 'captions')
+        }
       })
     })
     parser.on('subtitle', (subtitle, trackNumber) => {
@@ -898,7 +895,14 @@ Style: Default,${options.defaultSSAStyles}
     } else if (client.get(torrentID)) {
       this.playTorrent(client.get(torrentID), opts)
     } else {
-      this.add(torrentID, settings.torrent5 ? { store: IdbChunkStore } : {}, torrent => {
+      this.add(torrentID, {
+        store: settings.torrent5 ? IdbChunkStore : undefined,
+        announce: [
+          'wss://tracker.openwebtorrent.com',
+          'wss://tracker.sloppyta.co:443/announce',
+          'wss://hub.bugout.link:443/announce'
+        ]
+      }, torrent => {
         this.playTorrent(torrent, opts)
         if (this.streamedDownload) torrent.deselect(0, torrent.pieces.length - 1, false)
       })
@@ -958,7 +962,12 @@ Style: Default,${options.defaultSSAStyles}
   offlineDownload (torrentID, skipVerify) {
     const torrent = this.add(torrentID, {
       store: IdbChunkStore,
-      skipVerify: skipVerify
+      skipVerify: skipVerify,
+      announce: [
+        'wss://tracker.openwebtorrent.com',
+        'wss://tracker.sloppyta.co:443/announce',
+        'wss://hub.bugout.link:443/announce'
+      ]
     })
     torrent.on('metadata', async () => {
       console.log(torrent)

@@ -13,6 +13,15 @@
 
 /*PLAYER*/
 
+.immersed {
+    cursor: none
+}
+
+.immersed .controls,
+.immersed .stats {
+    opacity: 0;
+}
+
 #player:target {
     bottom: 0;
     right: 0;
@@ -23,16 +32,8 @@
     transition: none !important;
 }
 
-.immersed {
-    cursor: none
-}
-
-.immersed .controls,
-.immersed .stats {
-    opacity: 0;
-}
-
 #player {
+    will-change: width, right, bottom, position, display;
     position: fixed;
     display: var(--miniplayer-display);
     bottom: 2rem;
@@ -214,7 +215,8 @@
 #player:target>a,
 #progress+img[src=" "],
 video[src=""],
-#player.pip video {
+#player.pip video,
+#bcap[disabled], #baudio[disabled] {
     display: none !important
 }
 

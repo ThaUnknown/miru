@@ -248,7 +248,6 @@ class SubtitlesOctopus {
           self.resize()
         } else {
           self.video.addEventListener('loadedmetadata', function (e) {
-            e.target.removeEventListener(e.type, arguments.callee)
             self.resize()
           }, false)
         }
