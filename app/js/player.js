@@ -65,9 +65,9 @@ class TorrentPlayer extends WebTorrent {
     this.controls.setProgress.addEventListener('thouchend', (e) => this.dragBarEnd(e.target.value))
     this.controls.setProgress.addEventListener('mousedown', (e) => this.dragBarStart(e.target.value))
     this.video.addEventListener('timeupdate', (e) => {
-      if (this.immerseTimeout && document.location.hash === '#player') this.setProgress(e.target.currentTime / e.target.duration * 100)
+      if (this.immerseTimeout && document.location.hash === '#player' && !this.video.paused) this.setProgress(e.target.currentTime / e.target.duration * 100)
     })
-    this.video.addEventListener('ended', (e) => this.setProgress(e.target.value))
+    this.video.addEventListener('ended', () => this.setProgress(100))
 
     this.player = options.player
     this.playerWrapper = options.playerWrapper
@@ -86,7 +86,7 @@ class TorrentPlayer extends WebTorrent {
       timeout: undefined,
       defaultHeader: `[V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,${options.defaultSSAStyles}
+Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1'}
 [Events]
 
 `
@@ -209,9 +209,11 @@ Style: Default,${options.defaultSSAStyles}
     }
 
     for (const [key, value] of Object.entries(this.controls)) {
-      value.addEventListener('click', (e) => {
-        this[key](e.target.value)
-      })
+      if (this[key]) {
+        value.addEventListener('click', (e) => {
+          this[key](e.target.value)
+        })
+      }
     }
     document.onkeydown = a => {
       if (a.key === 'F5') {
@@ -499,6 +501,7 @@ Style: Default,${options.defaultSSAStyles}
           const canvas = document.createElement('canvas')
           const canvasVideo = document.createElement('video')
           const context = canvas.getContext('2d', { alpha: false })
+          const subtitleCanvas = this.subtitleData.renderer.canvas
           let running = true
           canvas.width = this.video.videoWidth
           canvas.height = this.video.videoHeight
@@ -820,7 +823,7 @@ Style: Default,${options.defaultSSAStyles}
     parser.on('subtitle', (subtitle, trackNumber) => {
       if (!this.subtitleData.parsed) {
         if (!this.subtitleData.renderer) this.initSubtitleRenderer()
-        this.subtitleData.tracks[trackNumber].add(this.constructSub(subtitle, this.subtitleData.headers[trackNumber].type === 'webvtt'))
+        this.subtitleData.tracks[trackNumber].add(this.constructSub(subtitle, this.subtitleData.headers[trackNumber].type !== 'ass'))
         if (this.subtitleData.current === trackNumber) this.selectCaptions(trackNumber)
       }
     })
