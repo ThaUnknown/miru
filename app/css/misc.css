@@ -1,4 +1,5 @@
 :root {
+    --accent-color: #e5204c;
     --dm-link-text-color: var(--dm-muted-text-color) !important;
     --dm-link-text-color-hover: var(--dm-text-color) !important;
     --base-html-font-size: 50%;

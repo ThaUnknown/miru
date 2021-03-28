@@ -22,7 +22,7 @@
     <link href="css/halfmoon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="css/misc.css" rel="stylesheet">
-    <link href="css/player.css" rel="stylesheet">
+    <link href="css/torrent-player.css" rel="stylesheet">
     <style id="substyles">
     </style>
 </head>
@@ -167,89 +167,84 @@
             </a>
         </nav>
         <div class="overflow-y-hidden content-wrapper">
-            <section id="player" class="overflow-hidden">
+            <section id="player" class="overflow-hidden torrent-player">
                 <video id="video" src=""></video>
-                <a href="#player" class="w-full h-full"></a>
-                <div class="player d-none flex-column justify-content-between w-full h-full">
-                    <div class="stats row">
-                        <div id="nowPlayingDisplay" class="col-4 ts text-truncate">
-                        </div>
-                        <div class="d-flex col-4 justify-content-center">
-                            <span class="ctrl material-icons" id="peers" data-value="0" data-name="peers">
-                                people
-                            </span>
-                            <span class="ctrl material-icons" id="downSpeed" data-value="0 B/s" data-name="downSpeed">
-                                arrow_downward
-                            </span>
-                            <span class="ctrl material-icons" id="upSpeed" data-value="0 B/s" data-name="upSpeed">
-                                arrow_upward
-                            </span>
-                        </div>
-                        <div class="col-4 d-flex justify-content-end">
-                            <span id="dl" class="material-icons pointer ctrl"
-                                title="Wait For File To Fully Download Before Saving To Drive" disabled
-                                data-name="downloadFile">
-                                get_app
-                            </span>
-                        </div>
+                <a href="#player" class="miniplayer"></a>
+                <div class="top">
+                    <div data-name="nowPlaying" class="col-4 ctrl">
                     </div>
-                    <div id="ptoggle" class="h-full d-flex justify-content-center align-items-center">
-                        <div id="buffering" class="hidden ctrl" data-name="buffering">
-                        </div>
-                    </div>
-                    <div class="controls d-flex">
-                        <span class="material-icons ctrl" title="Play/Pause [Space]" id="bpp" data-name="playPause">
-                            play_arrow
+                    <div class="col-4 justify-content-center">
+                        <span class="ctrl material-icons" data-value="0" data-name="peers">
+                            people
                         </span>
-                        <span class="material-icons ctrl" title="Next [N]" id="bnext" data-name="playNext">
-                            skip_next
+                        <span class="ctrl material-icons" data-value="0 B/s" data-name="downSpeed">
+                            arrow_downward
                         </span>
-                        <span class="material-icons ctrl" title="Playlist [P]" id="bpl" data-name="openPlaylist">
-                            playlist_play
-                        </span>
-                        <div class="volume">
-                            <span class="material-icons ctrl" title="Mute [M]" id="bmute" data-name="toggleMute">
-                                volume_up
-                            </span>
-                            <input class="ctrl" type="range" value="100" id="volume" step="any" data-name="setVolume">
-                        </div>
-                        <div class="audio-tracks dropdown dropup with-arrow">
-                            <span class="material-icons ctrl" title="Audio Tracks [T]" id="baudio" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false" disabled data-name="audioButton">
-                                queue_music
-                            </span>
-                            <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize"
-                                aria-labelledby="baudio" data-name="selectAudio">
-                            </div>
-                        </div>
-                        <div class="prog ctrl" data-name="progressWrapper" data-elapsed="00:00" data-remaining="00:00">
-                            <div>
-                                <input class="ctrl" type="range" min="0" max="100" value="0" id="progress" step="any"
-                                    data-name="setProgress">
-                                <img class="ctrl" data-elapsed="00:00" data-name="thumbnail">
-                            </div>
-                        </div>
-                        <div class="subtitles dropdown dropup with-arrow">
-                            <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false" disabled data-name="captionsButton">
-                                subtitles
-                            </span>
-                            <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize"
-                                aria-labelledby="bcap" data-name="selectCaptions">
-                            </div>
-                        </div>
-                        <span class="material-icons ctrl" title="Popout Window [P]" id="bpip" data-name="togglePopout">
-                            picture_in_picture
-                        </span>
-                        <span class="material-icons ctrl" title="Theatre Mode [T]" id="btheatre"
-                            data-name="toggleTheatre">
-                            crop_16_9
-                        </span>
-                        <span class="material-icons ctrl" title="Fullscreen [F]" id="bfull"
-                            data-name="toggleFullscreen">
-                            fullscreen
+                        <span class="ctrl material-icons" data-value="0 B/s" data-name="upSpeed">
+                            arrow_upward
                         </span>
                     </div>
+                    <div class="col-4 justify-content-end">
+                        <span class="material-icons ctrl" title="Wait For File To Fully Download Before Saving To Drive"
+                            disabled data-name="downloadFile">
+                            get_app
+                        </span>
+                    </div>
+                </div>
+                <div class="middle ctrl" data-name="ppToggle">
+                    <div data-name="bufferingDisplay">
+                    </div>
+                </div>
+                <div class="bottom">
+                    <span class="material-icons ctrl" title="Play/Pause [Space]" data-name="playPause">
+                        play_arrow
+                    </span>
+                    <span class="material-icons ctrl" title="Next [N]" data-name="playNext">
+                        skip_next
+                    </span>
+                    <span class="material-icons ctrl" title="Playlist [P]" data-name="openPlaylist">
+                        playlist_play
+                    </span>
+                    <div class="volume">
+                        <span class="material-icons ctrl" title="Mute [M]" data-name="toggleMute">
+                            volume_up
+                        </span>
+                        <input class="ctrl" type="range" value="100" id="volume" step="any" data-name="setVolume">
+                    </div>
+                    <div class="audio-tracks dropdown dropup with-arrow">
+                        <span class="material-icons ctrl" title="Audio Tracks [T]" id="baudio" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false" disabled data-name="audioButton">
+                            queue_music
+                        </span>
+                        <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize"
+                            aria-labelledby="baudio" data-name="selectAudio">
+                        </div>
+                    </div>
+                    <div class="ctrl" data-name="progressWrapper" data-elapsed="00:00" data-remaining="00:00">
+                        <div>
+                            <input class="ctrl" type="range" min="0" max="100" value="0" step="any"
+                                data-name="setProgress">
+                            <img class="ctrl" data-elapsed="00:00" data-name="thumbnail">
+                        </div>
+                    </div>
+                    <div class="subtitles dropdown dropup with-arrow">
+                        <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false" disabled data-name="captionsButton">
+                            subtitles
+                        </span>
+                        <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize"
+                            aria-labelledby="bcap" data-name="selectCaptions">
+                        </div>
+                    </div>
+                    <span class="material-icons ctrl" title="Popout Window [P]" data-name="togglePopout">
+                        picture_in_picture
+                    </span>
+                    <span class="material-icons ctrl" title="Theatre Mode [T]" data-name="toggleTheatre">
+                        crop_16_9
+                    </span>
+                    <span class="material-icons ctrl" title="Fullscreen [F]" data-name="toggleFullscreen">
+                        fullscreen
+                    </span>
                 </div>
             </section>
             <section id="home" class="flex-column overflow-y-auto">

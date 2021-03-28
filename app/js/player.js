@@ -57,7 +57,7 @@ class TorrentPlayer extends WebTorrent {
 
     this.controls.setVolume.addEventListener('input', (e) => this.setVolume(e.target.value))
     this.setVolume()
-    ptoggle.addEventListener('click', () => this.playPause()) // non-tplayer specific // TODO: fix this
+    this.controls.ppToggle.addEventListener('click', () => this.playPause())
     this.oldVolume = undefined
 
     this.controls.setProgress.addEventListener('input', (e) => this.setProgress(e.target.value))
@@ -72,7 +72,7 @@ class TorrentPlayer extends WebTorrent {
     this.player = options.player
     this.playerWrapper = options.playerWrapper
     this.player.addEventListener('fullscreenchange', () => this.updateFullscreen())
-    ptoggle.addEventListener('dblclick', () => this.toggleFullscreen()) // non-tplayer specific // TODO: fix this
+    this.controls.ppToggle.addEventListener('dblclick', () => this.toggleFullscreen())
 
     this.subtitleData = {
       fonts: [],
@@ -372,7 +372,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         nowPlayingDisplay.textContent = `EP ${Number(this.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
       } else {
         document.title = `${this.nowPlaying[0].title.userPreferred} -  EP ${Number(this.nowPlaying[1])} - Miru`
-        nowPlayingDisplay.textContent = `EP ${Number(this.nowPlaying[1])}`
+        this.controls.nowPlaying.textContent = `EP ${Number(this.nowPlaying[1])}`
       }
     }
     if ('mediaSession' in navigator && mediaMetadata) navigator.mediaSession.metadata = mediaMetadata
@@ -418,7 +418,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       interval: undefined,
       video: undefined
     }
-    nowPlayingDisplay.textContent = '' // TODO: fix
+    this.controls.nowPlaying.textContent = ''
     this.controls.captionsButton.setAttribute('disabled', '')
     this.controls.selectCaptions.textContent = ''
     this.controls.selectAudio.textContent = ''
@@ -555,13 +555,11 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   prettyBytes (num) {
-    const neg = num < 0; const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-    if (neg) num = -num
-    if (num < 1) return (neg ? '-' : '') + num + ' B'
+    if (num < 1) return num + ' B'
+    const units = [' B', ' kB', ' MB', ' GB', ' TB', ' PB', ' EB', ' ZB', ' YB']
     const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1)
     num = Number((num / Math.pow(1000, exponent)).toFixed(2))
-    const unit = units[exponent]
-    return (neg ? '-' : '') + num + ' ' + unit
+    return num + units[exponent]
   }
 
   seek (time) {
@@ -592,13 +590,13 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     if (this.bufferTimeout) {
       clearTimeout(this.bufferTimeout)
       this.bufferTimeout = undefined
-      this.controls.buffering.classList.add('hidden')
+      this.player.classList.remove('buffering')
     }
   }
 
   showBuffering () {
     this.bufferTimeout = setTimeout(() => {
-      this.controls.buffering.classList.remove('hidden')
+      this.player.classList.add('buffering')
       this.resetImmerse()
     }, 150)
   }
