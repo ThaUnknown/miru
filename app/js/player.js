@@ -94,12 +94,12 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
     this.video.addEventListener('loadedmetadata', () => {
       if (this.video.audioTracks?.length > 1) {
-        baudio.removeAttribute('disabled') // TODO: fix
+        this.controls.audioButton.removeAttribute('disabled')
         for (const track of this.video.audioTracks) {
           this.createRadioElement(track, 'audio')
         }
       } else {
-        baudio.setAttribute('disabled', '') // TODO: fix
+        this.controls.audioButton.setAttribute('disabled', '')
       }
     })
 
@@ -320,7 +320,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.video.src = `/app/webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
     this.video.load()
 
-    if (this.videoFiles.length > 1) bpl.removeAttribute('disabled') // TODO: fix
+    if (this.videoFiles.length > 1) this.controls.playNext.removeAttribute('disabled')
 
     if (this.currentFile.done) {
       this.postDownload()
@@ -354,7 +354,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
           type: 'image/jpg'
         }]
       })
-      if (parseInt(this.nowPlaying[1]) >= this.nowPlaying[0].episodes) bnext.setAttribute('disabled', '') // TODO: fix
+      if (parseInt(this.nowPlaying[1]) >= this.nowPlaying[0].episodes) this.controls.playNext.setAttribute('disabled', '')
       let streamingEpisode
       if (this.nowPlaying[0].streamingEpisodes.length >= Number(this.nowPlaying[1])) {
         streamingEpisode = this.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(this.nowPlaying[1]))[0]
@@ -369,10 +369,10 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
           sizes: '256x256',
           type: 'image/jpg'
         }]
-        nowPlayingDisplay.innerHTML = `EP ${Number(this.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
+        nowPlayingDisplay.textContent = `EP ${Number(this.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
       } else {
         document.title = `${this.nowPlaying[0].title.userPreferred} -  EP ${Number(this.nowPlaying[1])} - Miru`
-        nowPlayingDisplay.innerHTML = `EP ${Number(this.nowPlaying[1])}`
+        nowPlayingDisplay.textContent = `EP ${Number(this.nowPlaying[1])}`
       }
     }
     if ('mediaSession' in navigator && mediaMetadata) navigator.mediaSession.metadata = mediaMetadata
@@ -382,6 +382,8 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     if (this.subtitleData.renderer) this.subtitleData.renderer.dispose()
     if (this.subtitleData.fonts) this.subtitleData.fonts.forEach(file => URL.revokeObjectURL(file)) // ideally this should clean up after its been downloaded by the sw renderer, but oh well
     this.controls.downloadFile.setAttribute('disabled', '')
+    this.currentFile = undefined
+    this.currentTorrent = undefined
     this.video.poster = ''
     // some attemt at cache clearing
     this.video.pause()
@@ -416,8 +418,10 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       interval: undefined,
       video: undefined
     }
-    nowPlayingDisplay.innerHTML = '' // TODO: fix
-    bcap.setAttribute('disabled', '') // TODO: fix
+    nowPlayingDisplay.textContent = '' // TODO: fix
+    this.controls.captionsButton.setAttribute('disabled', '')
+    this.controls.selectCaptions.textContent = ''
+    this.controls.selectAudio.textContent = ''
     this.controls.openPlaylist.setAttribute('disabled', '')
     this.controls.playNext.removeAttribute('disabled')
     navNowPlaying.classList.add('d-none') // TODO: fix
@@ -428,9 +432,9 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   async playVideo () {
     try {
       await this.video.play()
-      this.controls.playPause.innerHTML = 'pause'
+      this.controls.playPause.textContent = 'pause'
     } catch (err) {
-      this.controls.playPause.innerHTML = 'play_arrow'
+      this.controls.playPause.textContent = 'play_arrow'
     }
   }
 
@@ -438,7 +442,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     if (this.video.paused) {
       this.playVideo()
     } else {
-      this.controls.playPause.innerHTML = 'play_arrow'
+      this.controls.playPause.textContent = 'play_arrow'
       this.video.pause()
     }
   }
@@ -447,7 +451,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     const level = volume === undefined ? Number(this.controls.setVolume.value) : volume
     this.controls.setVolume.value = level
     this.controls.setVolume.style.setProperty('--volume-level', level + '%')
-    this.controls.toggleMute.innerHTML = level === 0 ? 'volume_off' : 'volume_up'
+    this.controls.toggleMute.textContent = level === 0 ? 'volume_off' : 'volume_up'
     this.video.volume = level / 100
   }
 
@@ -469,7 +473,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   updateFullscreen () {
-    document.fullscreenElement ? this.controls.toggleFullscreen.innerHTML = 'fullscreen_exit' : this.controls.toggleFullscreen.innerHTML = 'fullscreen'
+    document.fullscreenElement ? this.controls.toggleFullscreen.textContent = 'fullscreen_exit' : this.controls.toggleFullscreen.textContent = 'fullscreen'
   }
 
   openPlaylist () {
@@ -482,8 +486,8 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       if (this.videoFiles?.length > 1 && this.videoFiles.indexOf(this.currentFile) < this.videoFiles.length) {
         const fileIndex = this.videoFiles.indexOf(this.currentFile) + 1
         const nowPlaying = [this.nowPlaying[0], parseInt(this.nowPlaying[1]) + 1] // TODO: fix
-        cleanupVideo()
-        buildVideo(this.videoFiles[fileIndex], nowPlaying) // TODO: fix
+        this.cleanupVideo()
+        this.buildVideo(this.videoFiles[fileIndex], nowPlaying) // TODO: fix
       } else {
         if (this.onNext) this.onNext()
       }
@@ -509,7 +513,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
           const renderFrame = () => {
             if (running === true) {
               context.drawImage(this.video, 0, 0)
-              context.drawImage(subtitleCanvas, 0, 0, canvas.width, canvas.height) // TODO: reference SO canvas
+              context.drawImage(subtitleCanvas, 0, 0, canvas.width, canvas.height)
               window.requestAnimationFrame(renderFrame)
             }
           }
@@ -588,13 +592,13 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     if (this.bufferTimeout) {
       clearTimeout(this.bufferTimeout)
       this.bufferTimeout = undefined
-      buffering.classList.add('hidden') // non-tplayer specific // TODO: fix this
+      this.controls.buffering.classList.add('hidden')
     }
   }
 
   showBuffering () {
     this.bufferTimeout = setTimeout(() => {
-      buffering.classList.remove('hidden') // non-tplayer specific // TODO: fix this
+      this.controls.buffering.classList.remove('hidden')
       this.resetImmerse()
     }, 150)
   }
@@ -621,7 +625,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     const height = this.thumbnailData.canvas.width / (this.video.videoWidth / this.video.videoHeight)
     this.thumbnailData.interval = this.video.duration / 300 < 5 ? 5 : this.video.duration / 300
     this.thumbnailData.canvas.height = height
-    thumb.style.setProperty('--height', height + 'px') // TODO: fix
+    this.controls.thumbnail.style.setProperty('height', height + 'px')
   }
 
   createThumbnail (video) {
@@ -681,21 +685,20 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   setProgress (progressPercent) {
     progressPercent = progressPercent || 0
     const currentTime = this.video.duration * progressPercent / 100 || 0
-    this.controls.setProgress.style.setProperty('--progress', progressPercent + '%')
-    thumb.src = this.thumbnailData.thumbnails[Math.floor(currentTime / this.thumbnailData.interval)] || ' ' // TODO: fix
-    thumb.style.setProperty('--progress', progressPercent + '%') // TODO: fix
-    elapsed.innerHTML = this.toTS(currentTime) // TODO: fix
-    remaining.innerHTML = this.toTS(this.video.duration - currentTime) // TODO: fix
+    this.controls.progressWrapper.style.setProperty('--progress', progressPercent + '%')
+    this.controls.thumbnail.src = this.thumbnailData.thumbnails[Math.floor(currentTime / this.thumbnailData.interval)] || ' '
+    this.controls.setProgress.dataset.elapsed = this.toTS(currentTime)
+    this.controls.progressWrapper.dataset.elapsed = this.toTS(currentTime)
+    this.controls.progressWrapper.dataset.remaining = this.toTS(this.video.duration - currentTime)
     this.controls.setProgress.value = progressPercent
-    this.controls.setProgress.setAttribute('data-ts', this.toTS(currentTime))
   }
 
   updateDisplay () {
     if (this.currentTorrent && this.currentFile) {
       this.player.style.setProperty('--download', this.currentFile.progress * 100 + '%')
-      peers.innerHTML = this.currentTorrent.numPeers
-      downSpeed.innerHTML = this.prettyBytes(this.currentTorrent.downloadSpeed) + '/s'
-      upSpeed.innerHTML = this.prettyBytes(this.currentTorrent.uploadSpeed) + '/s'
+      this.controls.peers.dataset.value = this.currentTorrent.numPeers
+      this.controls.downSpeed.dataset.value = this.prettyBytes(this.currentTorrent.downloadSpeed) + '/s'
+      this.controls.upSpeed.dataset.value = this.prettyBytes(this.currentTorrent.uploadSpeed) + '/s'
     }
     window.requestAnimationFrame(() => setTimeout(() => this.updateDisplay(), 200))
   }
@@ -715,7 +718,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       ? type === 'captions'
           ? (track.language || (!Object.values(this.subtitleData.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : header.type)) + (track.name ? ' - ' + track.name : '')
           : (track.language || (!Object.values(this.video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) + (track.label ? ' - ' + track.label : '')
-      : 'OFF'
+      : 'OFF' // TODO: clean this up, TLDR assume english track if track lang is undefined || 'und' and there isnt an existing eng track already
     frag.appendChild(input)
     frag.appendChild(label)
     if (type === 'captions') {
@@ -749,7 +752,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   constructSub (subtitle, isNotAss) {
-    if (isNotAss) { // converts VTT or other to SSA
+    if (isNotAss === true) { // converts VTT or other to SSA
       const matches = subtitle.text.match(/<[^>]+>/g) // create array of all tags
       if (matches) {
         matches.forEach(match => {
@@ -773,7 +776,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     (subtitle.marginR || '0') + ',' +
     (subtitle.marginV || '0') + ',' +
     (subtitle.effect || '') + ',' +
-    subtitle.text
+    subtitle.text || ''
   }
 
   async parseSubtitles (file) { // parse subtitles fully after a download is finished
@@ -787,7 +790,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
           this.subtitleData.stream = undefined
           this.selectCaptions(this.subtitleData.current)
           parser = undefined
-          bcap.removeAttribute('disabled') // TODO: fix
+          this.controls.captionsButton.removeAttribute('disabled')
           if (!this.video.paused) {
             this.video.pause()
             this.playVideo()
@@ -805,7 +808,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
   handleSubtitleParser (parser, skipFile) {
     parser.once('tracks', tracks => {
-      bcap.removeAttribute('disabled') // TODO: fix
+      this.controls.captionsButton.removeAttribute('disabled')
       tracks.forEach(track => {
         if (!this.subtitleData.tracks[track.number]) {
         // overwrite webvtt or other header with custom one
@@ -958,7 +961,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   cleanupTorrents () {
   // creates an array of all non-offline store torrents and removes them
     this.torrents.filter(torrent => !this.offlineTorrents[torrent.infoHash]).forEach(torrent => torrent.destroy({ destroyStore: true }))
-    document.querySelector('.playlist').innerHTML = ''
+    document.querySelector('.playlist').textContent = ''
   }
 
   // add torrent for offline download
@@ -1015,7 +1018,7 @@ const client = new TorrentPlayer({
   autoNext: settings.player6,
   streamedDownload: settings.torrent6,
   generateThumbnails: settings.player5,
-  defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === settings.subtitle1)[0].innerText,
+  defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === settings.subtitle1)[0].textContent,
   onDownloadDone: (name) => {
     halfmoon.initStickyAlert({
       content: `<span class="text-break">${name}</span> has finished downloading. Now seeding.`,

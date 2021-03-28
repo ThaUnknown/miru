@@ -175,28 +175,26 @@
                         <div id="nowPlayingDisplay" class="col-4 ts text-truncate">
                         </div>
                         <div class="d-flex col-4 justify-content-center">
-                            <span class="material-icons">
+                            <span class="ctrl material-icons" id="peers" data-value="0" data-name="peers">
                                 people
                             </span>
-                            <span class="ts" id="peers">0</span>
-                            <span class="material-icons">
+                            <span class="ctrl material-icons" id="downSpeed" data-value="0 B/s" data-name="downSpeed">
                                 arrow_downward
                             </span>
-                            <span class="ts" id="downSpeed">0 B/s</span>
-                            <span class="material-icons">
+                            <span class="ctrl material-icons" id="upSpeed" data-value="0 B/s" data-name="upSpeed">
                                 arrow_upward
                             </span>
-                            <span class="ts" id="upSpeed">0 B/s</span>
                         </div>
                         <div class="col-4 d-flex justify-content-end">
                             <span id="dl" class="material-icons pointer ctrl"
-                                title="Wait For File To Fully Download Before Saving To Drive" disabled data-name="downloadFile">
+                                title="Wait For File To Fully Download Before Saving To Drive" disabled
+                                data-name="downloadFile">
                                 get_app
                             </span>
                         </div>
                     </div>
                     <div id="ptoggle" class="h-full d-flex justify-content-center align-items-center">
-                        <div id="buffering" class="hidden">
+                        <div id="buffering" class="hidden ctrl" data-name="buffering">
                         </div>
                     </div>
                     <div class="controls d-flex">
@@ -216,34 +214,39 @@
                             <input class="ctrl" type="range" value="100" id="volume" step="any" data-name="setVolume">
                         </div>
                         <div class="audio-tracks dropdown dropup with-arrow">
-                            <span class="material-icons" title="Audio Tracks [T]" id="baudio" data-toggle="dropdown" 
-                            aria-haspopup="true" aria-expanded="false" disabled>
+                            <span class="material-icons ctrl" title="Audio Tracks [T]" id="baudio" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false" disabled data-name="audioButton">
                                 queue_music
                             </span>
-                            <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize" aria-labelledby="baudio" data-name="selectAudio">
+                            <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize"
+                                aria-labelledby="baudio" data-name="selectAudio">
                             </div>
                         </div>
-                        <span class="ts" id="elapsed">00:00</span>
-                        <div class="prog">
-                            <input class="ctrl" type="range" min="0" max="100" value="0" id="progress" step="any" data-name="setProgress">
-                            <img id="thumb">
+                        <div class="prog ctrl" data-name="progressWrapper" data-elapsed="00:00" data-remaining="00:00">
+                            <div>
+                                <input class="ctrl" type="range" min="0" max="100" value="0" id="progress" step="any"
+                                    data-name="setProgress">
+                                <img class="ctrl" data-elapsed="00:00" data-name="thumbnail">
+                            </div>
                         </div>
-                        <span class="ts" id="remaining">00:00</span>
                         <div class="subtitles dropdown dropup with-arrow">
-                            <span class="material-icons" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false" disabled>
+                            <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false" disabled data-name="captionsButton">
                                 subtitles
                             </span>
-                            <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize" aria-labelledby="bcap" data-name="selectCaptions">
+                            <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize"
+                                aria-labelledby="bcap" data-name="selectCaptions">
                             </div>
                         </div>
                         <span class="material-icons ctrl" title="Popout Window [P]" id="bpip" data-name="togglePopout">
                             picture_in_picture
                         </span>
-                        <span class="material-icons ctrl" title="Theatre Mode [T]" id="btheatre" data-name="toggleTheatre">
+                        <span class="material-icons ctrl" title="Theatre Mode [T]" id="btheatre"
+                            data-name="toggleTheatre">
                             crop_16_9
                         </span>
-                        <span class="material-icons ctrl" title="Fullscreen [F]" id="bfull" data-name="toggleFullscreen">
+                        <span class="material-icons ctrl" title="Fullscreen [F]" id="bfull"
+                            data-name="toggleFullscreen">
                             fullscreen
                         </span>
                     </div>
@@ -631,21 +634,26 @@
                                 </div>
                             </div>
                             <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
-                            data-title="The Default Styles For Subtitles That Don't Have Styles Specified">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Default Style</span>
+                                data-title="The Default Styles For Subtitles That Don't Have Styles Specified">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Default Style</span>
+                                </div>
+                                <input id="subtitle1" type="text" list="subtitle1list" class="form-control"
+                                    autocomplete="off" value="SubsPlease">
+                                <datalist id="subtitle1list">
+                                    <option value="SubsPlease">Roboto
+                                        Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
+                                    </option>
+                                    <option value="Erai-raws">Open Sans
+                                        Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1
+                                    </option>
+                                </datalist>
                             </div>
-                            <input id="subtitle1" type="text" list="subtitle1list" class="form-control"
-                                autocomplete="off" value="SubsPlease">
-                            <datalist id="subtitle1list">
-                                <option value="SubsPlease">Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1</option>
-                                <option value="Erai-raws">Open Sans Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1</option>
-                            </datalist>
-                        </div>
-                        <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Displays Subtitles In PiP And ChromeCast, CPU Intensive">
-                            <input type="checkbox" id="subtitle3" checked>
-                            <label for="subtitle3">Burn In Subtitles</label>
-                        </div>
+                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
+                                data-title="Displays Subtitles In PiP And ChromeCast, CPU Intensive">
+                                <input type="checkbox" id="subtitle3" checked>
+                                <label for="subtitle3">Burn In Subtitles</label>
+                            </div>
                             <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
                                 data-title="Generates Small Thumbnail Images When Using The Seek Bar After A Video Finished Downloading, VERY CPU Intensive">
                                 <input type="checkbox" id="player5" checked>
@@ -686,7 +694,8 @@
                                     autocomplete="off" value="SubsPlease">
                                 <datalist id="torrent4list">
                                     <option value="SubsPlease">https://subsplease.org/rss/?r=</option>
-                                    <option value="Erai-raws">https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-</option>
+                                    <option value="Erai-raws">
+                                        https://miru.kirdow.com/request/?url=https://www.erai-raws.info/rss-</option>
                                 </datalist>
                             </div>
                             <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
@@ -698,16 +707,16 @@
                                     class="form-control text-right">
                             </div>
                             <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
-                            data-title="Download/Upload Speed Limit For Torrents, Higher Values Increase CPU Usage">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Speed Cap</span>
+                                data-title="Download/Upload Speed Limit For Torrents, Higher Values Increase CPU Usage">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Speed Cap</span>
+                                </div>
+                                <input id="torrent7" type="number" value="10" min="1" max="30"
+                                    class="form-control text-right">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">MB/s</span>
+                                </div>
                             </div>
-                            <input id="torrent7" type="number" value="10" min="1" max="30"
-                                class="form-control text-right">
-                            <div class="input-group-append">
-                                <span class="input-group-text">MB/s</span>
-                            </div>
-                        </div>
                             <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Skips The Torrent Selection Popup, Might Lead To Unwanted Videos Being
                     Played">
                                 <input type="checkbox" id="torrent2">
@@ -728,7 +737,8 @@
                                 <input type="checkbox" id="torrent5">
                                 <label for="torrent5">Drive Caching</label>
                             </div>
-                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top" data-title="Only Downloads Pieces Directly Required For Playback Instead Of The Entire File. Recommended Only For Low-End Devices">
+                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
+                                data-title="Only Downloads Pieces Directly Required For Playback Instead Of The Entire File. Recommended Only For Low-End Devices">
                                 <input type="checkbox" id="torrent8">
                                 <label for="torrent8">Streamed Download</label>
                             </div>

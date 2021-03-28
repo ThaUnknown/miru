@@ -4,7 +4,6 @@
     --volume-level: 100%;
     --progress: 0%;
     --buffer: 0%;
-    --height: 0;
     --download: 0%;
     color: #b6b6b6;
     --ts: "";
@@ -75,6 +74,20 @@
     border-image-source: linear-gradient(90deg, #e5204c var(--download), rgba(0, 0, 0, .8) var(--download))
 }
 
+.stats span {
+    display: flex;
+}
+
+#peers::after, #downSpeed::after, #upSpeed::after{
+    content: attr(data-value);
+    font-size: 1.8rem !important;
+    white-space: nowrap;
+    align-self: center;
+    font-weight: 600;
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    padding-left: 1.2rem;
+}
+
 .player {
     position: absolute;
     user-select: none;
@@ -88,10 +101,6 @@
 
 .controls span {
     cursor: pointer
-}
-
-.stats .ts {
-    padding: 0 1.2rem 0 0 !important
 }
 
 .player span {
@@ -108,13 +117,6 @@
     cursor: default;
     padding: 0 1.2rem;
     font-weight: 600
-}
-
-#progress,
-.prog {
-    width: 100%;
-    height: 100%;
-    position: relative;
 }
 
 #video {
@@ -155,11 +157,6 @@
     background: linear-gradient(90deg, #e5204c var(--volume-level), rgba(255, 255, 255, .2) var(--volume-level))
 }
 
-#progress::-webkit-slider-runnable-track {
-    height: 3px;
-    background: linear-gradient(90deg, #e5204c var(--progress), rgba(255, 255, 255, .4) var(--progress), rgba(255, 255, 255, .4) var(--buffer), rgba(255, 255, 255, .2) var(--buffer))
-}
-
 .controls input[type=range]:hover::-webkit-slider-thumb {
     height: 12px;
     width: 12px;
@@ -174,6 +171,20 @@
     -webkit-appearance: none;
     margin-top: 2px;
     transition: all .1s ease
+}
+
+#progress::-webkit-slider-runnable-track {
+    height: 3px;
+    background: linear-gradient(90deg, #e5204c var(--progress), rgba(255, 255, 255, .4) var(--progress), rgba(255, 255, 255, .4) var(--buffer), rgba(255, 255, 255, .2) var(--buffer))
+}
+
+#progress,
+.prog,
+.prog div{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: relative;
 }
 
 #progress+img,
@@ -193,17 +204,39 @@
 
 #progress+img {
     content: "";
-    height: var(--height);
+    height: 0;
     top: -2rem;
     width: 150px;
 }
 
 #progress::before {
     top: .5rem;
-    content: attr(data-ts)
+    content: attr(data-elapsed);
 }
 
-#progress:active~img,
+.prog::before,
+.prog::after {
+    color: #ececec;
+    font-size: 1.8rem !important;
+    white-space: nowrap;
+    align-self: center;
+    cursor: default;
+    line-height: var(--base-line-height);
+    padding: 0 1.2rem;
+    font-weight: 600;
+}
+.prog::before {
+    content: attr(data-elapsed)
+}
+.prog::after {
+    content: attr(data-remaining)
+}
+
+#progress {
+    display: flex;
+}
+
+#progress:active+img,
 #progress:active::before {
     opacity: 1
 }
