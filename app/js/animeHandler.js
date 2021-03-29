@@ -494,7 +494,7 @@ function cardCreator (opts) {
         </div>
         <div class="col-8 h-full card-grid">
             <div class="px-15 py-10 bg-very-dark">
-                <h5 class="m-0 text-capitalize font-weight-bold">${opts.media.title.userPreferred}${opts.episode ? ' - ' + opts.episode : ''}</h5>
+                <h5 class="m-0 text-capitalize font-weight-bold">${opts.media.title.userPreferred}${opts.episodeNumber ? ' - ' + opts.episodeNumber : ''}</h5>
                 ${opts.schedule && opts.media.nextAiringEpisode ? "<span class='text-muted font-weight-bold'>EP " + opts.media.nextAiringEpisode.episode + ' in ' + countdown(opts.media.nextAiringEpisode.timeUntilAiring) + '</span>' : ''}
                 <p class="text-muted m-0 text-capitalize details">
                 ${(opts.media.format ? (opts.media.format === 'TV' ? '<span>' + opts.media.format + ' Show' : '<span>' + opts.media.format.toLowerCase().replace(/_/g, ' ')) : '') + '</span>'}
@@ -687,7 +687,17 @@ async function resolveFileMedia (opts) {
       }
     }
   }
-  return { media: media, episode: episode, parseObject: elems }
+  const streamingEpisode = media?.streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(elems.episode_number))[0]
+  return {
+    mediaTitle: media?.title.userPreferred,
+    episodeNumber: episode,
+    episodeTitle: streamingEpisode ? episodeRx.exec(streamingEpisode.title)[2] : undefined,
+    episodeThumbnail: streamingEpisode?.thumbnail,
+    mediaCover: media?.coverImage.medium,
+    name: 'Miru',
+    parseObject: elems,
+    media: media
+  }
 }
 
 let store = JSON.parse(localStorage.getItem('store')) || {}

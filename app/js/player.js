@@ -113,6 +113,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.nextTimeout = undefined
     if (this.onNext && options.autoNext) this.video.addEventListener('ended', () => this.onNext())
 
+    this.resolveFileMedia = options.resolveFileMedia
     this.currentFile = undefined
     this.videoFile = undefined
 
@@ -329,53 +330,41 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         this.postDownload()
       })
     }
+    // opts.media: mediaTitle, episodeNumber, episodeTitle, episodeThumbnail, mediaCover, name
 
-    if (opts.media && this.videoFiles.length === 1) {
-      // if this is a single file, then the media is most likely accurate, just update it!
-      this.nowPlaying = [await alRequest({ id: opts.media?.id, method: 'SearchIDSingle' }).then(res => res.data.Media), opts.episode || 1]
-      // update store with entry, but dont really do anything with it
-      resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' })
-    } else {
-      // if this is a batch or single unresolved file, then resolve the single selected file, batches can include specials
-      const mediaInformation = await resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' })
-      this.nowPlaying = [mediaInformation.media, mediaInformation.episode || 1]
-    }
-    let mediaMetadata
-    // only set mediasession and other shit if the playerdata is parsed correctly
-    if (this.nowPlaying[0]) { // TODO: fix!!!!!
-      navNowPlaying.classList.remove('d-none')
-      mediaMetadata = new MediaMetadata({
-        title: this.nowPlaying[0].title.userPreferred,
-        artist: `Episode ${Number(this.nowPlaying[1])}`,
-        album: 'Miru',
-        artwork: [{
-          src: this.nowPlaying[0].coverImage.medium,
-          sizes: '256x256',
-          type: 'image/jpg'
-        }]
-      })
-      if (parseInt(this.nowPlaying[1]) >= this.nowPlaying[0].episodes) this.controls.playNext.setAttribute('disabled', '')
-      let streamingEpisode
-      if (this.nowPlaying[0].streamingEpisodes.length >= Number(this.nowPlaying[1])) {
-        streamingEpisode = this.nowPlaying[0].streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(this.nowPlaying[1]))[0]
+    this.nowPlaying = (opts.media && this.videoFiles.length === 1) ? opts.media : await this.resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' })
+
+    if (this.nowPlaying) {
+      navNowPlaying.classList.remove('d-none') // TODO: fix
+
+      const episodeInfo = [this.nowPlaying.episodeNumber, this.nowPlaying.episodeTitle].filter(s => s).join(' - ')
+
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: this.nowPlaying.mediaTitle || this.nowPlaying.name || 'TorrentPlayer',
+          artist: 'Episode ' + episodeInfo,
+          album: this.nowPlaying.name || 'TorrentPlayer',
+          artwork: [{
+            src: this.nowPlaying.episodeThumbnail || this.nowPlaying.mediaCover || '',
+            sizes: '256x256',
+            type: 'image/jpg'
+          }]
+        })
       }
-      // TODO: this should also use absolute episode numbers instead of relative but AL will change this anyways....
-      if (streamingEpisode) {
-        video.poster = streamingEpisode.thumbnail
-        document.title = `${this.nowPlaying[0].title.userPreferred} - EP ${Number(this.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]} - Miru`
-        mediaMetadata.artist = `Episode ${Number(this.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
-        mediaMetadata.artwork = [{
-          src: streamingEpisode.thumbnail,
-          sizes: '256x256',
-          type: 'image/jpg'
-        }]
-        nowPlayingDisplay.textContent = `EP ${Number(this.nowPlaying[1])} - ${episodeRx.exec(streamingEpisode.title)[2]}`
-      } else {
-        document.title = `${this.nowPlaying[0].title.userPreferred} -  EP ${Number(this.nowPlaying[1])} - Miru`
-        this.controls.nowPlaying.textContent = `EP ${Number(this.nowPlaying[1])}`
-      }
+      if (this.nowPlaying.episodeThumbnail) this.video.poster = this.nowPlaying.episodeThumbnail
+      this.controls.nowPlaying.textContent = 'EP ' + episodeInfo
+      document.title = [this.nowPlaying.mediaTitle, episodeInfo ? 'EP ' + episodeInfo : false, this.nowPlaying.name || 'TorrentPlayer'].filter(s => s).join(' - ')
     }
-    if ('mediaSession' in navigator && mediaMetadata) navigator.mediaSession.metadata = mediaMetadata
+
+    // if (opts.media && this.videoFiles.length === 1) {
+    //   // if this is a single file, then the media is most likely accurate, just update it!
+    //   this.nowPlaying = [await alRequest({ id: opts.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media), opts.episode || 1]
+    //   // update store with entry, but dont really do anything with it
+    //   resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' })
+    // } else {
+    //   // if this is a batch or single unresolved file, then resolve the single selected file, batches can include specials
+    //   const mediaInformation = await resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' })
+    // }
   }
 
   cleanupVideo () { // cleans up objects, attemps to clear as much video caching as possible
@@ -423,7 +412,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.controls.selectCaptions.textContent = ''
     this.controls.selectAudio.textContent = ''
     this.controls.openPlaylist.setAttribute('disabled', '')
-    this.controls.playNext.removeAttribute('disabled')
     navNowPlaying.classList.add('d-none') // TODO: fix
     if ('mediaSession' in navigator) navigator.mediaSession.metadata = undefined
     this.fps = 23.976
@@ -556,7 +544,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
   prettyBytes (num) {
     if (num < 1) return num + ' B'
-    const units = [' B', ' kB', ' MB', ' GB', ' TB', ' PB', ' EB', ' ZB', ' YB']
+    const units = [' B', ' kB', ' MB', ' GB', ' TB']
     const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1)
     num = Number((num / Math.pow(1000, exponent)).toFixed(2))
     return num + units[exponent]
@@ -935,7 +923,11 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
           const template = cardCreator(mediaInformation)
           template.onclick = () => {
             this.cleanupVideo()
-            this.buildVideo(torrent, { media: mediaInformation.media, episode: mediaInformation.parseObject.episode, file: file })
+            this.buildVideo(torrent, {
+              media: mediaInformation,
+              episode: mediaInformation.parseObject.episode,
+              file: file
+            })
           }
           frag.appendChild(template)
         }
@@ -981,7 +973,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       }
       const mediaInformation = await resolveFileMedia({ fileName: torrent.name, method: 'SearchName' })
       const template = cardCreator(mediaInformation)
-      template.onclick = () => this.addTorrent(torrent, { media: mediaInformation.media, episode: mediaInformation.episode })
+      template.onclick = () => this.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
       document.querySelector('.downloads').appendChild(template)
     })
   }
@@ -1017,6 +1009,7 @@ const client = new TorrentPlayer({
   streamedDownload: settings.torrent6,
   generateThumbnails: settings.player5,
   defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === settings.subtitle1)[0].textContent,
+  resolveFileMedia: resolveFileMedia,
   onDownloadDone: (name) => {
     halfmoon.initStickyAlert({
       content: `<span class="text-break">${name}</span> has finished downloading. Now seeding.`,
