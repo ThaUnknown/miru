@@ -261,9 +261,9 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
   return json
 }
 async function alEntry () {
-  if (playerData.nowPlaying && playerData.nowPlaying[0] && localStorage.getItem('ALtoken')) {
-    const res = await alRequest({ method: 'SearchIDStatus', id: playerData.nowPlaying[0].id })
-    if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= parseInt(playerData.nowPlaying[1])) {
+  if (client.nowPlaying.media && localStorage.getItem('ALtoken')) {
+    const res = await alRequest({ method: 'SearchIDStatus', id: client.nowPlaying.media.id })
+    if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= client.nowPlaying.episodeNumber) {
       const query = `
 mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
     SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
@@ -275,11 +275,11 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
 }`
       const variables = {
         repeat: 0,
-        id: playerData.nowPlaying[0].id,
+        id: client.nowPlaying.media.id,
         status: 'CURRENT',
-        episode: parseInt(playerData.nowPlaying[1])
+        episode: client.nowPlaying.episodeNumber
       }
-      if (parseInt(playerData.nowPlaying[1]) === playerData.nowPlaying[0].episodes) {
+      if (client.nowPlaying.episodeNumber === client.nowPlaying.media.episodes) {
         variables.status = 'COMPLETED'
         if (res.data.MediaList.status === 'COMPLETED') {
           variables.repeat = res.data.MediaList.repeat + 1
@@ -614,8 +614,6 @@ async function resolveFileMedia (opts) {
       res = await alRequest(method)
     }
     if (res.data.Page.media[0]) store[elems.anime_title] = res.data.Page.media[0]
-  } else {
-    store[elems.anime_title] = await alRequest({ id: store[elems.anime_title].id, method: 'SearchIDSingle' }).then(res => res.data.Media)
   }
   let episode; let media = store[elems.anime_title]
   // resolve episode, if movie, dont.
@@ -721,7 +719,7 @@ async function releasesCards (items, frag, limit) {
     results.forEach((mediaInformation, index) => {
       const o = items[index].querySelector.bind(items[index])
       template = cardCreator(mediaInformation)
-      template.onclick = () => client.addTorrent(o('link').innerHTML, { media: mediaInformation.media, episode: mediaInformation.episode })
+      template.onclick = () => client.addTorrent(o('link').innerHTML, { media: mediaInformation, episode: mediaInformation.episode })
       frag.appendChild(template)
     })
   })

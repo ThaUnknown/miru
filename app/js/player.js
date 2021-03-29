@@ -167,7 +167,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       navigator.mediaSession.setActionHandler('seekforward', () => this.seek(seekTime))
       navigator.mediaSession.setActionHandler('nexttrack', () => this.playNext())
     }
-    if ('setPositionState' in navigator.mediaSession) video.addEventListener('timeupdate', () => this.updatePositionState())
+    if ('setPositionState' in navigator.mediaSession) this.video.addEventListener('timeupdate', () => this.updatePositionState())
 
     this.videoExtensions = ['.3g2', '.3gp', '.asf', '.avi', '.dv', '.flv', '.gxf', '.m2ts', '.m4a', '.m4b', '.m4p', '.m4r', '.m4v', '.mkv', '.mov', '.mp4', '.mpd', '.mpeg', '.mpg', '.mxf', '.nut', '.ogm', '.ogv', '.swf', '.ts', '.vob', '.webm', '.wmv', '.wtv']
     this.videoFiles = undefined
@@ -355,16 +355,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       this.controls.nowPlaying.textContent = 'EP ' + episodeInfo
       document.title = [this.nowPlaying.mediaTitle, episodeInfo ? 'EP ' + episodeInfo : false, this.nowPlaying.name || 'TorrentPlayer'].filter(s => s).join(' - ')
     }
-
-    // if (opts.media && this.videoFiles.length === 1) {
-    //   // if this is a single file, then the media is most likely accurate, just update it!
-    //   this.nowPlaying = [await alRequest({ id: opts.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media), opts.episode || 1]
-    //   // update store with entry, but dont really do anything with it
-    //   resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' })
-    // } else {
-    //   // if this is a batch or single unresolved file, then resolve the single selected file, batches can include specials
-    //   const mediaInformation = await resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' })
-    // }
   }
 
   cleanupVideo () { // cleans up objects, attemps to clear as much video caching as possible
@@ -381,12 +371,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.onDone = undefined
     document.title = 'Miru'
     this.setProgress(0)
-    // if (typeof client !== 'undefined' && client.torrents[0] && client.torrents[0].files.length > 1) {
-    //     client.torrents[0].files.forEach(file => file.deselect());
-    //     client.torrents[0].deselect(0, client.torrents[0].pieces.length - 1, false);
-    // console.log(videoFiles.filter(file => `${scope}webtorrent/${client.torrents[0].infoHash}/${encodeURI(file.path)}` == video.src))
-    // look for file and delete its store
-    // }
+    // look for file and delete its store, idk how to do this
     this.subtitleData = {
       fonts: [],
       headers: [],
@@ -471,11 +456,11 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   playNext () {
     clearTimeout(this.nextTimeout)
     this.nextTimeout = setTimeout(() => {
-      if (this.videoFiles?.length > 1 && this.videoFiles.indexOf(this.currentFile) < this.videoFiles.length) {
-        const fileIndex = this.videoFiles.indexOf(this.currentFile) + 1
-        const nowPlaying = [this.nowPlaying[0], parseInt(this.nowPlaying[1]) + 1] // TODO: fix
+      if (this.videoFiles?.indexOf(this.currentFile) < this.videoFiles?.length) {
+        const nowPlaying = this.nowPlaying
+        nowPlaying.episodeNumber += 1
         this.cleanupVideo()
-        this.buildVideo(this.videoFiles[fileIndex], nowPlaying) // TODO: fix
+        this.buildVideo(this.currentTorrent, { media: nowPlaying, file: this.videoFiles[this.videoFiles.indexOf(this.currentFile) + 1] })
       } else {
         if (this.onNext) this.onNext()
       }
@@ -590,10 +575,9 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   checkCompletion () {
-    if (!this.completed && video.duration - 180 < video.currentTime) {
-      this.onWatched()
-    } else {
+    if (!this.completed && this.video.duration - 180 < this.video.currentTime) {
       this.completed = true
+      this.onWatched()
     }
   }
 
@@ -1019,11 +1003,12 @@ const client = new TorrentPlayer({
     })
   },
   onWatched: () => { // TODO: fix
-    if (settings.other2 && !(!(playerData.nowPlaying[0].episodes || playerData.nowPlaying[0].nextAiringEpisode.episode) && playerData.nowPlaying[0].streamingEpisodes.length && parseInt(playerData.nowPlaying[1] > 12))) {
+    console.log('ran')
+    if (settings.other2 && (client.nowPlaying.media?.episodes || client.nowPlaying.media?.nextAiringEpisode?.episode)) {
       alEntry()
     } else {
       halfmoon.initStickyAlert({
-        content: `Do You Want To Mark <br><b>${playerData.nowPlaying[0].title.userPreferred}</b><br>Episode ${playerData.nowPlaying[1]} As Completed?<br>
+        content: `Do You Want To Mark <br><b>${client.nowPlaying.mediaTitle}</b><br>Episode ${client.nowPlaying.episodeNumber} As Completed?<br>
                 <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
                 <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
         title: 'Episode Complete',
@@ -1035,8 +1020,8 @@ const client = new TorrentPlayer({
     window.location.hash = '#playlist'
   },
   onNext: () => {
-    if (playerData.nowPlaying[0]) {
-      nyaaSearch(playerData.nowPlaying[0], parseInt(playerData.nowPlaying[1]) + 1)
+    if (client.nowPlaying.media) {
+      nyaaSearch(client.nowPlaying.media, client.nowPlaying.episodeNumber)
     } else {
       halfmoon.initStickyAlert({
         content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
