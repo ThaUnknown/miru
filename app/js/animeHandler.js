@@ -72,7 +72,7 @@ function searchBox () { // make searchbox behave nicely
   document.location.hash = '#browse'
 }
 // events
-navNowPlaying.onclick = () => { viewAnime(playerData.nowPlaying[0]) }
+navNowPlaying.onclick = () => { viewAnime(client.nowPlaying?.media) }
 // AL lookup logic
 async function alRequest (opts) {
   let query
