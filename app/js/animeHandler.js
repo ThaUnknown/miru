@@ -559,6 +559,9 @@ const exclusions = {
   chromium: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265', '.m2ts', '.ts'],
   firefox: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265', '.m2ts', '.ts', '.3gp', '.mkv']
 }
+if (!('audioTracks' in HTMLVideoElement.prototype)) {
+  exclusions[userBrowser].push('mutli audio', 'dual audio')
+}
 
 async function nyaaRss (media, episode) {
   const frag = document.createDocumentFragment()
@@ -643,7 +646,7 @@ async function resolveFileMedia (opts) {
       } else if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) <= (media.episodes || media.nextAiringEpisode.episode) && epMin - (opts.offset + tempMedia.episodes) > 0) {
         // episode is in range, seems good! overwriting media to count up "seasons"
         if (opts.episode.constructor === Array) {
-          episode = `${elems.episode_number[0] - (opts.offset + tempMedia.episodes)} - ${elems.episode_number[elems.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
+          episode = `${elems.episode_number[0] - (opts.offset + tempMedia.episodes)} ~ ${elems.episode_number[elems.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
         } else {
           episode = opts.episode - (opts.offset + tempMedia.episodes)
         }
@@ -655,7 +658,7 @@ async function resolveFileMedia (opts) {
         console.log('error in parsing!', opts.media, tempMedia)
         // something failed, most likely couldnt find an edge or processing failed, force episode number even if its invalid/out of bounds, better than nothing
         if (opts.episode.constructor === Array) {
-          episode = `${Number(elems.episode_number[0])} - ${Number(elems.episode_number[elems.episode_number.length - 1])}`
+          episode = `${Number(elems.episode_number[0])} ~ ${Number(elems.episode_number[elems.episode_number.length - 1])}`
         } else {
           episode = Number(opts.episode)
         }
@@ -665,14 +668,14 @@ async function resolveFileMedia (opts) {
       // is an episode range
       if (parseInt(elems.episode_number[0]) === 1) {
         // if it starts with #1 and overflows then it includes more than 1 season in a batch, cant fix this cleanly, name is parsed per file basis so this shouldnt be an issue
-        episode = `${elems.episode_number[0]} - ${elems.episode_number[elems.episode_number.length - 1]}`
+        episode = `${elems.episode_number[0]} ~ ${elems.episode_number[elems.episode_number.length - 1]}`
       } else {
         if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(elems.episode_number[elems.episode_number.length - 1]) > (media.episodes || media.nextAiringEpisode.episode)) {
           // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
           await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
         } else {
           // cant find ep count or range seems fine
-          episode = `${Number(elems.episode_number[0])} - ${Number(elems.episode_number[elems.episode_number.length - 1])}`
+          episode = `${Number(elems.episode_number[0])} ~ ${Number(elems.episode_number[elems.episode_number.length - 1])}`
         }
       }
     } else {

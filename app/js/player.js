@@ -91,19 +91,20 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
 `
     }
-
-    this.video.addEventListener('loadedmetadata', () => {
-      if (this.video.audioTracks?.length > 1) {
-        this.controls.audioButton.removeAttribute('disabled')
-        for (const track of this.video.audioTracks) {
-          this.createRadioElement(track, 'audio')
+    if ('audioTracks' in HTMLVideoElement.prototype) {
+      this.video.addEventListener('loadedmetadata', () => {
+        if (this.video.audioTracks.length > 1) {
+          this.controls.audioButton.removeAttribute('disabled')
+          for (const track of this.video.audioTracks) {
+            this.createRadioElement(track, 'audio')
+          }
+        } else {
+          this.controls.audioButton.setAttribute('disabled', '')
         }
-      } else {
-        this.controls.audioButton.setAttribute('disabled', '')
-      }
-    })
+      })
+    }
 
-    this.completed = undefined
+    this.completed = false
     this.onWatched = options.onWatched
     if (this.onWatched) this.video.addEventListener('timeupdate', () => this.checkCompletion())
 
@@ -185,7 +186,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       this.video.addEventListener('loadedmetadata', () => {
         this.fps = new Promise((resolve, reject) => {
           this.video.onplay = () => {
-            this.video.onplay = undefined
             setTimeout(() => this.video.requestVideoFrameCallback((now, metaData) => {
               let duration = 0
               for (let index = this.video.played.length; index--;) {
@@ -203,6 +203,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
                 resolve(23.976) // smth went VERY wrong
               }
             }), 2000)
+            this.video.onplay = undefined
           }
           this.playVideo()
         })
@@ -392,6 +393,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       interval: undefined,
       video: undefined
     }
+    this.completed = false
     this.controls.nowPlaying.textContent = ''
     this.controls.captionsButton.setAttribute('disabled', '')
     this.controls.selectCaptions.textContent = ''
@@ -709,6 +711,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
   selectCaptions (trackNumber) {
     if (trackNumber !== undefined) {
+      trackNumber = Number(trackNumber)
       this.subtitleData.current = trackNumber
       if (!this.subtitleData.timeout) {
         this.subtitleData.timeout = setTimeout(() => {
