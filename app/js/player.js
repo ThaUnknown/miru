@@ -373,7 +373,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     document.title = 'Miru'
     this.setProgress(0)
     // look for file and delete its store, idk how to do this
-    this.subtitleData = {
+    Object.assign(this.subtitleData, {
       fonts: [],
       headers: [],
       tracks: [],
@@ -382,17 +382,14 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       stream: undefined,
       parser: undefined,
       parsed: undefined,
-      timeout: undefined,
-      defaultHeader: this.subtitleData.defaultHeader
-    }
+      timeout: undefined
+    })
 
-    this.thumbnailData = {
+    Object.assign(this.thumbnailData, {
       thumbnails: [],
-      canvas: this.thumbnailData.canvas,
-      context: this.thumbnailData.context,
       interval: undefined,
       video: undefined
-    }
+    })
     this.completed = false
     this.controls.nowPlaying.textContent = ''
     this.controls.captionsButton.setAttribute('disabled', '')
@@ -448,7 +445,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   updateFullscreen () {
-    document.fullscreenElement ? this.controls.toggleFullscreen.textContent = 'fullscreen_exit' : this.controls.toggleFullscreen.textContent = 'fullscreen'
+    this.controls.toggleFullscreen.textContent = document.fullscreenElement ? 'fullscreen_exit' : 'fullscreen'
   }
 
   openPlaylist () {
@@ -993,7 +990,7 @@ const client = new TorrentPlayer({
   immerseTime: Number(settings.player2),
   visibilityLossPause: settings.player10,
   autoNext: settings.player6,
-  streamedDownload: settings.torrent6,
+  streamedDownload: settings.torrent8,
   generateThumbnails: settings.player5,
   defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === settings.subtitle1)[0].textContent,
   resolveFileMedia: resolveFileMedia,
