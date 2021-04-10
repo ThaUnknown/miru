@@ -608,10 +608,11 @@ async function resolveFileMedia (opts) {
       method = { name: elems.anime_title, method: 'SearchName', perPage: 1, status: 'RELEASING', sort: 'TRENDING_DESC' } // START_DATE_DESC
       // maybe releases should include this and last season? idfk
     } else {
-      method = { name: elems.anime_title, method: opts.method, perPage: 1 }
+      method = { name: elems.anime_title, method: opts.method, perPage: 1, sort: 'SEARCH_MATCH' }
     }
     res = await alRequest(method)
     if (!res.data.Page.media[0]) {
+      method.sort = 'SEARCH_MATCH'
       method.name = method.name.replace(' (TV)', '').replace(` (${new Date().getFullYear()})`, '').replace('-', '').replace('S2', '2') // this needs to be improved!!!
       method.status = undefined
       res = await alRequest(method)
