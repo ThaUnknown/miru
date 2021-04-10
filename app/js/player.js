@@ -1004,16 +1004,18 @@ const client = new TorrentPlayer({
   },
   onWatched: () => { // TODO: fix
     console.log('ran')
-    if (settings.other2 && (client.nowPlaying.media?.episodes || client.nowPlaying.media?.nextAiringEpisode?.episode)) {
-      alEntry()
-    } else {
-      halfmoon.initStickyAlert({
-        content: `Do You Want To Mark <br><b>${client.nowPlaying.mediaTitle}</b><br>Episode ${client.nowPlaying.episodeNumber} As Completed?<br>
+    if (client.nowPlaying.media?.episodes || client.nowPlaying.media?.nextAiringEpisode?.episode) {
+      if (settings.other2 && (client.nowPlaying.media?.episodes || client.nowPlaying.media?.nextAiringEpisode?.episode > client.nowPlaying.episodeNumber)) {
+        alEntry()
+      } else {
+        halfmoon.initStickyAlert({
+          content: `Do You Want To Mark <br><b>${client.nowPlaying.mediaTitle}</b><br>Episode ${client.nowPlaying.episodeNumber} As Completed?<br>
                 <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
                 <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
-        title: 'Episode Complete',
-        timeShown: 180000
-      })
+          title: 'Episode Complete',
+          timeShown: 180000
+        })
+      }
     }
   },
   onPlaylist: () => {
