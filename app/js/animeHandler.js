@@ -639,11 +639,11 @@ async function resolveFileMedia (opts) {
         tempMedia = opts.media.relations.edges.filter(edge => edge.relationType === 'SEQUEL' && (edge.node.format === 'TV' || 'TV_SHORT'))[0].node
         increment = true
       }
-      if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) > (media.episodes || media.nextAiringEpisode.episode)) {
+      if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) > (media.nextAiringEpisode?.episode || media.episodes)) {
         // episode is still out of bounds
         const nextEdge = await alRequest({ method: 'SearchIDSingle', id: tempMedia.id })
         await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes, increment: increment })
-      } else if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) <= (media.episodes || media.nextAiringEpisode.episode) && epMin - (opts.offset + tempMedia.episodes) > 0) {
+      } else if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) <= (media.nextAiringEpisode?.episode || media.episodes) && epMin - (opts.offset + tempMedia.episodes) > 0) {
         // episode is in range, seems good! overwriting media to count up "seasons"
         if (opts.episode.constructor === Array) {
           episode = `${elems.episode_number[0] - (opts.offset + tempMedia.episodes)} ~ ${elems.episode_number[elems.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
