@@ -360,6 +360,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
   cleanupVideo () { // cleans up objects, attemps to clear as much video caching as possible
     if (this.subtitleData.renderer) this.subtitleData.renderer.dispose()
+    if (this.subtitleData.parser) this.subtitleData.parser.destroy()
     if (this.subtitleData.fonts) this.subtitleData.fonts.forEach(file => URL.revokeObjectURL(file)) // ideally this should clean up after its been downloaded by the sw renderer, but oh well
     this.controls.downloadFile.setAttribute('disabled', '')
     this.currentFile = undefined
@@ -486,7 +487,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
             if (running === true) {
               context.drawImage(this.video, 0, 0)
               context.drawImage(subtitleCanvas, 0, 0, canvas.width, canvas.height)
-              window.requestAnimationFrame(renderFrame)
+              requestAnimationFrame(renderFrame)
             }
           }
           canvasVideo.srcObject = canvas.captureStream()
@@ -508,7 +509,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
             canvas.remove()
             this.player.classList.remove('pip')
           }
-          window.requestAnimationFrame(renderFrame)
+          requestAnimationFrame(renderFrame)
         }
       }
     }
@@ -669,7 +670,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       this.controls.downSpeed.dataset.value = this.prettyBytes(this.currentTorrent.downloadSpeed) + '/s'
       this.controls.upSpeed.dataset.value = this.prettyBytes(this.currentTorrent.uploadSpeed) + '/s'
     }
-    window.requestAnimationFrame(() => setTimeout(() => this.updateDisplay(), 200))
+    setTimeout(() => requestAnimationFrame(() => this.updateDisplay()), 200)
   }
 
   createRadioElement (track, type) {
@@ -758,6 +759,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
           console.log('Sub parsing finished')
           this.subtitleData.parsed = true
           this.subtitleData.stream = undefined
+          this.subtitleData.parser.destroy()
           this.selectCaptions(this.subtitleData.current)
           parser = undefined
           this.controls.captionsButton.removeAttribute('disabled')
