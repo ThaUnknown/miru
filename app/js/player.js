@@ -75,7 +75,7 @@ class TorrentPlayer extends WebTorrent {
     this.controls.ppToggle.addEventListener('dblclick', () => this.toggleFullscreen())
 
     this.subtitleData = {
-      fonts: [],
+      fonts: ['https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2'],
       headers: [],
       tracks: [],
       current: undefined,
@@ -375,7 +375,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.setProgress(0)
     // look for file and delete its store, idk how to do this
     Object.assign(this.subtitleData, {
-      fonts: [],
+      fonts: ['https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2'],
       headers: [],
       tracks: [],
       current: undefined,
@@ -818,7 +818,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         targetFps: await this.fps,
         subContent: this.subtitleData.headers[this.subtitleData.current].header.slice(0, -1),
         renderMode: 'offscreenCanvas',
-        fonts: this.subtitleData.fonts.length ? this.subtitleData.fonts : ['https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2'],
+        fonts: this.subtitleData.fonts,
         workerUrl: 'js/subtitles-octopus-worker.js',
         timeOffset: 0,
         onReady: () => { // weird hack for laggy subtitles, this is some issue in SO
@@ -834,6 +834,45 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         this.selectCaptions(this.subtitleData.current)
       }
     }
+  }
+
+  convertFile (file) {
+    const regex = /^(?:\d+\n)?(\S{9,12})\s?-->\s?(\S{9,12})(.*)\n([\s\S]*)$/i
+    const subtitles = []
+
+    for (const split of fileContent.split('\n\n')) {
+      match = split.match(regex)
+      if (match) {
+        if (match[1].length === 9) {
+          match[1] = '0:' + match[1]
+        } else {
+          if (match[1][0] === '0') {
+            match[1].substring(1)
+          }
+        }
+        match[1].replace(',', '.')
+        if (match[2].length === 9) {
+          match[2] = '0:' + match[2]
+        } else {
+          if (match[2][0] === '0') {
+            match[2].substring(1)
+          }
+        }
+        match[2].replace(',', '.')
+        const matches = match[4].match(/<[^>]+>/g) // create array of all tags
+        if (matches) {
+          matches.forEach(matched => {
+            if (/<\//.test(matched)) { // check if its a closing tag
+              match[4] = match[4].replace(matched, matched.replace('</', '{\\').replace('>', '0}'))
+            } else {
+              match[4] = match[4].replace(matched, matched.replace('<', '{\\').replace('>', '1}'))
+            }
+          })
+        }
+        subtitles.push('Dialogue: 1,' + match[1] + ',' + match[2] + ',Default,,0,0,0,,' + match[4])
+      }
+    }
+    return subtitles
   }
 
   async downloadFile () {
