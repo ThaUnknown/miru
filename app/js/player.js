@@ -170,11 +170,11 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     }
     if ('setPositionState' in navigator.mediaSession) this.video.addEventListener('timeupdate', () => this.updatePositionState())
 
+    this.subtitleExtensions = ['.srt', '.ass', '.vtt']
     this.videoExtensions = ['.3g2', '.3gp', '.asf', '.avi', '.dv', '.flv', '.gxf', '.m2ts', '.m4a', '.m4b', '.m4p', '.m4r', '.m4v', '.mkv', '.mov', '.mp4', '.mpd', '.mpeg', '.mpg', '.mxf', '.nut', '.ogm', '.ogv', '.swf', '.ts', '.vob', '.webm', '.wmv', '.wtv']
     this.videoFiles = undefined
 
     this.updateDisplay()
-    this.currentTorrent = undefined
     this.offlineTorrents = JSON.parse(localStorage.getItem('offlineTorrents')) || {}
     // adds all offline store torrents to the client
     Object.values(this.offlineTorrents).forEach(torrentID => this.offlineDownload(new Blob([new Uint8Array(torrentID)]), true))
@@ -318,7 +318,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     } else {
       this.currentFile = this.videoFiles[0]
     }
-    this.currentTorrent = torrent
     this.video.src = `/app/webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
     this.video.load()
 
@@ -364,7 +363,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     if (this.subtitleData.fonts) this.subtitleData.fonts.forEach(file => URL.revokeObjectURL(file)) // ideally this should clean up after its been downloaded by the sw renderer, but oh well
     this.controls.downloadFile.setAttribute('disabled', '')
     this.currentFile = undefined
-    this.currentTorrent = undefined
     this.video.poster = ''
     // some attemt at cache clearing
     this.video.pause()
@@ -459,8 +457,9 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       if (this.videoFiles?.indexOf(this.currentFile) < this.videoFiles?.length) {
         const nowPlaying = this.nowPlaying
         nowPlaying.episodeNumber += 1
+        const torrent = this.currentFile._torrent
         this.cleanupVideo()
-        this.buildVideo(this.currentTorrent, { media: nowPlaying, file: this.videoFiles[this.videoFiles.indexOf(this.currentFile) + 1] })
+        this.buildVideo(torrent, { media: nowPlaying, file: this.videoFiles[this.videoFiles.indexOf(this.currentFile) + 1] })
       } else {
         if (this.onNext) this.onNext()
       }
@@ -664,11 +663,11 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   updateDisplay () {
-    if (this.currentTorrent && this.currentFile) {
+    if (this.currentFile && this.currentFile._torrent) {
       this.player.style.setProperty('--download', this.currentFile.progress * 100 + '%')
-      this.controls.peers.dataset.value = this.currentTorrent.numPeers
-      this.controls.downSpeed.dataset.value = this.prettyBytes(this.currentTorrent.downloadSpeed) + '/s'
-      this.controls.upSpeed.dataset.value = this.prettyBytes(this.currentTorrent.uploadSpeed) + '/s'
+      this.controls.peers.dataset.value = this.currentFile._torrent.numPeers
+      this.controls.downSpeed.dataset.value = this.prettyBytes(this.currentFile._torrent.downloadSpeed) + '/s'
+      this.controls.upSpeed.dataset.value = this.prettyBytes(this.currentFile._torrent.uploadSpeed) + '/s'
     }
     setTimeout(() => requestAnimationFrame(() => this.updateDisplay()), 200)
   }
@@ -875,8 +874,17 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     return subtitles
   }
 
+  findSubtitles (targetFile) {
+    const path = targetFile.path.split(targetFile.name)[0]
+    const subtitleFiles = []
+    for (const file of targetFile.torrent_.files.filter(file => this.subtitleExtensions.some(ext => file.name.endsWith(ext)))) {
+      const split = file.split(path)
+      if (split.length === 2) subtitleFiles.push(file)
+    }
+  }
+
   async downloadFile () {
-    if (this.currentFile?.done && !this.currentTorrent.store.store._store) {
+    if (this.currentFile?.done && !this.currentFile._torrent.store.store._store) {
       this.currentFile.getBlobURL((err, url) => {
         if (err) throw err
         const a = document.createElement('a')
@@ -896,7 +904,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     if (this.generateThumbnails) {
       this.finishThumbnails(this.video.src)
     }
-    if (!this.currentTorrent.store.store._store) { // only allow download from RAM
+    if (!this.currentFile._torrent.store.store._store) { // only allow download from RAM
       this.controls.downloadFile.removeAttribute('disabled')
     }
   }
@@ -1043,8 +1051,7 @@ const client = new TorrentPlayer({
       fillType: ''
     })
   },
-  onWatched: () => { // TODO: fix
-    console.log('ran')
+  onWatched: () => {
     if (client.nowPlaying.media?.episodes || client.nowPlaying.media?.nextAiringEpisode?.episode) {
       if (settings.other2 && (client.nowPlaying.media?.episodes || client.nowPlaying.media?.nextAiringEpisode?.episode > client.nowPlaying.episodeNumber)) {
         alEntry()
