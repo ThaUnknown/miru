@@ -2877,7 +2877,7 @@ if ('now' in self.performance === false) {
               table[i] = new HuffmanCode(0, 0)
             }
             ReadHuffmanCode(num_htrees + max_run_length_prefix, table, 0, br)
-            for (i = 0; i < context_map_size; ) {
+            for (i = 0; i < context_map_size;) {
               var code
               br.readMoreInput()
               code = ReadSymbol(table, 0, br)
@@ -5051,17 +5051,17 @@ var Browser = {
       typeof MozBlobBuilder !== 'undefined'
         ? MozBlobBuilder
         : typeof WebKitBlobBuilder !== 'undefined'
-        ? WebKitBlobBuilder
-        : !Browser.hasBlobConstructor
-        ? console.log('warning: no BlobBuilder')
-        : null
+          ? WebKitBlobBuilder
+          : !Browser.hasBlobConstructor
+              ? console.log('warning: no BlobBuilder')
+              : null
     Browser.URLObject =
       typeof window !== 'undefined'
         ? window.URL
-          ? window.URL
-          : window.webkitURL
+            ? window.URL
+            : window.webkitURL
         : undefined
-    if (!Module.noImageDecoding && typeof Browser.URLObject === 'undefined') {
+    if (!Module.noImageDecoding && !typeof Browser.URLObject === 'undefined') {
       console.log(
         'warning: Browser does not support creating object URLs. Built-in browser image decoding will not be available.'
       )
@@ -8308,14 +8308,14 @@ var SYSCALLS = {
       ((tempDouble = stat.size),
       +Math_abs(tempDouble) >= 1
         ? tempDouble > 0
-          ? (Math_min(+Math_floor(tempDouble / 4294967296), 4294967295) | 0) >>>
+            ? (Math_min(+Math_floor(tempDouble / 4294967296), 4294967295) | 0) >>>
             0
-          : ~~+Math_ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>>
+            : ~~+Math_ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>>
             0
         : 0)
     ]),
-      (HEAP32[(buf + 40) >> 2] = tempI64[0]),
-      (HEAP32[(buf + 44) >> 2] = tempI64[1])
+    (HEAP32[(buf + 40) >> 2] = tempI64[0]),
+    (HEAP32[(buf + 44) >> 2] = tempI64[1])
     HEAP32[(buf + 48) >> 2] = 4096
     HEAP32[(buf + 52) >> 2] = stat.blocks
     HEAP32[(buf + 56) >> 2] = (stat.atime.getTime() / 1e3) | 0
@@ -8329,14 +8329,14 @@ var SYSCALLS = {
       ((tempDouble = stat.ino),
       +Math_abs(tempDouble) >= 1
         ? tempDouble > 0
-          ? (Math_min(+Math_floor(tempDouble / 4294967296), 4294967295) | 0) >>>
+            ? (Math_min(+Math_floor(tempDouble / 4294967296), 4294967295) | 0) >>>
             0
-          : ~~+Math_ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>>
+            : ~~+Math_ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>>
             0
         : 0)
     ]),
-      (HEAP32[(buf + 80) >> 2] = tempI64[0]),
-      (HEAP32[(buf + 84) >> 2] = tempI64[1])
+    (HEAP32[(buf + 80) >> 2] = tempI64[0]),
+    (HEAP32[(buf + 84) >> 2] = tempI64[1])
     return 0
   },
   doMsync: function (addr, stream, len, flags, offset) {
@@ -8558,41 +8558,41 @@ function ___sys_getdents64 (fd, dirp, count) {
         type = FS.isChrdev(child.mode)
           ? 2
           : FS.isDir(child.mode)
-          ? 4
-          : FS.isLink(child.mode)
-          ? 10
-          : 8
+            ? 4
+            : FS.isLink(child.mode)
+              ? 10
+              : 8
       }
       ;(tempI64 = [
         id >>> 0,
         ((tempDouble = id),
         +Math_abs(tempDouble) >= 1
           ? tempDouble > 0
-            ? (Math_min(+Math_floor(tempDouble / 4294967296), 4294967295) |
+              ? (Math_min(+Math_floor(tempDouble / 4294967296), 4294967295) |
                 0) >>>
               0
-            : ~~+Math_ceil(
-                (tempDouble - +(~~tempDouble >>> 0)) / 4294967296
-              ) >>> 0
+              : ~~+Math_ceil(
+                  (tempDouble - +(~~tempDouble >>> 0)) / 4294967296
+                ) >>> 0
           : 0)
       ]),
-        (HEAP32[(dirp + pos) >> 2] = tempI64[0]),
-        (HEAP32[(dirp + pos + 4) >> 2] = tempI64[1])
+      (HEAP32[(dirp + pos) >> 2] = tempI64[0]),
+      (HEAP32[(dirp + pos + 4) >> 2] = tempI64[1])
       ;(tempI64 = [
         ((idx + 1) * struct_size) >>> 0,
         ((tempDouble = (idx + 1) * struct_size),
         +Math_abs(tempDouble) >= 1
           ? tempDouble > 0
-            ? (Math_min(+Math_floor(tempDouble / 4294967296), 4294967295) |
+              ? (Math_min(+Math_floor(tempDouble / 4294967296), 4294967295) |
                 0) >>>
               0
-            : ~~+Math_ceil(
-                (tempDouble - +(~~tempDouble >>> 0)) / 4294967296
-              ) >>> 0
+              : ~~+Math_ceil(
+                  (tempDouble - +(~~tempDouble >>> 0)) / 4294967296
+                ) >>> 0
           : 0)
       ]),
-        (HEAP32[(dirp + pos + 8) >> 2] = tempI64[0]),
-        (HEAP32[(dirp + pos + 12) >> 2] = tempI64[1])
+      (HEAP32[(dirp + pos + 8) >> 2] = tempI64[0]),
+      (HEAP32[(dirp + pos + 12) >> 2] = tempI64[1])
       HEAP16[(dirp + pos + 16) >> 1] = 280
       HEAP8[(dirp + pos + 18) >> 0] = type
       stringToUTF8(name, dirp + pos + 19, 256)
@@ -8983,10 +8983,10 @@ function _fd_fdstat_get (fd, pbuf) {
     const type = stream.tty
       ? 2
       : FS.isDir(stream.mode)
-      ? 3
-      : FS.isLink(stream.mode)
-      ? 7
-      : 4
+        ? 3
+        : FS.isLink(stream.mode)
+          ? 7
+          : 4
     HEAP8[pbuf >> 0] = type
     return 0
   } catch (e) {
@@ -9022,14 +9022,14 @@ function _fd_seek (fd, offset_low, offset_high, whence, newOffset) {
       ((tempDouble = stream.position),
       +Math_abs(tempDouble) >= 1
         ? tempDouble > 0
-          ? (Math_min(+Math_floor(tempDouble / 4294967296), 4294967295) | 0) >>>
+            ? (Math_min(+Math_floor(tempDouble / 4294967296), 4294967295) | 0) >>>
             0
-          : ~~+Math_ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>>
+            : ~~+Math_ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>>
             0
         : 0)
     ]),
-      (HEAP32[newOffset >> 2] = tempI64[0]),
-      (HEAP32[(newOffset + 4) >> 2] = tempI64[1])
+    (HEAP32[newOffset >> 2] = tempI64[0]),
+    (HEAP32[(newOffset + 4) >> 2] = tempI64[1])
     if (stream.getdents && offset === 0 && whence === 0) stream.getdents = null
     return 0
   } catch (e) {
@@ -12816,7 +12816,7 @@ self.setIsPaused = function (isPaused) {
 self.offscreenRender = function (force) {
   self.rafId = 0
   self.renderPending = false
-  const startTime = performance.now()
+  // const startTime = performance.now()
   const result = self.octObj.renderImage(
     self.getCurrentTime() + self.delay,
     self.changed
@@ -12824,16 +12824,16 @@ self.offscreenRender = function (force) {
   const changed = Module.getValue(self.changed, 'i32')
   if ((Number(changed) !== 0 || force) && self.offscreenCanvas) {
     const images = self.buildResultImage(result)
-    const newTime = performance.now()
-    const libassTime = newTime - startTime
+    // const newTime = performance.now()
+    // const libassTime = newTime - startTime
     const promises = []
     for (let i = 0; i < images.length; i++) {
       promises[i] = createImageBitmap(images[i].image)
     }
     Promise.all(promises).then(function (bitmaps) {
-      const decodeTime = performance.now() - newTime
+      // const decodeTime = performance.now() - newTime
       function renderFastFrames () {
-        const beforeDrawTime = performance.now()
+        // const beforeDrawTime = performance.now()
         self.offscreenCanvasCtx.clearRect(
           0,
           0,
@@ -12847,17 +12847,17 @@ self.offscreenRender = function (force) {
             images[i].y
           )
         }
-        const drawTime = performance.now() - beforeDrawTime
-        console.log(
-          bitmaps.length +
-            ' bitmaps, libass: ' +
-            libassTime +
-            'ms, decode: ' +
-            decodeTime +
-            'ms, draw: ' +
-            drawTime +
-            'ms'
-        )
+        // const drawTime = performance.now() - beforeDrawTime
+        // console.log(
+        //   bitmaps.length +
+        //     ' bitmaps, libass: ' +
+        //     libassTime +
+        //     'ms, decode: ' +
+        //     decodeTime +
+        //     'ms, draw: ' +
+        //     drawTime +
+        //     'ms'
+        // )
       }
       self.requestAnimationFrame(renderFastFrames)
     })

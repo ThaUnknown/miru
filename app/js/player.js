@@ -74,6 +74,7 @@ class TorrentPlayer extends WebTorrent {
     this.player.addEventListener('fullscreenchange', () => this.updateFullscreen())
     this.controls.ppToggle.addEventListener('dblclick', () => this.toggleFullscreen())
 
+    this.video.addEventListener('loadedmetadata', () => this.findSubtitleFiles(this.currentFile))
     this.subtitleData = {
       fonts: ['https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2'],
       headers: [],
@@ -170,7 +171,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     }
     if ('setPositionState' in navigator.mediaSession) this.video.addEventListener('timeupdate', () => this.updatePositionState())
 
-    this.subtitleExtensions = ['.srt', '.ass', '.vtt']
+    this.subtitleExtensions = ['.srt', '.vtt', '.ass', '.ssa']
     this.videoExtensions = ['.3g2', '.3gp', '.asf', '.avi', '.dv', '.flv', '.gxf', '.m2ts', '.m4a', '.m4b', '.m4p', '.m4r', '.m4v', '.mkv', '.mov', '.mp4', '.mpd', '.mpeg', '.mpg', '.mxf', '.nut', '.ogm', '.ogv', '.swf', '.ts', '.vob', '.webm', '.wmv', '.wtv']
     this.videoFiles = undefined
 
@@ -679,10 +680,10 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     const label = document.createElement('label')
     input.name = `${type}-radio-set`
     input.type = 'radio'
-    input.id = type === 'captions' ? `${type}-${track?.number || 'off'}-radio` : `${type}-${track.id}-radio`
-    input.value = type === 'captions' ? track?.number || null : track.id
+    input.id = type === 'captions' ? `${type}-${track ? track.number : 'off'}-radio` : `${type}-${track.id}-radio`
+    input.value = type === 'captions' ? track ? track.number : -1 : track.id
     input.checked = type === 'captions' ? track?.number === this.subtitleData.current : track.enabled
-    label.htmlFor = type === 'captions' ? `${type}-${track?.number || 'off'}-radio` : `${type}-${track.id}-radio`
+    label.htmlFor = type === 'captions' ? `${type}-${track ? track.number : 'off'}-radio` : `${type}-${track.id}-radio`
     label.textContent = track
       ? type === 'captions'
           ? (track.language || (!Object.values(this.subtitleData.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : header.type)) + (track.name ? ' - ' + track.name : '')
@@ -714,7 +715,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         this.subtitleData.timeout = setTimeout(() => {
           this.subtitleData.timeout = undefined
           if (this.subtitleData.renderer) {
-            this.subtitleData.renderer.setTrack(trackNumber ? this.subtitleData.headers[trackNumber].header.slice(0, -1) + Array.from(this.subtitleData.tracks[trackNumber]).join('\n') : this.subtitleData.headers[3].header.slice(0, -1))
+            this.subtitleData.renderer.setTrack(trackNumber !== -1 ? this.subtitleData.headers[trackNumber].header.slice(0, -1) + Array.from(this.subtitleData.tracks[trackNumber]).join('\n') : this.subtitleData.defaultHeader)
           }
         }, 1000)
       }
@@ -761,7 +762,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
           this.subtitleData.parser.destroy()
           this.selectCaptions(this.subtitleData.current)
           parser = undefined
-          this.controls.captionsButton.removeAttribute('disabled')
           if (!this.video.paused) {
             this.video.pause()
             this.playVideo()
@@ -770,7 +770,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         })
         console.log('Sub parsing started')
         this.subtitleData.parser = file.createReadStream().pipe(parser)
-        // when this gets overwritten the parser stays so it might "leak" some RAM???
       } else {
         resolve()
       }
@@ -779,7 +778,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
   handleSubtitleParser (parser, skipFile) {
     parser.once('tracks', tracks => {
-      this.controls.captionsButton.removeAttribute('disabled')
       tracks.forEach(track => {
         if (!this.subtitleData.tracks[track.number]) {
         // overwrite webvtt or other header with custom one
@@ -828,58 +826,94 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         }
       }
       if (!this.subtitleData.renderer) {
-        console.log()
         this.subtitleData.renderer = new SubtitlesOctopus(options)
         this.selectCaptions(this.subtitleData.current)
+        this.controls.captionsButton.removeAttribute('disabled')
       }
     }
   }
 
-  convertFile (file) {
-    const regex = /^(?:\d+\n)?(\S{9,12})\s?-->\s?(\S{9,12})(.*)\n([\s\S]*)$/i
-    const subtitles = []
-
-    for (const split of fileContent.split('\n\n')) {
-      match = split.match(regex)
-      if (match) {
-        if (match[1].length === 9) {
-          match[1] = '0:' + match[1]
-        } else {
-          if (match[1][0] === '0') {
-            match[1].substring(1)
-          }
-        }
-        match[1].replace(',', '.')
-        if (match[2].length === 9) {
-          match[2] = '0:' + match[2]
-        } else {
-          if (match[2][0] === '0') {
-            match[2].substring(1)
-          }
-        }
-        match[2].replace(',', '.')
-        const matches = match[4].match(/<[^>]+>/g) // create array of all tags
-        if (matches) {
-          matches.forEach(matched => {
-            if (/<\//.test(matched)) { // check if its a closing tag
-              match[4] = match[4].replace(matched, matched.replace('</', '{\\').replace('>', '0}'))
+  convertSubFile (file, isAss, callback) {
+    const regex = /(?:\d+\n)?(\S{9,12})\s?-->\s?(\S{9,12})(.*)\n([\s\S]*)$/i
+    file.getBuffer((_err, buffer) => {
+      const subtitles = isAss ? buffer.toString() : []
+      if (isAss) {
+        callback(subtitles)
+      } else {
+        for (const split of buffer.toString().split('\n\n')) {
+          const match = split.match(regex)
+          if (match) {
+            match[1] = match[1].match(/.*[.,]\d{2}/)[0]
+            match[2] = match[2].match(/.*[.,]\d{2}/)[0]
+            if (match[1].length === 9) {
+              match[1] = '0:' + match[1]
             } else {
-              match[4] = match[4].replace(matched, matched.replace('<', '{\\').replace('>', '1}'))
+              if (match[1][0] === '0') {
+                match[1] = match[1].substring(1)
+              }
             }
-          })
+            match[1].replace(',', '.')
+            if (match[2].length === 9) {
+              match[2] = '0:' + match[2]
+            } else {
+              if (match[2][0] === '0') {
+                match[2] = match[2].substring(1)
+              }
+            }
+            match[2].replace(',', '.')
+            const matches = match[4].match(/<[^>]+>/g) // create array of all tags
+            if (matches) {
+              matches.forEach(matched => {
+                if (/<\//.test(matched)) { // check if its a closing tag
+                  match[4] = match[4].replace(matched, matched.replace('</', '{\\').replace('>', '0}'))
+                } else {
+                  match[4] = match[4].replace(matched, matched.replace('<', '{\\').replace('>', '1}'))
+                }
+              })
+            }
+            subtitles.push('Dialogue: 0,' + match[1].replace(',', '.') + ',' + match[2].replace(',', '.') + ',Default,,0,0,0,,' + match[4])
+          }
         }
-        subtitles.push('Dialogue: 1,' + match[1] + ',' + match[2] + ',Default,,0,0,0,,' + match[4])
+        callback(subtitles)
       }
-    }
-    return subtitles
+    })
   }
 
-  findSubtitles (targetFile) {
+  findSubtitleFiles (targetFile) {
     const path = targetFile.path.split(targetFile.name)[0]
-    const subtitleFiles = []
-    for (const file of targetFile.torrent_.files.filter(file => this.subtitleExtensions.some(ext => file.name.endsWith(ext)))) {
-      const split = file.split(path)
-      if (split.length === 2) subtitleFiles.push(file)
+    // array of subtitle files that match video name, or all subtitle files when only 1 vid file
+    const subtitleFiles = targetFile._torrent.files.filter(file => {
+      return this.subtitleExtensions.some(ext => file.name.endsWith(ext)) && (this.videoFiles.length === 1 ? true : file.path.split(path).length === 2)
+    })
+    if (subtitleFiles.length) {
+      this.createRadioElement(undefined, 'captions')
+      this.subtitleData.parsed = true
+      this.subtitleData.current = 0
+      for (const [index, file] of subtitleFiles.entries()) {
+        const isAss = file.name.endsWith('.ass') || file.name.endsWith('.ssa')
+        const extension = /\.(\w+)$/
+        const name = file.name.replace(targetFile.name, '') === file.name
+          ? file.name.replace(targetFile.name.replace(extension, ''), '').slice(0, -4).replace(/[,._-]/g, ' ').trim()
+          : file.name.replace(targetFile.name, '').slice(0, -4).replace(/[,._-]/g, ' ').trim()
+        const header = {
+          header: this.subtitleData.defaultHeader,
+          language: name,
+          number: index,
+          type: file.name.match(extension)[1]
+        }
+        this.subtitleData.headers.push(header)
+        this.subtitleData.tracks[index] = []
+        this.createRadioElement(header, 'captions')
+        this.convertSubFile(file, isAss, subtitles => {
+          if (isAss) {
+            this.subtitleData.headers[index].header = subtitles
+          } else {
+            this.subtitleData.tracks[index] = subtitles
+          }
+          if (this.subtitleData.current === index) this.selectCaptions(this.subtitleData.current)
+        })
+        this.initSubtitleRenderer()
+      }
     }
   }
 
@@ -1052,7 +1086,7 @@ const client = new TorrentPlayer({
     })
   },
   onWatched: () => {
-    if (client.nowPlaying.media?.episodes || client.nowPlaying.media?.nextAiringEpisode?.episode) {
+    if (client.nowPlaying?.media?.episodes || client.nowPlaying?.media?.nextAiringEpisode?.episode) {
       if (settings.other2 && (client.nowPlaying.media?.episodes || client.nowPlaying.media?.nextAiringEpisode?.episode > client.nowPlaying.episodeNumber)) {
         alEntry()
       } else {
