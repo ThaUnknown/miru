@@ -556,8 +556,8 @@ async function nyaaSearch (media, episode) {
 
 const exclusions = {
   edge: ['DTS'],
-  chromium: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265', '.m2ts', '.ts'],
-  firefox: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265', '.m2ts', '.ts', '.3gp', '.mkv']
+  chromium: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265'],
+  firefox: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265', '.3gp', '.mkv']
 }
 if (!('audioTracks' in HTMLVideoElement.prototype)) {
   exclusions[userBrowser].push('mutli audio', 'dual audio')
@@ -586,7 +586,7 @@ async function nyaaRss (media, episode) {
                 <td>${i('leechers').innerHTML}</td>
                 <td>${i('downloads').innerHTML}</td>
                 <td class="pointer">Play</td>`
-        template.onclick = () => { addTorrent(i('infoHash').innerHTML, { media: media, episode: episode }) }
+        template.onclick = () => { client.addTorrent(i('infoHash').innerHTML, { media: media, episode: episode }) }
         frag.appendChild(template)
       })
     } catch (e) {
