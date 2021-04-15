@@ -12892,8 +12892,7 @@ self.buildResultImageItem = function (ptr) {
   if (a === 0) {
     return null
   }
-  const c =
-    ((color << 8) & 0xff0000) | ((color >> 8) & 0xff00) | ((color >> 24) & 0xff) // black magic
+  const c = ((color << 8) & 0xff0000) | ((color >> 8) & 0xff00) | ((color >> 24) & 0xff) // black magic
   const buf = new ArrayBuffer(w * h * 4)
   const buf8 = new Uint8ClampedArray(buf)
   const data = new Uint32Array(buf) // operate on a single position, instead of 4 positions at once
