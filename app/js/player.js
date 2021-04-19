@@ -987,8 +987,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         const frag = document.createDocumentFragment()
         for (const file of this.videoFiles) {
           const mediaInformation = await resolveFileMedia({ fileName: file.name, method: 'SearchName' })
-          const template = cardCreator(mediaInformation)
-          template.onclick = () => {
+          mediaInformation.onclick = () => {
             this.cleanupVideo()
             this.buildVideo(torrent, {
               media: mediaInformation,
@@ -1039,8 +1038,8 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         localStorage.setItem('offlineTorrents', JSON.stringify(this.offlineTorrents))
       }
       const mediaInformation = await resolveFileMedia({ fileName: torrent.name, method: 'SearchName' })
+      mediaInformation.onclick = () => this.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
       const template = cardCreator(mediaInformation)
-      template.onclick = () => this.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
       document.querySelector('.downloads').appendChild(template)
     })
   }

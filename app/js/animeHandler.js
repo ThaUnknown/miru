@@ -303,24 +303,20 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
 }
 let alResponse
 async function searchAnime (a) { // search bar functionality
-  const frag = document.createDocumentFragment()
+  const cards = []
   const browse = document.querySelector('.browse')
   browse.innerHTML = ''
-  browse.appendChild(skeletonCard)
+  // browse.appendChild(skeletonCard) // TODO: fix
   a ? alResponse = await alRequest({ method: 'SearchName', name: a }) : alResponse = await alRequest({ method: 'Trending' })
   try {
     alResponse.data.Page.media.forEach(media => {
-      const template = cardCreator({ media: media })
-      template.onclick = () => {
-        viewAnime(media)
-      }
-      frag.appendChild(template)
+      cards.push(cardCreator({ media: media, onclick: () => viewAnime(media) }))
     })
   } catch (e) {
     console.error(e)
   }
   browse.innerHTML = ''
-  browse.appendChild(frag)
+  browse.append(...cards)
 }
 
 // these really shouldnt be global
@@ -482,53 +478,6 @@ function countdown (s) {
   (d || h || m) && tmp.push(m + 'm')
   return tmp.join(' ')
 }
-function cardCreator (opts) {
-  const template = document.createElement('div')
-  template.classList.add('card', 'm-0', 'p-0')
-  if (opts?.media) {
-    template.innerHTML = `
-    <div class="row h-full" style="--color:${opts.media.coverImage.color || '#1890ff'};">
-        <div class="col-4">
-            <img loading="lazy" src="${opts.media.coverImage.extraLarge || ''}"
-                class="cover-img w-full h-full">
-        </div>
-        <div class="col-8 h-full card-grid">
-            <div class="px-15 py-10 bg-very-dark">
-                <h5 class="m-0 text-capitalize font-weight-bold">${opts.media.title.userPreferred}${opts.episodeNumber ? ' - ' + opts.episodeNumber : ''}</h5>
-                ${opts.schedule && opts.media.nextAiringEpisode ? "<span class='text-muted font-weight-bold'>EP " + opts.media.nextAiringEpisode.episode + ' in ' + countdown(opts.media.nextAiringEpisode.timeUntilAiring) + '</span>' : ''}
-                <p class="text-muted m-0 text-capitalize details">
-                ${(opts.media.format ? (opts.media.format === 'TV' ? '<span>' + opts.media.format + ' Show' : '<span>' + opts.media.format.toLowerCase().replace(/_/g, ' ')) : '') + '</span>'}
-                ${opts.media.episodes ? '<span>' + opts.media.episodes + ' Episodes</span>' : opts.media.duration ? '<span>' + opts.media.duration + ' Minutes</span>' : ''}
-                ${opts.media.status ? '<span>' + opts.media.status.toLowerCase().replace(/_/g, ' ') + '</span>' : ''}
-                ${opts.media.season || opts.media.seasonYear ? '<span>' + ((opts.media.season.toLowerCase() || '') + ' ') + (opts.media.seasonYear || '') + '</span>' : ''}
-                </p>
-            </div>
-            <div class="overflow-y-auto px-15 pb-5 bg-very-dark card-desc">
-                ${opts.media.description}
-            </div>
-            <div class="px-15 pb-10 pt-5">
-                ${opts.media.genres.map(key => (`<span class="badge badge-pill badge-color text-dark mt-5 font-weight-bold">${key}</span> `)).join('')}
-            </div>
-        </div>
-    </div>
-    `
-  } else {
-    template.innerHTML = `
-        <div class="row h-full">
-            <div class="col-4 skeloader">
-            </div>
-            <div class="col-8 bg-very-dark px-15 py-10">
-                ${opts?.parseObject ? `<h5 class="m-0 text-capitalize font-weight-bold pb-10">${opts.parseObject.anime_title + ' - ' + opts.parseObject.episode_number}</h5>` : '<p class="skeloader w-300 h-25 rounded bg-dark">'}
-                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                </p>
-            </div>
-        </div>
-        `
-  }
-  return template
-}
-const skeletonCard = cardCreator({})
 
 const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
 
@@ -713,8 +662,9 @@ function getRSSurl () {
     return settings.torrent4 + settings.torrent1 // add custom RSS
   }
 }
-async function releasesCards (items, frag, limit) {
+async function releasesCards (items, limit) {
   const mediaItems = []
+  const cards = []
   for (let l = 0; l < (limit || items.length); l++) {
     const i = items[l].querySelector.bind(items[l])
     mediaItems.push(resolveFileMedia({ fileName: i('title').innerHTML, method: 'SearchName', isRelease: true }))
@@ -722,25 +672,25 @@ async function releasesCards (items, frag, limit) {
   await Promise.all(mediaItems).then(results => {
     results.forEach((mediaInformation, index) => {
       const o = items[index].querySelector.bind(items[index])
-      template = cardCreator(mediaInformation)
-      template.onclick = () => client.addTorrent(o('link').innerHTML, { media: mediaInformation, episode: mediaInformation.episode })
-      frag.appendChild(template)
+      mediaInformation.onclick = () => client.addTorrent(o('link').innerHTML, { media: mediaInformation, episode: mediaInformation.episode })
+      cards.push(cardCreator(mediaInformation))
     })
   })
   localStorage.setItem('store', JSON.stringify(store))
+  return cards
 }
 async function releasesRss (limit) {
-  const frag = document.createDocumentFragment()
+  let cards
   await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
     try {
       const doc = DOMPARSER(xmlTxt, 'text/xml')
       const items = doc.querySelectorAll('item')
-      await releasesCards(items, frag, limit)
+      cards = await releasesCards(items, limit)
     } catch (e) {
       console.error(e)
     }
   }))
-  return frag
+  return cards
 }
 let alID // login icon
 async function loadAnime () {

@@ -776,6 +776,53 @@
             </section>
         </div>
     </div>
+    <template id="skeletonCardTemplate">
+        <div class="card m-0 p-0">
+            <div class="row h-full">
+                <div class="col-4 skeloader"></div>
+                <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark"></p>
+                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="bareCardTemplate">
+        <div class="card m-0 p-0">
+            <div class="row h-full">
+                <div class="col-4 skeloader"></div>
+                <div class="col-8 bg-very-dark px-15 py-10">
+                    <h5 class="m-0 text-capitalize font-weight-bold pb-10"></h5>
+                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="fullCardTemplate">
+        <div class="card m-0 p-0">
+            <div class="row h-full">
+                <div class="col-4">
+                    <img loading="lazy" src="" class="cover-img w-full h-full">
+                </div>
+                <div class="col-8 h-full card-grid">
+                    <div class="px-15 py-10 bg-very-dark">
+                        <h5 class="m-0 text-capitalize font-weight-bold"></h5>
+                        <span class='text-muted font-weight-bold'></span>
+                        <p class="text-muted m-0 text-capitalize details">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </p>
+                    </div>
+                    <div class="overflow-y-auto px-15 pb-5 bg-very-dark card-desc"></div>
+                    <div class="px-15 pb-10 pt-5 genres"></div>
+                </div>
+            </div>
+        </div>
+    </template>
     <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.1/js/halfmoon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@latest/dist/matroska-subtitles.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/indexeddb-chunk-store@latest/idbchunkstore.min.js"></script> -->

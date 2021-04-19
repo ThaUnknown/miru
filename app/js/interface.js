@@ -10,10 +10,10 @@ async function loadHomePage () {
     },
     releases: async function () {
       gallerySkeleton(browseGallery)
-      const frag = await releasesRss()
-      browseGallery.innerHTML = ''
+      const cards = await releasesRss()
+      browseGallery.textContent = ''
+      browseGallery.append(...cards)
       browse.classList.remove('loading')
-      browseGallery.appendChild(frag)
       browseGallery.scrollTop = 0
       browse.onscroll = undefined
     },
@@ -57,12 +57,11 @@ async function loadHomePage () {
     releases: async function () { // this could be cleaner, but oh well
       await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
         const doc = DOMPARSER(xmlTxt, 'text/xml')
-        const pubDate = doc.querySelector('pubDate').innerHTML
+        const pubDate = doc.querySelector('pubDate').textContent
         if (lastRSSDate !== pubDate) {
           if (lastRSSDate) {
-            homeReleases.innerHTML = ''
-            homeReleases.appendChild(gallerySkeletonFrag(5))
-            resolveFileMedia({ fileName: doc.querySelector('item').querySelector('title').innerHTML, method: 'SearchName', isRelease: true }).then(mediaInformation => {
+            homeReleases.append(...gallerySkeletonFrag(5))
+            resolveFileMedia({ fileName: doc.querySelector('item').querySelector('title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
               if (settings.other1) {
                 const notification = new Notification(mediaInformation.media.title.userPreferred, {
                   body: `Episode ${mediaInformation.episode} was just released!`,
@@ -70,17 +69,16 @@ async function loadHomePage () {
                 })
                 notification.onclick = async () => {
                   window.parent.focus()
-                  client.addTorrent(doc.querySelector('item').querySelector('link').innerHTML, { media: mediaInformation, episode: mediaInformation.episode })
+                  client.addTorrent(doc.querySelector('item').querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
                   store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media)
                 }
               }
             })
           }
-          const frag = document.createDocumentFragment()
           lastRSSDate = pubDate
-          await releasesCards(doc.querySelectorAll('item'), frag, 5)
-          homeReleases.innerHTML = ''
-          homeReleases.appendChild(frag)
+          const cards = await releasesCards(doc.querySelectorAll('item'), 5)
+          homeReleases.textContent = ''
+          homeReleases.append(...cards)
         }
       }))
       setTimeout(homePreviewFunctions.releases, 30000)
@@ -107,11 +105,11 @@ async function loadHomePage () {
     }
   }
   const gallerySkeletonFrag = function (limit) {
-    const frag = document.createDocumentFragment()
-    for (let i = 0; i < limit; i++) {
-      frag.appendChild(cardCreator({}))
+    const cards = []
+    while (limit--) {
+      cards.push(skeletonCard.cloneNode(true))
     }
-    return frag
+    return cards
   }
   let loadTimeout
   let lastDate
@@ -120,8 +118,7 @@ async function loadHomePage () {
 
   function gallerySkeleton (gallery) {
     browse.classList.add('loading')
-    gallery.innerHTML = ''
-    gallery.appendChild(gallerySkeletonFrag(10))
+    gallery.append(...gallerySkeletonFrag(10))
   }
   function galleryAppend (opts) {
     if (opts.page === 1) {
@@ -139,26 +136,24 @@ async function loadHomePage () {
       }
     }
     if (!opts.page || opts.page === 1) {
-      opts.gallery.innerHTML = ''
+      opts.gallery.textContent = ''
     }
-    const frag = document.createDocumentFragment()
     const date = new Date()
+    const cards = []
     opts.media.forEach(media => {
       if (opts.schedule) {
         if (media.timeUntilAiring && (!lastDate || (new Date(+date + media.timeUntilAiring * 1000).getDay() !== lastDate.getDay()))) {
           const div = document.createElement('div')
           lastDate = new Date(+date + media.timeUntilAiring * 1000)
           div.classList.add('day-row', 'font-size-24', 'font-weight-bold', 'h-50', 'd-flex', 'align-items-end')
-          div.innerHTML = lastDate.toLocaleDateString('en-US', { weekday: 'long' })
-          frag.appendChild(div)
+          div.textContent = lastDate.toLocaleDateString('en-US', { weekday: 'long' })
+          cards.push(div)
         }
         media = media.media
       }
-      const template = cardCreator({ media: media, schedule: opts.schedule })
-      template.onclick = () => viewAnime(media)
-      frag.appendChild(template)
+      cards.push(cardCreator({ media: media, schedule: opts.schedule, onclick: () => viewAnime(media) }))
     })
-    opts.gallery.appendChild(frag)
+    opts.gallery.append(...cards)
     canScroll = true
   }
 
@@ -173,10 +168,40 @@ async function loadHomePage () {
   navHome.onclick = () => {
     lastRSSDate = undefined
     for (const item of homePreviewElements) {
-      item.innerHTML = ''
-      item.appendChild(gallerySkeletonFrag(5))
+      item.textContent = ''
+      item.append(...gallerySkeletonFrag(5))
       homePreviewFunctions[item.dataset.function]()
     }
-    document.querySelector('.browse').innerHTML = ''
+    document.querySelector('.browse').textContent = ''
+  }
+}
+
+const skeletonCard = skeletonCardTemplate.cloneNode(true).content
+const bareCard = bareCardTemplate.cloneNode(true).content
+const fullCard = fullCardTemplate.cloneNode(true).content
+function cardCreator (opts) {
+  if (opts.media) {
+    const card = fullCard.cloneNode(true)
+    const nodes = card.querySelectorAll('*')
+    nodes[0].onclick = () => opts.onclick()
+    nodes[0].style = `--color:${opts.media.coverImage.color || '#1890ff'};`
+    nodes[3].src = opts.media.coverImage.extraLarge || ''
+    nodes[6].textContent = [opts.media.title.userPreferred, opts.episodeNumber].filter(s => s).join(' - ')
+    if (opts.schedule && opts.media.nextAiringEpisode) nodes[7] = opts.media.nextAiringEpisode.episode + ' in ' + countdown(opts.media.nextAiringEpisode.timeUntilAiring)
+    nodes[8].innerHTML = '<span>' + [
+      opts.media.format === 'TV' ? 'TV Show' : opts.media.format?.toLowerCase().replace(/_/g, ' '),
+      opts.media.episodes ? opts.media.episodes + ' Episodes' : opts.media.duration ? opts.media.duration + ' Minutes' : undefined,
+      opts.media.status?.toLowerCase().replace(/_/g, ' '),
+      [opts.media.season?.toLowerCase(), opts.media.seasonYear].filter(s => s).join(' ')
+    ].filter(s => s).join('</span><span>') + '</span>'
+    nodes[13].innerHTML = opts.media.description
+    nodes[14].innerHTML = opts.media.genres.map(key => (`<span class="badge badge-pill badge-color text-dark mt-5 font-weight-bold">${key}</span> `)).join('')
+    return card
+  } else if (opts.parseObject) {
+    const card = bareCard.cloneNode(true)
+    card.querySelector('h5').textContent = [opts.parseObject.anime_title, opts.parseObject.episode_number].filter(s => s).join(' - ')
+    return card
+  } else {
+    return skeletonCard.cloneNode(true)
   }
 }
