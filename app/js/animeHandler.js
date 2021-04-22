@@ -91,10 +91,7 @@ async function alRequest (opts) {
       'Content-Type': 'application/json',
       Accept: 'application/json'
     },
-    body: JSON.stringify({
-      query: query,
-      variables: variables
-    })
+    body: undefined
   }
   const queryObjects = `
   id

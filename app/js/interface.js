@@ -106,17 +106,17 @@ async function loadHomePage () {
       })
     },
     trending: function () {
-      alRequest({ method: 'Trending', id: alID, perPage: 5 }).then((res) => {
+      alRequest({ method: 'Search', id: alID, perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
         galleryAppend({ media: res.data.Page.media, gallery: homeTrending })
       })
     },
     romance: function () {
-      alRequest({ method: 'Genre', genre: 'Romance', perPage: 5 }).then((res) => {
+      alRequest({ method: 'Search', genre: 'Romance', perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
         galleryAppend({ media: res.data.Page.media, gallery: homeRomance })
       })
     },
     action: function () {
-      alRequest({ method: 'Genre', genre: 'Action', perPage: 5 }).then((res) => {
+      alRequest({ method: 'Search', genre: 'Action', perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
         galleryAppend({ media: res.data.Page.media, gallery: homeAction })
       })
     }
