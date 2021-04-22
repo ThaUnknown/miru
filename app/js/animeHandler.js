@@ -65,12 +65,6 @@ function traceAnime (image, type) { // WAIT lookup logic
       }
     })
 }
-function searchBox () { // make searchbox behave nicely
-  search.placeholder = search.value
-  searchAnime(search.value)
-  search.value = ''
-  document.location.hash = '#browse'
-}
 // events
 navNowPlaying.onclick = () => { viewAnime(client.nowPlaying?.media) }
 // AL lookup logic
@@ -294,24 +288,6 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
     }
   }
 }
-let alResponse
-async function searchAnime (a) { // search bar functionality
-  const cards = []
-  const browse = document.querySelector('.browse')
-  browse.innerHTML = ''
-  // browse.appendChild(skeletonCard) // TODO: fix
-  a ? alResponse = await alRequest({ method: 'SearchName', name: a }) : alResponse = await alRequest({ method: 'Trending' })
-  try {
-    alResponse.data.Page.media.forEach(media => {
-      cards.push(cardCreator({ media: media, onclick: () => viewAnime(media) }))
-    })
-  } catch (e) {
-    console.error(e)
-  }
-  browse.innerHTML = ''
-  browse.append(...cards)
-}
-
 // these really shouldnt be global
 const detailsfrag = document.createDocumentFragment()
 const details = {
@@ -687,7 +663,6 @@ async function releasesRss (limit) {
 }
 let alID // login icon
 async function loadAnime () {
-  // await searchAnime()
   if (localStorage.getItem('ALtoken')) {
     alRequest({ method: 'Viewer' }).then(result => {
       oauth.removeAttribute('href')

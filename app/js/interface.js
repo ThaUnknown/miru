@@ -185,6 +185,7 @@ async function loadHomePage () {
     }
   }
   function reloadHome () {
+    home.classList.remove('browsing')
     lastRSSDate = undefined
     for (const item of homePreviewElements) {
       item.textContent = ''
@@ -215,7 +216,7 @@ async function loadHomePage () {
     searchTimeout = setTimeout(() => {
       homeLoadFunctions.search()
       searchTimeout = undefined
-    }, 1000)
+    }, 500)
   }
 }
 
