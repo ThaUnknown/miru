@@ -97,78 +97,68 @@ async function alRequest (opts) {
     })
   }
   const queryObjects = `
-id
-title {
-    romaji
-    english
-    native
-    userPreferred
-}
-description(
-    asHtml: true
-)
-season
-seasonYear
-format
-status
-episodes
-duration
-averageScore
-genres
-coverImage {
-    extraLarge
-    medium
-    color
-}
-countryOfOrigin
-isAdult
-bannerImage
-synonyms
-nextAiringEpisode {
-    timeUntilAiring
-    episode
-}
-trailer {
-    id
-    site
-}
-streamingEpisodes {
-    title
-    thumbnail
-}
-relations {
-    edges {
-        relationType(version:2)
-        node {
-            id
-            title {
-                userPreferred
-            }
-            coverImage {
-                medium
-            }
-            type
-            status
-            format
-            episodes
-        }
-    }
-}`
+  id
+  title {
+      romaji
+      english
+      native
+      userPreferred
+  }
+  description(
+      asHtml: true
+  )
+  season
+  seasonYear
+  format
+  status
+  episodes
+  duration
+  averageScore
+  genres
+  coverImage {
+      extraLarge
+      medium
+      color
+  }
+  countryOfOrigin
+  isAdult
+  bannerImage
+  synonyms
+  nextAiringEpisode {
+      timeUntilAiring
+      episode
+  }
+  trailer {
+      id
+      site
+  }
+  streamingEpisodes {
+      title
+      thumbnail
+  }
+  relations {
+      edges {
+          relationType(version:2)
+          node {
+              id
+              title {
+                  userPreferred
+              }
+              coverImage {
+                  medium
+              }
+              type
+              status
+              format
+              episodes
+          }
+      }
+  }`
   if (opts.status) variables.status = opts.status
   if (localStorage.getItem('ALtoken')) options.headers.Authorization = localStorage.getItem('ALtoken')
-  if (opts.method === 'Trending') {
-    search.placeholder = 'Search'
-    query = `
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
-    Page (page: $page, perPage: $perPage) {
-        media(type: $type, sort: $sort) {
-            ${queryObjects}
-        }
-    }
-}`
-  } else if (opts.method === 'SearchName') {
+  if (opts.method === 'SearchName') { // look at me go, i'm doing the yandree dev
     variables.search = opts.name
-    query = `
+    query = ` 
 query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus) {
     Page (page: $page, perPage: $perPage) {
         media(type: $type, search: $search, sort: $sort, status: $status) {
@@ -178,14 +168,14 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
 }`
   } else if (opts.method === 'SearchIDSingle') {
     variables.id = opts.id
-    query = `
+    query = ` 
 query ($id: Int, $type: MediaType) { 
     Media (id: $id, type: $type){
         ${queryObjects}
     }
 }`
   } else if (opts.method === 'Viewer') {
-    query = `
+    query = ` 
 query {
     Viewer {
         avatar {
@@ -197,7 +187,7 @@ query {
 }`
   } else if (opts.method === 'UserLists') {
     variables.id = opts.id
-    query = `
+    query = ` 
 query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [MediaListStatus]){
     Page (page: $page, perPage: $perPage) {
         mediaList (userId: $id, type: $type, status_in: $status_in) {
@@ -210,22 +200,12 @@ query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [Media
   } else if (opts.method === 'SearchIDStatus') {
     variables.id = alID
     variables.mediaId = opts.id
-    query = `
+    query = ` 
 query ($id: Int, $mediaId: Int){
     MediaList(userId: $id, mediaId: $mediaId) {
         status
         progress
         repeat
-    }
-}`
-  } else if (opts.method === 'Genre') {
-    variables.genre = opts.genre
-    query = `
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $genre: String) {
-    Page (page: $page, perPage: $perPage) {
-        media(type: $type, sort: $sort, genre: $genre) {
-            ${queryObjects}
-        }
     }
 }`
   } else if (opts.method === 'AiringSchedule') {
@@ -236,7 +216,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $genre: 
     variables.from = date.getTime() / 1000
     variables.to = (date.getTime() + 7 * 24 * 60 * 60 * 1000) / 1000
     console.log(variables)
-    query = `
+    query = ` 
 query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
     Page (page: $page, perPage: $perPage) {
         airingSchedules(airingAt_greater: $from, airingAt_lesser: $to) {
@@ -249,9 +229,25 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
         }
     }
 }`
+  } else if (opts.method === 'Search') {
+    variables.genre = opts.genre
+    variables.search = opts.search
+    variables.year = opts.year
+    variables.season = opts.season
+    variables.format = opts.format
+    variables.status = opts.status
+    variables.sort = opts.sort || 'SEARCH_MATCH'
+    query = ` 
+query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
+    Page (page: $page, perPage: $perPage) {
+        media(type: $type, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format) {
+            ${queryObjects}
+        }
+    }
+}`
   }
   options.body = JSON.stringify({
-    query: query,
+    query: query.replace(/\s{2,}/g, ' '),
     variables: variables
   })
 

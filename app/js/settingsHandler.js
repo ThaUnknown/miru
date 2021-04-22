@@ -16,17 +16,17 @@ function applySettingsTimeout () {
   applyTimeout = setTimeout(saveSettings, 500)
 }
 function saveSettings () {
-  settingsElements.forEach(element => {
+  for (const element of settingsElements) {
     element.type === 'checkbox' ? settings[element.id] = element.checked : settings[element.id] = element.value
-  })
+  }
   localStorage.setItem('settings', JSON.stringify(settings))
 }
 
 function renderSettings () {
-  Object.entries(settings).forEach(setting => {
+  for (const setting of Object.entries(settings)) {
     const settingElement = settingsElements.filter(e => e.id === setting[0])[0]
     if (settingElement) settingElement.type === 'checkbox' ? settingElement.checked = setting[1] : settingElement.value = setting[1]
-  })
+  }
 }
 function registerProtocol () {
   if ('registerProtocolHandler' in navigator) {

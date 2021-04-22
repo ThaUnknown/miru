@@ -1,61 +1,77 @@
 async function loadHomePage () {
   const homeLoadElements = [navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore]
   const homePreviewElements = [homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction]
+  const homeSearchElements = [searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort]
   const browseGallery = document.querySelector('.browse')
   const homeLoadFunctions = {
     continue: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      const res = await alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })
-      galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'continue', page: page || 1 })
+      await alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 }).then(res => {
+        galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'continue', page: page || 1 })
+      })
     },
     releases: async function () {
       gallerySkeleton(browseGallery)
-      const cards = await releasesRss()
-      browseGallery.textContent = ''
-      browseGallery.append(...cards)
-      browse.classList.remove('loading')
-      browseGallery.scrollTop = 0
-      browse.onscroll = undefined
+      await releasesRss().then(cards => {
+        browseGallery.textContent = ''
+        browseGallery.append(...cards)
+        home.classList.remove('loading')
+        home.onscroll = undefined
+      })
     },
     planning: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 }).then((res) => {
+      await alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 }).then(res => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'planning', page: page || 1 })
       })
     },
-    trending: async function (page) {
-      if (!page) gallerySkeleton(browseGallery)
-      alRequest({ method: 'Trending', id: alID, page: page || 1 }).then((res) => {
-        galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: 'trending', page: page || 1 })
-      })
+    trending: async function () {
+      gallerySkeleton(browseGallery)
+      clearSearch()
+      searchSort.value = 'TRENDING_DESC'
+      await homeLoadFunctions.search()
     },
-    romance: async function (page) {
-      if (!page) gallerySkeleton(browseGallery)
-      alRequest({ method: 'Genre', genre: 'Romance', page: page || 1 }).then((res) => {
-        galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: 'romance', page: page || 1 })
-      })
+    romance: async function () {
+      gallerySkeleton(browseGallery)
+      clearSearch()
+      searchGenre.value = 'romance'
+      searchSort.value = 'TRENDING_DESC'
+      await homeLoadFunctions.search()
     },
-    action: async function (page) {
-      if (!page) gallerySkeleton(browseGallery)
-      alRequest({ method: 'Genre', genre: 'Action', page: page || 1 }).then((res) => {
-        galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: 'action', page: page || 1 })
-      })
+    action: async function () {
+      gallerySkeleton(browseGallery)
+      clearSearch()
+      searchGenre.value = 'action'
+      searchSort.value = 'TRENDING_DESC'
+      await homeLoadFunctions.search()
     },
     schedule: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      alRequest({ method: 'AiringSchedule', page: page || 1 }).then(res => {
+      await alRequest({ method: 'AiringSchedule', page: page || 1 }).then(res => {
         galleryAppend({ media: res.data.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
+      })
+    },
+    search: async function (page) {
+      const opts = {
+        method: 'Search',
+        page: page || 1
+      }
+      for (const element of homeSearchElements) {
+        if (element.value) opts[element.dataset.option] = element.value
+      }
+      await alRequest(opts).then(res => {
+        galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: 'search', page: page || 1 })
       })
     }
   }
   const homePreviewFunctions = {
-    continue: async function () {
+    continue: function () {
       alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, perPage: 5 }).then((res) => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homeContinue })
       })
     },
     releases: async function () { // this could be cleaner, but oh well
-      await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
+      await fetch(getRSSurl()).then(res => res.text().then(xmlTxt => {
         const doc = DOMPARSER(xmlTxt, 'text/xml')
         const pubDate = doc.querySelector('pubDate').textContent
         if (lastRSSDate !== pubDate) {
@@ -76,29 +92,30 @@ async function loadHomePage () {
             })
           }
           lastRSSDate = pubDate
-          const cards = await releasesCards(doc.querySelectorAll('item'), 5)
-          homeReleases.textContent = ''
-          homeReleases.append(...cards)
+          releasesCards(doc.querySelectorAll('item'), 5).then(cards => {
+            homeReleases.textContent = ''
+            homeReleases.append(...cards)
+          })
         }
       }))
       setTimeout(homePreviewFunctions.releases, 30000)
     },
-    planning: async function () {
+    planning: function () {
       alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, perPage: 5 }).then((res) => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homePlanning })
       })
     },
-    trending: async function () {
+    trending: function () {
       alRequest({ method: 'Trending', id: alID, perPage: 5 }).then((res) => {
         galleryAppend({ media: res.data.Page.media, gallery: homeTrending })
       })
     },
-    romance: async function () {
+    romance: function () {
       alRequest({ method: 'Genre', genre: 'Romance', perPage: 5 }).then((res) => {
         galleryAppend({ media: res.data.Page.media, gallery: homeRomance })
       })
     },
-    action: async function () {
+    action: function () {
       alRequest({ method: 'Genre', genre: 'Action', perPage: 5 }).then((res) => {
         galleryAppend({ media: res.data.Page.media, gallery: homeAction })
       })
@@ -117,17 +134,17 @@ async function loadHomePage () {
   let canScroll = true
 
   function gallerySkeleton (gallery) {
-    browse.classList.add('loading')
+    home.classList.add('loading')
+    gallery.textContent = ''
     gallery.append(...gallerySkeletonFrag(10))
   }
   function galleryAppend (opts) {
     if (opts.page === 1) {
-      opts.gallery.scrollTop = 0
-      browse.classList.remove('loading')
+      home.classList.remove('loading')
     }
     if (opts.method) {
       canScroll = false
-      browse.onscroll = function () {
+      home.onscroll = function () {
         if (this.scrollTop + this.clientHeight > this.scrollHeight - 800 && !loadTimeout && canScroll) {
           canScroll = false
           loadTimeout = setTimeout(function () { loadTimeout = undefined }, 1000)
@@ -162,10 +179,12 @@ async function loadHomePage () {
   }
   for (const item of homeLoadElements) {
     item.onclick = function () {
+      home.scrollTop = 0
+      home.classList.add('browsing')
       homeLoadFunctions[this.dataset.function]()
     }
   }
-  navHome.onclick = () => {
+  function reloadHome () {
     lastRSSDate = undefined
     for (const item of homePreviewElements) {
       item.textContent = ''
@@ -173,6 +192,30 @@ async function loadHomePage () {
       homePreviewFunctions[item.dataset.function]()
     }
     document.querySelector('.browse').textContent = ''
+  }
+  navHome.onclick = reloadHome
+  function clearSearch () {
+    for (const element of homeSearchElements) {
+      element.value = ''
+    }
+  }
+  searchClear.onclick = () => {
+    clearSearch()
+    reloadHome()
+    home.classList.remove('browsing')
+  }
+  let searchTimeout
+  searchWrapper.oninput = e => {
+    if (!searchTimeout) {
+      home.classList.add('browsing')
+      gallerySkeleton(browseGallery)
+    } else {
+      clearTimeout(searchTimeout)
+    }
+    searchTimeout = setTimeout(() => {
+      homeLoadFunctions.search()
+      searchTimeout = undefined
+    }, 1000)
   }
 }
 
@@ -183,7 +226,7 @@ function cardCreator (opts) {
   if (opts.media) {
     const card = fullCard.cloneNode(true)
     const nodes = card.querySelectorAll('*')
-    nodes[0].onclick = () => opts.onclick()
+    nodes[0].onclick = opts.onclick
     nodes[0].style = `--color:${opts.media.coverImage.color || '#1890ff'};`
     nodes[3].src = opts.media.coverImage.extraLarge || ''
     nodes[6].textContent = [opts.media.title.userPreferred, opts.episodeNumber].filter(s => s).join(' - ')
@@ -200,6 +243,7 @@ function cardCreator (opts) {
   } else if (opts.parseObject) {
     const card = bareCard.cloneNode(true)
     card.querySelector('h5').textContent = [opts.parseObject.anime_title, opts.parseObject.episode_number].filter(s => s).join(' - ')
+    card.firstElementChild.onclick = opts.onclick
     return card
   } else {
     return skeletonCard.cloneNode(true)

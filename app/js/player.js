@@ -17,29 +17,23 @@ class TorrentPlayer extends WebTorrent {
     })
     // kind of a fetch event from service worker but for the main thread.
     navigator.serviceWorker.addEventListener('message', evt => {
-      const request = new Request(evt.data.url, {
-        headers: evt.data.headers,
-        method: evt.data.method
-      })
-
-      const [port] = evt.ports
-      const respondWith = msg => port.postMessage(msg)
-      const pathname = request.url.split(evt.data.scope + 'webtorrent/')[1]
-      let [infoHash, ...filePath] = pathname.split('/')
+      let [infoHash, ...filePath] = evt.data.url.split(evt.data.scope + 'webtorrent/')[1].split('/')
       filePath = decodeURI(filePath.join('/'))
 
       if (!infoHash || !filePath) return
 
-      const torrent = this.get(infoHash)
-      const file = torrent.files.find(file => file.path === filePath)
-
-      const [response, stream] = this.serveFile(file, request)
+      const [port] = evt.ports
+      const [response, stream] = this.serveFile(this.get(infoHash).files.find(file => file.path === filePath), new Request(evt.data.url, {
+        headers: evt.data.headers,
+        method: evt.data.method
+      }))
       const asyncIterator = stream && stream[Symbol.asyncIterator]()
-      respondWith(response)
-      async function pull (msg) {
+      port.postMessage(response)
+
+      port.onmessage = async msg => {
         if (msg.data) {
           const chunk = (await asyncIterator.next()).value
-          respondWith(chunk)
+          port.postMessage(chunk)
           if (!chunk) port.onmessage = null
         } else {
           console.log('Closing stream')
@@ -47,8 +41,6 @@ class TorrentPlayer extends WebTorrent {
           port.onmessage = null
         }
       }
-
-      port.onmessage = pull
     })
 
     this.video = options.video
@@ -145,6 +137,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.immerseTime = options.immerseTime || 5
     this.player.addEventListener('mousemove', () => requestAnimationFrame(() => this.resetImmerse()))
     this.player.addEventListener('keypress', () => requestAnimationFrame(() => this.resetImmerse()))
+    this.player.addEventListener('mouseleave', () => requestAnimationFrame(() => this.immersePlayer()))
 
     this.bufferTimeout = undefined
     this.video.addEventListener('playing', () => this.hideBuffering())
@@ -183,33 +176,39 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.streamedDownload = options.streamedDownload
 
     this.fps = 23.976
-    if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
-      this.video.addEventListener('loadedmetadata', () => {
+    this.video.addEventListener('loadedmetadata', () => {
+      if (this.currentFile.name.endsWith('.mkv') || this.currentFile.name.endsWith('.webm')) {
         this.fps = new Promise((resolve, reject) => {
-          this.video.onplay = () => {
-            setTimeout(() => this.video.requestVideoFrameCallback((now, metaData) => {
-              let duration = 0
-              for (let index = this.video.played.length; index--;) {
-                duration += this.video.played.end(index) - this.video.played.start(index)
-              }
-              const rawFPS = metaData.presentedFrames / duration
-              console.log(rawFPS, metaData)
-              if (rawFPS < 28) {
-                resolve(23.976)
-              } else if (rawFPS <= 35) {
-                resolve(29.97)
-              } else if (rawFPS <= 70) {
-                resolve(59.94)
-              } else {
-                resolve(23.976) // smth went VERY wrong
-              }
-            }), 2000)
-            this.video.onplay = undefined
+          if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+            this.video.onplay = () => {
+              setTimeout(() => this.video.requestVideoFrameCallback((now, metaData) => {
+                let duration = 0
+                for (let index = this.video.played.length; index--;) {
+                  duration += this.video.played.end(index) - this.video.played.start(index)
+                }
+                const rawFPS = metaData.presentedFrames / duration
+                console.log(rawFPS, metaData)
+                if (rawFPS < 28) {
+                  resolve(23.976)
+                } else if (rawFPS <= 35) {
+                  resolve(29.97)
+                } else if (rawFPS <= 70) {
+                  resolve(59.94)
+                } else {
+                  resolve(23.976) // smth went VERY wrong
+                }
+              }), 2000)
+              this.video.onplay = undefined
+            }
+            this.playVideo()
+          } else {
+            setTimeout(() => {
+              resolve(23.976)
+            }, 2000)
           }
-          this.playVideo()
         })
-      })
-    }
+      }
+    })
 
     for (const [key, value] of Object.entries(this.controls)) {
       if (this[key]) {
@@ -218,7 +217,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         })
       }
     }
-    document.onkeydown = a => {
+    document.addEventListener('keydown', a => {
       if (a.key === 'F5') {
         a.preventDefault()
       }
@@ -265,7 +264,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
             break
         }
       }
-    }
+    })
   }
 
   serveFile (file, req) {
@@ -552,11 +551,12 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   resetImmerse () {
-    if (!this.immerseTimeout) {
+    if (this.immerseTimeout) {
       clearTimeout(this.immerseTimeout)
+    } else {
       this.player.classList.remove('immersed')
-      this.immerseTimeout = setTimeout(() => this.immersePlayer(), this.immerseTime * 1000)
     }
+    this.immerseTimeout = setTimeout(() => this.immersePlayer(), this.immerseTime * 1000)
   }
 
   hideBuffering () {
@@ -693,6 +693,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     frag.appendChild(label)
     if (type === 'captions') {
       this.controls.selectCaptions.appendChild(frag)
+      this.controls.captionsButton.removeAttribute('disabled')
     } else {
       this.controls.selectAudio.appendChild(frag)
     }
@@ -828,7 +829,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       if (!this.subtitleData.renderer) {
         this.subtitleData.renderer = new SubtitlesOctopus(options)
         this.selectCaptions(this.subtitleData.current)
-        this.controls.captionsButton.removeAttribute('disabled')
       }
     }
   }

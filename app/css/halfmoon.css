@@ -1246,7 +1246,7 @@ CSS variables (CSS custom properties)
 
   /* Select */
 
-  --select-bg-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAYAAABiDJ37AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAI9JREFUeNpiZACCyMjIBCDVD8SOy5cvv8BAAgDqNQBS+4G4EKh3ASPUsPlQ+Q+kGIpkmABUKJEJ6jIYAEnshyok1TAQ6AcZ6Ah1GdGG4jAM7DtGQgrQvU9ILSOxColVw0is7VA2QV8wkhA+DMQECSMJgc5AyDCcBhIwFG9aZSQxrRFM+IwkJGAGYnIRQIABACQuXCKovu2mAAAAAElFTkSuQmCC);
+  --select-bg-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAYAAABiDJ37AAAAAXNSR0IArs4c6QAAAN9JREFUOE+Vk1t1AzEMRO8wMJRSKJMWQpAEQsvEFMKkZjA98iqJva+m/tizXq+uRiNZALY/gCvwLukW315dtt+AClwkfSthXwlo/4EOsJLxnwH8AYoB9QcvQTvMVOQSQctyC2AecM/SD0CH5S/KXEGFVGLUFJalhzvQfaUBM1SZEsKWop7/3rVGY+YSlsyT0rGaBIWeyaIH8KG0dyx9GTxNk6qhDEEbvyfgGmqUjXLr74TPqc00tB2zDXD21GWAMiY4atou8ERpGHs6VofAdfdzOnbLHG/VKXAFje2fV/MXa5SXgndWNgQAAAAASUVORK5CYII=);
   --select-bg-size: 1rem;
   --select-bg-repeat: no-repeat;
   --select-bg-position: calc(100% - 1rem) center;
@@ -7104,12 +7104,18 @@ select.form-control:not([multiple]) {
 .dark-mode select.form-control:not([multiple]) > option {
   /* Required for some browsers, such as Firefox, or the old Ms Edge (ignored on webkit browsers) */
   color: var(--dm-input-text-color);
-  background-color: var(--dark-color);
+  background-color: rgb(48 51 55);
 }
 .dark-mode select.form-control:not([multiple]) > option:hover {
   /* Required for some browsers, such as Firefox, or the old Ms Edge (ignored on webkit browsers) */
   color: var(--dm-input-text-color);
   background-color: var(--primary-color);
+}
+.dark-mode select.form-control:invalid {
+  color: var(--dm-input-placeholder-text-color);
+}
+select.form-control:invalid {
+  color: var(--lm-input-placeholder-text-color);
 }
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {  
   /*

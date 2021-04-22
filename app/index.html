@@ -2,841 +2,917 @@
 <html lang="en">
 
 <head>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Miru">
-    <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
-    <meta name="theme-color" content="#11141700" />
-    <link rel="icon" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-    <meta property="og:title" content="Miru">
-    <meta property="og:url" content="https://mirumoe.netlify.app/">
-    <meta property="og:description" content="Miru - Torrent streaming made simple!">
-    <meta property="og:type" content="video.other">
-    <meta property="og:image" content="logo.png">
-    <title>Miru</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Miru">
+  <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
+  <meta name="theme-color" content="#11141700" />
+  <link rel="icon" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta property="og:title" content="Miru">
+  <meta property="og:url" content="https://mirumoe.netlify.app/">
+  <meta property="og:description" content="Miru - Torrent streaming made simple!">
+  <meta property="og:type" content="video.other">
+  <meta property="og:image" content="logo.png">
+  <title>Miru</title>
 
-    <link href="css/halfmoon.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="css/misc.css" rel="stylesheet">
-    <link href="css/torrent-player.css" rel="stylesheet">
-    <style id="substyles">
-    </style>
+  <link href="css/halfmoon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/misc.css" rel="stylesheet">
+  <link href="css/torrent-player.css" rel="stylesheet">
+  <style id="substyles">
+  </style>
 </head>
 
 <body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars">
-    <div class="modal" id="tsearch" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content w-auto">
-                <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Size</th>
-                            <th scope="col">Seed</th>
-                            <th scope="col">Leech</th>
-                            <th scope="col">Downloads</th>
-                            <th scope="col">Play</th>
-                        </tr>
-                    </thead>
-                    <tbody class="results">
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  <div class="modal" id="tsearch" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content w-auto">
+        <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close">
+          <span>&times;</span>
+        </button>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Name</th>
+              <th scope="col">Size</th>
+              <th scope="col">Seed</th>
+              <th scope="col">Leech</th>
+              <th scope="col">Downloads</th>
+              <th scope="col">Play</th>
+            </tr>
+          </thead>
+          <tbody class="results">
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class="modal modal-full bg-dark-light" id="view" tabindex="-1" role="dialog">
-        <div class="modal-dialog bg-transparent" role="document">
-            <div class="view modal-content bg-transparent">
-                <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close">
-                    <span>×</span>
-                </button>
-                <div class="row">
-                    <div class="col-md-2">
-                        <img class="contain-img rounded w-full mb-15" src="" id="viewImg">
-                        <div class="d-flex flex-column flex-wrap">
-                            <button class="btn btn-primary d-flex align-items-end mb-5" type="button" id="viewPlay">
-                                <span class="material-icons mr-10 font-size-20">
-                                    play_arrow
-                                </span>
-                                Play
-                            </button>
-                            <button class="btn d-flex align-items-end mb-5" type="button" id="viewTrailer">
-                                <span class="material-icons mr-10 font-size-20">
-                                    theaters
-                                </span>
-                                Trailer
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-md-7">
-                        <div class="px-20 ml-20 d-flex flex-column font-size-12 text-muted">
-                            <span class="title font-weight-bold font-size-24 text-white pb-5" id="viewTitle"></span>
-                            <span id="viewSeason" class="text-capitalize"></span>
-                            <span id="viewMediaInfo" class="text-capitalize"></span>
-                            <p class="text-muted desc overflow-y-auto my-0 font-size-12 pt-20" id="viewDesc">
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="card m-0 py-5 font-size-12" id="viewDetails">
-                        </div>
-                        <div class="input-group mt-5" data-toggle="tooltip" data-placement="top"
-                            data-title="Manually Add A Synonym To The Media, Case Sensitive">
-                            <input type="text" class="form-control" placeholder="Add Synonym" id="viewSynonymText">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary btn-square" type="button"
-                                    id="viewSynonym">&plus;</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="pt-20" id="viewEpisodesWrapper">
-                    <span class="font-weight-bold font-size-22 text-white">Episodes</span>
-                    <div id="episodes" class="pt-10 d-flex overflow-x-auto justify-content-start">
-                    </div>
-                </div>
-                <div id="viewRelations" class="pt-20">
-                    <span class="font-weight-bold font-size-22 text-white">Relations</span>
-                    <div class="gallery gallery-sm" id="viewRelationsGallery">
-                    </div>
-                </div>
+  </div>
+  <div class="modal modal-full bg-dark-light" id="view" tabindex="-1" role="dialog">
+    <div class="modal-dialog bg-transparent" role="document">
+      <div class="view modal-content bg-transparent">
+        <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close">
+          <span>×</span>
+        </button>
+        <div class="row">
+          <div class="col-md-2">
+            <img class="contain-img rounded w-full mb-15" src="" id="viewImg">
+            <div class="d-flex flex-column flex-wrap">
+              <button class="btn btn-primary d-flex align-items-end mb-5" type="button" id="viewPlay">
+                <span class="material-icons mr-10 font-size-20">
+                  play_arrow
+                </span>
+                Play
+              </button>
+              <button class="btn d-flex align-items-end mb-5" type="button" id="viewTrailer">
+                <span class="material-icons mr-10 font-size-20">
+                  theaters
+                </span>
+                Trailer
+              </button>
             </div>
-        </div>
-    </div>
-    <div class="modal" id="trailer" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content w-three-quarter h-full bg-transparent d-flex justify-content-center flex-column">
-                <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close" id="trailerClose">
-                    <span>&times;</span>
-                </button>
-                <div class="trailer w-full position-relative">
-                    <iframe id="trailerVideo" src="" frameborder="0" allowfullscreen="allowfullscreen"
-                        class="w-full h-full position-absolute rounded top-0 left-0"></iframe>
-                </div>
+          </div>
+          <div class="col-md-7">
+            <div class="px-20 ml-20 d-flex flex-column font-size-12 text-muted">
+              <span class="title font-weight-bold font-size-24 text-white pb-5" id="viewTitle"></span>
+              <span id="viewSeason" class="text-capitalize"></span>
+              <span id="viewMediaInfo" class="text-capitalize"></span>
+              <p class="text-muted desc overflow-y-auto my-0 font-size-12 pt-20" id="viewDesc">
+              </p>
             </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card m-0 py-5 font-size-12" id="viewDetails">
+            </div>
+            <div class="input-group mt-5" data-toggle="tooltip" data-placement="top"
+              data-title="Manually Add A Synonym To The Media, Case Sensitive">
+              <input type="text" class="form-control" placeholder="Add Synonym" id="viewSynonymText">
+              <div class="input-group-append">
+                <button class="btn btn-primary btn-square" type="button" id="viewSynonym">&plus;</button>
+              </div>
+            </div>
+          </div>
         </div>
+        <div class="pt-20" id="viewEpisodesWrapper">
+          <span class="font-weight-bold font-size-22 text-white">Episodes</span>
+          <div id="episodes" class="pt-10 d-flex overflow-x-auto justify-content-start">
+          </div>
+        </div>
+        <div id="viewRelations" class="pt-20">
+          <span class="font-weight-bold font-size-22 text-white">Relations</span>
+          <div class="gallery gallery-sm" id="viewRelationsGallery">
+          </div>
+        </div>
+      </div>
     </div>
-    <div id="pageWrapper" class="page-wrapper with-navbar">
-        <div class="sticky-alerts"></div>
-        <nav class="navbar bg-dark">
-            <a href="#player" class="navbar-brand mt-5 ml-10">
-                <img src="logo_cut.png" alt="logo">
+  </div>
+  <div class="modal" id="trailer" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content w-three-quarter h-full bg-transparent d-flex justify-content-center flex-column">
+        <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close" id="trailerClose">
+          <span>&times;</span>
+        </button>
+        <div class="trailer w-full position-relative">
+          <iframe id="trailerVideo" src="" frameborder="0" allowfullscreen="allowfullscreen"
+            class="w-full h-full position-absolute rounded top-0 left-0"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="pageWrapper" class="page-wrapper with-navbar">
+    <div class="sticky-alerts"></div>
+    <nav class="navbar bg-dark">
+      <div class="container">
+        <a href="#player" class="navbar-brand mt-5 ml-10">
+          <img src="logo_cut.png" alt="logo">
+        </a>
+        <a href="#downloads" class="navbar-brand pointer ml-auto" data-toggle="tooltip" data-placement="bottom"
+          data-title="Your Downloads" id="navDownloads">
+          <span class="material-icons font-size-20">get_app</span>
+        </a>
+        <a href="#home" class="navbar-brand pointer" data-toggle="tooltip" data-placement="bottom"
+          data-title="Airing Schedule" id="navSchedule" data-function="schedule">
+          <span class="material-icons font-size-20">schedule</span>
+        </a>
+        <a href="#home" class="navbar-brand pointer" data-toggle="tooltip" data-placement="bottom"
+          data-title="Home Page" id="navHome">
+          <span class="material-icons font-size-20">home</span>
+        </a>
+        <a class="navbar-brand pointer d-none" data-toggle="tooltip" data-placement="bottom"
+          data-title="Currently Playing Anime" id="navNowPlaying">
+          <span class="material-icons font-size-20">queue_music</span>
+        </a>
+        <a href="#settingsTab" class="navbar-brand pointer font-size-20" data-toggle="tooltip" data-placement="bottom"
+          data-title="Settings">
+          <span class="material-icons font-size-20">tune</span>
+        </a>
+        <a id="oauth" class="navbar-brand pointer font-size-20 mr-5" data-toggle="tooltip" data-placement="bottom"
+          data-title="Login With AniList"
+          href="https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token">
+          <span class="material-icons font-size-20">login</span>
+        </a>
+      </div>
+    </nav>
+    <div class="overflow-y-hidden content-wrapper">
+      <section id="player" class="overflow-hidden torrent-player">
+        <video id="video" src=""></video>
+        <a href="#player" class="miniplayer"></a>
+        <div class="top">
+          <div data-name="nowPlaying" class="col-4 ctrl">
+          </div>
+          <div class="col-4 justify-content-center">
+            <span class="ctrl material-icons" data-value="0" data-name="peers">
+              people
+            </span>
+            <span class="ctrl material-icons" data-value="0 B/s" data-name="downSpeed">
+              arrow_downward
+            </span>
+            <span class="ctrl material-icons" data-value="0 B/s" data-name="upSpeed">
+              arrow_upward
+            </span>
+          </div>
+          <div class="col-4 justify-content-end">
+            <span class="material-icons ctrl" title="Wait For File To Fully Download Before Saving To Drive" disabled
+              data-name="downloadFile">
+              get_app
+            </span>
+          </div>
+        </div>
+        <div class="middle ctrl" data-name="ppToggle">
+          <div data-name="bufferingDisplay">
+          </div>
+        </div>
+        <div class="bottom">
+          <span class="material-icons ctrl" title="Play/Pause [Space]" data-name="playPause">
+            play_arrow
+          </span>
+          <span class="material-icons ctrl" title="Next [N]" data-name="playNext">
+            skip_next
+          </span>
+          <span class="material-icons ctrl" title="Playlist [P]" data-name="openPlaylist">
+            playlist_play
+          </span>
+          <div class="volume">
+            <span class="material-icons ctrl" title="Mute [M]" data-name="toggleMute">
+              volume_up
+            </span>
+            <input class="ctrl" type="range" value="100" id="volume" step="any" data-name="setVolume">
+          </div>
+          <div class="audio-tracks dropdown dropup with-arrow">
+            <span class="material-icons ctrl" title="Audio Tracks [T]" id="baudio" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false" disabled data-name="audioButton">
+              queue_music
+            </span>
+            <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize"
+              aria-labelledby="baudio" data-name="selectAudio">
+            </div>
+          </div>
+          <div class="ctrl" data-name="progressWrapper" data-elapsed="00:00" data-remaining="00:00">
+            <div>
+              <input class="ctrl" type="range" min="0" max="100" value="0" step="any" data-name="setProgress">
+              <img class="ctrl" data-elapsed="00:00" data-name="thumbnail">
+            </div>
+          </div>
+          <div class="subtitles dropdown dropup with-arrow">
+            <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false" disabled data-name="captionsButton">
+              subtitles
+            </span>
+            <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize"
+              aria-labelledby="bcap" data-name="selectCaptions">
+            </div>
+          </div>
+          <span class="material-icons ctrl" title="Popout Window [P]" data-name="togglePopout">
+            picture_in_picture
+          </span>
+          <span class="material-icons ctrl" title="Theatre Mode [T]" data-name="toggleTheatre">
+            crop_16_9
+          </span>
+          <span class="material-icons ctrl" title="Fullscreen [F]" data-name="toggleFullscreen">
+            fullscreen
+          </span>
+        </div>
+      </section>
+      <section id="home" class="flex-column overflow-y-auto">
+        <div class="h-full py-10">
+          <div class="container-fluid row p-20" id="searchWrapper">
+            <div class="col-lg col-3 p-10 d-flex flex-column justify-content-end">
+              <div class="pb-10 font-size-24 font-weight-semi-bold">Title</div>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span
+                    class="input-group-text d-flex material-icons bg-dark text-muted pr-0 font-size-18">search</span>
+                </div>
+                <input type="text" class="form-control bg-dark border-left-0" autocomplete="off" id="searchText"
+                  data-option="search" placeholder="Any">
+              </div>
+            </div>
+            <div class="col-lg col-3 p-10 d-flex flex-column justify-content-end">
+              <div class="pb-10 font-size-24 font-weight-semi-bold">Genre</div>
+              <select class="form-control bg-dark" required id="searchGenre" data-option="genre">
+                <option value selected disabled hidden>Any</option>
+                <option value="action">Action</option>
+                <option value="adventure">Adventure</option>
+                <option value="comedy">Comedy</option>
+                <option value="drama">Drama</option>
+                <option value="ecchi">Ecchi</option>
+                <option value="fantasy">Fantasy</option>
+                <option value="horror">Horror</option>
+                <option value="maho shoujo">Mahou Shoujo</option>
+                <option value="mecha">Mecha</option>
+                <option value="music">Music</option>
+                <option value="mystery">Mystery</option>
+                <option value="psychological">Psychological</option>
+                <option value="romance">Romance</option>
+                <option value="sci-fi">Sci-Fi</option>
+                <option value="slice of life">Slice of Life</option>
+                <option value="sports">Sports</option>
+                <option value="supernatural">Supernatural</option>
+                <option value="thriller">Thriller</option>
+              </select>
+            </div>
+            <div class="col-lg col-3 p-10 d-flex flex-column justify-content-end">
+              <div class="pb-10 font-size-24 font-weight-semi-bold">Year</div>
+              <input type="number" placeholder="Any" min="1940" max="2100" class="form-control bg-dark" id="searchYear"
+                data-option="year">
+            </div>
+            <div class="col-lg col-3 p-10 d-flex flex-column justify-content-end">
+              <div class="pb-10 font-size-24 font-weight-semi-bold">Season</div>
+              <select class="form-control bg-dark" required id="searchSeason" data-option="season">
+                <option value selected disabled hidden>Any</option>
+                <option value="WINTER">Winter</option>
+                <option value="SPRING">Spring</option>
+                <option value="SUMMER">Summer</option>
+                <option value="FALL">Fall</option>
+              </select>
+            </div>
+            <div class="col p-10 d-flex flex-column justify-content-end">
+              <div class="pb-10 font-size-24 font-weight-semi-bold">Format</div>
+              <select class="form-control bg-dark" required id="searchFormat" data-option="format">
+                <option value selected disabled hidden>Any</option>
+                <option value="TV">TV Show</option>
+                <option value="MOVIE">Movie</option>
+                <option value="TV_SHORT">TV Short</option>
+                <option value="OVA">OVA</option>
+                <option value="ONA">ONA</option>
+              </select>
+            </div>
+            <div class="col p-10 d-flex flex-column justify-content-end">
+              <div class="pb-10 font-size-24 font-weight-semi-bold">Airing Status</div>
+              <select class="form-control bg-dark" required id="searchStatus" data-option="status">
+                <option value selected disabled hidden>Any</option>
+                <option value="RELEASING">Airing</option>
+                <option value="FINISHED">Finished</option>
+                <option value="NOT_YET_RELEASED">Not Yet Aired</option>
+                <option value="CANCELLED">Cancelled</option>
+              </select>
+            </div>
+            <div class="col p-10 d-flex flex-column justify-content-end">
+              <div class="pb-10 font-size-24 font-weight-semi-bold">Sort</div>
+              <select class="form-control bg-dark" required id="searchSort" data-option="sort">
+                <option value selected disabled hidden>Name</option>
+                <option value="START_DATE_DESC">Release Date</option>
+                <option value="SCORE_DESC">Score</option>
+                <option value="POPULARITY_DESC">Popularity</option>
+                <option value="TRENDING_DESC">Trending</option>
+              </select>
+            </div>
+            <div class="col-auto p-10 d-flex">
+              <button class="btn bg-dark material-icons font-size-18 px-5 align-self-end" type="button"
+                id="searchClear">delete</button>
+            </div>
+          </div>
+          <div class="gallery browse">
+          </div>
+          <div class="home">
+            <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homeContinueMore"
+              data-function="continue">
+              <div class="pl-10 font-size-24 font-weight-semi-bold">Continue Watching</div>
+              <div class="pr-10 ml-auto font-size-12">View More</div>
             </a>
-            <a href="#downloads" class="navbar-brand pointer ml-auto" data-toggle="tooltip" data-placement="bottom"
-                data-title="Your Downloads" id="navDownloads">
-                <span class="material-icons font-size-20">get_app</span>
+            <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homeContinue"
+              data-function="continue">
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homeReleasesMore"
+              data-function="releases">
+              <div class="pl-10 font-size-24 font-weight-semi-bold">New Releases</div>
+              <div class="pr-10 ml-auto font-size-12">View More</div>
             </a>
-            <a href="#browse" class="navbar-brand pointer" data-toggle="tooltip" data-placement="bottom"
-                data-title="Airing Schedule" id="navSchedule" data-function="schedule">
-                <span class="material-icons font-size-20">schedule</span>
+            <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homeReleases"
+              data-function="releases">
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homePlanningMore"
+              data-function="planning">
+              <div class="pl-10 font-size-24 font-weight-semi-bold">Your List</div>
+              <div class="pr-10 ml-auto font-size-12">View More</div>
             </a>
-            <a href="#home" class="navbar-brand pointer" data-toggle="tooltip" data-placement="bottom"
-                data-title="Home Page" id="navHome">
-                <span class="material-icons font-size-20">home</span>
+            <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homePlanning"
+              data-function="planning">
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homeTrendingMore"
+              data-function="trending">
+              <div class="pl-10 font-size-24 font-weight-semi-bold">Trending Now</div>
+              <div class="pr-10 ml-auto font-size-12">View More</div>
             </a>
-            <a class="navbar-brand pointer d-none" data-toggle="tooltip" data-placement="bottom"
-                data-title="Currently Playing Anime" id="navNowPlaying">
-                <span class="material-icons font-size-20">queue_music</span>
+            <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homeTrending"
+              data-function="trending">
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homeRomanceMore"
+              data-function="romance">
+              <div class="pl-10 font-size-24 font-weight-semi-bold">Romance</div>
+              <div class="pr-10 ml-auto font-size-12">View More</div>
             </a>
-            <form class="form-inline d-flex" action="javascript:searchBox()">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text d-flex material-icons bg-dark-light pr-0">search</span>
-                    </div>
-                    <input id="search" type="text" class="form-control bg-dark-light border-left-0" placeholder="Search"
-                        autocomplete="off">
+            <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homeRomance"
+              data-function="romance">
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
                 </div>
-            </form>
-            <a id="oauth" class="navbar-brand pointer font-size-20 mr-5" data-toggle="tooltip" data-placement="bottom"
-                data-title="Login With AniList"
-                href="https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token">
-                <span class="material-icons font-size-20">login</span>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homeActionMore"
+              data-function="action">
+              <div class="pl-10 font-size-24 font-weight-semi-bold">Action</div>
+              <div class="pr-10 ml-auto font-size-12">View More</div>
             </a>
-            <a href="#settingsTab" class="navbar-brand pointer font-size-20 mr-5">
-                <span class="material-icons font-size-20">settings</span>
-            </a>
-        </nav>
-        <div class="overflow-y-hidden content-wrapper">
-            <section id="player" class="overflow-hidden torrent-player">
-                <video id="video" src=""></video>
-                <a href="#player" class="miniplayer"></a>
-                <div class="top">
-                    <div data-name="nowPlaying" class="col-4 ctrl">
-                    </div>
-                    <div class="col-4 justify-content-center">
-                        <span class="ctrl material-icons" data-value="0" data-name="peers">
-                            people
-                        </span>
-                        <span class="ctrl material-icons" data-value="0 B/s" data-name="downSpeed">
-                            arrow_downward
-                        </span>
-                        <span class="ctrl material-icons" data-value="0 B/s" data-name="upSpeed">
-                            arrow_upward
-                        </span>
-                    </div>
-                    <div class="col-4 justify-content-end">
-                        <span class="material-icons ctrl" title="Wait For File To Fully Download Before Saving To Drive"
-                            disabled data-name="downloadFile">
-                            get_app
-                        </span>
-                    </div>
+            <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homeAction"
+              data-function="action">
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
                 </div>
-                <div class="middle ctrl" data-name="ppToggle">
-                    <div data-name="bufferingDisplay">
-                    </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
                 </div>
-                <div class="bottom">
-                    <span class="material-icons ctrl" title="Play/Pause [Space]" data-name="playPause">
-                        play_arrow
-                    </span>
-                    <span class="material-icons ctrl" title="Next [N]" data-name="playNext">
-                        skip_next
-                    </span>
-                    <span class="material-icons ctrl" title="Playlist [P]" data-name="openPlaylist">
-                        playlist_play
-                    </span>
-                    <div class="volume">
-                        <span class="material-icons ctrl" title="Mute [M]" data-name="toggleMute">
-                            volume_up
-                        </span>
-                        <input class="ctrl" type="range" value="100" id="volume" step="any" data-name="setVolume">
-                    </div>
-                    <div class="audio-tracks dropdown dropup with-arrow">
-                        <span class="material-icons ctrl" title="Audio Tracks [T]" id="baudio" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false" disabled data-name="audioButton">
-                            queue_music
-                        </span>
-                        <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize"
-                            aria-labelledby="baudio" data-name="selectAudio">
-                        </div>
-                    </div>
-                    <div class="ctrl" data-name="progressWrapper" data-elapsed="00:00" data-remaining="00:00">
-                        <div>
-                            <input class="ctrl" type="range" min="0" max="100" value="0" step="any"
-                                data-name="setProgress">
-                            <img class="ctrl" data-elapsed="00:00" data-name="thumbnail">
-                        </div>
-                    </div>
-                    <div class="subtitles dropdown dropup with-arrow">
-                        <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false" disabled data-name="captionsButton">
-                            subtitles
-                        </span>
-                        <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize"
-                            aria-labelledby="bcap" data-name="selectCaptions">
-                        </div>
-                    </div>
-                    <span class="material-icons ctrl" title="Popout Window [P]" data-name="togglePopout">
-                        picture_in_picture
-                    </span>
-                    <span class="material-icons ctrl" title="Theatre Mode [T]" data-name="toggleTheatre">
-                        crop_16_9
-                    </span>
-                    <span class="material-icons ctrl" title="Fullscreen [F]" data-name="toggleFullscreen">
-                        fullscreen
-                    </span>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
                 </div>
-            </section>
-            <section id="home" class="flex-column overflow-y-auto">
-                <div class="h-full py-10">
-                    <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homeContinueMore"
-                        data-function="continue" href="#browse">
-                        <div class="pl-10 font-size-24 font-weight-semi-bold">Continue Watching</div>
-                        <div class="pr-10 ml-auto font-size-12">View More</div>
-                    </a>
-                    <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homeContinue"
-                        data-function="continue">
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homeReleasesMore"
-                        data-function="releases" href="#browse">
-                        <div class="pl-10 font-size-24 font-weight-semi-bold">New Releases</div>
-                        <div class="pr-10 ml-auto font-size-12">View More</div>
-                    </a>
-                    <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homeReleases"
-                        data-function="releases">
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homePlanningMore"
-                        data-function="planning" href="#browse">
-                        <div class="pl-10 font-size-24 font-weight-semi-bold">Your List</div>
-                        <div class="pr-10 ml-auto font-size-12">View More</div>
-                    </a>
-                    <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homePlanning"
-                        data-function="planning">
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homeTrendingMore"
-                        data-function="trending" href="#browse">
-                        <div class="pl-10 font-size-24 font-weight-semi-bold">Trending Now</div>
-                        <div class="pr-10 ml-auto font-size-12">View More</div>
-                    </a>
-                    <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homeTrending"
-                        data-function="trending">
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homeRomanceMore"
-                        data-function="romance" href="#browse">
-                        <div class="pl-10 font-size-24 font-weight-semi-bold">Romance</div>
-                        <div class="pr-10 ml-auto font-size-12">View More</div>
-                    </a>
-                    <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homeRomance"
-                        data-function="romance">
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <a class="d-flex px-20 align-items-end pointer text-decoration-none" id="homeActionMore"
-                        data-function="action" href="#browse">
-                        <div class="pl-10 font-size-24 font-weight-semi-bold">Action</div>
-                        <div class="pr-10 ml-auto font-size-12">View More</div>
-                    </a>
-                    <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative" id="homeAction"
-                        data-function="action">
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-0 p-0">
-                            <div class="row h-full">
-                                <div class="col-4 skeloader">
-                                </div>
-                                <div class="col-8 bg-very-dark px-15 py-10">
-                                    <p class="skeloader w-300 h-25 rounded bg-dark">
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                        <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+              </div>
+              <div class="card m-0 p-0">
+                <div class="row h-full">
+                  <div class="col-4 skeloader">
+                  </div>
+                  <div class="col-8 bg-very-dark px-15 py-10">
+                    <p class="skeloader w-300 h-25 rounded bg-dark">
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                      <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+                    </p>
+                  </div>
                 </div>
-            </section>
-            <section id="browse" class="flex-column overflow-y-auto">
-                <div class="gallery browse">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="downloads" class="flex-column overflow-y-auto">
+        <div class="gallery downloads">
+        </div>
+      </section>
+      <section id="playlist" class="flex-column overflow-y-auto">
+        <div class="gallery playlist">
+        </div>
+      </section>
+      <section id="settingsTab" class="overflow-y-auto">
+        <div class="content d-flex flex-column align-items-center w-full mt-15">
+          <div class="d-flex flex-row">
+            <div class="p-5">
+              <h1 class="content-title font-size-22">
+                Player Settings
+              </h1>
+              <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
+                data-title="Time For Player Controls To Hide">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Immerse After</span>
                 </div>
-            </section>
-            <section id="downloads" class="flex-column overflow-y-auto">
-                <div class="gallery downloads">
+                <input id="player2" type="number" value="3" min="1" max="30" class="form-control text-right">
+                <div class="input-group-append">
+                  <span class="input-group-text">sec</span>
                 </div>
-            </section>
-            <section id="playlist" class="flex-column overflow-y-auto">
-                <div class="gallery playlist">
+              </div>
+              <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
+                data-title="How Much To Seek Video">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Seek</span>
                 </div>
-            </section>
-            <section id="settingsTab" class="overflow-y-auto">
-                <div class="content d-flex flex-column align-items-center w-full mt-15">
-                    <div class="d-flex flex-row">
-                        <div class="p-5">
-                            <h1 class="content-title font-size-22">
-                                Player Settings
-                            </h1>
-                            <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Time For Player Controls To Hide">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Immerse After</span>
-                                </div>
-                                <input id="player2" type="number" value="3" min="1" max="30"
-                                    class="form-control text-right">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">sec</span>
-                                </div>
-                            </div>
-                            <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="How Much To Seek Video">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Seek</span>
-                                </div>
-                                <input id="player3" type="number" value="2" min="1" max="30"
-                                    class="form-control text-right">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">sec</span>
-                                </div>
-                            </div>
-                            <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
-                                data-title="The Default Styles For Subtitles That Don't Have Styles Specified">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Default Style</span>
-                                </div>
-                                <input id="subtitle1" type="text" list="subtitle1list" class="form-control"
-                                    autocomplete="off" value="SubsPlease">
-                                <datalist id="subtitle1list">
-                                    <option value="SubsPlease">Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1</option>
-                                    <option value="Erai-raws">Open Sans Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1</option>
-                                </datalist>
-                            </div>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Displays Subtitles In PiP And ChromeCast, CPU Intensive">
-                                <input type="checkbox" id="subtitle3" checked>
-                                <label for="subtitle3">Burn In Subtitles</label>
-                            </div>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Generates Small Thumbnail Images When Using The Seek Bar After A Video Finished Downloading, VERY CPU Intensive">
-                                <input type="checkbox" id="player5" checked>
-                                <label for="player5">Generate Seek Bar Previews</label>
-                            </div>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Automatically Starts Playing Next Episode When A Video Ends">
-                                <input type="checkbox" id="player6">
-                                <label for="player6">Autoplay Next Episode</label>
-                            </div>
-                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
-                                data-title="Pauses/Resumes Video Playback When Tabbing In/Out Of The App.">
-                                <input type="checkbox" id="player10" checked>
-                                <label for="player10">Pause When Tabbing Out</label>
-                            </div>
-                        </div>
-                        <div class="p-5">
-                            <h1 class="content-title font-size-22">
-                                Torrent Settings
-                            </h1>
-                            <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
-                                data-title="What Quality To Find Torrents In">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Quality</span>
-                                </div>
-                                <select class="form-control" id="torrent1">
-                                    <option value="1080" selected>1080p</option>
-                                    <option value="720">720p</option>
-                                    <option value='480"||"540'>SD</option>
-                                </select>
-                            </div>
-                            <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
-                                data-title="What RSS Feed To Fetch Torrents From, Allows For Custom CORS Enabled Feeds, URL Is Automatically Followed By Resolution">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Feed</span>
-                                </div>
-                                <input id="torrent4" type="text" list="torrent4list" class="form-control"
-                                    autocomplete="off" value="SubsPlease">
-                                <datalist id="torrent4list">
-                                    <option value="SubsPlease">https://subsplease.org/rss/?r=</option>
-                                    <option value="Erai-raws">https://www.erai-raws.info/rss-</option>
-                                </datalist>
-                            </div>
-                            <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="How Many Max Peers To Connect To, Higher Numbers Mean Higher Speeds And More CPU Usage">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Max Connections</span>
-                                </div>
-                                <input id="torrent6" type="number" value="55" min="10" step="5" max="255"
-                                    class="form-control text-right">
-                            </div>
-                            <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Download/Upload Speed Limit For Torrents, Higher Values Increase CPU Usage">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Speed Cap</span>
-                                </div>
-                                <input id="torrent7" type="number" value="10" min="0" max="50"
-                                    class="form-control text-right">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">MB/s</span>
-                                </div>
-                            </div>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Skips The Torrent Selection Popup, Might Lead To Unwanted Videos Being
+                <input id="player3" type="number" value="2" min="1" max="30" class="form-control text-right">
+                <div class="input-group-append">
+                  <span class="input-group-text">sec</span>
+                </div>
+              </div>
+              <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
+                data-title="The Default Styles For Subtitles That Don't Have Styles Specified">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Default Style</span>
+                </div>
+                <input id="subtitle1" type="text" list="subtitle1list" class="form-control" autocomplete="off"
+                  value="SubsPlease">
+                <datalist id="subtitle1list">
+                  <option value="SubsPlease">Roboto
+                    Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
+                  </option>
+                  <option value="Erai-raws">Open Sans
+                    Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1
+                  </option>
+                </datalist>
+              </div>
+              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
+                data-title="Displays Subtitles In PiP And ChromeCast, CPU Intensive">
+                <input type="checkbox" id="subtitle3" checked>
+                <label for="subtitle3">Burn In Subtitles</label>
+              </div>
+              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
+                data-title="Generates Small Thumbnail Images When Using The Seek Bar After A Video Finished Downloading, VERY CPU Intensive">
+                <input type="checkbox" id="player5" checked>
+                <label for="player5">Generate Seek Bar Previews</label>
+              </div>
+              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
+                data-title="Automatically Starts Playing Next Episode When A Video Ends">
+                <input type="checkbox" id="player6">
+                <label for="player6">Autoplay Next Episode</label>
+              </div>
+              <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
+                data-title="Pauses/Resumes Video Playback When Tabbing In/Out Of The App.">
+                <input type="checkbox" id="player10" checked>
+                <label for="player10">Pause When Tabbing Out</label>
+              </div>
+            </div>
+            <div class="p-5">
+              <h1 class="content-title font-size-22">
+                Torrent Settings
+              </h1>
+              <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
+                data-title="What Quality To Find Torrents In">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Quality</span>
+                </div>
+                <select class="form-control" id="torrent1">
+                  <option value="1080" selected>1080p</option>
+                  <option value="720">720p</option>
+                  <option value='480"||"540'>SD</option>
+                </select>
+              </div>
+              <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
+                data-title="What RSS Feed To Fetch Torrents From, Allows For Custom CORS Enabled Feeds, URL Is Automatically Followed By Resolution">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Feed</span>
+                </div>
+                <input id="torrent4" type="text" list="torrent4list" class="form-control" autocomplete="off"
+                  value="SubsPlease">
+                <datalist id="torrent4list">
+                  <option value="SubsPlease">https://subsplease.org/rss/?r=</option>
+                  <option value="Erai-raws">https://www.erai-raws.info/rss-</option>
+                </datalist>
+              </div>
+              <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
+                data-title="How Many Max Peers To Connect To, Higher Numbers Mean Higher Speeds And More CPU Usage">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Max Connections</span>
+                </div>
+                <input id="torrent6" type="number" value="55" min="10" step="5" max="255"
+                  class="form-control text-right">
+              </div>
+              <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
+                data-title="Download/Upload Speed Limit For Torrents, Higher Values Increase CPU Usage">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Speed Cap</span>
+                </div>
+                <input id="torrent7" type="number" value="10" min="0" max="50" class="form-control text-right">
+                <div class="input-group-append">
+                  <span class="input-group-text">MB/s</span>
+                </div>
+              </div>
+              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Skips The Torrent Selection Popup, Might Lead To Unwanted Videos Being
                     Played">
-                                <input type="checkbox" id="torrent2">
-                                <label for="torrent2">Auto-Play Torrents</label>
-                            </div>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Finds Only Trusted Torrents, Gives Less Results But Higher Quality And With More Seeders">
-                                <input type="checkbox" id="torrent3" checked>
-                                <label for="torrent3">Trusted Only</label>
-                            </div>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Tries To Find Batches For Finished Shows Instead Of Downloading 1 Episode At A Time">
-                                <input type="checkbox" id="torrent9">
-                                <label for="torrent9">Batch Lookup</label>
-                            </div>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Greatly Reduces RAM Usage By Caching Torrents On Drive, Increases CPU And Drive Usage,
+                <input type="checkbox" id="torrent2">
+                <label for="torrent2">Auto-Play Torrents</label>
+              </div>
+              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
+                data-title="Finds Only Trusted Torrents, Gives Less Results But Higher Quality And With More Seeders">
+                <input type="checkbox" id="torrent3" checked>
+                <label for="torrent3">Trusted Only</label>
+              </div>
+              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
+                data-title="Tries To Find Batches For Finished Shows Instead Of Downloading 1 Episode At A Time">
+                <input type="checkbox" id="torrent9">
+                <label for="torrent9">Batch Lookup</label>
+              </div>
+              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Greatly Reduces RAM Usage By Caching Torrents On Drive, Increases CPU And Drive Usage,
                     Bad For SSDs, Disables Downloading">
-                                <input type="checkbox" id="torrent5">
-                                <label for="torrent5">Drive Caching</label>
-                            </div>
-                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
-                                data-title="Only Downloads Pieces Directly Required For Playback Instead Of The Entire File. Recommended Only For Low-End Devices">
-                                <input type="checkbox" id="torrent8">
-                                <label for="torrent8">Streamed Download</label>
-                            </div>
-                        </div>
-                        <div class="p-5">
-                            <h1 class="content-title font-size-22">
-                                Other Settings
-                            </h1>
-                            <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                                data-title="Sends A Notification When A New Episode Is Released">
-                                <input type="checkbox" id="other1">
-                                <label for="other1">Release Notifications</label>
-                            </div>
-                            <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
-                                data-title="Automatically Marks Episodes As Complete On AniList When You Finish Watching Them, Requires AniList Login">
-                                <input type="checkbox" id="other2">
-                                <label for="other2">Autocomplete Episodes</label>
-                            </div>
-                        </div>
-                    </div>
+                <input type="checkbox" id="torrent5">
+                <label for="torrent5">Drive Caching</label>
+              </div>
+              <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
+                data-title="Only Downloads Pieces Directly Required For Playback Instead Of The Entire File. Recommended Only For Low-End Devices">
+                <input type="checkbox" id="torrent8">
+                <label for="torrent8">Streamed Download</label>
+              </div>
+            </div>
+            <div class="p-5">
+              <h1 class="content-title font-size-22">
+                Other Settings
+              </h1>
+              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
+                data-title="Sends A Notification When A New Episode Is Released">
+                <input type="checkbox" id="other1">
+                <label for="other1">Release Notifications</label>
+              </div>
+              <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
+                data-title="Automatically Marks Episodes As Complete On AniList When You Finish Watching Them, Requires AniList Login">
+                <input type="checkbox" id="other2">
+                <label for="other2">Autocomplete Episodes</label>
+              </div>
+            </div>
+          </div>
 
 
-                    <div>
-                        <button class="btn btn-danger" type="button" id="setRes" data-toggle="tooltip"
-                            data-placement="top"
-                            data-title="Restores All Settings Back To Their Recommended Defaults">Restore
-                            Defaults
-                        </button>
-                        <button class="btn btn-danger" type="button" id="clearRelCache" data-toggle="tooltip"
-                            data-placement="top" data-title="Clears Anime Names Data Cache">Clear Name Cache
-                        </button>
-                        <button class="btn btn-success" type="button" id="regProtButton" data-toggle="tooltip"
-                            data-placement="top"
-                            data-title="Sets The App As The Default Program To Launch When Opening Magnet Links On Other Sites, Automatically Downloads And Plays The Torrent">Set
-                            As Default For Magnet Links
-                        </button>
-                    </div>
-                    <p class="text-muted mb-15">
-                        Restart may be required for some settings to take effect.
-                    </p>
-                    <p class="text-muted mb-15">
-                        If you don't know what shit does, use default settings.
-                    </p>
-                </div>
-            </section>
+          <div>
+            <button class="btn btn-danger" type="button" id="setRes" data-toggle="tooltip" data-placement="top"
+              data-title="Restores All Settings Back To Their Recommended Defaults">Restore
+              Defaults
+            </button>
+            <button class="btn btn-danger" type="button" id="clearRelCache" data-toggle="tooltip" data-placement="top"
+              data-title="Clears Anime Names Data Cache">Clear Name Cache
+            </button>
+            <button class="btn btn-success" type="button" id="regProtButton" data-toggle="tooltip" data-placement="top"
+              data-title="Sets The App As The Default Program To Launch When Opening Magnet Links On Other Sites, Automatically Downloads And Plays The Torrent">Set
+              As Default For Magnet Links
+            </button>
+          </div>
+          <p class="text-muted mb-15">
+            Restart may be required for some settings to take effect.
+          </p>
+          <p class="text-muted mb-15">
+            If you don't know what shit does, use default settings.
+          </p>
         </div>
+      </section>
     </div>
-    <template id="skeletonCardTemplate">
-        <div class="card m-0 p-0">
-            <div class="row h-full">
-                <div class="col-4 skeloader"></div>
-                <div class="col-8 bg-very-dark px-15 py-10">
-                    <p class="skeloader w-300 h-25 rounded bg-dark"></p>
-                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                </div>
-            </div>
+  </div>
+  <template id="skeletonCardTemplate">
+    <div class="card m-0 p-0">
+      <div class="row h-full">
+        <div class="col-4 skeloader"></div>
+        <div class="col-8 bg-very-dark px-15 py-10">
+          <p class="skeloader w-300 h-25 rounded bg-dark"></p>
+          <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+          <p class="skeloader w-150 h-10 rounded bg-dark"></p>
         </div>
-    </template>
-    <template id="bareCardTemplate">
-        <div class="card m-0 p-0">
-            <div class="row h-full">
-                <div class="col-4 skeloader"></div>
-                <div class="col-8 bg-very-dark px-15 py-10">
-                    <h5 class="m-0 text-capitalize font-weight-bold pb-10"></h5>
-                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                    <p class="skeloader w-150 h-10 rounded bg-dark"></p>
-                </div>
-            </div>
+      </div>
+    </div>
+  </template>
+  <template id="bareCardTemplate">
+    <div class="card m-0 p-0">
+      <div class="row h-full">
+        <div class="col-4 skeloader"></div>
+        <div class="col-8 bg-very-dark px-15 py-10">
+          <h5 class="m-0 text-capitalize font-weight-bold pb-10"></h5>
+          <p class="skeloader w-150 h-10 rounded bg-dark"></p>
+          <p class="skeloader w-150 h-10 rounded bg-dark"></p>
         </div>
-    </template>
-    <template id="fullCardTemplate">
-        <div class="card m-0 p-0">
-            <div class="row h-full">
-                <div class="col-4">
-                    <img loading="lazy" src="" class="cover-img w-full h-full">
-                </div>
-                <div class="col-8 h-full card-grid">
-                    <div class="px-15 py-10 bg-very-dark">
-                        <h5 class="m-0 text-capitalize font-weight-bold"></h5>
-                        <span class='text-muted font-weight-bold'></span>
-                        <p class="text-muted m-0 text-capitalize details">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </p>
-                    </div>
-                    <div class="overflow-y-auto px-15 pb-5 bg-very-dark card-desc"></div>
-                    <div class="px-15 pb-10 pt-5 genres"></div>
-                </div>
-            </div>
+      </div>
+    </div>
+  </template>
+  <template id="fullCardTemplate">
+    <div class="card m-0 p-0">
+      <div class="row h-full">
+        <div class="col-4">
+          <img loading="lazy" src="" class="cover-img w-full h-full">
         </div>
-    </template>
-    <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.1/js/halfmoon.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@latest/dist/matroska-subtitles.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/indexeddb-chunk-store@latest/idbchunkstore.min.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/anitomyscript@2.0.4/dist/anitomyscript.bundle.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/webtorrent@0.113.0/webtorrent.min.js"></script> -->
-    <script src="js/indexeddb-chunk-store.min.js"></script>
-    <script src="js/wt-ex.js"></script>
-    <script src="js/settingsHandler.js"></script>
-    <script src="js/rangeParser.js"></script>
-    <script src="js/subtitles-octopus.js"></script>
-    <script src="js/util.js"></script>
-    <script src="js/interface.js"></script>
-    <script src="js/animeHandler.js"></script>
-    <script src="js/player.js"></script>
+        <div class="col-8 h-full card-grid">
+          <div class="px-15 py-10 bg-very-dark">
+            <h5 class="m-0 text-capitalize font-weight-bold"></h5>
+            <span class='text-muted font-weight-bold'></span>
+            <p class="text-muted m-0 text-capitalize details">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </p>
+          </div>
+          <div class="overflow-y-auto px-15 pb-5 bg-very-dark card-desc"></div>
+          <div class="px-15 pb-10 pt-5 genres"></div>
+        </div>
+      </div>
+    </div>
+  </template>
+  <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.1/js/halfmoon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@latest/dist/matroska-subtitles.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/indexeddb-chunk-store@latest/idbchunkstore.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/anitomyscript@2.0.4/dist/anitomyscript.bundle.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/webtorrent@0.113.0/webtorrent.min.js"></script> -->
+  <script src="js/indexeddb-chunk-store.min.js"></script>
+  <script src="js/wt-ex.js"></script>
+  <script src="js/settingsHandler.js"></script>
+  <script src="js/rangeParser.js"></script>
+  <script src="js/subtitles-octopus.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/interface.js"></script>
+  <script src="js/animeHandler.js"></script>
+  <script src="js/player.js"></script>
 </body>
 
 </html>
