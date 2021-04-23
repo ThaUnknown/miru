@@ -5,7 +5,7 @@ setRes.addEventListener('click', restoreDefaults)
 settingsTab.addEventListener('click', applySettingsTimeout)
 volume.addEventListener('click', applySettingsTimeout)
 regProtButton.addEventListener('click', registerProtocol)
-let settings = {}
+const settings = JSON.parse(localStorage.getItem('settings')) || {}
 function restoreDefaults () {
   localStorage.removeItem('settings')
   location.reload()
@@ -38,15 +38,13 @@ function registerProtocol () {
   }
 }
 
-if (!localStorage.getItem('settings')) {
+if (!settings) {
   saveSettings()
   location.reload()
-} else {
-  settings = JSON.parse(localStorage.getItem('settings'))
 }
 clearRelCache.onclick = () => {
-  localStorage.removeItem('store')
-  store = {}
+  localStorage.removeItem('relations')
+  relations = {}
 }
 renderSettings()
 

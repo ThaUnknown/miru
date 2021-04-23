@@ -206,7 +206,6 @@ query ($id: Int, $mediaId: Int){
     date.setHours(0, 0, 0, 0)
     variables.from = date.getTime() / 1000
     variables.to = (date.getTime() + 7 * 24 * 60 * 60 * 1000) / 1000
-    console.log(variables)
     query = ` 
 query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
     Page (page: $page, perPage: $perPage) {
@@ -377,9 +376,9 @@ function viewAnime (media) {
     viewRelationsGallery.classList.add('d-none')
   }
   viewSynonym.onclick = () => {
-    store[viewSynonymText.value] = media
+    relations[viewSynonymText.value] = media.id
     viewSynonymText.value = ''
-    localStorage.setItem('store', JSON.stringify(store))
+    localStorage.setItem('relations', JSON.stringify(relations))
   }
   episodes.innerHTML = ''
   if (media.streamingEpisodes.length) {
@@ -519,7 +518,7 @@ async function resolveFileMedia (opts) {
   // opts.fileName opts.method opts.isRelease
 
   const elems = await anitomyscript(opts.fileName)
-  if (!store[elems.anime_title]) {
+  if (!relations[elems.anime_title]) {
     // resolve name and shit
     let method, res
     if (opts.isRelease) {
@@ -535,9 +534,15 @@ async function resolveFileMedia (opts) {
       method.status = undefined
       res = await alRequest(method)
     }
-    if (res.data.Page.media[0]) store[elems.anime_title] = res.data.Page.media[0]
+    if (res.data.Page.media[0]) {
+      relations[elems.anime_title] = res.data.Page.media[0].id
+      store[res.data.Page.media[0].id] = res.data.Page.media[0]
+    }
   }
-  let episode; let media = store[elems.anime_title]
+  if (!store[relations[elems.anime_title]] && relations[elems.anime_title]) {
+    store[relations[elems.anime_title]] = (await alRequest({ method: 'SearchIDSingle', id: relations[elems.anime_title] })).data.Media
+  }
+  let episode; let media = store[relations[elems.anime_title]]
   // resolve episode, if movie, dont.
   if ((media?.format !== 'MOVIE' || (media.episodes || media.nextAiringEpisode.episode)) && elems.episode_number) {
     async function resolveSeason (opts) {
@@ -620,8 +625,8 @@ async function resolveFileMedia (opts) {
   }
 }
 
-let store = JSON.parse(localStorage.getItem('store')) || {}
-store = store || {}
+const store = {}
+const relations = JSON.parse(localStorage.getItem('relations')) || {}
 
 function getRSSurl () {
   if (Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0]) {
@@ -645,7 +650,7 @@ async function releasesCards (items, limit) {
       cards.push(cardCreator(mediaInformation))
     })
   })
-  localStorage.setItem('store', JSON.stringify(store))
+  localStorage.setItem('relations', JSON.stringify(relations))
   return cards
 }
 async function releasesRss (limit) {

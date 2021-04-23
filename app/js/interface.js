@@ -86,7 +86,7 @@ async function loadHomePage () {
                 notification.onclick = async () => {
                   window.parent.focus()
                   client.addTorrent(doc.querySelector('item').querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
-                  store[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media)
+                  store[relations[mediaInformation.parseObject.anime_title]] = await alRequest({ id: mediaInformation.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media)
                 }
               }
             })
@@ -169,6 +169,7 @@ async function loadHomePage () {
         media = media.media
       }
       cards.push(cardCreator({ media: media, schedule: opts.schedule, onclick: () => viewAnime(media) }))
+      store[media.id] = media
     })
     opts.gallery.append(...cards)
     canScroll = true
