@@ -38,7 +38,7 @@ function registerProtocol () {
   }
 }
 
-if (!settings) {
+if (!Object.values(settings).length) {
   saveSettings()
   location.reload()
 }

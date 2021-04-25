@@ -171,8 +171,8 @@ query {
     Viewer {
         avatar {
             medium
-        },
-        name,
+        }
+        name
         id
     }
 }`

@@ -158,7 +158,7 @@
       </div>
     </nav>
     <div class="overflow-y-hidden content-wrapper">
-      <section id="player" class="overflow-hidden torrent-player">
+      <section id="player" class="overflow-hidden torrent-player mobile">
         <video id="video" src=""></video>
         <a href="#player" class="miniplayer"></a>
         <div class="top">
@@ -182,7 +182,23 @@
             </span>
           </div>
         </div>
-        <div class="middle ctrl" data-name="ppToggle">
+        <div class="middle">
+          <div class="middle ctrl" data-name="ppToggle"></div>
+          <span class="material-icons ctrl" data-name="playLast">
+            skip_previous
+          </span>
+          <span class="material-icons ctrl" data-name="rewind">
+            fast_rewind
+          </span>
+          <span class="material-icons ctrl" data-name="playPause">
+            play_arrow
+          </span>
+          <span class="material-icons ctrl" data-name="forward">
+            fast_forward
+          </span>
+          <span class="material-icons ctrl" data-name="playNext">
+            skip_next
+          </span>
           <div data-name="bufferingDisplay">
           </div>
         </div>

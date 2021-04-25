@@ -45,7 +45,7 @@ class TorrentPlayer extends WebTorrent {
 
     this.video = options.video
     this.controls = options.controls // object of controls
-    // playPause, playNext, openPlaylist, toggleMute, setVolume, setProgress, showCaptions, showAudio, toggleTheatre, toggleFullscreen, togglePopout, downloadFile
+    // playPause, playNext, playLast, openPlaylist, toggleMute, setVolume, setProgress, showCaptions, showAudio, toggleTheatre, toggleFullscreen, togglePopout, downloadFile, forward, rewind
 
     this.controls.setVolume.addEventListener('input', (e) => this.setVolume(e.target.value))
     this.setVolume()
@@ -54,7 +54,7 @@ class TorrentPlayer extends WebTorrent {
 
     this.controls.setProgress.addEventListener('input', (e) => this.setProgress(e.target.value))
     this.controls.setProgress.addEventListener('mouseup', (e) => this.dragBarEnd(e.target.value))
-    this.controls.setProgress.addEventListener('thouchend', (e) => this.dragBarEnd(e.target.value))
+    this.controls.setProgress.addEventListener('touchend', (e) => this.dragBarEnd(e.target.value))
     this.controls.setProgress.addEventListener('mousedown', (e) => this.dragBarStart(e.target.value))
     this.video.addEventListener('timeupdate', (e) => {
       if (this.immerseTimeout && document.location.hash === '#player' && !this.video.paused) this.setProgress(e.target.currentTime / e.target.duration * 100)
@@ -136,8 +136,23 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.immerseTimeout = undefined
     this.immerseTime = options.immerseTime || 5
     this.player.addEventListener('mousemove', () => requestAnimationFrame(() => this.resetImmerse()))
+    this.player.addEventListener('touchmove', () => requestAnimationFrame(() => this.resetImmerse()))
     this.player.addEventListener('keypress', () => requestAnimationFrame(() => this.resetImmerse()))
     this.player.addEventListener('mouseleave', () => requestAnimationFrame(() => this.immersePlayer()))
+
+    this.doubleTapTimeout = undefined
+    this.player.addEventListener('touchend', e => {
+      if (this.doubleTapTimeout) {
+        e.preventDefault()
+        clearTimeout(this.doubleTapTimeout)
+        this.doubleTapTimeout = undefined
+        this.toggleFullscreen()
+      } else {
+        this.doubleTapTimeout = setTimeout(() => {
+          this.doubleTapTimeout = undefined
+        }, 200)
+      }
+    })
 
     this.bufferTimeout = undefined
     this.video.addEventListener('playing', () => this.hideBuffering())
@@ -210,11 +225,19 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       }
     })
 
-    for (const [key, value] of Object.entries(this.controls)) {
-      if (this[key]) {
-        value.addEventListener('click', (e) => {
-          this[key](e.target.value)
-        })
+    for (const [functionName, elements] of Object.entries(this.controls)) {
+      if (this[functionName]) {
+        if (elements.constructor === Array) {
+          for (const element of elements) {
+            element.addEventListener('click', (e) => {
+              this[functionName](e.target.value)
+            })
+          }
+        } else {
+          elements.addEventListener('click', (e) => {
+            this[functionName](e.target.value)
+          })
+        }
       }
     }
     document.addEventListener('keydown', a => {
@@ -352,7 +375,8 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         })
       }
       if (this.nowPlaying.episodeThumbnail) this.video.poster = this.nowPlaying.episodeThumbnail
-      this.controls.nowPlaying.textContent = 'EP ' + episodeInfo
+
+      this.changeControlsIcon('nowPlaying', 'EP ' + episodeInfo)
       document.title = [this.nowPlaying.mediaTitle, episodeInfo ? 'EP ' + episodeInfo : false, this.nowPlaying.name || 'TorrentPlayer'].filter(s => s).join(' - ')
     }
   }
@@ -390,22 +414,32 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       video: undefined
     })
     this.completed = false
-    this.controls.nowPlaying.textContent = ''
+    this.changeControlsIcon('nowPlaying', '')
     this.controls.captionsButton.setAttribute('disabled', '')
-    this.controls.selectCaptions.textContent = ''
-    this.controls.selectAudio.textContent = ''
+    this.changeControlsIcon('selectCaptions', '')
+    this.changeControlsIcon('selectAudio', '')
     this.controls.openPlaylist.setAttribute('disabled', '')
     navNowPlaying.classList.add('d-none') // TODO: fix
     if ('mediaSession' in navigator) navigator.mediaSession.metadata = undefined
     this.fps = 23.976
   }
 
+  changeControlsIcon (type, text) {
+    if (this.controls[type].constructor === Array) {
+      for (const element of this.controls[type]) {
+        element.textContent = text
+      }
+    } else {
+      this.controls[type].textContent = text
+    }
+  }
+
   async playVideo () {
     try {
       await this.video.play()
-      this.controls.playPause.textContent = 'pause'
+      this.changeControlsIcon('playPause', 'pause')
     } catch (err) {
-      this.controls.playPause.textContent = 'play_arrow'
+      this.changeControlsIcon('playPause', 'play_arrow')
     }
   }
 
@@ -413,7 +447,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     if (this.video.paused) {
       this.playVideo()
     } else {
-      this.controls.playPause.textContent = 'play_arrow'
+      this.changeControlsIcon('playPause', 'play_arrow')
       this.video.pause()
     }
   }
@@ -422,7 +456,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     const level = volume === undefined ? Number(this.controls.setVolume.value) : volume
     this.controls.setVolume.value = level
     this.controls.setVolume.style.setProperty('--volume-level', level + '%')
-    this.controls.toggleMute.textContent = level === 0 ? 'volume_off' : 'volume_up'
+    this.changeControlsIcon('toggleMute', level === 0 ? 'volume_off' : 'volume_up')
     this.video.volume = level / 100
   }
 
@@ -444,7 +478,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   updateFullscreen () {
-    this.controls.toggleFullscreen.textContent = document.fullscreenElement ? 'fullscreen_exit' : 'fullscreen'
+    this.changeControlsIcon('toggleFullscreen', document.fullscreenElement ? 'fullscreen_exit' : 'fullscreen')
   }
 
   openPlaylist () {
@@ -543,6 +577,14 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       this.video.currentTime += time
     }
     this.setProgress(this.video.currentTime / this.video.duration * 100)
+  }
+
+  forward () {
+    this.seek(this.seekTime)
+  }
+
+  rewind () {
+    this.seek(-this.seekTime)
   }
 
   immersePlayer () {
@@ -1052,7 +1094,11 @@ const announceList = [
 ]
 const playerControls = {}
 for (const item of document.getElementsByClassName('ctrl')) {
-  playerControls[item.dataset.name] = item
+  if (!playerControls[item.dataset.name]) {
+    playerControls[item.dataset.name] = item
+  } else {
+    playerControls[item.dataset.name] = [playerControls[item.dataset.name], item]
+  }
 }
 const client = new TorrentPlayer({
   WebTorrentOpts: {
