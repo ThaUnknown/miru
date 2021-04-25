@@ -488,7 +488,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   playNext () {
     clearTimeout(this.nextTimeout)
     this.nextTimeout = setTimeout(() => {
-      if (this.videoFiles?.indexOf(this.currentFile) < this.videoFiles?.length) {
+      if (this.videoFiles?.indexOf(this.currentFile) < this.videoFiles?.length - 1) {
         const nowPlaying = this.nowPlaying
         nowPlaying.episodeNumber += 1
         const torrent = this.currentFile._torrent
@@ -503,7 +503,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   playLast () {
     clearTimeout(this.nextTimeout)
     this.nextTimeout = setTimeout(() => {
-      if (this.videoFiles?.indexOf(this.currentFile) < this.videoFiles?.length) {
+      if (this.videoFiles?.indexOf(this.currentFile)) {
         const nowPlaying = this.nowPlaying
         nowPlaying.episodeNumber -= 1
         const torrent = this.currentFile._torrent
