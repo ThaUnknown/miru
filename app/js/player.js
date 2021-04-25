@@ -500,6 +500,21 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     }, 200)
   }
 
+  playLast () {
+    clearTimeout(this.nextTimeout)
+    this.nextTimeout = setTimeout(() => {
+      if (this.videoFiles?.indexOf(this.currentFile) < this.videoFiles?.length) {
+        const nowPlaying = this.nowPlaying
+        nowPlaying.episodeNumber -= 1
+        const torrent = this.currentFile._torrent
+        this.cleanupVideo()
+        this.buildVideo(torrent, { media: nowPlaying, file: this.videoFiles[this.videoFiles.indexOf(this.currentFile) - 1] })
+      } else {
+        if (this.onPrev) this.onPrev()
+      }
+    }, 200)
+  }
+
   async togglePopout () {
     if (this.video.readyState) {
       if (!(this.burnIn && this.subtitleData.renderer)) {
