@@ -13,11 +13,11 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
     item.getAsString(text => {
       if (torrentRx.exec(text)) {
         e.preventDefault()
-        search.value = ''
+        searchText.value = ''
         client.addTorrent(text, {})
       } else if (imageRx.exec(text)) {
         e.preventDefault()
-        search.value = ''
+        searchText.value = ''
         traceAnime(text)
       }
     })
@@ -26,7 +26,7 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
       const img = new DOMParser().parseFromString(text, 'text/html').querySelectorAll('img')[0]
       if (img) {
         e.preventDefault()
-        search.value = ''
+        searchText.value = ''
         traceAnime(img.src)
       }
     })
@@ -522,7 +522,7 @@ async function resolveFileMedia (opts) {
     // resolve name and shit
     let method, res
     if (opts.isRelease) {
-      method = { name: elems.anime_title, method: 'SearchName', perPage: 1, status: 'RELEASING', sort: 'TRENDING_DESC' } // START_DATE_DESC
+      method = { name: elems.anime_title, method: 'SearchName', perPage: 1, status: 'RELEASING', sort: 'TRENDING_DESC' }
       // maybe releases should include this and last season? idfk
     } else {
       method = { name: elems.anime_title, method: opts.method, perPage: 1, sort: 'SEARCH_MATCH' }

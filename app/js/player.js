@@ -142,7 +142,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.bufferTimeout = undefined
     this.video.addEventListener('playing', () => this.hideBuffering())
     this.video.addEventListener('canplay', () => this.hideBuffering())
-    this.video.addEventListener('timeupdate', () => this.hideBuffering())
+    this.video.addEventListener('loadeddata', () => this.hideBuffering())
     this.video.addEventListener('waiting', () => this.showBuffering())
 
     if ('pictureInPictureEnabled' in document) {
