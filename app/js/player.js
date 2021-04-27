@@ -583,6 +583,12 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     return num + units[exponent]
   }
 
+  getBytes (str) {
+    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'Bytes', 'KB', 'MB', 'GB', 'TB']
+    const split = str.split(' ')
+    return split[0] * 1024 ** (units.indexOf(split[1] || 'B') % 5) // this is so lazy
+  }
+
   seek (time) {
     if (time === 85 && this.video.currentTime < 10) {
       this.video.currentTime = 90
@@ -1011,8 +1017,13 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     } else if (client.get(torrentID)) {
       this.playTorrent(client.get(torrentID), opts)
     } else {
+      const store = opts.expectedSize && performance.memory && !settings.torrent5
+        ? (performance.memory.jsHeapSizeLimit - performance.memory.totalJSHeapSize) * 0.8 < this.getBytes(opts.expectedSize)
+            ? IdbChunkStore
+            : undefined
+        : IdbChunkStore
       this.add(torrentID, {
-        store: settings.torrent5 ? IdbChunkStore : undefined,
+        store: store,
         announce: [
           'wss://tracker.openwebtorrent.com',
           'wss://tracker.sloppyta.co:443/announce',
@@ -1089,7 +1100,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       ]
     })
     torrent.on('metadata', async () => {
-      console.log(torrent)
       if (!this.offlineTorrents[torrent.infoHash]) {
         this.offlineTorrents[torrent.infoHash] = Array.from(torrent.torrentFile)
         localStorage.setItem('offlineTorrents', JSON.stringify(this.offlineTorrents))

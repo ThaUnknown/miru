@@ -488,8 +488,8 @@ async function nyaaRss (media, episode) {
   await res.text().then((xmlTxt) => {
     try {
       const doc = DOMPARSER(xmlTxt, 'text/xml')
-      if (settings.torrent2 && doc.querySelectorAll('infoHash')[0]) {
-        addTorrent(doc.querySelectorAll('infoHash')[0].innerHTML, { media: media, episode: episode })
+      if (settings.torrent2 && doc.querySelector('infoHash')) {
+        client.addTorrent(doc.querySelector('infoHash').textContent, { media: media, episode: episode, expectedSize: doc.querySelector('size').textContent })
         halfmoon.toggleModal('tsearch')
       }
       doc.querySelectorAll('item').forEach((item, index) => {
@@ -497,13 +497,13 @@ async function nyaaRss (media, episode) {
         const template = document.createElement('tr')
         template.innerHTML += `
                 <th>${(index + 1)}</th>
-                <td>${i('title').innerHTML}</td>
-                <td>${i('size').innerHTML}</td>
-                <td>${i('seeders').innerHTML}</td>
-                <td>${i('leechers').innerHTML}</td>
-                <td>${i('downloads').innerHTML}</td>
+                <td>${i('title').textContent}</td>
+                <td>${i('size').textContent}</td>
+                <td>${i('seeders').textContent}</td>
+                <td>${i('leechers').textContent}</td>
+                <td>${i('downloads').textContent}</td>
                 <td class="pointer">Play</td>`
-        template.onclick = () => { client.addTorrent(i('infoHash').innerHTML, { media: media, episode: episode }) }
+        template.onclick = () => { client.addTorrent(i('infoHash').textContent, { media: media, episode: episode, expectedSize: i('size').textContent }) }
         frag.appendChild(template)
       })
     } catch (e) {
@@ -630,7 +630,6 @@ const relations = JSON.parse(localStorage.getItem('relations')) || {}
 
 function getRSSurl () {
   if (Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0]) {
-    // add my own cors proxy for erai
     return settings.torrent4 === 'Erai-raws' ? new URL(Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0].innerHTML + settings.torrent1 + '-magnet') : new URL(Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0].innerHTML + settings.torrent1)
   } else {
     return settings.torrent4 + settings.torrent1 // add custom RSS
@@ -640,13 +639,12 @@ async function releasesCards (items, limit) {
   const mediaItems = []
   const cards = []
   for (let l = 0; l < (limit || items.length); l++) {
-    const i = items[l].querySelector.bind(items[l])
-    mediaItems.push(resolveFileMedia({ fileName: i('title').innerHTML, method: 'SearchName', isRelease: true }))
+    mediaItems.push(resolveFileMedia({ fileName: items[l].querySelector('title').textContent, method: 'SearchName', isRelease: true }))
   }
   await Promise.all(mediaItems).then(results => {
     results.forEach((mediaInformation, index) => {
       const o = items[index].querySelector.bind(items[index])
-      mediaInformation.onclick = () => client.addTorrent(o('link').innerHTML, { media: mediaInformation, episode: mediaInformation.episode })
+      mediaInformation.onclick = () => client.addTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode, expectedSize: o('size').textContent })
       cards.push(cardCreator(mediaInformation))
     })
   })
@@ -657,9 +655,7 @@ async function releasesRss (limit) {
   let cards
   await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
     try {
-      const doc = DOMPARSER(xmlTxt, 'text/xml')
-      const items = doc.querySelectorAll('item')
-      cards = await releasesCards(items, limit)
+      cards = await releasesCards(DOMPARSER(xmlTxt, 'text/xml').querySelectorAll('item'), limit)
     } catch (e) {
       console.error(e)
     }
