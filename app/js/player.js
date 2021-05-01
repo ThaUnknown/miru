@@ -294,11 +294,11 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     const res = {
       status: 200,
       headers: {
-        'Content-Type': file._getMimeType(),
         // Support range-requests
         'Accept-Ranges': 'bytes'
       }
     }
+    if (req.headers.get('accept') === '*/*') res.headers['Content-Type'] = file._getMimeType()
 
     // `rangeParser` returns an array of ranges, or an error code (number) if
     // there was an error parsing the range.
@@ -343,6 +343,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     }
     this.video.src = `/app/webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
     this.video.load()
+    this.controls.downloadFile.href = `/app/webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
 
     if (this.videoFiles.length > 1) this.controls.playNext.removeAttribute('disabled')
 
@@ -385,7 +386,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     if (this.subtitleData.renderer) this.subtitleData.renderer.dispose()
     if (this.subtitleData.parser) this.subtitleData.parser.destroy()
     if (this.subtitleData.fonts) this.subtitleData.fonts.forEach(file => URL.revokeObjectURL(file)) // ideally this should clean up after its been downloaded by the sw renderer, but oh well
-    this.controls.downloadFile.setAttribute('disabled', '')
+    this.controls.downloadFile.href = ''
     this.currentFile = undefined
     this.video.poster = ''
     // some attemt at cache clearing
@@ -881,7 +882,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         renderMode: 'offscreenCanvas',
         fonts: this.subtitleData.fonts,
         workerUrl: 'js/subtitles-octopus-worker.js',
-        timeOffset: 0,
+        timeOffset: 0.083,
         onReady: () => { // weird hack for laggy subtitles, this is some issue in SO
           if (!this.video.paused) {
             this.video.pause()
@@ -980,29 +981,11 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     }
   }
 
-  async downloadFile () {
-    if (this.currentFile?.done && !this.currentFile._torrent.store.store._store) {
-      this.currentFile.getBlobURL((err, url) => {
-        if (err) throw err
-        const a = document.createElement('a')
-        a.download = this.currentFile.name
-        a.href = url
-        document.body.appendChild(a)
-        a.click(e)
-        a.remove()
-        window.URL.revokeObjectURL(url)
-      })
-    }
-  }
-
   async postDownload () {
     this.onDownloadDone(this.currentFile.name)
     await this.parseSubtitles(this.currentFile)
     if (this.generateThumbnails) {
       this.finishThumbnails(this.video.src)
-    }
-    if (!this.currentFile._torrent.store.store._store) { // only allow download from RAM
-      this.controls.downloadFile.removeAttribute('disabled')
     }
   }
 
@@ -1031,7 +1014,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         ]
       }, torrent => {
         this.playTorrent(torrent, opts)
-        if (this.streamedDownload) torrent.deselect(0, torrent.pieces.length - 1, false)
       })
     }
   }
@@ -1048,6 +1030,10 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       }
     })
     await this.worker
+    if (this.streamedDownload) {
+      torrent.files.forEach(file => file.deselect())
+      torrent.deselect(0, torrent.pieces.length - 1, false)
+    }
     this.videoFiles = torrent.files.filter(file => this.videoExtensions.some(ext => file.name.endsWith(ext)))
     if (this.videoFiles.length > 1) {
       (async () => {

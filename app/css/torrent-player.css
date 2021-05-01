@@ -75,12 +75,16 @@
 .torrent-player.immersed .bottom {
   opacity: 0;
 }
+.torrent-player .ctrl[data-name='downloadFile']:hover{
+  text-decoration: none;
+}
 
 .torrent-player:target a.miniplayer,
 .torrent-player .bottom input[type='range'][data-name='setProgress']+img[src=' '],
-video[src=''],
+.torrent-player video[src=''],
 .torrent-player.pip video,
 .torrent-player .ctrl[disabled],
+.torrent-player .ctrl[href=''],
 .torrent-player:fullscreen .ctrl[data-name='toggleTheatre'],
 .torrent-player:fullscreen .ctrl[data-name='openPlaylist'],
 .torrent-player:fullscreen .ctrl[data-name='togglePopout'] {
