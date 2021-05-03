@@ -503,7 +503,10 @@ async function nyaaRss (media, episode) {
                 <td>${i('leechers').textContent}</td>
                 <td>${i('downloads').textContent}</td>
                 <td class="pointer">Play</td>`
-        template.onclick = () => { client.addTorrent(i('infoHash').textContent, { media: media, episode: episode, expectedSize: i('size').textContent }) }
+        template.onclick = () => {
+          client.addTorrent(i('infoHash').textContent, { media: media, episode: episode, expectedSize: i('size').textContent })
+          halfmoon.hideModal('tsearch')
+        }
         frag.appendChild(template)
       })
     } catch (e) {

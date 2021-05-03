@@ -158,13 +158,13 @@
       </div>
     </nav>
     <div class="overflow-y-hidden content-wrapper">
-      <section id="player" class="overflow-hidden torrent-player mobile">
+      <section id="player" class="torrent-player">
         <video id="video" src=""></video>
         <a href="#player" class="miniplayer"></a>
         <div class="top">
-          <div data-name="nowPlaying" class="col-4 ctrl">
+          <div data-name="nowPlaying" class="ctrl">
           </div>
-          <div class="col-4 justify-content-center">
+          <div class='stats'>
             <span class="ctrl material-icons" data-value="0" data-name="peers">
               people
             </span>
@@ -175,15 +175,12 @@
               arrow_upward
             </span>
           </div>
-          <div class="col-4 justify-content-end">
-            <a class="material-icons ctrl" title="Save File To Drive"
-              data-name="downloadFile" href="" target="_blank">
-              get_app
+          <a class="material-icons ctrl" title="Save File To Drive" data-name="downloadFile" href="" target="_blank">
+            get_app
           </a>
-          </div>
         </div>
         <div class="middle">
-          <div class="middle ctrl" data-name="ppToggle"></div>
+          <div class="ctrl" data-name="ppToggle"></div>
           <span class="material-icons ctrl" data-name="playLast">
             skip_previous
           </span>
@@ -234,8 +231,8 @@
             </div>
           </div>
           <div class="subtitles dropdown dropup with-arrow">
-            <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false" disabled data-name="captionsButton">
+            <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false" disabled data-name="captionsButton">
               subtitles
             </span>
             <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize"
@@ -915,10 +912,11 @@
   <script src="https://cdn.jsdelivr.net/npm/matroska-subtitles@latest/dist/matroska-subtitles.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/indexeddb-chunk-store@latest/idbchunkstore.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/anitomyscript@2.0.4/dist/anitomyscript.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/range-parser@latest/index.js"></script>
   <!-- <script src="https://cdn.jsdelivr.net/npm/webtorrent@0.113.0/webtorrent.min.js"></script> -->
   <script src="js/wt-ex.js"></script>
+  <script src="js/torrent-player.js"></script>
   <script src="js/settingsHandler.js"></script>
-  <script src="js/rangeParser.js"></script>
   <script src="js/subtitles-octopus.js"></script>
   <script src="js/util.js"></script>
   <script src="js/interface.js"></script>

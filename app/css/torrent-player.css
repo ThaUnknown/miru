@@ -16,6 +16,7 @@
   width: 25%;
   height: auto;
   transition: width 0.2s ease;
+  overflow: hidden;
 }
 
 .torrent-player:target {
@@ -27,7 +28,8 @@
   transition: none !important;
 }
 
-.torrent-player:target>div {
+.torrent-player:target .middle,
+.torrent-player:target .bottom {
   display: flex;
 }
 
@@ -75,8 +77,11 @@
 .torrent-player.immersed .bottom {
   opacity: 0;
 }
-.torrent-player .ctrl[data-name='downloadFile']:hover{
-  text-decoration: none;
+
+.torrent-player .ctrl[data-name='downloadFile'] {
+  text-decoration: none !important;
+  color: #ececec !important;
+  justify-self: end;
 }
 
 .torrent-player:target a.miniplayer,
@@ -107,9 +112,18 @@
   border-image-source: linear-gradient(90deg,
       #e5204c var(--download),
       rgba(0, 0, 0, 0.8) var(--download));
+  grid-template-columns: 1fr auto 1fr;
 }
 
-.torrent-player .top>div {
+.torrent-player:target .top {
+  display: grid;
+}
+
+.torrent-player .stats {
+  justify-content: center;
+}
+
+.torrent-player .top .stats {
   display: flex;
 }
 
@@ -236,17 +250,40 @@
   height: 3px;
 }
 
+.torrent-player .bottom input[type='range']::-moz-range-track {
+  height: 3px;
+}
+
 .torrent-player .bottom input[type='range']::-webkit-slider-thumb {
   height: 0;
   width: 0;
   border-radius: 50%;
-  background: var(--accent-color);
+  background: #e5204c;
   -webkit-appearance: none;
+  appearance: none;
   margin-top: 2px;
   transition: all 0.1s ease;
 }
 
+.torrent-player .bottom input[type='range']::-moz-range-thumb {
+  height: 0;
+  width: 0;
+  border-radius: 50%;
+  background: #e5204c;
+  -moz-appearance: none;
+  appearance: none;
+  margin-top: 2px;
+  transition: all 0.1s ease;
+  border: none;
+}
+
 .torrent-player .bottom input[type='range']:hover::-webkit-slider-thumb {
+  height: 12px;
+  width: 12px;
+  margin-top: -4px;
+}
+
+.torrent-player .bottom input[type='range']:hover::-moz-range-thumb {
   height: 12px;
   width: 12px;
   margin-top: -4px;
@@ -259,6 +296,18 @@
 }
 
 .torrent-player .bottom input[type='range'][data-name='setVolume']::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg,
+      #e5204c var(--volume-level),
+      rgba(255, 255, 255, 0.2) var(--volume-level));
+}
+
+.torrent-player .bottom input[type='range'][data-name='setProgress']::-moz-range-track {
+  background: linear-gradient(90deg,
+      #e5204c var(--progress),
+      rgba(255, 255, 255, 0.2) var(--progress));
+}
+
+.torrent-player .bottom input[type='range'][data-name='setVolume']::-moz-range-track {
   background: linear-gradient(90deg,
       #e5204c var(--volume-level),
       rgba(255, 255, 255, 0.2) var(--volume-level));
@@ -342,6 +391,41 @@
 
 .torrent-player .bottom div[data-name='progressWrapper']::after {
   content: attr(data-remaining);
+}
+
+.torrent-player .bottom .popup {
+  position: relative;
+}
+.torrent-player .bottom .popup input {
+  display: none;
+}
+.torrent-player .bottom .popup input:checked+label {
+  color: white
+}
+.torrent-player .bottom .popup label {
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+
+.torrent-player .bottom .popup .popup-menu {
+  visibility: hidden;
+  position: absolute;
+  transform: translateY(-100%);
+  text-transform: capitalize;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 5rem;
+  background: #191c20;
+  padding: .8rem;
+  border-radius: 3px;
+  font-size: 1.2rem
+}
+
+.torrent-player .bottom .popup:hover .popup-menu{
+  visibility: visible;
 }
 
 @media (pointer:none),
