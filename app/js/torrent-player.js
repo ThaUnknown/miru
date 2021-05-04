@@ -1,8 +1,9 @@
-class TorrentPlayer extends WebTorrent {
+class WebTorrentPlayer extends WebTorrent {
   constructor (options = {}) {
     super(options.WebTorrentOpts)
 
-    this.worker = navigator.serviceWorker.register('sw.js', { scope: '/app/' }).catch(e => {
+    this.scope = options.scope
+    this.worker = navigator.serviceWorker.register('sw.js', { scope: this.scope }).catch(e => {
       if (String(e) === 'InvalidStateError: Failed to register a ServiceWorker: The document is in an invalid state.') {
         location.reload() // weird workaround for a weird bug
       } else {
@@ -42,27 +43,41 @@ class TorrentPlayer extends WebTorrent {
     })
 
     this.video = options.video
-    this.controls = options.controls // object of controls
-    // playPause, playNext, playLast, openPlaylist, toggleMute, setVolume, setProgress, showCaptions, showAudio, toggleTheatre, toggleFullscreen, togglePopout, downloadFile, forward, rewind
+    this.controls = options.controls || {} // object of controls
+    // playPause, playNext, playLast, openPlaylist, toggleMute, setVolume, setProgress, selectCaptions, selectAudio, toggleTheatre, toggleFullscreen, togglePopout, forward, rewind
 
-    this.controls.setVolume.addEventListener('input', (e) => this.setVolume(e.target.value))
-    this.setVolume()
-    this.controls.ppToggle.addEventListener('click', () => this.playPause())
-    this.oldVolume = undefined
+    if (this.controls.setVolume) {
+      this.controls.setVolume.addEventListener('input', (e) => this.setVolume(e.target.value))
+      this.setVolume()
+      this.oldVolume = undefined
+      if ('audioTracks' in HTMLVideoElement.prototype && this.controls.audioButton) {
+        this.video.addEventListener('loadedmetadata', () => {
+          if (this.video.audioTracks.length > 1) {
+            this.controls.audioButton.removeAttribute('disabled')
+            for (const track of this.video.audioTracks) {
+              this.createRadioElement(track, 'audio')
+            }
+          } else {
+            this.controls.audioButton.setAttribute('disabled', '')
+          }
+        })
+      }
+    }
+    if (this.controls.ppToggle) {
+      this.controls.ppToggle.addEventListener('click', () => this.playPause())
+      this.controls.ppToggle.addEventListener('dblclick', () => this.toggleFullscreen())
+    }
 
-    this.controls.setProgress.addEventListener('input', (e) => this.setProgress(e.target.value))
-    this.controls.setProgress.addEventListener('mouseup', (e) => this.dragBarEnd(e.target.value))
-    this.controls.setProgress.addEventListener('touchend', (e) => this.dragBarEnd(e.target.value))
-    this.controls.setProgress.addEventListener('mousedown', (e) => this.dragBarStart(e.target.value))
-    this.video.addEventListener('timeupdate', (e) => {
-      if (this.immerseTimeout && document.location.hash === '#player' && !this.video.paused) this.setProgress(e.target.currentTime / e.target.duration * 100)
-    })
-    this.video.addEventListener('ended', () => this.setProgress(100))
-
-    this.player = options.player
-    this.playerWrapper = options.playerWrapper
-    this.player.addEventListener('fullscreenchange', () => this.updateFullscreen())
-    this.controls.ppToggle.addEventListener('dblclick', () => this.toggleFullscreen())
+    if (this.controls.setProgress) {
+      this.controls.setProgress.addEventListener('input', (e) => this.setProgress(e.target.value))
+      this.controls.setProgress.addEventListener('mouseup', (e) => this.dragBarEnd(e.target.value))
+      this.controls.setProgress.addEventListener('touchend', (e) => this.dragBarEnd(e.target.value))
+      this.controls.setProgress.addEventListener('mousedown', (e) => this.dragBarStart(e.target.value))
+      this.video.addEventListener('timeupdate', (e) => {
+        if (this.immerseTimeout && document.location.hash === '#player' && !this.video.paused) this.setProgress(e.target.currentTime / e.target.duration * 100)
+      })
+      this.video.addEventListener('ended', () => this.setProgress(100))
+    }
 
     this.video.addEventListener('loadedmetadata', () => this.findSubtitleFiles(this.currentFile))
     this.subtitleData = {
@@ -82,18 +97,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
 `
     }
-    if ('audioTracks' in HTMLVideoElement.prototype) {
-      this.video.addEventListener('loadedmetadata', () => {
-        if (this.video.audioTracks.length > 1) {
-          this.controls.audioButton.removeAttribute('disabled')
-          for (const track of this.video.audioTracks) {
-            this.createRadioElement(track, 'audio')
-          }
-        } else {
-          this.controls.audioButton.setAttribute('disabled', '')
-        }
-      })
-    }
 
     this.completed = false
     this.onWatched = options.onWatched
@@ -104,7 +107,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.onNext = options.onNext
     this.onPrev = options.onPrev
     this.nextTimeout = undefined
-    if (this.onNext && options.autoNext) this.video.addEventListener('ended', () => this.onNext())
+    if (this.onNext && options.autoNext) this.video.addEventListener('ended', () => this.playNext())
 
     this.onError = options.onError
     this.onWarn = options.onWarn
@@ -114,18 +117,20 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.videoFile = undefined
     this.onVideoFiles = options.onVideoFiles
 
-    this.generateThumbnails = options.generateThumbnails
-    const thumbCanvas = document.createElement('canvas')
-    thumbCanvas.width = options.thumbnailWidth || 150
-    this.thumbnailData = {
-      thumbnails: [],
-      canvas: thumbCanvas,
-      context: thumbCanvas.getContext('2d'),
-      interval: undefined,
-      video: undefined
+    if (this.controls.thumbnail) {
+      this.generateThumbnails = options.generateThumbnails
+      const thumbCanvas = document.createElement('canvas')
+      thumbCanvas.width = options.thumbnailWidth || 150
+      this.thumbnailData = {
+        thumbnails: [],
+        canvas: thumbCanvas,
+        context: thumbCanvas.getContext('2d'),
+        interval: undefined,
+        video: undefined
+      }
+      this.video.addEventListener('loadedmetadata', () => this.initThumbnail())
+      this.video.addEventListener('timeupdate', () => this.createThumbnail(this.video))
     }
-    this.video.addEventListener('loadedmetadata', () => this.initThumbnail())
-    this.video.addEventListener('timeupdate', () => this.createThumbnail(this.video))
 
     if (options.visibilityLossPause) {
       document.addEventListener('visibilitychange', () => {
@@ -140,24 +145,30 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
     this.immerseTimeout = undefined
     this.immerseTime = options.immerseTime || 5
-    this.player.addEventListener('mousemove', () => requestAnimationFrame(() => this.resetImmerse()))
-    this.player.addEventListener('touchmove', () => requestAnimationFrame(() => this.resetImmerse()))
-    this.player.addEventListener('keypress', () => requestAnimationFrame(() => this.resetImmerse()))
-    this.player.addEventListener('mouseleave', () => requestAnimationFrame(() => this.immersePlayer()))
 
-    this.doubleTapTimeout = undefined
-    this.player.addEventListener('touchend', e => {
-      if (this.doubleTapTimeout) {
-        e.preventDefault()
-        clearTimeout(this.doubleTapTimeout)
-        this.doubleTapTimeout = undefined
-        this.toggleFullscreen()
-      } else {
-        this.doubleTapTimeout = setTimeout(() => {
+    this.playerWrapper = options.playerWrapper
+    this.player = options.player
+    if (this.player) {
+      this.player.addEventListener('fullscreenchange', () => this.updateFullscreen())
+      this.player.addEventListener('mousemove', () => requestAnimationFrame(() => this.resetImmerse()))
+      this.player.addEventListener('touchmove', () => requestAnimationFrame(() => this.resetImmerse()))
+      this.player.addEventListener('keypress', () => requestAnimationFrame(() => this.resetImmerse()))
+      this.player.addEventListener('mouseleave', () => requestAnimationFrame(() => this.immersePlayer()))
+
+      this.doubleTapTimeout = undefined
+      this.player.addEventListener('touchend', e => {
+        if (this.doubleTapTimeout) {
+          e.preventDefault()
+          clearTimeout(this.doubleTapTimeout)
           this.doubleTapTimeout = undefined
-        }, 200)
-      }
-    })
+          this.toggleFullscreen()
+        } else {
+          this.doubleTapTimeout = setTimeout(() => {
+            this.doubleTapTimeout = undefined
+          }, 200)
+        }
+      })
+    }
 
     this.bufferTimeout = undefined
     this.video.addEventListener('playing', () => this.hideBuffering())
@@ -167,11 +178,11 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
     if ('pictureInPictureEnabled' in document) {
       this.burnIn = options.burnIn
-      this.controls.togglePopout.removeAttribute('disabled')
+      if (this.controls.togglePopout) this.controls.togglePopout.removeAttribute('disabled')
       if (this.burnIn) this.video.addEventListener('enterpictureinpicture', () => { if (this.subtitleData.renderer) this.togglePopout() })
     } else {
       this.video.setAttribute('disablePictureInPicture', '')
-      this.controls.togglePopout.setAttribute('disabled', '')
+      if (this.controls.togglePopout) this.controls.togglePopout.setAttribute('disabled', '')
     }
 
     this.seekTime = options.seekTime || 5
@@ -197,7 +208,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
     this.fps = 23.976
     this.video.addEventListener('loadedmetadata', () => {
-      if (this.currentFile.name.endsWith('.mkv') || this.currentFile.name.endsWith('.webm')) {
+      if (this.currentFile.name.endsWith('.mkv')) {
         this.fps = new Promise((resolve, reject) => {
           if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
             this.video.onplay = () => {
@@ -331,7 +342,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     res.body = req.method === 'HEAD' ? '' : 'stream'
     // parser is really a passthrough mkv stream now
     const stream = file.createReadStream(range)
-    if ((file.name.endsWith('.mkv') || file.name.endsWith('.webm')) && !this.subtitleData.parsed) {
+    if (file.name.endsWith('.mkv') && !this.subtitleData.parsed) {
       this.subtitleData.stream = new MatroskaSubtitles.SubtitleStream(this.subtitleData.stream)
       this.handleSubtitleParser(this.subtitleData.stream)
       stream.pipe(this.subtitleData.stream)
@@ -342,20 +353,18 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
   async buildVideo (torrent, opts = {}) { // sets video source and creates a bunch of other media stuff
     // play wanted episode from opts, or the 1st episode, or 1st file [batches: plays wanted episode, single: plays the only episode, manually added: plays first or only file]
+    this.cleanupVideo()
     if (opts.file) {
       this.currentFile = opts.file
     } else if (this.videoFiles.length > 1) {
-      // TODO play selected media too!
-      this.currentFile = this.videoFiles.filter(async file => await anitomyscript(file.name).then(object => Number(object.episode_number) === Number(opts.episode || 1)))[0] || this.videoFiles[0]
+      this.currentFile = this.videoFiles.filter(async file => await this.resolveFileMedia({ fileName: file.name }).then(FileMedia => (Number(FileMedia.episodeNumber) === Number(opts.episode || 1)) || (FileMedia === opts.media)))[0] || this.videoFiles[0]
     } else {
       this.currentFile = this.videoFiles[0]
     }
-    this.video.src = `/app/webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
+    this.video.src = `${this.scope}webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
     this.video.load()
     this.playVideo()
-    this.controls.downloadFile.href = `/app/webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
-
-    if (this.videoFiles.length > 1) this.controls.playNext.removeAttribute('disabled')
+    if (this.controls.downloadFile) this.controls.downloadFile.href = `${this.scope}webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
 
     if (this.currentFile.done) {
       this.postDownload()
@@ -365,8 +374,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       })
     }
     // opts.media: mediaTitle, episodeNumber, episodeTitle, episodeThumbnail, mediaCover, name
-
-    this.nowPlaying = (opts.media && this.videoFiles.length === 1) ? opts.media : this.resolveFileMedia ? await this.resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' }) : undefined
+    this.nowPlaying = (opts.media && (this.videoFiles.length === 1 || (opts.forceMedia && opts.file))) ? opts.media : this.resolveFileMedia ? await this.resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' }) : undefined
 
     if (this.nowPlaying) {
       navNowPlaying.classList.remove('d-none') // TODO: fix
@@ -375,9 +383,9 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-          title: this.nowPlaying.mediaTitle || this.nowPlaying.name || 'TorrentPlayer',
+          title: this.nowPlaying.mediaTitle || this.nowPlaying.name || 'WebTorrentPlayer',
           artist: 'Episode ' + episodeInfo,
-          album: this.nowPlaying.name || 'TorrentPlayer',
+          album: this.nowPlaying.name || 'WebTorrentPlayer',
           artwork: [{
             src: this.nowPlaying.episodeThumbnail || this.nowPlaying.mediaCover || '',
             sizes: '256x256',
@@ -388,7 +396,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       if (this.nowPlaying.episodeThumbnail) this.video.poster = this.nowPlaying.episodeThumbnail
 
       this.changeControlsIcon('nowPlaying', 'EP ' + episodeInfo)
-      document.title = [this.nowPlaying.mediaTitle, episodeInfo ? 'EP ' + episodeInfo : false, this.nowPlaying.name || 'TorrentPlayer'].filter(s => s).join(' - ')
+      document.title = [this.nowPlaying.mediaTitle, episodeInfo ? 'EP ' + episodeInfo : false, this.nowPlaying.name || 'WebTorrentPlayer'].filter(s => s).join(' - ')
     }
   }
 
@@ -396,7 +404,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     if (this.subtitleData.renderer) this.subtitleData.renderer.dispose()
     if (this.subtitleData.parser) this.subtitleData.parser.destroy()
     if (this.subtitleData.fonts) this.subtitleData.fonts.forEach(file => URL.revokeObjectURL(file)) // ideally this should clean up after its been downloaded by the sw renderer, but oh well
-    this.controls.downloadFile.href = ''
+    if (this.controls.downloadFile) this.controls.downloadFile.href = ''
     this.currentFile = undefined
     this.video.poster = ''
     // some attemt at cache clearing
@@ -404,7 +412,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.video.src = ''
     this.video.load()
     this.onDone = undefined
-    document.title = 'Miru'
+    document.title = this.nowPlaying?.name || 'WebTorrentPlayer'
     this.setProgress(0)
     // look for file and delete its store, idk how to do this
     Object.assign(this.subtitleData, {
@@ -419,29 +427,33 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       timeout: undefined
     })
 
-    Object.assign(this.thumbnailData, {
-      thumbnails: [],
-      interval: undefined,
-      video: undefined
-    })
+    if (this.controls.thumbnail) {
+      Object.assign(this.thumbnailData, {
+        thumbnails: [],
+        interval: undefined,
+        video: undefined
+      })
+    }
     this.completed = false
     this.changeControlsIcon('nowPlaying', '')
-    this.controls.captionsButton.setAttribute('disabled', '')
+    if (this.controls.captionsButton) this.controls.captionsButton.setAttribute('disabled', '')
     this.changeControlsIcon('selectCaptions', '')
     this.changeControlsIcon('selectAudio', '')
-    this.controls.openPlaylist.setAttribute('disabled', '')
+    if (this.controls.openPlaylist) this.controls.openPlaylist.setAttribute('disabled', '')
     navNowPlaying.classList.add('d-none') // TODO: fix
     if ('mediaSession' in navigator) navigator.mediaSession.metadata = undefined
     this.fps = 23.976
   }
 
   changeControlsIcon (type, text) {
-    if (this.controls[type].constructor === Array) {
-      for (const element of this.controls[type]) {
-        element.textContent = text
+    if (this.controls[type]) {
+      if (this.controls[type].constructor === Array) {
+        for (const element of this.controls[type]) {
+          element.textContent = text
+        }
+      } else {
+        this.controls[type].textContent = text
       }
-    } else {
-      this.controls[type].textContent = text
     }
   }
 
@@ -503,10 +515,9 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         const nowPlaying = this.nowPlaying
         nowPlaying.episodeNumber += 1
         const torrent = this.currentFile._torrent
-        this.cleanupVideo()
         this.buildVideo(torrent, { media: nowPlaying, file: this.videoFiles[this.videoFiles.indexOf(this.currentFile) + 1] })
       } else {
-        if (this.onNext) this.onNext()
+        if (this.onNext) this.onNext(this.currentFile, this.nowPlaying)
       }
     }, 200)
   }
@@ -518,10 +529,9 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         const nowPlaying = this.nowPlaying
         nowPlaying.episodeNumber -= 1
         const torrent = this.currentFile._torrent
-        this.cleanupVideo()
         this.buildVideo(torrent, { media: nowPlaying, file: this.videoFiles[this.videoFiles.indexOf(this.currentFile) - 1] })
       } else {
-        if (this.onPrev) this.onPrev()
+        if (this.onPrev) this.onPrev(this.currentFile, this.nowPlaying)
       }
     }, 200)
   }
@@ -651,7 +661,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   checkCompletion () {
     if (!this.completed && this.video.duration - 180 < this.video.currentTime) {
       this.completed = true
-      this.onWatched()
+      this.onWatched(this.currentFile, this.nowPlaying)
     }
   }
 
@@ -729,47 +739,53 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   setProgress (progressPercent) {
     progressPercent = progressPercent || 0
     const currentTime = this.video.duration * progressPercent / 100 || 0
-    this.controls.progressWrapper.style.setProperty('--progress', progressPercent + '%')
-    this.controls.thumbnail.src = this.thumbnailData.thumbnails[Math.floor(currentTime / this.thumbnailData.interval)] || ' '
-    this.controls.setProgress.dataset.elapsed = this.toTS(currentTime)
-    this.controls.progressWrapper.dataset.elapsed = this.toTS(currentTime)
-    this.controls.progressWrapper.dataset.remaining = this.toTS(this.video.duration - currentTime)
-    this.controls.setProgress.value = progressPercent
+    if (this.controls.progressWrapper) this.controls.progressWrapper.style.setProperty('--progress', progressPercent + '%')
+    if (this.controls.thumbnail) this.controls.thumbnail.src = this.thumbnailData.thumbnails[Math.floor(currentTime / this.thumbnailData.interval)] || ' '
+    if (this.controls.setProgress) {
+      this.controls.setProgress.dataset.elapsed = this.toTS(currentTime)
+      this.controls.setProgress.value = progressPercent
+    }
+    if (this.controls.progressWrapper) {
+      this.controls.progressWrapper.dataset.elapsed = this.toTS(currentTime)
+      this.controls.progressWrapper.dataset.remaining = this.toTS(this.video.duration - currentTime)
+    }
   }
 
   updateDisplay () {
     if (this.currentFile && this.currentFile._torrent) {
-      this.player.style.setProperty('--download', this.currentFile.progress * 100 + '%')
-      this.controls.peers.dataset.value = this.currentFile._torrent.numPeers
-      this.controls.downSpeed.dataset.value = this.prettyBytes(this.currentFile._torrent.downloadSpeed) + '/s'
-      this.controls.upSpeed.dataset.value = this.prettyBytes(this.currentFile._torrent.uploadSpeed) + '/s'
+      if (this.player) this.player.style.setProperty('--download', this.currentFile.progress * 100 + '%')
+      if (this.controls.peers) this.controls.peers.dataset.value = this.currentFile._torrent.numPeers
+      if (this.controls.downSpeed) this.controls.downSpeed.dataset.value = this.prettyBytes(this.currentFile._torrent.downloadSpeed) + '/s'
+      if (this.controls.upSpeed) this.controls.upSpeed.dataset.value = this.prettyBytes(this.currentFile._torrent.uploadSpeed) + '/s'
     }
     setTimeout(() => requestAnimationFrame(() => this.updateDisplay()), 200)
   }
 
   createRadioElement (track, type) {
     // type: captions audio
-    const frag = document.createDocumentFragment()
-    const input = document.createElement('input')
-    const label = document.createElement('label')
-    input.name = `${type}-radio-set`
-    input.type = 'radio'
-    input.id = type === 'captions' ? `${type}-${track ? track.number : 'off'}-radio` : `${type}-${track.id}-radio`
-    input.value = type === 'captions' ? track ? track.number : -1 : track.id
-    input.checked = type === 'captions' ? track?.number === this.subtitleData.current : track.enabled
-    label.htmlFor = type === 'captions' ? `${type}-${track ? track.number : 'off'}-radio` : `${type}-${track.id}-radio`
-    label.textContent = track
-      ? type === 'captions'
-          ? (track.language || (!Object.values(this.subtitleData.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : header.type)) + (track.name ? ' - ' + track.name : '')
-          : (track.language || (!Object.values(this.video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) + (track.label ? ' - ' + track.label : '')
-      : 'OFF' // TODO: clean this up, TLDR assume english track if track lang is undefined || 'und' and there isnt an existing eng track already
-    frag.appendChild(input)
-    frag.appendChild(label)
-    if (type === 'captions') {
-      this.controls.selectCaptions.appendChild(frag)
-      this.controls.captionsButton.removeAttribute('disabled')
-    } else {
-      this.controls.selectAudio.appendChild(frag)
+    if ((type === 'captions' && this.controls.selectCaptions && this.controls.captionsButton) || (type === 'audio' && this.controls.selectAudio)) {
+      const frag = document.createDocumentFragment()
+      const input = document.createElement('input')
+      const label = document.createElement('label')
+      input.name = `${type}-radio-set`
+      input.type = 'radio'
+      input.id = type === 'captions' ? `${type}-${track ? track.number : 'off'}-radio` : `${type}-${track.id}-radio`
+      input.value = type === 'captions' ? track ? track.number : -1 : track.id
+      input.checked = type === 'captions' ? track?.number === this.subtitleData.current : track.enabled
+      label.htmlFor = type === 'captions' ? `${type}-${track ? track.number : 'off'}-radio` : `${type}-${track.id}-radio`
+      label.textContent = track
+        ? type === 'captions'
+            ? (track.language || (!Object.values(this.subtitleData.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : header.type)) + (track.name ? ' - ' + track.name : '')
+            : (track.language || (!Object.values(this.video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) + (track.label ? ' - ' + track.label : '')
+        : 'OFF' // TODO: clean this up, TLDR assume english track if track lang is undefined || 'und' and there isnt an existing eng track already
+      frag.appendChild(input)
+      frag.appendChild(label)
+      if (type === 'captions') {
+        this.controls.selectCaptions.appendChild(frag)
+        this.controls.captionsButton.removeAttribute('disabled')
+      } else {
+        this.controls.selectAudio.appendChild(frag)
+      }
     }
   }
 
@@ -827,7 +843,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
   async parseSubtitles (file) { // parse subtitles fully after a download is finished
     return new Promise((resolve, reject) => {
-      if (file.name.endsWith('.mkv') || file.name.endsWith('.webm')) {
+      if (file.name.endsWith('.mkv')) {
         let parser = new MatroskaSubtitles.SubtitleParser()
         this.handleSubtitleParser(parser, true)
         parser.on('finish', () => {
@@ -992,22 +1008,42 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   async postDownload () {
-    this.onDownloadDone(this.currentFile.name)
+    this.onDownloadDone(this.currentFile)
     await this.parseSubtitles(this.currentFile)
     if (this.generateThumbnails) {
       this.finishThumbnails(this.video.src)
     }
   }
 
-  // this should be cleaned up, fuck cares tho
-  addTorrent (torrentID, opts = {}) {
+  async playTorrent (torrentID, opts = {}) { // TODO: clean this up
+    const handleTorrent = async (torrent, opts) => {
+      torrent.on('noPeers', () => {
+        if (this.onWarn) this.onWarn('no peers', torrent)
+      })
+      await this.worker
+      if (this.streamedDownload) {
+        torrent.files.forEach(file => file.deselect())
+        torrent.deselect(0, torrent.pieces.length - 1, false)
+      }
+      this.videoFiles = torrent.files.filter(file => this.videoExtensions.some(ext => file.name.endsWith(ext)))
+      if (this.onVideoFiles) this.onVideoFiles(this.videoFiles)
+      if (this.videoFiles.length > 1) {
+        torrent.files.forEach(file => file.deselect())
+      }
+      if (this.videoFiles) {
+        this.buildVideo(torrent, opts)
+      } else {
+        if (this.onWarn) this.onWarn('no file', torrent)
+        this.cleanupTorrents()
+      }
+    }
     document.location.hash = '#player'
     this.cleanupVideo()
     this.cleanupTorrents()
     if (torrentID instanceof Object) {
-      this.playTorrent(torrentID, opts)
+      handleTorrent(torrentID, opts)
     } else if (client.get(torrentID)) {
-      this.playTorrent(client.get(torrentID), opts)
+      handleTorrent(client.get(torrentID), opts)
     } else {
       const store = opts.expectedSize && performance.memory && !settings.torrent5
         ? (performance.memory.jsHeapSizeLimit - performance.memory.totalJSHeapSize) * 0.8 < this.getBytes(opts.expectedSize)
@@ -1022,30 +1058,8 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
           'wss://hub.bugout.link:443/announce'
         ]
       }, torrent => {
-        this.playTorrent(torrent, opts)
+        handleTorrent(torrent, opts)
       })
-    }
-  }
-
-  async playTorrent (torrent, opts) {
-    torrent.on('noPeers', () => {
-      if (this.onWarn) this.onWarn('no peers', torrent)
-    })
-    await this.worker
-    if (this.streamedDownload) {
-      torrent.files.forEach(file => file.deselect())
-      torrent.deselect(0, torrent.pieces.length - 1, false)
-    }
-    this.videoFiles = torrent.files.filter(file => this.videoExtensions.some(ext => file.name.endsWith(ext)))
-    if (this.onVideoFiles) this.onVideoFiles(this.videoFiles)
-    if (this.videoFiles.length > 1) {
-      torrent.files.forEach(file => file.deselect())
-    }
-    if (this.videoFiles) {
-      this.buildVideo(torrent, opts)
-    } else {
-      if (this.onWarn) this.onWarn('no file', torrent)
-      this.cleanupTorrents()
     }
   }
 

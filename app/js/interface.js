@@ -85,7 +85,7 @@ async function loadHomePage () {
                 })
                 notification.onclick = async () => {
                   window.parent.focus()
-                  client.addTorrent(doc.querySelector('item').querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
+                  client.playTorrent(doc.querySelector('item').querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
                   store[relations[mediaInformation.parseObject.anime_title]] = await alRequest({ id: mediaInformation.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media)
                 }
               }

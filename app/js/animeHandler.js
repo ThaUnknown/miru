@@ -14,7 +14,7 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
       if (torrentRx.exec(text)) {
         e.preventDefault()
         searchText.value = ''
-        client.addTorrent(text, {})
+        client.playTorrent(text)
       } else if (imageRx.exec(text)) {
         e.preventDefault()
         searchText.value = ''
@@ -489,7 +489,7 @@ async function nyaaRss (media, episode) {
     try {
       const doc = DOMPARSER(xmlTxt, 'text/xml')
       if (settings.torrent2 && doc.querySelector('infoHash')) {
-        client.addTorrent(doc.querySelector('infoHash').textContent, { media: media, episode: episode, expectedSize: doc.querySelector('size').textContent })
+        client.playTorrent(doc.querySelector('infoHash').textContent, { media: media, episode: episode, expectedSize: doc.querySelector('size').textContent })
         halfmoon.toggleModal('tsearch')
       }
       doc.querySelectorAll('item').forEach((item, index) => {
@@ -504,7 +504,7 @@ async function nyaaRss (media, episode) {
                 <td>${i('downloads').textContent}</td>
                 <td class="pointer">Play</td>`
         template.onclick = () => {
-          client.addTorrent(i('infoHash').textContent, { media: media, episode: episode, expectedSize: i('size').textContent })
+          client.playTorrent(i('infoHash').textContent, { media: media, episode: episode, expectedSize: i('size').textContent })
           halfmoon.hideModal('tsearch')
         }
         frag.appendChild(template)
@@ -647,7 +647,7 @@ async function releasesCards (items, limit) {
   await Promise.all(mediaItems).then(results => {
     results.forEach((mediaInformation, index) => {
       const o = items[index].querySelector.bind(items[index])
-      mediaInformation.onclick = () => client.addTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode, expectedSize: o('size').textContent })
+      mediaInformation.onclick = () => client.playTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode, expectedSize: o('size').textContent })
       cards.push(cardCreator(mediaInformation))
     })
   })

@@ -11,7 +11,7 @@ for (const item of document.getElementsByClassName('ctrl')) {
     playerControls[item.dataset.name] = [playerControls[item.dataset.name], item]
   }
 }
-const client = new TorrentPlayer({
+const client = new WebTorrentPlayer({
   WebTorrentOpts: {
     maxConns: settings.torrent6,
     downloadLimit: settings.torrent7 * 1048576,
@@ -20,6 +20,7 @@ const client = new TorrentPlayer({
       announce: announceList
     }
   },
+  scope: '/app/',
   controls: playerControls,
   video: video,
   player: player,
@@ -33,21 +34,21 @@ const client = new TorrentPlayer({
   generateThumbnails: settings.player5,
   defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === settings.subtitle1)[0].textContent,
   resolveFileMedia: resolveFileMedia,
-  onDownloadDone: (name) => {
+  onDownloadDone: File => {
     halfmoon.initStickyAlert({
-      content: `<span class="text-break">${name}</span> has finished downloading. Now seeding.`,
+      content: `<span class="text-break">${File.name}</span> has finished downloading. Now seeding.`,
       title: 'Download Complete',
       alertType: 'alert-success',
       fillType: ''
     })
   },
-  onWatched: () => {
-    if (client.nowPlaying?.media?.episodes || client.nowPlaying?.media?.nextAiringEpisode?.episode) {
-      if (settings.other2 && (client.nowPlaying.media?.episodes || client.nowPlaying.media?.nextAiringEpisode?.episode > client.nowPlaying.episodeNumber)) {
+  onWatched: (File, FileMedia) => {
+    if (FileMedia?.media?.episodes || FileMedia?.media?.nextAiringEpisode?.episode) {
+      if (settings.other2 && (FileMedia.media.episodes || FileMedia.media.nextAiringEpisode?.episode > FileMedia.episodeNumber)) {
         alEntry()
       } else {
         halfmoon.initStickyAlert({
-          content: `Do You Want To Mark <br><b>${client.nowPlaying.mediaTitle}</b><br>Episode ${client.nowPlaying.episodeNumber} As Completed?<br>
+          content: `Do You Want To Mark <br><b>${FileMedia.mediaTitle}</b><br>Episode ${FileMedia.episodeNumber} As Completed?<br>
                 <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
                 <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
           title: 'Episode Complete',
@@ -59,9 +60,9 @@ const client = new TorrentPlayer({
   onPlaylist: () => {
     window.location.hash = '#playlist'
   },
-  onNext: () => {
-    if (client.nowPlaying.media) {
-      nyaaSearch(client.nowPlaying.media, client.nowPlaying.episodeNumber + 1)
+  onNext: (File, FileMedia) => {
+    if (FileMedia.media) {
+      nyaaSearch(FileMedia.media, FileMedia.episodeNumber + 1)
     } else {
       halfmoon.initStickyAlert({
         content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
@@ -71,9 +72,9 @@ const client = new TorrentPlayer({
       })
     }
   },
-  onPrev: () => {
-    if (client.nowPlaying.media) {
-      nyaaSearch(client.nowPlaying.media, client.nowPlaying.episodeNumber - 1)
+  onPrev: (File, FileMedia) => {
+    if (FileMedia.media) {
+      nyaaSearch(FileMedia.media, FileMedia.episodeNumber - 1)
     } else {
       halfmoon.initStickyAlert({
         content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
@@ -96,7 +97,6 @@ const client = new TorrentPlayer({
     for (const file of videoFiles) {
       const mediaInformation = await resolveFileMedia({ fileName: file.name, method: 'SearchName' })
       mediaInformation.onclick = () => {
-        client.cleanupVideo()
         client.buildVideo(torrent, {
           media: mediaInformation,
           episode: mediaInformation.parseObject.episode,
@@ -133,18 +133,18 @@ const client = new TorrentPlayer({
 window.onbeforeunload = function () {
   return ''
 }
-if (searchParams.get('file')) client.addTorrent(searchParams.get('file'))
+if (searchParams.get('file')) client.playTorrent(searchParams.get('file'))
 
 function t (a) {
   switch (a) {
     case 1:
-      client.addTorrent('https://webtorrent.io/torrents/sintel.torrent')
+      client.playTorrent('https://webtorrent.io/torrents/sintel.torrent')
       break
     case 2:
-      client.addTorrent('https://webtorrent.io/torrents/tears-of-steel.torrent')
+      client.playTorrent('https://webtorrent.io/torrents/tears-of-steel.torrent')
       break
     case 3:
-      client.addTorrent('magnet:?xt=urn:btih:CE9156EB497762F8B7577B71C0647A4B0C3423E1&dn=Inception+%282010%29+720p+-+mkv+-+1.0GB+-+YIFY')
+      client.playTorrent('magnet:?xt=urn:btih:CE9156EB497762F8B7577B71C0647A4B0C3423E1&dn=Inception+%282010%29+720p+-+mkv+-+1.0GB+-+YIFY')
       break
   }
 }
