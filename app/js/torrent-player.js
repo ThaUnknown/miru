@@ -81,7 +81,7 @@ class WebTorrentPlayer extends WebTorrent {
 
     this.video.addEventListener('loadedmetadata', () => this.findSubtitleFiles(this.currentFile))
     this.subtitleData = {
-      fonts: ['https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2'],
+      fonts: [],
       headers: [],
       tracks: [],
       current: undefined,
@@ -416,7 +416,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.setProgress(0)
     // look for file and delete its store, idk how to do this
     Object.assign(this.subtitleData, {
-      fonts: ['https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2'],
+      fonts: [],
       headers: [],
       tracks: [],
       current: undefined,
@@ -907,8 +907,9 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         subContent: this.subtitleData.headers[this.subtitleData.current].header.slice(0, -1),
         renderMode: 'offscreenCanvas',
         fonts: this.subtitleData.fonts,
+        fallbackFont: 'https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2',
         workerUrl: 'js/subtitles-octopus-worker.js',
-        timeOffset: 0.083,
+        timeOffset: 0.041,
         onReady: () => { // weird hack for laggy subtitles, this is some issue in SO
           if (!this.video.paused) {
             this.video.pause()
