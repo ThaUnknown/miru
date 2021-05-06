@@ -383,9 +383,9 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-          title: this.nowPlaying.mediaTitle || this.nowPlaying.name || 'WebTorrentPlayer',
+          title: this.nowPlaying.mediaTitle || this.nowPlaying.name || 'Miru',
           artist: 'Episode ' + episodeInfo,
-          album: this.nowPlaying.name || 'WebTorrentPlayer',
+          album: this.nowPlaying.name || 'Miru',
           artwork: [{
             src: this.nowPlaying.episodeThumbnail || this.nowPlaying.mediaCover || '',
             sizes: '256x256',
@@ -396,7 +396,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       if (this.nowPlaying.episodeThumbnail) this.video.poster = this.nowPlaying.episodeThumbnail
 
       this.changeControlsIcon('nowPlaying', 'EP ' + episodeInfo)
-      document.title = [this.nowPlaying.mediaTitle, episodeInfo ? 'EP ' + episodeInfo : false, this.nowPlaying.name || 'WebTorrentPlayer'].filter(s => s).join(' - ')
+      document.title = [this.nowPlaying.mediaTitle, episodeInfo ? 'EP ' + episodeInfo : false, this.nowPlaying.name || 'Miru'].filter(s => s).join(' - ')
     }
   }
 
@@ -412,7 +412,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.video.src = ''
     this.video.load()
     this.onDone = undefined
-    document.title = this.nowPlaying?.name || 'WebTorrentPlayer'
+    document.title = this.nowPlaying?.name || 'Miru'
     this.setProgress(0)
     // look for file and delete its store, idk how to do this
     Object.assign(this.subtitleData, {

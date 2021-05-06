@@ -161,8 +161,18 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
     variables.id = opts.id
     query = ` 
 query ($id: Int, $type: MediaType) { 
-  Media (id: $id, type: $type){
+  Media (id: $id, type: $type) {
     ${queryObjects}
+  }
+}`
+  } else if (opts.method === 'SearchIDS') {
+    variables.id = opts.id
+    query = ` 
+query ($id: [Int], $type: MediaType, $page: Int, $perPage: Int) { 
+  Page (page: $page, perPage: $perPage) {
+    media (id_in: $id, type: $type) {
+      ${queryObjects}
+    }
   }
 }`
   } else if (opts.method === 'Viewer') {
@@ -520,34 +530,43 @@ async function nyaaRss (media, episode) {
 async function resolveFileMedia (opts) {
   // opts.fileName opts.method opts.isRelease
 
-  const elems = await anitomyscript(opts.fileName)
-  if (!relations[elems.anime_title]) {
-    // resolve name and shit
-    let method, res
-    if (opts.isRelease) {
-      method = { name: elems.anime_title, method: 'SearchName', perPage: 1, status: 'RELEASING', sort: 'TRENDING_DESC' }
-      // maybe releases should include this and last season? idfk
-    } else {
-      method = { name: elems.anime_title, method: opts.method, perPage: 1, sort: 'SEARCH_MATCH' }
-    }
-    res = await alRequest(method)
-    if (!res.data.Page.media[0]) {
-      method.sort = 'SEARCH_MATCH'
-      method.name = method.name.replace(' (TV)', '').replace(` (${new Date().getFullYear()})`, '').replace('-', '').replace('S2', '2') // this needs to be improved!!!
-      method.status = undefined
+  async function resolveTitle (title) {
+    if (!relations[title]) {
+      // resolve name and shit
+      let method, res
+      if (opts.isRelease) {
+        method = { name: title, method: 'SearchName', perPage: 1, status: 'RELEASING', sort: 'TRENDING_DESC' }
+        // maybe releases should include this and last season? idfk
+      } else {
+        method = { name: title, method: opts.method, perPage: 1, sort: 'SEARCH_MATCH' }
+      }
       res = await alRequest(method)
-    }
-    if (res.data.Page.media[0]) {
-      relations[elems.anime_title] = res.data.Page.media[0].id
-      store[res.data.Page.media[0].id] = res.data.Page.media[0]
+      if (!res.data.Page.media[0]) {
+        method.sort = 'SEARCH_MATCH'
+        method.name = method.name.replace('(TV)', '').replace(` (${new Date().getFullYear()})`, '').replace('-', '').replace('S2', '2') // this needs to be improved!!!
+        method.status = undefined
+        res = await alRequest(method)
+      }
+      if (res.data.Page.media[0]) {
+        relations[title] = res.data.Page.media[0].id
+      }
     }
   }
-  if (!store[relations[elems.anime_title]] && relations[elems.anime_title]) {
-    store[relations[elems.anime_title]] = (await alRequest({ method: 'SearchIDSingle', id: relations[elems.anime_title] })).data.Media
+  const parsePromises = []
+  if (opts.fileName.constructor === Array) {
+    for (const name of opts.fileName) parsePromises.push(anitomyscript(name))
+  } else {
+    parsePromises[0] = anitomyscript(opts.fileName)
   }
-  let episode; let media = store[relations[elems.anime_title]]
-  // resolve episode, if movie, dont.
-  if ((media?.format !== 'MOVIE' || (media.episodes || media.nextAiringEpisode.episode)) && elems.episode_number) {
+  const parseObjs = await Promise.all(parsePromises)
+  const titlePromises = [...new Set(parseObjs.map(obj => obj.anime_title))].map(title => resolveTitle(title))
+  await Promise.all(titlePromises)
+  const mediaList = (await alRequest({ method: 'SearchIDS', id: [...new Set(parseObjs.map(obj => relations[obj.anime_title]))], perPage: 50 })).data.Page.media
+  const assoc = {}
+  for (const media of mediaList) assoc[media.id] = media
+  const fileMedias = []
+  for (const praseObj of parseObjs) {
+    let media = assoc[relations[praseObj.anime_title]]
     async function resolveSeason (opts) {
       // opts.media, opts.episode, opts.increment, opts.offset
       let epMin, epMax
@@ -573,7 +592,7 @@ async function resolveFileMedia (opts) {
       } else if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) <= (media.nextAiringEpisode?.episode || media.episodes) && epMin - (opts.offset + tempMedia.episodes) > 0) {
         // episode is in range, seems good! overwriting media to count up "seasons"
         if (opts.episode.constructor === Array) {
-          episode = `${elems.episode_number[0] - (opts.offset + tempMedia.episodes)} ~ ${elems.episode_number[elems.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
+          episode = `${praseObj.episode_number[0] - (opts.offset + tempMedia.episodes)} ~ ${praseObj.episode_number[praseObj.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
         } else {
           episode = opts.episode - (opts.offset + tempMedia.episodes)
         }
@@ -585,51 +604,56 @@ async function resolveFileMedia (opts) {
         console.log('error in parsing!', opts.media, tempMedia)
         // something failed, most likely couldnt find an edge or processing failed, force episode number even if its invalid/out of bounds, better than nothing
         if (opts.episode.constructor === Array) {
-          episode = `${Number(elems.episode_number[0])} ~ ${Number(elems.episode_number[elems.episode_number.length - 1])}`
+          episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[praseObj.episode_number.length - 1])}`
         } else {
           episode = Number(opts.episode)
         }
       }
     }
-    if (elems.episode_number.constructor === Array) {
+
+    // resolve episode, if movie, dont.
+    if ((media?.format !== 'MOVIE' || (media.episodes || media.nextAiringEpisode.episode)) && praseObj.episode_number) {
+      if (praseObj.episode_number.constructor === Array) {
       // is an episode range
-      if (parseInt(elems.episode_number[0]) === 1) {
+        if (parseInt(praseObj.episode_number[0]) === 1) {
         // if it starts with #1 and overflows then it includes more than 1 season in a batch, cant fix this cleanly, name is parsed per file basis so this shouldnt be an issue
-        episode = `${elems.episode_number[0]} ~ ${elems.episode_number[elems.episode_number.length - 1]}`
-      } else {
-        if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(elems.episode_number[elems.episode_number.length - 1]) > (media.episodes || media.nextAiringEpisode.episode)) {
-          // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
-          await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
+          episode = `${praseObj.episode_number[0]} ~ ${praseObj.episode_number[praseObj.episode_number.length - 1]}`
         } else {
+          if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(praseObj.episode_number[praseObj.episode_number.length - 1]) > (media.episodes || media.nextAiringEpisode.episode)) {
+          // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
+            await resolveSeason({ media: media, episode: praseObj.episode_number, offset: 0 })
+          } else {
           // cant find ep count or range seems fine
-          episode = `${Number(elems.episode_number[0])} ~ ${Number(elems.episode_number[elems.episode_number.length - 1])}`
+            episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[praseObj.episode_number.length - 1])}`
+          }
+        }
+      } else {
+        if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(praseObj.episode_number) > (media.episodes || media.nextAiringEpisode.episode)) {
+        // value bigger than episode count
+          await resolveSeason({ media: media, episode: praseObj.episode_number, offset: 0 })
+        } else {
+        // cant find ep count or episode seems fine
+          episode = Number(praseObj.episode_number)
         }
       }
-    } else {
-      if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(elems.episode_number) > (media.episodes || media.nextAiringEpisode.episode)) {
-        // value bigger than episode count
-        await resolveSeason({ media: media, episode: elems.episode_number, offset: 0 })
-      } else {
-        // cant find ep count or episode seems fine
-        episode = Number(elems.episode_number)
-      }
     }
+    const streamingEpisode = media?.streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(praseObj.episode_number))[0]
+    fileMedias.push({
+      mediaTitle: media?.title.userPreferred,
+      episodeNumber: episode,
+      episodeTitle: streamingEpisode ? episodeRx.exec(streamingEpisode.title)[2] : undefined,
+      episodeThumbnail: streamingEpisode?.thumbnail,
+      mediaCover: media?.coverImage.medium,
+      name: 'Miru',
+      parseObject: praseObj,
+      media: media
+    })
   }
-  const streamingEpisode = media?.streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(elems.episode_number))[0]
-  return {
-    mediaTitle: media?.title.userPreferred,
-    episodeNumber: episode,
-    episodeTitle: streamingEpisode ? episodeRx.exec(streamingEpisode.title)[2] : undefined,
-    episodeThumbnail: streamingEpisode?.thumbnail,
-    mediaCover: media?.coverImage.medium,
-    name: 'Miru',
-    parseObject: elems,
-    media: media
-  }
+  return fileMedias.length === 1 ? fileMedias[0] : fileMedias
 }
 
-const store = {}
-const relations = JSON.parse(localStorage.getItem('relations')) || {}
+let relations = JSON.parse(localStorage.getItem('relations'))
+relations = relations || {}
 
 function getRSSurl () {
   if (Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0]) {
@@ -639,12 +663,8 @@ function getRSSurl () {
   }
 }
 async function releasesCards (items, limit) {
-  const mediaItems = []
   const cards = []
-  for (let l = 0; l < (limit || items.length); l++) {
-    mediaItems.push(resolveFileMedia({ fileName: items[l].querySelector('title').textContent, method: 'SearchName', isRelease: true }))
-  }
-  await Promise.all(mediaItems).then(results => {
+  await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true }).then(results => {
     results.forEach((mediaInformation, index) => {
       const o = items[index].querySelector.bind(items[index])
       mediaInformation.onclick = () => client.playTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode, expectedSize: o('size').textContent })
