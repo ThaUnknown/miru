@@ -552,18 +552,13 @@ async function resolveFileMedia (opts) {
       }
     }
   }
-  const parsePromises = []
-  if (opts.fileName.constructor === Array) {
-    for (const name of opts.fileName) parsePromises.push(anitomyscript(name))
-  } else {
-    parsePromises[0] = anitomyscript(opts.fileName)
-  }
+  const parsePromises = opts.fileName.constructor === Array
+    ? opts.fileName.map(name => anitomyscript(name))
+    : [anitomyscript(opts.fileName)]
   const parseObjs = await Promise.all(parsePromises)
-  const titlePromises = [...new Set(parseObjs.map(obj => obj.anime_title))].map(title => resolveTitle(title))
-  await Promise.all(titlePromises)
-  const mediaList = (await alRequest({ method: 'SearchIDS', id: [...new Set(parseObjs.map(obj => relations[obj.anime_title]))], perPage: 50 })).data.Page.media
+  await Promise.all([...new Set(parseObjs.map(obj => obj.anime_title))].map(title => resolveTitle(title)))
   const assoc = {}
-  for (const media of mediaList) assoc[media.id] = media
+  for (const media of (await alRequest({ method: 'SearchIDS', id: [...new Set(parseObjs.map(obj => relations[obj.anime_title]))], perPage: 50 })).data.Page.media) assoc[media.id] = media
   const fileMedias = []
   for (const praseObj of parseObjs) {
     let media = assoc[relations[praseObj.anime_title]]
