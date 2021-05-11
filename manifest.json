@@ -28,10 +28,16 @@
     }
   },
   "intent_filters": {
-    "scope_url_scheme": "https",
-    "scope_url_host": "mirumoe.netlify.app",
+    "scope_url_scheme": "http",
+    "scope_url_host": "localhost",
     "scope_url_path": "/app/"
   },
+  "capture_links": "existing_client_event",
+  "url_handlers": [
+    {
+      "origin": "localhost"
+    }
+  ],
   "protocol_handlers": [
     {
       "protocol": "magnet",
