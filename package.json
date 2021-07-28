@@ -1,0 +1,29 @@
+{
+  "name": "miru",
+  "version": "1.0.0",
+  "description": "P2P anime streaming site!",
+  "main": "index.html",
+  "scripts": {
+    "test": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThaUnknown/miru.git"
+  },
+  "keywords": [
+    "anime",
+    "streaming",
+    "p2p",
+    "webtorrent",
+    "torrent"
+  ],
+  "author": "ThaUnknown_",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ThaUnknown/miru/issues"
+  },
+  "homepage": "https://github.com/ThaUnknown/miru#readme",
+  "dependencies": {
+    "webtorrent-player": "github:ThaUnknown/webtorrent-player"
+  }
+}

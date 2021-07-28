@@ -13,7 +13,7 @@ for (const item of document.getElementsByClassName('ctrl')) {
 }
 const client = new WebTorrentPlayer({
   WebTorrentOpts: {
-    maxConns: settings.torrent6,
+    maxConns: 127,
     downloadLimit: settings.torrent7 * 1048576,
     uploadLimit: settings.torrent7 * 1572864,
     tracker: {

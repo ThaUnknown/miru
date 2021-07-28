@@ -1,5 +1,5 @@
 const settingsElements = [
-  volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent6, torrent7, torrent8, torrent9, other1, other2
+  volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent7, torrent8, torrent9, other1, other2
 ]
 setRes.addEventListener('click', restoreDefaults)
 settingsTab.addEventListener('click', applySettingsTimeout)
@@ -17,7 +17,7 @@ function applySettingsTimeout () {
 }
 function saveSettings () {
   for (const element of settingsElements) {
-    element.type === 'checkbox' ? settings[element.id] = element.checked : settings[element.id] = element.value
+    settings[element.id] = element.type === 'checkbox' ? element.checked : element.value
   }
   localStorage.setItem('settings', JSON.stringify(settings))
 }
@@ -48,14 +48,14 @@ clearRelCache.onclick = () => {
 }
 renderSettings()
 
-other1.onclick = () => Notification.requestPermission().then(function (perm) { perm === 'denied' ? other1.checked = false : other1.checked = true })
+other1.onclick = () => Notification.requestPermission().then(perm => { perm === 'denied' ? other1.checked = false : other1.checked = true })
 
 const searchParams = new URLSearchParams(location.href)
 if (searchParams.get('access_token')) {
   localStorage.setItem('ALtoken', searchParams.get('access_token'))
   window.location = '/app/#settingsTab'
 }
-const userBrowser = (function () {
+const userBrowser = (() => {
   if (window.chrome) {
     if (navigator.userAgent.indexOf('Edg') !== -1) {
       return 'edge'
@@ -64,4 +64,4 @@ const userBrowser = (function () {
     }
   }
   if (typeof InstallTrigger !== 'undefined') return 'firefox'
-}())
+})()

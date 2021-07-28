@@ -1,4 +1,4 @@
-/aniflix
-/compiled
+/node_modules
+package-lock.json
 *.mkv
 *.mp4
