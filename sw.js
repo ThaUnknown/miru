@@ -1,3 +1,4 @@
+/* eslint-env serviceworker */
 'use strict'
 
 const staticCacheName = 'v1.0.0'
@@ -40,6 +41,7 @@ self.addEventListener('activate', event => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
             return caches.delete(cacheName)
           }
+          return null
         })
       )
     })
@@ -52,17 +54,17 @@ self.addEventListener('activate', event => {
 //     caches.match(event.request)
 //       .then(response => {
 //         if (response) {
-//           return response;
+//           return response
 //         }
 //         return fetch(event.request)
 //           .then(response => {
 //             if (response.status === 404) {
-//               return;
+//               return
 //             }
-//             return response;
-//           });
+//             return response
+//           })
 //       }).catch(error => {
-//         return caches.match('index.html');
+//         return caches.match('index.html')
 //       })
-//   );
-// });
+//   )
+// })

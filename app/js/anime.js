@@ -1,3 +1,8 @@
+/* eslint-env browser */
+/* global searchText, navNowPlaying, halfmoon, home, oauth, anitomyscript, torrent4list */
+import { settings, searchParams, userBrowser } from './settings.js'
+import { loadHomePage, cardCreator } from './interface.js'
+import { client } from './main.js'
 const torrentRx = /(magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent){1}/i
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/
 window.addEventListener('paste', async e => { // WAIT image lookup on paste, or add torrent on paste
@@ -68,7 +73,7 @@ function traceAnime (image, type) { // WAIT lookup logic
 // events
 navNowPlaying.onclick = () => { viewAnime(client.nowPlaying?.media) }
 // AL lookup logic
-async function alRequest (opts) {
+export async function alRequest (opts) {
   let query
   const variables = {
     type: 'ANIME',
@@ -256,7 +261,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
   console.log(json)
   return json
 }
-async function alEntry () {
+export async function alEntry () {
   if (client.nowPlaying.media && localStorage.getItem('ALtoken')) {
     const res = await alRequest({ method: 'SearchIDStatus', id: client.nowPlaying.media.id })
     if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= client.nowPlaying.episodeNumber) {
@@ -457,7 +462,7 @@ function countdown (s) {
   return tmp.join(' ')
 }
 
-const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
+export const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
 
 async function nyaaSearch (media, episode) {
   if (parseInt(episode) < 10) {
@@ -528,7 +533,7 @@ async function nyaaRss (media, episode) {
 }
 // resolve anime name based on file name and store it
 
-async function resolveFileMedia (opts) {
+export async function resolveFileMedia (opts) {
   // opts.fileName opts.method opts.isRelease
 
   async function resolveTitle (title) {
@@ -562,6 +567,7 @@ async function resolveFileMedia (opts) {
   for (const media of (await alRequest({ method: 'SearchIDS', id: [...new Set(parseObjs.map(obj => relations[obj.anime_title]))], perPage: 50 })).data.Page.media) assoc[media.id] = media
   const fileMedias = []
   for (const praseObj of parseObjs) {
+    let episode
     let media = assoc[relations[praseObj.anime_title]]
     async function resolveSeason (opts) {
       // opts.media, opts.episode, opts.increment, opts.offset
@@ -648,17 +654,17 @@ async function resolveFileMedia (opts) {
   return fileMedias.length === 1 ? fileMedias[0] : fileMedias
 }
 
-let relations = JSON.parse(localStorage.getItem('relations'))
+export let relations = JSON.parse(localStorage.getItem('relations')) || {}
 relations = relations || {}
 
-function getRSSurl () {
+export function getRSSurl () {
   if (Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0]) {
     return settings.torrent4 === 'Erai-raws' ? new URL(Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0].innerHTML + settings.torrent1 + '-magnet') : new URL(Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0].innerHTML + settings.torrent1)
   } else {
     return settings.torrent4 + settings.torrent1 // add custom RSS
   }
 }
-async function releasesCards (items, limit) {
+export async function releasesCards (items, limit) {
   const cards = []
   await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true }).then(results => {
     results.forEach((mediaInformation, index) => {
@@ -670,7 +676,7 @@ async function releasesCards (items, limit) {
   localStorage.setItem('relations', JSON.stringify(relations))
   return cards
 }
-async function releasesRss (limit) {
+export async function releasesRss (limit) {
   let cards
   await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
     try {
@@ -681,7 +687,7 @@ async function releasesRss (limit) {
   }))
   return cards
 }
-let alID // login icon
+export let alID // login icon
 async function loadAnime () {
   if (localStorage.getItem('ALtoken')) {
     alRequest({ method: 'Viewer' }).then(result => {

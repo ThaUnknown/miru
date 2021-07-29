@@ -1,11 +1,14 @@
-const settingsElements = [
+/* eslint-env browser */
+/* global volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent7, torrent8, torrent9, other1, other2, setRes, settingsTab, regProtButton, clearRelCache */
+import { relations } from './anime.js'
+export const settingsElements = [
   volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent7, torrent8, torrent9, other1, other2
 ]
 setRes.addEventListener('click', restoreDefaults)
 settingsTab.addEventListener('click', applySettingsTimeout)
 volume.addEventListener('click', applySettingsTimeout)
 regProtButton.addEventListener('click', registerProtocol)
-const settings = JSON.parse(localStorage.getItem('settings')) || {}
+export const settings = JSON.parse(localStorage.getItem('settings')) || {}
 function restoreDefaults () {
   localStorage.removeItem('settings')
   location.reload()
@@ -50,12 +53,12 @@ renderSettings()
 
 other1.onclick = () => Notification.requestPermission().then(perm => { perm === 'denied' ? other1.checked = false : other1.checked = true })
 
-const searchParams = new URLSearchParams(location.href)
+export const searchParams = new URLSearchParams(location.href)
 if (searchParams.get('access_token')) {
   localStorage.setItem('ALtoken', searchParams.get('access_token'))
   window.location = '/app/#settingsTab'
 }
-const userBrowser = (() => {
+export const userBrowser = (() => {
   if (window.chrome) {
     if (navigator.userAgent.indexOf('Edg') !== -1) {
       return 'edge'

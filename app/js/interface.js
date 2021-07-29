@@ -1,4 +1,9 @@
-async function loadHomePage () {
+/* eslint-env browser */
+/* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
+import { alRequest, alID, getRSSurl, DOMPARSER, releasesCards, releasesRss, resolveFileMedia, viewAnime, countdown } from './anime.js'
+import { settings, relations } from './settings.js'
+import { client } from './main.js'
+export async function loadHomePage () {
   const homeLoadElements = [navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore]
   const homePreviewElements = [homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction]
   const homeSearchElements = [searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort]
@@ -223,7 +228,7 @@ async function loadHomePage () {
 const skeletonCard = skeletonCardTemplate.cloneNode(true).content
 const bareCard = bareCardTemplate.cloneNode(true).content
 const fullCard = fullCardTemplate.cloneNode(true).content
-function cardCreator (opts) {
+export function cardCreator (opts) {
   if (opts.media) {
     const card = fullCard.cloneNode(true)
     const nodes = card.querySelectorAll('*')

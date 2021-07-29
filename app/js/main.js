@@ -1,3 +1,11 @@
+/* globals video, player, halfmoon, pageWrapper, subtitle1list */
+
+import WebTorrentPlayer from 'webtorrent-player'
+import './util.js'
+import { resolveFileMedia, nyaaSearch, alEntry } from './anime.js'
+import { settings, searchParams } from './settings.js'
+import { cardCreator } from './interface.js'
+
 const announceList = [
   'wss://tracker.openwebtorrent.com',
   'wss://tracker.sloppyta.co:443/announce',
@@ -11,7 +19,7 @@ for (const item of document.getElementsByClassName('ctrl')) {
     playerControls[item.dataset.name] = [playerControls[item.dataset.name], item]
   }
 }
-const client = new WebTorrentPlayer({
+export const client = new WebTorrentPlayer({
   WebTorrentOpts: {
     maxConns: 127,
     downloadLimit: settings.torrent7 * 1048576,
@@ -20,7 +28,6 @@ const client = new WebTorrentPlayer({
       announce: announceList
     }
   },
-  scope: '/app/',
   controls: playerControls,
   video: video,
   player: player,
@@ -91,7 +98,7 @@ const client = new WebTorrentPlayer({
       document.querySelector('.downloads').appendChild(template)
     })
   },
-  onVideoFiles: async videoFiles => {
+  onVideoFiles: async (videoFiles, torrent) => {
     document.querySelector('.playlist').textContent = ''
     const cards = []
     for (const file of videoFiles) {
@@ -134,17 +141,3 @@ window.onbeforeunload = function () {
   return ''
 }
 if (searchParams.get('file')) client.playTorrent(searchParams.get('file'))
-
-function t (a) {
-  switch (a) {
-    case 1:
-      client.playTorrent('https://webtorrent.io/torrents/sintel.torrent')
-      break
-    case 2:
-      client.playTorrent('https://webtorrent.io/torrents/tears-of-steel.torrent')
-      break
-    case 3:
-      client.playTorrent('magnet:?xt=urn:btih:CE9156EB497762F8B7577B71C0647A4B0C3423E1&dn=Inception+%282010%29+720p+-+mkv+-+1.0GB+-+YIFY')
-      break
-  }
-}

@@ -4,7 +4,8 @@
   "description": "P2P anime streaming site!",
   "main": "index.html",
   "scripts": {
-    "test": "standard"
+    "test": "standard",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,11 @@
   "homepage": "https://github.com/ThaUnknown/miru#readme",
   "dependencies": {
     "webtorrent-player": "github:ThaUnknown/webtorrent-player"
+  },
+  "devDependencies": {
+    "node-polyfill-webpack-plugin": "^1.1.4",
+    "standard": "^16.0.3",
+    "webpack": "^5.47.0",
+    "webpack-cli": "^4.7.2"
   }
 }
