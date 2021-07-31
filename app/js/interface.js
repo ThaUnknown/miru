@@ -1,8 +1,9 @@
 /* eslint-env browser */
 /* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
-import { alRequest, alID, getRSSurl, DOMPARSER, releasesCards, releasesRss, resolveFileMedia, viewAnime, countdown } from './anime.js'
-import { settings, relations } from './settings.js'
+import { alRequest, alID, getRSSurl, releasesCards, releasesRss, resolveFileMedia, viewAnime, relations } from './anime.js'
+import { settings } from './settings.js'
 import { client } from './main.js'
+import { DOMPARSER, countdown } from './util.js'
 export async function loadHomePage () {
   const homeLoadElements = [navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore]
   const homePreviewElements = [homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction]

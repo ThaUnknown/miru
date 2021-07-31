@@ -4,10 +4,10 @@ if (!Module.expectedDataFileDownloads) {
 }
 Module.expectedDataFileDownloads++;
 (function () {
-  const loadPackage = function (metadata) {
+  var loadPackage = function (metadata) {
     function runWithFS () {
       Module.FS_createPath('/', 'assets', true, true)
-      const fileData0 = []
+      var fileData0 = []
       fileData0.push.apply(fileData0, [60, 63, 120, 109, 108, 32, 118, 101, 114, 115, 105, 111, 110, 61, 34, 49, 46, 48, 34, 63, 62, 10, 60, 33, 68, 79, 67, 84, 89, 80, 69, 32, 102, 111, 110, 116, 99, 111, 110, 102, 105, 103, 32, 83, 89, 83, 84, 69, 77, 32, 34, 102, 111, 110, 116, 115, 46, 100, 116, 100, 34, 62, 10, 60, 102, 111, 110, 116, 99, 111, 110, 102, 105, 103, 62, 10, 9, 60, 100, 105, 114, 62, 47, 102, 111, 110, 116, 115, 60, 47, 100, 105, 114, 62, 10, 9, 60, 109, 97, 116, 99, 104, 32, 116, 97, 114, 103, 101, 116, 61, 34, 112, 97, 116, 116, 101, 114, 110, 34, 62, 10, 9, 9, 60, 116, 101, 115, 116, 32, 113, 117, 97, 108, 61, 34, 97, 110, 121, 34, 32, 110, 97, 109, 101, 61, 34, 102, 97, 109, 105, 108, 121, 34, 62, 10, 9, 9, 9, 60, 115, 116, 114, 105, 110, 103, 62, 109, 111, 110, 111, 60, 47, 115, 116, 114, 105, 110, 103, 62, 10, 9, 9, 60, 47, 116, 101, 115, 116, 62, 10, 9, 9, 60, 101, 100, 105, 116, 32, 110, 97, 109, 101, 61, 34, 102, 97, 109, 105, 108, 121, 34, 32, 109, 111, 100, 101, 61, 34, 97, 115, 115, 105, 103, 110, 34, 32, 98, 105, 110, 100, 105, 110, 103, 61, 34, 115, 97, 109, 101, 34, 62, 10, 9, 9, 9, 60, 115, 116, 114, 105, 110, 103, 62, 109, 111, 110, 111, 115, 112, 97, 99, 101, 60, 47, 115, 116, 114, 105, 110, 103, 62, 10, 9, 9, 60, 47, 101, 100, 105, 116, 62, 10, 9, 60, 47, 109, 97, 116, 99, 104, 62, 10, 9, 60, 109, 97, 116, 99, 104, 32, 116, 97, 114, 103, 101, 116, 61, 34, 112, 97, 116, 116, 101, 114, 110, 34, 62, 10, 9, 9, 60, 116, 101, 115, 116, 32, 113, 117, 97, 108, 61, 34, 97, 110, 121, 34, 32, 110, 97, 109, 101, 61, 34, 102, 97, 109, 105, 108, 121, 34, 62, 10, 9, 9, 9, 60, 115, 116, 114, 105, 110, 103, 62, 115, 97, 110, 115, 32, 115, 101, 114, 105, 102, 60, 47, 115, 116, 114, 105, 110, 103, 62, 10, 9, 9, 60, 47, 116, 101, 115, 116, 62, 10, 9, 9, 60, 101, 100, 105, 116, 32, 110, 97, 109, 101, 61, 34, 102, 97, 109, 105, 108, 121, 34, 32, 109, 111, 100, 101, 61, 34, 97, 115, 115, 105, 103, 110, 34, 32, 98, 105, 110, 100, 105, 110, 103, 61, 34, 115, 97, 109, 101, 34, 62, 10, 9, 9, 9, 60, 115, 116, 114, 105, 110, 103, 62, 115, 97, 110, 115, 45, 115, 101, 114, 105, 102, 60, 47, 115, 116, 114, 105, 110, 103, 62, 10, 9, 9, 60, 47, 101, 100, 105, 116, 62, 10, 9, 60, 47, 109, 97, 116, 99, 104, 62, 10, 9, 60, 109, 97, 116, 99, 104, 32, 116, 97, 114, 103, 101, 116, 61, 34, 112, 97, 116, 116, 101, 114, 110, 34, 62, 10, 9, 9, 60, 116, 101, 115, 116, 32, 113, 117, 97, 108, 61, 34, 97, 110, 121, 34, 32, 110, 97, 109, 101, 61, 34, 102, 97, 109, 105, 108, 121, 34, 62, 10, 9, 9, 9, 60, 115, 116, 114, 105, 110, 103, 62, 115, 97, 110, 115, 60, 47, 115, 116, 114, 105, 110, 103, 62, 10, 9, 9, 60, 47, 116, 101, 115, 116, 62, 10, 9, 9, 60, 101, 100, 105, 116, 32, 110, 97, 109, 101, 61, 34, 102, 97, 109, 105, 108, 121, 34, 32, 109, 111, 100, 101, 61, 34, 97, 115, 115, 105, 103, 110, 34, 32, 98, 105, 110, 100, 105, 110, 103, 61, 34, 115, 97, 109, 101, 34, 62, 10, 9, 9, 9, 60, 115, 116, 114, 105, 110, 103, 62, 115, 97, 110, 115, 45, 115, 101, 114, 105, 102, 60, 47, 115, 116, 114, 105, 110, 103, 62, 10, 9, 9, 60, 47, 101, 100, 105, 116, 62, 10, 9, 60, 47, 109, 97, 116, 99, 104, 62, 10, 9, 60, 99, 97, 99, 104, 101, 100, 105, 114, 62, 47, 46, 102, 111, 110, 116, 99, 111, 110, 102, 105, 103, 60, 47, 99, 97, 99, 104, 101, 100, 105, 114, 62, 10, 9, 60, 99, 111, 110, 102, 105, 103, 62, 10, 9, 9, 60, 114, 101, 115, 99, 97, 110, 62, 10, 9, 9, 9, 60, 105, 110, 116, 62, 51, 48, 60, 47, 105, 110, 116, 62, 10, 9, 9, 60, 47, 114, 101, 115, 99, 97, 110, 62, 10, 9, 60, 47, 99, 111, 110, 102, 105, 103, 62, 10, 60, 47, 102, 111, 110, 116, 99, 111, 110, 102, 105, 103, 62, 10])
       Module.FS_createDataFile('/assets', 'fonts.conf', fileData0, true, true, false)
     }
@@ -22,23 +22,23 @@ Module.expectedDataFileDownloads++;
     files: []
   })
 })()
+/* eslint camelcase: 0, no-return-assign: 0, no-var: 0, prefer-regex-literals: 0, no-control-regex: 0 */
 Module = Module || {}
 
 Module.preRun = Module.preRun || []
 
-Module.preRun.push(function () {
+Module.preRun.push(() => {
   let i
   Module.FS_createFolder('/', 'fonts', true, true)
   Module.FS_createFolder('/', '.fontconfig', true, true)
 
-  if (!self.subContent) {
-    // We can use sync xhr cause we're inside Web Worker
-    self.subContent = read_(self.subUrl)
-  }
+  // We can use sync xhr cause we're inside Web Worker
+  if (!self.subContent) self.subContent = read_(self.subUrl)
 
   let result
   {
-    const regex = /^fontname((v2:[ \t]*(?<fontName2>[^_]+)_(?<fontProperties2>[^,]*)\.(?<fontExtension2>[a-z0-9]{3,5}),[ \t]*(?<fontContent2>.+)$)|(:[ \t]*(?<fontName>[^_]+)_(?<fontProperties>[^$]*)\.(?<fontExtension>[a-z0-9]{3,5})(?<fontContent>(?:\r?\n[\x21-\x60]+)+)))/mg
+    // shit crashes if regex is done correctly, thanks emscripten
+    const regex = new RegExp('^fontname((v2:[ \t]*(?<fontName2>[^_]+)_(?<fontProperties2>[^,]*).(?<fontExtension2>[a-z0-9]{3,5}),[ \t]*(?<fontContent2>.+)$)|(:[ \t]*(?<fontName>[^_]+)_(?<fontProperties>[^$]*).(?<fontExtension>[a-z0-9]{3,5})(?<fontContent>(?:\r?\n[\x21-\x60]+)+)))', 'mg')
     while ((result = regex.exec(self.subContent)) !== null) {
       let font
       if ('fontName2' in result.groups && result.groups.fontName2 !== undefined) {
@@ -56,63 +56,45 @@ Module.preRun.push(function () {
       }
 
       self.fontMap_[font.id] = true
-      Module.FS.writeFile('/fonts/font' + (self.fontId++) + '-' + font.name, font.content, {
-        encoding: 'binary'
-      })
+      Module.FS.writeFile('/fonts/font' + (self.fontId++) + '-' + font.name, font.content, { encoding: 'binary' })
       console.log('libass: attaching embedded font ' + font.name)
     }
   }
 
   if ((self.availableFonts && self.availableFonts.length !== 0)) {
-    const sections = parseAss(self.subContent)
-    for (i = 0; i < sections.length; i++) {
-      for (let j = 0; j < sections[i].body.length; j++) {
-        if (sections[i].body[j].key === 'Style') {
-          self.writeFontToFS(sections[i].body[j].value.Fontname)
-        }
+    for (const selection of parseAss(self.subContent)) {
+      for (const body of selection.body) {
+        if (body.key === 'Style') self.writeFontToFS(body.value.Fontname)
       }
     }
 
     const regex = /\\fn([^\\}]*?)[\\}]/g
     let matches
-    while (matches = regex.exec(self.subContent)) {
-      self.writeFontToFS(matches[1])
-    }
+    while ((matches = regex.exec(self.subContent)) !== null) self.writeFontToFS(matches[1])
   }
 
-  if (self.subContent) {
-    Module.FS.writeFile('/sub.ass', self.subContent)
-  }
+  if (self.subContent) Module.FS.writeFile('/sub.ass', self.subContent)
 
   self.subContent = null
 
   Module.FS_createLazyFile('/fonts', '.fallback-' + self.fallbackFont.split('/').pop(), self.fallbackFont, true, false)
-
-  // Module["FS"].mount(Module["FS"].filesystems.IDBFS, {}, '/fonts');
-  const fontFiles = self.fontFiles || []
-  for (i = 0; i < fontFiles.length; i++) {
-    Module.FS_createLazyFile('/fonts', 'font' + i + '-' + fontFiles[i].split('/').pop(), fontFiles[i], true, false)
+  for (const file of self.fontFiles || []) {
+    Module.FS_createLazyFile('/fonts', 'font' + i + '-' + file.split('/').pop(), file, true, false)
   }
 })
 
-Module.onRuntimeInitialized = function () {
+Module.onRuntimeInitialized = () => {
   self.octObj = new Module.SubtitleOctopus()
-
   self.changed = Module._malloc(4)
 
-  if (self.debug) {
-    self.octObj.setLogLevel(7)
-  }
+  if (self.debug) self.octObj.setLogLevel(7)
   self.octObj.initLibrary(screen.width, screen.height, '/fonts/.fallback-' + self.fallbackFont.split('/').pop())
   self.octObj.setDropAnimations(!!self.dropAllAnimations)
   self.octObj.createTrack('/sub.ass')
   self.ass_track = self.octObj.track
   self.ass_library = self.octObj.ass_library
   self.ass_renderer = self.octObj.ass_renderer
-
-  if (self.libassMemoryLimit > 0 || self.libassGlyphLimit > 0) {
-    self.octObj.setMemoryLimits(self.libassGlyphLimit, self.libassMemoryLimit)
-  }
+  if (self.libassMemoryLimit > 0 || self.libassGlyphLimit > 0) self.octObj.setMemoryLimits(self.libassGlyphLimit, self.libassMemoryLimit)
 }
 
 Module.print = function (text) {
@@ -123,27 +105,28 @@ Module.printErr = function (text) {
   if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ')
   console.error(text)
 }
-let moduleOverrides = {}
-let key
+
+var moduleOverrides = {}
+var key
 for (key in Module) {
   if (Module.hasOwnProperty(key)) {
     moduleOverrides[key] = Module[key]
   }
 }
-let arguments_ = []
-let thisProgram = './this.program'
-let quit_ = function (status, toThrow) {
+var arguments_ = []
+var thisProgram = './this.program'
+var quit_ = function (status, toThrow) {
   throw toThrow
 }
-let ENVIRONMENT_IS_WEB = false
-let ENVIRONMENT_IS_WORKER = false
-let ENVIRONMENT_IS_NODE = false
-let ENVIRONMENT_IS_SHELL = false
+var ENVIRONMENT_IS_WEB = false
+var ENVIRONMENT_IS_WORKER = false
+var ENVIRONMENT_IS_NODE = false
+var ENVIRONMENT_IS_SHELL = false
 ENVIRONMENT_IS_WEB = typeof window === 'object'
 ENVIRONMENT_IS_WORKER = typeof importScripts === 'function'
 ENVIRONMENT_IS_NODE = typeof process === 'object' && typeof process.versions === 'object' && typeof process.versions.node === 'string'
 ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER
-let scriptDirectory = ''
+var scriptDirectory = ''
 
 function locateFile (path) {
   if (Module.locateFile) {
@@ -151,7 +134,7 @@ function locateFile (path) {
   }
   return scriptDirectory + path
 }
-let read_, readAsync, readBinary, setWindowTitle
+var read_, readAsync, readBinary, setWindowTitle
 if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
   if (ENVIRONMENT_IS_WORKER) {
     scriptDirectory = self.location.href
@@ -162,64 +145,64 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
     scriptDirectory = scriptDirectory.substr(0, scriptDirectory.lastIndexOf('/') + 1)
   } else {
     scriptDirectory = ''
-  } {
-    read_ = function shell_read (url) {
+  }
+  read_ = function shell_read (url) {
+    try {
+      var xhr = new XMLHttpRequest()
+      xhr.open('GET', url, false)
+      xhr.send(null)
+      return xhr.responseText
+    } catch (err) {
+      var data = tryParseAsDataURI(url)
+      if (data) {
+        return intArrayToString(data)
+      }
+      throw err
+    }
+  }
+  if (ENVIRONMENT_IS_WORKER) {
+    readBinary = function readBinary (url) {
       try {
-        const xhr = new XMLHttpRequest()
+        var xhr = new XMLHttpRequest()
         xhr.open('GET', url, false)
+        xhr.responseType = 'arraybuffer'
         xhr.send(null)
-        return xhr.responseText
+        return new Uint8Array(xhr.response)
       } catch (err) {
-        const data = tryParseAsDataURI(url)
+        var data = tryParseAsDataURI(url)
         if (data) {
-          return intArrayToString(data)
+          return data
         }
         throw err
       }
     }
-    if (ENVIRONMENT_IS_WORKER) {
-      readBinary = function readBinary (url) {
-        try {
-          const xhr = new XMLHttpRequest()
-          xhr.open('GET', url, false)
-          xhr.responseType = 'arraybuffer'
-          xhr.send(null)
-          return new Uint8Array(xhr.response)
-        } catch (err) {
-          const data = tryParseAsDataURI(url)
-          if (data) {
-            return data
-          }
-          throw err
-        }
-      }
-    }
-    readAsync = function readAsync (url, onload, onerror) {
-      const xhr = new XMLHttpRequest()
-      xhr.open('GET', url, true)
-      xhr.responseType = 'arraybuffer'
-      xhr.onload = function xhr_onload () {
-        if (xhr.status == 200 || xhr.status == 0 && xhr.response) {
-          onload(xhr.response)
-          return
-        }
-        const data = tryParseAsDataURI(url)
-        if (data) {
-          onload(data.buffer)
-          return
-        }
-        onerror()
-      }
-      xhr.onerror = onerror
-      xhr.send(null)
-    }
   }
+  readAsync = function readAsync (url, onload, onerror) {
+    var xhr = new XMLHttpRequest()
+    xhr.open('GET', url, true)
+    xhr.responseType = 'arraybuffer'
+    xhr.onload = function xhr_onload () {
+      if (xhr.status == 200 || xhr.status == 0 && xhr.response) {
+        onload(xhr.response)
+        return
+      }
+      var data = tryParseAsDataURI(url)
+      if (data) {
+        onload(data.buffer)
+        return
+      }
+      onerror()
+    }
+    xhr.onerror = onerror
+    xhr.send(null)
+  }
+
   setWindowTitle = function (title) {
     document.title = title
   }
-} else {}
-const out = Module.print || console.log.bind(console)
-const err = Module.printErr || console.warn.bind(console)
+}
+var out = Module.print || console.log.bind(console)
+var err = Module.printErr || console.warn.bind(console)
 for (key in moduleOverrides) {
   if (moduleOverrides.hasOwnProperty(key)) {
     Module[key] = moduleOverrides[key]
@@ -229,11 +212,11 @@ moduleOverrides = null
 if (Module.arguments) arguments_ = Module.arguments
 if (Module.thisProgram) thisProgram = Module.thisProgram
 if (Module.quit) quit_ = Module.quit
-const STACK_ALIGN = 16
+var STACK_ALIGN = 16
 
 function dynamicAlloc (size) {
-  const ret = HEAP32[DYNAMICTOP_PTR >> 2]
-  const end = ret + size + 15 & -16
+  var ret = HEAP32[DYNAMICTOP_PTR >> 2]
+  var end = ret + size + 15 & -16
   HEAP32[DYNAMICTOP_PTR >> 2] = end
   return ret
 }
@@ -242,16 +225,16 @@ function alignMemory (size, factor) {
   if (!factor) factor = STACK_ALIGN
   return Math.ceil(size / factor) * factor
 }
-let tempRet0 = 0
-const setTempRet0 = function (value) {
+var tempRet0 = 0
+var setTempRet0 = function (value) {
   tempRet0 = value
 }
-const getTempRet0 = function () {
+var getTempRet0 = function () {
   return tempRet0
 }
-let wasmBinary
+var wasmBinary
 if (Module.wasmBinary) wasmBinary = Module.wasmBinary
-let noExitRuntime
+var noExitRuntime
 if (Module.noExitRuntime) noExitRuntime = Module.noExitRuntime
 
 function getValue (ptr, type, noSafe) {
@@ -277,14 +260,14 @@ function getValue (ptr, type, noSafe) {
   }
   return null
 }
-let wasmMemory
-const wasmTable = new WebAssembly.Table({
+var wasmMemory
+var wasmTable = new WebAssembly.Table({
   initial: 1013,
   maximum: 1013,
   element: 'anyfunc'
 })
-let ABORT = false
-let EXITSTATUS = 0
+var ABORT = false
+var EXITSTATUS = 0
 
 function assert (condition, text) {
   if (!condition) {
@@ -293,24 +276,24 @@ function assert (condition, text) {
 }
 
 function getCFunc (ident) {
-  const func = Module['_' + ident]
+  var func = Module['_' + ident]
   assert(func, 'Cannot call unknown function ' + ident + ', make sure it is exported')
   return func
 }
 
 function ccall (ident, returnType, argTypes, args, opts) {
-  const toC = {
+  var toC = {
     string: function (str) {
-      let ret = 0
+      var ret = 0
       if (str !== null && str !== undefined && str !== 0) {
-        const len = (str.length << 2) + 1
+        var len = (str.length << 2) + 1
         ret = stackAlloc(len)
         stringToUTF8(str, ret, len)
       }
       return ret
     },
     array: function (arr) {
-      const ret = stackAlloc(arr.length)
+      var ret = stackAlloc(arr.length)
       writeArrayToMemory(arr, ret)
       return ret
     }
@@ -321,12 +304,12 @@ function ccall (ident, returnType, argTypes, args, opts) {
     if (returnType === 'boolean') return Boolean(ret)
     return ret
   }
-  const func = getCFunc(ident)
-  const cArgs = []
-  let stack = 0
+  var func = getCFunc(ident)
+  var cArgs = []
+  var stack = 0
   if (args) {
-    for (let i = 0; i < args.length; i++) {
-      const converter = toC[argTypes[i]]
+    for (var i = 0; i < args.length; i++) {
+      var converter = toC[argTypes[i]]
       if (converter) {
         if (stack === 0) stack = stackSave()
         cArgs[i] = converter(args[i])
@@ -335,7 +318,7 @@ function ccall (ident, returnType, argTypes, args, opts) {
       }
     }
   }
-  let ret = func.apply(null, cArgs)
+  var ret = func.apply(null, cArgs)
   ret = convertReturnValue(ret)
   if (stack !== 0) stackRestore(stack)
   return ret
@@ -343,10 +326,10 @@ function ccall (ident, returnType, argTypes, args, opts) {
 
 function cwrap (ident, returnType, argTypes, opts) {
   argTypes = argTypes || []
-  const numericArgs = argTypes.every(function (type) {
+  var numericArgs = argTypes.every(function (type) {
     return type === 'number'
   })
-  const numericRet = returnType !== 'string'
+  var numericRet = returnType !== 'string'
   if (numericRet && numericArgs && !opts) {
     return getCFunc(ident)
   }
@@ -359,30 +342,30 @@ function getMemory (size) {
   if (!runtimeInitialized) return dynamicAlloc(size)
   return _malloc(size)
 }
-const UTF8Decoder = new TextDecoder('utf8')
+var UTF8Decoder = new TextDecoder('utf8')
 
 function UTF8ArrayToString (heap, idx, maxBytesToRead) {
-  const endIdx = idx + maxBytesToRead
-  let endPtr = idx
+  var endIdx = idx + maxBytesToRead
+  var endPtr = idx
   while (heap[endPtr] && !(endPtr >= endIdx)) ++endPtr
   return UTF8Decoder.decode(heap.subarray ? heap.subarray(idx, endPtr) : new Uint8Array(heap.slice(idx, endPtr)))
 }
 
 function UTF8ToString (ptr, maxBytesToRead) {
   if (!ptr) return ''
-  const maxPtr = ptr + maxBytesToRead
+  var maxPtr = ptr + maxBytesToRead
   for (var end = ptr; !(end >= maxPtr) && HEAPU8[end];) ++end
   return UTF8Decoder.decode(HEAPU8.subarray(ptr, end))
 }
 
 function stringToUTF8Array (str, heap, outIdx, maxBytesToWrite) {
   if (!(maxBytesToWrite > 0)) return 0
-  const startIdx = outIdx
-  const endIdx = outIdx + maxBytesToWrite - 1
-  for (let i = 0; i < str.length; ++i) {
-    let u = str.charCodeAt(i)
+  var startIdx = outIdx
+  var endIdx = outIdx + maxBytesToWrite - 1
+  for (var i = 0; i < str.length; ++i) {
+    var u = str.charCodeAt(i)
     if (u >= 55296 && u <= 57343) {
-      const u1 = str.charCodeAt(++i)
+      var u1 = str.charCodeAt(++i)
       u = 65536 + ((u & 1023) << 10) | u1 & 1023
     }
     if (u <= 127) {
@@ -414,9 +397,9 @@ function stringToUTF8 (str, outPtr, maxBytesToWrite) {
 }
 
 function lengthBytesUTF8 (str) {
-  let len = 0
-  for (let i = 0; i < str.length; ++i) {
-    let u = str.charCodeAt(i)
+  var len = 0
+  for (var i = 0; i < str.length; ++i) {
+    var u = str.charCodeAt(i)
     if (u >= 55296 && u <= 57343) u = 65536 + ((u & 1023) << 10) | str.charCodeAt(++i) & 1023
     if (u <= 127) ++len
     else if (u <= 2047) len += 2
@@ -427,8 +410,8 @@ function lengthBytesUTF8 (str) {
 }
 
 function allocateUTF8OnStack (str) {
-  const size = lengthBytesUTF8(str) + 1
-  const ret = stackAlloc(size)
+  var size = lengthBytesUTF8(str) + 1
+  var ret = stackAlloc(size)
   stringToUTF8Array(str, HEAP8, ret, size)
   return ret
 }
@@ -438,12 +421,12 @@ function writeArrayToMemory (array, buffer) {
 }
 
 function writeAsciiToMemory (str, buffer, dontAddNull) {
-  for (let i = 0; i < str.length; ++i) {
+  for (var i = 0; i < str.length; ++i) {
     HEAP8[buffer++ >> 0] = str.charCodeAt(i)
   }
   if (!dontAddNull) HEAP8[buffer >> 0] = 0
 }
-const WASM_PAGE_SIZE = 65536
+var WASM_PAGE_SIZE = 65536
 
 function alignUp (x, multiple) {
   if (x % multiple > 0) {
@@ -451,7 +434,7 @@ function alignUp (x, multiple) {
   }
   return x
 }
-let buffer, HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64
+var buffer, HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64
 
 function updateGlobalBufferAndViews (buf) {
   buffer = buf
@@ -464,9 +447,9 @@ function updateGlobalBufferAndViews (buf) {
   Module.HEAPF32 = HEAPF32 = new Float32Array(buf)
   Module.HEAPF64 = HEAPF64 = new Float64Array(buf)
 }
-const DYNAMIC_BASE = 5891344
+var DYNAMIC_BASE = 5891344
 var DYNAMICTOP_PTR = 648448
-let INITIAL_INITIAL_MEMORY = Module.INITIAL_MEMORY || 67108864
+var INITIAL_INITIAL_MEMORY = Module.INITIAL_MEMORY || 67108864
 if (Module.wasmMemory) {
   wasmMemory = Module.wasmMemory
 } else {
@@ -481,12 +464,12 @@ if (wasmMemory) {
 INITIAL_INITIAL_MEMORY = buffer.byteLength
 updateGlobalBufferAndViews(buffer)
 HEAP32[DYNAMICTOP_PTR >> 2] = DYNAMIC_BASE
-const __ATPRERUN__ = []
-const __ATINIT__ = []
-const __ATMAIN__ = []
-const __ATPOSTRUN__ = []
+var __ATPRERUN__ = []
+var __ATINIT__ = []
+var __ATMAIN__ = []
+var __ATPOSTRUN__ = []
 var runtimeInitialized = false
-let runtimeExited = false
+var runtimeExited = false
 
 function preRun () {
   if (Module.preRun) {
@@ -535,13 +518,13 @@ function addOnPreMain (cb) {
 function addOnPostRun (cb) {
   __ATPOSTRUN__.unshift(cb)
 }
-const Math_abs = Math.abs
-const Math_ceil = Math.ceil
-const Math_floor = Math.floor
-const Math_min = Math.min
-let runDependencies = 0
-let runDependencyWatcher = null
-let dependenciesFulfilled = null
+var Math_abs = Math.abs
+var Math_ceil = Math.ceil
+var Math_floor = Math.floor
+var Math_min = Math.min
+var runDependencies = 0
+var runDependencyWatcher = null
+var dependenciesFulfilled = null
 
 function getUniqueRunDependency (id) {
   return id
@@ -565,7 +548,7 @@ function removeRunDependency (id) {
       runDependencyWatcher = null
     }
     if (dependenciesFulfilled) {
-      const callback = dependenciesFulfilled
+      var callback = dependenciesFulfilled
       dependenciesFulfilled = null
       callback()
     }
@@ -583,19 +566,19 @@ function abort (what) {
   ABORT = true
   EXITSTATUS = 1
   what = 'abort(' + what + '). Build with -s ASSERTIONS=1 for more info.'
-  const e = new WebAssembly.RuntimeError(what)
+  var e = new WebAssembly.RuntimeError(what)
   throw e
 }
 
 function hasPrefix (str, prefix) {
   return String.prototype.startsWith ? str.startsWith(prefix) : str.indexOf(prefix) === 0
 }
-const dataURIPrefix = 'data:application/octet-stream;base64,'
+var dataURIPrefix = 'data:application/octet-stream;base64,'
 
 function isDataURI (filename) {
   return hasPrefix(filename, dataURIPrefix)
 }
-let wasmBinaryFile = 'subtitles-octopus-worker.wasm'
+var wasmBinaryFile = 'subtitles-octopus-worker.wasm'
 if (!isDataURI(wasmBinaryFile)) {
   wasmBinaryFile = locateFile(wasmBinaryFile)
 }
@@ -605,7 +588,7 @@ function getBinary () {
     if (wasmBinary) {
       return new Uint8Array(wasmBinary)
     }
-    const binary = tryParseAsDataURI(wasmBinaryFile)
+    var binary = tryParseAsDataURI(wasmBinaryFile)
     if (binary) {
       return binary
     }
@@ -636,12 +619,12 @@ function getBinaryPromise () {
 }
 
 function createWasm () {
-  const info = {
+  var info = {
     a: asmLibraryArg
   }
 
   function receiveInstance (instance, module) {
-    const exports = instance.exports
+    var exports = instance.exports
     Module.asm = exports
     removeRunDependency('wasm-instantiate')
   }
@@ -656,7 +639,7 @@ function createWasm () {
       return WebAssembly.instantiate(binary, info)
     }).then(receiver, function (reason) {
       err('failed to asynchronously prepare wasm: ' + reason)
-      const search = location.search
+      var search = location.search
       if (search.indexOf('_rwasm=0') < 0) {
         location.href += (search ? search + '&' : '?') + '_rwasm=0'
       }
@@ -669,7 +652,7 @@ function createWasm () {
       fetch(wasmBinaryFile, {
         credentials: 'same-origin'
       }).then(function (response) {
-        const result = WebAssembly.instantiateStreaming(response, info)
+        var result = WebAssembly.instantiateStreaming(response, info)
         return result.then(receiveInstantiatedSource, function (reason) {
           err('wasm streaming compile failed: ' + reason)
           err('falling back to ArrayBuffer instantiation')
@@ -682,7 +665,7 @@ function createWasm () {
   }
   if (Module.instantiateWasm) {
     try {
-      const exports = Module.instantiateWasm(info, receiveInstance)
+      var exports = Module.instantiateWasm(info, receiveInstance)
       return exports
     } catch (e) {
       err('Module.instantiateWasm callback failed with error: ' + e)
@@ -692,8 +675,8 @@ function createWasm () {
   instantiateAsync()
   return {}
 }
-let tempDouble
-let tempI64
+var tempDouble
+var tempI64
 __ATINIT__.push({
   func: function () {
     ___wasm_call_ctors()
@@ -702,12 +685,12 @@ __ATINIT__.push({
 
 function callRuntimeCallbacks (callbacks) {
   while (callbacks.length > 0) {
-    const callback = callbacks.shift()
+    var callback = callbacks.shift()
     if (typeof callback === 'function') {
       callback(Module)
       continue
     }
-    const func = callback.func
+    var func = callback.func
     if (typeof func === 'number') {
       if (callback.arg === undefined) {
         wasmTable.get(func)()
@@ -725,15 +708,15 @@ function demangle (func) {
 }
 
 function demangleAll (text) {
-  const regex = /\b_Z[\w\d_]+/g
+  var regex = /\b_Z[\w\d_]+/g
   return text.replace(regex, function (x) {
-    const y = demangle(x)
+    var y = demangle(x)
     return x === y ? x : y + ' [' + x + ']'
   })
 }
 
 function jsStackTrace () {
-  let error = new Error()
+  var error = new Error()
   if (!error.stack) {
     try {
       throw new Error()
@@ -748,7 +731,7 @@ function jsStackTrace () {
 }
 
 function stackTrace () {
-  let js = jsStackTrace()
+  var js = jsStackTrace()
   if (Module.extraStackTrace) js += '\n' + Module.extraStackTrace()
   return demangleAll(js)
 }
@@ -756,11 +739,11 @@ function stackTrace () {
 function ___assert_fail (condition, filename, line, func) {
   abort('Assertion failed: ' + UTF8ToString(condition) + ', at: ' + [filename ? UTF8ToString(filename) : 'unknown filename', line, func ? UTF8ToString(func) : 'unknown function'])
 }
-let _emscripten_get_now
+var _emscripten_get_now
 _emscripten_get_now = function () {
   return performance.now()
 }
-const _emscripten_get_now_is_monotonic = true
+var _emscripten_get_now_is_monotonic = true
 
 function setErrNo (value) {
   HEAP32[___errno_location() >> 2] = value
@@ -768,7 +751,7 @@ function setErrNo (value) {
 }
 
 function _clock_gettime (clk_id, tp) {
-  let now
+  var now
   if (clk_id === 0) {
     now = Date.now()
   } else if ((clk_id === 1 || clk_id === 4) && _emscripten_get_now_is_monotonic) {
@@ -787,13 +770,13 @@ function ___clock_gettime (a0, a1) {
 }
 var PATH = {
   splitPath: function (filename) {
-    const splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/
+    var splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/
     return splitPathRe.exec(filename).slice(1)
   },
   normalizeArray: function (parts, allowAboveRoot) {
-    let up = 0
-    for (let i = parts.length - 1; i >= 0; i--) {
-      const last = parts[i]
+    var up = 0
+    for (var i = parts.length - 1; i >= 0; i--) {
+      var last = parts[i]
       if (last === '.') {
         parts.splice(i, 1)
       } else if (last === '..') {
@@ -812,8 +795,8 @@ var PATH = {
     return parts
   },
   normalize: function (path) {
-    const isAbsolute = path.charAt(0) === '/'
-    let trailingSlash = path.substr(-1) === '/'
+    var isAbsolute = path.charAt(0) === '/'
+    var trailingSlash = path.substr(-1) === '/'
     path = PATH.normalizeArray(path.split('/').filter(function (p) {
       return !!p
     }), !isAbsolute).join('/')
@@ -826,9 +809,9 @@ var PATH = {
     return (isAbsolute ? '/' : '') + path
   },
   dirname: function (path) {
-    const result = PATH.splitPath(path)
-    let root = result[0]
-    let dir = result[1]
+    var result = PATH.splitPath(path)
+    var root = result[0]
+    var dir = result[1]
     if (!root && !dir) {
       return '.'
     }
@@ -841,7 +824,7 @@ var PATH = {
     if (path === '/') return '/'
     path = PATH.normalize(path)
     path = path.replace(/\/$/, '')
-    const lastSlash = path.lastIndexOf('/')
+    var lastSlash = path.lastIndexOf('/')
     if (lastSlash === -1) return path
     return path.substr(lastSlash + 1)
   },
@@ -849,7 +832,7 @@ var PATH = {
     return PATH.splitPath(path)[3]
   },
   join: function () {
-    const paths = Array.prototype.slice.call(arguments, 0)
+    var paths = Array.prototype.slice.call(arguments, 0)
     return PATH.normalize(paths.join('/'))
   },
   join2: function (l, r) {
@@ -858,10 +841,10 @@ var PATH = {
 }
 var PATH_FS = {
   resolve: function () {
-    let resolvedPath = ''
-    let resolvedAbsolute = false
-    for (let i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-      const path = i >= 0 ? arguments[i] : FS.cwd()
+    var resolvedPath = ''
+    var resolvedAbsolute = false
+    for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+      var path = i >= 0 ? arguments[i] : FS.cwd()
       if (typeof path !== 'string') {
         throw new TypeError('Arguments to path.resolve must be strings')
       } else if (!path) {
@@ -880,28 +863,28 @@ var PATH_FS = {
     to = PATH_FS.resolve(to).substr(1)
 
     function trim (arr) {
-      let start = 0
+      var start = 0
       for (; start < arr.length; start++) {
         if (arr[start] !== '') break
       }
-      let end = arr.length - 1
+      var end = arr.length - 1
       for (; end >= 0; end--) {
         if (arr[end] !== '') break
       }
       if (start > end) return []
       return arr.slice(start, end - start + 1)
     }
-    const fromParts = trim(from.split('/'))
-    const toParts = trim(to.split('/'))
-    const length = Math.min(fromParts.length, toParts.length)
-    let samePartsLength = length
+    var fromParts = trim(from.split('/'))
+    var toParts = trim(to.split('/'))
+    var length = Math.min(fromParts.length, toParts.length)
+    var samePartsLength = length
     for (var i = 0; i < length; i++) {
       if (fromParts[i] !== toParts[i]) {
         samePartsLength = i
         break
       }
     }
-    let outputParts = []
+    var outputParts = []
     for (var i = samePartsLength; i < fromParts.length; i++) {
       outputParts.push('..')
     }
@@ -923,7 +906,7 @@ var TTY = {
   },
   stream_ops: {
     open: function (stream) {
-      const tty = TTY.ttys[stream.node.rdev]
+      var tty = TTY.ttys[stream.node.rdev]
       if (!tty) {
         throw new FS.ErrnoError(43)
       }
@@ -940,8 +923,8 @@ var TTY = {
       if (!stream.tty || !stream.tty.ops.get_char) {
         throw new FS.ErrnoError(60)
       }
-      let bytesRead = 0
-      for (let i = 0; i < length; i++) {
+      var bytesRead = 0
+      for (var i = 0; i < length; i++) {
         var result
         try {
           result = stream.tty.ops.get_char(stream.tty)
@@ -980,7 +963,7 @@ var TTY = {
   default_tty_ops: {
     get_char: function (tty) {
       if (!tty.input.length) {
-        let result = null
+        var result = null
         if (typeof window !== 'undefined' && typeof window.prompt === 'function') {
           result = window.prompt('Input: ')
           if (result !== null) {
@@ -1089,7 +1072,7 @@ var MEMFS = {
         }
       }
     }
-    const node = FS.createNode(parent, name, mode, dev)
+    var node = FS.createNode(parent, name, mode, dev)
     if (FS.isDir(node.mode)) {
       node.node_ops = MEMFS.ops_table.dir.node
       node.stream_ops = MEMFS.ops_table.dir.stream
@@ -1114,8 +1097,8 @@ var MEMFS = {
   },
   getFileDataAsRegularArray: function (node) {
     if (node.contents && node.contents.subarray) {
-      const arr = []
-      for (let i = 0; i < node.usedBytes; ++i) arr.push(node.contents[i])
+      var arr = []
+      for (var i = 0; i < node.usedBytes; ++i) arr.push(node.contents[i])
       return arr
     }
     return node.contents
@@ -1126,12 +1109,12 @@ var MEMFS = {
     return new Uint8Array(node.contents)
   },
   expandFileStorage: function (node, newCapacity) {
-    const prevCapacity = node.contents ? node.contents.length : 0
+    var prevCapacity = node.contents ? node.contents.length : 0
     if (prevCapacity >= newCapacity) return
-    let CAPACITY_DOUBLING_MAX = 1024 * 1024
+    var CAPACITY_DOUBLING_MAX = 1024 * 1024
     newCapacity = Math.max(newCapacity, prevCapacity * (prevCapacity < CAPACITY_DOUBLING_MAX ? 2 : 1.125) >>> 0)
     if (prevCapacity != 0) newCapacity = Math.max(newCapacity, 256)
-    let oldContents = node.contents
+    var oldContents = node.contents
     node.contents = new Uint8Array(newCapacity)
     if (node.usedBytes > 0) node.contents.set(oldContents.subarray(0, node.usedBytes), 0)
   },
@@ -1143,7 +1126,7 @@ var MEMFS = {
       return
     }
     if (!node.contents || node.contents.subarray) {
-      const oldContents = node.contents
+      var oldContents = node.contents
       node.contents = new Uint8Array(newSize)
       if (oldContents) {
         node.contents.set(oldContents.subarray(0, Math.min(newSize, node.usedBytes)))
@@ -1158,7 +1141,7 @@ var MEMFS = {
   },
   node_ops: {
     getattr: function (node) {
-      const attr = {}
+      var attr = {}
       attr.dev = FS.isChrdev(node.mode) ? node.id : 1
       attr.ino = node.id
       attr.mode = node.mode
@@ -1201,12 +1184,12 @@ var MEMFS = {
     },
     rename: function (old_node, new_dir, new_name) {
       if (FS.isDir(old_node.mode)) {
-        let new_node
+        var new_node
         try {
           new_node = FS.lookupNode(new_dir, new_name)
         } catch (e) {}
         if (new_node) {
-          for (const i in new_node.contents) {
+          for (var i in new_node.contents) {
             throw new FS.ErrnoError(55)
           }
         }
@@ -1220,15 +1203,15 @@ var MEMFS = {
       delete parent.contents[name]
     },
     rmdir: function (parent, name) {
-      const node = FS.lookupNode(parent, name)
-      for (const i in node.contents) {
+      var node = FS.lookupNode(parent, name)
+      for (var i in node.contents) {
         throw new FS.ErrnoError(55)
       }
       delete parent.contents[name]
     },
     readdir: function (node) {
-      const entries = ['.', '..']
-      for (const key in node.contents) {
+      var entries = ['.', '..']
+      for (var key in node.contents) {
         if (!node.contents.hasOwnProperty(key)) {
           continue
         }
@@ -1237,7 +1220,7 @@ var MEMFS = {
       return entries
     },
     symlink: function (parent, newname, oldpath) {
-      const node = MEMFS.createNode(parent, newname, 511 | 40960, 0)
+      var node = MEMFS.createNode(parent, newname, 511 | 40960, 0)
       node.link = oldpath
       return node
     },
@@ -1250,13 +1233,13 @@ var MEMFS = {
   },
   stream_ops: {
     read: function (stream, buffer, offset, length, position) {
-      const contents = stream.node.contents
+      var contents = stream.node.contents
       if (position >= stream.node.usedBytes) return 0
-      const size = Math.min(stream.node.usedBytes - position, length)
+      var size = Math.min(stream.node.usedBytes - position, length)
       if (size > 8 && contents.subarray) {
         buffer.set(contents.subarray(position, position + size), offset)
       } else {
-        for (let i = 0; i < size; i++) buffer[offset + i] = contents[position + i]
+        for (var i = 0; i < size; i++) buffer[offset + i] = contents[position + i]
       }
       return size
     },
@@ -1265,7 +1248,7 @@ var MEMFS = {
         canOwn = false
       }
       if (!length) return 0
-      const node = stream.node
+      var node = stream.node
       node.timestamp = Date.now()
       if (buffer.subarray && (!node.contents || node.contents.subarray)) {
         if (canOwn) {
@@ -1285,7 +1268,7 @@ var MEMFS = {
       if (node.contents.subarray && buffer.subarray) {
         node.contents.set(buffer.subarray(offset, offset + length), position)
       } else {
-        for (let i = 0; i < length; i++) {
+        for (var i = 0; i < length; i++) {
           node.contents[position + i] = buffer[offset + i]
         }
       }
@@ -1293,7 +1276,7 @@ var MEMFS = {
       return length
     },
     llseek: function (stream, offset, whence) {
-      let position = offset
+      var position = offset
       if (whence === 1) {
         position += stream.position
       } else if (whence === 2) {
@@ -1315,9 +1298,9 @@ var MEMFS = {
       if (!FS.isFile(stream.node.mode)) {
         throw new FS.ErrnoError(43)
       }
-      let ptr
-      let allocated
-      let contents = stream.node.contents
+      var ptr
+      var allocated
+      var contents = stream.node.contents
       if (!(flags & 2) && contents.buffer === buffer) {
         allocated = false
         ptr = contents.byteOffset
@@ -1348,7 +1331,7 @@ var MEMFS = {
       if (mmapFlags & 2) {
         return 0
       }
-      const bytesWritten = MEMFS.stream_ops.write(stream, buffer, 0, length, offset, false)
+      var bytesWritten = MEMFS.stream_ops.write(stream, buffer, 0, length, offset, false)
       return 0
     }
   }
@@ -1385,13 +1368,13 @@ var FS = {
       return {
         path: '',
         node: null
-      } 
-}
-    const defaults = {
+      }
+    }
+    var defaults = {
       follow_mount: true,
       recurse_count: 0
     }
-    for (const key in defaults) {
+    for (var key in defaults) {
       if (opts[key] === undefined) {
         opts[key] = defaults[key]
       }
@@ -1399,13 +1382,13 @@ var FS = {
     if (opts.recurse_count > 8) {
       throw new FS.ErrnoError(32)
     }
-    const parts = PATH.normalizeArray(path.split('/').filter(function (p) {
+    var parts = PATH.normalizeArray(path.split('/').filter(function (p) {
       return !!p
     }), false)
-    let current = FS.root
-    let current_path = '/'
-    for (let i = 0; i < parts.length; i++) {
-      const islast = i === parts.length - 1
+    var current = FS.root
+    var current_path = '/'
+    for (var i = 0; i < parts.length; i++) {
+      var islast = i === parts.length - 1
       if (islast && opts.parent) {
         break
       }
@@ -1417,11 +1400,11 @@ var FS = {
         }
       }
       if (!islast || opts.follow) {
-        let count = 0
+        var count = 0
         while (FS.isLink(current.mode)) {
-          const link = FS.readlink(current_path)
+          var link = FS.readlink(current_path)
           current_path = PATH_FS.resolve(PATH.dirname(current_path), link)
-          const lookup = FS.lookupPath(current_path, {
+          var lookup = FS.lookupPath(current_path, {
             recurse_count: opts.recurse_count
           })
           current = lookup.node
@@ -1437,10 +1420,10 @@ var FS = {
     }
   },
   getPath: function (node) {
-    let path
+    var path
     while (true) {
       if (FS.isRoot(node)) {
-        const mount = node.mount.mountpoint
+        var mount = node.mount.mountpoint
         if (!path) return mount
         return mount[mount.length - 1] !== '/' ? mount + '/' + path : mount + path
       }
@@ -1449,23 +1432,23 @@ var FS = {
     }
   },
   hashName: function (parentid, name) {
-    let hash = 0
-    for (let i = 0; i < name.length; i++) {
+    var hash = 0
+    for (var i = 0; i < name.length; i++) {
       hash = (hash << 5) - hash + name.charCodeAt(i) | 0
     }
     return (parentid + hash >>> 0) % FS.nameTable.length
   },
   hashAddNode: function (node) {
-    const hash = FS.hashName(node.parent.id, node.name)
+    var hash = FS.hashName(node.parent.id, node.name)
     node.name_next = FS.nameTable[hash]
     FS.nameTable[hash] = node
   },
   hashRemoveNode: function (node) {
-    const hash = FS.hashName(node.parent.id, node.name)
+    var hash = FS.hashName(node.parent.id, node.name)
     if (FS.nameTable[hash] === node) {
       FS.nameTable[hash] = node.name_next
     } else {
-      let current = FS.nameTable[hash]
+      var current = FS.nameTable[hash]
       while (current) {
         if (current.name_next === node) {
           current.name_next = node.name_next
@@ -1476,13 +1459,13 @@ var FS = {
     }
   },
   lookupNode: function (parent, name) {
-    const errCode = FS.mayLookup(parent)
+    var errCode = FS.mayLookup(parent)
     if (errCode) {
       throw new FS.ErrnoError(errCode, parent)
     }
-    const hash = FS.hashName(parent.id, name)
-    for (let node = FS.nameTable[hash]; node; node = node.name_next) {
-      const nodeName = node.name
+    var hash = FS.hashName(parent.id, name)
+    for (var node = FS.nameTable[hash]; node; node = node.name_next) {
+      var nodeName = node.name
       if (node.parent.id === parent.id && nodeName === name) {
         return node
       }
@@ -1490,7 +1473,7 @@ var FS = {
     return FS.lookup(parent, name)
   },
   createNode: function (parent, name, mode, rdev) {
-    const node = new FS.FSNode(parent, name, mode, rdev)
+    var node = new FS.FSNode(parent, name, mode, rdev)
     FS.hashAddNode(node)
     return node
   },
@@ -1542,14 +1525,14 @@ var FS = {
     'xa+': 1218
   },
   modeStringToFlags: function (str) {
-    const flags = FS.flagModes[str]
+    var flags = FS.flagModes[str]
     if (typeof flags === 'undefined') {
       throw new Error('Unknown file open mode: ' + str)
     }
     return flags
   },
   flagsToPermissionString: function (flag) {
-    let perms = ['r', 'w', 'rw'][flag & 3]
+    var perms = ['r', 'w', 'rw'][flag & 3]
     if (flag & 512) {
       perms += 'w'
     }
@@ -1569,26 +1552,26 @@ var FS = {
     return 0
   },
   mayLookup: function (dir) {
-    const errCode = FS.nodePermissions(dir, 'x')
+    var errCode = FS.nodePermissions(dir, 'x')
     if (errCode) return errCode
     if (!dir.node_ops.lookup) return 2
     return 0
   },
   mayCreate: function (dir, name) {
     try {
-      const node = FS.lookupNode(dir, name)
+      var node = FS.lookupNode(dir, name)
       return 20
     } catch (e) {}
     return FS.nodePermissions(dir, 'wx')
   },
   mayDelete: function (dir, name, isdir) {
-    let node
+    var node
     try {
       node = FS.lookupNode(dir, name)
     } catch (e) {
       return e.errno
     }
-    const errCode = FS.nodePermissions(dir, 'wx')
+    var errCode = FS.nodePermissions(dir, 'wx')
     if (errCode) {
       return errCode
     }
@@ -1623,7 +1606,7 @@ var FS = {
   nextfd: function (fd_start, fd_end) {
     fd_start = fd_start || 0
     fd_end = fd_end || FS.MAX_OPEN_FDS
-    for (let fd = fd_start; fd <= fd_end; fd++) {
+    for (var fd = fd_start; fd <= fd_end; fd++) {
       if (!FS.streams[fd]) {
         return fd
       }
@@ -1662,12 +1645,12 @@ var FS = {
         }
       }
     }
-    const newStream = new FS.FSStream()
-    for (const p in stream) {
+    var newStream = new FS.FSStream()
+    for (var p in stream) {
       newStream[p] = stream[p]
     }
     stream = newStream
-    const fd = FS.nextfd(fd_start, fd_end)
+    var fd = FS.nextfd(fd_start, fd_end)
     stream.fd = fd
     FS.streams[fd] = stream
     return stream
@@ -1677,7 +1660,7 @@ var FS = {
   },
   chrdev_stream_ops: {
     open: function (stream) {
-      const device = FS.getDevice(stream.node.rdev)
+      var device = FS.getDevice(stream.node.rdev)
       stream.stream_ops = device.stream_ops
       if (stream.stream_ops.open) {
         stream.stream_ops.open(stream)
@@ -1705,10 +1688,10 @@ var FS = {
     return FS.devices[dev]
   },
   getMounts: function (mount) {
-    const mounts = []
-    const check = [mount]
+    var mounts = []
+    var check = [mount]
     while (check.length) {
-      const m = check.pop()
+      var m = check.pop()
       mounts.push(m)
       check.push.apply(check, m.mounts)
     }
@@ -1723,8 +1706,8 @@ var FS = {
     if (FS.syncFSRequests > 1) {
       err('warning: ' + FS.syncFSRequests + ' FS.syncfs operations in flight at once, probably just doing extra work')
     }
-    const mounts = FS.getMounts(FS.root.mount)
-    let completed = 0
+    var mounts = FS.getMounts(FS.root.mount)
+    var completed = 0
 
     function doCallback (errCode) {
       FS.syncFSRequests--
@@ -1751,13 +1734,13 @@ var FS = {
     })
   },
   mount: function (type, opts, mountpoint) {
-    const root = mountpoint === '/'
-    const pseudo = !mountpoint
-    let node
+    var root = mountpoint === '/'
+    var pseudo = !mountpoint
+    var node
     if (root && FS.root) {
       throw new FS.ErrnoError(10)
     } else if (!root && !pseudo) {
-      const lookup = FS.lookupPath(mountpoint, {
+      var lookup = FS.lookupPath(mountpoint, {
         follow_mount: false
       })
       mountpoint = lookup.path
@@ -1769,13 +1752,13 @@ var FS = {
         throw new FS.ErrnoError(54)
       }
     }
-    const mount = {
+    var mount = {
       type: type,
       opts: opts,
       mountpoint: mountpoint,
       mounts: []
     }
-    const mountRoot = type.mount(mount)
+    var mountRoot = type.mount(mount)
     mountRoot.mount = mount
     mount.root = mountRoot
     if (root) {
@@ -1789,19 +1772,19 @@ var FS = {
     return mountRoot
   },
   unmount: function (mountpoint) {
-    const lookup = FS.lookupPath(mountpoint, {
+    var lookup = FS.lookupPath(mountpoint, {
       follow_mount: false
     })
     if (!FS.isMountpoint(lookup.node)) {
       throw new FS.ErrnoError(28)
     }
-    const node = lookup.node
-    const mount = node.mounted
-    const mounts = FS.getMounts(mount)
+    var node = lookup.node
+    var mount = node.mounted
+    var mounts = FS.getMounts(mount)
     Object.keys(FS.nameTable).forEach(function (hash) {
-      let current = FS.nameTable[hash]
+      var current = FS.nameTable[hash]
       while (current) {
-        const next = current.name_next
+        var next = current.name_next
         if (mounts.indexOf(current.mount) !== -1) {
           FS.destroyNode(current)
         }
@@ -1809,22 +1792,22 @@ var FS = {
       }
     })
     node.mounted = null
-    const idx = node.mount.mounts.indexOf(mount)
+    var idx = node.mount.mounts.indexOf(mount)
     node.mount.mounts.splice(idx, 1)
   },
   lookup: function (parent, name) {
     return parent.node_ops.lookup(parent, name)
   },
   mknod: function (path, mode, dev) {
-    const lookup = FS.lookupPath(path, {
+    var lookup = FS.lookupPath(path, {
       parent: true
     })
-    const parent = lookup.node
-    const name = PATH.basename(path)
+    var parent = lookup.node
+    var name = PATH.basename(path)
     if (!name || name === '.' || name === '..') {
       throw new FS.ErrnoError(28)
     }
-    const errCode = FS.mayCreate(parent, name)
+    var errCode = FS.mayCreate(parent, name)
     if (errCode) {
       throw new FS.ErrnoError(errCode)
     }
@@ -1846,9 +1829,9 @@ var FS = {
     return FS.mknod(path, mode, 0)
   },
   mkdirTree: function (path, mode) {
-    const dirs = path.split('/')
-    let d = ''
-    for (let i = 0; i < dirs.length; ++i) {
+    var dirs = path.split('/')
+    var d = ''
+    for (var i = 0; i < dirs.length; ++i) {
       if (!dirs[i]) continue
       d += '/' + dirs[i]
       try {
@@ -1870,15 +1853,15 @@ var FS = {
     if (!PATH_FS.resolve(oldpath)) {
       throw new FS.ErrnoError(44)
     }
-    const lookup = FS.lookupPath(newpath, {
+    var lookup = FS.lookupPath(newpath, {
       parent: true
     })
-    const parent = lookup.node
+    var parent = lookup.node
     if (!parent) {
       throw new FS.ErrnoError(44)
     }
-    const newname = PATH.basename(newpath)
-    const errCode = FS.mayCreate(parent, newname)
+    var newname = PATH.basename(newpath)
+    var errCode = FS.mayCreate(parent, newname)
     if (errCode) {
       throw new FS.ErrnoError(errCode)
     }
@@ -1888,11 +1871,11 @@ var FS = {
     return parent.node_ops.symlink(parent, newname, oldpath)
   },
   rename: function (old_path, new_path) {
-    const old_dirname = PATH.dirname(old_path)
-    const new_dirname = PATH.dirname(new_path)
-    const old_name = PATH.basename(old_path)
-    const new_name = PATH.basename(new_path)
-    let lookup, old_dir, new_dir
+    var old_dirname = PATH.dirname(old_path)
+    var new_dirname = PATH.dirname(new_path)
+    var old_name = PATH.basename(old_path)
+    var new_name = PATH.basename(new_path)
+    var lookup, old_dir, new_dir
     lookup = FS.lookupPath(old_path, {
       parent: true
     })
@@ -1905,8 +1888,8 @@ var FS = {
     if (old_dir.mount !== new_dir.mount) {
       throw new FS.ErrnoError(75)
     }
-    const old_node = FS.lookupNode(old_dir, old_name)
-    let relative = PATH_FS.relative(old_path, new_dirname)
+    var old_node = FS.lookupNode(old_dir, old_name)
+    var relative = PATH_FS.relative(old_path, new_dirname)
     if (relative.charAt(0) !== '.') {
       throw new FS.ErrnoError(28)
     }
@@ -1914,15 +1897,15 @@ var FS = {
     if (relative.charAt(0) !== '.') {
       throw new FS.ErrnoError(55)
     }
-    let new_node
+    var new_node
     try {
       new_node = FS.lookupNode(new_dir, new_name)
     } catch (e) {}
     if (old_node === new_node) {
       return
     }
-    const isdir = FS.isDir(old_node.mode)
-    let errCode = FS.mayDelete(old_dir, old_name, isdir)
+    var isdir = FS.isDir(old_node.mode)
+    var errCode = FS.mayDelete(old_dir, old_name, isdir)
     if (errCode) {
       throw new FS.ErrnoError(errCode)
     }
@@ -1952,8 +1935,6 @@ var FS = {
     FS.hashRemoveNode(old_node)
     try {
       old_dir.node_ops.rename(old_node, new_dir, new_name)
-    } catch (e) {
-      throw e
     } finally {
       FS.hashAddNode(old_node)
     }
@@ -1964,13 +1945,13 @@ var FS = {
     }
   },
   rmdir: function (path) {
-    const lookup = FS.lookupPath(path, {
+    var lookup = FS.lookupPath(path, {
       parent: true
     })
-    const parent = lookup.node
-    const name = PATH.basename(path)
-    const node = FS.lookupNode(parent, name)
-    const errCode = FS.mayDelete(parent, name, true)
+    var parent = lookup.node
+    var name = PATH.basename(path)
+    var node = FS.lookupNode(parent, name)
+    var errCode = FS.mayDelete(parent, name, true)
     if (errCode) {
       throw new FS.ErrnoError(errCode)
     }
@@ -1996,23 +1977,23 @@ var FS = {
     }
   },
   readdir: function (path) {
-    const lookup = FS.lookupPath(path, {
+    var lookup = FS.lookupPath(path, {
       follow: true
     })
-    const node = lookup.node
+    var node = lookup.node
     if (!node.node_ops.readdir) {
       throw new FS.ErrnoError(54)
     }
     return node.node_ops.readdir(node)
   },
   unlink: function (path) {
-    const lookup = FS.lookupPath(path, {
+    var lookup = FS.lookupPath(path, {
       parent: true
     })
-    const parent = lookup.node
-    const name = PATH.basename(path)
-    const node = FS.lookupNode(parent, name)
-    const errCode = FS.mayDelete(parent, name, false)
+    var parent = lookup.node
+    var name = PATH.basename(path)
+    var node = FS.lookupNode(parent, name)
+    var errCode = FS.mayDelete(parent, name, false)
     if (errCode) {
       throw new FS.ErrnoError(errCode)
     }
@@ -2038,8 +2019,8 @@ var FS = {
     }
   },
   readlink: function (path) {
-    const lookup = FS.lookupPath(path)
-    const link = lookup.node
+    var lookup = FS.lookupPath(path)
+    var link = lookup.node
     if (!link) {
       throw new FS.ErrnoError(44)
     }
@@ -2049,10 +2030,10 @@ var FS = {
     return PATH_FS.resolve(FS.getPath(link.parent), link.node_ops.readlink(link))
   },
   stat: function (path, dontFollow) {
-    const lookup = FS.lookupPath(path, {
+    var lookup = FS.lookupPath(path, {
       follow: !dontFollow
     })
-    const node = lookup.node
+    var node = lookup.node
     if (!node) {
       throw new FS.ErrnoError(44)
     }
@@ -2065,9 +2046,9 @@ var FS = {
     return FS.stat(path, true)
   },
   chmod: function (path, mode, dontFollow) {
-    let node
+    var node
     if (typeof path === 'string') {
-      const lookup = FS.lookupPath(path, {
+      var lookup = FS.lookupPath(path, {
         follow: !dontFollow
       })
       node = lookup.node
@@ -2086,16 +2067,16 @@ var FS = {
     FS.chmod(path, mode, true)
   },
   fchmod: function (fd, mode) {
-    const stream = FS.getStream(fd)
+    var stream = FS.getStream(fd)
     if (!stream) {
       throw new FS.ErrnoError(8)
     }
     FS.chmod(stream.node, mode)
   },
   chown: function (path, uid, gid, dontFollow) {
-    let node
+    var node
     if (typeof path === 'string') {
-      const lookup = FS.lookupPath(path, {
+      var lookup = FS.lookupPath(path, {
         follow: !dontFollow
       })
       node = lookup.node
@@ -2113,7 +2094,7 @@ var FS = {
     FS.chown(path, uid, gid, true)
   },
   fchown: function (fd, uid, gid) {
-    const stream = FS.getStream(fd)
+    var stream = FS.getStream(fd)
     if (!stream) {
       throw new FS.ErrnoError(8)
     }
@@ -2123,9 +2104,9 @@ var FS = {
     if (len < 0) {
       throw new FS.ErrnoError(28)
     }
-    let node
+    var node
     if (typeof path === 'string') {
-      const lookup = FS.lookupPath(path, {
+      var lookup = FS.lookupPath(path, {
         follow: true
       })
       node = lookup.node
@@ -2141,7 +2122,7 @@ var FS = {
     if (!FS.isFile(node.mode)) {
       throw new FS.ErrnoError(28)
     }
-    const errCode = FS.nodePermissions(node, 'w')
+    var errCode = FS.nodePermissions(node, 'w')
     if (errCode) {
       throw new FS.ErrnoError(errCode)
     }
@@ -2151,7 +2132,7 @@ var FS = {
     })
   },
   ftruncate: function (fd, len) {
-    const stream = FS.getStream(fd)
+    var stream = FS.getStream(fd)
     if (!stream) {
       throw new FS.ErrnoError(8)
     }
@@ -2161,10 +2142,10 @@ var FS = {
     FS.truncate(stream.node, len)
   },
   utime: function (path, atime, mtime) {
-    const lookup = FS.lookupPath(path, {
+    var lookup = FS.lookupPath(path, {
       follow: true
     })
-    const node = lookup.node
+    var node = lookup.node
     node.node_ops.setattr(node, {
       timestamp: Math.max(atime, mtime)
     })
@@ -2180,19 +2161,19 @@ var FS = {
     } else {
       mode = 0
     }
-    let node
+    var node
     if (typeof path === 'object') {
       node = path
     } else {
       path = PATH.normalize(path)
       try {
-        const lookup = FS.lookupPath(path, {
+        var lookup = FS.lookupPath(path, {
           follow: !(flags & 131072)
         })
         node = lookup.node
       } catch (e) {}
     }
-    let created = false
+    var created = false
     if (flags & 64) {
       if (node) {
         if (flags & 128) {
@@ -2213,7 +2194,7 @@ var FS = {
       throw new FS.ErrnoError(54)
     }
     if (!created) {
-      const errCode = FS.mayOpen(node, flags)
+      var errCode = FS.mayOpen(node, flags)
       if (errCode) {
         throw new FS.ErrnoError(errCode)
       }
@@ -2222,7 +2203,7 @@ var FS = {
       FS.truncate(node, 0)
     }
     flags &= ~(128 | 512 | 131072)
-    const stream = FS.createStream({
+    var stream = FS.createStream({
       node: node,
       path: FS.getPath(node),
       flags: flags,
@@ -2244,7 +2225,7 @@ var FS = {
     }
     try {
       if (FS.trackingDelegate.onOpenFile) {
-        let trackingFlags = 0
+        var trackingFlags = 0
         if ((flags & 2097155) !== 1) {
           trackingFlags |= FS.tracking.openFlags.READ
         }
@@ -2267,8 +2248,6 @@ var FS = {
       if (stream.stream_ops.close) {
         stream.stream_ops.close(stream)
       }
-    } catch (e) {
-      throw e
     } finally {
       FS.closeStream(stream.fd)
     }
@@ -2307,13 +2286,13 @@ var FS = {
     if (!stream.stream_ops.read) {
       throw new FS.ErrnoError(28)
     }
-    const seeking = typeof position !== 'undefined'
+    var seeking = typeof position !== 'undefined'
     if (!seeking) {
       position = stream.position
     } else if (!stream.seekable) {
       throw new FS.ErrnoError(70)
     }
-    const bytesRead = stream.stream_ops.read(stream, buffer, offset, length, position)
+    var bytesRead = stream.stream_ops.read(stream, buffer, offset, length, position)
     if (!seeking) stream.position += bytesRead
     return bytesRead
   },
@@ -2336,13 +2315,13 @@ var FS = {
     if (stream.seekable && stream.flags & 1024) {
       FS.llseek(stream, 0, 2)
     }
-    const seeking = typeof position !== 'undefined'
+    var seeking = typeof position !== 'undefined'
     if (!seeking) {
       position = stream.position
     } else if (!stream.seekable) {
       throw new FS.ErrnoError(70)
     }
-    const bytesWritten = stream.stream_ops.write(stream, buffer, offset, length, position, canOwn)
+    var bytesWritten = stream.stream_ops.write(stream, buffer, offset, length, position, canOwn)
     if (!seeking) stream.position += bytesWritten
     try {
       if (stream.path && FS.trackingDelegate.onWriteToFile) FS.trackingDelegate.onWriteToFile(stream.path)
@@ -2403,11 +2382,11 @@ var FS = {
     if (opts.encoding !== 'utf8' && opts.encoding !== 'binary') {
       throw new Error('Invalid encoding type "' + opts.encoding + '"')
     }
-    let ret
-    const stream = FS.open(path, opts.flags)
-    const stat = FS.stat(path)
-    const length = stat.size
-    const buf = new Uint8Array(length)
+    var ret
+    var stream = FS.open(path, opts.flags)
+    var stat = FS.stat(path)
+    var length = stat.size
+    var buf = new Uint8Array(length)
     FS.read(stream, buf, 0, length, 0)
     if (opts.encoding === 'utf8') {
       ret = UTF8ArrayToString(buf, 0)
@@ -2420,10 +2399,10 @@ var FS = {
   writeFile: function (path, data, opts) {
     opts = opts || {}
     opts.flags = opts.flags || 'w'
-    const stream = FS.open(path, opts.flags, opts.mode)
+    var stream = FS.open(path, opts.flags, opts.mode)
     if (typeof data === 'string') {
-      const buf = new Uint8Array(lengthBytesUTF8(data) + 1)
-      const actualNumBytes = stringToUTF8Array(data, buf, 0, buf.length)
+      var buf = new Uint8Array(lengthBytesUTF8(data) + 1)
+      var actualNumBytes = stringToUTF8Array(data, buf, 0, buf.length)
       FS.write(stream, buf, 0, actualNumBytes, undefined, opts.canOwn)
     } else if (ArrayBuffer.isView(data)) {
       FS.write(stream, data, 0, data.byteLength, undefined, opts.canOwn)
@@ -2436,7 +2415,7 @@ var FS = {
     return FS.currentPath
   },
   chdir: function (path) {
-    const lookup = FS.lookupPath(path, {
+    var lookup = FS.lookupPath(path, {
       follow: true
     })
     if (lookup.node === null) {
@@ -2445,7 +2424,7 @@ var FS = {
     if (!FS.isDir(lookup.node.mode)) {
       throw new FS.ErrnoError(54)
     }
-    const errCode = FS.nodePermissions(lookup.node, 'x')
+    var errCode = FS.nodePermissions(lookup.node, 'x')
     if (errCode) {
       throw new FS.ErrnoError(errCode)
     }
@@ -2471,9 +2450,9 @@ var FS = {
     TTY.register(FS.makedev(6, 0), TTY.default_tty1_ops)
     FS.mkdev('/dev/tty', FS.makedev(5, 0))
     FS.mkdev('/dev/tty1', FS.makedev(6, 0))
-    let random_device
+    var random_device
     if (typeof crypto === 'object' && typeof crypto.getRandomValues === 'function') {
-      const randomBuffer = new Uint8Array(1)
+      var randomBuffer = new Uint8Array(1)
       random_device = function () {
         crypto.getRandomValues(randomBuffer)
         return randomBuffer[0]
@@ -2495,13 +2474,13 @@ var FS = {
     FS.mkdir('/proc/self/fd')
     FS.mount({
       mount: function () {
-        const node = FS.createNode('/proc/self', 'fd', 16384 | 511, 73)
+        var node = FS.createNode('/proc/self', 'fd', 16384 | 511, 73)
         node.node_ops = {
           lookup: function (parent, name) {
-            const fd = +name
-            const stream = FS.getStream(fd)
+            var fd = +name
+            var stream = FS.getStream(fd)
             if (!stream) throw new FS.ErrnoError(8)
-            const ret = {
+            var ret = {
               parent: null,
               mount: {
                 mountpoint: 'fake'
@@ -2578,10 +2557,10 @@ var FS = {
   },
   quit: function () {
     FS.init.initialized = false
-    const fflush = Module._fflush
+    var fflush = Module._fflush
     if (fflush) fflush(0)
-    for (let i = 0; i < FS.streams.length; i++) {
-      const stream = FS.streams[i]
+    for (var i = 0; i < FS.streams.length; i++) {
+      var stream = FS.streams[i]
       if (!stream) {
         continue
       }
@@ -2589,13 +2568,13 @@ var FS = {
     }
   },
   getMode: function (canRead, canWrite) {
-    let mode = 0
+    var mode = 0
     if (canRead) mode |= 292 | 73
     if (canWrite) mode |= 146
     return mode
   },
   joinPath: function (parts, forceRelative) {
-    let path = PATH.join.apply(null, parts)
+    var path = PATH.join.apply(null, parts)
     if (forceRelative && path[0] == '/') path = path.substr(1)
     return path
   },
@@ -2606,7 +2585,7 @@ var FS = {
     return PATH.normalize(path)
   },
   findObject: function (path, dontResolveLastLink) {
-    const ret = FS.analyzePath(path, dontResolveLastLink)
+    var ret = FS.analyzePath(path, dontResolveLastLink)
     if (ret.exists) {
       return ret.object
     } else {
@@ -2621,7 +2600,7 @@ var FS = {
       })
       path = lookup.path
     } catch (e) {}
-    const ret = {
+    var ret = {
       isRoot: false,
       exists: false,
       error: 0,
@@ -2654,15 +2633,15 @@ var FS = {
     return ret
   },
   createFolder: function (parent, name, canRead, canWrite) {
-    const path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name)
-    const mode = FS.getMode(canRead, canWrite)
+    var path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name)
+    var mode = FS.getMode(canRead, canWrite)
     return FS.mkdir(path, mode)
   },
   createPath: function (parent, path, canRead, canWrite) {
     parent = typeof parent === 'string' ? parent : FS.getPath(parent)
-    const parts = path.split('/').reverse()
+    var parts = path.split('/').reverse()
     while (parts.length) {
-      const part = parts.pop()
+      var part = parts.pop()
       if (!part) continue
       var current = PATH.join2(parent, part)
       try {
@@ -2673,22 +2652,22 @@ var FS = {
     return current
   },
   createFile: function (parent, name, properties, canRead, canWrite) {
-    const path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name)
-    const mode = FS.getMode(canRead, canWrite)
+    var path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name)
+    var mode = FS.getMode(canRead, canWrite)
     return FS.create(path, mode)
   },
   createDataFile: function (parent, name, data, canRead, canWrite, canOwn) {
-    const path = name ? PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name) : parent
-    const mode = FS.getMode(canRead, canWrite)
-    const node = FS.create(path, mode)
+    var path = name ? PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name) : parent
+    var mode = FS.getMode(canRead, canWrite)
+    var node = FS.create(path, mode)
     if (data) {
       if (typeof data === 'string') {
-        const arr = new Array(data.length)
-        for (let i = 0, len = data.length; i < len; ++i) arr[i] = data.charCodeAt(i)
+        var arr = new Array(data.length)
+        for (var i = 0, len = data.length; i < len; ++i) arr[i] = data.charCodeAt(i)
         data = arr
       }
       FS.chmod(node, mode | 146)
-      const stream = FS.open(node, 'w')
+      var stream = FS.open(node, 'w')
       FS.write(stream, data, 0, data.length, 0, canOwn)
       FS.close(stream)
       FS.chmod(node, mode)
@@ -2696,10 +2675,10 @@ var FS = {
     return node
   },
   createDevice: function (parent, name, input, output) {
-    const path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name)
-    const mode = FS.getMode(!!input, !!output)
+    var path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name)
+    var mode = FS.getMode(!!input, !!output)
     if (!FS.createDevice.major) FS.createDevice.major = 64
-    const dev = FS.makedev(FS.createDevice.major++, 0)
+    var dev = FS.makedev(FS.createDevice.major++, 0)
     FS.registerDevice(dev, {
       open: function (stream) {
         stream.seekable = false
@@ -2710,8 +2689,8 @@ var FS = {
         }
       },
       read: function (stream, buffer, offset, length, pos) {
-        let bytesRead = 0
-        for (let i = 0; i < length; i++) {
+        var bytesRead = 0
+        for (var i = 0; i < length; i++) {
           var result
           try {
             result = input()
@@ -2747,12 +2726,12 @@ var FS = {
     return FS.mkdev(path, mode, dev)
   },
   createLink: function (parent, name, target, canRead, canWrite) {
-    const path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name)
+    var path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name)
     return FS.symlink(target, path)
   },
   forceLoadFile: function (obj) {
     if (obj.isDevice || obj.isFolder || obj.link || obj.contents) return true
-    let success = true
+    var success = true
     if (typeof XMLHttpRequest !== 'undefined') {
       throw new Error('Lazy loading should have been performed (contents set) in createLazyFile, but it was not. Lazy loading only works in web workers. Use --embed-file or --preload-file in emcc on the main thread.')
     } else if (read_) {
@@ -2777,28 +2756,28 @@ var FS = {
       if (idx > this.length - 1 || idx < 0) {
         return undefined
       }
-      const chunkOffset = idx % this.chunkSize
-      const chunkNum = idx / this.chunkSize | 0
+      var chunkOffset = idx % this.chunkSize
+      var chunkNum = idx / this.chunkSize | 0
       return this.getter(chunkNum)[chunkOffset]
     }
     LazyUint8Array.prototype.setDataGetter = function LazyUint8Array_setDataGetter (getter) {
       this.getter = getter
     }
     LazyUint8Array.prototype.cacheLength = function LazyUint8Array_cacheLength () {
-      const xhr = new XMLHttpRequest()
+      var xhr = new XMLHttpRequest()
       xhr.open('GET', url, false)
       xhr.send(null)
       if (!(xhr.status >= 200 && xhr.status < 300 || xhr.status === 304)) throw new Error("Couldn't load " + url + '. Status: ' + xhr.status)
-      let datalength = Number(xhr.getResponseHeader('Content-length'))
-      let header
-      const hasByteServing = (header = xhr.getResponseHeader('Accept-Ranges')) && header === 'bytes'
-      const usesGzip = (header = xhr.getResponseHeader('Content-Encoding')) && header === 'gzip'
-      let chunkSize = 1024 * 1024
+      var datalength = Number(xhr.getResponseHeader('Content-length'))
+      var header
+      var hasByteServing = (header = xhr.getResponseHeader('Accept-Ranges')) && header === 'bytes'
+      var usesGzip = (header = xhr.getResponseHeader('Content-Encoding')) && header === 'gzip'
+      var chunkSize = 1024 * 1024
       if (!hasByteServing) chunkSize = datalength
-      const doXHR = function (from, to) {
+      var doXHR = function (from, to) {
         if (from > to) throw new Error('invalid range (' + from + ', ' + to + ') or no bytes requested!')
         if (to > datalength - 1) throw new Error('only ' + datalength + ' bytes available! programmer error!')
-        const xhr = new XMLHttpRequest()
+        var xhr = new XMLHttpRequest()
         xhr.open('GET', url, false)
         if (datalength !== chunkSize) xhr.setRequestHeader('Range', 'bytes=' + from + '-' + to)
         if (typeof Uint8Array !== 'undefined') xhr.responseType = 'arraybuffer'
@@ -2813,10 +2792,10 @@ var FS = {
           return intArrayFromString(xhr.responseText || '', true)
         }
       }
-      const lazyArray = this
+      var lazyArray = this
       lazyArray.setDataGetter(function (chunkNum) {
-        const start = chunkNum * chunkSize
-        let end = (chunkNum + 1) * chunkSize - 1
+        var start = chunkNum * chunkSize
+        var end = (chunkNum + 1) * chunkSize - 1
         end = Math.min(end, datalength - 1)
         if (typeof lazyArray.chunks[chunkNum] === 'undefined') {
           lazyArray.chunks[chunkNum] = doXHR(start, end)
@@ -2836,7 +2815,7 @@ var FS = {
     }
     if (typeof XMLHttpRequest !== 'undefined') {
       if (!ENVIRONMENT_IS_WORKER) throw 'Cannot do synchronous binary XHRs outside webworkers in modern browsers. Use --embed-file or --preload-file in emcc'
-      const lazyArray = new LazyUint8Array()
+      var lazyArray = new LazyUint8Array()
       Object.defineProperties(lazyArray, {
         length: {
           get: function () {
@@ -2865,7 +2844,7 @@ var FS = {
         url: url
       }
     }
-    const node = FS.createFile(parent, name, properties, canRead, canWrite)
+    var node = FS.createFile(parent, name, properties, canRead, canWrite)
     if (properties.contents) {
       node.contents = properties.contents
     } else if (properties.url) {
@@ -2879,10 +2858,10 @@ var FS = {
         }
       }
     })
-    const stream_ops = {}
-    const keys = Object.keys(node.stream_ops)
+    var stream_ops = {}
+    var keys = Object.keys(node.stream_ops)
     keys.forEach(function (key) {
-      const fn = node.stream_ops[key]
+      var fn = node.stream_ops[key]
       stream_ops[key] = function forceLoadLazyFile () {
         if (!FS.forceLoadFile(node)) {
           throw new FS.ErrnoError(29)
@@ -2894,9 +2873,9 @@ var FS = {
       if (!FS.forceLoadFile(node)) {
         throw new FS.ErrnoError(29)
       }
-      const contents = stream.node.contents
+      var contents = stream.node.contents
       if (position >= contents.length) return 0
-      const size = Math.min(contents.length - position, length)
+      var size = Math.min(contents.length - position, length)
       if (contents.slice) {
         for (var i = 0; i < size; i++) {
           buffer[offset + i] = contents[position + i]
@@ -2913,8 +2892,8 @@ var FS = {
   },
   createPreloadedFile: function (parent, name, url, canRead, canWrite, onload, onerror, dontCreateFile, canOwn, preFinish) {
     Browser.init()
-    const fullname = name ? PATH_FS.resolve(PATH.join2(parent, name)) : parent
-    const dep = getUniqueRunDependency('cp ' + fullname)
+    var fullname = name ? PATH_FS.resolve(PATH.join2(parent, name)) : parent
+    var dep = getUniqueRunDependency('cp ' + fullname)
 
     function processData (byteArray) {
       function finish (byteArray) {
@@ -2925,7 +2904,7 @@ var FS = {
         if (onload) onload()
         removeRunDependency(dep)
       }
-      let handled = false
+      var handled = false
       Module.preloadPlugins.forEach(function (plugin) {
         if (handled) return
         if (plugin.canHandle(fullname)) {
@@ -2958,7 +2937,7 @@ var FS = {
   saveFilesToDB: function (paths, onload, onerror) {
     onload = onload || function () {}
     onerror = onerror || function () {}
-    const indexedDB = FS.indexedDB()
+    var indexedDB = FS.indexedDB()
     try {
       var openRequest = indexedDB.open(FS.DB_NAME(), FS.DB_VERSION)
     } catch (e) {
@@ -2966,23 +2945,23 @@ var FS = {
     }
     openRequest.onupgradeneeded = function openRequest_onupgradeneeded () {
       out('creating db')
-      const db = openRequest.result
+      var db = openRequest.result
       db.createObjectStore(FS.DB_STORE_NAME)
     }
     openRequest.onsuccess = function openRequest_onsuccess () {
-      const db = openRequest.result
-      const transaction = db.transaction([FS.DB_STORE_NAME], 'readwrite')
-      const files = transaction.objectStore(FS.DB_STORE_NAME)
-      let ok = 0
-      let fail = 0
-      let total = paths.length
+      var db = openRequest.result
+      var transaction = db.transaction([FS.DB_STORE_NAME], 'readwrite')
+      var files = transaction.objectStore(FS.DB_STORE_NAME)
+      var ok = 0
+      var fail = 0
+      var total = paths.length
 
       function finish () {
         if (fail == 0) onload()
         else onerror()
       }
       paths.forEach(function (path) {
-        const putRequest = files.put(FS.analyzePath(path).object.contents, path)
+        var putRequest = files.put(FS.analyzePath(path).object.contents, path)
         putRequest.onsuccess = function putRequest_onsuccess () {
           ok++
           if (ok + fail == total) finish()
@@ -2999,7 +2978,7 @@ var FS = {
   loadFilesFromDB: function (paths, onload, onerror) {
     onload = onload || function () {}
     onerror = onerror || function () {}
-    const indexedDB = FS.indexedDB()
+    var indexedDB = FS.indexedDB()
     try {
       var openRequest = indexedDB.open(FS.DB_NAME(), FS.DB_VERSION)
     } catch (e) {
@@ -3007,24 +2986,24 @@ var FS = {
     }
     openRequest.onupgradeneeded = onerror
     openRequest.onsuccess = function openRequest_onsuccess () {
-      const db = openRequest.result
+      var db = openRequest.result
       try {
         var transaction = db.transaction([FS.DB_STORE_NAME], 'readonly')
       } catch (e) {
         onerror(e)
         return
       }
-      const files = transaction.objectStore(FS.DB_STORE_NAME)
-      let ok = 0
-      let fail = 0
-      let total = paths.length
+      var files = transaction.objectStore(FS.DB_STORE_NAME)
+      var ok = 0
+      var fail = 0
+      var total = paths.length
 
       function finish () {
         if (fail == 0) onload()
         else onerror()
       }
       paths.forEach(function (path) {
-        const getRequest = files.get(path)
+        var getRequest = files.get(path)
         getRequest.onsuccess = function getRequest_onsuccess () {
           if (FS.analyzePath(path).exists) {
             FS.unlink(path)
@@ -3043,8 +3022,8 @@ var FS = {
     openRequest.onerror = onerror
   },
   mmapAlloc: function (size) {
-    const alignedSize = alignMemory(size, 16384)
-    const ptr = _malloc(alignedSize)
+    var alignedSize = alignMemory(size, 16384)
+    var ptr = _malloc(alignedSize)
     while (size < alignedSize) HEAP8[ptr + size++] = 0
     return ptr
   }
@@ -3055,11 +3034,11 @@ var SYSCALLS = {
   umask: 511,
   calculateAt: function (dirfd, path) {
     if (path[0] !== '/') {
-      let dir
+      var dir
       if (dirfd === -100) {
         dir = FS.cwd()
       } else {
-        const dirstream = FS.getStream(dirfd)
+        var dirstream = FS.getStream(dirfd)
         if (!dirstream) throw new FS.ErrnoError(8)
         dir = dirstream.path
       }
@@ -3098,7 +3077,7 @@ var SYSCALLS = {
     return 0
   },
   doMsync: function (addr, stream, len, flags, offset) {
-    const buffer = HEAPU8.slice(addr, addr + len)
+    var buffer = HEAPU8.slice(addr, addr + len)
     FS.msync(stream, buffer, offset, len, flags)
   },
   doMkdir: function (path, mode) {
@@ -3123,9 +3102,9 @@ var SYSCALLS = {
   },
   doReadlink: function (path, buf, bufsize) {
     if (bufsize <= 0) return -28
-    const ret = FS.readlink(path)
-    const len = Math.min(bufsize, lengthBytesUTF8(ret))
-    const endChar = HEAP8[buf + len]
+    var ret = FS.readlink(path)
+    var len = Math.min(bufsize, lengthBytesUTF8(ret))
+    var endChar = HEAP8[buf + len]
     stringToUTF8(ret, buf, bufsize + 1)
     HEAP8[buf + len] = endChar
     return len
@@ -3134,15 +3113,15 @@ var SYSCALLS = {
     if (amode & ~7) {
       return -28
     }
-    let node
-    const lookup = FS.lookupPath(path, {
+    var node
+    var lookup = FS.lookupPath(path, {
       follow: true
     })
     node = lookup.node
     if (!node) {
       return -44
     }
-    let perms = ''
+    var perms = ''
     if (amode & 4) perms += 'r'
     if (amode & 2) perms += 'w'
     if (amode & 1) perms += 'x'
@@ -3152,16 +3131,16 @@ var SYSCALLS = {
     return 0
   },
   doDup: function (path, flags, suggestFD) {
-    const suggest = FS.getStream(suggestFD)
+    var suggest = FS.getStream(suggestFD)
     if (suggest) FS.close(suggest)
     return FS.open(path, flags, 0, suggestFD, suggestFD).fd
   },
   doReadv: function (stream, iov, iovcnt, offset) {
-    let ret = 0
-    for (let i = 0; i < iovcnt; i++) {
-      const ptr = HEAP32[iov + i * 8 >> 2]
-      const len = HEAP32[iov + (i * 8 + 4) >> 2]
-      const curr = FS.read(stream, HEAP8, ptr, len, offset)
+    var ret = 0
+    for (var i = 0; i < iovcnt; i++) {
+      var ptr = HEAP32[iov + i * 8 >> 2]
+      var len = HEAP32[iov + (i * 8 + 4) >> 2]
+      var curr = FS.read(stream, HEAP8, ptr, len, offset)
       if (curr < 0) return -1
       ret += curr
       if (curr < len) break
@@ -3169,11 +3148,11 @@ var SYSCALLS = {
     return ret
   },
   doWritev: function (stream, iov, iovcnt, offset) {
-    let ret = 0
-    for (let i = 0; i < iovcnt; i++) {
-      const ptr = HEAP32[iov + i * 8 >> 2]
-      const len = HEAP32[iov + (i * 8 + 4) >> 2]
-      const curr = FS.write(stream, HEAP8, ptr, len, offset)
+    var ret = 0
+    for (var i = 0; i < iovcnt; i++) {
+      var ptr = HEAP32[iov + i * 8 >> 2]
+      var len = HEAP32[iov + (i * 8 + 4) >> 2]
+      var curr = FS.write(stream, HEAP8, ptr, len, offset)
       if (curr < 0) return -1
       ret += curr
     }
@@ -3182,15 +3161,15 @@ var SYSCALLS = {
   varargs: undefined,
   get: function () {
     SYSCALLS.varargs += 4
-    const ret = HEAP32[SYSCALLS.varargs - 4 >> 2]
+    var ret = HEAP32[SYSCALLS.varargs - 4 >> 2]
     return ret
   },
   getStr: function (ptr) {
-    const ret = UTF8ToString(ptr)
+    var ret = UTF8ToString(ptr)
     return ret
   },
   getStreamFromFD: function (fd) {
-    const stream = FS.getStream(fd)
+    var stream = FS.getStream(fd)
     if (!stream) throw new FS.ErrnoError(8)
     return stream
   },
@@ -3223,14 +3202,14 @@ function ___sys_chmod (path, mode) {
 function ___sys_fcntl64 (fd, cmd, varargs) {
   SYSCALLS.varargs = varargs
   try {
-    const stream = SYSCALLS.getStreamFromFD(fd)
+    var stream = SYSCALLS.getStreamFromFD(fd)
     switch (cmd) {
       case 0: {
         var arg = SYSCALLS.get()
         if (arg < 0) {
           return -28
         }
-        let newStream
+        var newStream
         newStream = FS.open(stream.path, stream.flags, 0, arg)
         return newStream.fd
       }
@@ -3246,7 +3225,7 @@ function ___sys_fcntl64 (fd, cmd, varargs) {
       }
       case 12: {
         var arg = SYSCALLS.get()
-        const offset = 0
+        var offset = 0
         HEAP16[arg + offset >> 1] = 2
         return 0
       }
@@ -3271,7 +3250,7 @@ function ___sys_fcntl64 (fd, cmd, varargs) {
 
 function ___sys_fstat64 (fd, buf) {
   try {
-    const stream = SYSCALLS.getStreamFromFD(fd)
+    var stream = SYSCALLS.getStreamFromFD(fd)
     return SYSCALLS.doStat(FS.stat, stream.path, buf)
   } catch (e) {
     if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) abort(e)
@@ -3282,8 +3261,8 @@ function ___sys_fstat64 (fd, buf) {
 function ___sys_getcwd (buf, size) {
   try {
     if (size === 0) return -28
-    const cwd = FS.cwd()
-    const cwdLengthInBytes = lengthBytesUTF8(cwd)
+    var cwd = FS.cwd()
+    var cwdLengthInBytes = lengthBytesUTF8(cwd)
     if (size < cwdLengthInBytes + 1) return -68
     stringToUTF8(cwd, buf, size)
     return buf
@@ -3295,23 +3274,23 @@ function ___sys_getcwd (buf, size) {
 
 function ___sys_getdents64 (fd, dirp, count) {
   try {
-    const stream = SYSCALLS.getStreamFromFD(fd)
+    var stream = SYSCALLS.getStreamFromFD(fd)
     if (!stream.getdents) {
       stream.getdents = FS.readdir(stream.path)
     }
-    const struct_size = 280
-    let pos = 0
-    const off = FS.llseek(stream, 0, 1)
-    let idx = Math.floor(off / struct_size)
+    var struct_size = 280
+    var pos = 0
+    var off = FS.llseek(stream, 0, 1)
+    var idx = Math.floor(off / struct_size)
     while (idx < stream.getdents.length && pos + struct_size <= count) {
       var id
       var type
-      const name = stream.getdents[idx]
+      var name = stream.getdents[idx]
       if (name[0] === '.') {
         id = 1
         type = 4
       } else {
-        const child = FS.lookupNode(stream.node, name)
+        var child = FS.lookupNode(stream.node, name)
         id = child.id
         type = FS.isChrdev(child.mode) ? 2 : FS.isDir(child.mode) ? 4 : FS.isLink(child.mode) ? 10 : 8
       }
@@ -3338,7 +3317,7 @@ function ___sys_getpid () {
 function ___sys_ioctl (fd, op, varargs) {
   SYSCALLS.varargs = varargs
   try {
-    const stream = SYSCALLS.getStreamFromFD(fd)
+    var stream = SYSCALLS.getStreamFromFD(fd)
     switch (op) {
       case 21509:
       case 21505: {
@@ -3416,9 +3395,9 @@ function ___sys_mprotect (addr, len, size) {
 function ___sys_open (path, flags, varargs) {
   SYSCALLS.varargs = varargs
   try {
-    const pathname = SYSCALLS.getStr(path)
-    const mode = SYSCALLS.get()
-    const stream = FS.open(pathname, flags, mode)
+    var pathname = SYSCALLS.getStr(path)
+    var mode = SYSCALLS.get()
+    var stream = FS.open(pathname, flags, mode)
     return stream.fd
   } catch (e) {
     if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) abort(e)
@@ -3428,7 +3407,7 @@ function ___sys_open (path, flags, varargs) {
 
 function ___sys_read (fd, buf, count) {
   try {
-    const stream = SYSCALLS.getStreamFromFD(fd)
+    var stream = SYSCALLS.getStreamFromFD(fd)
     return FS.read(stream, HEAP8, buf, count)
   } catch (e) {
     if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) abort(e)
@@ -3533,24 +3512,24 @@ function emscripten_realloc_buffer (size) {
 
 function _emscripten_resize_heap (requestedSize) {
   requestedSize = requestedSize >>> 0
-  const oldSize = _emscripten_get_heap_size()
-  const maxHeapSize = 2147483648
+  var oldSize = _emscripten_get_heap_size()
+  var maxHeapSize = 2147483648
   if (requestedSize > maxHeapSize) {
     return false
   }
-  const minHeapSize = 16777216
-  for (let cutDown = 1; cutDown <= 4; cutDown *= 2) {
-    let overGrownHeapSize = oldSize * (1 + 0.2 / cutDown)
+  var minHeapSize = 16777216
+  for (var cutDown = 1; cutDown <= 4; cutDown *= 2) {
+    var overGrownHeapSize = oldSize * (1 + 0.2 / cutDown)
     overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296)
-    const newSize = Math.min(maxHeapSize, alignUp(Math.max(minHeapSize, requestedSize, overGrownHeapSize), 65536))
-    const replacement = emscripten_realloc_buffer(newSize)
+    var newSize = Math.min(maxHeapSize, alignUp(Math.max(minHeapSize, requestedSize, overGrownHeapSize), 65536))
+    var replacement = emscripten_realloc_buffer(newSize)
     if (replacement) {
       return true
     }
   }
   return false
 }
-const ENV = {}
+var ENV = {}
 
 function getExecutableName () {
   return thisProgram || './this.program'
@@ -3558,8 +3537,8 @@ function getExecutableName () {
 
 function getEnvStrings () {
   if (!getEnvStrings.strings) {
-    const lang = (typeof navigator === 'object' && navigator.languages && navigator.languages[0] || 'C').replace('-', '_') + '.UTF-8'
-    const env = {
+    var lang = (typeof navigator === 'object' && navigator.languages && navigator.languages[0] || 'C').replace('-', '_') + '.UTF-8'
+    var env = {
       USER: 'web_user',
       LOGNAME: 'web_user',
       PATH: '/',
@@ -3571,7 +3550,7 @@ function getEnvStrings () {
     for (var x in ENV) {
       env[x] = ENV[x]
     }
-    const strings = []
+    var strings = []
     for (var x in env) {
       strings.push(x + '=' + env[x])
     }
@@ -3581,9 +3560,9 @@ function getEnvStrings () {
 }
 
 function _environ_get (__environ, environ_buf) {
-  let bufSize = 0
+  var bufSize = 0
   getEnvStrings().forEach(function (string, i) {
-    const ptr = environ_buf + bufSize
+    var ptr = environ_buf + bufSize
     HEAP32[__environ + i * 4 >> 2] = ptr
     writeAsciiToMemory(string, ptr)
     bufSize += string.length + 1
@@ -3592,9 +3571,9 @@ function _environ_get (__environ, environ_buf) {
 }
 
 function _environ_sizes_get (penviron_count, penviron_buf_size) {
-  const strings = getEnvStrings()
+  var strings = getEnvStrings()
   HEAP32[penviron_count >> 2] = strings.length
-  let bufSize = 0
+  var bufSize = 0
   strings.forEach(function (string) {
     bufSize += string.length + 1
   })
@@ -3608,7 +3587,7 @@ function _exit (status) {
 
 function _fd_close (fd) {
   try {
-    const stream = SYSCALLS.getStreamFromFD(fd)
+    var stream = SYSCALLS.getStreamFromFD(fd)
     FS.close(stream)
     return 0
   } catch (e) {
@@ -3619,8 +3598,8 @@ function _fd_close (fd) {
 
 function _fd_fdstat_get (fd, pbuf) {
   try {
-    const stream = SYSCALLS.getStreamFromFD(fd)
-    const type = stream.tty ? 2 : FS.isDir(stream.mode) ? 3 : FS.isLink(stream.mode) ? 7 : 4
+    var stream = SYSCALLS.getStreamFromFD(fd)
+    var type = stream.tty ? 2 : FS.isDir(stream.mode) ? 3 : FS.isLink(stream.mode) ? 7 : 4
     HEAP8[pbuf >> 0] = type
     return 0
   } catch (e) {
@@ -3631,8 +3610,8 @@ function _fd_fdstat_get (fd, pbuf) {
 
 function _fd_read (fd, iov, iovcnt, pnum) {
   try {
-    const stream = SYSCALLS.getStreamFromFD(fd)
-    const num = SYSCALLS.doReadv(stream, iov, iovcnt)
+    var stream = SYSCALLS.getStreamFromFD(fd)
+    var num = SYSCALLS.doReadv(stream, iov, iovcnt)
     HEAP32[pnum >> 2] = num
     return 0
   } catch (e) {
@@ -3643,10 +3622,10 @@ function _fd_read (fd, iov, iovcnt, pnum) {
 
 function _fd_seek (fd, offset_low, offset_high, whence, newOffset) {
   try {
-    const stream = SYSCALLS.getStreamFromFD(fd)
-    const HIGH_OFFSET = 4294967296
-    const offset = offset_high * HIGH_OFFSET + (offset_low >>> 0)
-    const DOUBLE_LIMIT = 9007199254740992
+    var stream = SYSCALLS.getStreamFromFD(fd)
+    var HIGH_OFFSET = 4294967296
+    var offset = offset_high * HIGH_OFFSET + (offset_low >>> 0)
+    var DOUBLE_LIMIT = 9007199254740992
     if (offset <= -DOUBLE_LIMIT || offset >= DOUBLE_LIMIT) {
       return -61
     }
@@ -3662,8 +3641,8 @@ function _fd_seek (fd, offset_low, offset_high, whence, newOffset) {
 
 function _fd_write (fd, iov, iovcnt, pnum) {
   try {
-    const stream = SYSCALLS.getStreamFromFD(fd)
-    const num = SYSCALLS.doWritev(stream, iov, iovcnt)
+    var stream = SYSCALLS.getStreamFromFD(fd)
+    var num = SYSCALLS.doWritev(stream, iov, iovcnt)
     HEAP32[pnum >> 2] = num
     return 0
   } catch (e) {
@@ -3673,7 +3652,7 @@ function _fd_write (fd, iov, iovcnt, pnum) {
 }
 
 function _gettimeofday (ptr) {
-  const now = Date.now()
+  var now = Date.now()
   HEAP32[ptr >> 2] = now / 1e3 | 0
   HEAP32[ptr + 4 >> 2] = now % 1e3 * 1e3 | 0
   return 0
@@ -3840,13 +3819,13 @@ function _sysconf (name) {
 }
 
 function _time (ptr) {
-  const ret = Date.now() / 1e3 | 0
+  var ret = Date.now() / 1e3 | 0
   if (ptr) {
     HEAP32[ptr >> 2] = ret
   }
   return ret
 }
-const FSNode = function (parent, name, mode, rdev) {
+var FSNode = function (parent, name, mode, rdev) {
   if (!parent) {
     parent = this
   }
@@ -3860,8 +3839,8 @@ const FSNode = function (parent, name, mode, rdev) {
   this.stream_ops = {}
   this.rdev = rdev
 }
-const readMode = 292 | 73
-const writeMode = 146
+var readMode = 292 | 73
+var writeMode = 146
 Object.defineProperties(FSNode.prototype, {
   read: {
     get: function () {
@@ -3900,20 +3879,20 @@ Module.FS_createLazyFile = FS.createLazyFile
 Module.FS_createLink = FS.createLink
 Module.FS_createDevice = FS.createDevice
 Module.FS_unlink = FS.unlink
-const ASSERTIONS = false
+var ASSERTIONS = false
 
 function intArrayFromString (stringy, dontAddNull, length) {
-  const len = length > 0 ? length : lengthBytesUTF8(stringy) + 1
-  const u8array = new Array(len)
-  const numBytesWritten = stringToUTF8Array(stringy, u8array, 0, u8array.length)
+  var len = length > 0 ? length : lengthBytesUTF8(stringy) + 1
+  var u8array = new Array(len)
+  var numBytesWritten = stringToUTF8Array(stringy, u8array, 0, u8array.length)
   if (dontAddNull) u8array.length = numBytesWritten
   return u8array
 }
 
 function intArrayToString (array) {
-  const ret = []
-  for (let i = 0; i < array.length; i++) {
-    let chr = array[i]
+  var ret = []
+  for (var i = 0; i < array.length; i++) {
+    var chr = array[i]
     if (chr > 255) {
       if (ASSERTIONS) {
         assert(false, 'Character code ' + chr + ' (' + String.fromCharCode(chr) + ')  at offset ' + i + ' not in 0x00-0xFF.')
@@ -3924,12 +3903,12 @@ function intArrayToString (array) {
   }
   return ret.join('')
 }
-const decodeBase64 = typeof atob === 'function' ? atob : function (input) {
-  const keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
-  let output = ''
-  let chr1, chr2, chr3
-  let enc1, enc2, enc3, enc4
-  let i = 0
+var decodeBase64 = typeof atob === 'function' ? atob : function (input) {
+  var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+  var output = ''
+  var chr1, chr2, chr3
+  var enc1, enc2, enc3, enc4
+  var i = 0
   input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '')
   do {
     enc1 = keyStr.indexOf(input.charAt(i++))
@@ -3952,9 +3931,9 @@ const decodeBase64 = typeof atob === 'function' ? atob : function (input) {
 
 function intArrayFromBase64 (s) {
   try {
-    const decoded = decodeBase64(s)
-    const bytes = new Uint8Array(decoded.length)
-    for (let i = 0; i < decoded.length; ++i) {
+    var decoded = decodeBase64(s)
+    var bytes = new Uint8Array(decoded.length)
+    for (var i = 0; i < decoded.length; ++i) {
       bytes[i] = decoded.charCodeAt(i)
     }
     return bytes
@@ -4017,7 +3996,7 @@ var asmLibraryArg = {
   table: wasmTable,
   l: _time
 }
-const asm = createWasm()
+var asm = createWasm()
 var ___wasm_call_ctors = Module.___wasm_call_ctors = function () {
   return (___wasm_call_ctors = Module.___wasm_call_ctors = Module.asm.S).apply(null, arguments)
 }
@@ -4767,7 +4746,7 @@ var stackAlloc = Module.stackAlloc = function () {
 }
 
 function invoke_iii (index, a1, a2) {
-  const sp = stackSave()
+  var sp = stackSave()
   try {
     return wasmTable.get(index)(a1, a2)
   } catch (e) {
@@ -4778,7 +4757,7 @@ function invoke_iii (index, a1, a2) {
 }
 
 function invoke_iiiii (index, a1, a2, a3, a4) {
-  const sp = stackSave()
+  var sp = stackSave()
   try {
     return wasmTable.get(index)(a1, a2, a3, a4)
   } catch (e) {
@@ -4789,7 +4768,7 @@ function invoke_iiiii (index, a1, a2, a3, a4) {
 }
 
 function invoke_iiii (index, a1, a2, a3) {
-  const sp = stackSave()
+  var sp = stackSave()
   try {
     return wasmTable.get(index)(a1, a2, a3)
   } catch (e) {
@@ -4800,7 +4779,7 @@ function invoke_iiii (index, a1, a2, a3) {
 }
 
 function invoke_vii (index, a1, a2) {
-  const sp = stackSave()
+  var sp = stackSave()
   try {
     wasmTable.get(index)(a1, a2)
   } catch (e) {
@@ -4823,31 +4802,31 @@ Module.FS_createLazyFile = FS.createLazyFile
 Module.FS_createLink = FS.createLink
 Module.FS_createDevice = FS.createDevice
 Module.FS_unlink = FS.unlink
-let calledRun
+var calledRun
 
 function ExitStatus (status) {
   this.name = 'ExitStatus'
   this.message = 'Program terminated with exit(' + status + ')'
   this.status = status
 }
-let calledMain = false
+var calledMain = false
 dependenciesFulfilled = function runCaller () {
   if (!calledRun) run()
   if (!calledRun) dependenciesFulfilled = runCaller
 }
 
 function callMain (args) {
-  const entryFunction = Module._main
+  var entryFunction = Module._main
   args = args || []
-  const argc = args.length + 1
-  const argv = stackAlloc((argc + 1) * 4)
+  var argc = args.length + 1
+  var argv = stackAlloc((argc + 1) * 4)
   HEAP32[argv >> 2] = allocateUTF8OnStack(thisProgram)
-  for (let i = 1; i < argc; i++) {
+  for (var i = 1; i < argc; i++) {
     HEAP32[(argv >> 2) + i] = allocateUTF8OnStack(args[i - 1])
   }
   HEAP32[(argv >> 2) + argc] = 0
   try {
-    const ret = entryFunction(argc, argv)
+    var ret = entryFunction(argc, argv)
     exit(ret, true)
   } catch (e) {
     if (e instanceof ExitStatus) {
@@ -4856,7 +4835,7 @@ function callMain (args) {
       noExitRuntime = true
       return
     } else {
-      let toLog = e
+      var toLog = e
       if (e && typeof e === 'object' && e.stack) {
         toLog = [e, e.stack]
       }
@@ -4937,8 +4916,8 @@ function getCache (__class__) {
 Module.getCache = getCache
 
 function wrapPointer (ptr, __class__) {
-  const cache = getCache(__class__)
-  let ret = cache[ptr]
+  var cache = getCache(__class__)
+  var ret = cache[ptr]
   if (ret) return ret
   ret = Object.create((__class__ || WrapperObject).prototype)
   ret.ptr = ptr
@@ -4981,7 +4960,7 @@ var ensureCache = {
   needed: 0,
   prepare: function () {
     if (ensureCache.needed) {
-      for (let i = 0; i < ensureCache.temps.length; i++) {
+      for (var i = 0; i < ensureCache.temps.length; i++) {
         Module._free(ensureCache.temps[i])
       }
       ensureCache.temps.length = 0
@@ -4999,10 +4978,10 @@ var ensureCache = {
   },
   alloc: function (array, view) {
     assert(ensureCache.buffer)
-    const bytes = view.BYTES_PER_ELEMENT
-    let len = array.length * bytes
+    var bytes = view.BYTES_PER_ELEMENT
+    var len = array.length * bytes
     len = len + 7 & -8
-    let ret
+    var ret
     if (ensureCache.pos + len >= ensureCache.size) {
       assert(len > 0)
       ensureCache.needed += len
@@ -5015,8 +4994,8 @@ var ensureCache = {
     return ret
   },
   copy: function (array, view, offset) {
-    let offsetShifted = offset
-    const bytes = view.BYTES_PER_ELEMENT
+    var offsetShifted = offset
+    var bytes = view.BYTES_PER_ELEMENT
     switch (bytes) {
       case 2:
         offsetShifted >>= 1
@@ -5028,7 +5007,7 @@ var ensureCache = {
         offsetShifted >>= 3
         break
     }
-    for (let i = 0; i < array.length; i++) {
+    for (var i = 0; i < array.length; i++) {
       view[offsetShifted + i] = array[i]
     }
   }
@@ -5036,8 +5015,8 @@ var ensureCache = {
 
 function ensureString (value) {
   if (typeof value === 'string') {
-    const intArray = intArrayFromString(value)
-    const offset = ensureCache.alloc(intArray, HEAP8)
+    var intArray = intArrayFromString(value)
+    var offset = ensureCache.alloc(intArray, HEAP8)
     ensureCache.copy(intArray, HEAP8, offset)
     return offset
   }
@@ -5062,11 +5041,11 @@ ASS_Event.prototype.__class__ = ASS_Event
 ASS_Event.__cache__ = {}
 Module.ASS_Event = ASS_Event
 ASS_Event.prototype.get_Start = ASS_Event.prototype.get_Start = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Event_get_Start_0(self)
 }
 ASS_Event.prototype.set_Start = ASS_Event.prototype.set_Start = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Event_set_Start_1(self, arg0)
 }
@@ -5075,11 +5054,11 @@ Object.defineProperty(ASS_Event.prototype, 'Start', {
   set: ASS_Event.prototype.set_Start
 })
 ASS_Event.prototype.get_Duration = ASS_Event.prototype.get_Duration = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Event_get_Duration_0(self)
 }
 ASS_Event.prototype.set_Duration = ASS_Event.prototype.set_Duration = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Event_set_Duration_1(self, arg0)
 }
@@ -5088,11 +5067,11 @@ Object.defineProperty(ASS_Event.prototype, 'Duration', {
   set: ASS_Event.prototype.set_Duration
 })
 ASS_Event.prototype.get_ReadOrder = ASS_Event.prototype.get_ReadOrder = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Event_get_ReadOrder_0(self)
 }
 ASS_Event.prototype.set_ReadOrder = ASS_Event.prototype.set_ReadOrder = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Event_set_ReadOrder_1(self, arg0)
 }
@@ -5101,11 +5080,11 @@ Object.defineProperty(ASS_Event.prototype, 'ReadOrder', {
   set: ASS_Event.prototype.set_ReadOrder
 })
 ASS_Event.prototype.get_Layer = ASS_Event.prototype.get_Layer = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Event_get_Layer_0(self)
 }
 ASS_Event.prototype.set_Layer = ASS_Event.prototype.set_Layer = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Event_set_Layer_1(self, arg0)
 }
@@ -5114,11 +5093,11 @@ Object.defineProperty(ASS_Event.prototype, 'Layer', {
   set: ASS_Event.prototype.set_Layer
 })
 ASS_Event.prototype.get_Style = ASS_Event.prototype.get_Style = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Event_get_Style_0(self)
 }
 ASS_Event.prototype.set_Style = ASS_Event.prototype.set_Style = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Event_set_Style_1(self, arg0)
 }
@@ -5127,11 +5106,11 @@ Object.defineProperty(ASS_Event.prototype, 'Style', {
   set: ASS_Event.prototype.set_Style
 })
 ASS_Event.prototype.get_Name = ASS_Event.prototype.get_Name = function () {
-  const self = this.ptr
+  var self = this.ptr
   return UTF8ToString(_emscripten_bind_ASS_Event_get_Name_0(self))
 }
 ASS_Event.prototype.set_Name = ASS_Event.prototype.set_Name = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   else arg0 = ensureString(arg0)
@@ -5142,11 +5121,11 @@ Object.defineProperty(ASS_Event.prototype, 'Name', {
   set: ASS_Event.prototype.set_Name
 })
 ASS_Event.prototype.get_MarginL = ASS_Event.prototype.get_MarginL = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Event_get_MarginL_0(self)
 }
 ASS_Event.prototype.set_MarginL = ASS_Event.prototype.set_MarginL = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Event_set_MarginL_1(self, arg0)
 }
@@ -5155,11 +5134,11 @@ Object.defineProperty(ASS_Event.prototype, 'MarginL', {
   set: ASS_Event.prototype.set_MarginL
 })
 ASS_Event.prototype.get_MarginR = ASS_Event.prototype.get_MarginR = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Event_get_MarginR_0(self)
 }
 ASS_Event.prototype.set_MarginR = ASS_Event.prototype.set_MarginR = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Event_set_MarginR_1(self, arg0)
 }
@@ -5168,11 +5147,11 @@ Object.defineProperty(ASS_Event.prototype, 'MarginR', {
   set: ASS_Event.prototype.set_MarginR
 })
 ASS_Event.prototype.get_MarginV = ASS_Event.prototype.get_MarginV = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Event_get_MarginV_0(self)
 }
 ASS_Event.prototype.set_MarginV = ASS_Event.prototype.set_MarginV = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Event_set_MarginV_1(self, arg0)
 }
@@ -5181,11 +5160,11 @@ Object.defineProperty(ASS_Event.prototype, 'MarginV', {
   set: ASS_Event.prototype.set_MarginV
 })
 ASS_Event.prototype.get_Effect = ASS_Event.prototype.get_Effect = function () {
-  const self = this.ptr
+  var self = this.ptr
   return UTF8ToString(_emscripten_bind_ASS_Event_get_Effect_0(self))
 }
 ASS_Event.prototype.set_Effect = ASS_Event.prototype.set_Effect = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   else arg0 = ensureString(arg0)
@@ -5196,11 +5175,11 @@ Object.defineProperty(ASS_Event.prototype, 'Effect', {
   set: ASS_Event.prototype.set_Effect
 })
 ASS_Event.prototype.get_Text = ASS_Event.prototype.get_Text = function () {
-  const self = this.ptr
+  var self = this.ptr
   return UTF8ToString(_emscripten_bind_ASS_Event_get_Text_0(self))
 }
 ASS_Event.prototype.set_Text = ASS_Event.prototype.set_Text = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   else arg0 = ensureString(arg0)
@@ -5229,11 +5208,11 @@ RenderBlendResult.prototype.__class__ = RenderBlendResult
 RenderBlendResult.__cache__ = {}
 Module.RenderBlendResult = RenderBlendResult
 RenderBlendResult.prototype.get_changed = RenderBlendResult.prototype.get_changed = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_RenderBlendResult_get_changed_0(self)
 }
 RenderBlendResult.prototype.set_changed = RenderBlendResult.prototype.set_changed = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_RenderBlendResult_set_changed_1(self, arg0)
 }
@@ -5242,11 +5221,11 @@ Object.defineProperty(RenderBlendResult.prototype, 'changed', {
   set: RenderBlendResult.prototype.set_changed
 })
 RenderBlendResult.prototype.get_blend_time = RenderBlendResult.prototype.get_blend_time = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_RenderBlendResult_get_blend_time_0(self)
 }
 RenderBlendResult.prototype.set_blend_time = RenderBlendResult.prototype.set_blend_time = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_RenderBlendResult_set_blend_time_1(self, arg0)
 }
@@ -5255,11 +5234,11 @@ Object.defineProperty(RenderBlendResult.prototype, 'blend_time', {
   set: RenderBlendResult.prototype.set_blend_time
 })
 RenderBlendResult.prototype.get_part = RenderBlendResult.prototype.get_part = function () {
-  const self = this.ptr
+  var self = this.ptr
   return wrapPointer(_emscripten_bind_RenderBlendResult_get_part_0(self), RenderBlendPart)
 }
 RenderBlendResult.prototype.set_part = RenderBlendResult.prototype.set_part = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_RenderBlendResult_set_part_1(self, arg0)
 }
@@ -5278,21 +5257,21 @@ SubtitleOctopus.prototype.__class__ = SubtitleOctopus
 SubtitleOctopus.__cache__ = {}
 Module.SubtitleOctopus = SubtitleOctopus
 SubtitleOctopus.prototype.setLogLevel = SubtitleOctopus.prototype.setLogLevel = function (level) {
-  const self = this.ptr
+  var self = this.ptr
   if (level && typeof level === 'object') level = level.ptr
   _emscripten_bind_SubtitleOctopus_setLogLevel_1(self, level)
 }
 SubtitleOctopus.prototype.setDropAnimations = SubtitleOctopus.prototype.setDropAnimations = function (value) {
-  const self = this.ptr
+  var self = this.ptr
   if (value && typeof value === 'object') value = value.ptr
   _emscripten_bind_SubtitleOctopus_setDropAnimations_1(self, value)
 }
 SubtitleOctopus.prototype.getDropAnimations = SubtitleOctopus.prototype.getDropAnimations = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_SubtitleOctopus_getDropAnimations_0(self)
 }
 SubtitleOctopus.prototype.initLibrary = SubtitleOctopus.prototype.initLibrary = function (frame_w, frame_h, default_font) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (frame_w && typeof frame_w === 'object') frame_w = frame_w.ptr
   if (frame_h && typeof frame_h === 'object') frame_h = frame_h.ptr
@@ -5301,14 +5280,14 @@ SubtitleOctopus.prototype.initLibrary = SubtitleOctopus.prototype.initLibrary = 
   _emscripten_bind_SubtitleOctopus_initLibrary_3(self, frame_w, frame_h, default_font)
 }
 SubtitleOctopus.prototype.createTrack = SubtitleOctopus.prototype.createTrack = function (subfile) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (subfile && typeof subfile === 'object') subfile = subfile.ptr
   else subfile = ensureString(subfile)
   _emscripten_bind_SubtitleOctopus_createTrack_1(self, subfile)
 }
 SubtitleOctopus.prototype.createTrackMem = SubtitleOctopus.prototype.createTrackMem = function (buf, bufsize) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (buf && typeof buf === 'object') buf = buf.ptr
   else buf = ensureString(buf)
@@ -5316,35 +5295,35 @@ SubtitleOctopus.prototype.createTrackMem = SubtitleOctopus.prototype.createTrack
   _emscripten_bind_SubtitleOctopus_createTrackMem_2(self, buf, bufsize)
 }
 SubtitleOctopus.prototype.removeTrack = SubtitleOctopus.prototype.removeTrack = function () {
-  const self = this.ptr
+  var self = this.ptr
   _emscripten_bind_SubtitleOctopus_removeTrack_0(self)
 }
 SubtitleOctopus.prototype.resizeCanvas = SubtitleOctopus.prototype.resizeCanvas = function (frame_w, frame_h) {
-  const self = this.ptr
+  var self = this.ptr
   if (frame_w && typeof frame_w === 'object') frame_w = frame_w.ptr
   if (frame_h && typeof frame_h === 'object') frame_h = frame_h.ptr
   _emscripten_bind_SubtitleOctopus_resizeCanvas_2(self, frame_w, frame_h)
 }
 SubtitleOctopus.prototype.renderImage = SubtitleOctopus.prototype.renderImage = function (time, changed) {
-  const self = this.ptr
+  var self = this.ptr
   if (time && typeof time === 'object') time = time.ptr
   if (changed && typeof changed === 'object') changed = changed.ptr
   return wrapPointer(_emscripten_bind_SubtitleOctopus_renderImage_2(self, time, changed), ASS_Image)
 }
 SubtitleOctopus.prototype.quitLibrary = SubtitleOctopus.prototype.quitLibrary = function () {
-  const self = this.ptr
+  var self = this.ptr
   _emscripten_bind_SubtitleOctopus_quitLibrary_0(self)
 }
 SubtitleOctopus.prototype.reloadLibrary = SubtitleOctopus.prototype.reloadLibrary = function () {
-  const self = this.ptr
+  var self = this.ptr
   _emscripten_bind_SubtitleOctopus_reloadLibrary_0(self)
 }
 SubtitleOctopus.prototype.reloadFonts = SubtitleOctopus.prototype.reloadFonts = function () {
-  const self = this.ptr
+  var self = this.ptr
   _emscripten_bind_SubtitleOctopus_reloadFonts_0(self)
 }
 SubtitleOctopus.prototype.setMargin = SubtitleOctopus.prototype.setMargin = function (top, bottom, left, right) {
-  const self = this.ptr
+  var self = this.ptr
   if (top && typeof top === 'object') top = top.ptr
   if (bottom && typeof bottom === 'object') bottom = bottom.ptr
   if (left && typeof left === 'object') left = left.ptr
@@ -5352,78 +5331,78 @@ SubtitleOctopus.prototype.setMargin = SubtitleOctopus.prototype.setMargin = func
   _emscripten_bind_SubtitleOctopus_setMargin_4(self, top, bottom, left, right)
 }
 SubtitleOctopus.prototype.getEventCount = SubtitleOctopus.prototype.getEventCount = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_SubtitleOctopus_getEventCount_0(self)
 }
 SubtitleOctopus.prototype.allocEvent = SubtitleOctopus.prototype.allocEvent = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_SubtitleOctopus_allocEvent_0(self)
 }
 SubtitleOctopus.prototype.allocStyle = SubtitleOctopus.prototype.allocStyle = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_SubtitleOctopus_allocStyle_0(self)
 }
 SubtitleOctopus.prototype.removeEvent = SubtitleOctopus.prototype.removeEvent = function (eid) {
-  const self = this.ptr
+  var self = this.ptr
   if (eid && typeof eid === 'object') eid = eid.ptr
   _emscripten_bind_SubtitleOctopus_removeEvent_1(self, eid)
 }
 SubtitleOctopus.prototype.getStyleCount = SubtitleOctopus.prototype.getStyleCount = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_SubtitleOctopus_getStyleCount_0(self)
 }
 SubtitleOctopus.prototype.getStyleByName = SubtitleOctopus.prototype.getStyleByName = function (name) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (name && typeof name === 'object') name = name.ptr
   else name = ensureString(name)
   return _emscripten_bind_SubtitleOctopus_getStyleByName_1(self, name)
 }
 SubtitleOctopus.prototype.removeStyle = SubtitleOctopus.prototype.removeStyle = function (eid) {
-  const self = this.ptr
+  var self = this.ptr
   if (eid && typeof eid === 'object') eid = eid.ptr
   _emscripten_bind_SubtitleOctopus_removeStyle_1(self, eid)
 }
 SubtitleOctopus.prototype.removeAllEvents = SubtitleOctopus.prototype.removeAllEvents = function () {
-  const self = this.ptr
+  var self = this.ptr
   _emscripten_bind_SubtitleOctopus_removeAllEvents_0(self)
 }
 SubtitleOctopus.prototype.setMemoryLimits = SubtitleOctopus.prototype.setMemoryLimits = function (glyph_limit, bitmap_cache_limit) {
-  const self = this.ptr
+  var self = this.ptr
   if (glyph_limit && typeof glyph_limit === 'object') glyph_limit = glyph_limit.ptr
   if (bitmap_cache_limit && typeof bitmap_cache_limit === 'object') bitmap_cache_limit = bitmap_cache_limit.ptr
   _emscripten_bind_SubtitleOctopus_setMemoryLimits_2(self, glyph_limit, bitmap_cache_limit)
 }
 SubtitleOctopus.prototype.renderBlend = SubtitleOctopus.prototype.renderBlend = function (tm, force) {
-  const self = this.ptr
+  var self = this.ptr
   if (tm && typeof tm === 'object') tm = tm.ptr
   if (force && typeof force === 'object') force = force.ptr
   return wrapPointer(_emscripten_bind_SubtitleOctopus_renderBlend_2(self, tm, force), RenderBlendResult)
 }
 SubtitleOctopus.prototype.findNextEventStart = SubtitleOctopus.prototype.findNextEventStart = function (tm) {
-  const self = this.ptr
+  var self = this.ptr
   if (tm && typeof tm === 'object') tm = tm.ptr
   return _emscripten_bind_SubtitleOctopus_findNextEventStart_1(self, tm)
 }
 SubtitleOctopus.prototype.findEventStopTimes = SubtitleOctopus.prototype.findEventStopTimes = function (tm) {
-  const self = this.ptr
+  var self = this.ptr
   if (tm && typeof tm === 'object') tm = tm.ptr
   return wrapPointer(_emscripten_bind_SubtitleOctopus_findEventStopTimes_1(self, tm), EventStopTimesResult)
 }
 SubtitleOctopus.prototype.setTrackFeatures = SubtitleOctopus.prototype.setTrackFeatures = function () {
-  const self = this.ptr
+  var self = this.ptr
   _emscripten_bind_SubtitleOctopus_setTrackFeatures_0(self)
 }
 SubtitleOctopus.prototype.rescanAllAnimations = SubtitleOctopus.prototype.rescanAllAnimations = function () {
-  const self = this.ptr
+  var self = this.ptr
   _emscripten_bind_SubtitleOctopus_rescanAllAnimations_0(self)
 }
 SubtitleOctopus.prototype.get_track = SubtitleOctopus.prototype.get_track = function () {
-  const self = this.ptr
+  var self = this.ptr
   return wrapPointer(_emscripten_bind_SubtitleOctopus_get_track_0(self), ASS_Track)
 }
 SubtitleOctopus.prototype.set_track = SubtitleOctopus.prototype.set_track = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_SubtitleOctopus_set_track_1(self, arg0)
 }
@@ -5432,11 +5411,11 @@ Object.defineProperty(SubtitleOctopus.prototype, 'track', {
   set: SubtitleOctopus.prototype.set_track
 })
 SubtitleOctopus.prototype.get_ass_renderer = SubtitleOctopus.prototype.get_ass_renderer = function () {
-  const self = this.ptr
+  var self = this.ptr
   return wrapPointer(_emscripten_bind_SubtitleOctopus_get_ass_renderer_0(self), ASS_Renderer)
 }
 SubtitleOctopus.prototype.set_ass_renderer = SubtitleOctopus.prototype.set_ass_renderer = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_SubtitleOctopus_set_ass_renderer_1(self, arg0)
 }
@@ -5445,11 +5424,11 @@ Object.defineProperty(SubtitleOctopus.prototype, 'ass_renderer', {
   set: SubtitleOctopus.prototype.set_ass_renderer
 })
 SubtitleOctopus.prototype.get_ass_library = SubtitleOctopus.prototype.get_ass_library = function () {
-  const self = this.ptr
+  var self = this.ptr
   return wrapPointer(_emscripten_bind_SubtitleOctopus_get_ass_library_0(self), ASS_Library)
 }
 SubtitleOctopus.prototype.set_ass_library = SubtitleOctopus.prototype.set_ass_library = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_SubtitleOctopus_set_ass_library_1(self, arg0)
 }
@@ -5458,7 +5437,7 @@ Object.defineProperty(SubtitleOctopus.prototype, 'ass_library', {
   set: SubtitleOctopus.prototype.set_ass_library
 })
 SubtitleOctopus.prototype.__destroy__ = SubtitleOctopus.prototype.__destroy__ = function () {
-  const self = this.ptr
+  var self = this.ptr
   _emscripten_bind_SubtitleOctopus___destroy___0(self)
 }
 
@@ -5471,11 +5450,11 @@ ASS_Track.prototype.__class__ = ASS_Track
 ASS_Track.__cache__ = {}
 Module.ASS_Track = ASS_Track
 ASS_Track.prototype.get_n_styles = ASS_Track.prototype.get_n_styles = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Track_get_n_styles_0(self)
 }
 ASS_Track.prototype.set_n_styles = ASS_Track.prototype.set_n_styles = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Track_set_n_styles_1(self, arg0)
 }
@@ -5484,11 +5463,11 @@ Object.defineProperty(ASS_Track.prototype, 'n_styles', {
   set: ASS_Track.prototype.set_n_styles
 })
 ASS_Track.prototype.get_max_styles = ASS_Track.prototype.get_max_styles = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Track_get_max_styles_0(self)
 }
 ASS_Track.prototype.set_max_styles = ASS_Track.prototype.set_max_styles = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Track_set_max_styles_1(self, arg0)
 }
@@ -5497,11 +5476,11 @@ Object.defineProperty(ASS_Track.prototype, 'max_styles', {
   set: ASS_Track.prototype.set_max_styles
 })
 ASS_Track.prototype.get_n_events = ASS_Track.prototype.get_n_events = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Track_get_n_events_0(self)
 }
 ASS_Track.prototype.set_n_events = ASS_Track.prototype.set_n_events = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Track_set_n_events_1(self, arg0)
 }
@@ -5510,11 +5489,11 @@ Object.defineProperty(ASS_Track.prototype, 'n_events', {
   set: ASS_Track.prototype.set_n_events
 })
 ASS_Track.prototype.get_max_events = ASS_Track.prototype.get_max_events = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Track_get_max_events_0(self)
 }
 ASS_Track.prototype.set_max_events = ASS_Track.prototype.set_max_events = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Track_set_max_events_1(self, arg0)
 }
@@ -5523,12 +5502,12 @@ Object.defineProperty(ASS_Track.prototype, 'max_events', {
   set: ASS_Track.prototype.set_max_events
 })
 ASS_Track.prototype.get_styles = ASS_Track.prototype.get_styles = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   return wrapPointer(_emscripten_bind_ASS_Track_get_styles_1(self, arg0), ASS_Style)
 }
 ASS_Track.prototype.set_styles = ASS_Track.prototype.set_styles = function (arg0, arg1) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   if (arg1 && typeof arg1 === 'object') arg1 = arg1.ptr
@@ -5539,12 +5518,12 @@ Object.defineProperty(ASS_Track.prototype, 'styles', {
   set: ASS_Track.prototype.set_styles
 })
 ASS_Track.prototype.get_events = ASS_Track.prototype.get_events = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   return wrapPointer(_emscripten_bind_ASS_Track_get_events_1(self, arg0), ASS_Event)
 }
 ASS_Track.prototype.set_events = ASS_Track.prototype.set_events = function (arg0, arg1) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   if (arg1 && typeof arg1 === 'object') arg1 = arg1.ptr
@@ -5555,11 +5534,11 @@ Object.defineProperty(ASS_Track.prototype, 'events', {
   set: ASS_Track.prototype.set_events
 })
 ASS_Track.prototype.get_style_format = ASS_Track.prototype.get_style_format = function () {
-  const self = this.ptr
+  var self = this.ptr
   return UTF8ToString(_emscripten_bind_ASS_Track_get_style_format_0(self))
 }
 ASS_Track.prototype.set_style_format = ASS_Track.prototype.set_style_format = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   else arg0 = ensureString(arg0)
@@ -5570,11 +5549,11 @@ Object.defineProperty(ASS_Track.prototype, 'style_format', {
   set: ASS_Track.prototype.set_style_format
 })
 ASS_Track.prototype.get_event_format = ASS_Track.prototype.get_event_format = function () {
-  const self = this.ptr
+  var self = this.ptr
   return UTF8ToString(_emscripten_bind_ASS_Track_get_event_format_0(self))
 }
 ASS_Track.prototype.set_event_format = ASS_Track.prototype.set_event_format = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   else arg0 = ensureString(arg0)
@@ -5585,11 +5564,11 @@ Object.defineProperty(ASS_Track.prototype, 'event_format', {
   set: ASS_Track.prototype.set_event_format
 })
 ASS_Track.prototype.get_PlayResX = ASS_Track.prototype.get_PlayResX = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Track_get_PlayResX_0(self)
 }
 ASS_Track.prototype.set_PlayResX = ASS_Track.prototype.set_PlayResX = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Track_set_PlayResX_1(self, arg0)
 }
@@ -5598,11 +5577,11 @@ Object.defineProperty(ASS_Track.prototype, 'PlayResX', {
   set: ASS_Track.prototype.set_PlayResX
 })
 ASS_Track.prototype.get_PlayResY = ASS_Track.prototype.get_PlayResY = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Track_get_PlayResY_0(self)
 }
 ASS_Track.prototype.set_PlayResY = ASS_Track.prototype.set_PlayResY = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Track_set_PlayResY_1(self, arg0)
 }
@@ -5611,11 +5590,11 @@ Object.defineProperty(ASS_Track.prototype, 'PlayResY', {
   set: ASS_Track.prototype.set_PlayResY
 })
 ASS_Track.prototype.get_Timer = ASS_Track.prototype.get_Timer = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Track_get_Timer_0(self)
 }
 ASS_Track.prototype.set_Timer = ASS_Track.prototype.set_Timer = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Track_set_Timer_1(self, arg0)
 }
@@ -5624,11 +5603,11 @@ Object.defineProperty(ASS_Track.prototype, 'Timer', {
   set: ASS_Track.prototype.set_Timer
 })
 ASS_Track.prototype.get_WrapStyle = ASS_Track.prototype.get_WrapStyle = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Track_get_WrapStyle_0(self)
 }
 ASS_Track.prototype.set_WrapStyle = ASS_Track.prototype.set_WrapStyle = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Track_set_WrapStyle_1(self, arg0)
 }
@@ -5637,11 +5616,11 @@ Object.defineProperty(ASS_Track.prototype, 'WrapStyle', {
   set: ASS_Track.prototype.set_WrapStyle
 })
 ASS_Track.prototype.get_ScaledBorderAndShadow = ASS_Track.prototype.get_ScaledBorderAndShadow = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Track_get_ScaledBorderAndShadow_0(self)
 }
 ASS_Track.prototype.set_ScaledBorderAndShadow = ASS_Track.prototype.set_ScaledBorderAndShadow = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Track_set_ScaledBorderAndShadow_1(self, arg0)
 }
@@ -5650,11 +5629,11 @@ Object.defineProperty(ASS_Track.prototype, 'ScaledBorderAndShadow', {
   set: ASS_Track.prototype.set_ScaledBorderAndShadow
 })
 ASS_Track.prototype.get_Kerning = ASS_Track.prototype.get_Kerning = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Track_get_Kerning_0(self)
 }
 ASS_Track.prototype.set_Kerning = ASS_Track.prototype.set_Kerning = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Track_set_Kerning_1(self, arg0)
 }
@@ -5663,11 +5642,11 @@ Object.defineProperty(ASS_Track.prototype, 'Kerning', {
   set: ASS_Track.prototype.set_Kerning
 })
 ASS_Track.prototype.get_Language = ASS_Track.prototype.get_Language = function () {
-  const self = this.ptr
+  var self = this.ptr
   return UTF8ToString(_emscripten_bind_ASS_Track_get_Language_0(self))
 }
 ASS_Track.prototype.set_Language = ASS_Track.prototype.set_Language = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   else arg0 = ensureString(arg0)
@@ -5678,11 +5657,11 @@ Object.defineProperty(ASS_Track.prototype, 'Language', {
   set: ASS_Track.prototype.set_Language
 })
 ASS_Track.prototype.get_default_style = ASS_Track.prototype.get_default_style = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Track_get_default_style_0(self)
 }
 ASS_Track.prototype.set_default_style = ASS_Track.prototype.set_default_style = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Track_set_default_style_1(self, arg0)
 }
@@ -5691,11 +5670,11 @@ Object.defineProperty(ASS_Track.prototype, 'default_style', {
   set: ASS_Track.prototype.set_default_style
 })
 ASS_Track.prototype.get_name = ASS_Track.prototype.get_name = function () {
-  const self = this.ptr
+  var self = this.ptr
   return UTF8ToString(_emscripten_bind_ASS_Track_get_name_0(self))
 }
 ASS_Track.prototype.set_name = ASS_Track.prototype.set_name = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   else arg0 = ensureString(arg0)
@@ -5724,11 +5703,11 @@ ASS_Style.prototype.__class__ = ASS_Style
 ASS_Style.__cache__ = {}
 Module.ASS_Style = ASS_Style
 ASS_Style.prototype.get_Name = ASS_Style.prototype.get_Name = function () {
-  const self = this.ptr
+  var self = this.ptr
   return UTF8ToString(_emscripten_bind_ASS_Style_get_Name_0(self))
 }
 ASS_Style.prototype.set_Name = ASS_Style.prototype.set_Name = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   else arg0 = ensureString(arg0)
@@ -5739,11 +5718,11 @@ Object.defineProperty(ASS_Style.prototype, 'Name', {
   set: ASS_Style.prototype.set_Name
 })
 ASS_Style.prototype.get_FontName = ASS_Style.prototype.get_FontName = function () {
-  const self = this.ptr
+  var self = this.ptr
   return UTF8ToString(_emscripten_bind_ASS_Style_get_FontName_0(self))
 }
 ASS_Style.prototype.set_FontName = ASS_Style.prototype.set_FontName = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   else arg0 = ensureString(arg0)
@@ -5754,11 +5733,11 @@ Object.defineProperty(ASS_Style.prototype, 'FontName', {
   set: ASS_Style.prototype.set_FontName
 })
 ASS_Style.prototype.get_FontSize = ASS_Style.prototype.get_FontSize = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_FontSize_0(self)
 }
 ASS_Style.prototype.set_FontSize = ASS_Style.prototype.set_FontSize = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_FontSize_1(self, arg0)
 }
@@ -5767,11 +5746,11 @@ Object.defineProperty(ASS_Style.prototype, 'FontSize', {
   set: ASS_Style.prototype.set_FontSize
 })
 ASS_Style.prototype.get_PrimaryColour = ASS_Style.prototype.get_PrimaryColour = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_PrimaryColour_0(self)
 }
 ASS_Style.prototype.set_PrimaryColour = ASS_Style.prototype.set_PrimaryColour = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_PrimaryColour_1(self, arg0)
 }
@@ -5780,11 +5759,11 @@ Object.defineProperty(ASS_Style.prototype, 'PrimaryColour', {
   set: ASS_Style.prototype.set_PrimaryColour
 })
 ASS_Style.prototype.get_SecondaryColour = ASS_Style.prototype.get_SecondaryColour = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_SecondaryColour_0(self)
 }
 ASS_Style.prototype.set_SecondaryColour = ASS_Style.prototype.set_SecondaryColour = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_SecondaryColour_1(self, arg0)
 }
@@ -5793,11 +5772,11 @@ Object.defineProperty(ASS_Style.prototype, 'SecondaryColour', {
   set: ASS_Style.prototype.set_SecondaryColour
 })
 ASS_Style.prototype.get_OutlineColour = ASS_Style.prototype.get_OutlineColour = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_OutlineColour_0(self)
 }
 ASS_Style.prototype.set_OutlineColour = ASS_Style.prototype.set_OutlineColour = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_OutlineColour_1(self, arg0)
 }
@@ -5806,11 +5785,11 @@ Object.defineProperty(ASS_Style.prototype, 'OutlineColour', {
   set: ASS_Style.prototype.set_OutlineColour
 })
 ASS_Style.prototype.get_BackColour = ASS_Style.prototype.get_BackColour = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_BackColour_0(self)
 }
 ASS_Style.prototype.set_BackColour = ASS_Style.prototype.set_BackColour = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_BackColour_1(self, arg0)
 }
@@ -5819,11 +5798,11 @@ Object.defineProperty(ASS_Style.prototype, 'BackColour', {
   set: ASS_Style.prototype.set_BackColour
 })
 ASS_Style.prototype.get_Bold = ASS_Style.prototype.get_Bold = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_Bold_0(self)
 }
 ASS_Style.prototype.set_Bold = ASS_Style.prototype.set_Bold = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_Bold_1(self, arg0)
 }
@@ -5832,11 +5811,11 @@ Object.defineProperty(ASS_Style.prototype, 'Bold', {
   set: ASS_Style.prototype.set_Bold
 })
 ASS_Style.prototype.get_Italic = ASS_Style.prototype.get_Italic = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_Italic_0(self)
 }
 ASS_Style.prototype.set_Italic = ASS_Style.prototype.set_Italic = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_Italic_1(self, arg0)
 }
@@ -5845,11 +5824,11 @@ Object.defineProperty(ASS_Style.prototype, 'Italic', {
   set: ASS_Style.prototype.set_Italic
 })
 ASS_Style.prototype.get_Underline = ASS_Style.prototype.get_Underline = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_Underline_0(self)
 }
 ASS_Style.prototype.set_Underline = ASS_Style.prototype.set_Underline = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_Underline_1(self, arg0)
 }
@@ -5858,11 +5837,11 @@ Object.defineProperty(ASS_Style.prototype, 'Underline', {
   set: ASS_Style.prototype.set_Underline
 })
 ASS_Style.prototype.get_StrikeOut = ASS_Style.prototype.get_StrikeOut = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_StrikeOut_0(self)
 }
 ASS_Style.prototype.set_StrikeOut = ASS_Style.prototype.set_StrikeOut = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_StrikeOut_1(self, arg0)
 }
@@ -5871,11 +5850,11 @@ Object.defineProperty(ASS_Style.prototype, 'StrikeOut', {
   set: ASS_Style.prototype.set_StrikeOut
 })
 ASS_Style.prototype.get_ScaleX = ASS_Style.prototype.get_ScaleX = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_ScaleX_0(self)
 }
 ASS_Style.prototype.set_ScaleX = ASS_Style.prototype.set_ScaleX = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_ScaleX_1(self, arg0)
 }
@@ -5884,11 +5863,11 @@ Object.defineProperty(ASS_Style.prototype, 'ScaleX', {
   set: ASS_Style.prototype.set_ScaleX
 })
 ASS_Style.prototype.get_ScaleY = ASS_Style.prototype.get_ScaleY = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_ScaleY_0(self)
 }
 ASS_Style.prototype.set_ScaleY = ASS_Style.prototype.set_ScaleY = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_ScaleY_1(self, arg0)
 }
@@ -5897,11 +5876,11 @@ Object.defineProperty(ASS_Style.prototype, 'ScaleY', {
   set: ASS_Style.prototype.set_ScaleY
 })
 ASS_Style.prototype.get_Spacing = ASS_Style.prototype.get_Spacing = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_Spacing_0(self)
 }
 ASS_Style.prototype.set_Spacing = ASS_Style.prototype.set_Spacing = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_Spacing_1(self, arg0)
 }
@@ -5910,11 +5889,11 @@ Object.defineProperty(ASS_Style.prototype, 'Spacing', {
   set: ASS_Style.prototype.set_Spacing
 })
 ASS_Style.prototype.get_Angle = ASS_Style.prototype.get_Angle = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_Angle_0(self)
 }
 ASS_Style.prototype.set_Angle = ASS_Style.prototype.set_Angle = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_Angle_1(self, arg0)
 }
@@ -5923,11 +5902,11 @@ Object.defineProperty(ASS_Style.prototype, 'Angle', {
   set: ASS_Style.prototype.set_Angle
 })
 ASS_Style.prototype.get_BorderStyle = ASS_Style.prototype.get_BorderStyle = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_BorderStyle_0(self)
 }
 ASS_Style.prototype.set_BorderStyle = ASS_Style.prototype.set_BorderStyle = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_BorderStyle_1(self, arg0)
 }
@@ -5936,11 +5915,11 @@ Object.defineProperty(ASS_Style.prototype, 'BorderStyle', {
   set: ASS_Style.prototype.set_BorderStyle
 })
 ASS_Style.prototype.get_Outline = ASS_Style.prototype.get_Outline = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_Outline_0(self)
 }
 ASS_Style.prototype.set_Outline = ASS_Style.prototype.set_Outline = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_Outline_1(self, arg0)
 }
@@ -5949,11 +5928,11 @@ Object.defineProperty(ASS_Style.prototype, 'Outline', {
   set: ASS_Style.prototype.set_Outline
 })
 ASS_Style.prototype.get_Shadow = ASS_Style.prototype.get_Shadow = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_Shadow_0(self)
 }
 ASS_Style.prototype.set_Shadow = ASS_Style.prototype.set_Shadow = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_Shadow_1(self, arg0)
 }
@@ -5962,11 +5941,11 @@ Object.defineProperty(ASS_Style.prototype, 'Shadow', {
   set: ASS_Style.prototype.set_Shadow
 })
 ASS_Style.prototype.get_Alignment = ASS_Style.prototype.get_Alignment = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_Alignment_0(self)
 }
 ASS_Style.prototype.set_Alignment = ASS_Style.prototype.set_Alignment = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_Alignment_1(self, arg0)
 }
@@ -5975,11 +5954,11 @@ Object.defineProperty(ASS_Style.prototype, 'Alignment', {
   set: ASS_Style.prototype.set_Alignment
 })
 ASS_Style.prototype.get_MarginL = ASS_Style.prototype.get_MarginL = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_MarginL_0(self)
 }
 ASS_Style.prototype.set_MarginL = ASS_Style.prototype.set_MarginL = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_MarginL_1(self, arg0)
 }
@@ -5988,11 +5967,11 @@ Object.defineProperty(ASS_Style.prototype, 'MarginL', {
   set: ASS_Style.prototype.set_MarginL
 })
 ASS_Style.prototype.get_MarginR = ASS_Style.prototype.get_MarginR = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_MarginR_0(self)
 }
 ASS_Style.prototype.set_MarginR = ASS_Style.prototype.set_MarginR = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_MarginR_1(self, arg0)
 }
@@ -6001,11 +5980,11 @@ Object.defineProperty(ASS_Style.prototype, 'MarginR', {
   set: ASS_Style.prototype.set_MarginR
 })
 ASS_Style.prototype.get_MarginV = ASS_Style.prototype.get_MarginV = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_MarginV_0(self)
 }
 ASS_Style.prototype.set_MarginV = ASS_Style.prototype.set_MarginV = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_MarginV_1(self, arg0)
 }
@@ -6014,11 +5993,11 @@ Object.defineProperty(ASS_Style.prototype, 'MarginV', {
   set: ASS_Style.prototype.set_MarginV
 })
 ASS_Style.prototype.get_Encoding = ASS_Style.prototype.get_Encoding = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_Encoding_0(self)
 }
 ASS_Style.prototype.set_Encoding = ASS_Style.prototype.set_Encoding = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_Encoding_1(self, arg0)
 }
@@ -6027,11 +6006,11 @@ Object.defineProperty(ASS_Style.prototype, 'Encoding', {
   set: ASS_Style.prototype.set_Encoding
 })
 ASS_Style.prototype.get_treat_fontname_as_pattern = ASS_Style.prototype.get_treat_fontname_as_pattern = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_treat_fontname_as_pattern_0(self)
 }
 ASS_Style.prototype.set_treat_fontname_as_pattern = ASS_Style.prototype.set_treat_fontname_as_pattern = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_treat_fontname_as_pattern_1(self, arg0)
 }
@@ -6040,11 +6019,11 @@ Object.defineProperty(ASS_Style.prototype, 'treat_fontname_as_pattern', {
   set: ASS_Style.prototype.set_treat_fontname_as_pattern
 })
 ASS_Style.prototype.get_Blur = ASS_Style.prototype.get_Blur = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_Blur_0(self)
 }
 ASS_Style.prototype.set_Blur = ASS_Style.prototype.set_Blur = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_Blur_1(self, arg0)
 }
@@ -6053,11 +6032,11 @@ Object.defineProperty(ASS_Style.prototype, 'Blur', {
   set: ASS_Style.prototype.set_Blur
 })
 ASS_Style.prototype.get_Justify = ASS_Style.prototype.get_Justify = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Style_get_Justify_0(self)
 }
 ASS_Style.prototype.set_Justify = ASS_Style.prototype.set_Justify = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Style_set_Justify_1(self, arg0)
 }
@@ -6075,11 +6054,11 @@ EventStopTimesResult.prototype.__class__ = EventStopTimesResult
 EventStopTimesResult.__cache__ = {}
 Module.EventStopTimesResult = EventStopTimesResult
 EventStopTimesResult.prototype.get_eventFinish = EventStopTimesResult.prototype.get_eventFinish = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_EventStopTimesResult_get_eventFinish_0(self)
 }
 EventStopTimesResult.prototype.set_eventFinish = EventStopTimesResult.prototype.set_eventFinish = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_EventStopTimesResult_set_eventFinish_1(self, arg0)
 }
@@ -6088,11 +6067,11 @@ Object.defineProperty(EventStopTimesResult.prototype, 'eventFinish', {
   set: EventStopTimesResult.prototype.set_eventFinish
 })
 EventStopTimesResult.prototype.get_emptyFinish = EventStopTimesResult.prototype.get_emptyFinish = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_EventStopTimesResult_get_emptyFinish_0(self)
 }
 EventStopTimesResult.prototype.set_emptyFinish = EventStopTimesResult.prototype.set_emptyFinish = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_EventStopTimesResult_set_emptyFinish_1(self, arg0)
 }
@@ -6101,11 +6080,11 @@ Object.defineProperty(EventStopTimesResult.prototype, 'emptyFinish', {
   set: EventStopTimesResult.prototype.set_emptyFinish
 })
 EventStopTimesResult.prototype.get_is_animated = EventStopTimesResult.prototype.get_is_animated = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_EventStopTimesResult_get_is_animated_0(self)
 }
 EventStopTimesResult.prototype.set_is_animated = EventStopTimesResult.prototype.set_is_animated = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_EventStopTimesResult_set_is_animated_1(self, arg0)
 }
@@ -6123,11 +6102,11 @@ ASS_Image.prototype.__class__ = ASS_Image
 ASS_Image.__cache__ = {}
 Module.ASS_Image = ASS_Image
 ASS_Image.prototype.get_w = ASS_Image.prototype.get_w = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Image_get_w_0(self)
 }
 ASS_Image.prototype.set_w = ASS_Image.prototype.set_w = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Image_set_w_1(self, arg0)
 }
@@ -6136,11 +6115,11 @@ Object.defineProperty(ASS_Image.prototype, 'w', {
   set: ASS_Image.prototype.set_w
 })
 ASS_Image.prototype.get_h = ASS_Image.prototype.get_h = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Image_get_h_0(self)
 }
 ASS_Image.prototype.set_h = ASS_Image.prototype.set_h = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Image_set_h_1(self, arg0)
 }
@@ -6149,11 +6128,11 @@ Object.defineProperty(ASS_Image.prototype, 'h', {
   set: ASS_Image.prototype.set_h
 })
 ASS_Image.prototype.get_stride = ASS_Image.prototype.get_stride = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Image_get_stride_0(self)
 }
 ASS_Image.prototype.set_stride = ASS_Image.prototype.set_stride = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Image_set_stride_1(self, arg0)
 }
@@ -6162,11 +6141,11 @@ Object.defineProperty(ASS_Image.prototype, 'stride', {
   set: ASS_Image.prototype.set_stride
 })
 ASS_Image.prototype.get_bitmap = ASS_Image.prototype.get_bitmap = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Image_get_bitmap_0(self)
 }
 ASS_Image.prototype.set_bitmap = ASS_Image.prototype.set_bitmap = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   else arg0 = ensureString(arg0)
@@ -6177,11 +6156,11 @@ Object.defineProperty(ASS_Image.prototype, 'bitmap', {
   set: ASS_Image.prototype.set_bitmap
 })
 ASS_Image.prototype.get_color = ASS_Image.prototype.get_color = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Image_get_color_0(self)
 }
 ASS_Image.prototype.set_color = ASS_Image.prototype.set_color = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Image_set_color_1(self, arg0)
 }
@@ -6190,11 +6169,11 @@ Object.defineProperty(ASS_Image.prototype, 'color', {
   set: ASS_Image.prototype.set_color
 })
 ASS_Image.prototype.get_dst_x = ASS_Image.prototype.get_dst_x = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Image_get_dst_x_0(self)
 }
 ASS_Image.prototype.set_dst_x = ASS_Image.prototype.set_dst_x = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Image_set_dst_x_1(self, arg0)
 }
@@ -6203,11 +6182,11 @@ Object.defineProperty(ASS_Image.prototype, 'dst_x', {
   set: ASS_Image.prototype.set_dst_x
 })
 ASS_Image.prototype.get_dst_y = ASS_Image.prototype.get_dst_y = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_ASS_Image_get_dst_y_0(self)
 }
 ASS_Image.prototype.set_dst_y = ASS_Image.prototype.set_dst_y = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Image_set_dst_y_1(self, arg0)
 }
@@ -6216,11 +6195,11 @@ Object.defineProperty(ASS_Image.prototype, 'dst_y', {
   set: ASS_Image.prototype.set_dst_y
 })
 ASS_Image.prototype.get_next = ASS_Image.prototype.get_next = function () {
-  const self = this.ptr
+  var self = this.ptr
   return wrapPointer(_emscripten_bind_ASS_Image_get_next_0(self), ASS_Image)
 }
 ASS_Image.prototype.set_next = ASS_Image.prototype.set_next = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_ASS_Image_set_next_1(self, arg0)
 }
@@ -6238,7 +6217,7 @@ VoidPtr.prototype.__class__ = VoidPtr
 VoidPtr.__cache__ = {}
 Module.VoidPtr = VoidPtr
 VoidPtr.prototype.__destroy__ = VoidPtr.prototype.__destroy__ = function () {
-  const self = this.ptr
+  var self = this.ptr
   _emscripten_bind_VoidPtr___destroy___0(self)
 }
 
@@ -6260,11 +6239,11 @@ RenderBlendPart.prototype.__class__ = RenderBlendPart
 RenderBlendPart.__cache__ = {}
 Module.RenderBlendPart = RenderBlendPart
 RenderBlendPart.prototype.get_dest_x = RenderBlendPart.prototype.get_dest_x = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_RenderBlendPart_get_dest_x_0(self)
 }
 RenderBlendPart.prototype.set_dest_x = RenderBlendPart.prototype.set_dest_x = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_RenderBlendPart_set_dest_x_1(self, arg0)
 }
@@ -6273,11 +6252,11 @@ Object.defineProperty(RenderBlendPart.prototype, 'dest_x', {
   set: RenderBlendPart.prototype.set_dest_x
 })
 RenderBlendPart.prototype.get_dest_y = RenderBlendPart.prototype.get_dest_y = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_RenderBlendPart_get_dest_y_0(self)
 }
 RenderBlendPart.prototype.set_dest_y = RenderBlendPart.prototype.set_dest_y = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_RenderBlendPart_set_dest_y_1(self, arg0)
 }
@@ -6286,11 +6265,11 @@ Object.defineProperty(RenderBlendPart.prototype, 'dest_y', {
   set: RenderBlendPart.prototype.set_dest_y
 })
 RenderBlendPart.prototype.get_dest_width = RenderBlendPart.prototype.get_dest_width = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_RenderBlendPart_get_dest_width_0(self)
 }
 RenderBlendPart.prototype.set_dest_width = RenderBlendPart.prototype.set_dest_width = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_RenderBlendPart_set_dest_width_1(self, arg0)
 }
@@ -6299,11 +6278,11 @@ Object.defineProperty(RenderBlendPart.prototype, 'dest_width', {
   set: RenderBlendPart.prototype.set_dest_width
 })
 RenderBlendPart.prototype.get_dest_height = RenderBlendPart.prototype.get_dest_height = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_RenderBlendPart_get_dest_height_0(self)
 }
 RenderBlendPart.prototype.set_dest_height = RenderBlendPart.prototype.set_dest_height = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_RenderBlendPart_set_dest_height_1(self, arg0)
 }
@@ -6312,11 +6291,11 @@ Object.defineProperty(RenderBlendPart.prototype, 'dest_height', {
   set: RenderBlendPart.prototype.set_dest_height
 })
 RenderBlendPart.prototype.get_image = RenderBlendPart.prototype.get_image = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_RenderBlendPart_get_image_0(self)
 }
 RenderBlendPart.prototype.set_image = RenderBlendPart.prototype.set_image = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   else arg0 = ensureString(arg0)
@@ -6327,11 +6306,11 @@ Object.defineProperty(RenderBlendPart.prototype, 'image', {
   set: RenderBlendPart.prototype.set_image
 })
 RenderBlendPart.prototype.get_next = RenderBlendPart.prototype.get_next = function () {
-  const self = this.ptr
+  var self = this.ptr
   return wrapPointer(_emscripten_bind_RenderBlendPart_get_next_0(self), RenderBlendPart)
 }
 RenderBlendPart.prototype.set_next = RenderBlendPart.prototype.set_next = function (arg0) {
-  const self = this.ptr
+  var self = this.ptr
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr
   _emscripten_bind_RenderBlendPart_set_next_1(self, arg0)
 }
@@ -6350,20 +6329,20 @@ libass.prototype.__class__ = libass
 libass.__cache__ = {}
 Module.libass = libass
 libass.prototype.oct_library_version = libass.prototype.oct_library_version = function () {
-  const self = this.ptr
+  var self = this.ptr
   return _emscripten_bind_libass_oct_library_version_0(self)
 }
 libass.prototype.oct_library_init = libass.prototype.oct_library_init = function () {
-  const self = this.ptr
+  var self = this.ptr
   return wrapPointer(_emscripten_bind_libass_oct_library_init_0(self), ASS_Library)
 }
 libass.prototype.oct_library_done = libass.prototype.oct_library_done = function (priv) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   _emscripten_bind_libass_oct_library_done_1(self, priv)
 }
 libass.prototype.oct_set_fonts_dir = libass.prototype.oct_set_fonts_dir = function (priv, fonts_dir) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (fonts_dir && typeof fonts_dir === 'object') fonts_dir = fonts_dir.ptr
@@ -6371,54 +6350,54 @@ libass.prototype.oct_set_fonts_dir = libass.prototype.oct_set_fonts_dir = functi
   _emscripten_bind_libass_oct_set_fonts_dir_2(self, priv, fonts_dir)
 }
 libass.prototype.oct_set_extract_fonts = libass.prototype.oct_set_extract_fonts = function (priv, extract) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (extract && typeof extract === 'object') extract = extract.ptr
   _emscripten_bind_libass_oct_set_extract_fonts_2(self, priv, extract)
 }
 libass.prototype.oct_set_style_overrides = libass.prototype.oct_set_style_overrides = function (priv, list) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (priv && typeof priv === 'object') priv = priv.ptr
   _emscripten_bind_libass_oct_set_style_overrides_2(self, priv, list)
 }
 libass.prototype.oct_process_force_style = libass.prototype.oct_process_force_style = function (track) {
-  const self = this.ptr
+  var self = this.ptr
   if (track && typeof track === 'object') track = track.ptr
   _emscripten_bind_libass_oct_process_force_style_1(self, track)
 }
 libass.prototype.oct_renderer_init = libass.prototype.oct_renderer_init = function (priv) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   return wrapPointer(_emscripten_bind_libass_oct_renderer_init_1(self, priv), ASS_Renderer)
 }
 libass.prototype.oct_renderer_done = libass.prototype.oct_renderer_done = function (priv) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   _emscripten_bind_libass_oct_renderer_done_1(self, priv)
 }
 libass.prototype.oct_set_frame_size = libass.prototype.oct_set_frame_size = function (priv, w, h) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (w && typeof w === 'object') w = w.ptr
   if (h && typeof h === 'object') h = h.ptr
   _emscripten_bind_libass_oct_set_frame_size_3(self, priv, w, h)
 }
 libass.prototype.oct_set_storage_size = libass.prototype.oct_set_storage_size = function (priv, w, h) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (w && typeof w === 'object') w = w.ptr
   if (h && typeof h === 'object') h = h.ptr
   _emscripten_bind_libass_oct_set_storage_size_3(self, priv, w, h)
 }
 libass.prototype.oct_set_shaper = libass.prototype.oct_set_shaper = function (priv, level) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (level && typeof level === 'object') level = level.ptr
   _emscripten_bind_libass_oct_set_shaper_2(self, priv, level)
 }
 libass.prototype.oct_set_margins = libass.prototype.oct_set_margins = function (priv, t, b, l, r) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (t && typeof t === 'object') t = t.ptr
   if (b && typeof b === 'object') b = b.ptr
@@ -6427,50 +6406,50 @@ libass.prototype.oct_set_margins = libass.prototype.oct_set_margins = function (
   _emscripten_bind_libass_oct_set_margins_5(self, priv, t, b, l, r)
 }
 libass.prototype.oct_set_use_margins = libass.prototype.oct_set_use_margins = function (priv, use) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (use && typeof use === 'object') use = use.ptr
   _emscripten_bind_libass_oct_set_use_margins_2(self, priv, use)
 }
 libass.prototype.oct_set_pixel_aspect = libass.prototype.oct_set_pixel_aspect = function (priv, par) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (par && typeof par === 'object') par = par.ptr
   _emscripten_bind_libass_oct_set_pixel_aspect_2(self, priv, par)
 }
 libass.prototype.oct_set_aspect_ratio = libass.prototype.oct_set_aspect_ratio = function (priv, dar, sar) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (dar && typeof dar === 'object') dar = dar.ptr
   if (sar && typeof sar === 'object') sar = sar.ptr
   _emscripten_bind_libass_oct_set_aspect_ratio_3(self, priv, dar, sar)
 }
 libass.prototype.oct_set_font_scale = libass.prototype.oct_set_font_scale = function (priv, font_scale) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (font_scale && typeof font_scale === 'object') font_scale = font_scale.ptr
   _emscripten_bind_libass_oct_set_font_scale_2(self, priv, font_scale)
 }
 libass.prototype.oct_set_hinting = libass.prototype.oct_set_hinting = function (priv, ht) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (ht && typeof ht === 'object') ht = ht.ptr
   _emscripten_bind_libass_oct_set_hinting_2(self, priv, ht)
 }
 libass.prototype.oct_set_line_spacing = libass.prototype.oct_set_line_spacing = function (priv, line_spacing) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (line_spacing && typeof line_spacing === 'object') line_spacing = line_spacing.ptr
   _emscripten_bind_libass_oct_set_line_spacing_2(self, priv, line_spacing)
 }
 libass.prototype.oct_set_line_position = libass.prototype.oct_set_line_position = function (priv, line_position) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (line_position && typeof line_position === 'object') line_position = line_position.ptr
   _emscripten_bind_libass_oct_set_line_position_2(self, priv, line_position)
 }
 libass.prototype.oct_set_fonts = libass.prototype.oct_set_fonts = function (priv, default_font, default_family, dfp, config, update) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (default_font && typeof default_font === 'object') default_font = default_font.ptr
@@ -6484,26 +6463,26 @@ libass.prototype.oct_set_fonts = libass.prototype.oct_set_fonts = function (priv
   _emscripten_bind_libass_oct_set_fonts_6(self, priv, default_font, default_family, dfp, config, update)
 }
 libass.prototype.oct_set_selective_style_override_enabled = libass.prototype.oct_set_selective_style_override_enabled = function (priv, bits) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (bits && typeof bits === 'object') bits = bits.ptr
   _emscripten_bind_libass_oct_set_selective_style_override_enabled_2(self, priv, bits)
 }
 libass.prototype.oct_set_selective_style_override = libass.prototype.oct_set_selective_style_override = function (priv, style) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (style && typeof style === 'object') style = style.ptr
   _emscripten_bind_libass_oct_set_selective_style_override_2(self, priv, style)
 }
 libass.prototype.oct_set_cache_limits = libass.prototype.oct_set_cache_limits = function (priv, glyph_max, bitmap_max_size) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (glyph_max && typeof glyph_max === 'object') glyph_max = glyph_max.ptr
   if (bitmap_max_size && typeof bitmap_max_size === 'object') bitmap_max_size = bitmap_max_size.ptr
   _emscripten_bind_libass_oct_set_cache_limits_3(self, priv, glyph_max, bitmap_max_size)
 }
 libass.prototype.oct_render_frame = libass.prototype.oct_render_frame = function (priv, track, now, detect_change) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   if (track && typeof track === 'object') track = track.ptr
   if (now && typeof now === 'object') now = now.ptr
@@ -6511,44 +6490,44 @@ libass.prototype.oct_render_frame = libass.prototype.oct_render_frame = function
   return wrapPointer(_emscripten_bind_libass_oct_render_frame_4(self, priv, track, now, detect_change), ASS_Image)
 }
 libass.prototype.oct_new_track = libass.prototype.oct_new_track = function (priv) {
-  const self = this.ptr
+  var self = this.ptr
   if (priv && typeof priv === 'object') priv = priv.ptr
   return wrapPointer(_emscripten_bind_libass_oct_new_track_1(self, priv), ASS_Track)
 }
 libass.prototype.oct_free_track = libass.prototype.oct_free_track = function (track) {
-  const self = this.ptr
+  var self = this.ptr
   if (track && typeof track === 'object') track = track.ptr
   _emscripten_bind_libass_oct_free_track_1(self, track)
 }
 libass.prototype.oct_alloc_style = libass.prototype.oct_alloc_style = function (track) {
-  const self = this.ptr
+  var self = this.ptr
   if (track && typeof track === 'object') track = track.ptr
   return _emscripten_bind_libass_oct_alloc_style_1(self, track)
 }
 libass.prototype.oct_alloc_event = libass.prototype.oct_alloc_event = function (track) {
-  const self = this.ptr
+  var self = this.ptr
   if (track && typeof track === 'object') track = track.ptr
   return _emscripten_bind_libass_oct_alloc_event_1(self, track)
 }
 libass.prototype.oct_free_style = libass.prototype.oct_free_style = function (track, sid) {
-  const self = this.ptr
+  var self = this.ptr
   if (track && typeof track === 'object') track = track.ptr
   if (sid && typeof sid === 'object') sid = sid.ptr
   _emscripten_bind_libass_oct_free_style_2(self, track, sid)
 }
 libass.prototype.oct_free_event = libass.prototype.oct_free_event = function (track, eid) {
-  const self = this.ptr
+  var self = this.ptr
   if (track && typeof track === 'object') track = track.ptr
   if (eid && typeof eid === 'object') eid = eid.ptr
   _emscripten_bind_libass_oct_free_event_2(self, track, eid)
 }
 libass.prototype.oct_flush_events = libass.prototype.oct_flush_events = function (track) {
-  const self = this.ptr
+  var self = this.ptr
   if (track && typeof track === 'object') track = track.ptr
   _emscripten_bind_libass_oct_flush_events_1(self, track)
 }
 libass.prototype.oct_read_file = libass.prototype.oct_read_file = function (library, fname, codepage) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (library && typeof library === 'object') library = library.ptr
   if (fname && typeof fname === 'object') fname = fname.ptr
@@ -6558,7 +6537,7 @@ libass.prototype.oct_read_file = libass.prototype.oct_read_file = function (libr
   return wrapPointer(_emscripten_bind_libass_oct_read_file_3(self, library, fname, codepage), ASS_Track)
 }
 libass.prototype.oct_add_font = libass.prototype.oct_add_font = function (library, name, data, data_size) {
-  const self = this.ptr
+  var self = this.ptr
   ensureCache.prepare()
   if (library && typeof library === 'object') library = library.ptr
   if (name && typeof name === 'object') name = name.ptr
@@ -6569,12 +6548,12 @@ libass.prototype.oct_add_font = libass.prototype.oct_add_font = function (librar
   _emscripten_bind_libass_oct_add_font_4(self, library, name, data, data_size)
 }
 libass.prototype.oct_clear_fonts = libass.prototype.oct_clear_fonts = function (library) {
-  const self = this.ptr
+  var self = this.ptr
   if (library && typeof library === 'object') library = library.ptr
   _emscripten_bind_libass_oct_clear_fonts_1(self, library)
 }
 libass.prototype.oct_step_sub = libass.prototype.oct_step_sub = function (track, now, movement) {
-  const self = this.ptr
+  var self = this.ptr
   if (track && typeof track === 'object') track = track.ptr
   if (now && typeof now === 'object') now = now.ptr
   if (movement && typeof movement === 'object') movement = movement.ptr
@@ -6605,6 +6584,7 @@ libass.prototype.oct_step_sub = libass.prototype.oct_step_sub = function (track,
   if (runtimeInitialized) setupEnums()
   else addOnPreMain(setupEnums)
 })()
+/* globals Module, FS, SDL */
 Module.FS = FS
 
 self.delay = 0 // approximate delay (time of render + postMessage + drawImage), for example 1/60 or 0
@@ -6613,7 +6593,7 @@ self.rate = 1
 self.rafId = null
 self.nextIsRaf = false
 self.lastCurrentTimeReceivedAt = Date.now()
-self.targetFps = 30
+self.targetFps = 23.976
 self.libassMemoryLimit = 0 // in MiB
 self.renderOnDemand = false // determines if only rendering on demand
 self.dropAllAnimations = false // set to true to enable "lite mode" with all animations disabled for speed
@@ -6629,10 +6609,8 @@ self.fontId = 0
  * @param dataURI
  * @returns {Uint8Array}
  */
-self.readDataUri = function (dataURI) {
-  if (typeof dataURI !== 'string') {
-    throw new Error('Invalid argument: dataURI must be a string')
-  }
+self.readDataUri = (dataURI) => {
+  if (typeof dataURI !== 'string') throw new Error('Invalid argument: dataURI must be a string')
   dataURI = dataURI.split(',')
   const byteString = atob(dataURI[1])
   const byteStringLength = byteString.length
@@ -6644,7 +6622,7 @@ self.readDataUri = function (dataURI) {
   return intArray
 }
 
-self.decodeASSFontEncoding = function (input) {
+self.decodeASSFontEncoding = (input) => {
   const output = new Uint8Array(input.length)
   const grouping = new Uint8Array(4)
 
@@ -6654,7 +6632,7 @@ self.decodeASSFontEncoding = function (input) {
   let charCode
   while (offset < input.length) {
     charCode = input.charCodeAt(offset++)
-    if (charCode >= 0x21 && charCode <= 0x60) {
+    if (charCode >= 0x21 && charCode <= 0x60) { // TODO: optimise
       grouping[arrayOffset++] = charCode - 33
       if (arrayOffset === 4) {
         output[writeOffset++] = (grouping[0] << 2) | (grouping[1] >> 4)
@@ -6669,7 +6647,7 @@ self.decodeASSFontEncoding = function (input) {
   if (arrayOffset > 0) {
     if (arrayOffset === 2) {
       output[writeOffset++] = ((grouping[0] << 6) | grouping[1]) >> 4
-    } else if (arrayOffset === 3) {
+    } else if (arrayOffset === 3) { // TODO: optimise
       const ix = ((grouping[0] << 12) | (grouping[1] << 6) | grouping[2]) >> 2
       output[writeOffset++] = ix >> 8
       output[writeOffset++] = ix & 0xff
@@ -6683,58 +6661,46 @@ self.decodeASSFontEncoding = function (input) {
  * Make the font accessible by libass by writing it to the virtual FS.
  * @param {!string} font the font name.
  */
-self.writeFontToFS = function (font) {
+self.writeFontToFS = (font) => {
   font = font.trim().toLowerCase()
 
-  if (font.startsWith('@')) {
-    font = font.substr(1)
-  }
+  if (font.startsWith('@')) font = font.substr(1)
 
-  if (self.fontMap_.font) return
+  if (self.fontMap_[font]) return
 
   self.fontMap_[font] = true
 
-  let path
-  if (self.availableFonts.font) {
-    path = self.availableFonts[font]
-  } else {
-    return
+  if (self.availableFonts[font]) {
+    const path = self.availableFonts[font]
+    Module[(self.lazyFontLoading && path.indexOf('blob:') !== 0) ? 'FS_createLazyFile' : 'FS_createPreloadedFile']('/fonts', 'font' + (self.fontId++) + '-' + path.split('/').pop(), path, true, false)
   }
-
-  Module.FS_createLazyFile('/fonts', 'font' + (self.fontId++) + '-' + path.split('/').pop(), path, true, false)
 }
 
 /**
  * Write all font's mentioned in the .ass file to the virtual FS.
  * @param {!string} content the file content.
  */
-self.writeAvailableFontsToFS = function (content) {
+self.writeAvailableFontsToFS = (content) => {
   if (!self.availableFonts) return
 
-  const sections = parseAss(content)
-
-  for (let i = 0; i < sections.length; i++) {
-    for (let j = 0; j < sections[i].body.length; j++) {
-      if (sections[i].body[j].key === 'Style') {
-        self.writeFontToFS(sections[i].body[j].value.Fontname)
-      }
+  for (const selection of parseAss(content)) {
+    for (const key of selection.body) {
+      if (key === 'Style') self.writeFontToFS(key.value.Fontname)
     }
   }
 
   const regex = /\\fn([^\\}]*?)[\\}]/g
   let matches
-  while (matches = regex.exec(self.subContent)) {
-    self.writeFontToFS(matches[1])
-  }
+  while ((matches = regex.exec(self.subContent)) !== null) self.writeFontToFS(matches[1])
 }
 
-self.getRenderMethod = function () {
+self.getRenderMethod = () => {
   switch (self.renderMode) {
     case 'fast':
       return self.fastRender
     case 'blend':
       return self.blendRender
-    case 'offscreenCanvas':
+    case 'offscreen':
       return self.offscreenRender
     default:
       return self.render
@@ -6745,7 +6711,7 @@ self.getRenderMethod = function () {
  * Set the subtitle track.
  * @param {!string} content the content of the subtitle file.
  */
-self.setTrack = function (content) {
+self.setTrack = (content) => {
   // Make sure that the fonts are loaded
   self.writeAvailableFontsToFS(content)
 
@@ -6755,63 +6721,52 @@ self.setTrack = function (content) {
   // Tell libass to render the new track
   self.octObj.createTrack('/sub.ass')
   self.ass_track = self.octObj.track
-  if (!self.renderOnDemand) {
-    self.getRenderMethod()()
-  }
+  if (!self.renderOnDemand) self.getRenderMethod()()
 }
 
 /**
  * Remove subtitle track.
  */
-self.freeTrack = function () {
+self.freeTrack = () => {
   self.octObj.removeTrack()
-  if (!self.renderOnDemand) {
-    self.getRenderMethod()()
-  }
+  if (!self.renderOnDemand) self.getRenderMethod()()
 }
 
 /**
  * Set the subtitle track.
  * @param {!string} url the URL of the subtitle file.
  */
-self.setTrackByUrl = function (url) {
+self.setTrackByUrl = (url) => {
   const content = read_(url)
   self.setTrack(content)
 }
 
-self.resize = function (width, height) {
+self.resize = (width, height) => {
   self.width = width
   self.height = height
   self.octObj.resizeCanvas(width, height)
 }
 
-self.getCurrentTime = function () {
+self.getCurrentTime = () => {
   const diff = (Date.now() - self.lastCurrentTimeReceivedAt) / 1000
-  if (self._isPaused) {
-    return self.lastCurrentTime
-  } else {
-    if (diff > 5) {
-      console.error('Didn\'t received currentTime > 5 seconds. Assuming video was paused.')
-      self.setIsPaused(true)
-    }
-    return self.lastCurrentTime + (diff * self.rate)
+  if (self._isPaused) return self.lastCurrentTime
+  if (diff > 5) {
+    console.error('Didn\'t received currentTime > 5 seconds. Assuming video was paused.')
+    self.setIsPaused(true)
   }
+  return self.lastCurrentTime + (diff * self.rate)
 }
-self.setCurrentTime = function (currentTime) {
+self.setCurrentTime = (currentTime) => {
   self.lastCurrentTime = currentTime
   self.lastCurrentTimeReceivedAt = Date.now()
   if (!self.rafId) {
     if (self.nextIsRaf) {
-      if (!self.renderOnDemand) {
-        self.rafId = self.requestAnimationFrame(self.getRenderMethod())
-      }
+      if (!self.renderOnDemand) self.rafId = self.requestAnimationFrame(self.getRenderMethod())
     } else {
-      if (!self.renderOnDemand) {
-        self.getRenderMethod()()
-      }
+      if (!self.renderOnDemand) self.getRenderMethod()()
 
       // Give onmessage chance to receive all queued messages
-      setTimeout(function () {
+      setTimeout(() => {
         self.nextIsRaf = false
       }, 20)
     }
@@ -6819,10 +6774,10 @@ self.setCurrentTime = function (currentTime) {
 }
 
 self._isPaused = true
-self.getIsPaused = function () {
+self.getIsPaused = () => {
   return self._isPaused
 }
-self.setIsPaused = function (isPaused) {
+self.setIsPaused = (isPaused) => {
   if (isPaused !== self._isPaused) {
     self._isPaused = isPaused
     if (isPaused) {
@@ -6832,42 +6787,18 @@ self.setIsPaused = function (isPaused) {
       }
     } else {
       self.lastCurrentTimeReceivedAt = Date.now()
-      if (!self.renderOnDemand) {
-        self.rafId = self.requestAnimationFrame(self.getRenderMethod())
-      }
+      if (!self.renderOnDemand) self.rafId = self.requestAnimationFrame(self.getRenderMethod())
     }
   }
 }
 
-self.render = function (force) {
-  self.rafId = 0
-  self.renderPending = false
-  const startTime = performance.now()
-  const renderResult = self.octObj.renderImage(self.getCurrentTime() + self.delay, self.changed)
-  const changed = Module.getValue(self.changed, 'i32')
-  if (changed !== 0 || force) {
-    const result = self.buildResult(renderResult)
-    const spentTime = performance.now() - startTime
-    postMessage({
-      target: 'canvas',
-      op: 'renderCanvas',
-      time: Date.now(),
-      spentTime: spentTime,
-      canvases: result[0]
-    }, result[1])
-  }
-
-  if (!self._isPaused) {
-    self.rafId = self.requestAnimationFrame(self.render)
-  }
-}
-
-self.blendRenderTiming = function (timing, force) {
+self.blendRenderTiming = (timing, force) => {
   const startTime = performance.now()
 
   const renderResult = self.octObj.renderBlend(timing, force)
   const blendTime = renderResult.blend_time
-  const canvases = []; const buffers = []
+  const canvases = []
+  const buffers = []
   if (renderResult.ptr !== 0 && (renderResult.changed !== 0 || force)) {
     // make a copy, as we should free the memory so subsequent calls can utilize it
     for (let part = renderResult.part; part.ptr !== 0; part = part.next) {
@@ -6886,7 +6817,7 @@ self.blendRenderTiming = function (timing, force) {
   }
 }
 
-self.blendRender = function (force) {
+self.blendRender = (force) => {
   self.rafId = 0
   self.renderPending = false
 
@@ -6902,17 +6833,17 @@ self.blendRender = function (force) {
     }, rendered.buffers)
   }
 
-  if (!self._isPaused) {
-    self.rafId = self.requestAnimationFrame(self.blendRender)
-  }
+  if (!self._isPaused) self.rafId = self.requestAnimationFrame(self.blendRender)
 }
 
-self.oneshotRender = function (lastRenderedTime, renderNow, iteration) {
+self.oneshotRender = (lastRenderedTime, renderNow, iteration) => {
   const eventStart = renderNow ? lastRenderedTime : self.octObj.findNextEventStart(lastRenderedTime)
-  let eventFinish = -1.0; let emptyFinish = -1.0; let animated = false
+  let eventFinish = -1.0
+  let emptyFinish = -1.0
+  let animated = false
   let rendered = {}
   if (eventStart >= 0) {
-    eventTimes = self.octObj.findEventStopTimes(eventStart)
+    const eventTimes = self.octObj.findEventStopTimes(eventStart)
     eventFinish = eventTimes.eventFinish
     emptyFinish = eventTimes.emptyFinish
     animated = eventTimes.is_animated
@@ -6939,29 +6870,49 @@ self.oneshotRender = function (lastRenderedTime, renderNow, iteration) {
   }, rendered.buffers || [])
 }
 
-self.fastRender = function (force) {
+self.render = (force) => {
   self.rafId = 0
   self.renderPending = false
   const startTime = performance.now()
   const renderResult = self.octObj.renderImage(self.getCurrentTime() + self.delay, self.changed)
   const changed = Module.getValue(self.changed, 'i32')
   if (changed !== 0 || force) {
-    const result = self.buildResult(renderResult)
     const newTime = performance.now()
     const libassTime = newTime - startTime
+    const result = self.buildResult(renderResult)
+    const decodeTime = performance.now() - newTime
+    postMessage({
+      target: 'canvas',
+      op: 'renderCanvas',
+      time: Date.now(),
+      libassTime,
+      decodeTime,
+      canvases: result[0]
+    }, result[1])
+  }
+
+  if (!self._isPaused) self.rafId = self.requestAnimationFrame(self.render)
+}
+
+self.fastRender = (force) => {
+  self.rafId = 0
+  self.renderPending = false
+  const startTime = performance.now()
+  const result = self.octObj.renderImage(self.getCurrentTime() + self.delay, self.changed)
+  const changed = Module.getValue(self.changed, 'i32')
+  if (Number(changed) !== 0 || force) {
+    const newTime = performance.now()
+    const libassTime = newTime - startTime
+    const images = self.buildResultImage(result)
     const promises = []
-    for (let i = 0; i < result[0].length; i++) {
-      const image = result[0][i]
-      const imageBuffer = new Uint8ClampedArray(image.buffer)
-      const imageData = new ImageData(imageBuffer, image.w, image.h)
-      promises[i] = createImageBitmap(imageData, 0, 0, image.w, image.h)
+    for (const item of images) {
+      promises.push(createImageBitmap(item.image))
     }
-    Promise.all(promises).then(function (imgs) {
+    Promise.all(promises).then(bitmaps => {
       const decodeTime = performance.now() - newTime
-      const bitmaps = []
-      for (let i = 0; i < imgs.length; i++) {
-        const image = result[0][i]
-        bitmaps[i] = { x: image.x, y: image.y, bitmap: imgs[i] }
+      const imgs = []
+      for (let i = 0; i < bitmaps.length; i++) {
+        imgs.push({ x: images[i].x, y: images[i].y, bitmap: bitmaps[i] })
       }
       postMessage({
         target: 'canvas',
@@ -6969,56 +6920,46 @@ self.fastRender = function (force) {
         time: Date.now(),
         libassTime: libassTime,
         decodeTime: decodeTime,
-        bitmaps: bitmaps
-      }, imgs)
+        bitmaps: imgs
+      }, bitmaps)
     })
   }
-  if (!self._isPaused) {
-    self.rafId = self.requestAnimationFrame(self.fastRender)
-  }
+  if (!self._isPaused) self.rafId = self.requestAnimationFrame(self.fastRender)
 }
 
-self.offscreenRender = function (force) {
+self.offscreenRender = (force) => {
   self.rafId = 0
   self.renderPending = false
-  // const startTime = performance.now()
-  const result = self.octObj.renderImage(
-    self.getCurrentTime() + self.delay,
-    self.changed
-  )
+  const startTime = performance.now()
+  const result = self.octObj.renderImage(self.getCurrentTime() + self.delay, self.changed)
   const changed = Module.getValue(self.changed, 'i32')
   if ((Number(changed) !== 0 || force) && self.offscreenCanvas) {
+    const newTime = performance.now()
+    const libassTime = newTime - startTime
     const images = self.buildResultImage(result)
-    // const newTime = performance.now()
-    // const libassTime = newTime - startTime
     const promises = []
     for (const item of images) {
       promises.push(createImageBitmap(item.image))
     }
-    Promise.all(promises).then(function (bitmaps) {
-      // const decodeTime = performance.now() - newTime
-      function renderFastFrames () {
-        // const beforeDrawTime = performance.now()
-        self.offscreenCanvasCtx.clearRect(0, 0, self.offscreenCanvas.width, self.offscreenCanvas.height)
-        for (let i = 0; i < bitmaps.length; i++) {
-          self.offscreenCanvasCtx.drawImage(
-            bitmaps[i],
-            images[i].x,
-            images[i].y
-          )
-        }
-        // const drawTime = performance.now() - beforeDrawTime
-        // console.log(bitmaps.length + ' bitmaps, libass: ' + libassTime + 'ms, decode: ' + decodeTime + 'ms, draw: ' + drawTime + 'ms' )
+    Promise.all(promises).then(bitmaps => {
+      const decodeTime = performance.now() - newTime
+      const preDraw = performance.now()
+      self.offscreenCanvasCtx.clearRect(0, 0, self.offscreenCanvas.width, self.offscreenCanvas.height)
+      for (let i = 0; i < bitmaps.length; i++) {
+        self.offscreenCanvasCtx.drawImage(
+          bitmaps[i],
+          images[i].x,
+          images[i].y
+        )
       }
-      self.requestAnimationFrame(renderFastFrames)
+      const drawTime = performance.now() - preDraw
+      if (this.debug) console.log({ length: bitmaps.length, sum: libassTime + decodeTime + drawTime, libassTime, decodeTime, drawTime })
     })
   }
-  if (!self._isPaused) {
-    self.rafId = self.requestAnimationFrame(self.offscreenRender)
-  }
+  if (!self._isPaused) self.rafId = self.requestAnimationFrame(self.offscreenRender)
 }
 
-self.buildResultImage = function (ptr) {
+self.buildResultImage = (ptr) => {
   const items = []
   let item
   while (Number(ptr.ptr) !== 0) {
@@ -7030,19 +6971,15 @@ self.buildResultImage = function (ptr) {
   }
   return items
 }
-self.buildResultImageItem = function (ptr) {
+self.buildResultImageItem = (ptr) => {
   const bitmap = ptr.bitmap
   const stride = ptr.stride
   const w = ptr.w
   const h = ptr.h
   const color = ptr.color
-  if (w === 0 || h === 0) {
-    return null
-  }
+  if (w === 0 || h === 0) return null
   const a = (255 - (color & 255)) / 255
-  if (a === 0) {
-    return null
-  }
+  if (a === 0) return null
   const c = ((color << 8) & 0xff0000) | ((color >> 8) & 0xff00) | ((color >> 24) & 0xff) // black magic
   const buf = new ArrayBuffer(w * h * 4)
   const buf8 = new Uint8ClampedArray(buf)
@@ -7053,22 +6990,16 @@ self.buildResultImageItem = function (ptr) {
     const offset = bitmap + bitmapPosition
     for (let x = 0, z = w; z--; ++x, resultPosition++) {
       const k = Module.HEAPU8[offset + x]
-      if (k !== 0) {
-        data[resultPosition] = ((a * k) << 24) | c // more black magic
-      }
+      if (k !== 0) data[resultPosition] = ((a * k) << 24) | c // more black magic
     }
   }
   const image = new ImageData(buf8, w, h)
-  x = ptr.dst_x
-  y = ptr.dst_y
-  return {
-    x: x,
-    y: y,
-    image: image
-  }
+  const x = ptr.dst_x
+  const y = ptr.dst_y
+  return { image, x, y }
 }
 
-self.buildResult = function (ptr) {
+self.buildResult = (ptr) => {
   const items = []
   const transferable = []
   let item
@@ -7085,63 +7016,37 @@ self.buildResult = function (ptr) {
   return [items, transferable]
 }
 
-self.buildResultItem = function (ptr) {
+self.buildResultItem = (ptr) => {
   const bitmap = ptr.bitmap
   const stride = ptr.stride
   const w = ptr.w
   const h = ptr.h
   const color = ptr.color
-  if (w === 0 || h === 0) {
-    return null
-  }
+  if (w === 0 || h === 0) return null
   const a = (255 - (color & 255)) / 255
-  if (a === 0) {
-    return null
-  }
+  if (a === 0) return null
   const c = ((color << 8) & 0xff0000) | ((color >> 8) & 0xff00) | ((color >> 24) & 0xff) // black magic
-  const buf = new ArrayBuffer(w * h * 4)
-  const buf8 = new Uint8ClampedArray(buf)
-  const data = new Uint32Array(buf) // operate on a single position, instead of 4 positions at once
+  const buffer = new ArrayBuffer(w * h * 4)
+  const data = new Uint32Array(buffer) // operate on a single position, instead of 4 positions at once
   let bitmapPosition = 0
   let resultPosition = 0
   for (let y = h; y--; bitmapPosition += stride) {
     const offset = bitmap + bitmapPosition
     for (let x = 0, z = w; z--; ++x, resultPosition++) {
       const k = Module.HEAPU8[offset + x]
-      if (k !== 0) {
-        data[resultPosition] = ((a * k) << 24) | c // more black magic
-      }
+      if (k !== 0) data[resultPosition] = ((a * k) << 24) | c // more black magic
     }
   }
+  const x = ptr.dst_x
+  const y = ptr.dst_y
 
-  x = ptr.dst_x
-  y = ptr.dst_y
-
-  return { w: w, h: h, x: x, y: y, buffer: buf8.buffer }
+  return { w, h, x, y, buffer }
 }
 
 if (typeof SDL !== 'undefined') {
   SDL.defaults.copyOnLock = false
   SDL.defaults.discardOnLock = false
   SDL.defaults.opaqueFrontBuffer = false
-}
-
-function FPSTracker (text) {
-  let last = 0
-  let mean = 0
-  let counter = 0
-  this.tick = function () {
-    const now = Date.now()
-    if (last > 0) {
-      const diff = now - last
-      mean = 0.99 * mean + 0.01 * diff
-      if (counter++ === 60) {
-        counter = 0
-        dump(text + ' fps: ' + (1000 / mean).toFixed(2) + '\n')
-      }
-    }
-    last = now
-  }
 }
 
 /**
@@ -7180,9 +7085,7 @@ function parseAss (content) {
             value = value.slice(0, format.length - 1)
             value.push(lastPart)
           }
-          value = value.map(function (s) {
-            return s.trim()
-          })
+          value = value.map(s => s.trim())
           if (format) {
             tmp = {}
             for (j = 0; j < value.length; j++) {
@@ -7205,10 +7108,10 @@ function parseAss (content) {
   return sections
 };
 
-self.requestAnimationFrame = (function () {
+self.requestAnimationFrame = (() => {
   // similar to Browser.requestAnimationFrame
   let nextRAF = 0
-  return function (func) {
+  return func => {
     // try to keep target fps (30fps) between calls to here
     const now = Date.now()
     if (nextRAF === 0) {
@@ -7245,7 +7148,7 @@ let clientFrameId = 0
 let commandBuffer = []
 
 const postMainLoop = Module.postMainLoop
-Module.postMainLoop = function () {
+Module.postMainLoop = () => {
   if (postMainLoop) postMainLoop()
   // frame complete, send a frame id
   postMessage({ target: 'tick', id: frameId++ })
@@ -7265,7 +7168,7 @@ function messageResender () {
   if (calledMain) {
     assert(messageBuffer && messageBuffer.length > 0)
     messageResenderTimeout = null
-    messageBuffer.forEach(function (message) {
+    messageBuffer.forEach(message => {
       onmessage(message)
     })
     messageBuffer = null
@@ -7277,8 +7180,8 @@ function messageResender () {
 function _applyKeys (input, output) {
   const vargs = Object.keys(input)
 
-  for (let i = 0; i < vargs.length; i++) {
-    output[vargs[i]] = input[vargs[i]]
+  for (const varg of vargs) {
+    output[varg] = input[varg]
   }
 }
 
@@ -7297,10 +7200,6 @@ function onMessageFromMainEmscriptenThread (message) {
   }
   // console.log('worker got ' + JSON.stringify(message.data).substr(0, 150) + '\n');
   switch (message.data.target) {
-    case 'window': {
-      self.fireEvent(message.data.event)
-      break
-    }
     case 'canvas': {
       if (message.data.event) {
         Module.canvas.fireEvent(message.data.event)
@@ -7354,11 +7253,11 @@ function onMessageFromMainEmscriptenThread (message) {
           Module.canvas.boundingClientRect = message.data.boundingClientRect
         }
       }
-      self.targetFps = message.data.targetFps || self.targetFps
-      self.libassMemoryLimit = message.data.libassMemoryLimit || self.libassMemoryLimit
-      self.libassGlyphLimit = message.data.libassGlyphLimit || 0
+      self.targetFps = message.data.targetFps
+      self.libassMemoryLimit = message.data.libassMemoryLimit
+      self.libassGlyphLimit = message.data.libassGlyphLimit
       self.renderOnDemand = message.data.renderOnDemand || false
-      self.dropAllAnimations = message.data.dropAllAnimations || false
+      self.dropAllAnimations = message.data.dropAllAnimations
       removeRunDependency('worker-init')
       postMessage({
         target: 'ready'
@@ -7432,7 +7331,7 @@ function onMessageFromMainEmscriptenThread (message) {
       break
     case 'create-style': {
       const style = message.data.style
-      const stylPtr = self.octObj.track.get_styles(iself.octObj.allocStyle())
+      const stylPtr = self.octObj.track.get_styles(self.octObj.allocStyle())
       _applyKeys(style, stylPtr)
       break
     }
@@ -7498,10 +7397,6 @@ function onMessageFromMainEmscriptenThread (message) {
       }
       break
     }
-    case 'setimmediate': {
-      if (Module.setImmediates) Module.setImmediates.shift()()
-      break
-    }
     default:
       throw new Error('wha? ' + message.data.target)
   }
@@ -7509,11 +7404,7 @@ function onMessageFromMainEmscriptenThread (message) {
 
 onmessage = onMessageFromMainEmscriptenThread
 
-function postCustomMessage (data) {
-  postMessage({ target: 'custom', userData: data })
-}
-
-self.runBenchmark = function (seconds, pos, async) {
+self.runBenchmark = (seconds, pos, async) => {
   let totalTime = 0
   let i = 0
   pos = pos || 0
@@ -7521,7 +7412,7 @@ self.runBenchmark = function (seconds, pos, async) {
   const count = seconds * self.targetFps
   const start = performance.now()
   let longestFrame = 0
-  const run = function () {
+  const run = () => {
     const t0 = performance.now()
 
     pos += 1 / self.targetFps

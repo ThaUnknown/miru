@@ -1,8 +1,11 @@
 /* eslint-env browser */
-/* global searchText, navNowPlaying, halfmoon, home, oauth, anitomyscript, torrent4list */
-import { settings, searchParams, userBrowser } from './settings.js'
+/* global searchText, navNowPlaying, home, oauth, torrent4list */
+import { settings } from './settings.js'
 import { loadHomePage, cardCreator } from './interface.js'
 import { client } from './main.js'
+import { searchParams, userBrowser, DOMPARSER, countdown } from './util.js'
+import halfmoon from 'halfmoon'
+import anitomyscript from 'anitomyscript'
 const torrentRx = /(magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent){1}/i
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/
 window.addEventListener('paste', async e => { // WAIT image lookup on paste, or add torrent on paste
@@ -320,7 +323,8 @@ const details = {
 }
 const episodeRx = /Episode (\d+) - (.*)/
 // this is fucked beyond belief, this is why you use frameworks
-function viewAnime (media) {
+/* global view, viewImg, viewTitle, viewDesc, viewDetails, viewSeason, viewMediaInfo, viewPlay, viewTrailer, viewRelationsGallery, viewSynonym, viewSynonymText, viewEpisodesWrapper, episodes, trailerVideo, trailerClose */
+export function viewAnime (media) {
   halfmoon.showModal('view')
   view.setAttribute('style', `background-image: url(${media.bannerImage}) !important`)
   viewImg.src = media.coverImage.extraLarge
@@ -448,23 +452,8 @@ function detailsCreator (entry) {
     })
   }
 }
-function countdown (s) {
-  const d = Math.floor(s / (3600 * 24))
-  s -= d * 3600 * 24
-  const h = Math.floor(s / 3600)
-  s -= h * 3600
-  const m = Math.floor(s / 60)
-  s -= m * 60
-  const tmp = [];
-  (d) && tmp.push(d + 'd');
-  (d || h) && tmp.push(h + 'h');
-  (d || h || m) && tmp.push(m + 'm')
-  return tmp.join(' ')
-}
 
-export const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
-
-async function nyaaSearch (media, episode) {
+export async function nyaaSearch (media, episode) {
   if (parseInt(episode) < 10) {
     episode = `0${episode}`
   }

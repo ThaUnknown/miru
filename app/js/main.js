@@ -1,10 +1,11 @@
-/* globals video, player, halfmoon, pageWrapper, subtitle1list */
+/* globals video, player, pageWrapper, subtitle1list */
 
 import WebTorrentPlayer from 'webtorrent-player'
-import './util.js'
+import { searchParams } from './util.js'
 import { resolveFileMedia, nyaaSearch, alEntry } from './anime.js'
-import { settings, searchParams } from './settings.js'
+import { settings } from './settings.js'
 import { cardCreator } from './interface.js'
+import halfmoon from 'halfmoon'
 
 const announceList = [
   'wss://tracker.openwebtorrent.com',
@@ -136,8 +137,7 @@ export const client = new WebTorrentPlayer({
     }
   }
 })
+window.client = client
 
-window.onbeforeunload = function () {
-  return ''
-}
+window.onbeforeunload = () => { return '' }
 if (searchParams.get('file')) client.playTorrent(searchParams.get('file'))

@@ -2,3 +2,4 @@
 package-lock.json
 *.mkv
 *.mp4
+.vscode

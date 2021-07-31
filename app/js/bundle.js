@@ -11,8 +11,11 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "alRequest": () => (/* binding */ alRequest),
-/* harmony export */   "DOMPARSER": () => (/* binding */ DOMPARSER),
+/* harmony export */   "alEntry": () => (/* binding */ alEntry),
+/* harmony export */   "viewAnime": () => (/* binding */ viewAnime),
+/* harmony export */   "nyaaSearch": () => (/* binding */ nyaaSearch),
 /* harmony export */   "resolveFileMedia": () => (/* binding */ resolveFileMedia),
+/* harmony export */   "relations": () => (/* binding */ relations),
 /* harmony export */   "getRSSurl": () => (/* binding */ getRSSurl),
 /* harmony export */   "releasesCards": () => (/* binding */ releasesCards),
 /* harmony export */   "releasesRss": () => (/* binding */ releasesRss),
@@ -20,8 +23,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _settings_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./settings.js */ "./app/js/settings.js");
 /* harmony import */ var _interface_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./interface.js */ "./app/js/interface.js");
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./main.js */ "./app/js/main.js");
+/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! halfmoon */ "halfmoon");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! anitomyscript */ "anitomyscript");
+/* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(anitomyscript__WEBPACK_IMPORTED_MODULE_5__);
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 /* eslint-env browser */
+/* global searchText, navNowPlaying, home, oauth, torrent4list */
+
+
+
+
 
 
 const torrentRx = /(magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent){1}/i
@@ -40,7 +54,7 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
       if (torrentRx.exec(text)) {
         e.preventDefault()
         searchText.value = ''
-        client.playTorrent(text)
+        _main_js__WEBPACK_IMPORTED_MODULE_2__.client.playTorrent(text)
       } else if (imageRx.exec(text)) {
         e.preventDefault()
         searchText.value = ''
@@ -58,12 +72,12 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
     })
   }
 })
-if (_settings_js__WEBPACK_IMPORTED_MODULE_0__.searchParams.get('link')) {
-  traceAnime(_settings_js__WEBPACK_IMPORTED_MODULE_0__.searchParams.get('link'))
+if (_util_js__WEBPACK_IMPORTED_MODULE_3__.searchParams.get('link')) {
+  traceAnime(_util_js__WEBPACK_IMPORTED_MODULE_3__.searchParams.get('link'))
   window.location = '/app/#home'
 }
 function traceAnime (image, type) { // WAIT lookup logic
-  halfmoon.initStickyAlert({
+  halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
     content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
   })
   let options
@@ -82,7 +96,7 @@ function traceAnime (image, type) { // WAIT lookup logic
         const res = await alRequest({ method: 'SearchIDSingle', id: result.docs[0].anilist_id })
         viewAnime(res.data.Media)
       } else {
-        halfmoon.initStickyAlert({
+        halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
           content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
           title: 'Search Failed',
           alertType: 'alert-danger',
@@ -92,7 +106,7 @@ function traceAnime (image, type) { // WAIT lookup logic
     })
 }
 // events
-navNowPlaying.onclick = () => { viewAnime(client.nowPlaying?.media) }
+navNowPlaying.onclick = () => { viewAnime(_main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.media) }
 // AL lookup logic
 async function alRequest (opts) {
   let query
@@ -283,9 +297,9 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
   return json
 }
 async function alEntry () {
-  if (client.nowPlaying.media && localStorage.getItem('ALtoken')) {
-    const res = await alRequest({ method: 'SearchIDStatus', id: client.nowPlaying.media.id })
-    if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= client.nowPlaying.episodeNumber) {
+  if (_main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.media && localStorage.getItem('ALtoken')) {
+    const res = await alRequest({ method: 'SearchIDStatus', id: _main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.media.id })
+    if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= _main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.episodeNumber) {
       const query = `
 mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
   SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
@@ -297,11 +311,11 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
 }`
       const variables = {
         repeat: 0,
-        id: client.nowPlaying.media.id,
+        id: _main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.media.id,
         status: 'CURRENT',
-        episode: client.nowPlaying.episodeNumber
+        episode: _main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.episodeNumber
       }
-      if (client.nowPlaying.episodeNumber === client.nowPlaying.media.episodes) {
+      if (_main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.episodeNumber === _main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.media.episodes) {
         variables.status = 'COMPLETED'
         if (res.data.MediaList.status === 'COMPLETED') {
           variables.repeat = res.data.MediaList.repeat + 1
@@ -341,8 +355,9 @@ const details = {
 }
 const episodeRx = /Episode (\d+) - (.*)/
 // this is fucked beyond belief, this is why you use frameworks
+/* global view, viewImg, viewTitle, viewDesc, viewDetails, viewSeason, viewMediaInfo, viewPlay, viewTrailer, viewRelationsGallery, viewSynonym, viewSynonymText, viewEpisodesWrapper, episodes, trailerVideo, trailerClose */
 function viewAnime (media) {
-  halfmoon.showModal('view')
+  halfmoon__WEBPACK_IMPORTED_MODULE_4___default().showModal('view')
   view.setAttribute('style', `background-image: url(${media.bannerImage}) !important`)
   viewImg.src = media.coverImage.extraLarge
   viewTitle.innerHTML = media.title.userPreferred
@@ -353,12 +368,12 @@ function viewAnime (media) {
   viewDetails.appendChild(detailsfrag)
   if (media.nextAiringEpisode) {
     const temp = document.createElement('p')
-    temp.innerHTML = `<span class="font-weight-bold">Airing</span><br><span class="text-muted"> Episode ${media.nextAiringEpisode.episode}: ${countdown(media.nextAiringEpisode.timeUntilAiring)}</span>`
+    temp.innerHTML = `<span class="font-weight-bold">Airing</span><br><span class="text-muted"> Episode ${media.nextAiringEpisode.episode}: ${(0,_util_js__WEBPACK_IMPORTED_MODULE_3__.countdown)(media.nextAiringEpisode.timeUntilAiring)}</span>`
     viewDetails.prepend(temp)
   }
   viewSeason.innerHTML = `${(media.season ? media.season.toLowerCase() + ' ' : '') + (media.seasonYear ? media.seasonYear : '')}`
   viewMediaInfo.innerHTML = `${media.format ? '<span>' + media.format + '</span>' : ''}${media.episodes ? '<span>' + media.episodes + ' Episodes</span>' : ''}${media.duration ? '<span>' + media.duration + ' Minutes</span>' : ''}`
-  viewPlay.onclick = () => { nyaaSearch(media, 1); halfmoon.toggleModal('view') }
+  viewPlay.onclick = () => { nyaaSearch(media, 1); halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('view') }
   if (media.trailer) {
     viewTrailer.removeAttribute('disabled', '')
     viewTrailer.onclick = () =>
@@ -401,7 +416,7 @@ function viewAnime (media) {
             </div>
         </div>`
       template.onclick = async () => {
-        halfmoon.hideModal('view')
+        halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('view')
         const res = await alRequest({ method: 'SearchIDSingle', id: edge.node.id })
         viewAnime(res.data.Media)
       }
@@ -426,7 +441,7 @@ function viewAnime (media) {
       temp.innerHTML = `
             <img loading="lazy" src="${episode.thumbnail}" class="w-full h-full">
             <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">${episode.title}</div>`
-      temp.onclick = () => { nyaaSearch(media, episodeRx.exec(episode.title)[1]); halfmoon.toggleModal('view') }
+      temp.onclick = () => { nyaaSearch(media, episodeRx.exec(episode.title)[1]); halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('view') }
       frag.appendChild(temp)
     })
     episodes.appendChild(frag)
@@ -439,7 +454,7 @@ trailerClose.onclick = () => {
 }
 function trailerPopup (trailer) {
   trailerVideo.src = ''
-  halfmoon.toggleModal('trailer')
+  halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('trailer')
   switch (trailer.site) { // should support the other possible sites too, but i cant find any examples
     case 'youtube':
       trailerVideo.src = 'https://www.youtube.com/embed/' + trailer.id
@@ -469,21 +484,6 @@ function detailsCreator (entry) {
     })
   }
 }
-function countdown (s) {
-  const d = Math.floor(s / (3600 * 24))
-  s -= d * 3600 * 24
-  const h = Math.floor(s / 3600)
-  s -= h * 3600
-  const m = Math.floor(s / 60)
-  s -= m * 60
-  const tmp = [];
-  (d) && tmp.push(d + 'd');
-  (d || h) && tmp.push(h + 'h');
-  (d || h || m) && tmp.push(m + 'm')
-  return tmp.join(' ')
-}
-
-const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
 
 async function nyaaSearch (media, episode) {
   if (parseInt(episode) < 10) {
@@ -494,7 +494,7 @@ async function nyaaSearch (media, episode) {
   const results = await nyaaRss(media, episode)
 
   if (results.children.length === 0) {
-    halfmoon.initStickyAlert({
+    halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
       content: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
       title: 'Search Failed',
       alertType: 'alert-danger',
@@ -503,7 +503,7 @@ async function nyaaSearch (media, episode) {
   } else {
     table.innerHTML = ''
     table.appendChild(results)
-    halfmoon.toggleModal('tsearch')
+    halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('tsearch')
   }
 }
 
@@ -513,20 +513,20 @@ const exclusions = {
   firefox: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265', '.3gp', '.mkv']
 }
 if (!('audioTracks' in HTMLVideoElement.prototype)) {
-  exclusions[userBrowser].push('mutli audio', 'dual audio')
+  exclusions[_util_js__WEBPACK_IMPORTED_MODULE_3__.userBrowser].push('mutli audio', 'dual audio')
 }
 
 async function nyaaRss (media, episode) {
   const frag = document.createDocumentFragment()
   const ep = (media.status === 'FINISHED' && _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
-  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(')})${ep}"${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1}"-(${exclusions[userBrowser].join('|')})`)
+  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(')})${ep}"${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1}"-(${exclusions[_util_js__WEBPACK_IMPORTED_MODULE_3__.userBrowser].join('|')})`)
   const res = await fetch(url)
   await res.text().then((xmlTxt) => {
     try {
-      const doc = DOMPARSER(xmlTxt, 'text/xml')
+      const doc = (0,_util_js__WEBPACK_IMPORTED_MODULE_3__.DOMPARSER)(xmlTxt, 'text/xml')
       if (_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent2 && doc.querySelector('infoHash')) {
-        client.playTorrent(doc.querySelector('infoHash').textContent, { media: media, episode: episode, expectedSize: doc.querySelector('size').textContent })
-        halfmoon.toggleModal('tsearch')
+        _main_js__WEBPACK_IMPORTED_MODULE_2__.client.playTorrent(doc.querySelector('infoHash').textContent, { media: media, episode: episode, expectedSize: doc.querySelector('size').textContent })
+        halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('tsearch')
       }
       doc.querySelectorAll('item').forEach((item, index) => {
         const i = item.querySelectorAll('*')
@@ -541,8 +541,8 @@ async function nyaaRss (media, episode) {
                 <td>${i[6].textContent}</td>
                 <td class="pointer">Play</td>`
         template.onclick = () => {
-          client.playTorrent(i[7].textContent, { media: media, episode: episode, expectedSize: i[10].textContent })
-          halfmoon.hideModal('tsearch')
+          _main_js__WEBPACK_IMPORTED_MODULE_2__.client.playTorrent(i[7].textContent, { media: media, episode: episode, expectedSize: i[10].textContent })
+          halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('tsearch')
         }
         frag.appendChild(template)
       })
@@ -580,8 +580,8 @@ async function resolveFileMedia (opts) {
     }
   }
   const parsePromises = opts.fileName.constructor === Array
-    ? opts.fileName.map(name => anitomyscript(name))
-    : [anitomyscript(opts.fileName)]
+    ? opts.fileName.map(name => anitomyscript__WEBPACK_IMPORTED_MODULE_5___default()(name))
+    : [anitomyscript__WEBPACK_IMPORTED_MODULE_5___default()(opts.fileName)]
   const parseObjs = await Promise.all(parsePromises)
   await Promise.all([...new Set(parseObjs.map(obj => obj.anime_title))].map(title => resolveTitle(title)))
   const assoc = {}
@@ -675,7 +675,7 @@ async function resolveFileMedia (opts) {
   return fileMedias.length === 1 ? fileMedias[0] : fileMedias
 }
 
-let relations = JSON.parse(localStorage.getItem('relations'))
+let relations = JSON.parse(localStorage.getItem('relations')) || {}
 relations = relations || {}
 
 function getRSSurl () {
@@ -690,7 +690,7 @@ async function releasesCards (items, limit) {
   await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true }).then(results => {
     results.forEach((mediaInformation, index) => {
       const o = items[index].querySelector.bind(items[index])
-      mediaInformation.onclick = () => client.playTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode, expectedSize: o('size').textContent })
+      mediaInformation.onclick = () => _main_js__WEBPACK_IMPORTED_MODULE_2__.client.playTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode, expectedSize: o('size').textContent })
       cards.push((0,_interface_js__WEBPACK_IMPORTED_MODULE_1__.cardCreator)(mediaInformation))
     })
   })
@@ -701,7 +701,7 @@ async function releasesRss (limit) {
   let cards
   await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
     try {
-      cards = await releasesCards(DOMPARSER(xmlTxt, 'text/xml').querySelectorAll('item'), limit)
+      cards = await releasesCards((0,_util_js__WEBPACK_IMPORTED_MODULE_3__.DOMPARSER)(xmlTxt, 'text/xml').querySelectorAll('item'), limit)
     } catch (e) {
       console.error(e)
     }
@@ -745,6 +745,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "cardCreator": () => (/* binding */ cardCreator)
 /* harmony export */ });
 /* harmony import */ var _anime_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./anime.js */ "./app/js/anime.js");
+/* harmony import */ var _settings_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./settings.js */ "./app/js/settings.js");
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./main.js */ "./app/js/main.js");
+/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
+/* eslint-env browser */
+/* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
+
+
+
 
 async function loadHomePage () {
   const homeLoadElements = [navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore]
@@ -820,21 +828,21 @@ async function loadHomePage () {
     },
     releases: async function () { // this could be cleaner, but oh well
       await fetch((0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.getRSSurl)()).then(res => res.text().then(xmlTxt => {
-        const doc = (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.DOMPARSER)(xmlTxt, 'text/xml')
+        const doc = (0,_util_js__WEBPACK_IMPORTED_MODULE_3__.DOMPARSER)(xmlTxt, 'text/xml')
         const pubDate = doc.querySelector('pubDate').textContent
         if (lastRSSDate !== pubDate) {
           if (lastRSSDate) {
             homeReleases.append(...gallerySkeletonFrag(5))
-            resolveFileMedia({ fileName: doc.querySelector('item').querySelector('title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
-              if (settings.other1) {
+            ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.resolveFileMedia)({ fileName: doc.querySelector('item').querySelector('title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
+              if (_settings_js__WEBPACK_IMPORTED_MODULE_1__.settings.other1) {
                 const notification = new Notification(mediaInformation.media.title.userPreferred, {
                   body: `Episode ${mediaInformation.episode} was just released!`,
                   icon: mediaInformation.media.coverImage.medium
                 })
                 notification.onclick = async () => {
                   window.parent.focus()
-                  client.playTorrent(doc.querySelector('item').querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
-                  relations[mediaInformation.parseObject.anime_title] = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ id: mediaInformation.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media.id)
+                  _main_js__WEBPACK_IMPORTED_MODULE_2__.client.playTorrent(doc.querySelector('item').querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
+                  _anime_js__WEBPACK_IMPORTED_MODULE_0__.relations[mediaInformation.parseObject.anime_title] = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ id: mediaInformation.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media.id)
                 }
               }
             })
@@ -916,7 +924,7 @@ async function loadHomePage () {
         }
         media = media.media
       }
-      cards.push(cardCreator({ media: media, schedule: opts.schedule, onclick: () => viewAnime(media) }))
+      cards.push(cardCreator({ media: media, schedule: opts.schedule, onclick: () => (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.viewAnime)(media) }))
     })
     opts.gallery.append(...cards)
     canScroll = true
@@ -979,7 +987,7 @@ function cardCreator (opts) {
     nodes[0].style = `--color:${opts.media.coverImage.color || '#1890ff'};`
     nodes[3].src = opts.media.coverImage.extraLarge || ''
     nodes[6].textContent = [opts.media.title.userPreferred, opts.episodeNumber].filter(s => s).join(' - ')
-    if (opts.schedule && opts.media.nextAiringEpisode) nodes[7] = opts.media.nextAiringEpisode.episode + ' in ' + countdown(opts.media.nextAiringEpisode.timeUntilAiring)
+    if (opts.schedule && opts.media.nextAiringEpisode) nodes[7] = opts.media.nextAiringEpisode.episode + ' in ' + (0,_util_js__WEBPACK_IMPORTED_MODULE_3__.countdown)(opts.media.nextAiringEpisode.timeUntilAiring)
     nodes[8].innerHTML = '<span>' + [
       opts.media.format === 'TV' ? 'TV Show' : opts.media.format?.toLowerCase().replace(/_/g, ' '),
       opts.media.episodes ? opts.media.episodes + ' Episodes' : opts.media.duration ? opts.media.duration + ' Minutes' : undefined,
@@ -1002,6 +1010,171 @@ function cardCreator (opts) {
 
 /***/ }),
 
+/***/ "./app/js/main.js":
+/*!************************!*\
+  !*** ./app/js/main.js ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "client": () => (/* binding */ client)
+/* harmony export */ });
+/* harmony import */ var webtorrent_player__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! webtorrent-player */ "./node_modules/webtorrent-player/index.js");
+/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
+/* harmony import */ var _anime_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./anime.js */ "./app/js/anime.js");
+/* harmony import */ var _settings_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./settings.js */ "./app/js/settings.js");
+/* harmony import */ var _interface_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./interface.js */ "./app/js/interface.js");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! halfmoon */ "halfmoon");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_5__);
+/* globals video, player, pageWrapper, subtitle1list */
+
+
+
+
+
+
+
+
+const announceList = [
+  'wss://tracker.openwebtorrent.com',
+  'wss://tracker.sloppyta.co:443/announce',
+  'wss://hub.bugout.link:443/announce'
+]
+const playerControls = {}
+for (const item of document.getElementsByClassName('ctrl')) {
+  if (!playerControls[item.dataset.name]) {
+    playerControls[item.dataset.name] = item
+  } else {
+    playerControls[item.dataset.name] = [playerControls[item.dataset.name], item]
+  }
+}
+const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
+  WebTorrentOpts: {
+    maxConns: 127,
+    downloadLimit: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.torrent7 * 1048576,
+    uploadLimit: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.torrent7 * 1572864,
+    tracker: {
+      announce: announceList
+    }
+  },
+  controls: playerControls,
+  video: video,
+  player: player,
+  playerWrapper: pageWrapper,
+  burnIn: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.subtitle3,
+  seekTime: Number(_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player3),
+  immerseTime: Number(_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player2),
+  visibilityLossPause: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player10,
+  autoNext: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player6,
+  streamedDownload: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.torrent8,
+  generateThumbnails: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player5,
+  defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.subtitle1)[0].textContent,
+  resolveFileMedia: _anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia,
+  onDownloadDone: File => {
+    halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+      content: `<span class="text-break">${File.name}</span> has finished downloading. Now seeding.`,
+      title: 'Download Complete',
+      alertType: 'alert-success',
+      fillType: ''
+    })
+  },
+  onWatched: (File, FileMedia) => {
+    if (FileMedia?.media?.episodes || FileMedia?.media?.nextAiringEpisode?.episode) {
+      if (_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.other2 && (FileMedia.media.episodes || FileMedia.media.nextAiringEpisode?.episode > FileMedia.episodeNumber)) {
+        (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.alEntry)()
+      } else {
+        halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+          content: `Do You Want To Mark <br><b>${FileMedia.mediaTitle}</b><br>Episode ${FileMedia.episodeNumber} As Completed?<br>
+                <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
+                <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
+          title: 'Episode Complete',
+          timeShown: 180000
+        })
+      }
+    }
+  },
+  onPlaylist: () => {
+    window.location.hash = '#playlist'
+  },
+  onNext: (File, FileMedia) => {
+    if (FileMedia.media) {
+      (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.nyaaSearch)(FileMedia.media, FileMedia.episodeNumber + 1)
+    } else {
+      halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+        content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
+        title: 'Search Failed',
+        alertType: 'alert-danger',
+        fillType: ''
+      })
+    }
+  },
+  onPrev: (File, FileMedia) => {
+    if (FileMedia.media) {
+      (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.nyaaSearch)(FileMedia.media, FileMedia.episodeNumber - 1)
+    } else {
+      halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+        content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
+        title: 'Search Failed',
+        alertType: 'alert-danger',
+        fillType: ''
+      })
+    }
+  },
+  onOfflineTorrent: torrent => {
+    (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: torrent.name, method: 'SearchName' }).then(mediaInformation => {
+      mediaInformation.onclick = () => client.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
+      const template = (0,_interface_js__WEBPACK_IMPORTED_MODULE_4__.cardCreator)(mediaInformation)
+      document.querySelector('.downloads').appendChild(template)
+    })
+  },
+  onVideoFiles: async (videoFiles, torrent) => {
+    document.querySelector('.playlist').textContent = ''
+    const cards = []
+    for (const file of videoFiles) {
+      const mediaInformation = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: file.name, method: 'SearchName' })
+      mediaInformation.onclick = () => {
+        client.buildVideo(torrent, {
+          media: mediaInformation,
+          episode: mediaInformation.parseObject.episode,
+          file: file
+        })
+      }
+      cards.push((0,_interface_js__WEBPACK_IMPORTED_MODULE_4__.cardCreator)(mediaInformation))
+    }
+    document.querySelector('.playlist').append(...cards)
+  },
+  onWarn: (warn, torrent) => {
+    switch (warn) {
+      case 'no file':
+        halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+          content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
+          title: 'Search Failed',
+          alertType: 'alert-danger',
+          fillType: ''
+        })
+        break
+      case 'no peers':
+        if (torrent.progress !== 1) {
+          halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+            content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
+            title: 'Search Failed',
+            alertType: 'alert-danger',
+            fillType: ''
+          })
+        }
+    }
+  }
+})
+window.client = client
+
+window.onbeforeunload = () => { return '' }
+if (_util_js__WEBPACK_IMPORTED_MODULE_1__.searchParams.get('file')) client.playTorrent(_util_js__WEBPACK_IMPORTED_MODULE_1__.searchParams.get('file'))
+
+
+/***/ }),
+
 /***/ "./app/js/settings.js":
 /*!****************************!*\
   !*** ./app/js/settings.js ***!
@@ -1012,9 +1185,7 @@ function cardCreator (opts) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "settingsElements": () => (/* binding */ settingsElements),
-/* harmony export */   "settings": () => (/* binding */ settings),
-/* harmony export */   "searchParams": () => (/* binding */ searchParams),
-/* harmony export */   "userBrowser": () => (/* binding */ userBrowser)
+/* harmony export */   "settings": () => (/* binding */ settings)
 /* harmony export */ });
 /* eslint-env browser */
 /* global volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent7, torrent8, torrent9, other1, other2, setRes, settingsTab, regProtButton, clearRelCache */
@@ -1041,13 +1212,6 @@ function saveSettings () {
   }
   localStorage.setItem('settings', JSON.stringify(settings))
 }
-
-function renderSettings () {
-  for (const setting of Object.entries(settings)) {
-    const settingElement = settingsElements.filter(e => e.id === setting[0])[0]
-    if (settingElement) settingElement.type === 'checkbox' ? settingElement.checked = setting[1] : settingElement.value = setting[1]
-  }
-}
 function registerProtocol () {
   if ('registerProtocolHandler' in navigator) {
     navigator.registerProtocolHandler(
@@ -1064,12 +1228,46 @@ if (!Object.values(settings).length) {
 }
 clearRelCache.onclick = () => {
   localStorage.removeItem('relations')
-  relations = {}
 }
-renderSettings()
+
+for (const setting of Object.entries(settings)) {
+  const settingElement = settingsElements.filter(e => e.id === setting[0])[0]
+  if (settingElement) settingElement.type === 'checkbox' ? settingElement.checked = setting[1] : settingElement.value = setting[1]
+}
 
 other1.onclick = () => Notification.requestPermission().then(perm => { perm === 'denied' ? other1.checked = false : other1.checked = true })
 
+
+/***/ }),
+
+/***/ "./app/js/util.js":
+/*!************************!*\
+  !*** ./app/js/util.js ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "searchParams": () => (/* binding */ searchParams),
+/* harmony export */   "userBrowser": () => (/* binding */ userBrowser),
+/* harmony export */   "countdown": () => (/* binding */ countdown),
+/* harmony export */   "DOMPARSER": () => (/* binding */ DOMPARSER)
+/* harmony export */ });
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! halfmoon */ "halfmoon");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_0__);
+/* eslint-env browser */
+
+if ((typeof (halfmoon__WEBPACK_IMPORTED_MODULE_0___default()) === 'object' || typeof (halfmoon__WEBPACK_IMPORTED_MODULE_0___default()) === 'function') && ((halfmoon__WEBPACK_IMPORTED_MODULE_0___default()) !== null)) {
+  ;(halfmoon__WEBPACK_IMPORTED_MODULE_0___default().showModal) = id => {
+    const t = document.getElementById(id)
+    t && t.classList.add('show')
+  }
+  ;(halfmoon__WEBPACK_IMPORTED_MODULE_0___default().hideModal) = id => {
+    const t = document.getElementById(id)
+    t && t.classList.remove('show')
+  }
+}
 const searchParams = new URLSearchParams(location.href)
 if (searchParams.get('access_token')) {
   localStorage.setItem('ALtoken', searchParams.get('access_token'))
@@ -1085,26 +1283,21 @@ const userBrowser = (() => {
   }
   if (typeof InstallTrigger !== 'undefined') return 'firefox'
 })()
-
-
-/***/ }),
-
-/***/ "./app/js/util.js":
-/*!************************!*\
-  !*** ./app/js/util.js ***!
-  \************************/
-/***/ (() => {
-
-if ((typeof halfmoon === 'object' || typeof halfmoon === 'function') && (halfmoon !== null)) {
-  halfmoon.showModal = id => {
-    const t = document.getElementById(id)
-    t && t.classList.add('show')
-  }
-  halfmoon.hideModal = id => {
-    const t = document.getElementById(id)
-    t && t.classList.remove('show')
-  }
+function countdown (s) {
+  const d = Math.floor(s / (3600 * 24))
+  s -= d * 3600 * 24
+  const h = Math.floor(s / 3600)
+  s -= h * 3600
+  const m = Math.floor(s / 60)
+  s -= m * 60
+  const tmp = [];
+  (d) && tmp.push(d + 'd');
+  (d || h) && tmp.push(h + 'h');
+  (d || h || m) && tmp.push(m + 'm')
+  return tmp.join(' ')
 }
+
+const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
 
 
 /***/ }),
@@ -78940,7 +79133,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         torrent.deselect(0, torrent.pieces.length - 1, false)
       }
       this.videoFiles = torrent.files.filter(file => this.videoExtensions.some(ext => file.name.endsWith(ext)))
-      if (this.onVideoFiles) this.onVideoFiles(this.videoFiles)
+      if (this.onVideoFiles) this.onVideoFiles(this.videoFiles, torrent)
       if (this.videoFiles.length > 1) {
         torrent.files.forEach(file => file.deselect())
       }
@@ -83314,6 +83507,28 @@ function extend() {
 
 /***/ }),
 
+/***/ "anitomyscript":
+/*!********************************!*\
+  !*** external "anitomyscript" ***!
+  \********************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = anitomyscript;
+
+/***/ }),
+
+/***/ "halfmoon":
+/*!***************************!*\
+  !*** external "halfmoon" ***!
+  \***************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = halfmoon;
+
+/***/ }),
+
 /***/ "?d546":
 /*!************************!*\
   !*** buffer (ignored) ***!
@@ -83706,181 +83921,12 @@ function extend() {
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-/*!************************!*\
-  !*** ./app/js/main.js ***!
-  \************************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var webtorrent_player__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! webtorrent-player */ "./node_modules/webtorrent-player/index.js");
-/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
-/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_util_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _anime_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./anime.js */ "./app/js/anime.js");
-/* harmony import */ var _settings_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./settings.js */ "./app/js/settings.js");
-/* harmony import */ var _interface_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./interface.js */ "./app/js/interface.js");
-/* globals video, player, halfmoon, pageWrapper, subtitle1list */
-
-
-
-
-
-
-
-const announceList = [
-  'wss://tracker.openwebtorrent.com',
-  'wss://tracker.sloppyta.co:443/announce',
-  'wss://hub.bugout.link:443/announce'
-]
-const playerControls = {}
-for (const item of document.getElementsByClassName('ctrl')) {
-  if (!playerControls[item.dataset.name]) {
-    playerControls[item.dataset.name] = item
-  } else {
-    playerControls[item.dataset.name] = [playerControls[item.dataset.name], item]
-  }
-}
-const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
-  WebTorrentOpts: {
-    maxConns: 127,
-    downloadLimit: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.torrent7 * 1048576,
-    uploadLimit: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.torrent7 * 1572864,
-    tracker: {
-      announce: announceList
-    }
-  },
-  scope: '/app/',
-  controls: playerControls,
-  video: video,
-  player: player,
-  playerWrapper: pageWrapper,
-  burnIn: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.subtitle3,
-  seekTime: Number(_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player3),
-  immerseTime: Number(_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player2),
-  visibilityLossPause: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player10,
-  autoNext: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player6,
-  streamedDownload: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.torrent8,
-  generateThumbnails: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player5,
-  defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.subtitle1)[0].textContent,
-  resolveFileMedia: _anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia,
-  onDownloadDone: File => {
-    halfmoon.initStickyAlert({
-      content: `<span class="text-break">${File.name}</span> has finished downloading. Now seeding.`,
-      title: 'Download Complete',
-      alertType: 'alert-success',
-      fillType: ''
-    })
-  },
-  onWatched: (File, FileMedia) => {
-    if (FileMedia?.media?.episodes || FileMedia?.media?.nextAiringEpisode?.episode) {
-      if (_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.other2 && (FileMedia.media.episodes || FileMedia.media.nextAiringEpisode?.episode > FileMedia.episodeNumber)) {
-        alEntry()
-      } else {
-        halfmoon.initStickyAlert({
-          content: `Do You Want To Mark <br><b>${FileMedia.mediaTitle}</b><br>Episode ${FileMedia.episodeNumber} As Completed?<br>
-                <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
-                <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
-          title: 'Episode Complete',
-          timeShown: 180000
-        })
-      }
-    }
-  },
-  onPlaylist: () => {
-    window.location.hash = '#playlist'
-  },
-  onNext: (File, FileMedia) => {
-    if (FileMedia.media) {
-      nyaaSearch(FileMedia.media, FileMedia.episodeNumber + 1)
-    } else {
-      halfmoon.initStickyAlert({
-        content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
-        title: 'Search Failed',
-        alertType: 'alert-danger',
-        fillType: ''
-      })
-    }
-  },
-  onPrev: (File, FileMedia) => {
-    if (FileMedia.media) {
-      nyaaSearch(FileMedia.media, FileMedia.episodeNumber - 1)
-    } else {
-      halfmoon.initStickyAlert({
-        content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
-        title: 'Search Failed',
-        alertType: 'alert-danger',
-        fillType: ''
-      })
-    }
-  },
-  onOfflineTorrent: torrent => {
-    (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: torrent.name, method: 'SearchName' }).then(mediaInformation => {
-      mediaInformation.onclick = () => client.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
-      const template = cardCreator(mediaInformation)
-      document.querySelector('.downloads').appendChild(template)
-    })
-  },
-  onVideoFiles: async videoFiles => {
-    document.querySelector('.playlist').textContent = ''
-    const cards = []
-    for (const file of videoFiles) {
-      const mediaInformation = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: file.name, method: 'SearchName' })
-      mediaInformation.onclick = () => {
-        client.buildVideo(torrent, {
-          media: mediaInformation,
-          episode: mediaInformation.parseObject.episode,
-          file: file
-        })
-      }
-      cards.push(cardCreator(mediaInformation))
-    }
-    document.querySelector('.playlist').append(...cards)
-  },
-  onWarn: (warn, torrent) => {
-    switch (warn) {
-      case 'no file':
-        halfmoon.initStickyAlert({
-          content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
-          title: 'Search Failed',
-          alertType: 'alert-danger',
-          fillType: ''
-        })
-        break
-      case 'no peers':
-        if (torrent.progress !== 1) {
-          halfmoon.initStickyAlert({
-            content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
-            title: 'Search Failed',
-            alertType: 'alert-danger',
-            fillType: ''
-          })
-        }
-    }
-  }
-})
-
-window.onbeforeunload = function () {
-  return ''
-}
-if (_settings_js__WEBPACK_IMPORTED_MODULE_3__.searchParams.get('file')) client.playTorrent(_settings_js__WEBPACK_IMPORTED_MODULE_3__.searchParams.get('file'))
-
-function t (a) {
-  switch (a) {
-    case 1:
-      client.playTorrent('https://webtorrent.io/torrents/sintel.torrent')
-      break
-    case 2:
-      client.playTorrent('https://webtorrent.io/torrents/tears-of-steel.torrent')
-      break
-    case 3:
-      client.playTorrent('magnet:?xt=urn:btih:CE9156EB497762F8B7577B71C0647A4B0C3423E1&dn=Inception+%282010%29+720p+-+mkv+-+1.0GB+-+YIFY')
-      break
-  }
-}
-
-})();
-
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__("./app/js/main.js");
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=bundle.js.map
