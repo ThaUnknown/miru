@@ -1,10 +1,13 @@
 /* eslint-env browser */
 /* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
-import { alRequest, alID, getRSSurl, releasesCards, releasesRss, resolveFileMedia, viewAnime, relations } from './anime.js'
+
+import { alRequest } from './anilist.js'
+import { resolveFileMedia, viewAnime, relations } from './anime.js'
+import { getRSSurl, releasesRss } from './rss.js'
 import { settings } from './settings.js'
 import { client } from './main.js'
 import { DOMPARSER, countdown } from './util.js'
-export async function loadHomePage () {
+export function loadHomePage () {
   const homeLoadElements = [navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore]
   const homePreviewElements = [homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction]
   const homeSearchElements = [searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort]
@@ -187,7 +190,7 @@ export async function loadHomePage () {
     item.onclick = function () {
       home.scrollTop = 0
       home.classList.add('browsing')
-      homeLoadFunctions[this.dataset.function]()
+      homeLoadFunctions[item.dataset.function]()
     }
   }
   function reloadHome () {
@@ -237,7 +240,7 @@ export function cardCreator (opts) {
     nodes[0].style = `--color:${opts.media.coverImage.color || '#1890ff'};`
     nodes[3].src = opts.media.coverImage.extraLarge || ''
     nodes[6].textContent = [opts.media.title.userPreferred, opts.episodeNumber].filter(s => s).join(' - ')
-    if (opts.schedule && opts.media.nextAiringEpisode) nodes[7] = opts.media.nextAiringEpisode.episode + ' in ' + countdown(opts.media.nextAiringEpisode.timeUntilAiring)
+    if (opts.schedule && opts.media.nextAiringEpisode) nodes[7].textContent = opts.media.nextAiringEpisode.episode + ' in ' + countdown(opts.media.nextAiringEpisode.timeUntilAiring)
     nodes[8].innerHTML = '<span>' + [
       opts.media.format === 'TV' ? 'TV Show' : opts.media.format?.toLowerCase().replace(/_/g, ' '),
       opts.media.episodes ? opts.media.episodes + ' Episodes' : opts.media.duration ? opts.media.duration + ' Minutes' : undefined,
@@ -254,5 +257,39 @@ export function cardCreator (opts) {
     return card
   } else {
     return skeletonCard.cloneNode(true)
+  }
+}
+
+export async function releasesCards (items, limit) {
+  const cards = []
+  await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true }).then(results => {
+    results.forEach((mediaInformation, index) => {
+      const o = items[index].querySelector.bind(items[index])
+      mediaInformation.onclick = () => client.playTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
+      cards.push(cardCreator(mediaInformation))
+    })
+  })
+  localStorage.setItem('relations', JSON.stringify(relations))
+  return cards
+}
+
+export let alID // login icon
+/* global oauth */
+export function initMenu () {
+  if (localStorage.getItem('ALtoken')) {
+    alRequest({ method: 'Viewer' }).then(result => {
+      oauth.removeAttribute('href')
+      oauth.setAttribute('data-title', `${result.data.Viewer.name}\nClick To Logout`)
+      oauth.innerHTML = `<img src="${result.data.Viewer.avatar.medium}" class="m-0">`
+      oauth.onclick = () => {
+        localStorage.removeItem('ALtoken')
+        location.reload()
+      }
+      alID = result.data.Viewer.id
+      loadHomePage()
+    })
+  } else {
+    loadHomePage()
+    home.classList.add('noauth')
   }
 }

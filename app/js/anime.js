@@ -1,9 +1,9 @@
 /* eslint-env browser */
-/* global searchText, navNowPlaying, home, oauth, torrent4list */
-import { settings } from './settings.js'
-import { loadHomePage, cardCreator } from './interface.js'
+/* global searchText, navNowPlaying */
 import { client } from './main.js'
-import { searchParams, userBrowser, DOMPARSER, countdown } from './util.js'
+import { searchParams, DOMPARSER, countdown } from './util.js'
+import { alRequest } from './anilist.js'
+import { nyaaRss } from './rss.js'
 import halfmoon from 'halfmoon'
 import anitomyscript from 'anitomyscript'
 const torrentRx = /(magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent){1}/i
@@ -31,7 +31,7 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
     })
   } else if (item && item.type === 'text/html') {
     item.getAsString(text => {
-      const img = new DOMParser().parseFromString(text, 'text/html').querySelectorAll('img')[0]
+      const img = DOMPARSER(text, 'text/html').querySelectorAll('img')[0]
       if (img) {
         e.preventDefault()
         searchText.value = ''
@@ -58,253 +58,24 @@ function traceAnime (image, type) { // WAIT lookup logic
     }
     url = 'https://trace.moe/api/search'
   }
-  fetch(url, options).then((res) => res.json())
-    .then(async (result) => {
-      if (result.docs[0].similarity >= 0.85) {
-        const res = await alRequest({ method: 'SearchIDSingle', id: result.docs[0].anilist_id })
-        viewAnime(res.data.Media)
-      } else {
-        halfmoon.initStickyAlert({
-          content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
-          title: 'Search Failed',
-          alertType: 'alert-danger',
-          fillType: ''
-        })
-      }
-    })
+  fetch(url, options).then(res => res.json()).then(async result => {
+    if (result.docs[0].similarity >= 0.85) {
+      const res = await alRequest({ method: 'SearchIDSingle', id: result.docs[0].anilist_id })
+      viewAnime(res.data.Media)
+    } else {
+      halfmoon.initStickyAlert({
+        content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
+        title: 'Search Failed',
+        alertType: 'alert-danger',
+        fillType: ''
+      })
+    }
+  })
 }
 // events
-navNowPlaying.onclick = () => { viewAnime(client.nowPlaying?.media) }
+navNowPlaying.onclick = () => viewAnime(client.nowPlaying?.media)
 // AL lookup logic
-export async function alRequest (opts) {
-  let query
-  const variables = {
-    type: 'ANIME',
-    sort: opts.sort || 'TRENDING_DESC',
-    page: opts.page || 1,
-    perPage: opts.perPage || 30,
-    status_in: opts.status_in || '[CURRENT,PLANNING]',
-    chunk: opts.chunk || 1,
-    perchunk: opts.perChunk || 30
-  }
-  const options = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json'
-    },
-    body: undefined
-  }
-  const queryObjects = `
-id,
-title {
-  romaji,
-  english,
-  native,
-  userPreferred
-},
-description(
-  asHtml: true
-),
-season,
-seasonYear,
-format,
-status,
-episodes,
-duration,
-averageScore,
-genres,
-coverImage {
-  extraLarge,
-  medium,
-  color
-},
-countryOfOrigin,
-isAdult,
-bannerImage,
-synonyms,
-nextAiringEpisode {
-  timeUntilAiring,
-  episode
-},
-trailer {
-  id,
-  site
-},
-streamingEpisodes {
-  title,
-  thumbnail
-},
-relations {
-  edges {
-    relationType(version:2)
-    node {
-      id,
-      title {
-        userPreferred
-      },
-      coverImage {
-        medium
-      },
-      type,
-      status,
-      format,
-      episodes
-    }
-  }
-}`
-  if (opts.status) variables.status = opts.status
-  if (localStorage.getItem('ALtoken')) options.headers.Authorization = localStorage.getItem('ALtoken')
-  if (opts.method === 'SearchName') { // look at me go, i'm doing the yandree dev
-    variables.search = opts.name
-    query = ` 
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus) {
-  Page (page: $page, perPage: $perPage) {
-    media(type: $type, search: $search, sort: $sort, status: $status) {
-      ${queryObjects}
-    }
-  }
-}`
-  } else if (opts.method === 'SearchIDSingle') {
-    variables.id = opts.id
-    query = ` 
-query ($id: Int, $type: MediaType) { 
-  Media (id: $id, type: $type) {
-    ${queryObjects}
-  }
-}`
-  } else if (opts.method === 'SearchIDS') {
-    variables.id = opts.id
-    query = ` 
-query ($id: [Int], $type: MediaType, $page: Int, $perPage: Int) { 
-  Page (page: $page, perPage: $perPage) {
-    media (id_in: $id, type: $type) {
-      ${queryObjects}
-    }
-  }
-}`
-  } else if (opts.method === 'Viewer') {
-    query = ` 
-query {
-  Viewer {
-    avatar {
-      medium
-    },
-    name,
-    id
-  }
-}`
-  } else if (opts.method === 'UserLists') {
-    variables.id = opts.id
-    query = ` 
-query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [MediaListStatus]){
-  Page (page: $page, perPage: $perPage) {
-    mediaList (userId: $id, type: $type, status_in: $status_in) {
-      media {
-        ${queryObjects}
-      }
-    }
-  }
-}`
-  } else if (opts.method === 'SearchIDStatus') {
-    variables.id = alID
-    variables.mediaId = opts.id
-    query = ` 
-query ($id: Int, $mediaId: Int){
-  MediaList(userId: $id, mediaId: $mediaId) {
-    status,
-    progress,
-    repeat
-  }
-}`
-  } else if (opts.method === 'AiringSchedule') {
-    const date = new Date()
-    const diff = date.getDay() >= 1 ? date.getDay() - 1 : 6 - date.getDay()
-    date.setDate(date.getDate() - diff)
-    date.setHours(0, 0, 0, 0)
-    variables.from = date.getTime() / 1000
-    variables.to = (date.getTime() + 7 * 24 * 60 * 60 * 1000) / 1000
-    query = ` 
-query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
-  Page (page: $page, perPage: $perPage) {
-    airingSchedules(airingAt_greater: $from, airingAt_lesser: $to) {
-      episode,
-      timeUntilAiring,
-      airingAt,
-      media{
-        ${queryObjects}
-      }
-    }
-  }
-}`
-  } else if (opts.method === 'Search') {
-    variables.genre = opts.genre
-    variables.search = opts.search
-    variables.year = opts.year
-    variables.season = opts.season
-    variables.format = opts.format
-    variables.status = opts.status
-    variables.sort = opts.sort || 'SEARCH_MATCH'
-    query = ` 
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
-  Page (page: $page, perPage: $perPage) {
-    media(type: $type, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format) {
-      ${queryObjects}
-    }
-  }
-}`
-  }
-  options.body = JSON.stringify({
-    query: query.replace(/\s/g, ''),
-    variables: variables
-  })
 
-  const res = await fetch('https://graphql.anilist.co', options).catch((error) => console.error(error))
-  const json = await res.json()
-  console.log(json)
-  return json
-}
-export async function alEntry () {
-  if (client.nowPlaying.media && localStorage.getItem('ALtoken')) {
-    const res = await alRequest({ method: 'SearchIDStatus', id: client.nowPlaying.media.id })
-    if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= client.nowPlaying.episodeNumber) {
-      const query = `
-mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
-  SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
-    id,
-    status,
-    progress,
-    repeat
-  }
-}`
-      const variables = {
-        repeat: 0,
-        id: client.nowPlaying.media.id,
-        status: 'CURRENT',
-        episode: client.nowPlaying.episodeNumber
-      }
-      if (client.nowPlaying.episodeNumber === client.nowPlaying.media.episodes) {
-        variables.status = 'COMPLETED'
-        if (res.data.MediaList.status === 'COMPLETED') {
-          variables.repeat = res.data.MediaList.repeat + 1
-        }
-      }
-      const options = {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('ALtoken'),
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        },
-        body: JSON.stringify({
-          query: query,
-          variables: variables
-        })
-      }
-      fetch('https://graphql.anilist.co', options).catch((error) => console.error(error))
-    }
-  }
-}
 // these really shouldnt be global
 const detailsfrag = document.createDocumentFragment()
 const details = {
@@ -475,51 +246,6 @@ export async function nyaaSearch (media, episode) {
   }
 }
 
-const exclusions = {
-  edge: ['DTS'],
-  chromium: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265'],
-  firefox: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265', '.3gp', '.mkv']
-}
-if (!('audioTracks' in HTMLVideoElement.prototype)) {
-  exclusions[userBrowser].push('mutli audio', 'dual audio')
-}
-
-async function nyaaRss (media, episode) {
-  const frag = document.createDocumentFragment()
-  const ep = (media.status === 'FINISHED' && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
-  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(')})${ep}"${settings.torrent1}"-(${exclusions[userBrowser].join('|')})`)
-  const res = await fetch(url)
-  await res.text().then((xmlTxt) => {
-    try {
-      const doc = DOMPARSER(xmlTxt, 'text/xml')
-      if (settings.torrent2 && doc.querySelector('infoHash')) {
-        client.playTorrent(doc.querySelector('infoHash').textContent, { media: media, episode: episode, expectedSize: doc.querySelector('size').textContent })
-        halfmoon.toggleModal('tsearch')
-      }
-      doc.querySelectorAll('item').forEach((item, index) => {
-        const i = item.querySelectorAll('*')
-        console.log(i)
-        const template = document.createElement('tr')
-        template.innerHTML += `
-                <th>${(index + 1)}</th>
-                <td>${i[0].textContent}</td>
-                <td>${i[10].textContent}</td>
-                <td>${i[4].textContent}</td>
-                <td>${i[5].textContent}</td>
-                <td>${i[6].textContent}</td>
-                <td class="pointer">Play</td>`
-        template.onclick = () => {
-          client.playTorrent(i[7].textContent, { media: media, episode: episode, expectedSize: i[10].textContent })
-          halfmoon.hideModal('tsearch')
-        }
-        frag.appendChild(template)
-      })
-    } catch (e) {
-      console.error(e)
-    }
-  })
-  return frag
-}
 // resolve anime name based on file name and store it
 
 export async function resolveFileMedia (opts) {
@@ -643,56 +369,4 @@ export async function resolveFileMedia (opts) {
   return fileMedias.length === 1 ? fileMedias[0] : fileMedias
 }
 
-export let relations = JSON.parse(localStorage.getItem('relations')) || {}
-relations = relations || {}
-
-export function getRSSurl () {
-  if (Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0]) {
-    return settings.torrent4 === 'Erai-raws' ? new URL(Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0].innerHTML + settings.torrent1 + '-magnet') : new URL(Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0].innerHTML + settings.torrent1)
-  } else {
-    return settings.torrent4 + settings.torrent1 // add custom RSS
-  }
-}
-export async function releasesCards (items, limit) {
-  const cards = []
-  await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true }).then(results => {
-    results.forEach((mediaInformation, index) => {
-      const o = items[index].querySelector.bind(items[index])
-      mediaInformation.onclick = () => client.playTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode, expectedSize: o('size').textContent })
-      cards.push(cardCreator(mediaInformation))
-    })
-  })
-  localStorage.setItem('relations', JSON.stringify(relations))
-  return cards
-}
-export async function releasesRss (limit) {
-  let cards
-  await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
-    try {
-      cards = await releasesCards(DOMPARSER(xmlTxt, 'text/xml').querySelectorAll('item'), limit)
-    } catch (e) {
-      console.error(e)
-    }
-  }))
-  return cards
-}
-export let alID // login icon
-async function loadAnime () {
-  if (localStorage.getItem('ALtoken')) {
-    alRequest({ method: 'Viewer' }).then(result => {
-      oauth.removeAttribute('href')
-      oauth.setAttribute('data-title', `${result.data.Viewer.name}\nClick To Logout`)
-      oauth.innerHTML = `<img src="${result.data.Viewer.avatar.medium}" class="m-0">`
-      oauth.onclick = () => {
-        localStorage.removeItem('ALtoken')
-        location.reload()
-      }
-      alID = result.data.Viewer.id
-      loadHomePage()
-    })
-  } else {
-    loadHomePage()
-    home.classList.add('noauth')
-  }
-}
-loadAnime()
+export const relations = JSON.parse(localStorage.getItem('relations')) || {}

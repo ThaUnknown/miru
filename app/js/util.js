@@ -15,13 +15,9 @@ if (searchParams.get('access_token')) {
 }
 export const userBrowser = (() => {
   if (window.chrome) {
-    if (navigator.userAgent.indexOf('Edg') !== -1) {
-      return 'edge'
-    } else {
-      return 'chromium'
-    }
+    return (navigator.userAgent.indexOf('Edg') !== -1) ? 'edge' : 'chromium'
   }
-  if (typeof InstallTrigger !== 'undefined') return 'firefox'
+  return 'firefox'
 })()
 export function countdown (s) {
   const d = Math.floor(s / (3600 * 24))

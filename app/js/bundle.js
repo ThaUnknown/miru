@@ -1,113 +1,90 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./app/js/anime.js":
-/*!*************************!*\
-  !*** ./app/js/anime.js ***!
-  \*************************/
+/***/ "./app/js/anilist.js":
+/*!***************************!*\
+  !*** ./app/js/anilist.js ***!
+  \***************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "alRequest": () => (/* binding */ alRequest),
 /* harmony export */   "alEntry": () => (/* binding */ alEntry),
-/* harmony export */   "viewAnime": () => (/* binding */ viewAnime),
-/* harmony export */   "nyaaSearch": () => (/* binding */ nyaaSearch),
-/* harmony export */   "resolveFileMedia": () => (/* binding */ resolveFileMedia),
-/* harmony export */   "relations": () => (/* binding */ relations),
-/* harmony export */   "getRSSurl": () => (/* binding */ getRSSurl),
-/* harmony export */   "releasesCards": () => (/* binding */ releasesCards),
-/* harmony export */   "releasesRss": () => (/* binding */ releasesRss),
-/* harmony export */   "alID": () => (/* binding */ alID)
+/* harmony export */   "alRequest": () => (/* binding */ alRequest)
 /* harmony export */ });
-/* harmony import */ var _settings_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./settings.js */ "./app/js/settings.js");
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./main.js */ "./app/js/main.js");
 /* harmony import */ var _interface_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./interface.js */ "./app/js/interface.js");
-/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./main.js */ "./app/js/main.js");
-/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
-/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! halfmoon */ "halfmoon");
-/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! anitomyscript */ "anitomyscript");
-/* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(anitomyscript__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! halfmoon */ "halfmoon");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_2__);
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 /* eslint-env browser */
-/* global searchText, navNowPlaying, home, oauth, torrent4list */
+/* global */
 
 
 
 
-
-
-const torrentRx = /(magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent){1}/i
-const imageRx = /\.(jpeg|jpg|gif|png|webp)/
-window.addEventListener('paste', async e => { // WAIT image lookup on paste, or add torrent on paste
-  const item = e.clipboardData.items[0]
-  if (item && item.type.indexOf('image') === 0) {
-    e.preventDefault()
-    const reader = new FileReader()
-    reader.onload = e => {
-      traceAnime(e.target.result, 'uri')
-    }
-    reader.readAsDataURL(item.getAsFile())
-  } else if (item && item.type === 'text/plain') {
-    item.getAsString(text => {
-      if (torrentRx.exec(text)) {
-        e.preventDefault()
-        searchText.value = ''
-        _main_js__WEBPACK_IMPORTED_MODULE_2__.client.playTorrent(text)
-      } else if (imageRx.exec(text)) {
-        e.preventDefault()
-        searchText.value = ''
-        traceAnime(text)
-      }
-    })
-  } else if (item && item.type === 'text/html') {
-    item.getAsString(text => {
-      const img = new DOMParser().parseFromString(text, 'text/html').querySelectorAll('img')[0]
-      if (img) {
-        e.preventDefault()
-        searchText.value = ''
-        traceAnime(img.src)
-      }
-    })
-  }
-})
-if (_util_js__WEBPACK_IMPORTED_MODULE_3__.searchParams.get('link')) {
-  traceAnime(_util_js__WEBPACK_IMPORTED_MODULE_3__.searchParams.get('link'))
-  window.location = '/app/#home'
-}
-function traceAnime (image, type) { // WAIT lookup logic
-  halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
-    content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
-  })
-  let options
-  let url = `https://trace.moe/api/search?url=${image}`
-  if (type === 'uri') {
-    options = {
-      method: 'POST',
-      body: JSON.stringify({ image: image }),
-      headers: { 'Content-Type': 'application/json' }
-    }
-    url = 'https://trace.moe/api/search'
-  }
-  fetch(url, options).then((res) => res.json())
-    .then(async (result) => {
-      if (result.docs[0].similarity >= 0.85) {
-        const res = await alRequest({ method: 'SearchIDSingle', id: result.docs[0].anilist_id })
-        viewAnime(res.data.Media)
-      } else {
-        halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
-          content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
+async function handleRequest (opts) {
+  return await fetch('https://graphql.anilist.co', opts).then(async res => {
+    const json = await res.json()
+    if (!res.ok) {
+      for (const error of json.errors) {
+        halfmoon__WEBPACK_IMPORTED_MODULE_2___default().initStickyAlert({
+          content: `Failed making request to anilist!<br>${error.status} - ${error.message}`,
           title: 'Search Failed',
           alertType: 'alert-danger',
           fillType: ''
         })
+        console.error(error)
+      }
+    }
+    return json
+  })
+}
+
+function alEntry () {
+  if (_main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media && localStorage.getItem('ALtoken')) {
+    alRequest({ method: 'SearchIDStatus', id: _main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media.id }).then(res => {
+      if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= _main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.episodeNumber) {
+        const query = `
+mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
+  SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
+    id,
+    status,
+    progress,
+    repeat
+  }
+}`
+        const variables = {
+          repeat: 0,
+          id: _main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media.id,
+          status: 'CURRENT',
+          episode: _main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.episodeNumber
+        }
+        if (_main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.episodeNumber === _main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media.episodes) {
+          variables.status = 'COMPLETED'
+          if (res.data.MediaList.status === 'COMPLETED') {
+            variables.repeat = res.data.MediaList.repeat + 1
+          }
+        }
+        const options = {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('ALtoken'),
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          },
+          body: JSON.stringify({
+            query: query,
+            variables: variables
+          })
+        }
+        handleRequest(options)
       }
     })
+  }
 }
-// events
-navNowPlaying.onclick = () => { viewAnime(_main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.media) }
-// AL lookup logic
+
 async function alRequest (opts) {
   let query
   const variables = {
@@ -187,9 +164,10 @@ relations {
 }`
   if (opts.status) variables.status = opts.status
   if (localStorage.getItem('ALtoken')) options.headers.Authorization = localStorage.getItem('ALtoken')
-  if (opts.method === 'SearchName') { // look at me go, i'm doing the yandree dev
-    variables.search = opts.name
-    query = ` 
+  switch (opts.method) {
+    case 'SearchName': {
+      variables.search = opts.name
+      query = ` 
 query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus) {
   Page (page: $page, perPage: $perPage) {
     media(type: $type, search: $search, sort: $sort, status: $status) {
@@ -197,17 +175,19 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
     }
   }
 }`
-  } else if (opts.method === 'SearchIDSingle') {
-    variables.id = opts.id
-    query = ` 
+      break
+    } case 'SearchIDSingle': {
+      variables.id = opts.id
+      query = ` 
 query ($id: Int, $type: MediaType) { 
   Media (id: $id, type: $type) {
     ${queryObjects}
   }
 }`
-  } else if (opts.method === 'SearchIDS') {
-    variables.id = opts.id
-    query = ` 
+      break
+    } case 'SearchIDS': {
+      variables.id = opts.id
+      query = ` 
 query ($id: [Int], $type: MediaType, $page: Int, $perPage: Int) { 
   Page (page: $page, perPage: $perPage) {
     media (id_in: $id, type: $type) {
@@ -215,8 +195,9 @@ query ($id: [Int], $type: MediaType, $page: Int, $perPage: Int) {
     }
   }
 }`
-  } else if (opts.method === 'Viewer') {
-    query = ` 
+      break
+    } case 'Viewer': {
+      query = ` 
 query {
   Viewer {
     avatar {
@@ -226,9 +207,10 @@ query {
     id
   }
 }`
-  } else if (opts.method === 'UserLists') {
-    variables.id = opts.id
-    query = ` 
+      break
+    } case 'UserLists': {
+      variables.id = opts.id
+      query = ` 
 query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [MediaListStatus]){
   Page (page: $page, perPage: $perPage) {
     mediaList (userId: $id, type: $type, status_in: $status_in) {
@@ -238,10 +220,11 @@ query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [Media
     }
   }
 }`
-  } else if (opts.method === 'SearchIDStatus') {
-    variables.id = alID
-    variables.mediaId = opts.id
-    query = ` 
+      break
+    } case 'SearchIDStatus': {
+      variables.id = _interface_js__WEBPACK_IMPORTED_MODULE_1__.alID
+      variables.mediaId = opts.id
+      query = ` 
 query ($id: Int, $mediaId: Int){
   MediaList(userId: $id, mediaId: $mediaId) {
     status,
@@ -249,14 +232,15 @@ query ($id: Int, $mediaId: Int){
     repeat
   }
 }`
-  } else if (opts.method === 'AiringSchedule') {
-    const date = new Date()
-    const diff = date.getDay() >= 1 ? date.getDay() - 1 : 6 - date.getDay()
-    date.setDate(date.getDate() - diff)
-    date.setHours(0, 0, 0, 0)
-    variables.from = date.getTime() / 1000
-    variables.to = (date.getTime() + 7 * 24 * 60 * 60 * 1000) / 1000
-    query = ` 
+      break
+    } case 'AiringSchedule': {
+      const date = new Date()
+      const diff = date.getDay() >= 1 ? date.getDay() - 1 : 6 - date.getDay()
+      date.setDate(date.getDate() - diff)
+      date.setHours(0, 0, 0, 0)
+      variables.from = date.getTime() / 1000
+      variables.to = (date.getTime() + 7 * 24 * 60 * 60 * 1000) / 1000
+      query = ` 
 query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
   Page (page: $page, perPage: $perPage) {
     airingSchedules(airingAt_greater: $from, airingAt_lesser: $to) {
@@ -269,15 +253,16 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
     }
   }
 }`
-  } else if (opts.method === 'Search') {
-    variables.genre = opts.genre
-    variables.search = opts.search
-    variables.year = opts.year
-    variables.season = opts.season
-    variables.format = opts.format
-    variables.status = opts.status
-    variables.sort = opts.sort || 'SEARCH_MATCH'
-    query = ` 
+      break
+    } case 'Search': {
+      variables.genre = opts.genre
+      variables.search = opts.search
+      variables.year = opts.year
+      variables.season = opts.season
+      variables.format = opts.format
+      variables.status = opts.status
+      variables.sort = opts.sort || 'SEARCH_MATCH'
+      query = ` 
 query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
   Page (page: $page, perPage: $perPage) {
     media(type: $type, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format) {
@@ -285,58 +270,120 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
     }
   }
 }`
+    }
   }
   options.body = JSON.stringify({
     query: query.replace(/\s/g, ''),
     variables: variables
   })
 
-  const res = await fetch('https://graphql.anilist.co', options).catch((error) => console.error(error))
-  const json = await res.json()
-  console.log(json)
-  return json
+  return await handleRequest(options)
 }
-async function alEntry () {
-  if (_main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.media && localStorage.getItem('ALtoken')) {
-    const res = await alRequest({ method: 'SearchIDStatus', id: _main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.media.id })
-    if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= _main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.episodeNumber) {
-      const query = `
-mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
-  SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
-    id,
-    status,
-    progress,
-    repeat
-  }
-}`
-      const variables = {
-        repeat: 0,
-        id: _main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.media.id,
-        status: 'CURRENT',
-        episode: _main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.episodeNumber
-      }
-      if (_main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.episodeNumber === _main_js__WEBPACK_IMPORTED_MODULE_2__.client.nowPlaying.media.episodes) {
-        variables.status = 'COMPLETED'
-        if (res.data.MediaList.status === 'COMPLETED') {
-          variables.repeat = res.data.MediaList.repeat + 1
-        }
-      }
-      const options = {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('ALtoken'),
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        },
-        body: JSON.stringify({
-          query: query,
-          variables: variables
-        })
-      }
-      fetch('https://graphql.anilist.co', options).catch((error) => console.error(error))
+
+
+/***/ }),
+
+/***/ "./app/js/anime.js":
+/*!*************************!*\
+  !*** ./app/js/anime.js ***!
+  \*************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "viewAnime": () => (/* binding */ viewAnime),
+/* harmony export */   "nyaaSearch": () => (/* binding */ nyaaSearch),
+/* harmony export */   "resolveFileMedia": () => (/* binding */ resolveFileMedia),
+/* harmony export */   "relations": () => (/* binding */ relations)
+/* harmony export */ });
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./main.js */ "./app/js/main.js");
+/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
+/* harmony import */ var _anilist_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./anilist.js */ "./app/js/anilist.js");
+/* harmony import */ var _rss_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./rss.js */ "./app/js/rss.js");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! halfmoon */ "halfmoon");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! anitomyscript */ "anitomyscript");
+/* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(anitomyscript__WEBPACK_IMPORTED_MODULE_5__);
+/* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
+/* eslint-env browser */
+/* global searchText, navNowPlaying */
+
+
+
+
+
+
+const torrentRx = /(magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent){1}/i
+const imageRx = /\.(jpeg|jpg|gif|png|webp)/
+window.addEventListener('paste', async e => { // WAIT image lookup on paste, or add torrent on paste
+  const item = e.clipboardData.items[0]
+  if (item && item.type.indexOf('image') === 0) {
+    e.preventDefault()
+    const reader = new FileReader()
+    reader.onload = e => {
+      traceAnime(e.target.result, 'uri')
     }
+    reader.readAsDataURL(item.getAsFile())
+  } else if (item && item.type === 'text/plain') {
+    item.getAsString(text => {
+      if (torrentRx.exec(text)) {
+        e.preventDefault()
+        searchText.value = ''
+        _main_js__WEBPACK_IMPORTED_MODULE_0__.client.playTorrent(text)
+      } else if (imageRx.exec(text)) {
+        e.preventDefault()
+        searchText.value = ''
+        traceAnime(text)
+      }
+    })
+  } else if (item && item.type === 'text/html') {
+    item.getAsString(text => {
+      const img = (0,_util_js__WEBPACK_IMPORTED_MODULE_1__.DOMPARSER)(text, 'text/html').querySelectorAll('img')[0]
+      if (img) {
+        e.preventDefault()
+        searchText.value = ''
+        traceAnime(img.src)
+      }
+    })
   }
+})
+if (_util_js__WEBPACK_IMPORTED_MODULE_1__.searchParams.get('link')) {
+  traceAnime(_util_js__WEBPACK_IMPORTED_MODULE_1__.searchParams.get('link'))
+  window.location = '/app/#home'
 }
+function traceAnime (image, type) { // WAIT lookup logic
+  halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
+    content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
+  })
+  let options
+  let url = `https://trace.moe/api/search?url=${image}`
+  if (type === 'uri') {
+    options = {
+      method: 'POST',
+      body: JSON.stringify({ image: image }),
+      headers: { 'Content-Type': 'application/json' }
+    }
+    url = 'https://trace.moe/api/search'
+  }
+  fetch(url, options).then(res => res.json()).then(async result => {
+    if (result.docs[0].similarity >= 0.85) {
+      const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)({ method: 'SearchIDSingle', id: result.docs[0].anilist_id })
+      viewAnime(res.data.Media)
+    } else {
+      halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
+        content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
+        title: 'Search Failed',
+        alertType: 'alert-danger',
+        fillType: ''
+      })
+    }
+  })
+}
+// events
+navNowPlaying.onclick = () => viewAnime(_main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media)
+// AL lookup logic
+
 // these really shouldnt be global
 const detailsfrag = document.createDocumentFragment()
 const details = {
@@ -368,7 +415,7 @@ function viewAnime (media) {
   viewDetails.appendChild(detailsfrag)
   if (media.nextAiringEpisode) {
     const temp = document.createElement('p')
-    temp.innerHTML = `<span class="font-weight-bold">Airing</span><br><span class="text-muted"> Episode ${media.nextAiringEpisode.episode}: ${(0,_util_js__WEBPACK_IMPORTED_MODULE_3__.countdown)(media.nextAiringEpisode.timeUntilAiring)}</span>`
+    temp.innerHTML = `<span class="font-weight-bold">Airing</span><br><span class="text-muted"> Episode ${media.nextAiringEpisode.episode}: ${(0,_util_js__WEBPACK_IMPORTED_MODULE_1__.countdown)(media.nextAiringEpisode.timeUntilAiring)}</span>`
     viewDetails.prepend(temp)
   }
   viewSeason.innerHTML = `${(media.season ? media.season.toLowerCase() + ' ' : '') + (media.seasonYear ? media.seasonYear : '')}`
@@ -417,7 +464,7 @@ function viewAnime (media) {
         </div>`
       template.onclick = async () => {
         halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('view')
-        const res = await alRequest({ method: 'SearchIDSingle', id: edge.node.id })
+        const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)({ method: 'SearchIDSingle', id: edge.node.id })
         viewAnime(res.data.Media)
       }
       frag.appendChild(template)
@@ -491,7 +538,7 @@ async function nyaaSearch (media, episode) {
   }
 
   const table = document.querySelector('tbody.results')
-  const results = await nyaaRss(media, episode)
+  const results = await (0,_rss_js__WEBPACK_IMPORTED_MODULE_3__.nyaaRss)(media, episode)
 
   if (results.children.length === 0) {
     halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
@@ -507,51 +554,6 @@ async function nyaaSearch (media, episode) {
   }
 }
 
-const exclusions = {
-  edge: ['DTS'],
-  chromium: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265'],
-  firefox: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265', '.3gp', '.mkv']
-}
-if (!('audioTracks' in HTMLVideoElement.prototype)) {
-  exclusions[_util_js__WEBPACK_IMPORTED_MODULE_3__.userBrowser].push('mutli audio', 'dual audio')
-}
-
-async function nyaaRss (media, episode) {
-  const frag = document.createDocumentFragment()
-  const ep = (media.status === 'FINISHED' && _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
-  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(')})${ep}"${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1}"-(${exclusions[_util_js__WEBPACK_IMPORTED_MODULE_3__.userBrowser].join('|')})`)
-  const res = await fetch(url)
-  await res.text().then((xmlTxt) => {
-    try {
-      const doc = (0,_util_js__WEBPACK_IMPORTED_MODULE_3__.DOMPARSER)(xmlTxt, 'text/xml')
-      if (_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent2 && doc.querySelector('infoHash')) {
-        _main_js__WEBPACK_IMPORTED_MODULE_2__.client.playTorrent(doc.querySelector('infoHash').textContent, { media: media, episode: episode, expectedSize: doc.querySelector('size').textContent })
-        halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('tsearch')
-      }
-      doc.querySelectorAll('item').forEach((item, index) => {
-        const i = item.querySelectorAll('*')
-        console.log(i)
-        const template = document.createElement('tr')
-        template.innerHTML += `
-                <th>${(index + 1)}</th>
-                <td>${i[0].textContent}</td>
-                <td>${i[10].textContent}</td>
-                <td>${i[4].textContent}</td>
-                <td>${i[5].textContent}</td>
-                <td>${i[6].textContent}</td>
-                <td class="pointer">Play</td>`
-        template.onclick = () => {
-          _main_js__WEBPACK_IMPORTED_MODULE_2__.client.playTorrent(i[7].textContent, { media: media, episode: episode, expectedSize: i[10].textContent })
-          halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('tsearch')
-        }
-        frag.appendChild(template)
-      })
-    } catch (e) {
-      console.error(e)
-    }
-  })
-  return frag
-}
 // resolve anime name based on file name and store it
 
 async function resolveFileMedia (opts) {
@@ -567,12 +569,12 @@ async function resolveFileMedia (opts) {
       } else {
         method = { name: title, method: opts.method, perPage: 1, sort: 'SEARCH_MATCH' }
       }
-      res = await alRequest(method)
+      res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)(method)
       if (!res.data.Page.media[0]) {
         method.sort = 'SEARCH_MATCH'
         method.name = method.name.replace('(TV)', '').replace(` (${new Date().getFullYear()})`, '').replace('-', '').replace('S2', '2') // this needs to be improved!!!
         method.status = undefined
-        res = await alRequest(method)
+        res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)(method)
       }
       if (res.data.Page.media[0]) {
         relations[title] = res.data.Page.media[0].id
@@ -585,7 +587,7 @@ async function resolveFileMedia (opts) {
   const parseObjs = await Promise.all(parsePromises)
   await Promise.all([...new Set(parseObjs.map(obj => obj.anime_title))].map(title => resolveTitle(title)))
   const assoc = {}
-  for (const media of (await alRequest({ method: 'SearchIDS', id: [...new Set(parseObjs.map(obj => relations[obj.anime_title]))], perPage: 50 })).data.Page.media) assoc[media.id] = media
+  for (const media of (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)({ method: 'SearchIDS', id: [...new Set(parseObjs.map(obj => relations[obj.anime_title]))], perPage: 50 })).data.Page.media) assoc[media.id] = media
   const fileMedias = []
   for (const praseObj of parseObjs) {
     let episode
@@ -610,7 +612,7 @@ async function resolveFileMedia (opts) {
       }
       if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) > (media.nextAiringEpisode?.episode || media.episodes)) {
         // episode is still out of bounds
-        const nextEdge = await alRequest({ method: 'SearchIDSingle', id: tempMedia.id })
+        const nextEdge = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)({ method: 'SearchIDSingle', id: tempMedia.id })
         await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes, increment: increment })
       } else if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) <= (media.nextAiringEpisode?.episode || media.episodes) && epMin - (opts.offset + tempMedia.episodes) > 0) {
         // episode is in range, seems good! overwriting media to count up "seasons"
@@ -620,7 +622,7 @@ async function resolveFileMedia (opts) {
           episode = opts.episode - (opts.offset + tempMedia.episodes)
         }
         if (opts.increment) {
-          const nextEdge = await alRequest({ method: 'SearchIDSingle', id: tempMedia.id })
+          const nextEdge = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)({ method: 'SearchIDSingle', id: tempMedia.id })
           media = nextEdge.data.Media
         }
       } else {
@@ -675,59 +677,7 @@ async function resolveFileMedia (opts) {
   return fileMedias.length === 1 ? fileMedias[0] : fileMedias
 }
 
-let relations = JSON.parse(localStorage.getItem('relations')) || {}
-relations = relations || {}
-
-function getRSSurl () {
-  if (Object.values(torrent4list.options).filter(item => item.value === _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent4)[0]) {
-    return _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent4 === 'Erai-raws' ? new URL(Object.values(torrent4list.options).filter(item => item.value === _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent4)[0].innerHTML + _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1 + '-magnet') : new URL(Object.values(torrent4list.options).filter(item => item.value === _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent4)[0].innerHTML + _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1)
-  } else {
-    return _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent4 + _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1 // add custom RSS
-  }
-}
-async function releasesCards (items, limit) {
-  const cards = []
-  await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true }).then(results => {
-    results.forEach((mediaInformation, index) => {
-      const o = items[index].querySelector.bind(items[index])
-      mediaInformation.onclick = () => _main_js__WEBPACK_IMPORTED_MODULE_2__.client.playTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode, expectedSize: o('size').textContent })
-      cards.push((0,_interface_js__WEBPACK_IMPORTED_MODULE_1__.cardCreator)(mediaInformation))
-    })
-  })
-  localStorage.setItem('relations', JSON.stringify(relations))
-  return cards
-}
-async function releasesRss (limit) {
-  let cards
-  await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
-    try {
-      cards = await releasesCards((0,_util_js__WEBPACK_IMPORTED_MODULE_3__.DOMPARSER)(xmlTxt, 'text/xml').querySelectorAll('item'), limit)
-    } catch (e) {
-      console.error(e)
-    }
-  }))
-  return cards
-}
-let alID // login icon
-async function loadAnime () {
-  if (localStorage.getItem('ALtoken')) {
-    alRequest({ method: 'Viewer' }).then(result => {
-      oauth.removeAttribute('href')
-      oauth.setAttribute('data-title', `${result.data.Viewer.name}\nClick To Logout`)
-      oauth.innerHTML = `<img src="${result.data.Viewer.avatar.medium}" class="m-0">`
-      oauth.onclick = () => {
-        localStorage.removeItem('ALtoken')
-        location.reload()
-      }
-      alID = result.data.Viewer.id
-      ;(0,_interface_js__WEBPACK_IMPORTED_MODULE_1__.loadHomePage)()
-    })
-  } else {
-    (0,_interface_js__WEBPACK_IMPORTED_MODULE_1__.loadHomePage)()
-    home.classList.add('noauth')
-  }
-}
-loadAnime()
+const relations = JSON.parse(localStorage.getItem('relations')) || {}
 
 
 /***/ }),
@@ -742,19 +692,27 @@ loadAnime()
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "loadHomePage": () => (/* binding */ loadHomePage),
-/* harmony export */   "cardCreator": () => (/* binding */ cardCreator)
+/* harmony export */   "cardCreator": () => (/* binding */ cardCreator),
+/* harmony export */   "releasesCards": () => (/* binding */ releasesCards),
+/* harmony export */   "alID": () => (/* binding */ alID),
+/* harmony export */   "initMenu": () => (/* binding */ initMenu)
 /* harmony export */ });
-/* harmony import */ var _anime_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./anime.js */ "./app/js/anime.js");
-/* harmony import */ var _settings_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./settings.js */ "./app/js/settings.js");
-/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./main.js */ "./app/js/main.js");
-/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
+/* harmony import */ var _anilist_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./anilist.js */ "./app/js/anilist.js");
+/* harmony import */ var _anime_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./anime.js */ "./app/js/anime.js");
+/* harmony import */ var _rss_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./rss.js */ "./app/js/rss.js");
+/* harmony import */ var _settings_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./settings.js */ "./app/js/settings.js");
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./main.js */ "./app/js/main.js");
+/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
 /* eslint-env browser */
 /* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
 
 
 
 
-async function loadHomePage () {
+
+
+
+function loadHomePage () {
   const homeLoadElements = [navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore]
   const homePreviewElements = [homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction]
   const homeSearchElements = [searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort]
@@ -762,13 +720,13 @@ async function loadHomePage () {
   const homeLoadFunctions = {
     continue: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      await (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: _anime_js__WEBPACK_IMPORTED_MODULE_0__.alID, page: page || 1 }).then(res => {
+      await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 }).then(res => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'continue', page: page || 1 })
       })
     },
     releases: async function () {
       gallerySkeleton(browseGallery)
-      await (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.releasesRss)().then(cards => {
+      await (0,_rss_js__WEBPACK_IMPORTED_MODULE_2__.releasesRss)().then(cards => {
         browseGallery.textContent = ''
         browseGallery.append(...cards)
         home.classList.remove('loading')
@@ -777,7 +735,7 @@ async function loadHomePage () {
     },
     planning: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      await (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: _anime_js__WEBPACK_IMPORTED_MODULE_0__.alID, page: page || 1 }).then(res => {
+      await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 }).then(res => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'planning', page: page || 1 })
       })
     },
@@ -803,7 +761,7 @@ async function loadHomePage () {
     },
     schedule: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      await (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'AiringSchedule', page: page || 1 }).then(res => {
+      await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'AiringSchedule', page: page || 1 }).then(res => {
         galleryAppend({ media: res.data.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
       })
     },
@@ -815,40 +773,40 @@ async function loadHomePage () {
       for (const element of homeSearchElements) {
         if (element.value) opts[element.dataset.option] = element.value
       }
-      await (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)(opts).then(res => {
+      await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)(opts).then(res => {
         galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: 'search', page: page || 1 })
       })
     }
   }
   const homePreviewFunctions = {
     continue: function () {
-      ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: _anime_js__WEBPACK_IMPORTED_MODULE_0__.alID, perPage: 5 }).then((res) => {
+      ;(0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, perPage: 5 }).then((res) => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homeContinue })
       })
     },
     releases: async function () { // this could be cleaner, but oh well
-      await fetch((0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.getRSSurl)()).then(res => res.text().then(xmlTxt => {
-        const doc = (0,_util_js__WEBPACK_IMPORTED_MODULE_3__.DOMPARSER)(xmlTxt, 'text/xml')
+      await fetch((0,_rss_js__WEBPACK_IMPORTED_MODULE_2__.getRSSurl)()).then(res => res.text().then(xmlTxt => {
+        const doc = (0,_util_js__WEBPACK_IMPORTED_MODULE_5__.DOMPARSER)(xmlTxt, 'text/xml')
         const pubDate = doc.querySelector('pubDate').textContent
         if (lastRSSDate !== pubDate) {
           if (lastRSSDate) {
             homeReleases.append(...gallerySkeletonFrag(5))
-            ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.resolveFileMedia)({ fileName: doc.querySelector('item').querySelector('title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
-              if (_settings_js__WEBPACK_IMPORTED_MODULE_1__.settings.other1) {
+            ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: doc.querySelector('item').querySelector('title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
+              if (_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.other1) {
                 const notification = new Notification(mediaInformation.media.title.userPreferred, {
                   body: `Episode ${mediaInformation.episode} was just released!`,
                   icon: mediaInformation.media.coverImage.medium
                 })
                 notification.onclick = async () => {
                   window.parent.focus()
-                  _main_js__WEBPACK_IMPORTED_MODULE_2__.client.playTorrent(doc.querySelector('item').querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
-                  _anime_js__WEBPACK_IMPORTED_MODULE_0__.relations[mediaInformation.parseObject.anime_title] = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ id: mediaInformation.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media.id)
+                  _main_js__WEBPACK_IMPORTED_MODULE_4__.client.playTorrent(doc.querySelector('item').querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
+                  _anime_js__WEBPACK_IMPORTED_MODULE_1__.relations[mediaInformation.parseObject.anime_title] = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ id: mediaInformation.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media.id)
                 }
               }
             })
           }
           lastRSSDate = pubDate
-          ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.releasesCards)(doc.querySelectorAll('item'), 5).then(cards => {
+          releasesCards(doc.querySelectorAll('item'), 5).then(cards => {
             homeReleases.textContent = ''
             homeReleases.append(...cards)
           })
@@ -857,22 +815,22 @@ async function loadHomePage () {
       setTimeout(homePreviewFunctions.releases, 30000)
     },
     planning: function () {
-      (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: _anime_js__WEBPACK_IMPORTED_MODULE_0__.alID, perPage: 5 }).then((res) => {
+      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: alID, perPage: 5 }).then((res) => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homePlanning })
       })
     },
     trending: function () {
-      (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', id: _anime_js__WEBPACK_IMPORTED_MODULE_0__.alID, perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
+      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', id: alID, perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
         galleryAppend({ media: res.data.Page.media, gallery: homeTrending })
       })
     },
     romance: function () {
-      (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', genre: 'Romance', perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
+      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', genre: 'Romance', perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
         galleryAppend({ media: res.data.Page.media, gallery: homeRomance })
       })
     },
     action: function () {
-      (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', genre: 'Action', perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
+      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', genre: 'Action', perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
         galleryAppend({ media: res.data.Page.media, gallery: homeAction })
       })
     }
@@ -924,7 +882,7 @@ async function loadHomePage () {
         }
         media = media.media
       }
-      cards.push(cardCreator({ media: media, schedule: opts.schedule, onclick: () => (0,_anime_js__WEBPACK_IMPORTED_MODULE_0__.viewAnime)(media) }))
+      cards.push(cardCreator({ media: media, schedule: opts.schedule, onclick: () => (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.viewAnime)(media) }))
     })
     opts.gallery.append(...cards)
     canScroll = true
@@ -937,7 +895,7 @@ async function loadHomePage () {
     item.onclick = function () {
       home.scrollTop = 0
       home.classList.add('browsing')
-      homeLoadFunctions[this.dataset.function]()
+      homeLoadFunctions[item.dataset.function]()
     }
   }
   function reloadHome () {
@@ -987,7 +945,7 @@ function cardCreator (opts) {
     nodes[0].style = `--color:${opts.media.coverImage.color || '#1890ff'};`
     nodes[3].src = opts.media.coverImage.extraLarge || ''
     nodes[6].textContent = [opts.media.title.userPreferred, opts.episodeNumber].filter(s => s).join(' - ')
-    if (opts.schedule && opts.media.nextAiringEpisode) nodes[7] = opts.media.nextAiringEpisode.episode + ' in ' + (0,_util_js__WEBPACK_IMPORTED_MODULE_3__.countdown)(opts.media.nextAiringEpisode.timeUntilAiring)
+    if (opts.schedule && opts.media.nextAiringEpisode) nodes[7].textContent = opts.media.nextAiringEpisode.episode + ' in ' + (0,_util_js__WEBPACK_IMPORTED_MODULE_5__.countdown)(opts.media.nextAiringEpisode.timeUntilAiring)
     nodes[8].innerHTML = '<span>' + [
       opts.media.format === 'TV' ? 'TV Show' : opts.media.format?.toLowerCase().replace(/_/g, ' '),
       opts.media.episodes ? opts.media.episodes + ' Episodes' : opts.media.duration ? opts.media.duration + ' Minutes' : undefined,
@@ -1004,6 +962,40 @@ function cardCreator (opts) {
     return card
   } else {
     return skeletonCard.cloneNode(true)
+  }
+}
+
+async function releasesCards (items, limit) {
+  const cards = []
+  await (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true }).then(results => {
+    results.forEach((mediaInformation, index) => {
+      const o = items[index].querySelector.bind(items[index])
+      mediaInformation.onclick = () => _main_js__WEBPACK_IMPORTED_MODULE_4__.client.playTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
+      cards.push(cardCreator(mediaInformation))
+    })
+  })
+  localStorage.setItem('relations', JSON.stringify(_anime_js__WEBPACK_IMPORTED_MODULE_1__.relations))
+  return cards
+}
+
+let alID // login icon
+/* global oauth */
+function initMenu () {
+  if (localStorage.getItem('ALtoken')) {
+    (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Viewer' }).then(result => {
+      oauth.removeAttribute('href')
+      oauth.setAttribute('data-title', `${result.data.Viewer.name}\nClick To Logout`)
+      oauth.innerHTML = `<img src="${result.data.Viewer.avatar.medium}" class="m-0">`
+      oauth.onclick = () => {
+        localStorage.removeItem('ALtoken')
+        location.reload()
+      }
+      alID = result.data.Viewer.id
+      loadHomePage()
+    })
+  } else {
+    loadHomePage()
+    home.classList.add('noauth')
   }
 }
 
@@ -1024,11 +1016,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var webtorrent_player__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! webtorrent-player */ "./node_modules/webtorrent-player/index.js");
 /* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
 /* harmony import */ var _anime_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./anime.js */ "./app/js/anime.js");
-/* harmony import */ var _settings_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./settings.js */ "./app/js/settings.js");
-/* harmony import */ var _interface_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./interface.js */ "./app/js/interface.js");
-/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! halfmoon */ "halfmoon");
-/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _anilist_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./anilist.js */ "./app/js/anilist.js");
+/* harmony import */ var _settings_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./settings.js */ "./app/js/settings.js");
+/* harmony import */ var _interface_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./interface.js */ "./app/js/interface.js");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! halfmoon */ "halfmoon");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_6__);
 /* globals video, player, pageWrapper, subtitle1list */
+
 
 
 
@@ -1053,8 +1047,8 @@ for (const item of document.getElementsByClassName('ctrl')) {
 const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
   WebTorrentOpts: {
     maxConns: 127,
-    downloadLimit: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.torrent7 * 1048576,
-    uploadLimit: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.torrent7 * 1572864,
+    downloadLimit: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.torrent7 * 1048576,
+    uploadLimit: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.torrent7 * 1572864,
     tracker: {
       announce: announceList
     }
@@ -1063,17 +1057,17 @@ const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
   video: video,
   player: player,
   playerWrapper: pageWrapper,
-  burnIn: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.subtitle3,
-  seekTime: Number(_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player3),
-  immerseTime: Number(_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player2),
-  visibilityLossPause: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player10,
-  autoNext: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player6,
-  streamedDownload: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.torrent8,
-  generateThumbnails: _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.player5,
-  defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === _settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.subtitle1)[0].textContent,
+  burnIn: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.subtitle3,
+  seekTime: Number(_settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.player3),
+  immerseTime: Number(_settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.player2),
+  visibilityLossPause: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.player10,
+  autoNext: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.player6,
+  streamedDownload: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.torrent8,
+  generateThumbnails: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.player5,
+  defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.subtitle1)[0].textContent,
   resolveFileMedia: _anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia,
   onDownloadDone: File => {
-    halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+    halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
       content: `<span class="text-break">${File.name}</span> has finished downloading. Now seeding.`,
       title: 'Download Complete',
       alertType: 'alert-success',
@@ -1082,10 +1076,10 @@ const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
   },
   onWatched: (File, FileMedia) => {
     if (FileMedia?.media?.episodes || FileMedia?.media?.nextAiringEpisode?.episode) {
-      if (_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.other2 && (FileMedia.media.episodes || FileMedia.media.nextAiringEpisode?.episode > FileMedia.episodeNumber)) {
-        (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.alEntry)()
+      if (_settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.other2 && (FileMedia.media.episodes || FileMedia.media.nextAiringEpisode?.episode > FileMedia.episodeNumber)) {
+        (0,_anilist_js__WEBPACK_IMPORTED_MODULE_3__.alEntry)()
       } else {
-        halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+        halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
           content: `Do You Want To Mark <br><b>${FileMedia.mediaTitle}</b><br>Episode ${FileMedia.episodeNumber} As Completed?<br>
                 <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
                 <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
@@ -1102,7 +1096,7 @@ const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
     if (FileMedia.media) {
       (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.nyaaSearch)(FileMedia.media, FileMedia.episodeNumber + 1)
     } else {
-      halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+      halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
         content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
         title: 'Search Failed',
         alertType: 'alert-danger',
@@ -1114,7 +1108,7 @@ const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
     if (FileMedia.media) {
       (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.nyaaSearch)(FileMedia.media, FileMedia.episodeNumber - 1)
     } else {
-      halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+      halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
         content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
         title: 'Search Failed',
         alertType: 'alert-danger',
@@ -1125,7 +1119,7 @@ const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
   onOfflineTorrent: torrent => {
     (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: torrent.name, method: 'SearchName' }).then(mediaInformation => {
       mediaInformation.onclick = () => client.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
-      const template = (0,_interface_js__WEBPACK_IMPORTED_MODULE_4__.cardCreator)(mediaInformation)
+      const template = (0,_interface_js__WEBPACK_IMPORTED_MODULE_5__.cardCreator)(mediaInformation)
       document.querySelector('.downloads').appendChild(template)
     })
   },
@@ -1141,14 +1135,14 @@ const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
           file: file
         })
       }
-      cards.push((0,_interface_js__WEBPACK_IMPORTED_MODULE_4__.cardCreator)(mediaInformation))
+      cards.push((0,_interface_js__WEBPACK_IMPORTED_MODULE_5__.cardCreator)(mediaInformation))
     }
     document.querySelector('.playlist').append(...cards)
   },
   onWarn: (warn, torrent) => {
     switch (warn) {
       case 'no file':
-        halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+        halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
           content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
           title: 'Search Failed',
           alertType: 'alert-danger',
@@ -1157,7 +1151,7 @@ const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
         break
       case 'no peers':
         if (torrent.progress !== 1) {
-          halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+          halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
             content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
             title: 'Search Failed',
             alertType: 'alert-danger',
@@ -1171,6 +1165,100 @@ window.client = client
 
 window.onbeforeunload = () => { return '' }
 if (_util_js__WEBPACK_IMPORTED_MODULE_1__.searchParams.get('file')) client.playTorrent(_util_js__WEBPACK_IMPORTED_MODULE_1__.searchParams.get('file'))
+
+queueMicrotask(_interface_js__WEBPACK_IMPORTED_MODULE_5__.initMenu)
+
+
+/***/ }),
+
+/***/ "./app/js/rss.js":
+/*!***********************!*\
+  !*** ./app/js/rss.js ***!
+  \***********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "nyaaRss": () => (/* binding */ nyaaRss),
+/* harmony export */   "releasesRss": () => (/* binding */ releasesRss),
+/* harmony export */   "getRSSurl": () => (/* binding */ getRSSurl)
+/* harmony export */ });
+/* harmony import */ var _settings_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./settings.js */ "./app/js/settings.js");
+/* harmony import */ var _interface_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./interface.js */ "./app/js/interface.js");
+/* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./main.js */ "./app/js/main.js");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! halfmoon */ "halfmoon");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_4__);
+/* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
+/* eslint-env browser */
+/* global torrent4list */
+
+
+
+
+
+
+
+const exclusions = {
+  edge: ['DTS'],
+  chromium: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265'],
+  firefox: ['DTS', 'AC3', 'HEVC', 'x265', 'H.265', '.3gp', '.mkv']
+}
+if (!('audioTracks' in HTMLVideoElement.prototype)) {
+  exclusions[_util_js__WEBPACK_IMPORTED_MODULE_2__.userBrowser].push('mutli audio', 'dual audio')
+}
+
+async function nyaaRss (media, episode) {
+  const frag = document.createDocumentFragment()
+  const ep = (media.status === 'FINISHED' && _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
+  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(')})${ep}"${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1}"-(${exclusions[_util_js__WEBPACK_IMPORTED_MODULE_2__.userBrowser].join('|')})`)
+  await fetch(url).then(res => {
+    res.text().then((xmlTxt) => {
+      try {
+        const doc = (0,_util_js__WEBPACK_IMPORTED_MODULE_2__.DOMPARSER)(xmlTxt, 'text/xml')
+        if (_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent2 && doc.querySelector('infoHash')) {
+          _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(doc.querySelector('infoHash').textContent, { media: media, episode: episode })
+          halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('tsearch')
+        }
+        doc.querySelectorAll('item').forEach((item, index) => {
+          const i = item.querySelectorAll('*')
+          const template = document.createElement('tr')
+          template.innerHTML += `
+                <th>${(index + 1)}</th>
+                <td>${i[0].textContent}</td>
+                <td>${i[10].textContent}</td>
+                <td>${i[4].textContent}</td>
+                <td>${i[5].textContent}</td>
+                <td>${i[6].textContent}</td>
+                <td class="pointer">Play</td>`
+          template.onclick = () => {
+            _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(i[7].textContent, { media: media, episode: episode })
+            halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('tsearch')
+          }
+          frag.appendChild(template)
+        })
+      } catch (e) {
+        console.error(e)
+      }
+    })
+  })
+  return frag
+}
+
+async function releasesRss (limit) {
+  return await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
+    return await (0,_interface_js__WEBPACK_IMPORTED_MODULE_1__.releasesCards)((0,_util_js__WEBPACK_IMPORTED_MODULE_2__.DOMPARSER)(xmlTxt, 'text/xml').querySelectorAll('item'), limit)
+  }))
+}
+
+function getRSSurl () {
+  if (Object.values(torrent4list.options).filter(item => item.value === _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent4)[0]) {
+    return _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent4 === 'Erai-raws' ? new URL(Object.values(torrent4list.options).filter(item => item.value === _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent4)[0].innerHTML + _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1 + '-magnet') : new URL(Object.values(torrent4list.options).filter(item => item.value === _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent4)[0].innerHTML + _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1)
+  } else {
+    return _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent4 + _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1 // add custom RSS
+  }
+}
 
 
 /***/ }),
@@ -1258,15 +1346,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_0__);
 /* eslint-env browser */
 
-if ((typeof (halfmoon__WEBPACK_IMPORTED_MODULE_0___default()) === 'object' || typeof (halfmoon__WEBPACK_IMPORTED_MODULE_0___default()) === 'function') && ((halfmoon__WEBPACK_IMPORTED_MODULE_0___default()) !== null)) {
-  ;(halfmoon__WEBPACK_IMPORTED_MODULE_0___default().showModal) = id => {
-    const t = document.getElementById(id)
-    t && t.classList.add('show')
-  }
-  ;(halfmoon__WEBPACK_IMPORTED_MODULE_0___default().hideModal) = id => {
-    const t = document.getElementById(id)
-    t && t.classList.remove('show')
-  }
+;(halfmoon__WEBPACK_IMPORTED_MODULE_0___default().showModal) = id => {
+  const t = document.getElementById(id)
+  t && t.classList.add('show')
+}
+;(halfmoon__WEBPACK_IMPORTED_MODULE_0___default().hideModal) = id => {
+  const t = document.getElementById(id)
+  t && t.classList.remove('show')
 }
 const searchParams = new URLSearchParams(location.href)
 if (searchParams.get('access_token')) {
@@ -1275,13 +1361,9 @@ if (searchParams.get('access_token')) {
 }
 const userBrowser = (() => {
   if (window.chrome) {
-    if (navigator.userAgent.indexOf('Edg') !== -1) {
-      return 'edge'
-    } else {
-      return 'chromium'
-    }
+    return (navigator.userAgent.indexOf('Edg') !== -1) ? 'edge' : 'chromium'
   }
-  if (typeof InstallTrigger !== 'undefined') return 'firefox'
+  return 'firefox'
 })()
 function countdown (s) {
   const d = Math.floor(s / (3600 * 24))
@@ -1290,10 +1372,10 @@ function countdown (s) {
   s -= h * 3600
   const m = Math.floor(s / 60)
   s -= m * 60
-  const tmp = [];
-  (d) && tmp.push(d + 'd');
-  (d || h) && tmp.push(h + 'h');
-  (d || h || m) && tmp.push(m + 'm')
+  const tmp = []
+  if (d) tmp.push(d + 'd')
+  if (d || h) tmp.push(h + 'h')
+  if (d || h || m) tmp.push(m + 'm')
   return tmp.join(' ')
 }
 

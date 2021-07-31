@@ -2,9 +2,10 @@
 
 import WebTorrentPlayer from 'webtorrent-player'
 import { searchParams } from './util.js'
-import { resolveFileMedia, nyaaSearch, alEntry } from './anime.js'
+import { resolveFileMedia, nyaaSearch } from './anime.js'
+import { alEntry } from './anilist.js'
 import { settings } from './settings.js'
-import { cardCreator } from './interface.js'
+import { cardCreator, initMenu } from './interface.js'
 import halfmoon from 'halfmoon'
 
 const announceList = [
@@ -141,3 +142,5 @@ window.client = client
 
 window.onbeforeunload = () => { return '' }
 if (searchParams.get('file')) client.playTorrent(searchParams.get('file'))
+
+queueMicrotask(initMenu)
