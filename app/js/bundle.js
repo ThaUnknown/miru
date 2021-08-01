@@ -315,7 +315,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const torrentRx = /(magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent){1}/i
-const imageRx = /\.(jpeg|jpg|gif|png|webp)/
+const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 window.addEventListener('paste', async e => { // WAIT image lookup on paste, or add torrent on paste
   const item = e.clipboardData.items[0]
   if (item && item.type.indexOf('image') === 0) {
@@ -899,6 +899,7 @@ function loadHomePage () {
     }
   }
   function reloadHome () {
+    clearSearch()
     home.classList.remove('browsing')
     lastRSSDate = undefined
     for (const item of homePreviewElements) {
@@ -909,15 +910,11 @@ function loadHomePage () {
     document.querySelector('.browse').textContent = ''
   }
   navHome.onclick = reloadHome
+  searchClear.onclick = reloadHome
   function clearSearch () {
     for (const element of homeSearchElements) {
       element.value = ''
     }
-  }
-  searchClear.onclick = () => {
-    clearSearch()
-    reloadHome()
-    home.classList.remove('browsing')
   }
   let searchTimeout
   searchWrapper.oninput = e => {
@@ -985,7 +982,12 @@ function initMenu () {
     (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Viewer' }).then(result => {
       oauth.removeAttribute('href')
       oauth.setAttribute('data-title', `${result.data.Viewer.name}\nClick To Logout`)
-      oauth.innerHTML = `<img src="${result.data.Viewer.avatar.medium}" class="m-0">`
+      oauth.innerHTML = `
+      <span class="text-nowrap d-flex align-items-center">
+      <img src="${result.data.Viewer.avatar.medium}">
+      <span class="text">${result.data.Viewer.name}</span>
+      <span class="material-icons menu text">logout</span>
+      </span>`
       oauth.onclick = () => {
         localStorage.removeItem('ALtoken')
         location.reload()
@@ -1065,102 +1067,101 @@ const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
   streamedDownload: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.torrent8,
   generateThumbnails: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.player5,
   defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.subtitle1)[0].textContent,
-  resolveFileMedia: _anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia,
-  onDownloadDone: File => {
-    halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
-      content: `<span class="text-break">${File.name}</span> has finished downloading. Now seeding.`,
-      title: 'Download Complete',
-      alertType: 'alert-success',
-      fillType: ''
-    })
-  },
-  onWatched: (File, FileMedia) => {
-    if (FileMedia?.media?.episodes || FileMedia?.media?.nextAiringEpisode?.episode) {
-      if (_settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.other2 && (FileMedia.media.episodes || FileMedia.media.nextAiringEpisode?.episode > FileMedia.episodeNumber)) {
-        (0,_anilist_js__WEBPACK_IMPORTED_MODULE_3__.alEntry)()
-      } else {
-        halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
-          content: `Do You Want To Mark <br><b>${FileMedia.mediaTitle}</b><br>Episode ${FileMedia.episodeNumber} As Completed?<br>
+  resolveFileMedia: _anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia
+})
+client.on('download-done', ({ file }) => {
+  halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
+    content: `<span class="text-break">${file.name}</span> has finished downloading. Now seeding.`,
+    title: 'Download Complete',
+    alertType: 'alert-success',
+    fillType: ''
+  })
+})
+client.on('watched', ({ filemedia }) => {
+  if (filemedia?.media?.episodes || filemedia?.media?.nextAiringEpisode?.episode) {
+    if (_settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.other2 && (filemedia.media.episodes || filemedia.media.nextAiringEpisode?.episode > filemedia.episodeNumber)) {
+      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_3__.alEntry)()
+    } else {
+      halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
+        content: `Do You Want To Mark <br><b>${filemedia.mediaTitle}</b><br>Episode ${filemedia.episodeNumber} As Completed?<br>
                 <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
                 <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
-          title: 'Episode Complete',
-          timeShown: 180000
-        })
-      }
-    }
-  },
-  onPlaylist: () => {
-    window.location.hash = '#playlist'
-  },
-  onNext: (File, FileMedia) => {
-    if (FileMedia.media) {
-      (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.nyaaSearch)(FileMedia.media, FileMedia.episodeNumber + 1)
-    } else {
-      halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
-        content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
-        title: 'Search Failed',
-        alertType: 'alert-danger',
-        fillType: ''
+        title: 'Episode Complete',
+        timeShown: 180000
       })
-    }
-  },
-  onPrev: (File, FileMedia) => {
-    if (FileMedia.media) {
-      (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.nyaaSearch)(FileMedia.media, FileMedia.episodeNumber - 1)
-    } else {
-      halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
-        content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
-        title: 'Search Failed',
-        alertType: 'alert-danger',
-        fillType: ''
-      })
-    }
-  },
-  onOfflineTorrent: torrent => {
-    (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: torrent.name, method: 'SearchName' }).then(mediaInformation => {
-      mediaInformation.onclick = () => client.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
-      const template = (0,_interface_js__WEBPACK_IMPORTED_MODULE_5__.cardCreator)(mediaInformation)
-      document.querySelector('.downloads').appendChild(template)
-    })
-  },
-  onVideoFiles: async (videoFiles, torrent) => {
-    document.querySelector('.playlist').textContent = ''
-    const cards = []
-    for (const file of videoFiles) {
-      const mediaInformation = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: file.name, method: 'SearchName' })
-      mediaInformation.onclick = () => {
-        client.buildVideo(torrent, {
-          media: mediaInformation,
-          episode: mediaInformation.parseObject.episode,
-          file: file
-        })
-      }
-      cards.push((0,_interface_js__WEBPACK_IMPORTED_MODULE_5__.cardCreator)(mediaInformation))
-    }
-    document.querySelector('.playlist').append(...cards)
-  },
-  onWarn: (warn, torrent) => {
-    switch (warn) {
-      case 'no file':
-        halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
-          content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
-          title: 'Search Failed',
-          alertType: 'alert-danger',
-          fillType: ''
-        })
-        break
-      case 'no peers':
-        if (torrent.progress !== 1) {
-          halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
-            content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
-            title: 'Search Failed',
-            alertType: 'alert-danger',
-            fillType: ''
-          })
-        }
     }
   }
 })
+client.on('playlist', () => {
+  window.location.hash = '#playlist'
+})
+client.on('next', ({ filemedia }) => {
+  if (filemedia.media) {
+    (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.nyaaSearch)(filemedia.media, filemedia.episodeNumber + 1)
+  } else {
+    halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
+      content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
+      title: 'Search Failed',
+      alertType: 'alert-danger',
+      fillType: ''
+    })
+  }
+})
+client.on('prev', ({ filemedia }) => {
+  if (filemedia.media) {
+    (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.nyaaSearch)(filemedia.media, filemedia.episodeNumber - 1)
+  } else {
+    halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
+      content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
+      title: 'Search Failed',
+      alertType: 'alert-danger',
+      fillType: ''
+    })
+  }
+})
+client.on('offline-torrent', torrent => {
+  ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: torrent.name, method: 'SearchName' }).then(mediaInformation => {
+    mediaInformation.onclick = () => client.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
+    const template = (0,_interface_js__WEBPACK_IMPORTED_MODULE_5__.cardCreator)(mediaInformation)
+    document.querySelector('.downloads').appendChild(template)
+  })
+})
+client.on('video-files', async ({ files, torrent }) => {
+  document.querySelector('.playlist').textContent = ''
+  const cards = []
+  for (const file of files) {
+    const mediaInformation = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: file.name, method: 'SearchName' })
+    mediaInformation.onclick = () => {
+      client.buildVideo(torrent, {
+        media: mediaInformation,
+        episode: mediaInformation.parseObject.episode,
+        file: file
+      })
+    }
+    cards.push((0,_interface_js__WEBPACK_IMPORTED_MODULE_5__.cardCreator)(mediaInformation))
+  }
+  document.querySelector('.playlist').append(...cards)
+})
+client.on('no-files', torrent => {
+  halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
+    content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
+    title: 'Search Failed',
+    alertType: 'alert-danger',
+    fillType: ''
+  })
+})
+client.on('no peers', torrent => {
+  if (torrent.progress !== 1) {
+    halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
+      content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
+      title: 'Search Failed',
+      alertType: 'alert-danger',
+      fillType: ''
+    })
+  }
+})
+client.nowPlaying = { name: 'Miru' }
+
 window.client = client
 
 window.onbeforeunload = () => { return '' }
@@ -46181,11 +46182,9 @@ module.exports = function forEach (obj, fn, ctx) {
 /*!*****************************************************!*\
   !*** ./node_modules/fs-access-chunk-store/index.js ***!
   \*****************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module) => {
 
-/* provided dependency */ var Buffer = __webpack_require__(/*! ./node_modules/buffer/index.js */ "./node_modules/buffer/index.js")["Buffer"];
-const queueMicrotask = __webpack_require__(/*! queue-microtask */ "./node_modules/queue-microtask/index.js")
-
+/* eslint-env browser */
 class WebFsChunkStore {
   constructor (chunkLength, opts = {}) {
     this.chunkLength = Number(chunkLength)
@@ -46195,19 +46194,78 @@ class WebFsChunkStore {
     }
 
     this.closed = false
-    this.length = Number(opts.length) || Infinity
-
-    if (this.length !== Infinity) {
-      this.lastChunkLength = this.length % this.chunkLength || this.chunkLength
-      this.lastChunkIndex = Math.ceil(this.length / this.chunkLength) - 1
-    }
 
     this.name = opts.name || 'default'
 
     this.rootDirPromise = opts.rootDir || navigator.storage.getDirectory()
     this.storageDirPromise = this._getStorageDirectoryHandle()
+    this.chunksDirPromise = ((opts.files && opts.rootDir) && this._getChunksDirHandle()) || this.storageDirPromise
 
-    this.chunks = []
+    this.chunks = [] // individual chunks, required for reads :/
+    this.chunkMap = [] // full files
+    this.directoryMap = {}
+
+    if (opts.files && opts.rootDir) {
+      this.files = opts.files.slice(0).map((file, i, files) => {
+        if (file.path == null) throw new Error('File is missing `path` property')
+        if (file.length == null) throw new Error('File is missing `length` property')
+        if (file.offset == null) {
+          if (i === 0) {
+            file.offset = 0
+          } else {
+            const prevFile = files[i - 1]
+            file.offset = prevFile.offset + prevFile.length
+          }
+        }
+
+        // file handles
+        if (file.handle == null) {
+          file.handle = this._createFileHandle({ path: file.path })
+        }
+
+        // file chunkMap
+        const fileStart = file.offset
+        const fileEnd = file.offset + file.length
+
+        const firstChunk = Math.floor(fileStart / this.chunkLength)
+        const lastChunk = Math.floor((fileEnd - 1) / this.chunkLength)
+
+        for (let p = firstChunk; p <= lastChunk; ++p) {
+          const chunkStart = p * this.chunkLength
+          const chunkEnd = chunkStart + this.chunkLength
+
+          const from = (fileStart < chunkStart) ? 0 : fileStart - chunkStart
+          const to = (fileEnd > chunkEnd) ? this.chunkLength : fileEnd - chunkStart
+          const offset = (fileStart > chunkStart) ? 0 : chunkStart - fileStart
+
+          if (!this.chunkMap[p]) this.chunkMap[p] = []
+
+          this.chunkMap[p].push({ from, to, offset, file })
+        }
+
+        return file
+      })
+
+      // close streams is page is frozen/unloaded, they will re-open if the user returns via BFC
+      window.addEventListener('pagehide', this.cleanup)
+
+      this.length = this.files.reduce((sum, file) => sum + file.length, 0)
+      if (opts.length != null && opts.length !== this.length) {
+        throw new Error('total `files` length is not equal to explicit `length` option')
+      }
+    } else {
+      this.length = Number(opts.length) || Infinity
+    }
+
+    if (this.length !== Infinity) {
+      this.lastChunkLength = this.length % this.chunkLength || this.chunkLength
+      this.lastChunkIndex = Math.ceil(this.length / this.chunkLength) - 1
+    }
+  }
+
+  async _getChunksDirHandle () {
+    const storageDir = await this.storageDirPromise
+    return await storageDir.getDirectoryHandle('chunks', { create: true })
   }
 
   async _getStorageDirectoryHandle () {
@@ -46220,14 +46278,29 @@ class WebFsChunkStore {
 
     if (!chunk) {
       const fileName = index.toString()
-      const storageDir = await this.storageDirPromise
+      const storageDir = await this.chunksDirPromise
 
-      chunk = this.chunks[index] = {
-        fileHandlePromise: storageDir.getFileHandle(fileName, { create: true })
-      }
+      chunk = this.chunks[index] = { fileHandlePromise: storageDir.getFileHandle(fileName, { create: true }) }
     }
 
     return chunk
+  }
+
+  async _createFileHandle (opts) {
+    const fileName = opts.path.slice(opts.path.lastIndexOf('/') + 1)
+    return (await this._getDirectoryHandle(opts)).getFileHandle(fileName, { create: true })
+  }
+
+  // recursive, equiv of cd and mkdirp
+  async _getDirectoryHandle (opts) {
+    const lastIndex = opts.path.lastIndexOf('/')
+    if (lastIndex === -1 || lastIndex === 0) return this.storageDirPromise
+    const path = opts.path = opts.path.slice(0, lastIndex)
+    if (!this.directoryMap[path]) {
+      const parent = this._getDirectoryHandle(opts)
+      this.directoryMap[path] = (await parent).getDirectoryHandle(path.slice(path.lastIndexOf('/') + 1), { create: true })
+    }
+    return this.directoryMap[path]
   }
 
   put (index, buf, cb = () => {}) {
@@ -46264,8 +46337,33 @@ class WebFsChunkStore {
         return
       }
 
-      cb(null)
+      if (!this.files) cb(null)
     })()
+
+    if (this.files) {
+      const targets = this.chunkMap[index]
+      if (!targets) {
+        queueMicrotask(() => cb(new Error('No files matching the request range')))
+      }
+      const promises = targets.map(target => {
+        return (async () => {
+          try {
+            const { file } = target
+            if (!file.stream) {
+              file.stream = (await file.handle).createWritable({
+                keepExistingData: true
+              })
+            }
+            const stream = await file.stream
+            await stream.write({ type: 'write', position: target.offset, data: buf.slice(target.from, target.to) })
+            return null
+          } catch (err) {
+            return cb(err)
+          }
+        })()
+      })
+      Promise.all(promises).then(() => cb(null))
+    }
   }
 
   get (index, opts, cb = () => {}) {
@@ -46282,33 +46380,82 @@ class WebFsChunkStore {
 
     if (!opts) opts = {}
 
-    const offset = opts.offset || 0
-    const len = opts.length || chunkLength - offset
+    const rangeFrom = opts.offset || 0
+    const rangeTo = opts.length ? rangeFrom + opts.length : chunkLength
+    const len = opts.length || chunkLength - rangeFrom
 
-    ;(async () => {
-      let buf
-      try {
-        const chunk = await this._getChunk(index)
-        const fileHandle = await chunk.fileHandlePromise
-        let file = await fileHandle.getFile()
-        if (offset !== 0 || len !== chunkLength) {
-          file = file.slice(offset, len + offset)
+    if (!this.files || this.chunks[index]) {
+      ;(async () => {
+        let buf
+        try {
+          const chunk = await this._getChunk(index)
+          const fileHandle = await chunk.fileHandlePromise
+          let file = await fileHandle.getFile()
+          if (rangeFrom !== 0 || len !== chunkLength) {
+            file = file.slice(rangeFrom, len + rangeFrom)
+          }
+          buf = await file.arrayBuffer()
+        } catch (err) {
+          cb(err)
+          return
         }
-        buf = await file.arrayBuffer()
-      } catch (err) {
-        cb(err)
-        return
-      }
 
-      if (buf.byteLength === 0) {
-        const err = new Error(`Index ${index} does not exist`)
-        err.notFound = true
-        cb(err)
-        return
-      }
+        if (buf.byteLength === 0) {
+          const err = new Error(`Index ${index} does not exist`)
+          err.notFound = true
+          cb(err)
+          return
+        }
 
-      cb(null, Buffer.from(buf))
-    })()
+        cb(null, new Uint8Array(buf))
+      })()
+    } else {
+      let targets = this.chunkMap[index]
+      if (!targets) {
+        queueMicrotask(() => cb(new Error('No files matching the request range')))
+      }
+      if (opts) {
+        targets = targets.filter(target => {
+          return target.to > rangeFrom && target.from < rangeTo
+        })
+        if (targets.length === 0) {
+          queueMicrotask(() => cb(new Error('No files matching the request range')))
+        }
+      }
+      if (rangeFrom === rangeTo) return queueMicrotask(() => cb(null, new Uint8Array(0)))
+
+      const promises = targets.map(target => {
+        return (async () => {
+          let from = target.from
+          let to = target.to
+          let offset = target.offset
+
+          if (opts) {
+            if (to > rangeTo) to = rangeTo
+            if (from < rangeFrom) {
+              offset += (rangeFrom - from)
+              from = rangeFrom
+            }
+          }
+          try {
+            const handle = await target.file.handle
+            const file = (await handle.getFile()).slice(offset, offset + to - from)
+            return await file.arrayBuffer()
+          } catch (err) {
+            return err
+          }
+        })()
+      })
+      Promise.all(promises).then(values => {
+        if (values.length === 1) {
+          cb(null, new Uint8Array(values[0]))
+        } else {
+          new Blob(values).arrayBuffer().then(buf => {
+            cb(null, new Uint8Array(buf))
+          })
+        }
+      })
+    }
   }
 
   close (cb = () => {}) {
@@ -46318,11 +46465,28 @@ class WebFsChunkStore {
     }
 
     this.closed = true
-    this.chunks = []
+    this.chunkMap = []
+    this.directoryMap = {}
+
+    this.cleanup()
 
     queueMicrotask(() => {
       cb(null)
     })
+  }
+
+  async cleanup () {
+    if (this.files) {
+      for (const file of this.files) {
+        if (file.stream) {
+          await (await file.stream).close()
+          file.stream = null
+        }
+      }
+      const storageDir = await this.storageDirPromise
+      await storageDir.removeEntry('chunks', { recursive: true })
+    }
+    this.chunks = []
   }
 
   destroy (cb = () => {}) {
@@ -78290,23 +78454,14 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     }
 
     this.completed = false
-    this.onWatched = options.onWatched
-    if (this.onWatched) this.video.addEventListener('timeupdate', () => this.checkCompletion())
+    this.video.addEventListener('timeupdate', () => this.checkCompletion())
 
-    this.onPlaylist = options.onPlaylist
-
-    this.onNext = options.onNext
-    this.onPrev = options.onPrev
     this.nextTimeout = undefined
-    if (this.onNext && options.autoNext) this.video.addEventListener('ended', () => this.playNext())
-
-    this.onError = options.onError
-    this.onWarn = options.onWarn
+    if (options.autoNext) this.video.addEventListener('ended', () => this.playNext())
 
     this.resolveFileMedia = options.resolveFileMedia
     this.currentFile = undefined
     this.videoFile = undefined
-    this.onVideoFiles = options.onVideoFiles
 
     if (this.controls.thumbnail) {
       this.generateThumbnails = options.generateThumbnails
@@ -78329,10 +78484,9 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       })
     }
 
-    this.onDownloadDone = options.onDownloadDone
     this.onDone = undefined
 
-    this.onOfflineTorrent = options.onOfflineTorrent
+    this.destroyStore = options.destroyStore || true
 
     this.immerseTimeout = undefined
     this.immerseTime = options.immerseTime || 5
@@ -78693,7 +78847,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   openPlaylist () {
-    if (this.onPlaylist) this.onPlaylist()
+    this.emit('playlist', { files: this.videoFiles })
   }
 
   playNext () {
@@ -78705,7 +78859,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         const torrent = this.currentFile._torrent
         this.buildVideo(torrent, { media: nowPlaying, file: this.videoFiles[this.videoFiles.indexOf(this.currentFile) + 1] })
       } else {
-        if (this.onNext) this.onNext(this.currentFile, this.nowPlaying)
+        this.emit('next', { file: this.currentFile, filemedia: this.nowPlaying })
       }
     }, 200)
   }
@@ -78719,7 +78873,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         const torrent = this.currentFile._torrent
         this.buildVideo(torrent, { media: nowPlaying, file: this.videoFiles[this.videoFiles.indexOf(this.currentFile) - 1] })
       } else {
-        if (this.onPrev) this.onPrev(this.currentFile, this.nowPlaying)
+        this.emit('prev', { file: this.currentFile, filemedia: this.nowPlaying })
       }
     }, 200)
   }
@@ -78848,7 +79002,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   checkCompletion () {
     if (!this.completed && this.video.duration - 180 < this.video.currentTime) {
       this.completed = true
-      this.onWatched(this.currentFile, this.nowPlaying)
+      this.emit('watched', { file: this.currentFile, filemedia: this.nowPlaying })
     }
   }
 
@@ -79197,7 +79351,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   postDownload () {
-    this.onDownloadDone(this.currentFile)
+    this.emit('download-done', { file: this.currentFile })
     this.parseSubtitles(this.currentFile).then(() => {
       if (this.generateThumbnails) {
         this.finishThumbnails(this.video.src)
@@ -79208,21 +79362,21 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   playTorrent (torrentID, opts = {}) { // TODO: clean this up
     const handleTorrent = (torrent, opts) => {
       torrent.on('noPeers', () => {
-        if (this.onWarn) this.onWarn('no peers', torrent)
+        this.emit('no-peers', torrent)
       })
       if (this.streamedDownload) {
         torrent.files.forEach(file => file.deselect())
         torrent.deselect(0, torrent.pieces.length - 1, false)
       }
       this.videoFiles = torrent.files.filter(file => this.videoExtensions.some(ext => file.name.endsWith(ext)))
-      if (this.onVideoFiles) this.onVideoFiles(this.videoFiles, torrent)
+      this.emit('video-files', { files: this.videoFiles, torrent: torrent })
       if (this.videoFiles.length > 1) {
         torrent.files.forEach(file => file.deselect())
       }
       if (this.videoFiles) {
         this.buildVideo(torrent, opts)
       } else {
-        if (this.onWarn) this.onWarn('no file', torrent)
+        this.emit('no-file', torrent)
         this.cleanupTorrents()
       }
     }
@@ -79251,7 +79405,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   // cleanup torrent and store
   cleanupTorrents () {
   // creates an array of all non-offline store torrents and removes them
-    this.torrents.filter(torrent => !this.offlineTorrents[torrent.infoHash]).forEach(torrent => torrent.destroy({ destroyStore: true }))
+    this.torrents.filter(torrent => !this.offlineTorrents[torrent.infoHash]).forEach(torrent => torrent.destroy({ destroyStore: this.destroyStore }))
   }
 
   // add torrent for offline download
@@ -79270,7 +79424,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         this.offlineTorrents[torrent.infoHash] = Array.from(torrent.torrentFile)
         localStorage.setItem('offlineTorrents', JSON.stringify(this.offlineTorrents))
       }
-      if (this.onOfflineTorrent) this.onOfflineTorrent(torrent)
+      this.emit('offline-torrent', torrent)
     })
   }
 }

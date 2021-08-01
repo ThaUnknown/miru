@@ -194,6 +194,7 @@ export function loadHomePage () {
     }
   }
   function reloadHome () {
+    clearSearch()
     home.classList.remove('browsing')
     lastRSSDate = undefined
     for (const item of homePreviewElements) {
@@ -204,15 +205,11 @@ export function loadHomePage () {
     document.querySelector('.browse').textContent = ''
   }
   navHome.onclick = reloadHome
+  searchClear.onclick = reloadHome
   function clearSearch () {
     for (const element of homeSearchElements) {
       element.value = ''
     }
-  }
-  searchClear.onclick = () => {
-    clearSearch()
-    reloadHome()
-    home.classList.remove('browsing')
   }
   let searchTimeout
   searchWrapper.oninput = e => {
@@ -280,7 +277,12 @@ export function initMenu () {
     alRequest({ method: 'Viewer' }).then(result => {
       oauth.removeAttribute('href')
       oauth.setAttribute('data-title', `${result.data.Viewer.name}\nClick To Logout`)
-      oauth.innerHTML = `<img src="${result.data.Viewer.avatar.medium}" class="m-0">`
+      oauth.innerHTML = `
+      <span class="text-nowrap d-flex align-items-center">
+      <img src="${result.data.Viewer.avatar.medium}">
+      <span class="text">${result.data.Viewer.name}</span>
+      <span class="material-icons menu text">logout</span>
+      </span>`
       oauth.onclick = () => {
         localStorage.removeItem('ALtoken')
         location.reload()

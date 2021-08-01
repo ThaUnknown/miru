@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Miru">
   <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
-  <meta name="theme-color" content="#11141700" />
+  <meta name="theme-color" content="#191c20" />
   <link rel="icon" href="logo.png">
   <link rel="apple-touch-icon" href="logo.png">
   <meta charset="utf-8" />
@@ -27,7 +27,7 @@
   </style>
 </head>
 
-<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars">
+<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars" data-sidebar-shortcut-enabled="true">
   <div class="modal" id="tsearch" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content w-auto">
@@ -123,40 +123,63 @@
       </div>
     </div>
   </div>
-  <div id="pageWrapper" class="page-wrapper with-navbar">
+  <div id="pageWrapper" class="page-wrapper with-sidebar" data-sidebar-type="full-height overlayed-sm-and-down" data-sidebar-hidden="hidden">
     <div class="sticky-alerts"></div>
-    <nav class="navbar bg-dark">
-      <div class="container">
-        <a href="#player" class="navbar-brand mt-5 ml-10">
-          <img src="logo_cut.png" alt="logo">
+    <div class="sidebar-overlay" onclick="halfmoon.toggleSidebar()"></div>
+    <div class="sidebar">
+      <div class="sidebar-menu h-full d-flex flex-column m-0">
+        <a class="sidebar-link sidebar-link-with-icon pointer brand" data-toggle="tooltip" data-placement="right"
+          data-title="Open Menu" onclick="halfmoon.toggleSidebar()">
+          <span class="text-nowrap d-flex align-items-center justify-content-between">
+            <img src="logo_cut.png" alt="logo" class="text">
+            <span class="material-icons menu">menu</span>
+          </span>
         </a>
-        <a href="#downloads" class="navbar-brand pointer ml-auto" data-toggle="tooltip" data-placement="bottom"
-          data-title="Your Downloads" id="navDownloads">
-          <span class="material-icons font-size-20">get_app</span>
-        </a>
-        <a href="#home" class="navbar-brand pointer" data-toggle="tooltip" data-placement="bottom"
-          data-title="Airing Schedule" id="navSchedule" data-function="schedule">
-          <span class="material-icons font-size-20">schedule</span>
-        </a>
-        <a href="#home" class="navbar-brand pointer" data-toggle="tooltip" data-placement="bottom"
+        <a href="#home" class="sidebar-link sidebar-link-with-icon" data-toggle="tooltip" data-placement="right"
           data-title="Home Page" id="navHome">
-          <span class="material-icons font-size-20">home</span>
+          <span class="text-nowrap d-flex align-items-center">
+            <span class="material-icons">home</span>
+            <span class="text">Home Page</span>
+          </span>
         </a>
-        <a class="navbar-brand pointer d-none" data-toggle="tooltip" data-placement="bottom"
-          data-title="Currently Playing Anime" id="navNowPlaying">
-          <span class="material-icons font-size-20">queue_music</span>
+        <a href="#home" class="sidebar-link sidebar-link-with-icon" data-toggle="tooltip" data-placement="right"
+          data-title="Airing Schedule" id="navSchedule" data-function="schedule" id="#home">
+          <span class="text-nowrap d-flex align-items-center">
+            <span class="material-icons">schedule</span>
+            <span class="text">Airing Schedule</span>
+          </span>
         </a>
-        <a href="#settingsTab" class="navbar-brand pointer font-size-20" data-toggle="tooltip" data-placement="bottom"
+        <a href="#downloads" class="sidebar-link sidebar-link-with-icon" data-toggle="tooltip" data-placement="right"
+          data-title="Your Downloads" id="navDownloads">
+          <span class="text-nowrap d-flex align-items-centern">
+            <span class="material-icons">get_app</span>
+            <span class="text">Your Downloads</span>
+          </span>
+        </a>
+        <a class="sidebar-link sidebar-link-with-icon d-none pointer" data-toggle="tooltip" data-placement="right"
+          data-title="Now Playing" id="navNowPlaying">
+          <span class="text-nowrap d-flex align-items-center">
+            <span class="material-icons">queue_music</span>
+            <span class="text">Now Playing</span>
+          </span>
+        </a>
+        <a href="#settingsTab" class="sidebar-link sidebar-link-with-icon mt-auto" data-toggle="tooltip" data-placement="right"
           data-title="Settings">
-          <span class="material-icons font-size-20">tune</span>
+          <span class="text-nowrap d-flex align-items-center">
+            <span class="material-icons">tune</span>
+            <span class="text">Settings</span>
+          </span>
         </a>
-        <a id="oauth" class="navbar-brand pointer font-size-20 mr-5" data-toggle="tooltip" data-placement="bottom"
+        <a id="oauth" class="sidebar-link sidebar-link-with-icon pointer" data-toggle="tooltip" data-placement="right"
           data-title="Login With AniList"
           href="https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token">
-          <span class="material-icons font-size-20">login</span>
+          <span class="text-nowrap d-flex align-items-center">
+            <span class="material-icons">login</span>
+            <span class="text">Login</span>
+          </span>
         </a>
       </div>
-    </nav>
+    </div>
     <div class="overflow-y-hidden content-wrapper">
       <section id="player" class="torrent-player">
         <video id="video" src=""></video>
@@ -231,8 +254,8 @@
             </div>
           </div>
           <div class="subtitles dropdown dropup with-arrow">
-            <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown" aria-haspopup="true"
-              aria-expanded="false" disabled data-name="captionsButton">
+            <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false" disabled data-name="captionsButton">
               subtitles
             </span>
             <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize"
@@ -724,8 +747,12 @@
                 <input id="subtitle1" type="text" list="subtitle1list" class="form-control" autocomplete="off"
                   value="SubsPlease">
                 <datalist id="subtitle1list">
-                  <option value="SubsPlease">Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1</option>
-                  <option value="Erai-raws">Open Sans Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1</option>
+                  <option value="SubsPlease">Roboto
+                    Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
+                  </option>
+                  <option value="Erai-raws">Open Sans
+                    Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1
+                  </option>
                 </datalist>
               </div>
               <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"

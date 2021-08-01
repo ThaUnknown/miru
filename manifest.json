@@ -8,8 +8,8 @@
   ],
   "lang": "en-US",
   "orientation": "landscape",
-  "background_color": "#111417",
-  "theme_color": "#111417",
+  "background_color": "#191c20",
+  "theme_color": "#191c20",
   "scope": "/app/",
   "description": "Anime torrent streaming, ad free in a simple solution.",
   "icons": [
@@ -32,10 +32,10 @@
     "scope_url_host": "localhost",
     "scope_url_path": "/app/"
   },
-  "capture_links": "existing_client_event",
+  "capture_links": "new-client",
   "url_handlers": [
     {
-      "origin": "localhost"
+      "origin": "https://localhost:5500"
     }
   ],
   "protocol_handlers": [

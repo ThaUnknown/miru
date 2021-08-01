@@ -27,6 +27,12 @@
   "dependencies": {
     "webtorrent-player": "github:ThaUnknown/webtorrent-player"
   },
+  "standard": {
+    "ignore": [
+      "bundle.js",
+      "bundle.map.js"
+    ]
+  },
   "devDependencies": {
     "node-polyfill-webpack-plugin": "^1.1.4",
     "standard": "^16.0.3",

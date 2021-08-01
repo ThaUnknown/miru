@@ -42,102 +42,101 @@ export const client = new WebTorrentPlayer({
   streamedDownload: settings.torrent8,
   generateThumbnails: settings.player5,
   defaultSSAStyles: Object.values(subtitle1list.options).filter(item => item.value === settings.subtitle1)[0].textContent,
-  resolveFileMedia: resolveFileMedia,
-  onDownloadDone: File => {
-    halfmoon.initStickyAlert({
-      content: `<span class="text-break">${File.name}</span> has finished downloading. Now seeding.`,
-      title: 'Download Complete',
-      alertType: 'alert-success',
-      fillType: ''
-    })
-  },
-  onWatched: (File, FileMedia) => {
-    if (FileMedia?.media?.episodes || FileMedia?.media?.nextAiringEpisode?.episode) {
-      if (settings.other2 && (FileMedia.media.episodes || FileMedia.media.nextAiringEpisode?.episode > FileMedia.episodeNumber)) {
-        alEntry()
-      } else {
-        halfmoon.initStickyAlert({
-          content: `Do You Want To Mark <br><b>${FileMedia.mediaTitle}</b><br>Episode ${FileMedia.episodeNumber} As Completed?<br>
+  resolveFileMedia: resolveFileMedia
+})
+client.on('download-done', ({ file }) => {
+  halfmoon.initStickyAlert({
+    content: `<span class="text-break">${file.name}</span> has finished downloading. Now seeding.`,
+    title: 'Download Complete',
+    alertType: 'alert-success',
+    fillType: ''
+  })
+})
+client.on('watched', ({ filemedia }) => {
+  if (filemedia?.media?.episodes || filemedia?.media?.nextAiringEpisode?.episode) {
+    if (settings.other2 && (filemedia.media.episodes || filemedia.media.nextAiringEpisode?.episode > filemedia.episodeNumber)) {
+      alEntry()
+    } else {
+      halfmoon.initStickyAlert({
+        content: `Do You Want To Mark <br><b>${filemedia.mediaTitle}</b><br>Episode ${filemedia.episodeNumber} As Completed?<br>
                 <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
                 <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
-          title: 'Episode Complete',
-          timeShown: 180000
-        })
-      }
-    }
-  },
-  onPlaylist: () => {
-    window.location.hash = '#playlist'
-  },
-  onNext: (File, FileMedia) => {
-    if (FileMedia.media) {
-      nyaaSearch(FileMedia.media, FileMedia.episodeNumber + 1)
-    } else {
-      halfmoon.initStickyAlert({
-        content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
-        title: 'Search Failed',
-        alertType: 'alert-danger',
-        fillType: ''
+        title: 'Episode Complete',
+        timeShown: 180000
       })
-    }
-  },
-  onPrev: (File, FileMedia) => {
-    if (FileMedia.media) {
-      nyaaSearch(FileMedia.media, FileMedia.episodeNumber - 1)
-    } else {
-      halfmoon.initStickyAlert({
-        content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
-        title: 'Search Failed',
-        alertType: 'alert-danger',
-        fillType: ''
-      })
-    }
-  },
-  onOfflineTorrent: torrent => {
-    resolveFileMedia({ fileName: torrent.name, method: 'SearchName' }).then(mediaInformation => {
-      mediaInformation.onclick = () => client.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
-      const template = cardCreator(mediaInformation)
-      document.querySelector('.downloads').appendChild(template)
-    })
-  },
-  onVideoFiles: async (videoFiles, torrent) => {
-    document.querySelector('.playlist').textContent = ''
-    const cards = []
-    for (const file of videoFiles) {
-      const mediaInformation = await resolveFileMedia({ fileName: file.name, method: 'SearchName' })
-      mediaInformation.onclick = () => {
-        client.buildVideo(torrent, {
-          media: mediaInformation,
-          episode: mediaInformation.parseObject.episode,
-          file: file
-        })
-      }
-      cards.push(cardCreator(mediaInformation))
-    }
-    document.querySelector('.playlist').append(...cards)
-  },
-  onWarn: (warn, torrent) => {
-    switch (warn) {
-      case 'no file':
-        halfmoon.initStickyAlert({
-          content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
-          title: 'Search Failed',
-          alertType: 'alert-danger',
-          fillType: ''
-        })
-        break
-      case 'no peers':
-        if (torrent.progress !== 1) {
-          halfmoon.initStickyAlert({
-            content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
-            title: 'Search Failed',
-            alertType: 'alert-danger',
-            fillType: ''
-          })
-        }
     }
   }
 })
+client.on('playlist', () => {
+  window.location.hash = '#playlist'
+})
+client.on('next', ({ filemedia }) => {
+  if (filemedia.media) {
+    nyaaSearch(filemedia.media, filemedia.episodeNumber + 1)
+  } else {
+    halfmoon.initStickyAlert({
+      content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
+      title: 'Search Failed',
+      alertType: 'alert-danger',
+      fillType: ''
+    })
+  }
+})
+client.on('prev', ({ filemedia }) => {
+  if (filemedia.media) {
+    nyaaSearch(filemedia.media, filemedia.episodeNumber - 1)
+  } else {
+    halfmoon.initStickyAlert({
+      content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
+      title: 'Search Failed',
+      alertType: 'alert-danger',
+      fillType: ''
+    })
+  }
+})
+client.on('offline-torrent', torrent => {
+  resolveFileMedia({ fileName: torrent.name, method: 'SearchName' }).then(mediaInformation => {
+    mediaInformation.onclick = () => client.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
+    const template = cardCreator(mediaInformation)
+    document.querySelector('.downloads').appendChild(template)
+  })
+})
+client.on('video-files', async ({ files, torrent }) => {
+  document.querySelector('.playlist').textContent = ''
+  const cards = []
+  for (const file of files) {
+    const mediaInformation = await resolveFileMedia({ fileName: file.name, method: 'SearchName' })
+    mediaInformation.onclick = () => {
+      client.buildVideo(torrent, {
+        media: mediaInformation,
+        episode: mediaInformation.parseObject.episode,
+        file: file
+      })
+    }
+    cards.push(cardCreator(mediaInformation))
+  }
+  document.querySelector('.playlist').append(...cards)
+})
+client.on('no-files', torrent => {
+  halfmoon.initStickyAlert({
+    content: `Couldn't find video file for <span class="text-break">${torrent.infoHash}</span>!`,
+    title: 'Search Failed',
+    alertType: 'alert-danger',
+    fillType: ''
+  })
+})
+client.on('no peers', torrent => {
+  if (torrent.progress !== 1) {
+    halfmoon.initStickyAlert({
+      content: `Couldn't find peers for <span class="text-break">${torrent.infoHash}</span>! Try a torrent with more seeders.`,
+      title: 'Search Failed',
+      alertType: 'alert-danger',
+      fillType: ''
+    })
+  }
+})
+client.nowPlaying = { name: 'Miru' }
+
 window.client = client
 
 window.onbeforeunload = () => { return '' }

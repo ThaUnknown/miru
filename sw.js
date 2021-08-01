@@ -5,19 +5,12 @@ const staticCacheName = 'v1.0.0'
 
 const filesToCache = [
   '/app/index.html',
-  '/app/js/settingsHandler.js',
-  '/app/js/animeHandler.js',
-  '/app/js/playerHandler.js',
-  '/app/js/torrentHandler.js',
-  '/app/js/rangeParser.js',
-  '/app/js/util.js',
+  '/app/js/bundle.js',
   '/app/css/misc.css',
-  '/app/css/player.css',
+  '/app/css/torrent-player.css',
   '/app/logo.png',
-  'https://cdn.jsdelivr.net/npm/matroska-subtitles@3.0.1/dist/matroska-subtitles.min.js',
   'https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css',
   'https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.0/js/halfmoon.min.js',
-  'https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js',
   'https://fonts.googleapis.com/icon?family=Material+Icons'
 ]
 
@@ -63,7 +56,7 @@ self.addEventListener('activate', event => {
 //             }
 //             return response
 //           })
-//       }).catch(error => {
+//       }).catch(_error => {
 //         return caches.match('index.html')
 //       })
 //   )
