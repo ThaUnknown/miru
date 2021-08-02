@@ -256,7 +256,7 @@ export async function resolveFileMedia (opts) {
       // resolve name and shit
       let method, res
       if (opts.isRelease) {
-        method = { name: title, method: 'SearchName', perPage: 1, status: 'RELEASING', sort: 'TRENDING_DESC' }
+        method = { name: title, method: 'SearchName', perPage: 1, status: 'RELEASING', sort: 'SEARCH_MATCH' }
         // maybe releases should include this and last season? idfk
       } else {
         method = { name: title, method: opts.method, perPage: 1, sort: 'SEARCH_MATCH' }
@@ -264,7 +264,8 @@ export async function resolveFileMedia (opts) {
       res = await alRequest(method)
       if (!res.data.Page.media[0]) {
         method.sort = 'SEARCH_MATCH'
-        method.name = method.name.replace('(TV)', '').replace(` (${new Date().getFullYear()})`, '').replace('-', '').replace('S2', '2') // this needs to be improved!!!
+        const index = method.name.search(/S\d/)
+        method.name = (method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
         method.status = undefined
         res = await alRequest(method)
       }

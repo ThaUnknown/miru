@@ -334,7 +334,7 @@ nav {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    font-weight: 400;
+    font-weight: bold;
 }
 
 .page-wrapper.with-sidebar[data-sidebar-hidden] .text {
@@ -418,6 +418,7 @@ nav {
     top: 0;
     opacity: 0;
     font-weight: bold;
+    box-shadow: var(--dm-shadow) !important;
 }
 
 .sidebar [data-toggle="tooltip"]:not([data-target-breakpoint]):hover::after,

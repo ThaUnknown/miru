@@ -5,6 +5,7 @@
   "main": "index.html",
   "scripts": {
     "test": "standard",
+    "start": "webpack --watch /app/js/main.js",
     "build": "webpack"
   },
   "repository": {
