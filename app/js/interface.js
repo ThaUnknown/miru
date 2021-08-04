@@ -237,7 +237,7 @@ export function cardCreator (opts) {
     nodes[0].style = `--color:${opts.media.coverImage.color || '#1890ff'};`
     nodes[3].src = opts.media.coverImage.extraLarge || ''
     nodes[6].textContent = [opts.media.title.userPreferred, opts.episodeNumber].filter(s => s).join(' - ')
-    if (opts.schedule && opts.media.nextAiringEpisode) nodes[7].textContent = opts.media.nextAiringEpisode.episode + ' in ' + countdown(opts.media.nextAiringEpisode.timeUntilAiring)
+    if (opts.schedule && opts.media.nextAiringEpisode) nodes[7].textContent = 'EP ' + opts.media.nextAiringEpisode.episode + ' in ' + countdown(opts.media.nextAiringEpisode.timeUntilAiring)
     nodes[8].innerHTML = '<span>' + [
       opts.media.format === 'TV' ? 'TV Show' : opts.media.format?.toLowerCase().replace(/_/g, ' '),
       opts.media.episodes ? opts.media.episodes + ' Episodes' : opts.media.duration ? opts.media.duration + ' Minutes' : undefined,

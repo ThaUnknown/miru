@@ -7,7 +7,7 @@
     --base-html-font-size-1920: 70%;
     --tooltip-width: 17rem;
     --card-border-width: 0;
-    --navbar-border-width: 0;
+    --sidebar-border-width: 0;
     --input-border-width: 0;
 }
 
@@ -180,13 +180,22 @@ section {
     display: none;
 }
 
-section:target {
+section:target,
+[id*=settingsTab]:target~#settingsTab {
     display: flex !important;
     height: 100%;
 }
 
-section:target:not(#player) {
+section:target:not(#player),
+[class*=settingsTab] {
     animation: .3s ease 0s 1 load-in;
+}
+
+/* settings tab */
+#settingsTabTorrent:target~#settingsTab .settingsTabTorrent,
+#settingsTabPlayer:target~#settingsTab .settingsTabPlayer,
+#settingsTabRSS:target~#settingsTab .settingsTabRSS {
+    display: flex !important;
 }
 
 .h-10 {

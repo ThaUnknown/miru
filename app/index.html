@@ -123,7 +123,8 @@
       </div>
     </div>
   </div>
-  <div id="pageWrapper" class="page-wrapper with-sidebar" data-sidebar-type="full-height overlayed-sm-and-down" data-sidebar-hidden="hidden">
+  <div id="pageWrapper" class="page-wrapper with-sidebar" data-sidebar-type="full-height overlayed-sm-and-down"
+    data-sidebar-hidden="hidden">
     <div class="sticky-alerts"></div>
     <div class="sidebar-overlay" onclick="halfmoon.toggleSidebar()"></div>
     <div class="sidebar">
@@ -163,8 +164,8 @@
             <span class="text">Now Playing</span>
           </span>
         </a>
-        <a href="#settingsTab" class="sidebar-link sidebar-link-with-icon mt-auto" data-toggle="tooltip" data-placement="right"
-          data-title="Settings">
+        <a href="#settingsTabTorrent" class="sidebar-link sidebar-link-with-icon mt-auto" data-toggle="tooltip"
+          data-placement="right" data-title="Settings">
           <span class="text-nowrap d-flex align-items-center">
             <span class="material-icons">tune</span>
             <span class="text">Settings</span>
@@ -712,168 +713,183 @@
         <div class="gallery playlist">
         </div>
       </section>
-      <section id="settingsTab" class="overflow-y-auto">
-        <div class="content d-flex flex-column align-items-center w-full mt-15">
-          <div class="d-flex flex-row">
-            <div class="p-5">
+      <div id="settingsTabTorrent" class="d-none"></div>
+      <div id="settingsTabPlayer" class="d-none"></div>
+      <div id="settingsTabRSS" class="d-none"></div>
+      <section id="settingsTab" class="flex-column overflow-y-auto justify-content-between">
+        <div class="d-flex justify-content-center content">
+          <a href="#settingsTabTorrent" class='font-size-20 px-10 font-weight-bold'>
+            Torrent
+          </a>
+          <a href="#settingsTabPlayer" class='font-size-20 px-10 font-weight-bold'>
+            Player
+          </a>
+          <a href="#settingsTabRSS" class='font-size-20 px-10 font-weight-bold'>
+            RSS
+          </a>
+        </div>
+        <div class="h-full">
+          <div class="settingsTabTorrent d-none content flex-column">
+            <div class="form-control-lg w-600 h-150 mb-10">
               <h1 class="content-title font-size-22">
-                Player Settings
+                Tracker List
               </h1>
-              <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
-                data-title="Time For Player Controls To Hide">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">Immerse After</span>
-                </div>
-                <input id="player2" type="number" value="3" min="1" max="30" class="form-control text-right">
-                <div class="input-group-append">
-                  <span class="input-group-text">sec</span>
-                </div>
+              <textarea class="form-control w-600 h-100" id="torrent10" value="">wss://tracker.openwebtorrent.com
+wss://tracker.sloppyta.co:443/announce
+wss://hub.bugout.link:443/announce</textarea>
+            </div>
+            <div class="input-group mb-10 form-control-lg w-600 d-none" data-toggle="tooltip" data-placement="top"
+            data-title="Specifies Folder To Store Torrents In, Which Is Accessible Externally." id="torrent5">
+              <div class="input-group-prepend">
+                <button class="btn btn-lg btn-primary" type="button">Choose Folder</button>
               </div>
-              <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
-                data-title="How Much To Seek Video">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">Seek</span>
-                </div>
-                <input id="player3" type="number" value="2" min="1" max="30" class="form-control text-right">
-                <div class="input-group-append">
-                  <span class="input-group-text">sec</span>
-                </div>
+              <input type="text" id='torrent5label' readonly class="form-control form-control-lg pl-10" placeholder="Folder">
+            </div>
+            <div class="input-group w-300 mb-10 form-control-lg" data-toggle="tooltip" data-placement="top"
+              data-title="Download/Upload Speed Limit For Torrents, Higher Values Increase CPU Usage">
+              <div class="input-group-prepend">
+                <span class="input-group-text">Speed Cap</span>
               </div>
-              <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
-                data-title="The Default Styles For Subtitles That Don't Have Styles Specified">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">Default Style</span>
-                </div>
-                <input id="subtitle1" type="text" list="subtitle1list" class="form-control" autocomplete="off"
-                  value="SubsPlease">
-                <datalist id="subtitle1list">
-                  <option value="SubsPlease">Roboto
-                    Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
-                  </option>
-                  <option value="Erai-raws">Open Sans
-                    Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1
-                  </option>
-                </datalist>
-              </div>
-              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                data-title="Displays Subtitles In PiP And ChromeCast, CPU Intensive">
-                <input type="checkbox" id="subtitle3" checked>
-                <label for="subtitle3">Burn In Subtitles</label>
-              </div>
-              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                data-title="Generates Small Thumbnail Images When Using The Seek Bar After A Video Finished Downloading, VERY CPU Intensive">
-                <input type="checkbox" id="player5" checked>
-                <label for="player5">Generate Seek Bar Previews</label>
-              </div>
-              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                data-title="Automatically Starts Playing Next Episode When A Video Ends">
-                <input type="checkbox" id="player6">
-                <label for="player6">Autoplay Next Episode</label>
-              </div>
-              <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
-                data-title="Pauses/Resumes Video Playback When Tabbing In/Out Of The App.">
-                <input type="checkbox" id="player10" checked>
-                <label for="player10">Pause When Tabbing Out</label>
+              <input id="torrent7" type="number" value="10" min="0" max="50"
+                class="form-control text-right form-control-lg">
+              <div class="input-group-append">
+                <span class="input-group-text">MB/s</span>
               </div>
             </div>
-            <div class="p-5">
-              <h1 class="content-title font-size-22">
-                Torrent Settings
-              </h1>
-              <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
-                data-title="What Quality To Find Torrents In">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">Quality</span>
-                </div>
-                <select class="form-control" id="torrent1">
-                  <option value="1080" selected>1080p</option>
-                  <option value="720">720p</option>
-                  <option value='480"||"540'>SD</option>
-                </select>
+            <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
+              data-title="Only Downloads Pieces Directly Required For Playback Instead Of The Entire File. Recommended Only For Low-End Devices">
+              <input type="checkbox" id="torrent8">
+              <label for="torrent8">Streamed Download</label>
+            </div>
+
+          </div>
+          <div class="settingsTabPlayer d-none content flex-column">
+            <div class="input-group mb-10 w-600 form-control-lg" data-toggle="tooltip" data-placement="top"
+              data-title="The Default Styles For Subtitles That Don't Have Styles Specified">
+              <div class="input-group-prepend">
+                <span class="input-group-text">Default Style</span>
               </div>
-              <div class="input-group mb-10 w-200" data-toggle="tooltip" data-placement="top"
-                data-title="What RSS Feed To Fetch Torrents From, Allows For Custom CORS Enabled Feeds, URL Is Automatically Followed By Resolution">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">Feed</span>
-                </div>
-                <input id="torrent4" type="text" list="torrent4list" class="form-control" autocomplete="off"
-                  value="SubsPlease">
-                <datalist id="torrent4list">
-                  <option value="SubsPlease">https://subsplease.org/rss/?r=</option>
-                  <option value="Erai-raws">https://www.erai-raws.info/rss-</option>
-                </datalist>
+              <input id="subtitle1" type="text" list="subtitle1list" class="form-control form-control-lg"
+                autocomplete="off" value="SubsPlease">
+              <datalist id="subtitle1list">
+                <option value="SubsPlease">Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
+                </option>
+                <option value="Erai-raws">Open Sans Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1
+                </option>
+              </datalist>
+            </div>
+            <div class="input-group w-300 mb-10 form-control-lg" data-toggle="tooltip" data-placement="top"
+              data-title="Time For Player Controls To Hide">
+              <div class="input-group-prepend">
+                <span class="input-group-text">Immerse After</span>
               </div>
-              <div class="input-group w-200 mb-10" data-toggle="tooltip" data-placement="top"
-                data-title="Download/Upload Speed Limit For Torrents, Higher Values Increase CPU Usage">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">Speed Cap</span>
-                </div>
-                <input id="torrent7" type="number" value="10" min="0" max="50" class="form-control text-right">
-                <div class="input-group-append">
-                  <span class="input-group-text">MB/s</span>
-                </div>
-              </div>
-              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Skips The Torrent Selection Popup, Might Lead To Unwanted Videos Being
-                    Played">
-                <input type="checkbox" id="torrent2">
-                <label for="torrent2">Auto-Play Torrents</label>
-              </div>
-              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                data-title="Finds Only Trusted Torrents, Gives Less Results But Higher Quality And With More Seeders">
-                <input type="checkbox" id="torrent3" checked>
-                <label for="torrent3">Trusted Only</label>
-              </div>
-              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                data-title="Tries To Find Batches For Finished Shows Instead Of Downloading 1 Episode At A Time">
-                <input type="checkbox" id="torrent9">
-                <label for="torrent9">Batch Lookup</label>
-              </div>
-              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top" data-title="Greatly Reduces RAM Usage By Caching Torrents On Drive, Increases CPU And Drive Usage,
-                    Bad For SSDs, Disables Downloading">
-                <input type="checkbox" id="torrent5">
-                <label for="torrent5">Drive Caching</label>
-              </div>
-              <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
-                data-title="Only Downloads Pieces Directly Required For Playback Instead Of The Entire File. Recommended Only For Low-End Devices">
-                <input type="checkbox" id="torrent8">
-                <label for="torrent8">Streamed Download</label>
+              <input id="player2" type="number" value="3" min="1" max="30"
+                class="form-control text-right form-control-lg">
+              <div class="input-group-append">
+                <span class="input-group-text">sec</span>
               </div>
             </div>
-            <div class="p-5">
-              <h1 class="content-title font-size-22">
-                Other Settings
-              </h1>
-              <div class="custom-switch mb-10" data-toggle="tooltip" data-placement="top"
-                data-title="Sends A Notification When A New Episode Is Released">
-                <input type="checkbox" id="other1">
-                <label for="other1">Release Notifications</label>
+            <div class="input-group w-300 mb-10 form-control-lg" data-toggle="tooltip" data-placement="top"
+              data-title="How Much To Seek Video">
+              <div class="input-group-prepend">
+                <span class="input-group-text">Seek</span>
               </div>
-              <div class="custom-switch mb-20" data-toggle="tooltip" data-placement="top"
-                data-title="Automatically Marks Episodes As Complete On AniList When You Finish Watching Them, Requires AniList Login">
-                <input type="checkbox" id="other2">
-                <label for="other2">Autocomplete Episodes</label>
+              <input id="player3" type="number" value="2" min="1" max="30"
+                class="form-control text-right form-control-lg">
+              <div class="input-group-append">
+                <span class="input-group-text">sec</span>
               </div>
+            </div>
+            <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
+              data-title="Displays Subtitles In PiP And ChromeCast, CPU Intensive">
+              <input type="checkbox" id="subtitle3" checked>
+              <label for="subtitle3">Burn In Subtitles</label>
+            </div>
+            <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
+              data-title="Generates Small Thumbnail Images When Using The Seek Bar After A Video Finished Downloading, VERY CPU Intensive">
+              <input type="checkbox" id="player5" checked>
+              <label for="player5">Generate Seek Bar Previews</label>
+            </div>
+            <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
+              data-title="Automatically Starts Playing Next Episode When A Video Ends">
+              <input type="checkbox" id="player6">
+              <label for="player6">Autoplay Next Episode</label>
+            </div>
+            <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
+              data-title="Pauses/Resumes Video Playback When Tabbing In/Out Of The App.">
+              <input type="checkbox" id="player10" checked>
+              <label for="player10">Pause When Tabbing Out</label>
+            </div>
+            <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
+              data-title="Automatically Marks Episodes As Complete On AniList When You Finish Watching Them, Requires AniList Login">
+              <input type="checkbox" id="other2">
+              <label for="other2">Autocomplete Episodes</label>
             </div>
           </div>
-
-
-          <div>
-            <button class="btn btn-danger" type="button" id="setRes" data-toggle="tooltip" data-placement="top"
-              data-title="Restores All Settings Back To Their Recommended Defaults">Restore
-              Defaults
-            </button>
-            <button class="btn btn-danger" type="button" id="clearRelCache" data-toggle="tooltip" data-placement="top"
-              data-title="Clears Anime Names Data Cache">Clear Name Cache
-            </button>
-            <button class="btn btn-success" type="button" id="regProtButton" data-toggle="tooltip" data-placement="top"
-              data-title="Sets The App As The Default Program To Launch When Opening Magnet Links On Other Sites, Automatically Downloads And Plays The Torrent">Set
-              As Default For Magnet Links
-            </button>
+          <div class="settingsTabRSS d-none content flex-column">
+            <div class="input-group mb-10 w-600 form-control-lg" data-toggle="tooltip" data-placement="top"
+              data-title="What RSS Feed To Fetch Releases From, Allows For Custom CORS Enabled Feeds">
+              <div class="input-group-prepend">
+                <span class="input-group-text">Feed</span>
+              </div>
+              <input id="torrent4" type="text" list="torrent4list" class="form-control form-control-lg"
+                autocomplete="off" value="SubsPlease">
+              <datalist id="torrent4list">
+                <option value="SubsPlease">https://subsplease.org/rss/?r=</option>
+                <option value="Erai-raws">https://www.erai-raws.info/rss-</option>
+              </datalist>
+            </div>
+            <div class="input-group mb-10 w-300 form-control-lg" data-toggle="tooltip" data-placement="top"
+              data-title="What Quality To Find Torrents In">
+              <div class="input-group-prepend">
+                <span class="input-group-text">Quality</span>
+              </div>
+              <select class="form-control form-control-lg" id="torrent1">
+                <option value="1080" selected>1080p</option>
+                <option value="720">720p</option>
+                <option value='480"||"540'>SD</option>
+              </select>
+            </div>
+            <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
+              data-title="Sends A Notification When A New Episode Is Released">
+              <input type="checkbox" id="other1">
+              <label for="other1">Release Notifications</label>
+            </div>
+            <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
+              data-title="Skips The Torrent Selection Popup, Might Lead To Unwanted Videos Being
+            Played">
+              <input type="checkbox" id="torrent2">
+              <label for="torrent2">Auto-Play Torrents</label>
+            </div>
+            <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
+              data-title="Finds Only Trusted Torrents, Gives Less Results But Higher Quality And With More Seeders">
+              <input type="checkbox" id="torrent3" checked>
+              <label for="torrent3">Trusted Only</label>
+            </div>
+            <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
+              data-title="Tries To Find Batches For Finished Shows Instead Of Downloading 1 Episode At A Time">
+              <input type="checkbox" id="torrent9">
+              <label for="torrent9">Batch Lookup</label>
+            </div>
           </div>
-          <p class="text-muted mb-15">
+        </div>
+        <div class="content my-10">
+          <button class="btn btn-lg btn-danger mb-5" type="button" id="setRes" data-toggle="tooltip" data-placement="top"
+            data-title="Restores All Settings Back To Their Recommended Defaults">Restore
+            Defaults
+          </button>
+          <button class="btn btn-lg btn-danger mb-5" type="button" id="clearRelCache" data-toggle="tooltip"
+            data-placement="top" data-title="Clears Anime Names Data Cache">Clear Name Cache
+          </button>
+          <button class="btn btn-lg btn-success mb-5" type="button" id="regProtButton" data-toggle="tooltip"
+            data-placement="top"
+            data-title="Sets The App As The Default Program To Launch When Opening Magnet Links On Other Sites, Automatically Downloads And Plays The Torrent">Set
+            As Default For Magnet Links
+          </button>
+          <p class="text-muted font-size-16 my-15">
             Restart may be required for some settings to take effect.
           </p>
-          <p class="text-muted mb-15">
+          <p class="text-muted font-size-16 my-15">
             If you don't know what shit does, use default settings.
           </p>
         </div>

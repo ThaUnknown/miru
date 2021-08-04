@@ -314,7 +314,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const torrentRx = /(magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent){1}/i
+const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 window.addEventListener('paste', async e => { // WAIT image lookup on paste, or add torrent on paste
   const item = e.clipboardData.items[0]
@@ -943,7 +943,7 @@ function cardCreator (opts) {
     nodes[0].style = `--color:${opts.media.coverImage.color || '#1890ff'};`
     nodes[3].src = opts.media.coverImage.extraLarge || ''
     nodes[6].textContent = [opts.media.title.userPreferred, opts.episodeNumber].filter(s => s).join(' - ')
-    if (opts.schedule && opts.media.nextAiringEpisode) nodes[7].textContent = opts.media.nextAiringEpisode.episode + ' in ' + (0,_util_js__WEBPACK_IMPORTED_MODULE_5__.countdown)(opts.media.nextAiringEpisode.timeUntilAiring)
+    if (opts.schedule && opts.media.nextAiringEpisode) nodes[7].textContent = 'EP ' + opts.media.nextAiringEpisode.episode + ' in ' + (0,_util_js__WEBPACK_IMPORTED_MODULE_5__.countdown)(opts.media.nextAiringEpisode.timeUntilAiring)
     nodes[8].innerHTML = '<span>' + [
       opts.media.format === 'TV' ? 'TV Show' : opts.media.format?.toLowerCase().replace(/_/g, ' '),
       opts.media.episodes ? opts.media.episodes + ' Episodes' : opts.media.duration ? opts.media.duration + ' Minutes' : undefined,
@@ -1034,11 +1034,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const announceList = [
-  'wss://tracker.openwebtorrent.com',
-  'wss://tracker.sloppyta.co:443/announce',
-  'wss://hub.bugout.link:443/announce'
-]
 const playerControls = {}
 for (const item of document.getElementsByClassName('ctrl')) {
   if (!playerControls[item.dataset.name]) {
@@ -1053,12 +1048,13 @@ const client = new webtorrent_player__WEBPACK_IMPORTED_MODULE_0__.default({
     downloadLimit: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.torrent7 * 1048576,
     uploadLimit: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.torrent7 * 1572864,
     tracker: {
-      announce: announceList
+      announce: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.torrent10.split('\n')
     }
   },
   controls: playerControls,
   video: video,
   player: player,
+  destroyStore: true,
   playerWrapper: pageWrapper,
   burnIn: _settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.subtitle3,
   seekTime: Number(_settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.player3),
@@ -1122,7 +1118,7 @@ client.on('prev', ({ filemedia }) => {
 })
 client.on('offline-torrent', torrent => {
   ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: torrent.name, method: 'SearchName' }).then(mediaInformation => {
-    mediaInformation.onclick = () => client.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
+    mediaInformation.onclick = () => client.playTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
     const template = (0,_interface_js__WEBPACK_IMPORTED_MODULE_5__.cardCreator)(mediaInformation)
     document.querySelector('.downloads').appendChild(template)
   })
@@ -1277,16 +1273,51 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "settingsElements": () => (/* binding */ settingsElements),
 /* harmony export */   "settings": () => (/* binding */ settings)
 /* harmony export */ });
+/* harmony import */ var idb_keyval__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! idb-keyval */ "./node_modules/idb-keyval/dist/esm/index.js");
 /* eslint-env browser */
-/* global volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent7, torrent8, torrent9, other1, other2, setRes, settingsTab, regProtButton, clearRelCache */
+/* global volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent5label, torrent7, torrent8, torrent9, torrent10, other1, other2, setRes, settingsTab, regProtButton, clearRelCache */
+
 const settingsElements = [
-  volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent7, torrent8, torrent9, other1, other2
+  volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent7, torrent8, torrent9, torrent10, other1, other2
 ]
 setRes.addEventListener('click', restoreDefaults)
 settingsTab.addEventListener('click', applySettingsTimeout)
 volume.addEventListener('click', applySettingsTimeout)
 regProtButton.addEventListener('click', registerProtocol)
 const settings = JSON.parse(localStorage.getItem('settings')) || {}
+
+const customStore = (0,idb_keyval__WEBPACK_IMPORTED_MODULE_0__.createStore)('handle-store', 'handles')
+
+settings.torrent5 = (0,idb_keyval__WEBPACK_IMPORTED_MODULE_0__.get)('directory', customStore).then(handle => {
+  if (handle) {
+    torrent5label.value = 'Folder: ' + handle.name
+    return handle
+  }
+  return null
+})
+if ('showDirectoryPicker' in window) {
+  torrent5.classList.remove('d-none')
+  torrent5.onclick = async () => {
+    const handle = await window.showDirectoryPicker()
+    await handle.requestPermission({ mode: 'readwrite' })
+    settings.torrent5 = handle
+    torrent5label.value = 'Folder: ' + handle.name || 0
+  }
+}
+
+async function saveSettings () {
+  for (const element of settingsElements) {
+    settings[element.id] = element.type === 'checkbox' ? element.checked : element.value
+  }
+  localStorage.setItem('settings', JSON.stringify(settings))
+  if ('showDirectoryPicker' in window) {
+    if (settings.torrent5) (0,idb_keyval__WEBPACK_IMPORTED_MODULE_0__.set)('directory', await settings.torrent5, customStore)
+  }
+}
+
+if (!Object.values(settings).length) {
+  saveSettings()
+}
 function restoreDefaults () {
   localStorage.removeItem('settings')
   location.reload()
@@ -1296,12 +1327,7 @@ function applySettingsTimeout () {
   clearTimeout(applyTimeout)
   applyTimeout = setTimeout(saveSettings, 500)
 }
-function saveSettings () {
-  for (const element of settingsElements) {
-    settings[element.id] = element.type === 'checkbox' ? element.checked : element.value
-  }
-  localStorage.setItem('settings', JSON.stringify(settings))
-}
+
 function registerProtocol () {
   if ('registerProtocolHandler' in navigator) {
     navigator.registerProtocolHandler(
@@ -1312,10 +1338,6 @@ function registerProtocol () {
   }
 }
 
-if (!Object.values(settings).length) {
-  saveSettings()
-  location.reload()
-}
 clearRelCache.onclick = () => {
   localStorage.removeItem('relations')
 }
@@ -1359,7 +1381,6 @@ __webpack_require__.r(__webpack_exports__);
 const searchParams = new URLSearchParams(location.href)
 if (searchParams.get('access_token')) {
   localStorage.setItem('ALtoken', searchParams.get('access_token'))
-  window.location = '/app/#settingsTab'
 }
 const userBrowser = (() => {
   if (window.chrome) {
@@ -48938,6 +48959,191 @@ module.exports = Storage
 
 /***/ }),
 
+/***/ "./node_modules/idb-keyval/dist/esm/index.js":
+/*!***************************************************!*\
+  !*** ./node_modules/idb-keyval/dist/esm/index.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "clear": () => (/* binding */ clear),
+/* harmony export */   "createStore": () => (/* binding */ createStore),
+/* harmony export */   "del": () => (/* binding */ del),
+/* harmony export */   "entries": () => (/* binding */ entries),
+/* harmony export */   "get": () => (/* binding */ get),
+/* harmony export */   "getMany": () => (/* binding */ getMany),
+/* harmony export */   "keys": () => (/* binding */ keys),
+/* harmony export */   "promisifyRequest": () => (/* binding */ promisifyRequest),
+/* harmony export */   "set": () => (/* binding */ set),
+/* harmony export */   "setMany": () => (/* binding */ setMany),
+/* harmony export */   "update": () => (/* binding */ update),
+/* harmony export */   "values": () => (/* binding */ values)
+/* harmony export */ });
+/* harmony import */ var safari_14_idb_fix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! safari-14-idb-fix */ "./node_modules/safari-14-idb-fix/dist/esm/index.js");
+
+
+function promisifyRequest(request) {
+    return new Promise((resolve, reject) => {
+        // @ts-ignore - file size hacks
+        request.oncomplete = request.onsuccess = () => resolve(request.result);
+        // @ts-ignore - file size hacks
+        request.onabort = request.onerror = () => reject(request.error);
+    });
+}
+function createStore(dbName, storeName) {
+    const dbp = (0,safari_14_idb_fix__WEBPACK_IMPORTED_MODULE_0__.default)().then(() => {
+        const request = indexedDB.open(dbName);
+        request.onupgradeneeded = () => request.result.createObjectStore(storeName);
+        return promisifyRequest(request);
+    });
+    return (txMode, callback) => dbp.then((db) => callback(db.transaction(storeName, txMode).objectStore(storeName)));
+}
+let defaultGetStoreFunc;
+function defaultGetStore() {
+    if (!defaultGetStoreFunc) {
+        defaultGetStoreFunc = createStore('keyval-store', 'keyval');
+    }
+    return defaultGetStoreFunc;
+}
+/**
+ * Get a value by its key.
+ *
+ * @param key
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function get(key, customStore = defaultGetStore()) {
+    return customStore('readonly', (store) => promisifyRequest(store.get(key)));
+}
+/**
+ * Set a value with a key.
+ *
+ * @param key
+ * @param value
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function set(key, value, customStore = defaultGetStore()) {
+    return customStore('readwrite', (store) => {
+        store.put(value, key);
+        return promisifyRequest(store.transaction);
+    });
+}
+/**
+ * Set multiple values at once. This is faster than calling set() multiple times.
+ * It's also atomic – if one of the pairs can't be added, none will be added.
+ *
+ * @param entries Array of entries, where each entry is an array of `[key, value]`.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function setMany(entries, customStore = defaultGetStore()) {
+    return customStore('readwrite', (store) => {
+        entries.forEach((entry) => store.put(entry[1], entry[0]));
+        return promisifyRequest(store.transaction);
+    });
+}
+/**
+ * Get multiple values by their keys
+ *
+ * @param keys
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function getMany(keys, customStore = defaultGetStore()) {
+    return customStore('readonly', (store) => Promise.all(keys.map((key) => promisifyRequest(store.get(key)))));
+}
+/**
+ * Update a value. This lets you see the old value and update it as an atomic operation.
+ *
+ * @param key
+ * @param updater A callback that takes the old value and returns a new value.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function update(key, updater, customStore = defaultGetStore()) {
+    return customStore('readwrite', (store) => 
+    // Need to create the promise manually.
+    // If I try to chain promises, the transaction closes in browsers
+    // that use a promise polyfill (IE10/11).
+    new Promise((resolve, reject) => {
+        store.get(key).onsuccess = function () {
+            try {
+                store.put(updater(this.result), key);
+                resolve(promisifyRequest(store.transaction));
+            }
+            catch (err) {
+                reject(err);
+            }
+        };
+    }));
+}
+/**
+ * Delete a particular key from the store.
+ *
+ * @param key
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function del(key, customStore = defaultGetStore()) {
+    return customStore('readwrite', (store) => {
+        store.delete(key);
+        return promisifyRequest(store.transaction);
+    });
+}
+/**
+ * Clear all values in the store.
+ *
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function clear(customStore = defaultGetStore()) {
+    return customStore('readwrite', (store) => {
+        store.clear();
+        return promisifyRequest(store.transaction);
+    });
+}
+function eachCursor(customStore, callback) {
+    return customStore('readonly', (store) => {
+        // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
+        // And openKeyCursor isn't supported by Safari.
+        store.openCursor().onsuccess = function () {
+            if (!this.result)
+                return;
+            callback(this.result);
+            this.result.continue();
+        };
+        return promisifyRequest(store.transaction);
+    });
+}
+/**
+ * Get all keys in the store.
+ *
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function keys(customStore = defaultGetStore()) {
+    const items = [];
+    return eachCursor(customStore, (cursor) => items.push(cursor.key)).then(() => items);
+}
+/**
+ * Get all values in the store.
+ *
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function values(customStore = defaultGetStore()) {
+    const items = [];
+    return eachCursor(customStore, (cursor) => items.push(cursor.value)).then(() => items);
+}
+/**
+ * Get all entries in the store. Each entry is an array of `[key, value]`.
+ *
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function entries(customStore = defaultGetStore()) {
+    const items = [];
+    return eachCursor(customStore, (cursor) => items.push([cursor.key, cursor.value])).then(() => items);
+}
+
+
+
+
+/***/ }),
+
 /***/ "./node_modules/idb/build/esm/index.js":
 /*!*********************************************!*\
   !*** ./node_modules/idb/build/esm/index.js ***!
@@ -69056,6 +69262,43 @@ module.exports = function () {
 
 /***/ }),
 
+/***/ "./node_modules/safari-14-idb-fix/dist/esm/index.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/safari-14-idb-fix/dist/esm/index.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/**
+ * https://bugs.webkit.org/show_bug.cgi?id=226547
+ * Safari has a horrible bug where IDB requests can hang while the browser is starting up.
+ * The only solution is to keep nudging it until it's awake.
+ * This probably creates garbage, but garbage is better than totally failing.
+ */
+function idbReady() {
+    const isSafari = !navigator.userAgentData &&
+        /Safari\//.test(navigator.userAgent) &&
+        !/Chrom(e|ium)\//.test(navigator.userAgent);
+    // No point putting other browsers or older versions of Safari through this mess.
+    if (!isSafari || !indexedDB.databases)
+        return Promise.resolve();
+    let intervalId;
+    return new Promise((resolve) => {
+        const tryIdb = () => indexedDB.databases().finally(resolve);
+        intervalId = setInterval(tryIdb, 100);
+        tryIdb();
+    }).finally(() => clearInterval(intervalId));
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (idbReady);
+
+
+/***/ }),
+
 /***/ "./node_modules/safe-buffer/index.js":
 /*!*******************************************!*\
   !*** ./node_modules/safe-buffer/index.js ***!
@@ -78338,7 +78581,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const keepAliveTime = 20000
-const units = [' B', ' kB', ' MB', ' GB', ' TB']
+const units = [' B', ' KB', ' MB', ' GB', ' TB']
 
 class WebTorrentPlayer extends (webtorrent__WEBPACK_IMPORTED_MODULE_0___default()) {
   constructor (options = {}) {
@@ -78347,7 +78590,7 @@ class WebTorrentPlayer extends (webtorrent__WEBPACK_IMPORTED_MODULE_0___default(
     this.storeOpts = options.storeOpts || {}
 
     this.scope = location.pathname.substr(0, location.pathname.lastIndexOf('/') + 1)
-    this.worker = navigator.serviceWorker.controller
+    this.worker = location.origin + this.scope + 'sw.js' === navigator.serviceWorker?.controller?.scriptURL && navigator.serviceWorker.controller
     if (!this.worker) {
       navigator.serviceWorker.register('sw.js', { scope: this.scope }).then(reg => {
         this.worker = reg.active || reg.waiting || reg.installing
@@ -78378,6 +78621,8 @@ class WebTorrentPlayer extends (webtorrent__WEBPACK_IMPORTED_MODULE_0___default(
       const [response, stream] = this.serveFile(file, data)
       const asyncIterator = stream && stream[Symbol.asyncIterator]()
       port.postMessage(response)
+      stream.on('close', () => stream.destroy())
+      stream.on('error', () => stream.destroy())
 
       this.workerPortCount++
       port.onmessage = async msg => {
@@ -78487,7 +78732,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
     this.onDone = undefined
 
-    this.destroyStore = options.destroyStore || true
+    this.destroyStore = !!options.destroyStore
 
     this.immerseTimeout = undefined
     this.immerseTime = options.immerseTime || 5
@@ -78703,19 +78948,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     } else {
       this.currentFile = this.videoFiles[0]
     }
-    await navigator.serviceWorker.ready
-    this.video.src = `${this.scope}webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
-    this.video.load()
-    this.playVideo()
-    if (this.controls.downloadFile) this.controls.downloadFile.href = `${this.scope}webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
-
-    if (this.currentFile.done) {
-      this.postDownload()
-    } else {
-      this.onDone = this.currentFile.on('done', () => {
-        this.postDownload()
-      })
-    }
     // opts.media: mediaTitle, episodeNumber, episodeTitle, episodeThumbnail, mediaCover, name
     this.nowPlaying = (opts.media && (this.videoFiles.length === 1 || (opts.forceMedia && opts.file))) ? opts.media : this.resolveFileMedia ? await this.resolveFileMedia({ fileName: this.currentFile.name, method: 'SearchName' }) : undefined
 
@@ -78741,12 +78973,27 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       this.changeControlsIcon('nowPlaying', 'EP ' + episodeInfo)
       document.title = [this.nowPlaying.mediaTitle, episodeInfo ? 'EP ' + episodeInfo : false, this.nowPlaying.name || 'WebTorrentPlayer'].filter(s => s).join(' - ')
     }
+    if (!this.currentFile.done && this.currentFile.name.endsWith('.mkv')) await this.initParser(this.currentFile)
+    await navigator.serviceWorker.ready
+    if (this.currentFile.done) {
+      this.postDownload()
+    } else {
+      this.onDone = this.currentFile.on('done', () => {
+        this.postDownload(true)
+      })
+    }
+    this.video.src = `${this.scope}webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
+    this.video.load()
+    this.playVideo()
+
+    if (this.controls.downloadFile) this.controls.downloadFile.href = `${this.scope}webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
   }
 
   cleanupVideo () { // cleans up objects, attemps to clear as much video caching as possible
-    if (this.subtitleData.renderer) this.subtitleData.renderer.dispose()
-    if (this.subtitleData.parser) this.subtitleData.parser.destroy()
-    if (this.subtitleData.fonts) this.subtitleData.fonts.forEach(file => URL.revokeObjectURL(file)) // ideally this should clean up after its been downloaded by the sw renderer, but oh well
+    this.subtitleData.renderer?.dispose()
+    this.subtitleData.parser?.destroy()
+    this.subtitleData.stream?.destroy()
+    this.subtitleData.fonts?.forEach(file => URL.revokeObjectURL(file)) // ideally this should clean up after its been downloaded by the sw renderer, but oh well
     if (this.controls.downloadFile) this.controls.downloadFile.href = ''
     this.currentFile = undefined
     this.video.poster = ''
@@ -79183,16 +79430,18 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     subtitle.text || 0
   }
 
-  parseSubtitles (file) { // parse subtitles fully after a download is finished
+  parseSubtitles (file, skipFiles) { // parse subtitles fully after a download is finished
     return new Promise((resolve) => {
       if (file.name.endsWith('.mkv')) {
         let parser = new matroska_subtitles__WEBPACK_IMPORTED_MODULE_2__.SubtitleParser()
-        this.handleSubtitleParser(parser, true)
+        this.handleSubtitleParser(parser, skipFiles)
         parser.on('finish', () => {
           console.log('Sub parsing finished', this.toTS((performance.now() - t0) / 1000))
           this.subtitleData.parsed = true
+          this.subtitleData.stream?.destroy()
           this.subtitleData.stream = undefined
           this.subtitleData.parser.destroy()
+          this.subtitleData.parser = undefined
           this.selectCaptions(this.subtitleData.current)
           parser = undefined
           if (!this.video.paused) {
@@ -79207,6 +79456,19 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       } else {
         resolve()
       }
+    })
+  }
+
+  initParser (file) {
+    return new Promise(resolve => {
+      this.subtitleData.stream = new matroska_subtitles__WEBPACK_IMPORTED_MODULE_2__.SubtitleStream()
+      this.handleSubtitleParser(this.subtitleData.stream)
+      this.subtitleData.stream.once('tracks', () => {
+        resolve()
+        fileStreamStream.destroy()
+      })
+      const fileStreamStream = file.createReadStream()
+      fileStreamStream.pipe(this.subtitleData.stream)
     })
   }
 
@@ -79235,7 +79497,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     })
     if (!skipFile) {
       parser.on('file', file => {
-        if (file.mimetype === 'application/x-truetype-font' || file.mimetype === 'application/font-woff') {
+        if (file.mimetype === 'application/x-truetype-font' || file.mimetype === 'application/font-woff' || file.mimetype === 'application/vnd.ms-opentype') {
           this.subtitleData.fonts.push(URL.createObjectURL(new Blob([file.data], { type: file.mimetype })))
         }
       })
@@ -79351,9 +79613,9 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     }
   }
 
-  postDownload () {
+  postDownload (skipFiles) {
     this.emit('download-done', { file: this.currentFile })
-    this.parseSubtitles(this.currentFile).then(() => {
+    this.parseSubtitles(this.currentFile, skipFiles).then(() => {
       if (this.generateThumbnails) {
         this.finishThumbnails(this.video.src)
       }
@@ -79390,6 +79652,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       handleTorrent(this.get(torrentID), opts)
     } else {
       this.add(torrentID, {
+        destroyStoreOnDestroy: this.destroyStore,
         storeOpts: this.storeOpts,
         store: (hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_3___default()),
         announce: this.tracker.announce || [

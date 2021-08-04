@@ -8,11 +8,6 @@ import { settings } from './settings.js'
 import { cardCreator, initMenu } from './interface.js'
 import halfmoon from 'halfmoon'
 
-const announceList = [
-  'wss://tracker.openwebtorrent.com',
-  'wss://tracker.sloppyta.co:443/announce',
-  'wss://hub.bugout.link:443/announce'
-]
 const playerControls = {}
 for (const item of document.getElementsByClassName('ctrl')) {
   if (!playerControls[item.dataset.name]) {
@@ -27,12 +22,13 @@ export const client = new WebTorrentPlayer({
     downloadLimit: settings.torrent7 * 1048576,
     uploadLimit: settings.torrent7 * 1572864,
     tracker: {
-      announce: announceList
+      announce: settings.torrent10.split('\n')
     }
   },
   controls: playerControls,
   video: video,
   player: player,
+  destroyStore: true,
   playerWrapper: pageWrapper,
   burnIn: settings.subtitle3,
   seekTime: Number(settings.player3),
@@ -96,7 +92,7 @@ client.on('prev', ({ filemedia }) => {
 })
 client.on('offline-torrent', torrent => {
   resolveFileMedia({ fileName: torrent.name, method: 'SearchName' }).then(mediaInformation => {
-    mediaInformation.onclick = () => client.addTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
+    mediaInformation.onclick = () => client.playTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
     const template = cardCreator(mediaInformation)
     document.querySelector('.downloads').appendChild(template)
   })

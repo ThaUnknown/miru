@@ -6,7 +6,7 @@ import { alRequest } from './anilist.js'
 import { nyaaRss } from './rss.js'
 import halfmoon from 'halfmoon'
 import anitomyscript from 'anitomyscript'
-const torrentRx = /(magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent){1}/i
+const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 window.addEventListener('paste', async e => { // WAIT image lookup on paste, or add torrent on paste
   const item = e.clipboardData.items[0]
