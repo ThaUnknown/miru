@@ -19,28 +19,42 @@ if (!('audioTracks' in HTMLVideoElement.prototype)) {
 export async function nyaaRss (media, episode) {
   const frag = document.createDocumentFragment()
   const ep = (media.status === 'FINISHED' && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
-  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(')})${ep}"${settings.torrent1}"-(${exclusions[userBrowser].join('|')})`)
-  await fetch(url).then(res => {
-    res.text().then((xmlTxt) => {
+  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '')})${ep}"${settings.torrent1}"-(${exclusions[userBrowser].join('|')})`)
+  await fetch(url).then(async res => {
+    await res.text().then((xmlTxt) => {
       try {
         const doc = DOMPARSER(xmlTxt, 'text/xml')
-        if (settings.torrent2 && doc.querySelector('infoHash')) {
-          client.playTorrent(doc.querySelector('infoHash').textContent, { media: media, episode: episode })
-          halfmoon.toggleModal('tsearch')
+        const nodes = doc.querySelectorAll('item *')
+        if (!nodes.length) return
+        const entries = []
+        for (let index = Math.floor(nodes.length / 15); index--;) {
+          const position = index * 15
+          entries[index] = {
+            title: nodes[position].textContent,
+            seeders: nodes[position + 4].textContent,
+            leechers: nodes[position + 5].textContent,
+            downloads: nodes[position + 6].textContent,
+            hash: nodes[position + 7].textContent,
+            size: nodes[position + 10].textContent
+          }
         }
-        doc.querySelectorAll('item').forEach((item, index) => {
-          const i = item.querySelectorAll('*')
+        entries.sort((a, b) => b.seeders - a.seeders)
+        if (settings.torrent2) {
+          client.playTorrent(entries[0].hash, { media: media, episode: episode })
+          halfmoon.hideModal('tsearch')
+        }
+        entries.forEach((entry, index) => {
           const template = document.createElement('tr')
           template.innerHTML += `
                 <th>${(index + 1)}</th>
-                <td>${i[0].textContent}</td>
-                <td>${i[10].textContent}</td>
-                <td>${i[4].textContent}</td>
-                <td>${i[5].textContent}</td>
-                <td>${i[6].textContent}</td>
+                <td>${entry.title}</td>
+                <td>${entry.size}</td>
+                <td>${entry.seeders}</td>
+                <td>${entry.leechers}</td>
+                <td>${entry.downloads}</td>
                 <td class="pointer">Play</td>`
           template.onclick = () => {
-            client.playTorrent(i[7].textContent, { media: media, episode: episode })
+            client.playTorrent(entry.hash, { media: media, episode: episode })
             halfmoon.hideModal('tsearch')
           }
           frag.appendChild(template)

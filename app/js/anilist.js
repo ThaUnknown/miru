@@ -1,6 +1,5 @@
 /* eslint-env browser */
 /* global */
-import { client } from './main.js'
 import { alID } from './interface.js'
 import halfmoon from 'halfmoon'
 
@@ -22,10 +21,10 @@ async function handleRequest (opts) {
   })
 }
 
-export function alEntry () {
-  if (client.nowPlaying.media && localStorage.getItem('ALtoken')) {
-    alRequest({ method: 'SearchIDStatus', id: client.nowPlaying.media.id }).then(res => {
-      if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= client.nowPlaying.episodeNumber) {
+export function alEntry (filemedia) {
+  if (filemedia.media && localStorage.getItem('ALtoken')) {
+    alRequest({ method: 'SearchIDStatus', id: filemedia.media.id }).then(res => {
+      if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= filemedia.episodeNumber) {
         const query = `
 mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
   SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
@@ -37,11 +36,11 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
 }`
         const variables = {
           repeat: 0,
-          id: client.nowPlaying.media.id,
+          id: filemedia.media.id,
           status: 'CURRENT',
-          episode: client.nowPlaying.episodeNumber
+          episode: filemedia.episodeNumber
         }
-        if (client.nowPlaying.episodeNumber === client.nowPlaying.media.episodes) {
+        if (filemedia.episodeNumber === filemedia.media.episodes) {
           variables.status = 'COMPLETED'
           if (res.data.MediaList.status === 'COMPLETED') {
             variables.repeat = res.data.MediaList.repeat + 1
@@ -81,8 +80,7 @@ export async function alRequest (opts) {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json'
-    },
-    body: undefined
+    }
   }
   const queryObjects = `
 id,

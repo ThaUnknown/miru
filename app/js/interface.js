@@ -197,6 +197,7 @@ export function loadHomePage () {
     clearSearch()
     home.classList.remove('browsing')
     lastRSSDate = undefined
+    home.onscroll = undefined
     for (const item of homePreviewElements) {
       item.textContent = ''
       item.append(...gallerySkeletonFrag(5))

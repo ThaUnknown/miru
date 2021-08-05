@@ -51,16 +51,16 @@ client.on('download-done', ({ file }) => {
 client.on('watched', ({ filemedia }) => {
   if (filemedia?.media?.episodes || filemedia?.media?.nextAiringEpisode?.episode) {
     if (settings.other2 && (filemedia.media.episodes || filemedia.media.nextAiringEpisode?.episode > filemedia.episodeNumber)) {
-      alEntry()
-    } else {
-      halfmoon.initStickyAlert({
-        content: `Do You Want To Mark <br><b>${filemedia.mediaTitle}</b><br>Episode ${filemedia.episodeNumber} As Completed?<br>
-                <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
-                <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
-        title: 'Episode Complete',
-        timeShown: 180000
-      })
+      alEntry(filemedia)
     }
+    //   halfmoon.initStickyAlert({
+    //     content: `Do You Want To Mark <br><b>${filemedia.mediaTitle}</b><br>Episode ${filemedia.episodeNumber} As Completed?<br>
+    //             <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
+    //             <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
+    //     title: 'Episode Complete',
+    //     timeShown: 180000
+    //   })
+    // }
   }
 })
 client.on('playlist', () => {
@@ -136,6 +136,7 @@ client.nowPlaying = { name: 'Miru' }
 window.client = client
 
 window.onbeforeunload = () => { return '' }
+
 if (searchParams.get('file')) client.playTorrent(searchParams.get('file'))
 
 queueMicrotask(initMenu)

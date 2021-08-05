@@ -11,6 +11,7 @@ halfmoon.hideModal = id => {
 export const searchParams = new URLSearchParams(location.href)
 if (searchParams.get('access_token')) {
   localStorage.setItem('ALtoken', searchParams.get('access_token'))
+  window.location = '/app/#home'
 }
 export const userBrowser = (() => {
   if (window.chrome) {

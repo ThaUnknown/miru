@@ -13,14 +13,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "alEntry": () => (/* binding */ alEntry),
 /* harmony export */   "alRequest": () => (/* binding */ alRequest)
 /* harmony export */ });
-/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./main.js */ "./app/js/main.js");
-/* harmony import */ var _interface_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./interface.js */ "./app/js/interface.js");
-/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! halfmoon */ "halfmoon");
-/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _interface_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./interface.js */ "./app/js/interface.js");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! halfmoon */ "halfmoon");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_1__);
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 /* eslint-env browser */
 /* global */
-
 
 
 
@@ -29,7 +27,7 @@ async function handleRequest (opts) {
     const json = await res.json()
     if (!res.ok) {
       for (const error of json.errors) {
-        halfmoon__WEBPACK_IMPORTED_MODULE_2___default().initStickyAlert({
+        halfmoon__WEBPACK_IMPORTED_MODULE_1___default().initStickyAlert({
           content: `Failed making request to anilist!<br>${error.status} - ${error.message}`,
           title: 'Search Failed',
           alertType: 'alert-danger',
@@ -42,10 +40,10 @@ async function handleRequest (opts) {
   })
 }
 
-function alEntry () {
-  if (_main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media && localStorage.getItem('ALtoken')) {
-    alRequest({ method: 'SearchIDStatus', id: _main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media.id }).then(res => {
-      if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= _main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.episodeNumber) {
+function alEntry (filemedia) {
+  if (filemedia.media && localStorage.getItem('ALtoken')) {
+    alRequest({ method: 'SearchIDStatus', id: filemedia.media.id }).then(res => {
+      if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= filemedia.episodeNumber) {
         const query = `
 mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
   SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
@@ -57,11 +55,11 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
 }`
         const variables = {
           repeat: 0,
-          id: _main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media.id,
+          id: filemedia.media.id,
           status: 'CURRENT',
-          episode: _main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.episodeNumber
+          episode: filemedia.episodeNumber
         }
-        if (_main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.episodeNumber === _main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media.episodes) {
+        if (filemedia.episodeNumber === filemedia.media.episodes) {
           variables.status = 'COMPLETED'
           if (res.data.MediaList.status === 'COMPLETED') {
             variables.repeat = res.data.MediaList.repeat + 1
@@ -101,8 +99,7 @@ async function alRequest (opts) {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json'
-    },
-    body: undefined
+    }
   }
   const queryObjects = `
 id,
@@ -222,7 +219,7 @@ query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [Media
 }`
       break
     } case 'SearchIDStatus': {
-      variables.id = _interface_js__WEBPACK_IMPORTED_MODULE_1__.alID
+      variables.id = _interface_js__WEBPACK_IMPORTED_MODULE_0__.alID
       variables.mediaId = opts.id
       query = ` 
 query ($id: Int, $mediaId: Int){
@@ -903,6 +900,7 @@ function loadHomePage () {
     clearSearch()
     home.classList.remove('browsing')
     lastRSSDate = undefined
+    home.onscroll = undefined
     for (const item of homePreviewElements) {
       item.textContent = ''
       item.append(...gallerySkeletonFrag(5))
@@ -1077,16 +1075,16 @@ client.on('download-done', ({ file }) => {
 client.on('watched', ({ filemedia }) => {
   if (filemedia?.media?.episodes || filemedia?.media?.nextAiringEpisode?.episode) {
     if (_settings_js__WEBPACK_IMPORTED_MODULE_4__.settings.other2 && (filemedia.media.episodes || filemedia.media.nextAiringEpisode?.episode > filemedia.episodeNumber)) {
-      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_3__.alEntry)()
-    } else {
-      halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
-        content: `Do You Want To Mark <br><b>${filemedia.mediaTitle}</b><br>Episode ${filemedia.episodeNumber} As Completed?<br>
-                <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
-                <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
-        title: 'Episode Complete',
-        timeShown: 180000
-      })
+      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_3__.alEntry)(filemedia)
     }
+    //   halfmoon.initStickyAlert({
+    //     content: `Do You Want To Mark <br><b>${filemedia.mediaTitle}</b><br>Episode ${filemedia.episodeNumber} As Completed?<br>
+    //             <button class="btn btn-sm btn-square btn-success mt-5" onclick="alEntry()" data-dismiss="alert" type="button" aria-label="Close">✓</button>
+    //             <button class="btn btn-sm btn-square mt-5" data-dismiss="alert" type="button" aria-label="Close"><span aria-hidden="true">X</span></button>`,
+    //     title: 'Episode Complete',
+    //     timeShown: 180000
+    //   })
+    // }
   }
 })
 client.on('playlist', () => {
@@ -1162,6 +1160,7 @@ client.nowPlaying = { name: 'Miru' }
 window.client = client
 
 window.onbeforeunload = () => { return '' }
+
 if (_util_js__WEBPACK_IMPORTED_MODULE_1__.searchParams.get('file')) client.playTorrent(_util_js__WEBPACK_IMPORTED_MODULE_1__.searchParams.get('file'))
 
 queueMicrotask(_interface_js__WEBPACK_IMPORTED_MODULE_5__.initMenu)
@@ -1210,28 +1209,42 @@ if (!('audioTracks' in HTMLVideoElement.prototype)) {
 async function nyaaRss (media, episode) {
   const frag = document.createDocumentFragment()
   const ep = (media.status === 'FINISHED' && _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
-  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(')})${ep}"${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1}"-(${exclusions[_util_js__WEBPACK_IMPORTED_MODULE_2__.userBrowser].join('|')})`)
-  await fetch(url).then(res => {
-    res.text().then((xmlTxt) => {
+  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '')})${ep}"${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1}"-(${exclusions[_util_js__WEBPACK_IMPORTED_MODULE_2__.userBrowser].join('|')})`)
+  await fetch(url).then(async res => {
+    await res.text().then((xmlTxt) => {
       try {
         const doc = (0,_util_js__WEBPACK_IMPORTED_MODULE_2__.DOMPARSER)(xmlTxt, 'text/xml')
-        if (_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent2 && doc.querySelector('infoHash')) {
-          _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(doc.querySelector('infoHash').textContent, { media: media, episode: episode })
-          halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('tsearch')
+        const nodes = doc.querySelectorAll('item *')
+        if (!nodes.length) return
+        const entries = []
+        for (let index = Math.floor(nodes.length / 15); index--;) {
+          const position = index * 15
+          entries[index] = {
+            title: nodes[position].textContent,
+            seeders: nodes[position + 4].textContent,
+            leechers: nodes[position + 5].textContent,
+            downloads: nodes[position + 6].textContent,
+            hash: nodes[position + 7].textContent,
+            size: nodes[position + 10].textContent
+          }
         }
-        doc.querySelectorAll('item').forEach((item, index) => {
-          const i = item.querySelectorAll('*')
+        entries.sort((a, b) => b.seeders - a.seeders)
+        if (_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent2) {
+          _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(entries[0].hash, { media: media, episode: episode })
+          halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('tsearch')
+        }
+        entries.forEach((entry, index) => {
           const template = document.createElement('tr')
           template.innerHTML += `
                 <th>${(index + 1)}</th>
-                <td>${i[0].textContent}</td>
-                <td>${i[10].textContent}</td>
-                <td>${i[4].textContent}</td>
-                <td>${i[5].textContent}</td>
-                <td>${i[6].textContent}</td>
+                <td>${entry.title}</td>
+                <td>${entry.size}</td>
+                <td>${entry.seeders}</td>
+                <td>${entry.leechers}</td>
+                <td>${entry.downloads}</td>
                 <td class="pointer">Play</td>`
           template.onclick = () => {
-            _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(i[7].textContent, { media: media, episode: episode })
+            _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(entry.hash, { media: media, episode: episode })
             halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('tsearch')
           }
           frag.appendChild(template)
@@ -1381,6 +1394,7 @@ __webpack_require__.r(__webpack_exports__);
 const searchParams = new URLSearchParams(location.href)
 if (searchParams.get('access_token')) {
   localStorage.setItem('ALtoken', searchParams.get('access_token'))
+  window.location = '/app/#home'
 }
 const userBrowser = (() => {
   if (window.chrome) {
@@ -48727,7 +48741,7 @@ class HybridChunkStore {
         this.stores.push(this.fallbackStore)
         newOpts.length = newLenght
       }
-      const store = new CacheChunkStore(new TargetStore(this.chunkLength, newOpts), { max: opts.max })
+      const store = new CacheChunkStore(new TargetStore(this.chunkLength, newOpts), { max: opts.max || 20 })
       this.stores.push(store)
       if (this.chunkCount) {
         this.chunks[this.chunkCount - 1] = store
@@ -79654,6 +79668,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       this.add(torrentID, {
         destroyStoreOnDestroy: this.destroyStore,
         storeOpts: this.storeOpts,
+        storeCacheSlots: 0,
         store: (hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_3___default()),
         announce: this.tracker.announce || [
           'wss://tracker.openwebtorrent.com',
@@ -79677,6 +79692,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     const torrent = this.add(torrentID, {
       storeOpts: this.storeOpts,
       store: (hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_3___default()),
+      storeCacheSlots: 0,
       announce: this.tracker.announce || [
         'wss://tracker.openwebtorrent.com',
         'wss://tracker.sloppyta.co:443/announce',
