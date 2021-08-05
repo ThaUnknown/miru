@@ -19,7 +19,7 @@ if (!('audioTracks' in HTMLVideoElement.prototype)) {
 export async function nyaaRss (media, episode) {
   const frag = document.createDocumentFragment()
   const ep = (media.status === 'FINISHED' && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
-  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '')})${ep}"${settings.torrent1}"-(${exclusions[userBrowser].join('|')})`)
+  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '%26')})${ep}"${settings.torrent1}"-(${exclusions[userBrowser].join('|')})`)
   await fetch(url).then(async res => {
     await res.text().then((xmlTxt) => {
       try {
