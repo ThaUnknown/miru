@@ -716,54 +716,54 @@ function loadHomePage () {
   const homeSearchElements = [searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort]
   const browseGallery = document.querySelector('.browse')
   const homeLoadFunctions = {
-    continue: async function (page) {
+    continue: function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 }).then(res => {
+      ;(0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 }).then(res => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'continue', page: page || 1 })
       })
     },
-    releases: async function () {
+    releases: function () {
       gallerySkeleton(browseGallery)
-      await (0,_rss_js__WEBPACK_IMPORTED_MODULE_2__.releasesRss)().then(cards => {
+      ;(0,_rss_js__WEBPACK_IMPORTED_MODULE_2__.releasesRSS)().then(cards => {
         browseGallery.textContent = ''
         browseGallery.append(...cards)
         home.classList.remove('loading')
         home.onscroll = undefined
       })
     },
-    planning: async function (page) {
+    planning: function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 }).then(res => {
+      ;(0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 }).then(res => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'planning', page: page || 1 })
       })
     },
-    trending: async function () {
+    trending: function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      homeLoadFunctions.search()
     },
-    romance: async function () {
+    romance: function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'romance'
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      homeLoadFunctions.search()
     },
-    action: async function () {
+    action: function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'action'
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      homeLoadFunctions.search()
     },
-    schedule: async function (page) {
+    schedule: function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'AiringSchedule', page: page || 1 }).then(res => {
+      ;(0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'AiringSchedule', page: page || 1 }).then(res => {
         galleryAppend({ media: res.data.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
       })
     },
-    search: async function (page) {
+    search: function (page) {
       const opts = {
         method: 'Search',
         page: page || 1
@@ -771,64 +771,61 @@ function loadHomePage () {
       for (const element of homeSearchElements) {
         if (element.value) opts[element.dataset.option] = element.value
       }
-      await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)(opts).then(res => {
+      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)(opts).then(res => {
         galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: 'search', page: page || 1 })
       })
     }
   }
   const homePreviewFunctions = {
     continue: function () {
-      ;(0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, perPage: 5 }).then((res) => {
+      ;(0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, perPage: 5 }).then(res => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homeContinue })
       })
     },
     releases: async function () { // this could be cleaner, but oh well
-      await fetch((0,_rss_js__WEBPACK_IMPORTED_MODULE_2__.getRSSurl)()).then(res => res.text().then(xmlTxt => {
-        const doc = (0,_util_js__WEBPACK_IMPORTED_MODULE_5__.DOMPARSER)(xmlTxt, 'text/xml')
-        const pubDate = doc.querySelector('pubDate').textContent
-        if (lastRSSDate !== pubDate) {
-          if (lastRSSDate) {
-            homeReleases.append(...gallerySkeletonFrag(5))
-            ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: doc.querySelector('item').querySelector('title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
-              if (_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.other1) {
-                const notification = new Notification(mediaInformation.media.title.userPreferred, {
-                  body: `Episode ${mediaInformation.episode} was just released!`,
-                  icon: mediaInformation.media.coverImage.medium
-                })
-                notification.onclick = async () => {
-                  window.parent.focus()
-                  _main_js__WEBPACK_IMPORTED_MODULE_4__.client.playTorrent(doc.querySelector('item').querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
-                  _anime_js__WEBPACK_IMPORTED_MODULE_1__.relations[mediaInformation.parseObject.anime_title] = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ id: mediaInformation.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media.id)
-                }
+      const doc = await (0,_rss_js__WEBPACK_IMPORTED_MODULE_2__.getRSSContent)((0,_rss_js__WEBPACK_IMPORTED_MODULE_2__.getRSSurl)())
+      const pubDate = doc.querySelector('pubDate').textContent
+      if (lastRSSDate !== pubDate) {
+        if (lastRSSDate) {
+          homeReleases.append(...gallerySkeletonFrag(5))
+          ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: doc.querySelector('item title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
+            if (_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.other1) {
+              const notification = new Notification(mediaInformation.media.title.userPreferred, {
+                body: `Episode ${mediaInformation.episode} was just released!`,
+                icon: mediaInformation.media.coverImage.medium
+              })
+              notification.onclick = async () => {
+                window.parent.focus()
+                _main_js__WEBPACK_IMPORTED_MODULE_4__.client.playTorrent(doc.querySelector('item link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
+                _anime_js__WEBPACK_IMPORTED_MODULE_1__.relations[mediaInformation.parseObject.anime_title] = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ id: mediaInformation.media.id, method: 'SearchIDSingle' })).data.Media.id
               }
-            })
-          }
-          lastRSSDate = pubDate
-          releasesCards(doc.querySelectorAll('item'), 5).then(cards => {
-            homeReleases.textContent = ''
-            homeReleases.append(...cards)
+            }
           })
         }
-      }))
+        lastRSSDate = pubDate
+        const cards = await releasesCards(doc.querySelectorAll('item'), 5)
+        homeReleases.textContent = ''
+        homeReleases.append(...cards)
+      }
       setTimeout(homePreviewFunctions.releases, 30000)
     },
     planning: function () {
-      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: alID, perPage: 5 }).then((res) => {
+      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: alID, perPage: 5 }).then(res => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homePlanning })
       })
     },
     trending: function () {
-      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', id: alID, perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
+      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', id: alID, perPage: 5, sort: 'TRENDING_DESC' }).then(res => {
         galleryAppend({ media: res.data.Page.media, gallery: homeTrending })
       })
     },
     romance: function () {
-      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', genre: 'Romance', perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
+      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', genre: 'Romance', perPage: 5, sort: 'TRENDING_DESC' }).then(res => {
         galleryAppend({ media: res.data.Page.media, gallery: homeRomance })
       })
     },
     action: function () {
-      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', genre: 'Action', perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
+      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'Search', genre: 'Action', perPage: 5, sort: 'TRENDING_DESC' }).then(res => {
         galleryAppend({ media: res.data.Page.media, gallery: homeAction })
       })
     }
@@ -956,19 +953,16 @@ function cardCreator (opts) {
     card.querySelector('h5').textContent = [opts.parseObject.anime_title, opts.parseObject.episode_number].filter(s => s).join(' - ')
     card.firstElementChild.onclick = opts.onclick
     return card
-  } else {
-    return skeletonCard.cloneNode(true)
   }
+  return skeletonCard.cloneNode(true)
 }
 
 async function releasesCards (items, limit) {
   const cards = []
-  await (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true }).then(results => {
-    results.forEach((mediaInformation, index) => {
-      const o = items[index].querySelector.bind(items[index])
-      mediaInformation.onclick = () => _main_js__WEBPACK_IMPORTED_MODULE_4__.client.playTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
-      cards.push(cardCreator(mediaInformation))
-    })
+  const media = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true })
+  media.forEach((mediaInformation, index) => {
+    mediaInformation.onclick = () => _main_js__WEBPACK_IMPORTED_MODULE_4__.client.playTorrent(items[index].querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
+    cards.push(cardCreator(mediaInformation))
   })
   localStorage.setItem('relations', JSON.stringify(_anime_js__WEBPACK_IMPORTED_MODULE_1__.relations))
   return cards
@@ -1177,8 +1171,9 @@ queueMicrotask(_interface_js__WEBPACK_IMPORTED_MODULE_5__.initMenu)
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getRSSContent": () => (/* binding */ getRSSContent),
 /* harmony export */   "nyaaRss": () => (/* binding */ nyaaRss),
-/* harmony export */   "releasesRss": () => (/* binding */ releasesRss),
+/* harmony export */   "releasesRSS": () => (/* binding */ releasesRSS),
 /* harmony export */   "getRSSurl": () => (/* binding */ getRSSurl)
 /* harmony export */ });
 /* harmony import */ var _settings_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./settings.js */ "./app/js/settings.js");
@@ -1206,36 +1201,49 @@ if (!('audioTracks' in HTMLVideoElement.prototype)) {
   exclusions[_util_js__WEBPACK_IMPORTED_MODULE_2__.userBrowser].push('mutli audio', 'dual audio')
 }
 
+function getRSSContent (url) {
+  return fetch(url).then(res => {
+    return res.text().then(xmlTxt => {
+      return (0,_util_js__WEBPACK_IMPORTED_MODULE_2__.DOMPARSER)(xmlTxt, 'text/xml')
+    })
+  }).catch(error => {
+    halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
+      content: 'Failed fetching RSS!<br>' + error,
+      title: 'Search Failed',
+      alertType: 'alert-danger',
+      fillType: ''
+    })
+    console.error(error)
+  })
+}
+
 async function nyaaRss (media, episode) {
   const frag = document.createDocumentFragment()
   const ep = (media.status === 'FINISHED' && _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
   const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '%26')})${ep}"${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1}"-(${exclusions[_util_js__WEBPACK_IMPORTED_MODULE_2__.userBrowser].join('|')})`)
-  await fetch(url).then(async res => {
-    await res.text().then((xmlTxt) => {
-      try {
-        const doc = (0,_util_js__WEBPACK_IMPORTED_MODULE_2__.DOMPARSER)(xmlTxt, 'text/xml')
-        const nodes = doc.querySelectorAll('item *')
-        if (!nodes.length) return
-        const entries = []
-        for (let index = Math.floor(nodes.length / 15); index--;) {
-          const position = index * 15
-          entries[index] = {
-            title: nodes[position].textContent,
-            seeders: nodes[position + 4].textContent,
-            leechers: nodes[position + 5].textContent,
-            downloads: nodes[position + 6].textContent,
-            hash: nodes[position + 7].textContent,
-            size: nodes[position + 10].textContent
-          }
-        }
-        entries.sort((a, b) => b.seeders - a.seeders)
-        if (_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent2) {
-          _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(entries[0].hash, { media: media, episode: episode })
-          halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('tsearch')
-        }
-        entries.forEach((entry, index) => {
-          const template = document.createElement('tr')
-          template.innerHTML += `
+
+  const nodes = (await getRSSContent(url)).querySelectorAll('item *')
+  if (!nodes.length) return frag
+  const entries = []
+  for (let index = Math.floor(nodes.length / 15); index--;) {
+    const position = index * 15
+    entries[index] = {
+      title: nodes[position].textContent,
+      seeders: nodes[position + 4].textContent,
+      leechers: nodes[position + 5].textContent,
+      downloads: nodes[position + 6].textContent,
+      hash: nodes[position + 7].textContent,
+      size: nodes[position + 10].textContent
+    }
+  }
+  entries.sort((a, b) => b.seeders - a.seeders)
+  if (_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent2) {
+    _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(entries[0].hash, { media: media, episode: episode })
+    halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('tsearch')
+  }
+  entries.forEach((entry, index) => {
+    const template = document.createElement('tr')
+    template.innerHTML += `
                 <th>${(index + 1)}</th>
                 <td>${entry.title}</td>
                 <td>${entry.size}</td>
@@ -1243,24 +1251,17 @@ async function nyaaRss (media, episode) {
                 <td>${entry.leechers}</td>
                 <td>${entry.downloads}</td>
                 <td class="pointer">Play</td>`
-          template.onclick = () => {
-            _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(entry.hash, { media: media, episode: episode })
-            halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('tsearch')
-          }
-          frag.appendChild(template)
-        })
-      } catch (e) {
-        console.error(e)
-      }
-    })
+    template.onclick = () => {
+      _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(entry.hash, { media: media, episode: episode })
+      halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('tsearch')
+    }
+    frag.appendChild(template)
   })
   return frag
 }
 
-async function releasesRss (limit) {
-  return await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
-    return await (0,_interface_js__WEBPACK_IMPORTED_MODULE_1__.releasesCards)((0,_util_js__WEBPACK_IMPORTED_MODULE_2__.DOMPARSER)(xmlTxt, 'text/xml').querySelectorAll('item'), limit)
-  }))
+async function releasesRSS (limit) {
+  return (0,_interface_js__WEBPACK_IMPORTED_MODULE_1__.releasesCards)((await getRSSContent(getRSSurl())).querySelectorAll('item'), limit)
 }
 
 function getRSSurl () {

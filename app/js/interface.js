@@ -3,64 +3,64 @@
 
 import { alRequest } from './anilist.js'
 import { resolveFileMedia, viewAnime, relations } from './anime.js'
-import { getRSSurl, releasesRss } from './rss.js'
+import { getRSSurl, releasesRSS, getRSSContent } from './rss.js'
 import { settings } from './settings.js'
 import { client } from './main.js'
-import { DOMPARSER, countdown } from './util.js'
+import { countdown } from './util.js'
 export function loadHomePage () {
   const homeLoadElements = [navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore]
   const homePreviewElements = [homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction]
   const homeSearchElements = [searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort]
   const browseGallery = document.querySelector('.browse')
   const homeLoadFunctions = {
-    continue: async function (page) {
+    continue: function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      await alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 }).then(res => {
+      alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 }).then(res => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'continue', page: page || 1 })
       })
     },
-    releases: async function () {
+    releases: function () {
       gallerySkeleton(browseGallery)
-      await releasesRss().then(cards => {
+      releasesRSS().then(cards => {
         browseGallery.textContent = ''
         browseGallery.append(...cards)
         home.classList.remove('loading')
         home.onscroll = undefined
       })
     },
-    planning: async function (page) {
+    planning: function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      await alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 }).then(res => {
+      alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 }).then(res => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'planning', page: page || 1 })
       })
     },
-    trending: async function () {
+    trending: function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      homeLoadFunctions.search()
     },
-    romance: async function () {
+    romance: function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'romance'
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      homeLoadFunctions.search()
     },
-    action: async function () {
+    action: function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'action'
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      homeLoadFunctions.search()
     },
-    schedule: async function (page) {
+    schedule: function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      await alRequest({ method: 'AiringSchedule', page: page || 1 }).then(res => {
+      alRequest({ method: 'AiringSchedule', page: page || 1 }).then(res => {
         galleryAppend({ media: res.data.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
       })
     },
-    search: async function (page) {
+    search: function (page) {
       const opts = {
         method: 'Search',
         page: page || 1
@@ -68,64 +68,61 @@ export function loadHomePage () {
       for (const element of homeSearchElements) {
         if (element.value) opts[element.dataset.option] = element.value
       }
-      await alRequest(opts).then(res => {
+      alRequest(opts).then(res => {
         galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: 'search', page: page || 1 })
       })
     }
   }
   const homePreviewFunctions = {
     continue: function () {
-      alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, perPage: 5 }).then((res) => {
+      alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, perPage: 5 }).then(res => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homeContinue })
       })
     },
     releases: async function () { // this could be cleaner, but oh well
-      await fetch(getRSSurl()).then(res => res.text().then(xmlTxt => {
-        const doc = DOMPARSER(xmlTxt, 'text/xml')
-        const pubDate = doc.querySelector('pubDate').textContent
-        if (lastRSSDate !== pubDate) {
-          if (lastRSSDate) {
-            homeReleases.append(...gallerySkeletonFrag(5))
-            resolveFileMedia({ fileName: doc.querySelector('item').querySelector('title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
-              if (settings.other1) {
-                const notification = new Notification(mediaInformation.media.title.userPreferred, {
-                  body: `Episode ${mediaInformation.episode} was just released!`,
-                  icon: mediaInformation.media.coverImage.medium
-                })
-                notification.onclick = async () => {
-                  window.parent.focus()
-                  client.playTorrent(doc.querySelector('item').querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
-                  relations[mediaInformation.parseObject.anime_title] = await alRequest({ id: mediaInformation.media.id, method: 'SearchIDSingle' }).then(res => res.data.Media.id)
-                }
+      const doc = await getRSSContent(getRSSurl())
+      const pubDate = doc.querySelector('pubDate').textContent
+      if (lastRSSDate !== pubDate) {
+        if (lastRSSDate) {
+          homeReleases.append(...gallerySkeletonFrag(5))
+          resolveFileMedia({ fileName: doc.querySelector('item title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
+            if (settings.other1) {
+              const notification = new Notification(mediaInformation.media.title.userPreferred, {
+                body: `Episode ${mediaInformation.episode} was just released!`,
+                icon: mediaInformation.media.coverImage.medium
+              })
+              notification.onclick = async () => {
+                window.parent.focus()
+                client.playTorrent(doc.querySelector('item link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
+                relations[mediaInformation.parseObject.anime_title] = (await alRequest({ id: mediaInformation.media.id, method: 'SearchIDSingle' })).data.Media.id
               }
-            })
-          }
-          lastRSSDate = pubDate
-          releasesCards(doc.querySelectorAll('item'), 5).then(cards => {
-            homeReleases.textContent = ''
-            homeReleases.append(...cards)
+            }
           })
         }
-      }))
+        lastRSSDate = pubDate
+        const cards = await releasesCards(doc.querySelectorAll('item'), 5)
+        homeReleases.textContent = ''
+        homeReleases.append(...cards)
+      }
       setTimeout(homePreviewFunctions.releases, 30000)
     },
     planning: function () {
-      alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, perPage: 5 }).then((res) => {
+      alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, perPage: 5 }).then(res => {
         galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homePlanning })
       })
     },
     trending: function () {
-      alRequest({ method: 'Search', id: alID, perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
+      alRequest({ method: 'Search', id: alID, perPage: 5, sort: 'TRENDING_DESC' }).then(res => {
         galleryAppend({ media: res.data.Page.media, gallery: homeTrending })
       })
     },
     romance: function () {
-      alRequest({ method: 'Search', genre: 'Romance', perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
+      alRequest({ method: 'Search', genre: 'Romance', perPage: 5, sort: 'TRENDING_DESC' }).then(res => {
         galleryAppend({ media: res.data.Page.media, gallery: homeRomance })
       })
     },
     action: function () {
-      alRequest({ method: 'Search', genre: 'Action', perPage: 5, sort: 'TRENDING_DESC' }).then((res) => {
+      alRequest({ method: 'Search', genre: 'Action', perPage: 5, sort: 'TRENDING_DESC' }).then(res => {
         galleryAppend({ media: res.data.Page.media, gallery: homeAction })
       })
     }
@@ -253,19 +250,16 @@ export function cardCreator (opts) {
     card.querySelector('h5').textContent = [opts.parseObject.anime_title, opts.parseObject.episode_number].filter(s => s).join(' - ')
     card.firstElementChild.onclick = opts.onclick
     return card
-  } else {
-    return skeletonCard.cloneNode(true)
   }
+  return skeletonCard.cloneNode(true)
 }
 
 export async function releasesCards (items, limit) {
   const cards = []
-  await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true }).then(results => {
-    results.forEach((mediaInformation, index) => {
-      const o = items[index].querySelector.bind(items[index])
-      mediaInformation.onclick = () => client.playTorrent(o('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
-      cards.push(cardCreator(mediaInformation))
-    })
+  const media = await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true })
+  media.forEach((mediaInformation, index) => {
+    mediaInformation.onclick = () => client.playTorrent(items[index].querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
+    cards.push(cardCreator(mediaInformation))
   })
   localStorage.setItem('relations', JSON.stringify(relations))
   return cards

@@ -16,36 +16,49 @@ if (!('audioTracks' in HTMLVideoElement.prototype)) {
   exclusions[userBrowser].push('mutli audio', 'dual audio')
 }
 
+export function getRSSContent (url) {
+  return fetch(url).then(res => {
+    return res.text().then(xmlTxt => {
+      return DOMPARSER(xmlTxt, 'text/xml')
+    })
+  }).catch(error => {
+    halfmoon.initStickyAlert({
+      content: 'Failed fetching RSS!<br>' + error,
+      title: 'Search Failed',
+      alertType: 'alert-danger',
+      fillType: ''
+    })
+    console.error(error)
+  })
+}
+
 export async function nyaaRss (media, episode) {
   const frag = document.createDocumentFragment()
   const ep = (media.status === 'FINISHED' && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
   const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '%26')})${ep}"${settings.torrent1}"-(${exclusions[userBrowser].join('|')})`)
-  await fetch(url).then(async res => {
-    await res.text().then((xmlTxt) => {
-      try {
-        const doc = DOMPARSER(xmlTxt, 'text/xml')
-        const nodes = doc.querySelectorAll('item *')
-        if (!nodes.length) return
-        const entries = []
-        for (let index = Math.floor(nodes.length / 15); index--;) {
-          const position = index * 15
-          entries[index] = {
-            title: nodes[position].textContent,
-            seeders: nodes[position + 4].textContent,
-            leechers: nodes[position + 5].textContent,
-            downloads: nodes[position + 6].textContent,
-            hash: nodes[position + 7].textContent,
-            size: nodes[position + 10].textContent
-          }
-        }
-        entries.sort((a, b) => b.seeders - a.seeders)
-        if (settings.torrent2) {
-          client.playTorrent(entries[0].hash, { media: media, episode: episode })
-          halfmoon.hideModal('tsearch')
-        }
-        entries.forEach((entry, index) => {
-          const template = document.createElement('tr')
-          template.innerHTML += `
+
+  const nodes = (await getRSSContent(url)).querySelectorAll('item *')
+  if (!nodes.length) return frag
+  const entries = []
+  for (let index = Math.floor(nodes.length / 15); index--;) {
+    const position = index * 15
+    entries[index] = {
+      title: nodes[position].textContent,
+      seeders: nodes[position + 4].textContent,
+      leechers: nodes[position + 5].textContent,
+      downloads: nodes[position + 6].textContent,
+      hash: nodes[position + 7].textContent,
+      size: nodes[position + 10].textContent
+    }
+  }
+  entries.sort((a, b) => b.seeders - a.seeders)
+  if (settings.torrent2) {
+    client.playTorrent(entries[0].hash, { media: media, episode: episode })
+    halfmoon.hideModal('tsearch')
+  }
+  entries.forEach((entry, index) => {
+    const template = document.createElement('tr')
+    template.innerHTML += `
                 <th>${(index + 1)}</th>
                 <td>${entry.title}</td>
                 <td>${entry.size}</td>
@@ -53,24 +66,17 @@ export async function nyaaRss (media, episode) {
                 <td>${entry.leechers}</td>
                 <td>${entry.downloads}</td>
                 <td class="pointer">Play</td>`
-          template.onclick = () => {
-            client.playTorrent(entry.hash, { media: media, episode: episode })
-            halfmoon.hideModal('tsearch')
-          }
-          frag.appendChild(template)
-        })
-      } catch (e) {
-        console.error(e)
-      }
-    })
+    template.onclick = () => {
+      client.playTorrent(entry.hash, { media: media, episode: episode })
+      halfmoon.hideModal('tsearch')
+    }
+    frag.appendChild(template)
   })
   return frag
 }
 
-export async function releasesRss (limit) {
-  return await fetch(getRSSurl()).then(res => res.text().then(async xmlTxt => {
-    return await releasesCards(DOMPARSER(xmlTxt, 'text/xml').querySelectorAll('item'), limit)
-  }))
+export async function releasesRSS (limit) {
+  return releasesCards((await getRSSContent(getRSSurl())).querySelectorAll('item'), limit)
 }
 
 export function getRSSurl () {
