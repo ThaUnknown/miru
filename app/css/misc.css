@@ -265,38 +265,6 @@ section:target:not(#player),
     transition-property: top, height;
 }
 
-nav {
-    transition: top .4s cubic-bezier(.25, .8, .25, 1);
-}
-
-#view {
-    background: no-repeat center center fixed;
-    background-size: cover;
-}
-
-#view>div {
-    backdrop-filter: blur(10px) brightness(0.5);
-}
-
-#viewEpisodesWrapper.hidden {
-    opacity: 0;
-    height: 0
-}
-
-#viewEpisodesWrapper {
-    opacity: 1;
-    height: auto;
-    transition: opacity .2s cubic-bezier(.25, .8, .25, 1);
-    overflow: hidden;
-}
-
-#viewDetails,
-#view .card {
-    background-color: var(--dm-button-bg-color) !important;
-    background-image: var(--dm-button-bg-image) !important;
-    box-shadow: var(--dm-button-box-shadow) !important;
-}
-
 .modal-dialog {
     top: 0 !important
 }
@@ -434,4 +402,47 @@ nav {
 .sidebar [data-toggle="tooltip"]:not([data-target-breakpoint]):focus::after {
     opacity: 1;
     top: 50%
+}
+
+/* view */
+
+#view, #viewAnime .banner {
+    background: no-repeat center center;
+    background-size: cover;
+}
+
+#view>div, #viewAnime .main {
+    backdrop-filter: blur(10px);
+    background: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%)
+}
+
+#viewEpisodesWrapper.hidden {
+    opacity: 0;
+    height: 0
+}
+
+#viewEpisodesWrapper {
+    opacity: 1;
+    height: auto;
+    transition: opacity .2s cubic-bezier(.25, .8, .25, 1);
+    overflow: hidden;
+}
+
+#viewDetails,
+#view .card {
+    background-color: var(--dm-button-bg-color) !important;
+    background-image: var(--dm-button-bg-image) !important;
+    box-shadow: var(--dm-button-box-shadow) !important;
+}
+
+#viewAnime .title {
+    font-size: 4rem
+}
+
+#viewAnime .badge {
+    background-color: var(--dm-button-bg-color) !important;
+    padding: .6rem 2rem;
+    font-size: 1.4rem;
+    border: none;
+    margin-right: 1rem;
 }

@@ -68,7 +68,7 @@ client.on('playlist', () => {
 })
 client.on('next', ({ filemedia }) => {
   if (filemedia.media) {
-    nyaaSearch(filemedia.media, filemedia.episodeNumber + 1)
+    nyaaSearch(filemedia.media, parseInt(filemedia.episodeNumber) + 1)
   } else {
     halfmoon.initStickyAlert({
       content: 'Couldn\'t find anime name! Try specifying a torrent manually.',

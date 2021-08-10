@@ -13,54 +13,50 @@ export function loadHomePage () {
   const homeSearchElements = [searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort]
   const browseGallery = document.querySelector('.browse')
   const homeLoadFunctions = {
-    continue: function (page) {
+    continue: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 }).then(res => {
-        galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'continue', page: page || 1 })
-      })
+      const mediaList = (await alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })).data.Page.mediaList
+      galleryAppend({ media: mediaList.map(i => i.media), gallery: browseGallery, method: 'continue', page: page || 1 })
     },
-    releases: function () {
+    releases: async function () {
       gallerySkeleton(browseGallery)
-      releasesRSS().then(cards => {
-        browseGallery.textContent = ''
-        browseGallery.append(...cards)
-        home.classList.remove('loading')
-        home.onscroll = undefined
-      })
+      const cards = await releasesRSS()
+      browseGallery.textContent = ''
+      browseGallery.append(...cards)
+      home.classList.remove('loading')
+      home.onscroll = undefined
     },
-    planning: function (page) {
+    planning: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 }).then(res => {
-        galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'planning', page: page || 1 })
-      })
+      const mediaList = (await alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 })).data.Page.mediaList
+      galleryAppend({ media: mediaList.map(i => i.media), gallery: browseGallery, method: 'planning', page: page || 1 })
     },
-    trending: function () {
+    trending: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchSort.value = 'TRENDING_DESC'
-      homeLoadFunctions.search()
+      await homeLoadFunctions.search()
     },
-    romance: function () {
+    romance: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'romance'
       searchSort.value = 'TRENDING_DESC'
-      homeLoadFunctions.search()
+      await homeLoadFunctions.search()
     },
-    action: function () {
+    action: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'action'
       searchSort.value = 'TRENDING_DESC'
-      homeLoadFunctions.search()
+      await homeLoadFunctions.search()
     },
-    schedule: function (page) {
+    schedule: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      alRequest({ method: 'AiringSchedule', page: page || 1 }).then(res => {
-        galleryAppend({ media: res.data.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
-      })
+      const mediaList = (await alRequest({ method: 'AiringSchedule', page: page || 1 })).data.Page.airingSchedules
+      galleryAppend({ media: mediaList.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
     },
-    search: function (page) {
+    search: async function (page) {
       const opts = {
         method: 'Search',
         page: page || 1
@@ -68,9 +64,8 @@ export function loadHomePage () {
       for (const element of homeSearchElements) {
         if (element.value) opts[element.dataset.option] = element.value
       }
-      alRequest(opts).then(res => {
-        galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: 'search', page: page || 1 })
-      })
+      const mediaList = (await alRequest(opts)).data.Page.media
+      galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
     }
   }
   const homePreviewFunctions = {

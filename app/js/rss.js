@@ -6,6 +6,7 @@ import { releasesCards } from './interface.js'
 import { userBrowser, DOMPARSER } from './util.js'
 import { client } from './main.js'
 import halfmoon from 'halfmoon'
+import { episodeRx } from './anime.js'
 
 const exclusions = {
   edge: ['DTS'],
@@ -52,22 +53,32 @@ export async function nyaaRss (media, episode) {
     }
   }
   entries.sort((a, b) => b.seeders - a.seeders)
+  const streamingEpisode = media?.streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(episode))[0]
+  const fileMedia = {
+    mediaTitle: media?.title.userPreferred,
+    episodeNumber: Number(episode),
+    episodeTitle: streamingEpisode ? episodeRx.exec(streamingEpisode.title)[2] : undefined,
+    episodeThumbnail: streamingEpisode?.thumbnail,
+    mediaCover: media?.coverImage.medium,
+    name: 'Miru',
+    media: media
+  }
   if (settings.torrent2) {
-    client.playTorrent(entries[0].hash, { media: media, episode: episode })
+    client.playTorrent(entries[0].hash, { media: fileMedia, episode: episode })
     halfmoon.hideModal('tsearch')
   }
   entries.forEach((entry, index) => {
     const template = document.createElement('tr')
     template.innerHTML += `
-                <th>${(index + 1)}</th>
-                <td>${entry.title}</td>
-                <td>${entry.size}</td>
-                <td>${entry.seeders}</td>
-                <td>${entry.leechers}</td>
-                <td>${entry.downloads}</td>
-                <td class="pointer">Play</td>`
+<th>${(index + 1)}</th>
+<td>${entry.title}</td>
+<td>${entry.size}</td>
+<td>${entry.seeders}</td>
+<td>${entry.leechers}</td>
+<td>${entry.downloads}</td>
+<td class="pointer">Play</td>`
     template.onclick = () => {
-      client.playTorrent(entry.hash, { media: media, episode: episode })
+      client.playTorrent(entry.hash, { media: fileMedia, episode: episode })
       halfmoon.hideModal('tsearch')
     }
     frag.appendChild(template)

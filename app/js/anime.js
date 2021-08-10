@@ -92,7 +92,7 @@ const details = {
   native: 'Native',
   synonyms: 'Synonyms'
 }
-const episodeRx = /Episode (\d+) - (.*)/
+export const episodeRx = /Episode (\d+) - (.*)/
 // this is fucked beyond belief, this is why you use frameworks
 /* global view, viewImg, viewTitle, viewDesc, viewDetails, viewSeason, viewMediaInfo, viewPlay, viewTrailer, viewRelationsGallery, viewSynonym, viewSynonymText, viewEpisodesWrapper, episodes, trailerVideo, trailerClose */
 export function viewAnime (media) {

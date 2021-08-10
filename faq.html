@@ -2,105 +2,104 @@
 <html lang="en">
 
 <head>
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Miru">
-    <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
-    <meta name="theme-color" content="#111417" />
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Miru">
+  <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
+  <meta name="theme-color" content="#111417" />
 
-    <link rel="apple-touch-icon" href="logo.png">
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-    <meta name="viewport" content="width=device-width" />
+  <link rel="apple-touch-icon" href="logo.png">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+  <meta name="viewport" content="width=device-width" />
 
-    <link rel="icon" href="logo.png">
-    <title>Miru - FAQ</title>
-    <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css" rel="stylesheet" />
+  <link rel="icon" href="logo.png">
+  <title>Miru - FAQ</title>
+  <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css" rel="stylesheet" />
 </head>
 
 <body class="with-custom-webkit-scrollbars with-custom-css-scrollbars">
-    <div class="page-wrapper">
-        <div class="content-wrapper d-flex flex-column">
-            <a href="/" class="w-200 align-self-center"><img src="logo.png" class="w-200" alt="logo"></a>
-            <div class="container-lg">
-                <div class="content">
-                    <h2 class="content-title">
-                        How does it work?
-                    </h2>
-                    <p>
-                        Miru uses WebTorrent and black magic to turn your browser into a P2P client which allows you to
-                        stream existing torrents created by other people, without any third-party servers.
-                    </p>
-                </div>
-                <div class="content">
-                    <h2 class="content-title">
-                        Is it legal?
-                    </h2>
-                    <p>
-                        Miru only provides the tools for people to share anime with eachother. Miru doesn't host or
-                        transmit any data.
-                    </p>
-                </div>
-                <div class="content">
-                    <h2 class="content-title">
-                        Is it safe?
-                    </h2>
-                    <p>
-                        Since the user downloads and shares copyrighted content, in theory their ISP might be angry
-                        about, in practice streaming a single episode won't do much, however if you want to be safe you
-                        can use a VPN, but it's in no way required.
-                    </p>
-                </div>
-                <div class="content">
-                    <h2 class="content-title">
-                        But is it safe?
-                    </h2>
-                    <p>
-                        Yes. At one point in time, WebRTC did have an issue where it would allow a website to discover
-                        your true public IP address, but this was fixed a long time ago. This unfortunate misinformation
-                        keeps bouncing around the internet.<br>
-
-                        There's now a spec that defines exactly which IP addresses are exposed with WebRTC. If you're
-                        interested in further reading, you can read the IP <a
-                            href="https://tools.ietf.org/html/draft-ietf-rtcweb-ip-handling-12">handling spec</a> for
-                        yourself.
-                    </p>
-                </div>
-                <div class="content">
-                    <h2 class="content-title">
-                        Are there any limitations?
-                    </h2>
-                    <p>
-                        Yes, since this relies on P2P streaming, sharing content entirely depends on the download and
-                        upload speed of the user and how many available peers a torrent has. You can help increase the
-                        number of initial peers by upvoting <a href="https://github.com/nyaadevs/nyaa/pull/623" target="_blank">this</a> pull request on GitHub.
-                    </p>
-                </div>
-                <div class="content">
-                    <h2 class="content-title">
-                        What's your subtitle support?
-                    </h2>
-                    <p>
-                        Miru uses supports softcoded subtitles, meaning it should work on any platform and support many
-                        devices. Miru only supports subtitles embedded inside the video file [SSA, UTF8, VTT, SRT*]
-                        in almost any video format, but doesn't support external subtitle files [yet].
-                    </p>
-                </div>
-                <div class="content">
-                    <h2 class="content-title">
-                        How do you download?
-                    </h2>
-                    <p>
-                        As you select an anime to play it automatically starts downloading, then you need to wait for
-                        WebTorrent to download it fully to be able to save it to your drive.
-                    </p>
-                </div>
-            </div>
+  <div class="page-wrapper">
+    <div class="content-wrapper d-flex flex-column">
+      <a href="/" class="w-200 align-self-center"><img src="logo.png" class="w-200" alt="logo"></a>
+      <div class="container-lg">
+        <div class="content">
+          <h2 class="content-title">
+            How does it work?
+          </h2>
+          <p>
+            Miru uses WebTorrent and black magic to turn your browser into a P2P client which allows you to
+            stream existing torrents created by other people, without any third-party servers.
+          </p>
         </div>
+        <div class="content">
+          <h2 class="content-title">
+            Is it legal?
+          </h2>
+          <p>
+            Miru only provides the tools for people to share anime with eachother. Miru doesn't host or
+            transmit any data.
+          </p>
+        </div>
+        <div class="content">
+          <h2 class="content-title">
+            Is it safe?
+          </h2>
+          <p>
+            Since the user downloads and shares copyrighted content, in theory their ISP might be angry
+            about, in practice streaming a single episode won't do much, however if you want to be safe you
+            can use a VPN, but it's in no way required.
+          </p>
+        </div>
+        <div class="content">
+          <h2 class="content-title">
+            But is it safe?
+          </h2>
+          <p>
+            Yes. At one point in time, WebRTC did have an issue where it would allow a website to discover
+            your true public IP address tru your VPN, but this was fixed a long time ago. This unfortunate
+            misinformation keeps bouncing around the internet.<br>
+
+            There's now a spec that defines exactly which IP addresses are exposed with WebRTC. If you're
+            interested in further reading, you can read the IP
+            <a href="https://tools.ietf.org/html/draft-ietf-rtcweb-ip-handling-12">handling spec</a> for
+            yourself.
+          </p>
+        </div>
+        <div class="content">
+          <h2 class="content-title">
+            Are there any limitations?
+          </h2>
+          <p>
+            Yes, since this relies on P2P streaming, sharing content entirely depends on the download and
+            upload speed of the user and how many available peers a torrent has.
+          </p>
+        </div>
+        <div class="content">
+          <h2 class="content-title">
+            What's your subtitle support?
+          </h2>
+          <p>
+            Miru uses supports softcoded subtitles, meaning it should work on any platform and support many
+            devices. Miru only supports subtitles embedded inside the video file [ASS, SSA, UTF8, VTT, SRT]
+            in almost any video format, and external subtitles.
+          </p>
+        </div>
+        <div class="content">
+          <h2 class="content-title">
+            How do you download files?
+          </h2>
+          <p>
+            As you select an anime to play it automatically starts downloading, then you can at any point save it to
+            your drive. If you're using a chromium browser you can alternatively specify the folder where the player
+            should store it's torrent files [recommended to use a HDD].
+          </p>
+        </div>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/js/halfmoon.min.js"></script>
+  </div>
 </body>
 
 </html>

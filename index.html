@@ -2,91 +2,91 @@
 <html lang="en">
 
 <head>
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Miru">
-    <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
-    <meta name="theme-color" content="#111417" />
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Miru">
+  <meta name="description" content="Anime torrent streaming, ad free in a simple solution.">
+  <meta name="theme-color" content="#111417" />
 
-    <link rel="apple-touch-icon" href="logo.png">
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-    <meta name="viewport" content="width=device-width" />
-    <meta property="og:title" content="Miru">
-    <meta property="og:url" content="https://mirumoe.netlify.app/">
-    <meta property="og:description" content="Miru - Torrent streaming made simple!">
-    <meta property="og:type" content="video.other">
-    <meta property="og:image" content="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+  <meta name="viewport" content="width=device-width" />
+  <meta property="og:title" content="Miru">
+  <meta property="og:url" content="https://mirumoe.netlify.app/">
+  <meta property="og:description" content="Miru - Torrent streaming made simple!">
+  <meta property="og:type" content="video.other">
+  <meta property="og:image" content="logo.png">
 
-    <link rel="icon" href="logo.png">
-    <title>Miru - Torrent streaming made simple!</title>
-    <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css" rel="stylesheet" />
-    <link rel="search" type="application/opensearchdescription+xml" title="Content Search" href="search.xml">
-    <script>
-        window.onload = () => {
-            navigator.serviceWorker.register('sw.js')
-            let deferredPrompt;
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-            });
-            add.addEventListener('click', (e) => {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        document.location.href = "/app/#browse"
-                    }
-                });
-            });
-        }
-    </script>
+  <link rel="icon" href="logo.png">
+  <title>Miru - Torrent streaming made simple!</title>
+  <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/css/halfmoon-variables.min.css" rel="stylesheet" />
+  <link rel="search" type="application/opensearchdescription+xml" title="Content Search" href="search.xml">
+  <script>
+    window.onload = () => {
+      navigator.serviceWorker.register('sw.js')
+      let deferredPrompt
+      window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault()
+        deferredPrompt = e
+      })
+      add.addEventListener('click', e => {
+        deferredPrompt.prompt()
+        deferredPrompt.userChoice.then(choiceResult => {
+          if (choiceResult.outcome === 'accepted') {
+            document.location.href = "/app/#browse"
+          }
+        })
+      })
+    }
+  </script>
 </head>
 
 <body class="with-custom-webkit-scrollbars with-custom-css-scrollbars dark-mode">
-    <div class="page-wrapper with-navbar-fixed-bottom">
-        <div class="content-wrapper d-lg-flex align-items-lg-center">
-            <div class="container-lg">
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="content">
-                            <h1 class="font-weight-medium">
-                                Miru - Anime torrent streaming, ad free in a simple solution.
-                            </h1>
-                            <p class="font-size-18">
-                                Miru is an otaku's dream, a website which allows you to stream and download anime
-                                torrents
-                                directly in the browser as soon as they are released. Accessible on any platform and
-                                device. Anime in original quality with
-                                no buffering, no ads, no delays, everything done client-side for free.
-                            </p>
-                            <div class="mt-20">
-                                <div class="btn btn-primary" role="button" id="add">
-                                    Add App
-                                </div>
-                                <a class="btn" role="button" href="/app/#home">
-                                    Open In Browser
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 d-flex align-items-center justify-content-center">
-                        <img class="w-400" alt="char" src="/char.webp">
-                    </div>
+  <div class="page-wrapper with-navbar-fixed-bottom">
+    <div class="content-wrapper d-lg-flex align-items-lg-center">
+      <div class="container-lg">
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="content">
+              <h1 class="font-weight-medium">
+                Miru - Anime torrent streaming, ad free in a simple solution.
+              </h1>
+              <p class="font-size-18">
+                Miru is an otaku's dream, a website which allows you to stream and download anime
+                torrents
+                directly in the browser as soon as they are released. Accessible on any platform and
+                device. Anime in original quality with
+                no buffering, no ads, no delays, everything done client-side for free.
+              </p>
+              <div class="mt-20">
+                <div class="btn btn-primary" role="button" id="add">
+                  Add App
                 </div>
+                <a class="btn" role="button" href="/app/#home">
+                  Open In Browser
+                </a>
+              </div>
             </div>
+          </div>
+          <div class="col-lg-4 d-flex align-items-center justify-content-center">
+            <img class="w-400" alt="char" src="/char.webp">
+          </div>
         </div>
-        <nav class="navbar navbar-fixed-bottom justify-content-center">
-            <a href="/faq.html">
-                FAQ
-            </a>
-            <span class="navbar-text">
-                © Copyright 2020, Miru
-            </span>
-        </nav>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/js/halfmoon.min.js"></script>
+    <nav class="navbar navbar-fixed-bottom justify-content-center">
+      <a href="/faq.html">
+        FAQ
+      </a>
+      <span class="navbar-text">
+        © Copyright 2020, Miru
+      </span>
+    </nav>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.0/js/halfmoon.min.js"></script>
 </body>
 
 </html>

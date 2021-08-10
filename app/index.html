@@ -52,9 +52,72 @@
       </div>
     </div>
   </div>
+  <div class="modal modal-full" id="viewAnime" tabindex="-1" role="dialog">
+    <div class="h-half w-full position-absolute banner bg-dark"
+      style="background-image: url(https://s4.anilist.co/file/anilistcdn/media/anime/banner/16498-8jpFCOcDmneX.jpg) !important">
+    </div>
+    <div class="h-full modal-content bg-very-dark p-0 overflow-y-auto">
+      <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close">
+        <span>×</span>
+      </button>
+      <div class="h-half main d-flex">
+        <div class="container-xl row w-full px-15 px-xl-0">
+          <div class="col-md-3 d-flex justify-content-end flex-column">
+            <img class="contain-img rounded w-full mb-15 shadow"
+              src="https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-m5ZMNtFioc7j.png">
+          </div>
+          <div class="col-md-7 d-flex justify-content-end flex-column">
+            <div class="px-20 ml-20 d-flex flex-column font-size-12">
+              <span class="title font-weight-bold pb-15 text-white">Shingeki no Kyojin</span>
+              <div class="d-flex flex-row font-size-18 pb-15">
+                <span class="material-icons mr-10 font-size-24">
+                  trending_up
+                </span>
+                <span>Rating: <span class="font-weight-bold mr-20">85%</span></span>
+                <span class="material-icons mx-10 font-size-24">
+                  monitor
+                </span>
+                <span>Format: <span class="font-weight-bold mr-20">TV</span></span>
+                <span class="material-icons mx-10 font-size-24">
+                  theaters
+                </span>
+                <span>Episodes: <span class="font-weight-bold mr-20">25</span></span>
+              </div>
+              <div class="pb-10 pt-5">
+                <span class="badge badge-pill badge-color mt-5 font-weight-bold shadow">Action</span>
+                <span class="badge badge-pill badge-color mt-5 font-weight-bold shadow">Drama</span>
+                <span class="badge badge-pill badge-color mt-5 font-weight-bold shadow">Fantasy</span>
+                <span class="badge badge-pill badge-color mt-5 font-weight-bold shadow">Mystery</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 d-flex justify-content-end flex-column">
+            <div class="d-flex flex-column flex-wrap">
+              <button class="btn btn-primary btn-lg d-flex align-items-end mb-5 font-weight-bold" type="button">
+                <span class="material-icons mr-10 font-size-20">
+                  play_arrow
+                </span>
+                Play
+              </button>
+              <button class="btn d-flex align-items-end mb-5 font-weight-bold" type="button">
+                <span class="material-icons mr-10 font-size-20">
+                  live_tv
+                </span>
+                Trailer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="content bg-very-dark">
+
+      </div>
+    </div>
+
+  </div>
   <div class="modal modal-full bg-dark-light" id="view" tabindex="-1" role="dialog">
     <div class="modal-dialog bg-transparent" role="document">
-      <div class="view modal-content bg-transparent">
+      <div class="h-full modal-content bg-transparent">
         <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close">
           <span>×</span>
         </button>
@@ -76,7 +139,7 @@
               </button>
             </div>
           </div>
-          <div class="col-md-7">
+          <div class="col-md-7 d-flex justify-content-end flex-column">
             <div class="px-20 ml-20 d-flex flex-column font-size-12 text-muted">
               <span class="title font-weight-bold font-size-24 text-white pb-5" id="viewTitle"></span>
               <span id="viewSeason" class="text-capitalize"></span>
@@ -739,11 +802,12 @@ wss://tracker.sloppyta.co:443/announce
 wss://hub.bugout.link:443/announce</textarea>
             </div>
             <div class="input-group mb-10 form-control-lg w-600 d-none" data-toggle="tooltip" data-placement="top"
-            data-title="Specifies Folder To Store Torrents In, Which Is Accessible Externally." id="torrent5">
+              data-title="Specifies Folder To Store Torrents In, Which Is Accessible Externally." id="torrent5">
               <div class="input-group-prepend">
                 <button class="btn btn-lg btn-primary" type="button">Choose Folder</button>
               </div>
-              <input type="text" id='torrent5label' readonly class="form-control form-control-lg pl-10" placeholder="Folder">
+              <input type="text" id='torrent5label' readonly class="form-control form-control-lg pl-10"
+                placeholder="Folder">
             </div>
             <div class="input-group w-300 mb-10 form-control-lg" data-toggle="tooltip" data-placement="top"
               data-title="Download/Upload Speed Limit For Torrents, Higher Values Increase CPU Usage">
@@ -772,9 +836,11 @@ wss://hub.bugout.link:443/announce</textarea>
               <input id="subtitle1" type="text" list="subtitle1list" class="form-control form-control-lg"
                 autocomplete="off" value="SubsPlease">
               <datalist id="subtitle1list">
-                <option value="SubsPlease">Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
+                <option value="SubsPlease">Roboto
+                  Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
                 </option>
-                <option value="Erai-raws">Open Sans Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1
+                <option value="Erai-raws">Open Sans
+                  Semibold,45,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,-1,0,0,0,100,100,0,0,1,1.7,0,2,10,10,25,1
                 </option>
               </datalist>
             </div>
@@ -874,8 +940,8 @@ wss://hub.bugout.link:443/announce</textarea>
           </div>
         </div>
         <div class="content my-10">
-          <button class="btn btn-lg btn-danger mb-5" type="button" id="setRes" data-toggle="tooltip" data-placement="top"
-            data-title="Restores All Settings Back To Their Recommended Defaults">Restore
+          <button class="btn btn-lg btn-danger mb-5" type="button" id="setRes" data-toggle="tooltip"
+            data-placement="top" data-title="Restores All Settings Back To Their Recommended Defaults">Restore
             Defaults
           </button>
           <button class="btn btn-lg btn-danger mb-5" type="button" id="clearRelCache" data-toggle="tooltip"

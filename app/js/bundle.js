@@ -289,6 +289,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "episodeRx": () => (/* binding */ episodeRx),
 /* harmony export */   "viewAnime": () => (/* binding */ viewAnime),
 /* harmony export */   "nyaaSearch": () => (/* binding */ nyaaSearch),
 /* harmony export */   "resolveFileMedia": () => (/* binding */ resolveFileMedia),
@@ -716,54 +717,50 @@ function loadHomePage () {
   const homeSearchElements = [searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort]
   const browseGallery = document.querySelector('.browse')
   const homeLoadFunctions = {
-    continue: function (page) {
+    continue: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      ;(0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 }).then(res => {
-        galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'continue', page: page || 1 })
-      })
+      const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })).data.Page.mediaList
+      galleryAppend({ media: mediaList.map(i => i.media), gallery: browseGallery, method: 'continue', page: page || 1 })
     },
-    releases: function () {
+    releases: async function () {
       gallerySkeleton(browseGallery)
-      ;(0,_rss_js__WEBPACK_IMPORTED_MODULE_2__.releasesRSS)().then(cards => {
-        browseGallery.textContent = ''
-        browseGallery.append(...cards)
-        home.classList.remove('loading')
-        home.onscroll = undefined
-      })
+      const cards = await (0,_rss_js__WEBPACK_IMPORTED_MODULE_2__.releasesRSS)()
+      browseGallery.textContent = ''
+      browseGallery.append(...cards)
+      home.classList.remove('loading')
+      home.onscroll = undefined
     },
-    planning: function (page) {
+    planning: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      ;(0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 }).then(res => {
-        galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: browseGallery, method: 'planning', page: page || 1 })
-      })
+      const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 })).data.Page.mediaList
+      galleryAppend({ media: mediaList.map(i => i.media), gallery: browseGallery, method: 'planning', page: page || 1 })
     },
-    trending: function () {
+    trending: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchSort.value = 'TRENDING_DESC'
-      homeLoadFunctions.search()
+      await homeLoadFunctions.search()
     },
-    romance: function () {
+    romance: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'romance'
       searchSort.value = 'TRENDING_DESC'
-      homeLoadFunctions.search()
+      await homeLoadFunctions.search()
     },
-    action: function () {
+    action: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'action'
       searchSort.value = 'TRENDING_DESC'
-      homeLoadFunctions.search()
+      await homeLoadFunctions.search()
     },
-    schedule: function (page) {
+    schedule: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      ;(0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'AiringSchedule', page: page || 1 }).then(res => {
-        galleryAppend({ media: res.data.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
-      })
+      const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'AiringSchedule', page: page || 1 })).data.Page.airingSchedules
+      galleryAppend({ media: mediaList.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
     },
-    search: function (page) {
+    search: async function (page) {
       const opts = {
         method: 'Search',
         page: page || 1
@@ -771,9 +768,8 @@ function loadHomePage () {
       for (const element of homeSearchElements) {
         if (element.value) opts[element.dataset.option] = element.value
       }
-      (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)(opts).then(res => {
-        galleryAppend({ media: res.data.Page.media, gallery: browseGallery, method: 'search', page: page || 1 })
-      })
+      const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)(opts)).data.Page.media
+      galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
     }
   }
   const homePreviewFunctions = {
@@ -1086,7 +1082,7 @@ client.on('playlist', () => {
 })
 client.on('next', ({ filemedia }) => {
   if (filemedia.media) {
-    (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.nyaaSearch)(filemedia.media, filemedia.episodeNumber + 1)
+    (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.nyaaSearch)(filemedia.media, parseInt(filemedia.episodeNumber) + 1)
   } else {
     halfmoon__WEBPACK_IMPORTED_MODULE_6___default().initStickyAlert({
       content: 'Couldn\'t find anime name! Try specifying a torrent manually.',
@@ -1182,9 +1178,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./main.js */ "./app/js/main.js");
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! halfmoon */ "halfmoon");
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _anime_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./anime.js */ "./app/js/anime.js");
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 /* eslint-env browser */
 /* global torrent4list */
+
 
 
 
@@ -1237,22 +1235,32 @@ async function nyaaRss (media, episode) {
     }
   }
   entries.sort((a, b) => b.seeders - a.seeders)
+  const streamingEpisode = media?.streamingEpisodes.filter(episode => _anime_js__WEBPACK_IMPORTED_MODULE_5__.episodeRx.exec(episode.title) && Number(_anime_js__WEBPACK_IMPORTED_MODULE_5__.episodeRx.exec(episode.title)[1]) === Number(episode))[0]
+  const fileMedia = {
+    mediaTitle: media?.title.userPreferred,
+    episodeNumber: Number(episode),
+    episodeTitle: streamingEpisode ? _anime_js__WEBPACK_IMPORTED_MODULE_5__.episodeRx.exec(streamingEpisode.title)[2] : undefined,
+    episodeThumbnail: streamingEpisode?.thumbnail,
+    mediaCover: media?.coverImage.medium,
+    name: 'Miru',
+    media: media
+  }
   if (_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent2) {
-    _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(entries[0].hash, { media: media, episode: episode })
+    _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(entries[0].hash, { media: fileMedia, episode: episode })
     halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('tsearch')
   }
   entries.forEach((entry, index) => {
     const template = document.createElement('tr')
     template.innerHTML += `
-                <th>${(index + 1)}</th>
-                <td>${entry.title}</td>
-                <td>${entry.size}</td>
-                <td>${entry.seeders}</td>
-                <td>${entry.leechers}</td>
-                <td>${entry.downloads}</td>
-                <td class="pointer">Play</td>`
+<th>${(index + 1)}</th>
+<td>${entry.title}</td>
+<td>${entry.size}</td>
+<td>${entry.seeders}</td>
+<td>${entry.leechers}</td>
+<td>${entry.downloads}</td>
+<td class="pointer">Play</td>`
     template.onclick = () => {
-      _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(entry.hash, { media: media, episode: episode })
+      _main_js__WEBPACK_IMPORTED_MODULE_3__.client.playTorrent(entry.hash, { media: fileMedia, episode: episode })
       halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('tsearch')
     }
     frag.appendChild(template)
@@ -6858,7 +6866,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 // Currently in sync with Node.js lib/assert.js
 // https://github.com/nodejs/node/commit/2a51ae424a513ec9a6aa3466baa0cc1d55dd4f3b
@@ -7501,7 +7509,7 @@ assert.strict.strict = assert.strict;
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 // Currently in sync with Node.js lib/internal/assert/assertion_error.js
 // https://github.com/nodejs/node/commit/0817840f775032169ddd70c85ac059f18ffcc81c
 
@@ -10787,7 +10795,7 @@ module.exports = Wire
   \***************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 /* provided dependency */ var Buffer = __webpack_require__(/*! ./node_modules/buffer/index.js */ "./node_modules/buffer/index.js")["Buffer"];
 const debug = __webpack_require__(/*! debug */ "./node_modules/debug/src/browser.js")('bittorrent-tracker:client')
 const EventEmitter = __webpack_require__(/*! events */ "./node_modules/events/events.js")
@@ -17063,7 +17071,7 @@ module.exports = verify
 
 "use strict";
 /* provided dependency */ var Buffer = __webpack_require__(/*! ./node_modules/buffer/index.js */ "./node_modules/buffer/index.js")["Buffer"];
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 
 /* eslint camelcase: "off" */
 
@@ -17483,7 +17491,7 @@ exports.Zlib = Zlib;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 
 
 var Buffer = __webpack_require__(/*! buffer */ "./node_modules/buffer/index.js").Buffer;
@@ -31197,7 +31205,7 @@ exports.constants = {
 /***/ ((module, exports, __webpack_require__) => {
 
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 /* eslint-env browser */
 
 /**
@@ -45182,7 +45190,7 @@ module.exports = JSON.parse('{"name":"elliptic","version":"6.5.4","description":
   \*********************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 var once = __webpack_require__(/*! once */ "./node_modules/once/once.js");
 
 var noop = function() {};
@@ -48788,7 +48796,7 @@ class HybridChunkStore {
   close (cb = () => {}) {
     const promises = []
     for (const store of this.stores) {
-      promises.push(new Promise(resolve => store.destroy(resolve)))
+      promises.push(new Promise(resolve => store.close(resolve)))
     }
     Promise.all(promises).then(values => {
       values = values.filter(value => value)
@@ -48799,7 +48807,7 @@ class HybridChunkStore {
   destroy (cb = () => {}) {
     const promises = []
     for (const store of this.stores) {
-      promises.push(new Promise(resolve => store.close(resolve)))
+      promises.push(new Promise(resolve => store.destroy(resolve)))
     }
     Promise.all(promises).then(values => {
       values = values.filter(value => value)
@@ -50070,9 +50078,9 @@ exports.TokenBucket = __webpack_require__(/*! ./lib/tokenBucket */ "./node_modul
 /*!*******************************************!*\
   !*** ./node_modules/limiter/lib/clock.js ***!
   \*******************************************/
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 var getMilliseconds = function() {
   if (typeof process !== 'undefined' && process.hrtime) {
     var hrtime = process.hrtime();
@@ -50096,7 +50104,7 @@ module.exports = getMilliseconds;
   \*************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 var TokenBucket = __webpack_require__(/*! ./tokenBucket */ "./node_modules/limiter/lib/tokenBucket.js");
 var getMilliseconds = __webpack_require__(/*! ./clock */ "./node_modules/limiter/lib/clock.js");
 
@@ -50242,9 +50250,9 @@ module.exports = RateLimiter;
 /*!*************************************************!*\
   !*** ./node_modules/limiter/lib/tokenBucket.js ***!
   \*************************************************/
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 
 /**
  * A hierarchical token bucket for rate limiting. See
@@ -58499,10 +58507,10 @@ function ensure (bool, fieldName) {
 /*!***********************************************!*\
   !*** ./node_modules/path-browserify/index.js ***!
   \***********************************************/
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 // 'path' module extracted from Node.js v8.11.1 (only the posix part)
 // transplited with Babel
 
@@ -59182,7 +59190,7 @@ module.exports = function (password, salt, iterations, keylen, digest, callback)
   \*****************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 var defaultEncoding
 /* istanbul ignore next */
 if (__webpack_require__.g.process && __webpack_require__.g.process.browser) {
@@ -59377,6 +59385,45 @@ module.exports = length
 function length (bytes) {
   return Math.max(16384, 1 << Math.log2(bytes < 1024 ? 1 : bytes / 1024) + 0.5 | 0)
 }
+
+
+/***/ }),
+
+/***/ "./node_modules/process-fast/index.js":
+/*!********************************************!*\
+  !*** ./node_modules/process-fast/index.js ***!
+  \********************************************/
+/***/ ((module) => {
+
+const process = module.exports = {}
+
+process.title = 'browser'
+process.browser = true
+process.env = {}
+process.argv = []
+process.version = ''
+process.versions = {}
+
+function noop () {}
+
+process.on = noop
+process.addListener = noop
+process.once = noop
+process.off = noop
+process.removeListener = noop
+process.removeAllListeners = noop
+process.emit = noop
+process.prependListener = noop
+process.prependOnceListener = noop
+
+process.nextTick = (func, ...args) => window.queueMicrotask(() => func(...args))
+
+process.listeners = (name) => []
+
+process.cwd = () => '/'
+process.umask = () => 0
+process.binding = (name) => { throw new Error('process.binding is not supported') }
+process.chdir = (dir) => { throw new Error('process.chdir is not supported') }
 
 
 /***/ }),
@@ -63146,7 +63193,7 @@ module.exports = function xor (a, b) {
   \************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 var once = __webpack_require__(/*! once */ "./node_modules/once/once.js")
 var eos = __webpack_require__(/*! end-of-stream */ "./node_modules/end-of-stream/index.js")
 var fs = __webpack_require__(/*! fs */ "?7874") // we only need fs to get the ReadStream and WriteStream prototypes
@@ -63469,7 +63516,7 @@ module.exports = iterate
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 
 
 // limit of Crypto.getRandomValues()
@@ -63531,7 +63578,7 @@ function randomBytes (size, cb) {
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 
 
 function oldBrowser () {
@@ -64302,7 +64349,7 @@ module.exports.codes = codes;
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -64501,7 +64548,7 @@ PassThrough.prototype._transform = function (chunk, encoding, cb) {
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -65847,7 +65894,7 @@ function done(stream, er, data) {
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -66555,7 +66602,7 @@ Writable.prototype._destroy = function (err, cb) {
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 
 
 var _Object$setPrototypeO;
@@ -66990,10 +67037,10 @@ function () {
 /*!**********************************************************************!*\
   !*** ./node_modules/readable-stream/lib/internal/streams/destroy.js ***!
   \**********************************************************************/
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
  // undocumented cb() API, needed for core, not for public API
 
 function destroy(err, cb) {
@@ -69202,7 +69249,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 /* eslint-disable node/no-deprecated-api */
 
 
@@ -72403,7 +72450,7 @@ xhr = null // Help gc
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 /* provided dependency */ var Buffer = __webpack_require__(/*! ./node_modules/buffer/index.js */ "./node_modules/buffer/index.js")["Buffer"];
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 var capability = __webpack_require__(/*! ./capability */ "./node_modules/stream-http/lib/capability.js")
 var inherits = __webpack_require__(/*! inherits */ "./node_modules/inherits/inherits_browser.js")
 var response = __webpack_require__(/*! ./response */ "./node_modules/stream-http/lib/response.js")
@@ -72766,7 +72813,7 @@ var unsafeHeaders = [
   \**************************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 /* provided dependency */ var Buffer = __webpack_require__(/*! ./node_modules/buffer/index.js */ "./node_modules/buffer/index.js")["Buffer"];
 var capability = __webpack_require__(/*! ./capability */ "./node_modules/stream-http/lib/capability.js")
 var inherits = __webpack_require__(/*! inherits */ "./node_modules/inherits/inherits_browser.js")
@@ -73067,7 +73114,7 @@ module.exports = function getBuffer (stream, length, cb) {
   \***************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 const { EventEmitter } = __webpack_require__(/*! events */ "./node_modules/events/events.js")
 const STREAM_DESTROYED = new Error('Stream was destroyed')
 const PREMATURE_CLOSE = new Error('Premature close')
@@ -74581,7 +74628,7 @@ module.exports = function (buf) {
   \*************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 /*! torrent-discovery. MIT License. WebTorrent LLC <https://webtorrent.io/opensource> */
 const debug = __webpack_require__(/*! debug */ "./node_modules/debug/src/browser.js")('torrent-discovery')
 const DHT = __webpack_require__(/*! bittorrent-dht/client */ "?42e5") // empty object in browser
@@ -77024,7 +77071,7 @@ exports.isAnyArrayBuffer = isAnyArrayBuffer;
   \***********************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -78424,7 +78471,7 @@ class WebTorrentPlayer extends (webtorrent__WEBPACK_IMPORTED_MODULE_0___default(
       })
     }
     window.addEventListener('unload', () => {
-      this.cleanupTorrents()
+      this.destroy()
       this.cleanupVideo()
     })
     // kind of a fetch event from service worker but for the main thread.
@@ -79492,7 +79539,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   // cleanup torrent and store
   cleanupTorrents () {
   // creates an array of all non-offline store torrents and removes them
-    this.torrents.filter(torrent => !this.offlineTorrents[torrent.infoHash]).forEach(torrent => torrent.destroy({ destroyStore: this.destroyStore }))
+    this.torrents.filter(torrent => !this.offlineTorrents[torrent.infoHash]).forEach(torrent => torrent.destroy())
   }
 
   // add torrent for offline download
@@ -81575,7 +81622,7 @@ module.exports = RarityMap
   \************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/* provided dependency */ var process = Object(function webpackMissingModule() { var e = new Error("Cannot find module 'process-fast'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 /* global Blob */
 
 const addrToIPPort = __webpack_require__(/*! addr-to-ip-port */ "./node_modules/addr-to-ip-port/index.js")
