@@ -406,14 +406,15 @@ section:target:not(#player),
 
 /* view */
 
-#view, #viewAnime .banner {
+#view,
+#viewAnime .banner {
     background: no-repeat center center;
     background-size: cover;
 }
 
-#view>div, #viewAnime .main {
+#view>div,
+#viewAnime .top {
     backdrop-filter: blur(10px);
-    background: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%)
 }
 
 #viewEpisodesWrapper.hidden {
@@ -444,5 +445,13 @@ section:target:not(#player),
     padding: .6rem 2rem;
     font-size: 1.4rem;
     border: none;
-    margin-right: 1rem;
+    margin-right: 0.6rem;
+}
+
+.w-30 {
+    width: 3rem
+}
+
+.font-size-30 {
+    font-size: 3rem
 }
