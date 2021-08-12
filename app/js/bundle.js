@@ -141,6 +141,9 @@ streamingEpisodes {
   title,
   thumbnail
 },
+mediaListEntry {
+  progress
+},
 relations {
   edges {
     relationType(version:2)
@@ -761,15 +764,23 @@ function loadHomePage () {
       galleryAppend({ media: mediaList.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
     },
     search: async function (page) {
-      const opts = {
+      const def = {
         method: 'Search',
         page: page || 1
       }
+      const opts = {}
+      Object.assign(opts, def)
       for (const element of homeSearchElements) {
         if (element.value) opts[element.dataset.option] = element.value
       }
-      const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)(opts)).data.Page.media
-      galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
+      if (Object.keys(def).length !== Object.keys(opts).length) {
+        const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)(opts)).data.Page.media
+        galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
+      } else {
+        searchClear.classList.remove('text-primary')
+        home.classList.remove('loading')
+        reloadHome()
+      }
     }
   }
   const homePreviewFunctions = {
@@ -803,7 +814,6 @@ function loadHomePage () {
         homeReleases.textContent = ''
         homeReleases.append(...cards)
       }
-      setTimeout(homePreviewFunctions.releases, 30000)
     },
     planning: function () {
       (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: alID, perPage: 5 }).then(res => {
@@ -882,18 +892,22 @@ function loadHomePage () {
   for (const item of homePreviewElements) {
     homePreviewFunctions[item.dataset.function]()
   }
+  setInterval(homePreviewFunctions.releases, 30000)
   for (const item of homeLoadElements) {
     item.onclick = function () {
       home.scrollTop = 0
       home.classList.add('browsing')
+      searchClear.classList.add('text-primary')
       homeLoadFunctions[item.dataset.function]()
     }
   }
   function reloadHome () {
     clearSearch()
+    searchClear.classList.remove('text-primary')
     home.classList.remove('browsing')
     lastRSSDate = undefined
     home.onscroll = undefined
+    home.scrollTop = 0
     for (const item of homePreviewElements) {
       item.textContent = ''
       item.append(...gallerySkeletonFrag(5))
@@ -913,9 +927,11 @@ function loadHomePage () {
     if (!searchTimeout) {
       home.classList.add('browsing')
       gallerySkeleton(browseGallery)
+      home.scrollTop = 0
     } else {
       clearTimeout(searchTimeout)
     }
+    searchClear.classList.add('text-primary')
     searchTimeout = setTimeout(() => {
       homeLoadFunctions.search()
       searchTimeout = undefined
@@ -1386,6 +1402,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "searchParams": () => (/* binding */ searchParams),
 /* harmony export */   "userBrowser": () => (/* binding */ userBrowser),
 /* harmony export */   "countdown": () => (/* binding */ countdown),
+/* harmony export */   "flattenObj": () => (/* binding */ flattenObj),
 /* harmony export */   "DOMPARSER": () => (/* binding */ DOMPARSER)
 /* harmony export */ });
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! halfmoon */ "halfmoon");
@@ -1423,6 +1440,23 @@ function countdown (s) {
   if (d || h) tmp.push(h + 'h')
   if (d || h || m) tmp.push(m + 'm')
   return tmp.join(' ')
+}
+
+function flattenObj (obj) {
+  const result = {}
+
+  for (const key in obj) {
+    if (typeof obj[key] === 'object') {
+      const childObj = flattenObj(obj[key])
+
+      for (const childObjKey in childObj) {
+        result[childObjKey] = childObj[childObjKey]
+      }
+    } else {
+      result[key] = obj[key]
+    }
+  }
+  return result
 }
 
 const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())

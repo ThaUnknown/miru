@@ -33,4 +33,21 @@ export function countdown (s) {
   return tmp.join(' ')
 }
 
+export function flattenObj (obj) {
+  const result = {}
+
+  for (const key in obj) {
+    if (typeof obj[key] === 'object') {
+      const childObj = flattenObj(obj[key])
+
+      for (const childObjKey in childObj) {
+        result[childObjKey] = childObj[childObjKey]
+      }
+    } else {
+      result[key] = obj[key]
+    }
+  }
+  return result
+}
+
 export const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())

@@ -6,7 +6,7 @@ import { resolveFileMedia, viewAnime, relations } from './anime.js'
 import { getRSSurl, releasesRSS, getRSSContent } from './rss.js'
 import { settings } from './settings.js'
 import { client } from './main.js'
-import { countdown } from './util.js'
+import { countdown, flattenObj } from './util.js'
 export function loadHomePage () {
   const homeLoadElements = [navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore]
   const homePreviewElements = [homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction]
@@ -57,15 +57,23 @@ export function loadHomePage () {
       galleryAppend({ media: mediaList.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
     },
     search: async function (page) {
-      const opts = {
+      const def = {
         method: 'Search',
         page: page || 1
       }
+      const opts = {}
+      Object.assign(opts, def)
       for (const element of homeSearchElements) {
         if (element.value) opts[element.dataset.option] = element.value
       }
-      const mediaList = (await alRequest(opts)).data.Page.media
-      galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
+      if (Object.keys(def).length !== Object.keys(opts).length) {
+        const mediaList = (await alRequest(opts)).data.Page.media
+        galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
+      } else {
+        searchClear.classList.remove('text-primary')
+        home.classList.remove('loading')
+        reloadHome()
+      }
     }
   }
   const homePreviewFunctions = {
@@ -99,7 +107,6 @@ export function loadHomePage () {
         homeReleases.textContent = ''
         homeReleases.append(...cards)
       }
-      setTimeout(homePreviewFunctions.releases, 30000)
     },
     planning: function () {
       alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, perPage: 5 }).then(res => {
@@ -178,18 +185,22 @@ export function loadHomePage () {
   for (const item of homePreviewElements) {
     homePreviewFunctions[item.dataset.function]()
   }
+  setInterval(homePreviewFunctions.releases, 30000)
   for (const item of homeLoadElements) {
     item.onclick = function () {
       home.scrollTop = 0
       home.classList.add('browsing')
+      searchClear.classList.add('text-primary')
       homeLoadFunctions[item.dataset.function]()
     }
   }
   function reloadHome () {
     clearSearch()
+    searchClear.classList.remove('text-primary')
     home.classList.remove('browsing')
     lastRSSDate = undefined
     home.onscroll = undefined
+    home.scrollTop = 0
     for (const item of homePreviewElements) {
       item.textContent = ''
       item.append(...gallerySkeletonFrag(5))
@@ -209,9 +220,11 @@ export function loadHomePage () {
     if (!searchTimeout) {
       home.classList.add('browsing')
       gallerySkeleton(browseGallery)
+      home.scrollTop = 0
     } else {
       clearTimeout(searchTimeout)
     }
+    searchClear.classList.add('text-primary')
     searchTimeout = setTimeout(() => {
       homeLoadFunctions.search()
       searchTimeout = undefined

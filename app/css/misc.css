@@ -35,6 +35,19 @@ img {
     pointer-events: none;
 }
 
+.w-30 {
+    width: 3rem
+}
+
+.font-size-30 {
+    font-size: 3rem !important
+}
+
+.border-right-dark {
+    border-right: var(--base-border-width) solid var(--dm-border-color) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important
+}
+
 input:invalid {
     box-shadow: 0 0 0 0.2rem var(--danger-color) !important
 }
@@ -146,15 +159,13 @@ input:invalid {
 }
 
 #home.loading {
-    height: 50rem !important;
-    position: relative;
-    overflow-y: hidden !important;
+    height: 50rem !important
 }
 
 #home.loading:after {
     content: "";
     position: absolute;
-    bottom: 0;
+    top: 40rem;
     height: 10rem;
     width: 100%;
     background: linear-gradient(0deg, rgba(37, 40, 44, 1) 0%, rgba(37, 40, 44, 1) 15%, rgba(37, 40, 44, .45) 70%, rgba(37, 40, 44, 0) 100%);
@@ -446,12 +457,4 @@ section:target:not(#player),
     font-size: 1.4rem;
     border: none;
     margin-right: 0.6rem;
-}
-
-.w-30 {
-    width: 3rem
-}
-
-.font-size-30 {
-    font-size: 3rem
 }

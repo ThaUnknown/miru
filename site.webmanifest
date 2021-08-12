@@ -32,7 +32,7 @@
     "scope_url_host": "localhost",
     "scope_url_path": "/app/"
   },
-  "capture_links": "new-client",
+  "capture_links": "existing-client-navigate",
   "url_handlers": [
     {
       "origin": "https://localhost:5500"

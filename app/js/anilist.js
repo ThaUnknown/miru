@@ -122,6 +122,9 @@ streamingEpisodes {
   title,
   thumbnail
 },
+mediaListEntry {
+  progress
+},
 relations {
   edges {
     relationType(version:2)
