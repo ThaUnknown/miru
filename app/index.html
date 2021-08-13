@@ -65,32 +65,56 @@
           <div class="container-xl w-full">
             <div class="row d-flex justify-content-end flex-row h-full px-20 pt-20 px-xl-0">
               <div class="col-md-3 col-4 d-flex h-full justify-content-end flex-column pb-15 align-items-center">
-                <img class="contain-img rounded mw-full mh-full shadow"
+                <img class="contain-img rounded mw-full mh-full shadow" id="viewImg"
                   src="https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-m5ZMNtFioc7j.png">
               </div>
               <div class="col-md-9 col-8 row align-content-end">
                 <div class="col-md-8 col-12 d-flex justify-content-end flex-column">
                   <div class="px-md-20 ml-20 d-flex flex-column font-size-12">
-                    <span class="title font-weight-bold pb-sm-15 text-white">Shingeki no Kyojin</span>
-                    <div class="d-flex flex-row font-size-18 pb-sm-15">
+                    <span class="title font-weight-bold pb-sm-15 text-white" id="viewTitle">Shingeki no Kyojin</span>
+                    <div class="d-flex flex-row font-size-18 pb-sm-15" id="viewLabels">
                       <span class="material-icons mr-10 font-size-24">
                         trending_up
                       </span>
-                      <span>Rating: <span class="font-weight-bold mr-20">85%</span></span>
+                      <span>Rating:
+                        <span class="font-weight-bold mr-20" id="viewRating">
+                          85%
+                        </span>
+                      </span>
                       <span class="material-icons mx-10 font-size-24">
                         monitor
                       </span>
-                      <span>Format: <span class="font-weight-bold mr-20">TV</span></span>
-                      <span class="material-icons mx-10 font-size-24">
-                        theaters
+                      <span>Format:
+                        <span class="font-weight-bold mr-20 text-capitalize" id="viewFormat">
+                          TV
+                        </span>
                       </span>
-                      <span>Episodes: <span class="font-weight-bold mr-20">25</span></span>
+                      <div class="d-flex episodes">
+                        <span class="material-icons mx-10 font-size-24">
+                          theaters
+                        </span>
+                        <span>Episodes:
+                          <span class="font-weight-bold mr-20" id="viewEpisode">
+                            25
+                          </span>
+                        </span>
+                      </div>
+                      <div class="d-none duration">
+                        <span class="material-icons mx-10 font-size-24">
+                          timer
+                        </span>
+                        <span>Length:
+                          <span class="font-weight-bold mr-20" id="viewDuration">
+                            24 mins
+                          </span>
+                        </span>
+                      </div>
                     </div>
-                    <div class="pb-15 pt-5 overflow-x-auto text-nowrap">
-                      <span class="badge badge-pill badge-color mt-5 font-weight-bold shadow">Action</span>
-                      <span class="badge badge-pill badge-color mt-5 font-weight-bold shadow">Drama</span>
-                      <span class="badge badge-pill badge-color mt-5 font-weight-bold shadow">Fantasy</span>
-                      <span class="badge badge-pill badge-color mt-5 font-weight-bold shadow">Mystery</span>
+                    <div class="pb-15 pt-5 overflow-x-auto text-nowrap font-weight-bold" id="viewBadges">
+                      <span class="badge badge-pill shadow">Action</span>
+                      <span class="badge badge-pill shadow">Drama</span>
+                      <span class="badge badge-pill shadow">Fantasy</span>
+                      <span class="badge badge-pill shadow">Mystery</span>
                     </div>
                   </div>
                 </div>
@@ -98,7 +122,7 @@
                   <div class="d-flex flex-column flex-wrap">
                     <div class="btn-group mb-5" role="group">
                       <button class="btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50"
-                        type="button">
+                        type="button" id="viewPlay">
                         <span class="material-icons mr-10 font-size-24 w-30">
                           play_arrow
                         </span>
@@ -116,15 +140,15 @@
                             <div class="input-group-prepend">
                               <span class="input-group-text">Episode</span>
                             </div>
-                            <input id="play-episode" type="number" value="1" min="1" max="30"
-                              class="form-control text-right form-control-lg">
+                            <input type="number" value="1" min="1" max="30"
+                              class="form-control text-right form-control-lg" id="viewPlayEp">
                           </div>
                         </div>
                       </div>
                     </div>
                     <div class="btn-group mb-5 border-0" role="group">
                       <button class="btn d-flex align-items-center font-weight-bold font-size-16 border-0"
-                        type="button">
+                        type="button" id="viewDownload">
                         <span class="material-icons mr-10 font-size-18 w-30">
                           get_app
                         </span>
@@ -142,13 +166,13 @@
                             <div class="input-group-prepend">
                               <span class="input-group-text">Episode</span>
                             </div>
-                            <input id="download-episode" type="number" value="1" min="1" max="30"
-                              class="form-control text-right form-control-lg">
+                            <input type="number" value="1" min="1" max="30"
+                              class="form-control text-right form-control-lg" id="viewDownloadEp">
                           </div>
                         </div>
                       </div>
                     </div>
-                    <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16" type="button">
+                    <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16" type="button" id="viewTrailer">
                       <span class="material-icons mr-10 font-size-18 w-30">
                         live_tv
                       </span>
@@ -165,7 +189,7 @@
         <div class="row p-20 px-xl-0 flex-column-reverse flex-md-row">
           <div class="col-md-9 px-20">
             <h1 class="title font-weight-bold text-white">Sypnosis</h1>
-            <div class="font-size-16 pr-15">
+            <div class="font-size-16 pr-15" id="viewDescription">
               Several hundred years ago, humans were nearly exterminated by titans. Titans are typically several stories
               tall, seem to have no intelligence, devour human beings and, worst of all, seem to do it for the pleasure
               rather than as a food source. A small percentage of humanity survived by walling themselves in a city
@@ -176,10 +200,195 @@
               Eren vows that he will murder every single titan and take revenge for all of mankind.<br><br> (Source:
               MangaHelpers)
             </div>
+            <h1 class="title font-weight-bold text-white pt-20">Episodes</h1>
+            <div id="episodes" class="d-flex flex-wrap justify-content-start">
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire1-tmb/b199406edeebc19a7f4e4412d6e1dfcc1365964779_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-5 text-truncate bottom-0">Episode 1 - To You, 2,000
+                  Years in the Future -The Fall of Zhiganshina (1)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire3-tmb/b9fbee83c6c9a6353383a36b81d861211365965650_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-5 text-truncate bottom-0">Episode 2 - That Day - The
+                  Fall of Zhiganshina (2)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire3-tmb/c7b6627f8880562f34268096f9c55c051366564160_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-5 text-truncate bottom-0">Episode 3 - A Dim Light in
+                  the Darkness of Despair - Humanity Rises Again (1)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire2-tmb/941f10ee007bd7a2704d00dfb460c8fa1367145015_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 4 - Night of the
+                  Graduation Ceremony - Humanity Rises Again (2)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire2-tmb/cc56e86eb68f3afde55d62e008fddb441367805554_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 5 - First Battle -
+                  Battle of Trost (1)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire4-tmb/0b9d827f813bd0f5b934721b7cce37d31368457914_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 6 - The World the
+                  Girl Saw - Battle for Trost (2)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire3-tmb/adea712fbf73a3096ace5c4bcfb94ab71368954327_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 7 - The Small Blade -
+                  The Battle for Trost (3)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire2-tmb/35c4c2b8bb74d8ee888aeff5a90e911c1369526858_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 8 - Hearing the
+                  Heartbeat - The Battle for Trost (4)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire1-tmb/dbe188f8378a1fbeb6bd75dca5f4833d1370123553_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 9 - Where the Left
+                  Arm Went - The Battle for Trost (5)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire3-tmb/d817405dd8bb881c6cbea6bfaff591c21370729401_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 10 - Response - The
+                  Battle for Trost (6)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire2-tmb/d178c066f3340c55c1f77f777f9082fd1371318103_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 11 - Icon - The
+                  Battle for Trost (7)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire4-tmb/6401b828d7db85669e185d115fa102a41371935223_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 12 - Wound - The
+                  Battle for Trost (8)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire1-tmb/69349336c3ef4817e40d7f4b99bee4e51372540942_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 13 - Primal Desires -
+                  The Battle for Trost (9)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire4-tmb/220fb12b27221cc389ea48d4e1a478fd1373166901_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 13.5 - Since That Day
+                </div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire1-tmb/94536ae32c4df9f96d8d8194c674c45d1373752009_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 14 - Still Can't See
+                  - Night Before the Counteroffensive (1)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire1-tmb/745d6f6f240ffc99cc08f4f4d52f6e0b1374356790_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 15 - Special Ops
+                  Squad - Night Before the Counteroffensive (2)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire4-tmb/91e17edd483923b330428ac5de39796d1374964414_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 16 - What Should Be
+                  Done - Night Before the Counteroffensive (3)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire1-tmb/af666f0f1d7dac4aea8fd7b548419e001375570078_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 17 - Female Titan -
+                  57th Expedition Beyond the Walls (1)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire2-tmb/96361bbd829a6ba6aa8d7e803b18ef3e1376169742_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 18 - Forest of Giant
+                  Trees - 57th Expedition Beyond the Walls (2)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire4-tmb/fbb4f7f661b9fe2e169bde507c96df441376778966_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 19 - Bite - 57th
+                  Expedition Beyond the Walls (3)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire2-tmb/d6f7322acdd63ccc27387feea0fd8a661377384263_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 20 - Erwin Smith -
+                  57th Expedition Beyond the Walls (4)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire4-tmb/554197194719955e2f746fc300540f321377988494_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 21 - Crushing Blow -
+                  57th Expedition Beyond the Walls (5)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire2-tmb/350c8f1fddd535e04cfb4b29b4e3ab751378592642_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 22 - The Defeated -
+                  57th Expedition Beyond the Walls (6)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire3-tmb/5c2122871212f063628d60a0280568bf1379190681_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 23 - Smile - Raid on
+                  Stohess District (1)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire3-tmb/83697a20a24c8d623cba002043e8e5241379794821_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 24 - Mercy - Raid on
+                  Stohess District (2)</div>
+              </div>
+              <div class="position-relative w-250 rounded mr-10 overflow-hidden pointer">
+                <img loading="lazy"
+                  src="https://img1.ak.crunchyroll.com/i/spire3-tmb/09379010a52b6c46c3e8fd0939974a071380395420_full.jpg"
+                  class="w-full h-full">
+                <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">Episode 25 - The Wall - Raid
+                  on Stohess District (3)</div>
+              </div>
+            </div>
           </div>
           <div class="col-md-3 px-sm-0 px-20">
             <h1 class="title font-weight-bold text-white">Details</h1>
-            <div class="card m-0 px-20 py-10 d-flex flex-md-column flex-row overflow-x-auto">
+            <div class="card m-0 px-20 py-10 d-flex flex-md-column flex-row overflow-x-auto text-capitalize" id='viewDetails'>
               <div class="d-flex flex-row px-10 py-5">
                 <div class="material-icons mr-10 font-size-24">
                   theater_comedy
@@ -295,7 +504,7 @@
     </div>
 
   </div>
-  <div class="modal modal-full bg-dark-light" id="view" tabindex="-1" role="dialog">
+  <!-- <div class="modal modal-full bg-dark-light" id="view" tabindex="-1" role="dialog">
     <div class="modal-dialog bg-transparent" role="document">
       <div class="h-full modal-content bg-transparent">
         <button class="close pointer" data-dismiss="modal" type="button" aria-label="Close">
@@ -352,7 +561,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
   <div class="modal" id="trailer" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content w-three-quarter h-full bg-transparent d-flex justify-content-center flex-column">
@@ -529,11 +738,10 @@
               </div>
               <div class="input-group shadow-lg">
                 <div class="input-group-prepend">
-                  <span
-                    class="input-group-text d-flex material-icons bg-dark pr-0 font-size-18">search</span>
+                  <span class="input-group-text d-flex material-icons bg-dark pr-0 font-size-18">search</span>
                 </div>
-                <input type="text" class="form-control bg-dark border-left-0 shadow-none" autocomplete="off"
-                  id="searchText" data-option="search" placeholder="Any">
+                <input type="text" class="form-control bg-dark border-left-0 shadow-none text-capitalize"
+                  autocomplete="off" id="searchText" data-option="search" placeholder="Any">
               </div>
             </div>
             <div class="col-lg col-4 p-10 d-flex flex-column justify-content-end">
@@ -573,7 +781,8 @@
                 Season
               </div>
               <div class="input-group shadow-lg">
-                <select class="form-control bg-dark shadow-none border-right-dark" required id="searchSeason" data-option="season">
+                <select class="form-control bg-dark shadow-none border-right-dark" required id="searchSeason"
+                  data-option="season">
                   <option value selected disabled hidden>Any</option>
                   <option value="WINTER">Winter</option>
                   <option value="SPRING">Spring</option>
@@ -581,7 +790,7 @@
                   <option value="FALL">Fall</option>
                 </select>
                 <input type="number" placeholder="Any" min="1940" max="2100" class="form-control bg-dark shadow-none"
-                id="searchYear" data-option="year">
+                  id="searchYear" data-option="year">
               </div>
             </div>
             <div class="col p-10 d-flex flex-column justify-content-end">
@@ -631,8 +840,8 @@
               </select>
             </div>
             <div class="col-auto p-10 d-flex">
-              <button class="btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0" type="button"
-                id="searchClear">delete</button>
+              <button class="btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0"
+                type="button" id="searchClear">delete</button>
             </div>
           </div>
           <div class="gallery browse">

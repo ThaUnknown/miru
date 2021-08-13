@@ -2,7 +2,6 @@
 /* global torrent4list */
 
 import { settings } from './settings.js'
-import { releasesCards } from './interface.js'
 import { userBrowser, DOMPARSER } from './util.js'
 import { client } from './main.js'
 import halfmoon from 'halfmoon'
@@ -19,9 +18,12 @@ if (!('audioTracks' in HTMLVideoElement.prototype)) {
 
 export function getRSSContent (url) {
   return fetch(url).then(res => {
-    return res.text().then(xmlTxt => {
-      return DOMPARSER(xmlTxt, 'text/xml')
-    })
+    if (res.ok) {
+      return res.text().then(xmlTxt => {
+        return DOMPARSER(xmlTxt, 'text/xml')
+      })
+    }
+    throw Error(res.statusText)
   }).catch(error => {
     halfmoon.initStickyAlert({
       content: 'Failed fetching RSS!<br>' + error,
@@ -33,7 +35,7 @@ export function getRSSContent (url) {
   })
 }
 
-export async function nyaaRss (media, episode) {
+export async function nyaaRss (media, episode, isOffline) {
   const frag = document.createDocumentFragment()
   const ep = (media.status === 'FINISHED' && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
   const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '%26')})${ep}"${settings.torrent1}"-(${exclusions[userBrowser].join('|')})`)
@@ -64,7 +66,11 @@ export async function nyaaRss (media, episode) {
     media: media
   }
   if (settings.torrent2) {
-    client.playTorrent(entries[0].hash, { media: fileMedia, episode: episode })
+    if (isOffline) {
+      client.offlineDownload(entries[0].hash)
+    } else {
+      client.playTorrent(entries[0].hash, { media: fileMedia, episode: episode })
+    }
     halfmoon.hideModal('tsearch')
   }
   entries.forEach((entry, index) => {
@@ -78,16 +84,16 @@ export async function nyaaRss (media, episode) {
 <td>${entry.downloads}</td>
 <td class="pointer">Play</td>`
     template.onclick = () => {
-      client.playTorrent(entry.hash, { media: fileMedia, episode: episode })
+      if (isOffline) {
+        client.offlineDownload(entry.hash)
+      } else {
+        client.playTorrent(entry.hash, { media: fileMedia, episode: episode })
+      }
       halfmoon.hideModal('tsearch')
     }
     frag.appendChild(template)
   })
   return frag
-}
-
-export async function releasesRSS (limit) {
-  return releasesCards((await getRSSContent(getRSSurl())).querySelectorAll('item'), limit)
 }
 
 export function getRSSurl () {

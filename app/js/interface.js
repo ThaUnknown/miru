@@ -2,11 +2,12 @@
 /* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
 
 import { alRequest } from './anilist.js'
-import { resolveFileMedia, viewAnime, relations } from './anime.js'
-import { getRSSurl, releasesRSS, getRSSContent } from './rss.js'
+import { resolveFileMedia, viewAnime, relations, nyaaSearch } from './anime.js'
+import { getRSSurl, getRSSContent } from './rss.js'
 import { settings } from './settings.js'
 import { client } from './main.js'
 import { countdown, flattenObj } from './util.js'
+import halfmoon from 'halfmoon'
 export function loadHomePage () {
   const homeLoadElements = [navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore]
   const homePreviewElements = [homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction]
@@ -22,7 +23,7 @@ export function loadHomePage () {
     },
     releases: async function () {
       gallerySkeleton(browseGallery)
-      const cards = await releasesRSS()
+      const cards = await releasesCards((await getRSSContent(getRSSurl())).querySelectorAll('item'))
       browseGallery.textContent = ''
       browseGallery.append(...cards)
       home.classList.remove('loading')
@@ -70,6 +71,7 @@ export function loadHomePage () {
       }
       if (Object.keys(def).length !== Object.keys(opts).length) {
         const mediaList = (await alRequest(opts)).data.Page.media
+        viewMedia(mediaList[0])
         galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
       } else {
         searchClear.classList.remove('text-primary')
@@ -89,28 +91,30 @@ export function loadHomePage () {
     },
     releases: async function () { // this could be cleaner, but oh well
       const doc = await getRSSContent(getRSSurl())
-      const pubDate = doc.querySelector('pubDate').textContent
-      if (lastRSSDate !== pubDate) {
-        if (lastRSSDate) {
-          homeReleases.append(...gallerySkeletonFrag(5))
-          resolveFileMedia({ fileName: doc.querySelector('item title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
-            if (settings.other1) {
-              const notification = new Notification(mediaInformation.media.title.userPreferred, {
-                body: `Episode ${mediaInformation.episode} was just released!`,
-                icon: mediaInformation.media.coverImage.medium
-              })
-              notification.onclick = async () => {
-                window.parent.focus()
-                client.playTorrent(doc.querySelector('item link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
-                relations[mediaInformation.parseObject.anime_title] = (await alRequest({ id: mediaInformation.media.id, method: 'SearchIDSingle' })).data.Media.id
+      if (doc) {
+        const pubDate = doc.querySelector('pubDate').textContent
+        if (lastRSSDate !== pubDate) {
+          if (lastRSSDate) {
+            homeReleases.append(...gallerySkeletonFrag(5))
+            resolveFileMedia({ fileName: doc.querySelector('item title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
+              if (settings.other1) {
+                const notification = new Notification(mediaInformation.media.title.userPreferred, {
+                  body: `Episode ${mediaInformation.episode} was just released!`,
+                  icon: mediaInformation.media.coverImage.medium
+                })
+                notification.onclick = async () => {
+                  window.parent.focus()
+                  client.playTorrent(doc.querySelector('item link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
+                  relations[mediaInformation.parseObject.anime_title] = (await alRequest({ id: mediaInformation.media.id, method: 'SearchIDSingle' })).data.Media.id
+                }
               }
-            }
-          })
+            })
+          }
+          lastRSSDate = pubDate
+          const cards = await releasesCards(doc.querySelectorAll('item'), 5)
+          homeReleases.textContent = ''
+          homeReleases.append(...cards)
         }
-        lastRSSDate = pubDate
-        const cards = await releasesCards(doc.querySelectorAll('item'), 5)
-        homeReleases.textContent = ''
-        homeReleases.append(...cards)
       }
     },
     planning: function () {
@@ -221,7 +225,7 @@ export function loadHomePage () {
     }
   }
   let searchTimeout
-  searchWrapper.oninput = e => {
+  searchWrapper.oninput = () => {
     if (!searchTimeout) {
       home.classList.add('browsing')
       gallerySkeleton(browseGallery)
@@ -267,7 +271,7 @@ export function cardCreator (opts) {
   return skeletonCard.cloneNode(true)
 }
 
-export async function releasesCards (items, limit) {
+async function releasesCards (items, limit) {
   const cards = []
   const media = await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true })
   media.forEach((mediaInformation, index) => {
@@ -276,6 +280,130 @@ export async function releasesCards (items, limit) {
   })
   localStorage.setItem('relations', JSON.stringify(relations))
   return cards
+}
+const genreBadge = document.createElement('span')
+genreBadge.classList.add('badge', 'badge-pill', 'shadow')
+
+function genreBadges (genres = []) {
+  const badges = []
+  for (const genre of genres) {
+    const badge = genreBadge.cloneNode(true)
+    badge.textContent = genre
+    badges.push(badge)
+  }
+  return badges
+}
+const detailsMap = [
+  { property: 'genres', label: 'Genres', icon: 'theater_comedy' },
+  { property: 'season', label: 'Season', icon: 'spa', custom: 'property' },
+  { property: 'episodes', label: 'Episodes', icon: 'theaters', custom: 'property' },
+  { property: 'duration', label: 'Duration', icon: 'timer' },
+  { property: 'format', label: 'Format', icon: 'monitor' },
+  { property: 'status', label: 'Status', icon: 'live_tv' },
+  { property: 'nodes', label: 'Studio', icon: 'business' },
+  { property: 'source', label: 'Source', icon: 'source' },
+  { property: 'averageScore', label: 'Rating', icon: 'trending_up', custom: 'property' },
+  { property: 'english', label: 'English', icon: 'title' },
+  { property: 'romaji', label: 'Romaji', icon: 'translate' },
+  { property: 'native', label: 'Native', icon: '日本', custom: 'icon' }
+]
+function mediaDetails (media) {
+  const details = []
+  for (const detail of detailsMap) {
+    if (media[detail.property]) {
+      const wrap = document.createElement('div')
+      const icon = document.createElement('div')
+      const info = document.createElement('div')
+      const label = document.createElement('div')
+      const value = document.createElement('div')
+      wrap.append(icon, info)
+      info.append(label, value)
+      wrap.classList.add('d-flex', 'flex-row', 'px-10', 'py-5')
+      icon.classList.add('material-icons', 'mr-10', 'font-size-24')
+      info.classList.add('d-flex', 'flex-column', 'justify-content-center', 'text-nowrap')
+      label.classList.add('font-weight-bold')
+      switch (media[detail.property].constructor) {
+        case String: {
+          value.textContent = media[detail.property].replace(/_/g, ' ').toLowerCase()
+          break
+        }
+        case Number: {
+          value.textContent = media[detail.property]
+          break
+        }
+        case Array: {
+          if (detail.property === 'nodes') {
+            value.textContent = media[detail.property][0] && media[detail.property][0].name
+          } else {
+            value.textContent = media[detail.property].join(', ').replace(/_/g, ' ').toLowerCase()
+          }
+        }
+      }
+      icon.textContent = detail.icon
+      label.textContent = detail.label
+      switch (detail.custom) {
+        case 'icon': {
+          icon.classList.remove('material-icons', 'font-size-24')
+          icon.classList.add('d-flex', 'align-items-center', 'text-nowrap', 'font-size-12', 'font-weight-bold')
+          break
+        }
+        case 'property': {
+          if (detail.property === 'episodes' && media.progress) {
+            value.innerHTML = `Watched <b>${media.progress}</b> of <b>${media.episodes}</b>`
+          } else if (detail.property === 'averageScore') {
+            value.textContent = media.averageScore + '%'
+          } else if (detail.property === 'season') {
+            value.textContent = [media.season, media.seasonYear].filter(f => f).join(' ')
+          } else {
+            value.textContent = media[detail.property]
+          }
+        }
+      }
+      details.push(wrap)
+    }
+  }
+  return details
+}
+
+function trailerPopup (trailer) {
+  trailerVideo.src = ''
+  halfmoon.toggleModal('trailer')
+  switch (trailer.site) { // should support the other possible sites too, but i cant find any examples
+    case 'youtube':
+      trailerVideo.src = 'https://www.youtube.com/embed/' + trailer.id
+      break
+  }
+}
+/* global viewImg, viewTitle, viewRating, viewFormat, viewLabels, viewDuration, viewEpisode, viewBadges, viewPlay, viewPlayEp, viewDescription, viewDetails,viewDownload, viewDownloadEp, trailerVideo, viewTrailer */
+function viewMedia (input) {
+  console.log(input)
+  const media = flattenObj(input)
+  viewImg.src = media.extraLarge || media.medium
+  viewTitle.textContent = media.userPreferred
+  viewRating.textContent = media.averageScore + '%'
+  viewFormat.textContent = media.format === 'TV' ? media.format : media.format?.toLowerCase()
+  if (media.episodes === 1 || !media.episodes) {
+    viewLabels.classList.add('movie')
+    viewDuration.textContent = media.duration + ' min'
+  } else {
+    viewEpisode.textContent = media.episodes
+  }
+  viewBadges.textContent = ''
+  viewBadges.append(...genreBadges(media.genres))
+
+  viewPlay.onclick = () => nyaaSearch(input, viewPlayEp.value)
+  viewPlayEp.value = media.progress || 1
+
+  viewDownload.onclick = () => nyaaSearch(input, viewPlayEp.value, true)
+  viewDownloadEp.value = media.progress || 1
+
+  viewTrailer.onclick = () => trailerPopup(input.trailer)
+
+  viewDescription.innerHTML = media.description
+
+  viewDetails.textContent = ''
+  viewDetails.append(...mediaDetails(media))
+  console.log(media)
 }
 
 export let alID // login icon

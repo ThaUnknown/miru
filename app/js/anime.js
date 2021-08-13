@@ -224,13 +224,13 @@ function detailsCreator (entry) {
   }
 }
 
-export async function nyaaSearch (media, episode) {
+export async function nyaaSearch (media, episode, isOffline) {
   if (parseInt(episode) < 10) {
     episode = `0${episode}`
   }
 
   const table = document.querySelector('tbody.results')
-  const results = await nyaaRss(media, episode)
+  const results = await nyaaRss(media, episode, isOffline)
 
   if (results.children.length === 0) {
     halfmoon.initStickyAlert({
@@ -315,7 +315,7 @@ export async function resolveFileMedia (opts) {
         } else {
           episode = opts.episode - (opts.offset + tempMedia.episodes)
         }
-        if (opts.increment) {
+        if (opts.increment || increment) {
           const nextEdge = await alRequest({ method: 'SearchIDSingle', id: tempMedia.id })
           media = nextEdge.data.Media
         }

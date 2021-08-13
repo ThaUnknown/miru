@@ -456,3 +456,9 @@ section:target:not(#player),
     border: none;
     margin-right: 0.6rem;
 }
+#viewLabels.movie .duration {
+    display: flex !important;
+}
+#viewLabels.movie .episodes {
+    display: none !important;
+}

@@ -125,6 +125,12 @@ streamingEpisodes {
 mediaListEntry {
   progress
 },
+source,
+studios(isMain: true) {
+  nodes {
+    name
+  }
+},
 relations {
   edges {
     relationType(version:2)
