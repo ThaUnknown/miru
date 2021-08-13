@@ -151,21 +151,19 @@ input:invalid {
     grid-auto-rows: auto;
     justify-content: center;
     grid-gap: 2rem;
-    padding: 2rem 4rem
+    padding: 2rem 4rem;
+    position: relative;
 }
 
-#home.loading .gallery {
-    overflow-y: initial !important;
+#home.loading .gallery.browse {
+    height: 30rem !important;
+    overflow-y: hidden !important;
 }
 
-#home.loading {
-    height: 50rem !important
-}
-
-#home.loading:after {
+#home.loading .gallery.browse:after {
     content: "";
     position: absolute;
-    top: 40rem;
+    bottom: 0;
     height: 10rem;
     width: 100%;
     background: linear-gradient(0deg, rgba(37, 40, 44, 1) 0%, rgba(37, 40, 44, 1) 15%, rgba(37, 40, 44, .45) 70%, rgba(37, 40, 44, 0) 100%);
