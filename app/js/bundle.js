@@ -561,7 +561,7 @@ async function resolveFileMedia (opts) {
   // opts.fileName opts.method opts.isRelease
 
   async function resolveTitle (title) {
-    if (!relations[title]) {
+    if (!(title in relations)) {
       // resolve name and shit
       let method, res
       if (opts.isRelease) {
@@ -572,7 +572,6 @@ async function resolveFileMedia (opts) {
       }
       res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)(method)
       if (!res.data.Page.media[0]) {
-        method.sort = 'SEARCH_MATCH'
         const index = method.name.search(/S\d/)
         method.name = (method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
         method.status = undefined
@@ -580,6 +579,8 @@ async function resolveFileMedia (opts) {
       }
       if (res.data.Page.media[0]) {
         relations[title] = res.data.Page.media[0].id
+      } else {
+        relations[title] = null
       }
     }
   }
@@ -668,7 +669,7 @@ async function resolveFileMedia (opts) {
     fileMedias.push({
       mediaTitle: media?.title.userPreferred,
       episodeNumber: episode,
-      episodeTitle: streamingEpisode ? episodeRx.exec(streamingEpisode.title)[2] : undefined,
+      episodeTitle: streamingEpisode && episodeRx.exec(streamingEpisode.title)[2],
       episodeThumbnail: streamingEpisode?.thumbnail,
       mediaCover: media?.coverImage.medium,
       name: 'Miru',
@@ -1446,7 +1447,7 @@ function flattenObj (obj) {
   const result = {}
 
   for (const key in obj) {
-    if (typeof obj[key] === 'object') {
+    if (obj[key] && obj[key].constructor === Object) {
       const childObj = flattenObj(obj[key])
 
       for (const childObjKey in childObj) {

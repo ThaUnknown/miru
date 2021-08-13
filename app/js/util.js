@@ -37,7 +37,7 @@ export function flattenObj (obj) {
   const result = {}
 
   for (const key in obj) {
-    if (typeof obj[key] === 'object') {
+    if (obj[key] && obj[key].constructor === Object) {
       const childObj = flattenObj(obj[key])
 
       for (const childObjKey in childObj) {
