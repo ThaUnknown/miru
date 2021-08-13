@@ -264,7 +264,7 @@ export async function resolveFileMedia (opts) {
       res = await alRequest(method)
       if (!res.data.Page.media[0]) {
         const index = method.name.search(/S\d/)
-        method.name = (method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
+        method.name = ((index !== -1 && method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)) || method.name).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
         method.status = undefined
         res = await alRequest(method)
       }

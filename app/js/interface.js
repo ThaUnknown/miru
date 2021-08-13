@@ -15,8 +15,10 @@ export function loadHomePage () {
   const homeLoadFunctions = {
     continue: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      const mediaList = (await alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })).data.Page.mediaList
-      galleryAppend({ media: mediaList.map(i => i.media), gallery: browseGallery, method: 'continue', page: page || 1 })
+      const mediaList = (await alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })).data.Page.mediaList.map(i => i.media).filter(media => {
+        return !(media.status === 'RELEASING' && media.mediaListEntry?.progress === media.nextAiringEpisode?.episode - 1)
+      })
+      galleryAppend({ media: mediaList, gallery: browseGallery, method: 'continue', page: page || 1 })
     },
     releases: async function () {
       gallerySkeleton(browseGallery)
@@ -78,8 +80,11 @@ export function loadHomePage () {
   }
   const homePreviewFunctions = {
     continue: function () {
-      alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, perPage: 5 }).then(res => {
-        galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homeContinue })
+      alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, perPage: 50 }).then(res => {
+        const mediaList = res.data.Page.mediaList.filter(({ media }) => {
+          return !(media.status === 'RELEASING' && media.mediaListEntry?.progress === media.nextAiringEpisode?.episode - 1)
+        }).slice(0, 5).map(i => i.media)
+        galleryAppend({ media: mediaList, gallery: homeContinue })
       })
     },
     releases: async function () { // this could be cleaner, but oh well

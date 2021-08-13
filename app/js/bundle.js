@@ -573,7 +573,7 @@ async function resolveFileMedia (opts) {
       res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)(method)
       if (!res.data.Page.media[0]) {
         const index = method.name.search(/S\d/)
-        method.name = (method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
+        method.name = ((index !== -1 && method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)) || method.name).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
         method.status = undefined
         res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)(method)
       }
@@ -723,8 +723,10 @@ function loadHomePage () {
   const homeLoadFunctions = {
     continue: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })).data.Page.mediaList
-      galleryAppend({ media: mediaList.map(i => i.media), gallery: browseGallery, method: 'continue', page: page || 1 })
+      const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })).data.Page.mediaList.map(i => i.media).filter(media => {
+        return !(media.status === 'RELEASING' && media.mediaListEntry?.progress === media.nextAiringEpisode?.episode - 1)
+      })
+      galleryAppend({ media: mediaList, gallery: browseGallery, method: 'continue', page: page || 1 })
     },
     releases: async function () {
       gallerySkeleton(browseGallery)
@@ -786,8 +788,11 @@ function loadHomePage () {
   }
   const homePreviewFunctions = {
     continue: function () {
-      ;(0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, perPage: 5 }).then(res => {
-        galleryAppend({ media: res.data.Page.mediaList.map(i => i.media), gallery: homeContinue })
+      ;(0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, perPage: 50 }).then(res => {
+        const mediaList = res.data.Page.mediaList.filter(({ media }) => {
+          return !(media.status === 'RELEASING' && media.mediaListEntry?.progress === media.nextAiringEpisode?.episode - 1)
+        }).slice(0, 5).map(i => i.media)
+        galleryAppend({ media: mediaList, gallery: homeContinue })
       })
     },
     releases: async function () { // this could be cleaner, but oh well
