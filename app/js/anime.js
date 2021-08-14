@@ -249,23 +249,23 @@ export async function nyaaSearch (media, episode, isOffline) {
 // resolve anime name based on file name and store it
 
 export async function resolveFileMedia (opts) {
-  // opts.fileName opts.method opts.isRelease
+  // opts.fileName opts.isRelease
 
   async function resolveTitle (title) {
     if (!(title in relations)) {
       // resolve name and shit
       let method, res
       if (opts.isRelease) {
-        method = { name: title, method: 'SearchName', perPage: 1, status: 'RELEASING', sort: 'SEARCH_MATCH' }
+        method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING'], sort: 'SEARCH_MATCH' }
         // maybe releases should include this and last season? idfk
       } else {
-        method = { name: title, method: opts.method, perPage: 1, sort: 'SEARCH_MATCH' }
+        method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
       }
       res = await alRequest(method)
       if (!res.data.Page.media[0]) {
         const index = method.name.search(/S\d/)
         method.name = ((index !== -1 && method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)) || method.name).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
-        method.status = undefined
+        method.status = ['RELEASING', 'FINISHED']
         res = await alRequest(method)
       }
       if (res.data.Page.media[0]) {

@@ -1,6 +1,8 @@
 /* eslint-env browser */
 /* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
 
+// THIS IS WHY YOU FUCKING USE FRAMEWORKS
+
 import { alRequest } from './anilist.js'
 import { resolveFileMedia, viewAnime, relations, nyaaSearch } from './anime.js'
 import { getRSSurl, getRSSContent } from './rss.js'
@@ -96,7 +98,7 @@ export function loadHomePage () {
         if (lastRSSDate !== pubDate) {
           if (lastRSSDate) {
             homeReleases.append(...gallerySkeletonFrag(5))
-            resolveFileMedia({ fileName: doc.querySelector('item title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
+            resolveFileMedia({ fileName: doc.querySelector('item title').textContent, isRelease: true }).then(mediaInformation => {
               if (settings.other1) {
                 const notification = new Notification(mediaInformation.media.title.userPreferred, {
                   body: `Episode ${mediaInformation.episode} was just released!`,
@@ -273,7 +275,7 @@ export function cardCreator (opts) {
 
 async function releasesCards (items, limit) {
   const cards = []
-  const media = await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true })
+  const media = await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), isRelease: true })
   media.forEach((mediaInformation, index) => {
     mediaInformation.onclick = () => client.playTorrent(items[index].querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
     cards.push(cardCreator(mediaInformation))
@@ -353,7 +355,7 @@ function mediaDetails (media) {
           } else if (detail.property === 'averageScore') {
             value.textContent = media.averageScore + '%'
           } else if (detail.property === 'season') {
-            value.textContent = [media.season, media.seasonYear].filter(f => f).join(' ')
+            value.textContent = [media.season?.toLowerCase(), media.seasonYear].filter(f => f).join(' ')
           } else {
             value.textContent = media[detail.property]
           }
@@ -374,7 +376,7 @@ function trailerPopup (trailer) {
       break
   }
 }
-/* global viewImg, viewTitle, viewRating, viewFormat, viewLabels, viewDuration, viewEpisode, viewBadges, viewPlay, viewPlayEp, viewDescription, viewDetails,viewDownload, viewDownloadEp, trailerVideo, viewTrailer */
+/* global viewImg, viewTitle, viewRating, viewFormat, viewLabels, viewDuration, viewEpisode, viewBadges, viewPlay, viewPlayEp, viewPlayText, viewDescription, viewDetails, viewDownload, viewDownloadEp, trailerVideo, viewTrailer, viewPlayback, viewBanner */
 function viewMedia (input) {
   console.log(input)
   const media = flattenObj(input)
@@ -391,11 +393,22 @@ function viewMedia (input) {
   viewBadges.textContent = ''
   viewBadges.append(...genreBadges(media.genres))
 
-  viewPlay.onclick = () => nyaaSearch(input, viewPlayEp.value)
-  viewPlayEp.value = media.progress || 1
+  if (media.episodes || media.episode) {
+    viewPlayback.classList.remove('hidden')
+    viewPlay.onclick = () => nyaaSearch(input, viewPlayEp.value)
+    viewPlayEp.value = media.progress || 1
+    viewPlayText.textContent = media.progress && media.progress !== media.episodes ? 'Continue' : 'Play'
 
-  viewDownload.onclick = () => nyaaSearch(input, viewPlayEp.value, true)
-  viewDownloadEp.value = media.progress || 1
+    viewDownload.onclick = () => nyaaSearch(input, viewPlayEp.value, true)
+    viewDownloadEp.value = media.progress || 1
+  } else {
+    viewPlayback.classList.add('hidden')
+  }
+  if (media.bannerImage) {
+    viewBanner.style = `background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%), url('${media.bannerImage}') !important`
+  } else {
+    viewBanner.style = 'background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%) !important'
+  }
 
   viewTrailer.onclick = () => trailerPopup(input.trailer)
 

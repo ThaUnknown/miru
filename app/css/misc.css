@@ -462,3 +462,6 @@ section:target:not(#player),
 #viewLabels.movie .episodes {
     display: none !important;
 }
+#viewPlayback.hidden .btn-group {
+    display: none;
+}

@@ -91,7 +91,7 @@ client.on('prev', ({ filemedia }) => {
   }
 })
 client.on('offline-torrent', torrent => {
-  resolveFileMedia({ fileName: torrent.name, method: 'SearchName' }).then(mediaInformation => {
+  resolveFileMedia({ fileName: torrent.name }).then(mediaInformation => {
     mediaInformation.onclick = () => client.playTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
     const template = cardCreator(mediaInformation)
     document.querySelector('.downloads').appendChild(template)
@@ -101,7 +101,7 @@ client.on('video-files', async ({ files, torrent }) => {
   document.querySelector('.playlist').textContent = ''
   const cards = []
   for (const file of files) {
-    const mediaInformation = await resolveFileMedia({ fileName: file.name, method: 'SearchName' })
+    const mediaInformation = await resolveFileMedia({ fileName: file.name })
     mediaInformation.onclick = () => {
       client.buildVideo(torrent, {
         media: mediaInformation,

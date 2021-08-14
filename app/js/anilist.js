@@ -155,9 +155,9 @@ relations {
     case 'SearchName': {
       variables.search = opts.name
       query = ` 
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus) {
+query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: [MediaStatus]) {
   Page (page: $page, perPage: $perPage) {
-    media(type: $type, search: $search, sort: $sort, status: $status) {
+    media(type: $type, search: $search, sort: $sort, status_in: $status) {
       ${queryObjects}
     }
   }

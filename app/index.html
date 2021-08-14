@@ -58,27 +58,26 @@
         <span>×</span>
       </button>
       <div class="h-md-half w-full position-relative z-20">
-        <div class="h-full w-full position-absolute banner bg-dark-light"
-          style="background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%), url('https://s4.anilist.co/file/anilistcdn/media/anime/banner/16498-8jpFCOcDmneX.jpg') !important">
+        <div class="h-full w-full position-absolute banner bg-dark-light" id="viewBanner"
+          style="background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%)!important">
         </div>
         <div class="d-flex h-full top w-full">
           <div class="container-xl w-full">
             <div class="row d-flex justify-content-end flex-row h-full px-20 pt-20 px-xl-0">
               <div class="col-md-3 col-4 d-flex h-full justify-content-end flex-column pb-15 align-items-center">
                 <img class="contain-img rounded mw-full mh-full shadow" id="viewImg"
-                  src="https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-m5ZMNtFioc7j.png">
+                  src="">
               </div>
-              <div class="col-md-9 col-8 row align-content-end">
+              <div class="col-md-9 col-8 row align-content-end pl-20">
                 <div class="col-md-8 col-12 d-flex justify-content-end flex-column">
-                  <div class="px-md-20 ml-20 d-flex flex-column font-size-12">
-                    <span class="title font-weight-bold pb-sm-15 text-white" id="viewTitle">Shingeki no Kyojin</span>
+                  <div class="px-md-20 d-flex flex-column font-size-12">
+                    <span class="title font-weight-bold pb-sm-15 text-white" id="viewTitle"></span>
                     <div class="d-flex flex-row font-size-18 pb-sm-15" id="viewLabels">
                       <span class="material-icons mr-10 font-size-24">
                         trending_up
                       </span>
                       <span>Rating:
                         <span class="font-weight-bold mr-20" id="viewRating">
-                          85%
                         </span>
                       </span>
                       <span class="material-icons mx-10 font-size-24">
@@ -86,7 +85,6 @@
                       </span>
                       <span>Format:
                         <span class="font-weight-bold mr-20 text-capitalize" id="viewFormat">
-                          TV
                         </span>
                       </span>
                       <div class="d-flex episodes">
@@ -95,7 +93,6 @@
                         </span>
                         <span>Episodes:
                           <span class="font-weight-bold mr-20" id="viewEpisode">
-                            25
                           </span>
                         </span>
                       </div>
@@ -105,28 +102,23 @@
                         </span>
                         <span>Length:
                           <span class="font-weight-bold mr-20" id="viewDuration">
-                            24 mins
                           </span>
                         </span>
                       </div>
                     </div>
                     <div class="pb-15 pt-5 overflow-x-auto text-nowrap font-weight-bold" id="viewBadges">
-                      <span class="badge badge-pill shadow">Action</span>
-                      <span class="badge badge-pill shadow">Drama</span>
-                      <span class="badge badge-pill shadow">Fantasy</span>
-                      <span class="badge badge-pill shadow">Mystery</span>
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4 d-flex justify-content-end flex-column pl-20 p-md-0">
-                  <div class="d-flex flex-column flex-wrap">
+                <div class="col-md-4 d-flex justify-content-end flex-column">
+                  <div class="d-flex flex-column flex-wrap" id="viewPlayback">
                     <div class="btn-group mb-5" role="group">
                       <button class="btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50"
                         type="button" id="viewPlay">
                         <span class="material-icons mr-10 font-size-24 w-30">
                           play_arrow
                         </span>
-                        Play
+                        <span id="viewPlayText">Play</span>
                       </button>
                       <div class="btn-group dropdown with-arrow" role="group">
                         <button class="btn btn-square btn-primary d-flex h-50 w-50 justify-content-center"
@@ -147,8 +139,8 @@
                       </div>
                     </div>
                     <div class="btn-group mb-5 border-0" role="group">
-                      <button class="btn d-flex align-items-center font-weight-bold font-size-16 border-0"
-                        type="button" id="viewDownload">
+                      <button class="btn d-flex align-items-center font-weight-bold font-size-16 border-0" type="button"
+                        id="viewDownload">
                         <span class="material-icons mr-10 font-size-18 w-30">
                           get_app
                         </span>
@@ -172,7 +164,8 @@
                         </div>
                       </div>
                     </div>
-                    <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16" type="button" id="viewTrailer">
+                    <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16" type="button"
+                      id="viewTrailer">
                       <span class="material-icons mr-10 font-size-18 w-30">
                         live_tv
                       </span>
@@ -190,15 +183,6 @@
           <div class="col-md-9 px-20">
             <h1 class="title font-weight-bold text-white">Sypnosis</h1>
             <div class="font-size-16 pr-15" id="viewDescription">
-              Several hundred years ago, humans were nearly exterminated by titans. Titans are typically several stories
-              tall, seem to have no intelligence, devour human beings and, worst of all, seem to do it for the pleasure
-              rather than as a food source. A small percentage of humanity survived by walling themselves in a city
-              protected by extremely high walls, even taller than the biggest of titans.<br><br> Flash forward to the
-              present and the city has not seen a titan in over 100 years. Teenage boy Eren and his foster sister Mikasa
-              witness something horrific as the city walls are destroyed by a colossal titan that appears out of thin
-              air. As the smaller titans flood the city, the two kids watch in horror as their mother is eaten alive.
-              Eren vows that he will murder every single titan and take revenge for all of mankind.<br><br> (Source:
-              MangaHelpers)
             </div>
             <h1 class="title font-weight-bold text-white pt-20">Episodes</h1>
             <div id="episodes" class="d-flex flex-wrap justify-content-start">
@@ -388,115 +372,8 @@
           </div>
           <div class="col-md-3 px-sm-0 px-20">
             <h1 class="title font-weight-bold text-white">Details</h1>
-            <div class="card m-0 px-20 py-10 d-flex flex-md-column flex-row overflow-x-auto text-capitalize" id='viewDetails'>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="material-icons mr-10 font-size-24">
-                  theater_comedy
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">Genres</div>
-                  <div>Action, Drama, Fantasy, Mystery</div>
-                </div>
-              </div>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="material-icons mr-10 font-size-24">
-                  spa
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">Season</div>
-                  <div>Spring 2013</div>
-                </div>
-              </div>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="material-icons mr-10 font-size-24">
-                  theaters
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">Episodes</div>
-                  <div>Watched <b>0</b> of <b>25</b></div>
-                </div>
-              </div>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="material-icons mr-10 font-size-24">
-                  timer
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">Episode Length</div>
-                  <div>24 mins</div>
-                </div>
-              </div>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="material-icons mr-10 font-size-24">
-                  monitor
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">Format</div>
-                  <div>TV</div>
-                </div>
-              </div>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="material-icons mr-10 font-size-24">
-                  live_tv
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">Status</div>
-                  <div>Finished</div>
-                </div>
-              </div>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="material-icons mr-10 font-size-24">
-                  business
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">Studios</div>
-                  <div>Wit Studio</div>
-                </div>
-              </div>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="material-icons mr-10 font-size-24">
-                  source
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">Source</div>
-                  <div>Manga</div>
-                </div>
-              </div>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="material-icons mr-10 font-size-24">
-                  trending_up
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">Rating</div>
-                  <div>85%</div>
-                </div>
-              </div>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="material-icons mr-10 font-size-24">
-                  title
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">English</div>
-                  <div>Attack on Titan</div>
-                </div>
-              </div>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="material-icons mr-10 font-size-24">
-                  translate
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">Romaji</div>
-                  <div>Shingeki no Kyojin</div>
-                </div>
-              </div>
-              <div class="d-flex flex-row px-10 py-5">
-                <div class="mr-10 font-size-12 font-weight-bold d-flex align-items-center text-nowrap">
-                  日本
-                </div>
-                <div class="d-flex flex-column justify-content-center text-nowrap">
-                  <div class="font-weight-bold">Native</div>
-                  <div>進撃の巨人</div>
-                </div>
-              </div>
+            <div class="card m-0 px-20 py-10 d-flex flex-md-column flex-row overflow-x-auto text-capitalize"
+              id='viewDetails'>
             </div>
           </div>
         </div>

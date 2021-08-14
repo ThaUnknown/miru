@@ -174,9 +174,9 @@ relations {
     case 'SearchName': {
       variables.search = opts.name
       query = ` 
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus) {
+query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: [MediaStatus]) {
   Page (page: $page, perPage: $perPage) {
-    media(type: $type, search: $search, sort: $sort, status: $status) {
+    media(type: $type, search: $search, sort: $sort, status_in: $status) {
       ${queryObjects}
     }
   }
@@ -564,23 +564,23 @@ async function nyaaSearch (media, episode, isOffline) {
 // resolve anime name based on file name and store it
 
 async function resolveFileMedia (opts) {
-  // opts.fileName opts.method opts.isRelease
+  // opts.fileName opts.isRelease
 
   async function resolveTitle (title) {
     if (!(title in relations)) {
       // resolve name and shit
       let method, res
       if (opts.isRelease) {
-        method = { name: title, method: 'SearchName', perPage: 1, status: 'RELEASING', sort: 'SEARCH_MATCH' }
+        method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING'], sort: 'SEARCH_MATCH' }
         // maybe releases should include this and last season? idfk
       } else {
-        method = { name: title, method: opts.method, perPage: 1, sort: 'SEARCH_MATCH' }
+        method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
       }
       res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)(method)
       if (!res.data.Page.media[0]) {
         const index = method.name.search(/S\d/)
         method.name = ((index !== -1 && method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)) || method.name).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
-        method.status = undefined
+        method.status = ['RELEASING', 'FINISHED']
         res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)(method)
       }
       if (res.data.Page.media[0]) {
@@ -717,6 +717,8 @@ __webpack_require__.r(__webpack_exports__);
 /* eslint-env browser */
 /* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
 
+// THIS IS WHY YOU FUCKING USE FRAMEWORKS
+
 
 
 
@@ -812,7 +814,7 @@ function loadHomePage () {
         if (lastRSSDate !== pubDate) {
           if (lastRSSDate) {
             homeReleases.append(...gallerySkeletonFrag(5))
-            ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: doc.querySelector('item title').textContent, method: 'SearchName', isRelease: true }).then(mediaInformation => {
+            ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: doc.querySelector('item title').textContent, isRelease: true }).then(mediaInformation => {
               if (_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.other1) {
                 const notification = new Notification(mediaInformation.media.title.userPreferred, {
                   body: `Episode ${mediaInformation.episode} was just released!`,
@@ -989,7 +991,7 @@ function cardCreator (opts) {
 
 async function releasesCards (items, limit) {
   const cards = []
-  const media = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), method: 'SearchName', isRelease: true })
+  const media = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), isRelease: true })
   media.forEach((mediaInformation, index) => {
     mediaInformation.onclick = () => _main_js__WEBPACK_IMPORTED_MODULE_4__.client.playTorrent(items[index].querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
     cards.push(cardCreator(mediaInformation))
@@ -1069,7 +1071,7 @@ function mediaDetails (media) {
           } else if (detail.property === 'averageScore') {
             value.textContent = media.averageScore + '%'
           } else if (detail.property === 'season') {
-            value.textContent = [media.season, media.seasonYear].filter(f => f).join(' ')
+            value.textContent = [media.season?.toLowerCase(), media.seasonYear].filter(f => f).join(' ')
           } else {
             value.textContent = media[detail.property]
           }
@@ -1090,7 +1092,7 @@ function trailerPopup (trailer) {
       break
   }
 }
-/* global viewImg, viewTitle, viewRating, viewFormat, viewLabels, viewDuration, viewEpisode, viewBadges, viewPlay, viewPlayEp, viewDescription, viewDetails,viewDownload, viewDownloadEp, trailerVideo, viewTrailer */
+/* global viewImg, viewTitle, viewRating, viewFormat, viewLabels, viewDuration, viewEpisode, viewBadges, viewPlay, viewPlayEp, viewPlayText, viewDescription, viewDetails, viewDownload, viewDownloadEp, trailerVideo, viewTrailer, viewPlayback, viewBanner */
 function viewMedia (input) {
   console.log(input)
   const media = (0,_util_js__WEBPACK_IMPORTED_MODULE_5__.flattenObj)(input)
@@ -1107,11 +1109,22 @@ function viewMedia (input) {
   viewBadges.textContent = ''
   viewBadges.append(...genreBadges(media.genres))
 
-  viewPlay.onclick = () => (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, viewPlayEp.value)
-  viewPlayEp.value = media.progress || 1
+  if (media.episodes || media.episode) {
+    viewPlayback.classList.remove('hidden')
+    viewPlay.onclick = () => (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, viewPlayEp.value)
+    viewPlayEp.value = media.progress || 1
+    viewPlayText.textContent = media.progress && media.progress !== media.episodes ? 'Continue' : 'Play'
 
-  viewDownload.onclick = () => (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, viewPlayEp.value, true)
-  viewDownloadEp.value = media.progress || 1
+    viewDownload.onclick = () => (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, viewPlayEp.value, true)
+    viewDownloadEp.value = media.progress || 1
+  } else {
+    viewPlayback.classList.add('hidden')
+  }
+  if (media.bannerImage) {
+    viewBanner.style = `background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%), url('${media.bannerImage}') !important`
+  } else {
+    viewBanner.style = 'background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%) !important'
+  }
 
   viewTrailer.onclick = () => trailerPopup(input.trailer)
 
@@ -1263,7 +1276,7 @@ client.on('prev', ({ filemedia }) => {
   }
 })
 client.on('offline-torrent', torrent => {
-  ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: torrent.name, method: 'SearchName' }).then(mediaInformation => {
+  ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: torrent.name }).then(mediaInformation => {
     mediaInformation.onclick = () => client.playTorrent(torrent, { media: mediaInformation, episode: mediaInformation.episode })
     const template = (0,_interface_js__WEBPACK_IMPORTED_MODULE_5__.cardCreator)(mediaInformation)
     document.querySelector('.downloads').appendChild(template)
@@ -1273,7 +1286,7 @@ client.on('video-files', async ({ files, torrent }) => {
   document.querySelector('.playlist').textContent = ''
   const cards = []
   for (const file of files) {
-    const mediaInformation = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: file.name, method: 'SearchName' })
+    const mediaInformation = await (0,_anime_js__WEBPACK_IMPORTED_MODULE_2__.resolveFileMedia)({ fileName: file.name })
     mediaInformation.onclick = () => {
       client.buildVideo(torrent, {
         media: mediaInformation,
