@@ -25,7 +25,7 @@ __webpack_require__.r(__webpack_exports__);
 async function handleRequest (opts) {
   return await fetch('https://graphql.anilist.co', opts).then(async res => {
     const json = await res.json()
-    if (!res.ok || json.errors?.length) {
+    if (!res.ok) {
       for (const error of json.errors) {
         halfmoon__WEBPACK_IMPORTED_MODULE_1___default().initStickyAlert({
           content: `Failed making request to anilist!<br>${error.status} - ${error.message}`,
@@ -43,7 +43,7 @@ async function handleRequest (opts) {
 function alEntry (filemedia) {
   if (filemedia.media && localStorage.getItem('ALtoken')) {
     alRequest({ method: 'SearchIDStatus', id: filemedia.media.id }).then(res => {
-      if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= filemedia.episodeNumber) {
+      if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= filemedia.episodeNumber || filemedia.episodes === 1) {
         const query = `
 mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
   SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
@@ -59,7 +59,7 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
           status: 'CURRENT',
           episode: filemedia.episodeNumber
         }
-        if (filemedia.episodeNumber === filemedia.media.episodes) {
+        if (filemedia.episodeNumber === filemedia.media.episodes || filemedia.episodes === 1) {
           variables.status = 'COMPLETED'
           if (res.data.MediaList.status === 'COMPLETED') {
             variables.repeat = res.data.MediaList.repeat + 1
