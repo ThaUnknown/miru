@@ -38,7 +38,7 @@ export function getRSSContent (url) {
 export async function nyaaRss (media, episode, isOffline) {
   const frag = document.createDocumentFragment()
   const titles = [...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '%26')
-  const ep = (media.format !== 'MOVIE' && ((media.status === 'FINISHED' && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`)) || ''
+  const ep = (media.format !== 'MOVIE' && ((media.status === 'FINISHED' && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"|"S01"` : `"+${episode}+"|"+${episode}v"`)) || ''
   const excl = exclusions[userBrowser].join('|')
   const quality = `"${settings.torrent1}"` || '"1080p"'
   const trusted = settings.torrent3 === true ? 2 : 0
