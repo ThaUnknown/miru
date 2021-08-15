@@ -25,7 +25,7 @@ __webpack_require__.r(__webpack_exports__);
 async function handleRequest (opts) {
   return await fetch('https://graphql.anilist.co', opts).then(async res => {
     const json = await res.json()
-    if (!res.ok) {
+    if (!res.ok || json.errors?.length) {
       for (const error of json.errors) {
         halfmoon__WEBPACK_IMPORTED_MODULE_1___default().initStickyAlert({
           content: `Failed making request to anilist!<br>${error.status} - ${error.message}`,
@@ -299,7 +299,6 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "episodeRx": () => (/* binding */ episodeRx),
-/* harmony export */   "viewAnime": () => (/* binding */ viewAnime),
 /* harmony export */   "nyaaSearch": () => (/* binding */ nyaaSearch),
 /* harmony export */   "resolveFileMedia": () => (/* binding */ resolveFileMedia),
 /* harmony export */   "relations": () => (/* binding */ relations)
@@ -315,7 +314,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(anitomyscript__WEBPACK_IMPORTED_MODULE_6__);
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 /* eslint-env browser */
-/* global searchText, navNowPlaying */
+/* global searchText */
 
 
 
@@ -389,157 +388,7 @@ function traceAnime (image, type) { // WAIT lookup logic
     }
   })
 }
-// events
-navNowPlaying.onclick = () => (0,_interface_js__WEBPACK_IMPORTED_MODULE_4__.viewMedia)(_main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media)
-// AL lookup logic
-
-// these really shouldnt be global
-const detailsfrag = document.createDocumentFragment()
-const details = {
-  averageScore: 'Average Score',
-  // duration: "Episode Duration",
-  // episodes: "Episodes",
-  // format: "Format",
-  genres: 'Genres',
-  // season: "Season",
-  // seasonYear: "Year",
-  status: 'Status',
-  english: 'English',
-  romaji: 'Romaji',
-  native: 'Native',
-  synonyms: 'Synonyms'
-}
 const episodeRx = /Episode (\d+) - (.*)/
-// this is fucked beyond belief, this is why you use frameworks
-/* global view, viewImg, viewTitle, viewDesc, viewDetails, viewSeason, viewMediaInfo, viewPlay, viewTrailer, viewRelationsGallery, viewSynonym, viewSynonymText, viewEpisodesWrapper, episodes, trailerVideo, trailerClose */
-function viewAnime (media) {
-  halfmoon__WEBPACK_IMPORTED_MODULE_5___default().showModal('view')
-  view.setAttribute('style', `background-image: url(${media.bannerImage}) !important`)
-  viewImg.src = media.coverImage.extraLarge
-  viewTitle.innerHTML = media.title.userPreferred
-  viewDesc.innerHTML = media.description || ''
-
-  viewDetails.innerHTML = ''
-  detailsCreator(media)
-  viewDetails.appendChild(detailsfrag)
-  if (media.nextAiringEpisode) {
-    const temp = document.createElement('p')
-    temp.innerHTML = `<span class="font-weight-bold">Airing</span><br><span class="text-muted"> Episode ${media.nextAiringEpisode.episode}: ${(0,_util_js__WEBPACK_IMPORTED_MODULE_1__.countdown)(media.nextAiringEpisode.timeUntilAiring)}</span>`
-    viewDetails.prepend(temp)
-  }
-  viewSeason.innerHTML = `${(media.season ? media.season.toLowerCase() + ' ' : '') + (media.seasonYear ? media.seasonYear : '')}`
-  viewMediaInfo.innerHTML = `${media.format ? '<span>' + media.format + '</span>' : ''}${media.episodes ? '<span>' + media.episodes + ' Episodes</span>' : ''}${media.duration ? '<span>' + media.duration + ' Minutes</span>' : ''}`
-  viewPlay.onclick = () => { nyaaSearch(media, 1); halfmoon__WEBPACK_IMPORTED_MODULE_5___default().toggleModal('view') }
-  if (media.trailer) {
-    viewTrailer.removeAttribute('disabled', '')
-    viewTrailer.onclick = () =>
-      trailerPopup(media.trailer)
-  } else {
-    viewTrailer.setAttribute('disabled', '')
-  }
-  if (media.status === 'NOT_YET_RELEASED') {
-    viewPlay.setAttribute('disabled', '')
-  } else {
-    viewPlay.removeAttribute('disabled', '')
-  }
-  if (media.relations.edges.length) {
-    viewRelationsGallery.classList.remove('d-none')
-    viewRelationsGallery.innerHTML = ''
-    const frag = document.createDocumentFragment()
-    media.relations.edges.forEach(edge => {
-      const template = document.createElement('div')
-      template.classList.add('card', 'm-0', 'p-0')
-      template.innerHTML = `
-            <div class="row h-full">
-            <div class="col-4">
-                <img loading="lazy" src="${edge.node.coverImage.medium}"
-                    class="cover-img w-full h-full">
-            </div>
-            <div class="col-8 h-full card-grid">
-                <div class="px-15 py-10">
-                    <p class="m-0 text-capitalize font-weight-bold font-size-14">
-                        ${edge.node.title.userPreferred}
-                    </p>
-                    <p class="m-0 text-capitalize font-size-12">
-                        ${edge.relationType.toLowerCase()}
-                    </p>
-                </div>
-                <span>
-                </span>
-                <div class="px-15 pb-10 pt-5 details text-capitalize font-size-12">
-                    <span>${edge.node.type.toLowerCase()}</span><span>${edge.node.status.toLowerCase()}</span>
-                </div>
-            </div>
-        </div>`
-      template.onclick = async () => {
-        halfmoon__WEBPACK_IMPORTED_MODULE_5___default().hideModal('view')
-        const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)({ method: 'SearchIDSingle', id: edge.node.id })
-        viewAnime(res.data.Media)
-      }
-      frag.appendChild(template)
-    })
-    viewRelationsGallery.appendChild(frag)
-  } else {
-    viewRelationsGallery.classList.add('d-none')
-  }
-  viewSynonym.onclick = () => {
-    relations[viewSynonymText.value] = media.id
-    viewSynonymText.value = ''
-    localStorage.setItem('relations', JSON.stringify(relations))
-  }
-  episodes.innerHTML = ''
-  if (media.streamingEpisodes.length) {
-    viewEpisodesWrapper.classList.add('remove')
-    const frag = document.createDocumentFragment()
-    media.streamingEpisodes.forEach(episode => {
-      const temp = document.createElement('div')
-      temp.classList.add('position-relative', 'w-250', 'rounded', 'mr-10', 'overflow-hidden', 'pointer')
-      temp.innerHTML = `
-            <img loading="lazy" src="${episode.thumbnail}" class="w-full h-full">
-            <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">${episode.title}</div>`
-      temp.onclick = () => { nyaaSearch(media, episodeRx.exec(episode.title)[1]); halfmoon__WEBPACK_IMPORTED_MODULE_5___default().toggleModal('view') }
-      frag.appendChild(temp)
-    })
-    episodes.appendChild(frag)
-  } else {
-    viewEpisodesWrapper.classList.add('hidden')
-  }
-}
-trailerClose.onclick = () => {
-  trailerVideo.src = ''
-}
-function trailerPopup (trailer) {
-  trailerVideo.src = ''
-  halfmoon__WEBPACK_IMPORTED_MODULE_5___default().toggleModal('trailer')
-  switch (trailer.site) { // should support the other possible sites too, but i cant find any examples
-    case 'youtube':
-      trailerVideo.src = 'https://www.youtube.com/embed/' + trailer.id
-      break
-  }
-}
-// details list factory
-function detailsCreator (entry) {
-  if (entry) {
-    Object.entries(entry).forEach(value => {
-      const template = document.createElement('p')
-      if (typeof value[1] === 'object') {
-        if (Array.isArray(value[1])) {
-          if (details[value[0]] && value[1].length > 0) {
-            template.innerHTML = `<span class="font-weight-bold">${details[value[0]]}</span><br><span class="text-muted">${value[1].map(key => (key)).join(', ')}</span>`
-            detailsfrag.appendChild(template)
-          }
-        } else {
-          detailsCreator(value[1])
-        }
-      } else {
-        if (details[value[0]]) {
-          template.innerHTML = `<span class="font-weight-bold">${details[value[0]]}</span><br><span class="text-muted">${value[1].toString()}</span>`
-          detailsfrag.appendChild(template)
-        }
-      }
-    })
-  }
-}
 
 async function nyaaSearch (media, episode, isOffline) {
   if (parseInt(episode) < 10) {
@@ -715,6 +564,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! halfmoon */ "halfmoon");
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_6__);
+/* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 /* eslint-env browser */
 /* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
 
@@ -1092,8 +942,14 @@ function trailerPopup (trailer) {
       break
   }
 }
-/* global trailerVideo, viewAnime */
+trailerClose.onclick = () => {
+  trailerVideo.src = ''
+}
+
+navNowPlaying.onclick = () => viewMedia(_main_js__WEBPACK_IMPORTED_MODULE_4__.client.nowPlaying.media)
+/* global trailerVideo, viewAnime, trailerClose, navNowPlaying */
 const viewNodes = viewAnime.querySelectorAll('*')
+console.log(viewNodes)
 function viewMedia (input) {
   halfmoon__WEBPACK_IMPORTED_MODULE_6___default().showModal('viewAnime')
   const media = (0,_util_js__WEBPACK_IMPORTED_MODULE_5__.flattenObj)(input)
@@ -1103,8 +959,11 @@ function viewMedia (input) {
   viewNodes[20].textContent = media.format === 'TV' ? media.format : media.format?.toLowerCase()
   if (media.episodes === 1 || !media.episodes) {
     viewNodes[14].classList.add('movie')
+    viewNodes[31].classList.add('movie')
     viewNodes[28].textContent = media.duration + ' min'
   } else {
+    viewNodes[31].classList.remove('movie')
+    viewNodes[14].classList.remove('movie')
     viewNodes[24].textContent = media.episodes
   }
   viewNodes[29].textContent = ''
@@ -1113,11 +972,11 @@ function viewMedia (input) {
   if (media.episodes || media.episode) {
     viewNodes[31].classList.remove('hidden')
     viewNodes[33].onclick = () => { ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, Number(viewNodes[44].value) || 1); halfmoon__WEBPACK_IMPORTED_MODULE_6___default().hideModal('viewAnime') }
-    viewNodes[44].value = Number(media.progress) + 1 || 1
+    viewNodes[44].value = Math.min(Number(media.progress) + 1 || 1, media.episodes)
     viewNodes[35].textContent = media.progress && media.progress !== media.episodes ? 'Continue' : 'Play'
 
     viewNodes[46].onclick = () => { ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, Number(viewNodes[56].value) || 1, true); halfmoon__WEBPACK_IMPORTED_MODULE_6___default().hideModal('viewAnime') }
-    viewNodes[56].value = Number(media.progress) + 1 || 1
+    viewNodes[56].value = Math.min(Number(media.progress) + 1 || 1, media.episodes)
   } else {
     viewNodes[31].classList.add('hidden')
   }
@@ -1388,8 +1247,12 @@ function getRSSContent (url) {
 
 async function nyaaRss (media, episode, isOffline) {
   const frag = document.createDocumentFragment()
-  const ep = (media.status === 'FINISHED' && _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
-  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '%26')})${ep}"${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1}"-(${exclusions[_util_js__WEBPACK_IMPORTED_MODULE_1__.userBrowser].join('|')})`)
+  const titles = [...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '%26')
+  const ep = (media.format !== 'MOVIE' && ((media.status === 'FINISHED' && _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`)) || ''
+  const excl = exclusions[_util_js__WEBPACK_IMPORTED_MODULE_1__.userBrowser].join('|')
+  const quality = `"${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1}"` || '"1080p"'
+  const trusted = _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent3 === true ? 2 : 0
+  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
 
   const nodes = (await getRSSContent(url)).querySelectorAll('item *')
   if (!nodes.length) return frag
@@ -1422,7 +1285,7 @@ async function nyaaRss (media, episode, isOffline) {
     } else {
       _main_js__WEBPACK_IMPORTED_MODULE_2__.client.playTorrent(entries[0].hash, { media: fileMedia, episode: episode })
     }
-    halfmoon__WEBPACK_IMPORTED_MODULE_3___default().hideModal('tsearch')
+    halfmoon__WEBPACK_IMPORTED_MODULE_3___default().toggleModal('tsearch')
   }
   entries.forEach((entry, index) => {
     const template = document.createElement('tr')

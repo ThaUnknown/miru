@@ -6,7 +6,7 @@ import halfmoon from 'halfmoon'
 async function handleRequest (opts) {
   return await fetch('https://graphql.anilist.co', opts).then(async res => {
     const json = await res.json()
-    if (!res.ok) {
+    if (!res.ok || json.errors?.length) {
       for (const error of json.errors) {
         halfmoon.initStickyAlert({
           content: `Failed making request to anilist!<br>${error.status} - ${error.message}`,

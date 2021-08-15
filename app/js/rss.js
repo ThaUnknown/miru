@@ -37,8 +37,12 @@ export function getRSSContent (url) {
 
 export async function nyaaRss (media, episode, isOffline) {
   const frag = document.createDocumentFragment()
-  const ep = (media.status === 'FINISHED' && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`
-  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${settings.torrent3 === true ? 2 : 0}&s=seeders&o=desc&q=(${[...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '%26')})${ep}"${settings.torrent1}"-(${exclusions[userBrowser].join('|')})`)
+  const titles = [...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '%26')
+  const ep = (media.format !== 'MOVIE' && ((media.status === 'FINISHED' && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"` : `"+${episode}+"|"+${episode}v"`)) || ''
+  const excl = exclusions[userBrowser].join('|')
+  const quality = `"${settings.torrent1}"` || '"1080p"'
+  const trusted = settings.torrent3 === true ? 2 : 0
+  const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
 
   const nodes = (await getRSSContent(url)).querySelectorAll('item *')
   if (!nodes.length) return frag
@@ -71,7 +75,7 @@ export async function nyaaRss (media, episode, isOffline) {
     } else {
       client.playTorrent(entries[0].hash, { media: fileMedia, episode: episode })
     }
-    halfmoon.hideModal('tsearch')
+    halfmoon.toggleModal('tsearch')
   }
   entries.forEach((entry, index) => {
     const template = document.createElement('tr')

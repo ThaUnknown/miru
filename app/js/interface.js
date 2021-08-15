@@ -375,8 +375,14 @@ function trailerPopup (trailer) {
       break
   }
 }
-/* global trailerVideo, viewAnime */
+trailerClose.onclick = () => {
+  trailerVideo.src = ''
+}
+
+navNowPlaying.onclick = () => viewMedia(client.nowPlaying?.media)
+/* global trailerVideo, viewAnime, trailerClose, navNowPlaying */
 const viewNodes = viewAnime.querySelectorAll('*')
+console.log(viewNodes)
 function viewMedia (input) {
   halfmoon.showModal('viewAnime')
   const media = flattenObj(input)
@@ -386,8 +392,11 @@ function viewMedia (input) {
   viewNodes[20].textContent = media.format === 'TV' ? media.format : media.format?.toLowerCase()
   if (media.episodes === 1 || !media.episodes) {
     viewNodes[14].classList.add('movie')
+    viewNodes[31].classList.add('movie')
     viewNodes[28].textContent = media.duration + ' min'
   } else {
+    viewNodes[31].classList.remove('movie')
+    viewNodes[14].classList.remove('movie')
     viewNodes[24].textContent = media.episodes
   }
   viewNodes[29].textContent = ''
@@ -396,11 +405,11 @@ function viewMedia (input) {
   if (media.episodes || media.episode) {
     viewNodes[31].classList.remove('hidden')
     viewNodes[33].onclick = () => { nyaaSearch(input, Number(viewNodes[44].value) || 1); halfmoon.hideModal('viewAnime') }
-    viewNodes[44].value = Number(media.progress) + 1 || 1
+    viewNodes[44].value = Math.min(Number(media.progress) + 1 || 1, media.episodes)
     viewNodes[35].textContent = media.progress && media.progress !== media.episodes ? 'Continue' : 'Play'
 
     viewNodes[46].onclick = () => { nyaaSearch(input, Number(viewNodes[56].value) || 1, true); halfmoon.hideModal('viewAnime') }
-    viewNodes[56].value = Number(media.progress) + 1 || 1
+    viewNodes[56].value = Math.min(Number(media.progress) + 1 || 1, media.episodes)
   } else {
     viewNodes[31].classList.add('hidden')
   }
