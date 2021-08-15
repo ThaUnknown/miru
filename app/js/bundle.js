@@ -1248,7 +1248,7 @@ function getRSSContent (url) {
 async function nyaaRss (media, episode, isOffline) {
   const frag = document.createDocumentFragment()
   const titles = [...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '%26')
-  const ep = (media.format !== 'MOVIE' && ((media.status === 'FINISHED' && _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"|"S01"` : `"+${episode}+"|"+${episode}v"`)) || ''
+  const ep = (media.episodes !== 1 && ((media.status === 'FINISHED' && _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"|"S01"` : `"+${episode}+"|"+${episode}v"`)) || ''
   const excl = exclusions[_util_js__WEBPACK_IMPORTED_MODULE_1__.userBrowser].join('|')
   const quality = `"${_settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent1}"` || '"1080p"'
   const trusted = _settings_js__WEBPACK_IMPORTED_MODULE_0__.settings.torrent3 === true ? 2 : 0
