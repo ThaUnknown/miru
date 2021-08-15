@@ -39,7 +39,7 @@ async function saveSettings () {
   }
 }
 
-if (!Object.values(settings).length) {
+if (Object.keys(settings).length !== settingsElements.length + 1) {
   saveSettings()
 }
 function restoreDefaults () {
@@ -71,4 +71,4 @@ for (const setting of Object.entries(settings)) {
   if (settingElement) settingElement.type === 'checkbox' ? settingElement.checked = setting[1] : settingElement.value = setting[1]
 }
 
-other1.onclick = () => Notification.requestPermission().then(perm => { perm === 'denied' ? other1.checked = false : other1.checked = true })
+other1.oninput = () => other1.checked && Notification.requestPermission().then(perm => { perm === 'denied' ? other1.checked = false : other1.checked = true })

@@ -4,6 +4,7 @@ import { client } from './main.js'
 import { searchParams, DOMPARSER, countdown } from './util.js'
 import { alRequest } from './anilist.js'
 import { nyaaRss } from './rss.js'
+import { viewMedia } from './interface.js'
 import halfmoon from 'halfmoon'
 import anitomyscript from 'anitomyscript'
 const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
@@ -61,7 +62,7 @@ function traceAnime (image, type) { // WAIT lookup logic
   fetch(url, options).then(res => res.json()).then(async result => {
     if (result.docs[0].similarity >= 0.85) {
       const res = await alRequest({ method: 'SearchIDSingle', id: result.docs[0].anilist_id })
-      viewAnime(res.data.Media)
+      viewMedia(res.data.Media)
     } else {
       halfmoon.initStickyAlert({
         content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
@@ -73,7 +74,7 @@ function traceAnime (image, type) { // WAIT lookup logic
   })
 }
 // events
-navNowPlaying.onclick = () => viewAnime(client.nowPlaying?.media)
+navNowPlaying.onclick = () => viewMedia(client.nowPlaying?.media)
 // AL lookup logic
 
 // these really shouldnt be global

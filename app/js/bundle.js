@@ -308,13 +308,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
 /* harmony import */ var _anilist_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./anilist.js */ "./app/js/anilist.js");
 /* harmony import */ var _rss_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./rss.js */ "./app/js/rss.js");
-/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! halfmoon */ "halfmoon");
-/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! anitomyscript */ "anitomyscript");
-/* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(anitomyscript__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _interface_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./interface.js */ "./app/js/interface.js");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! halfmoon */ "halfmoon");
+/* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! anitomyscript */ "anitomyscript");
+/* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(anitomyscript__WEBPACK_IMPORTED_MODULE_6__);
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 /* eslint-env browser */
 /* global searchText, navNowPlaying */
+
 
 
 
@@ -360,7 +362,7 @@ if (_util_js__WEBPACK_IMPORTED_MODULE_1__.searchParams.get('link')) {
   window.location = '/app/#home'
 }
 function traceAnime (image, type) { // WAIT lookup logic
-  halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
+  halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
     content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
   })
   let options
@@ -376,9 +378,9 @@ function traceAnime (image, type) { // WAIT lookup logic
   fetch(url, options).then(res => res.json()).then(async result => {
     if (result.docs[0].similarity >= 0.85) {
       const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)({ method: 'SearchIDSingle', id: result.docs[0].anilist_id })
-      viewAnime(res.data.Media)
+      ;(0,_interface_js__WEBPACK_IMPORTED_MODULE_4__.viewMedia)(res.data.Media)
     } else {
-      halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
+      halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
         content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
         title: 'Search Failed',
         alertType: 'alert-danger',
@@ -388,7 +390,7 @@ function traceAnime (image, type) { // WAIT lookup logic
   })
 }
 // events
-navNowPlaying.onclick = () => viewAnime(_main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media)
+navNowPlaying.onclick = () => (0,_interface_js__WEBPACK_IMPORTED_MODULE_4__.viewMedia)(_main_js__WEBPACK_IMPORTED_MODULE_0__.client.nowPlaying.media)
 // AL lookup logic
 
 // these really shouldnt be global
@@ -411,7 +413,7 @@ const episodeRx = /Episode (\d+) - (.*)/
 // this is fucked beyond belief, this is why you use frameworks
 /* global view, viewImg, viewTitle, viewDesc, viewDetails, viewSeason, viewMediaInfo, viewPlay, viewTrailer, viewRelationsGallery, viewSynonym, viewSynonymText, viewEpisodesWrapper, episodes, trailerVideo, trailerClose */
 function viewAnime (media) {
-  halfmoon__WEBPACK_IMPORTED_MODULE_4___default().showModal('view')
+  halfmoon__WEBPACK_IMPORTED_MODULE_5___default().showModal('view')
   view.setAttribute('style', `background-image: url(${media.bannerImage}) !important`)
   viewImg.src = media.coverImage.extraLarge
   viewTitle.innerHTML = media.title.userPreferred
@@ -427,7 +429,7 @@ function viewAnime (media) {
   }
   viewSeason.innerHTML = `${(media.season ? media.season.toLowerCase() + ' ' : '') + (media.seasonYear ? media.seasonYear : '')}`
   viewMediaInfo.innerHTML = `${media.format ? '<span>' + media.format + '</span>' : ''}${media.episodes ? '<span>' + media.episodes + ' Episodes</span>' : ''}${media.duration ? '<span>' + media.duration + ' Minutes</span>' : ''}`
-  viewPlay.onclick = () => { nyaaSearch(media, 1); halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('view') }
+  viewPlay.onclick = () => { nyaaSearch(media, 1); halfmoon__WEBPACK_IMPORTED_MODULE_5___default().toggleModal('view') }
   if (media.trailer) {
     viewTrailer.removeAttribute('disabled', '')
     viewTrailer.onclick = () =>
@@ -470,7 +472,7 @@ function viewAnime (media) {
             </div>
         </div>`
       template.onclick = async () => {
-        halfmoon__WEBPACK_IMPORTED_MODULE_4___default().hideModal('view')
+        halfmoon__WEBPACK_IMPORTED_MODULE_5___default().hideModal('view')
         const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)({ method: 'SearchIDSingle', id: edge.node.id })
         viewAnime(res.data.Media)
       }
@@ -495,7 +497,7 @@ function viewAnime (media) {
       temp.innerHTML = `
             <img loading="lazy" src="${episode.thumbnail}" class="w-full h-full">
             <div class="position-absolute ep-title w-full p-10 text-truncate bottom-0">${episode.title}</div>`
-      temp.onclick = () => { nyaaSearch(media, episodeRx.exec(episode.title)[1]); halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('view') }
+      temp.onclick = () => { nyaaSearch(media, episodeRx.exec(episode.title)[1]); halfmoon__WEBPACK_IMPORTED_MODULE_5___default().toggleModal('view') }
       frag.appendChild(temp)
     })
     episodes.appendChild(frag)
@@ -508,7 +510,7 @@ trailerClose.onclick = () => {
 }
 function trailerPopup (trailer) {
   trailerVideo.src = ''
-  halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('trailer')
+  halfmoon__WEBPACK_IMPORTED_MODULE_5___default().toggleModal('trailer')
   switch (trailer.site) { // should support the other possible sites too, but i cant find any examples
     case 'youtube':
       trailerVideo.src = 'https://www.youtube.com/embed/' + trailer.id
@@ -548,7 +550,7 @@ async function nyaaSearch (media, episode, isOffline) {
   const results = await (0,_rss_js__WEBPACK_IMPORTED_MODULE_3__.nyaaRss)(media, episode, isOffline)
 
   if (results.children.length === 0) {
-    halfmoon__WEBPACK_IMPORTED_MODULE_4___default().initStickyAlert({
+    halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
       content: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
       title: 'Search Failed',
       alertType: 'alert-danger',
@@ -557,7 +559,7 @@ async function nyaaSearch (media, episode, isOffline) {
   } else {
     table.innerHTML = ''
     table.appendChild(results)
-    halfmoon__WEBPACK_IMPORTED_MODULE_4___default().toggleModal('tsearch')
+    halfmoon__WEBPACK_IMPORTED_MODULE_5___default().toggleModal('tsearch')
   }
 }
 
@@ -591,8 +593,8 @@ async function resolveFileMedia (opts) {
     }
   }
   const parsePromises = opts.fileName.constructor === Array
-    ? opts.fileName.map(name => anitomyscript__WEBPACK_IMPORTED_MODULE_5___default()(name))
-    : [anitomyscript__WEBPACK_IMPORTED_MODULE_5___default()(opts.fileName)]
+    ? opts.fileName.map(name => anitomyscript__WEBPACK_IMPORTED_MODULE_6___default()(name))
+    : [anitomyscript__WEBPACK_IMPORTED_MODULE_6___default()(opts.fileName)]
   const parseObjs = await Promise.all(parsePromises)
   await Promise.all([...new Set(parseObjs.map(obj => obj.anime_title))].map(title => resolveTitle(title)))
   const assoc = {}
@@ -713,7 +715,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! halfmoon */ "halfmoon");
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_6__);
-/* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 /* eslint-env browser */
 /* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
 
@@ -789,7 +790,6 @@ function loadHomePage () {
       }
       if (Object.keys(def).length !== Object.keys(opts).length) {
         const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)(opts)).data.Page.media
-        viewMedia(mediaList[0])
         galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
       } else {
         searchClear.classList.remove('text-primary')
@@ -817,7 +817,7 @@ function loadHomePage () {
             ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: doc.querySelector('item title').textContent, isRelease: true }).then(mediaInformation => {
               if (_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.other1) {
                 const notification = new Notification(mediaInformation.media.title.userPreferred, {
-                  body: `Episode ${mediaInformation.episode} was just released!`,
+                  body: `Episode ${mediaInformation.episodeNumber} was just released!`,
                   icon: mediaInformation.media.coverImage.medium
                 })
                 notification.onclick = async () => {
@@ -903,7 +903,7 @@ function loadHomePage () {
         }
         media = media.media
       }
-      cards.push(cardCreator({ media: media, schedule: opts.schedule, onclick: () => (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.viewAnime)(media) }))
+      cards.push(cardCreator({ media: media, schedule: opts.schedule, onclick: () => viewMedia(media) }))
     })
     opts.gallery.append(...cards)
     canScroll = true
@@ -1092,47 +1092,47 @@ function trailerPopup (trailer) {
       break
   }
 }
-/* global viewImg, viewTitle, viewRating, viewFormat, viewLabels, viewDuration, viewEpisode, viewBadges, viewPlay, viewPlayEp, viewPlayText, viewDescription, viewDetails, viewDownload, viewDownloadEp, trailerVideo, viewTrailer, viewPlayback, viewBanner */
+/* global trailerVideo, viewAnime */
+const viewNodes = viewAnime.querySelectorAll('*')
 function viewMedia (input) {
-  console.log(input)
+  halfmoon__WEBPACK_IMPORTED_MODULE_6___default().showModal('viewAnime')
   const media = (0,_util_js__WEBPACK_IMPORTED_MODULE_5__.flattenObj)(input)
-  viewImg.src = media.extraLarge || media.medium
-  viewTitle.textContent = media.userPreferred
-  viewRating.textContent = media.averageScore + '%'
-  viewFormat.textContent = media.format === 'TV' ? media.format : media.format?.toLowerCase()
+  viewNodes[9].src = media.extraLarge || media.medium
+  viewNodes[13].textContent = media.userPreferred
+  viewNodes[17].textContent = media.averageScore + '%'
+  viewNodes[20].textContent = media.format === 'TV' ? media.format : media.format?.toLowerCase()
   if (media.episodes === 1 || !media.episodes) {
-    viewLabels.classList.add('movie')
-    viewDuration.textContent = media.duration + ' min'
+    viewNodes[14].classList.add('movie')
+    viewNodes[28].textContent = media.duration + ' min'
   } else {
-    viewEpisode.textContent = media.episodes
+    viewNodes[24].textContent = media.episodes
   }
-  viewBadges.textContent = ''
-  viewBadges.append(...genreBadges(media.genres))
+  viewNodes[29].textContent = ''
+  viewNodes[29].append(...genreBadges(media.genres))
 
   if (media.episodes || media.episode) {
-    viewPlayback.classList.remove('hidden')
-    viewPlay.onclick = () => (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, viewPlayEp.value)
-    viewPlayEp.value = media.progress || 1
-    viewPlayText.textContent = media.progress && media.progress !== media.episodes ? 'Continue' : 'Play'
+    viewNodes[31].classList.remove('hidden')
+    viewNodes[33].onclick = () => { ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, Number(viewNodes[44].value) || 1); halfmoon__WEBPACK_IMPORTED_MODULE_6___default().hideModal('viewAnime') }
+    viewNodes[44].value = Number(media.progress) + 1 || 1
+    viewNodes[35].textContent = media.progress && media.progress !== media.episodes ? 'Continue' : 'Play'
 
-    viewDownload.onclick = () => (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, viewPlayEp.value, true)
-    viewDownloadEp.value = media.progress || 1
+    viewNodes[46].onclick = () => { ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, Number(viewNodes[56].value) || 1, true); halfmoon__WEBPACK_IMPORTED_MODULE_6___default().hideModal('viewAnime') }
+    viewNodes[56].value = Number(media.progress) + 1 || 1
   } else {
-    viewPlayback.classList.add('hidden')
+    viewNodes[31].classList.add('hidden')
   }
   if (media.bannerImage) {
-    viewBanner.style = `background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%), url('${media.bannerImage}') !important`
+    viewNodes[4].style = `background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%), url('${media.bannerImage}') !important`
   } else {
-    viewBanner.style = 'background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%) !important'
+    viewNodes[4].style = 'background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%) !important'
   }
 
-  viewTrailer.onclick = () => trailerPopup(input.trailer)
+  viewNodes[57].onclick = () => trailerPopup(input.trailer)
 
-  viewDescription.innerHTML = media.description
+  viewNodes[63].innerHTML = media.description
 
-  viewDetails.textContent = ''
-  viewDetails.append(...mediaDetails(media))
-  console.log(media)
+  viewNodes[68].textContent = ''
+  viewNodes[68].append(...mediaDetails(media))
 }
 
 let alID // login icon
@@ -1512,7 +1512,7 @@ async function saveSettings () {
   }
 }
 
-if (!Object.values(settings).length) {
+if (Object.keys(settings).length !== settingsElements.length + 1) {
   saveSettings()
 }
 function restoreDefaults () {
@@ -1544,7 +1544,7 @@ for (const setting of Object.entries(settings)) {
   if (settingElement) settingElement.type === 'checkbox' ? settingElement.checked = setting[1] : settingElement.value = setting[1]
 }
 
-other1.onclick = () => Notification.requestPermission().then(perm => { perm === 'denied' ? other1.checked = false : other1.checked = true })
+other1.oninput = () => other1.checked && Notification.requestPermission().then(perm => { perm === 'denied' ? other1.checked = false : other1.checked = true })
 
 
 /***/ }),

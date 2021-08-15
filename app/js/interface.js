@@ -4,7 +4,7 @@
 // THIS IS WHY YOU FUCKING USE FRAMEWORKS
 
 import { alRequest } from './anilist.js'
-import { resolveFileMedia, viewAnime, relations, nyaaSearch } from './anime.js'
+import { resolveFileMedia, relations, nyaaSearch } from './anime.js'
 import { getRSSurl, getRSSContent } from './rss.js'
 import { settings } from './settings.js'
 import { client } from './main.js'
@@ -73,7 +73,6 @@ export function loadHomePage () {
       }
       if (Object.keys(def).length !== Object.keys(opts).length) {
         const mediaList = (await alRequest(opts)).data.Page.media
-        viewMedia(mediaList[0])
         galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
       } else {
         searchClear.classList.remove('text-primary')
@@ -101,7 +100,7 @@ export function loadHomePage () {
             resolveFileMedia({ fileName: doc.querySelector('item title').textContent, isRelease: true }).then(mediaInformation => {
               if (settings.other1) {
                 const notification = new Notification(mediaInformation.media.title.userPreferred, {
-                  body: `Episode ${mediaInformation.episode} was just released!`,
+                  body: `Episode ${mediaInformation.episodeNumber} was just released!`,
                   icon: mediaInformation.media.coverImage.medium
                 })
                 notification.onclick = async () => {
@@ -187,7 +186,7 @@ export function loadHomePage () {
         }
         media = media.media
       }
-      cards.push(cardCreator({ media: media, schedule: opts.schedule, onclick: () => viewAnime(media) }))
+      cards.push(cardCreator({ media: media, schedule: opts.schedule, onclick: () => viewMedia(media) }))
     })
     opts.gallery.append(...cards)
     canScroll = true
@@ -376,47 +375,47 @@ function trailerPopup (trailer) {
       break
   }
 }
-/* global viewImg, viewTitle, viewRating, viewFormat, viewLabels, viewDuration, viewEpisode, viewBadges, viewPlay, viewPlayEp, viewPlayText, viewDescription, viewDetails, viewDownload, viewDownloadEp, trailerVideo, viewTrailer, viewPlayback, viewBanner */
+/* global trailerVideo, viewAnime */
+const viewNodes = viewAnime.querySelectorAll('*')
 function viewMedia (input) {
-  console.log(input)
+  halfmoon.showModal('viewAnime')
   const media = flattenObj(input)
-  viewImg.src = media.extraLarge || media.medium
-  viewTitle.textContent = media.userPreferred
-  viewRating.textContent = media.averageScore + '%'
-  viewFormat.textContent = media.format === 'TV' ? media.format : media.format?.toLowerCase()
+  viewNodes[9].src = media.extraLarge || media.medium
+  viewNodes[13].textContent = media.userPreferred
+  viewNodes[17].textContent = media.averageScore + '%'
+  viewNodes[20].textContent = media.format === 'TV' ? media.format : media.format?.toLowerCase()
   if (media.episodes === 1 || !media.episodes) {
-    viewLabels.classList.add('movie')
-    viewDuration.textContent = media.duration + ' min'
+    viewNodes[14].classList.add('movie')
+    viewNodes[28].textContent = media.duration + ' min'
   } else {
-    viewEpisode.textContent = media.episodes
+    viewNodes[24].textContent = media.episodes
   }
-  viewBadges.textContent = ''
-  viewBadges.append(...genreBadges(media.genres))
+  viewNodes[29].textContent = ''
+  viewNodes[29].append(...genreBadges(media.genres))
 
   if (media.episodes || media.episode) {
-    viewPlayback.classList.remove('hidden')
-    viewPlay.onclick = () => nyaaSearch(input, viewPlayEp.value)
-    viewPlayEp.value = media.progress || 1
-    viewPlayText.textContent = media.progress && media.progress !== media.episodes ? 'Continue' : 'Play'
+    viewNodes[31].classList.remove('hidden')
+    viewNodes[33].onclick = () => { nyaaSearch(input, Number(viewNodes[44].value) || 1); halfmoon.hideModal('viewAnime') }
+    viewNodes[44].value = Number(media.progress) + 1 || 1
+    viewNodes[35].textContent = media.progress && media.progress !== media.episodes ? 'Continue' : 'Play'
 
-    viewDownload.onclick = () => nyaaSearch(input, viewPlayEp.value, true)
-    viewDownloadEp.value = media.progress || 1
+    viewNodes[46].onclick = () => { nyaaSearch(input, Number(viewNodes[56].value) || 1, true); halfmoon.hideModal('viewAnime') }
+    viewNodes[56].value = Number(media.progress) + 1 || 1
   } else {
-    viewPlayback.classList.add('hidden')
+    viewNodes[31].classList.add('hidden')
   }
   if (media.bannerImage) {
-    viewBanner.style = `background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%), url('${media.bannerImage}') !important`
+    viewNodes[4].style = `background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%), url('${media.bannerImage}') !important`
   } else {
-    viewBanner.style = 'background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%) !important'
+    viewNodes[4].style = 'background-image: linear-gradient(0deg, rgba(17,20,23,1) 0%, rgba(17,20,23,0.80) 25%, rgba(17,20,23,0.40) 50%, rgba(37,40,44,0) 100%) !important'
   }
 
-  viewTrailer.onclick = () => trailerPopup(input.trailer)
+  viewNodes[57].onclick = () => trailerPopup(input.trailer)
 
-  viewDescription.innerHTML = media.description
+  viewNodes[63].innerHTML = media.description
 
-  viewDetails.textContent = ''
-  viewDetails.append(...mediaDetails(media))
-  console.log(media)
+  viewNodes[68].textContent = ''
+  viewNodes[68].append(...mediaDetails(media))
 }
 
 export let alID // login icon

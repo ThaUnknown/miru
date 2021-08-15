@@ -415,13 +415,11 @@ section:target:not(#player),
 
 /* view */
 
-#view,
 #viewAnime .banner {
     background: no-repeat center center;
     background-size: cover;
 }
 
-#view>div,
 #viewAnime .top {
     backdrop-filter: blur(10px);
 }
@@ -456,12 +454,15 @@ section:target:not(#player),
     border: none;
     margin-right: 0.6rem;
 }
+
 #viewLabels.movie .duration {
     display: flex !important;
 }
+
 #viewLabels.movie .episodes {
     display: none !important;
 }
+
 #viewPlayback.hidden .btn-group {
     display: none;
 }
