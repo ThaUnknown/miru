@@ -343,11 +343,9 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
   const item = e.clipboardData.items[0]
   if (item && item.type.indexOf('image') === 0) {
     e.preventDefault()
-    const reader = new FileReader()
-    reader.onload = e => {
-      traceAnime(e.target.result, 'uri')
-    }
-    reader.readAsDataURL(item.getAsFile())
+    const formData = new FormData()
+    formData.append('image', item.getAsFile())
+    traceAnime(formData, 'file')
   } else if (item && item.type === 'text/plain') {
     item.getAsString(text => {
       if (torrentRx.exec(text)) {
@@ -376,23 +374,33 @@ if (_util_js__WEBPACK_IMPORTED_MODULE_1__.searchParams.get('link')) {
   window.location = '/app/#home'
 }
 function traceAnime (image, type) { // WAIT lookup logic
-  halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
-    content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
-  })
+  if (type === 'file') {
+    const reader = new FileReader()
+    reader.onload = e => {
+      halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+        content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${e.target.result}">`
+      })
+    }
+    reader.readAsDataURL(image.get('image'))
+  } else {
+    halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+      content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
+    })
+  }
   let options
-  let url = `https://trace.moe/api/search?url=${image}`
-  if (type === 'uri') {
+  let url = `https://api.trace.moe/search?cutBorders&url=${image}`
+  if (type === 'file') {
     options = {
       method: 'POST',
-      body: JSON.stringify({ image: image }),
-      headers: { 'Content-Type': 'application/json' }
+      body: image
     }
-    url = 'https://trace.moe/api/search'
+    url = 'https://api.trace.moe/search'
   }
-  fetch(url, options).then(res => res.json()).then(async result => {
-    if (result.docs[0].similarity >= 0.85) {
-      const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)({ method: 'SearchIDSingle', id: result.docs[0].anilist_id })
-      ;(0,_interface_js__WEBPACK_IMPORTED_MODULE_4__.viewMedia)(res.data.Media)
+  fetch(url, options).then(res => res.json()).then(async ({ result }) => {
+    console.log(result)
+    if (result && result[0].similarity >= 0.85) {
+      const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)({ method: 'SearchIDSingle', id: result[0].anilist })
+      ;(0,_interface_js__WEBPACK_IMPORTED_MODULE_4__.viewMedia)(res.data.Media, result[0].episode)
     } else {
       halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
         content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
@@ -967,14 +975,14 @@ trailerClose.onclick = () => {
 navNowPlaying.onclick = () => viewMedia(_main_js__WEBPACK_IMPORTED_MODULE_4__.client.nowPlaying.media)
 /* global trailerVideo, viewAnime, trailerClose, navNowPlaying */
 const viewNodes = viewAnime.querySelectorAll('*')
-function viewMedia (input) {
+function viewMedia (input, episode) {
   halfmoon__WEBPACK_IMPORTED_MODULE_6___default().showModal('viewAnime')
   const media = (0,_util_js__WEBPACK_IMPORTED_MODULE_5__.flattenObj)(input)
   viewNodes[9].src = media.extraLarge || media.medium
   viewNodes[13].textContent = media.userPreferred
   viewNodes[17].textContent = media.averageScore + '%'
   viewNodes[20].textContent = media.format === 'TV' ? media.format : media.format?.toLowerCase()
-  if (media.episodes === 1 || !media.episodes) {
+  if (media.episodes === 1 || (!media.episodes && !media.episode)) {
     viewNodes[14].classList.add('movie')
     viewNodes[31].classList.add('movie')
     viewNodes[28].textContent = media.duration + ' min'
@@ -989,11 +997,11 @@ function viewMedia (input) {
   if (media.episodes || media.episode) {
     viewNodes[31].classList.remove('hidden')
     viewNodes[33].onclick = () => { ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, Number(viewNodes[44].value) || 1); halfmoon__WEBPACK_IMPORTED_MODULE_6___default().hideModal('viewAnime') }
-    viewNodes[44].value = Math.min(Number(media.progress) + 1 || 1, media.episodes)
+    viewNodes[44].value = episode || Math.min(Number(media.progress) + 1 || 1, media.episodes)
     viewNodes[35].textContent = media.progress && media.progress !== media.episodes ? 'Continue' : 'Play'
 
     viewNodes[46].onclick = () => { ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.nyaaSearch)(input, Number(viewNodes[56].value) || 1, true); halfmoon__WEBPACK_IMPORTED_MODULE_6___default().hideModal('viewAnime') }
-    viewNodes[56].value = Math.min(Number(media.progress) + 1 || 1, media.episodes)
+    viewNodes[56].value = episode || Math.min(Number(media.progress) + 1 || 1, media.episodes)
   } else {
     viewNodes[31].classList.add('hidden')
   }

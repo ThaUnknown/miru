@@ -13,11 +13,9 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
   const item = e.clipboardData.items[0]
   if (item && item.type.indexOf('image') === 0) {
     e.preventDefault()
-    const reader = new FileReader()
-    reader.onload = e => {
-      traceAnime(e.target.result, 'uri')
-    }
-    reader.readAsDataURL(item.getAsFile())
+    const formData = new FormData()
+    formData.append('image', item.getAsFile())
+    traceAnime(formData, 'file')
   } else if (item && item.type === 'text/plain') {
     item.getAsString(text => {
       if (torrentRx.exec(text)) {
@@ -46,23 +44,33 @@ if (searchParams.get('link')) {
   window.location = '/app/#home'
 }
 function traceAnime (image, type) { // WAIT lookup logic
-  halfmoon.initStickyAlert({
-    content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
-  })
+  if (type === 'file') {
+    const reader = new FileReader()
+    reader.onload = e => {
+      halfmoon.initStickyAlert({
+        content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${e.target.result}">`
+      })
+    }
+    reader.readAsDataURL(image.get('image'))
+  } else {
+    halfmoon.initStickyAlert({
+      content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
+    })
+  }
   let options
-  let url = `https://trace.moe/api/search?url=${image}`
-  if (type === 'uri') {
+  let url = `https://api.trace.moe/search?cutBorders&url=${image}`
+  if (type === 'file') {
     options = {
       method: 'POST',
-      body: JSON.stringify({ image: image }),
-      headers: { 'Content-Type': 'application/json' }
+      body: image
     }
-    url = 'https://trace.moe/api/search'
+    url = 'https://api.trace.moe/search'
   }
-  fetch(url, options).then(res => res.json()).then(async result => {
-    if (result.docs[0].similarity >= 0.85) {
-      const res = await alRequest({ method: 'SearchIDSingle', id: result.docs[0].anilist_id })
-      viewMedia(res.data.Media)
+  fetch(url, options).then(res => res.json()).then(async ({ result }) => {
+    console.log(result)
+    if (result && result[0].similarity >= 0.85) {
+      const res = await alRequest({ method: 'SearchIDSingle', id: result[0].anilist })
+      viewMedia(res.data.Media, result[0].episode)
     } else {
       halfmoon.initStickyAlert({
         content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
