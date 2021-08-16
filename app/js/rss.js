@@ -51,10 +51,10 @@ export async function nyaaRss (media, episode, isOffline) {
     const position = index * 15
     entries[index] = {
       title: nodes[position].textContent,
+      hash: nodes[position + 1].textContent,
       seeders: nodes[position + 4].textContent,
       leechers: nodes[position + 5].textContent,
       downloads: nodes[position + 6].textContent,
-      hash: nodes[position + 7].textContent,
       size: nodes[position + 10].textContent
     }
   }

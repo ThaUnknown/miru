@@ -383,7 +383,7 @@ navNowPlaying.onclick = () => viewMedia(client.nowPlaying?.media)
 /* global trailerVideo, viewAnime, trailerClose, navNowPlaying */
 const viewNodes = viewAnime.querySelectorAll('*')
 console.log(viewNodes)
-function viewMedia (input) {
+export function viewMedia (input) {
   halfmoon.showModal('viewAnime')
   const media = flattenObj(input)
   viewNodes[9].src = media.extraLarge || media.medium

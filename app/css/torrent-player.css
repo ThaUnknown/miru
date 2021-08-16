@@ -86,7 +86,7 @@
 
 .torrent-player:target a.miniplayer,
 .torrent-player .bottom input[type='range'][data-name='setProgress']+img[src=' '],
-.torrent-player video[src=''],
+.torrent-player video[src='']:not([poster]),
 .torrent-player.pip video,
 .torrent-player .ctrl[disabled],
 .torrent-player .ctrl[href=''],

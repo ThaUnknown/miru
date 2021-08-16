@@ -38,7 +38,7 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
           repeat: 0,
           id: filemedia.media.id,
           status: 'CURRENT',
-          episode: filemedia.episodeNumber
+          episode: filemedia.episodeNumber || 1
         }
         if (filemedia.episodeNumber === filemedia.media.episodes || filemedia.episodes === 1) {
           variables.status = 'COMPLETED'
