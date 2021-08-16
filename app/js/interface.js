@@ -308,59 +308,52 @@ const detailsMap = [
   { property: 'romaji', label: 'Romaji', icon: 'translate' },
   { property: 'native', label: 'Native', icon: '日本', custom: 'icon' }
 ]
+/* global detailTemplate */
+const detailTemp = detailTemplate.cloneNode(true).content
 function mediaDetails (media) {
   const details = []
   for (const detail of detailsMap) {
     if (media[detail.property]) {
-      const wrap = document.createElement('div')
-      const icon = document.createElement('div')
-      const info = document.createElement('div')
-      const label = document.createElement('div')
-      const value = document.createElement('div')
-      wrap.append(icon, info)
-      info.append(label, value)
-      wrap.classList.add('d-flex', 'flex-row', 'px-10', 'py-5')
-      icon.classList.add('material-icons', 'mr-10', 'font-size-24')
-      info.classList.add('d-flex', 'flex-column', 'justify-content-center', 'text-nowrap')
-      label.classList.add('font-weight-bold')
+      const clone = detailTemp.cloneNode(true)
+      const nodes = clone.querySelectorAll('*')
       switch (media[detail.property].constructor) {
         case String: {
-          value.textContent = media[detail.property].replace(/_/g, ' ').toLowerCase()
+          nodes[4].textContent = media[detail.property].replace(/_/g, ' ').toLowerCase()
           break
         }
         case Number: {
-          value.textContent = media[detail.property]
+          nodes[4].textContent = media[detail.property]
           break
         }
         case Array: {
           if (detail.property === 'nodes') {
-            value.textContent = media[detail.property][0] && media[detail.property][0].name
+            nodes[4].textContent = media[detail.property][0] && media[detail.property][0].name
           } else {
-            value.textContent = media[detail.property].join(', ').replace(/_/g, ' ').toLowerCase()
+            nodes[4].textContent = media[detail.property].join(', ').replace(/_/g, ' ').toLowerCase()
           }
         }
       }
-      icon.textContent = detail.icon
-      label.textContent = detail.label
+      nodes[1].textContent = detail.icon
+      nodes[3].textContent = detail.label
       switch (detail.custom) {
         case 'icon': {
-          icon.classList.remove('material-icons', 'font-size-24')
-          icon.classList.add('d-flex', 'align-items-center', 'text-nowrap', 'font-size-12', 'font-weight-bold')
+          nodes[1].classList.remove('material-icons', 'font-size-24')
+          nodes[1].classList.add('d-flex', 'align-items-center', 'text-nowrap', 'font-size-12', 'font-weight-bold')
           break
         }
         case 'property': {
           if (detail.property === 'episodes' && media.progress) {
-            value.innerHTML = `Watched <b>${media.progress}</b> of <b>${media.episodes}</b>`
+            nodes[4].innerHTML = `Watched <b>${media.progress}</b> of <b>${media.episodes}</b>`
           } else if (detail.property === 'averageScore') {
-            value.textContent = media.averageScore + '%'
+            nodes[4].textContent = media.averageScore + '%'
           } else if (detail.property === 'season') {
-            value.textContent = [media.season?.toLowerCase(), media.seasonYear].filter(f => f).join(' ')
+            nodes[4].textContent = [media.season?.toLowerCase(), media.seasonYear].filter(f => f).join(' ')
           } else {
-            value.textContent = media[detail.property]
+            nodes[4].textContent = media[detail.property]
           }
         }
       }
-      details.push(wrap)
+      details.push(clone)
     }
   }
   return details
@@ -382,7 +375,6 @@ trailerClose.onclick = () => {
 navNowPlaying.onclick = () => viewMedia(client.nowPlaying?.media)
 /* global trailerVideo, viewAnime, trailerClose, navNowPlaying */
 const viewNodes = viewAnime.querySelectorAll('*')
-console.log(viewNodes)
 export function viewMedia (input) {
   halfmoon.showModal('viewAnime')
   const media = flattenObj(input)

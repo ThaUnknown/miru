@@ -39,10 +39,13 @@
   z-index: -1;
   width: 100%;
   height: 100%;
+  background: #191c209d;
+  backdrop-filter: blur(10px);
 }
 
 .torrent-player:target video {
   position: absolute;
+  background: none;
 }
 
 .torrent-player a.miniplayer {
@@ -87,13 +90,16 @@
 .torrent-player:target a.miniplayer,
 .torrent-player .bottom input[type='range'][data-name='setProgress']+img[src=' '],
 .torrent-player video[src='']:not([poster]),
-.torrent-player.pip video,
 .torrent-player .ctrl[disabled],
 .torrent-player .ctrl[href=''],
 .torrent-player:fullscreen .ctrl[data-name='toggleTheatre'],
 .torrent-player:fullscreen .ctrl[data-name='openPlaylist'],
 .torrent-player:fullscreen .ctrl[data-name='togglePopout'] {
   display: none !important;
+}
+
+.torrent-player.pip video {
+  visibility: hidden;
 }
 
 .torrent-player .top {
@@ -396,12 +402,15 @@
 .torrent-player .bottom .popup {
   position: relative;
 }
+
 .torrent-player .bottom .popup input {
   display: none;
 }
+
 .torrent-player .bottom .popup input:checked+label {
   color: white
 }
+
 .torrent-player .bottom .popup label {
   cursor: pointer;
   color: rgba(255, 255, 255, 0.6);
@@ -421,10 +430,10 @@
   background: #191c20;
   padding: .8rem;
   border-radius: 3px;
-  font-size: 1.2rem
+  font-size: 1.6rem
 }
 
-.torrent-player .bottom .popup:hover .popup-menu{
+.torrent-player .bottom .popup:hover .popup-menu {
   visibility: visible;
 }
 

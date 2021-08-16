@@ -111,7 +111,8 @@
                       </div>
                     </div>
                     <div class="btn-group mb-5 border-0" role="group">
-                      <button class="btn d-flex align-items-center font-weight-bold font-size-16 border-0" type="button">
+                      <button class="btn d-flex align-items-center font-weight-bold font-size-16 border-0"
+                        type="button">
                         <span class="material-icons mr-10 font-size-18 w-30">
                           get_app
                         </span>
@@ -329,7 +330,7 @@
       </div>
     </div>
     <div class="overflow-y-hidden content-wrapper">
-      <section id="player" class="torrent-player">
+      <section id="player" class="torrent-player shadow-lg">
         <video id="video" src=""></video>
         <a href="#player" class="miniplayer"></a>
         <div class="top">
@@ -1119,6 +1120,15 @@ wss://hub.bugout.link:443/announce</textarea>
           <div class="overflow-y-auto px-15 pb-5 bg-very-dark card-desc"></div>
           <div class="px-15 pb-10 pt-5 genres"></div>
         </div>
+      </div>
+    </div>
+  </template>
+  <template id="detailTemplate">
+    <div class="d-flex flex-row px-10 py-5">
+      <div class="material-icons mr-10 font-size-24"></div>
+      <div class="d-flex flex-column justify-content-center text-nowrap">
+        <div class="font-weight-bold"></div>
+        <div></div>
       </div>
     </div>
   </template>

@@ -260,10 +260,6 @@ section:target:not(#player),
     background: rgba(31, 38, 49, 0.7);
 }
 
-#search:focus {
-    box-shadow: none
-}
-
 #pageWrapper {
     transition: top .4s cubic-bezier(.25, .8, .25, 1);
 }
@@ -279,6 +275,20 @@ section:target:not(#player),
 
 #oauth::after {
     white-space: pre !important
+}
+
+#searchWrapper>div> :nth-child(2),
+#searchWrapper button {
+    transition: transform .2s ease;
+    will-change: transform;
+}
+
+#searchWrapper>div> :nth-child(2):hover {
+    transform: scale(1.05)
+}
+
+#searchWrapper button:hover {
+    transform: scale(1.15)
 }
 
 /* sidebar */
@@ -386,7 +396,6 @@ section:target:not(#player),
     transition: width .4s cubic-bezier(.25, .8, .25, 1), left .4s cubic-bezier(.25, .8, .25, 1);
     overflow: visible;
 }
-
 
 .nav-hidden>.sidebar {
     left: calc(-1* var(--sidebar-width)) !important;
