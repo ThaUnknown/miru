@@ -157,6 +157,9 @@ relations {
       query = ` 
 query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: [MediaStatus]) {
   Page (page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+    },
     media(type: $type, search: $search, sort: $sort, status_in: $status) {
       ${queryObjects}
     }
@@ -177,6 +180,9 @@ query ($id: Int, $type: MediaType) {
       query = ` 
 query ($id: [Int], $type: MediaType, $page: Int, $perPage: Int) { 
   Page (page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+    },
     media (id_in: $id, type: $type) {
       ${queryObjects}
     }
@@ -200,6 +206,9 @@ query {
       query = ` 
 query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [MediaListStatus]){
   Page (page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+    },
     mediaList (userId: $id, type: $type, status_in: $status_in) {
       media {
         ${queryObjects}
@@ -230,6 +239,9 @@ query ($id: Int, $mediaId: Int){
       query = ` 
 query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
   Page (page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+    },
     airingSchedules(airingAt_greater: $from, airingAt_lesser: $to) {
       episode,
       timeUntilAiring,
@@ -252,6 +264,9 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
       query = ` 
 query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
   Page (page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+    },
     media(type: $type, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format) {
       ${queryObjects}
     }

@@ -18,10 +18,12 @@ export function loadHomePage () {
   const homeLoadFunctions = {
     continue: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      const mediaList = (await alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })).data.Page.mediaList.map(i => i.media).filter(media => {
+      const res = await alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })
+      const mediaList = res.data.Page.mediaList.map(i => i.media).filter(media => {
         return !(media.status === 'RELEASING' && media.mediaListEntry?.progress === media.nextAiringEpisode?.episode - 1)
       })
       galleryAppend({ media: mediaList, gallery: browseGallery, method: 'continue', page: page || 1 })
+      return res.data.Page.pageInfo.hasNextPage
     },
     releases: async function () {
       gallerySkeleton(browseGallery)
@@ -30,36 +32,41 @@ export function loadHomePage () {
       browseGallery.append(...cards)
       home.classList.remove('loading')
       home.onscroll = undefined
+      return false
     },
     planning: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      const mediaList = (await alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 })).data.Page.mediaList
+      const res = await alRequest({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 })
+      const mediaList = res.data.Page.mediaList
       galleryAppend({ media: mediaList.map(i => i.media), gallery: browseGallery, method: 'planning', page: page || 1 })
+      return res.data.Page.pageInfo.hasNextPage
     },
     trending: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      return await homeLoadFunctions.search()
     },
     romance: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'romance'
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      return await homeLoadFunctions.search()
     },
     action: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'action'
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      return await homeLoadFunctions.search()
     },
     schedule: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      const mediaList = (await alRequest({ method: 'AiringSchedule', page: page || 1 })).data.Page.airingSchedules
+      const res = await alRequest({ method: 'AiringSchedule', page: page || 1 })
+      const mediaList = res.data.Page.airingSchedules
       galleryAppend({ media: mediaList.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
+      return res.data.Page.pageInfo.hasNextPage
     },
     search: async function (page) {
       const def = {
@@ -72,12 +79,15 @@ export function loadHomePage () {
         if (element.value) opts[element.dataset.option] = element.value
       }
       if (Object.keys(def).length !== Object.keys(opts).length) {
-        const mediaList = (await alRequest(opts)).data.Page.media
+        const res = await alRequest(opts)
+        const mediaList = res.data.Page.media
         galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
+        return res.data.Page.pageInfo.hasNextPage
       } else {
         searchClear.classList.remove('text-primary')
         home.classList.remove('loading')
         reloadHome()
+        return false
       }
     }
   }
@@ -166,7 +176,7 @@ export function loadHomePage () {
         if (this.scrollTop + this.clientHeight > this.scrollHeight - 800 && !loadTimeout && canScroll) {
           canScroll = false
           loadTimeout = setTimeout(function () { loadTimeout = undefined }, 1000)
-          homeLoadFunctions[opts.method](opts.page + 1).then(() => { canScroll = true })
+          homeLoadFunctions[opts.method](opts.page + 1).then((hasNextPage) => { canScroll = hasNextPage })
         }
       }
     }

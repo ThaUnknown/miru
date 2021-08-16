@@ -176,6 +176,9 @@ relations {
       query = ` 
 query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: [MediaStatus]) {
   Page (page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+    },
     media(type: $type, search: $search, sort: $sort, status_in: $status) {
       ${queryObjects}
     }
@@ -196,6 +199,9 @@ query ($id: Int, $type: MediaType) {
       query = ` 
 query ($id: [Int], $type: MediaType, $page: Int, $perPage: Int) { 
   Page (page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+    },
     media (id_in: $id, type: $type) {
       ${queryObjects}
     }
@@ -219,6 +225,9 @@ query {
       query = ` 
 query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [MediaListStatus]){
   Page (page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+    },
     mediaList (userId: $id, type: $type, status_in: $status_in) {
       media {
         ${queryObjects}
@@ -249,6 +258,9 @@ query ($id: Int, $mediaId: Int){
       query = ` 
 query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
   Page (page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+    },
     airingSchedules(airingAt_greater: $from, airingAt_lesser: $to) {
       episode,
       timeUntilAiring,
@@ -271,6 +283,9 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
       query = ` 
 query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
   Page (page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+    },
     media(type: $type, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format) {
       ${queryObjects}
     }
@@ -585,10 +600,12 @@ function loadHomePage () {
   const homeLoadFunctions = {
     continue: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })).data.Page.mediaList.map(i => i.media).filter(media => {
+      const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })
+      const mediaList = res.data.Page.mediaList.map(i => i.media).filter(media => {
         return !(media.status === 'RELEASING' && media.mediaListEntry?.progress === media.nextAiringEpisode?.episode - 1)
       })
       galleryAppend({ media: mediaList, gallery: browseGallery, method: 'continue', page: page || 1 })
+      return res.data.Page.pageInfo.hasNextPage
     },
     releases: async function () {
       gallerySkeleton(browseGallery)
@@ -597,36 +614,41 @@ function loadHomePage () {
       browseGallery.append(...cards)
       home.classList.remove('loading')
       home.onscroll = undefined
+      return false
     },
     planning: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 })).data.Page.mediaList
+      const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'UserLists', status_in: 'PLANNING', id: alID, page: page || 1 })
+      const mediaList = res.data.Page.mediaList
       galleryAppend({ media: mediaList.map(i => i.media), gallery: browseGallery, method: 'planning', page: page || 1 })
+      return res.data.Page.pageInfo.hasNextPage
     },
     trending: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      return await homeLoadFunctions.search()
     },
     romance: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'romance'
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      return await homeLoadFunctions.search()
     },
     action: async function () {
       gallerySkeleton(browseGallery)
       clearSearch()
       searchGenre.value = 'action'
       searchSort.value = 'TRENDING_DESC'
-      await homeLoadFunctions.search()
+      return await homeLoadFunctions.search()
     },
     schedule: async function (page) {
       if (!page) gallerySkeleton(browseGallery)
-      const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'AiringSchedule', page: page || 1 })).data.Page.airingSchedules
+      const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ method: 'AiringSchedule', page: page || 1 })
+      const mediaList = res.data.Page.airingSchedules
       galleryAppend({ media: mediaList.filter(entry => entry.media.countryOfOrigin !== 'CN' && entry.media.isAdult === false), gallery: browseGallery, method: 'schedule', page: page || 1, schedule: true })
+      return res.data.Page.pageInfo.hasNextPage
     },
     search: async function (page) {
       const def = {
@@ -639,12 +661,15 @@ function loadHomePage () {
         if (element.value) opts[element.dataset.option] = element.value
       }
       if (Object.keys(def).length !== Object.keys(opts).length) {
-        const mediaList = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)(opts)).data.Page.media
+        const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)(opts)
+        const mediaList = res.data.Page.media
         galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
+        return res.data.Page.pageInfo.hasNextPage
       } else {
         searchClear.classList.remove('text-primary')
         home.classList.remove('loading')
         reloadHome()
+        return false
       }
     }
   }
@@ -733,7 +758,7 @@ function loadHomePage () {
         if (this.scrollTop + this.clientHeight > this.scrollHeight - 800 && !loadTimeout && canScroll) {
           canScroll = false
           loadTimeout = setTimeout(function () { loadTimeout = undefined }, 1000)
-          homeLoadFunctions[opts.method](opts.page + 1).then(() => { canScroll = true })
+          homeLoadFunctions[opts.method](opts.page + 1).then((hasNextPage) => { canScroll = hasNextPage })
         }
       }
     }
