@@ -397,7 +397,6 @@ function traceAnime (image, type) { // WAIT lookup logic
     url = 'https://api.trace.moe/search'
   }
   fetch(url, options).then(res => res.json()).then(async ({ result }) => {
-    console.log(result)
     if (result && result[0].similarity >= 0.85) {
       const res = await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_2__.alRequest)({ method: 'SearchIDSingle', id: result[0].anilist })
       ;(0,_interface_js__WEBPACK_IMPORTED_MODULE_4__.viewMedia)(res.data.Media, result[0].episode)
