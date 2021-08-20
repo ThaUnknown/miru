@@ -971,7 +971,7 @@ trailerClose.onclick = () => {
   trailerVideo.src = ''
 }
 
-navNowPlaying.onclick = () => viewMedia(_main_js__WEBPACK_IMPORTED_MODULE_4__.client.nowPlaying.media)
+navNowPlaying.onclick = () => { if (_main_js__WEBPACK_IMPORTED_MODULE_4__.client.nowPlaying.media) viewMedia(_main_js__WEBPACK_IMPORTED_MODULE_4__.client.nowPlaying.media) }
 /* global trailerVideo, viewAnime, trailerClose, navNowPlaying */
 const viewNodes = viewAnime.querySelectorAll('*')
 function viewMedia (input, episode) {
@@ -1516,28 +1516,20 @@ const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
   \***********************************************/
 /***/ ((module) => {
 
-const ADDR_RE = /^\[?([^\]]+)\]?:(\d+)$/ // ipv4/ipv6/hostname + port
+const ADDR_RE = /^\[?([^\]]+)]?:(\d+)$/ // ipv4/ipv6/hostname + port
 
-let cache = {}
+let cache = new Map()
 
 // reset cache when it gets to 100,000 elements (~ 600KB of ipv4 addresses)
 // so it will not grow to consume all memory in long-running processes
-let size = 0
-
 module.exports = function addrToIPPort (addr) {
-  if (size === 100000) module.exports.reset()
-  if (!cache[addr]) {
+  if (cache.size === 100000) cache.clear()
+  if (!cache.has(addr)) {
     const m = ADDR_RE.exec(addr)
     if (!m) throw new Error(`invalid addr: ${addr}`)
-    cache[addr] = [ m[1], Number(m[2]) ]
-    size += 1
+    cache.set(addr, [ m[1], Number(m[2]) ])
   }
-  return cache[addr]
-}
-
-module.exports.reset = function reset () {
-  cache = {}
-  size = 0
+  return cache.get(addr)
 }
 
 
@@ -9200,8 +9192,7 @@ function fromByteArray (uint8) {
   \********************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var Buffer = __webpack_require__(/*! safe-buffer */ "./node_modules/safe-buffer/index.js").Buffer
-
+/* provided dependency */ var Buffer = __webpack_require__(/*! ./node_modules/buffer/index.js */ "./node_modules/buffer/index.js")["Buffer"];
 const INTEGER_START = 0x69 // 'i'
 const STRING_DELIM = 0x3A // ':'
 const DICTIONARY_START = 0x64 // 'd'
@@ -9218,11 +9209,11 @@ const END_OF_TYPE = 0x65 // 'e'
  * @return {Number} calculated number
  */
 function getIntFromBuffer (buffer, start, end) {
-  var sum = 0
-  var sign = 1
+  let sum = 0
+  let sign = 1
 
-  for (var i = start; i < end; i++) {
-    var num = buffer[i]
+  for (let i = start; i < end; i++) {
+    const num = buffer[i]
 
     if (num < 58 && num >= 48) {
       sum = sum * 10 + (num - 48)
@@ -9304,9 +9295,9 @@ decode.next = function () {
 }
 
 decode.find = function (chr) {
-  var i = decode.position
-  var c = decode.data.length
-  var d = decode.data
+  let i = decode.position
+  const c = decode.data.length
+  const d = decode.data
 
   while (i < c) {
     if (d[i] === chr) return i
@@ -9323,7 +9314,7 @@ decode.find = function (chr) {
 decode.dictionary = function () {
   decode.position++
 
-  var dict = {}
+  const dict = {}
 
   while (decode.data[decode.position] !== END_OF_TYPE) {
     dict[decode.buffer()] = decode.next()
@@ -9337,7 +9328,7 @@ decode.dictionary = function () {
 decode.list = function () {
   decode.position++
 
-  var lst = []
+  const lst = []
 
   while (decode.data[decode.position] !== END_OF_TYPE) {
     lst.push(decode.next())
@@ -9349,8 +9340,8 @@ decode.list = function () {
 }
 
 decode.integer = function () {
-  var end = decode.find(END_OF_TYPE)
-  var number = getIntFromBuffer(decode.data, decode.position + 1, end)
+  const end = decode.find(END_OF_TYPE)
+  const number = getIntFromBuffer(decode.data, decode.position + 1, end)
 
   decode.position += end + 1 - decode.position
 
@@ -9358,9 +9349,9 @@ decode.integer = function () {
 }
 
 decode.buffer = function () {
-  var sep = decode.find(STRING_DELIM)
-  var length = getIntFromBuffer(decode.data, decode.position, sep)
-  var end = ++sep + length
+  let sep = decode.find(STRING_DELIM)
+  const length = getIntFromBuffer(decode.data, decode.position, sep)
+  const end = ++sep + length
 
   decode.position = end
 
@@ -9380,8 +9371,9 @@ module.exports = decode
   \********************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
+/* provided dependency */ var Buffer = __webpack_require__(/*! ./node_modules/buffer/index.js */ "./node_modules/buffer/index.js")["Buffer"];
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
-var Buffer = __webpack_require__(/*! safe-buffer */ "./node_modules/safe-buffer/index.js").Buffer
+const { getType } = __webpack_require__(/*! ./util.js */ "./node_modules/bencode/lib/util.js")
 
 /**
  * Encodes data in bencode.
@@ -9390,8 +9382,8 @@ var Buffer = __webpack_require__(/*! safe-buffer */ "./node_modules/safe-buffer/
  * @return {Buffer}
  */
 function encode (data, buffer, offset) {
-  var buffers = []
-  var result = null
+  const buffers = []
+  let result = null
 
   encode._encode(buffers, data)
   result = Buffer.concat(buffers)
@@ -9408,23 +9400,15 @@ function encode (data, buffer, offset) {
 encode.bytes = -1
 encode._floatConversionDetected = false
 
-encode.getType = function (value) {
-  if (Buffer.isBuffer(value)) return 'buffer'
-  if (Array.isArray(value)) return 'array'
-  if (ArrayBuffer.isView(value)) return 'arraybufferview'
-  if (value instanceof Number) return 'number'
-  if (value instanceof Boolean) return 'boolean'
-  if (value instanceof ArrayBuffer) return 'arraybuffer'
-  return typeof value
-}
-
 encode._encode = function (buffers, data) {
   if (data == null) { return }
 
-  switch (encode.getType(data)) {
+  switch (getType(data)) {
     case 'buffer': encode.buffer(buffers, data); break
     case 'object': encode.dict(buffers, data); break
+    case 'map': encode.dictMap(buffers, data); break
     case 'array': encode.list(buffers, data); break
+    case 'set': encode.listSet(buffers, data); break
     case 'string': encode.string(buffers, data); break
     case 'number': encode.number(buffers, data); break
     case 'boolean': encode.number(buffers, data); break
@@ -9433,9 +9417,9 @@ encode._encode = function (buffers, data) {
   }
 }
 
-var buffE = Buffer.from('e')
-var buffD = Buffer.from('d')
-var buffL = Buffer.from('l')
+const buffE = Buffer.from('e')
+const buffD = Buffer.from('d')
+const buffL = Buffer.from('l')
 
 encode.buffer = function (buffers, data) {
   buffers.push(Buffer.from(data.length + ':'), data)
@@ -9446,10 +9430,10 @@ encode.string = function (buffers, data) {
 }
 
 encode.number = function (buffers, data) {
-  var maxLo = 0x80000000
-  var hi = (data / maxLo) << 0
-  var lo = (data % maxLo) << 0
-  var val = hi * maxLo + lo
+  const maxLo = 0x80000000
+  const hi = (data / maxLo) << 0
+  const lo = (data % maxLo) << 0
+  const val = hi * maxLo + lo
 
   buffers.push(Buffer.from('i' + val + 'e'))
 
@@ -9466,11 +9450,11 @@ encode.number = function (buffers, data) {
 encode.dict = function (buffers, data) {
   buffers.push(buffD)
 
-  var j = 0
-  var k
+  let j = 0
+  let k
   // fix for issue #13 - sorted dicts
-  var keys = Object.keys(data).sort()
-  var kl = keys.length
+  const keys = Object.keys(data).sort()
+  const kl = keys.length
 
   for (; j < kl; j++) {
     k = keys[j]
@@ -9482,9 +9466,25 @@ encode.dict = function (buffers, data) {
   buffers.push(buffE)
 }
 
+encode.dictMap = function (buffers, data) {
+  buffers.push(buffD)
+
+  const keys = Array.from(data.keys()).sort()
+
+  for (const key of keys) {
+    if (data.get(key) == null) continue
+    Buffer.isBuffer(key)
+      ? encode._encode(buffers, key)
+      : encode.string(buffers, String(key))
+    encode._encode(buffers, data.get(key))
+  }
+
+  buffers.push(buffE)
+}
+
 encode.list = function (buffers, data) {
-  var i = 0
-  var c = data.length
+  let i = 0
+  const c = data.length
   buffers.push(buffL)
 
   for (; i < c; i++) {
@@ -9495,7 +9495,98 @@ encode.list = function (buffers, data) {
   buffers.push(buffE)
 }
 
+encode.listSet = function (buffers, data) {
+  buffers.push(buffL)
+
+  for (const item of data) {
+    if (item == null) continue
+    encode._encode(buffers, item)
+  }
+
+  buffers.push(buffE)
+}
+
 module.exports = encode
+
+
+/***/ }),
+
+/***/ "./node_modules/bencode/lib/encoding-length.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/bencode/lib/encoding-length.js ***!
+  \*****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+/* provided dependency */ var Buffer = __webpack_require__(/*! ./node_modules/buffer/index.js */ "./node_modules/buffer/index.js")["Buffer"];
+const { digitCount, getType } = __webpack_require__(/*! ./util.js */ "./node_modules/bencode/lib/util.js")
+
+function listLength (list) {
+  let length = 1 + 1 // type marker + end-of-type marker
+
+  for (const value of list) {
+    length += encodingLength(value)
+  }
+
+  return length
+}
+
+function mapLength (map) {
+  let length = 1 + 1 // type marker + end-of-type marker
+
+  for (const [key, value] of map) {
+    const keyLength = Buffer.byteLength(key)
+    length += digitCount(keyLength) + 1 + keyLength
+    length += encodingLength(value)
+  }
+
+  return length
+}
+
+function objectLength (value) {
+  let length = 1 + 1 // type marker + end-of-type marker
+  const keys = Object.keys(value)
+
+  for (let i = 0; i < keys.length; i++) {
+    const keyLength = Buffer.byteLength(keys[i])
+    length += digitCount(keyLength) + 1 + keyLength
+    length += encodingLength(value[keys[i]])
+  }
+
+  return length
+}
+
+function stringLength (value) {
+  const length = Buffer.byteLength(value)
+  return digitCount(length) + 1 + length
+}
+
+function arrayBufferLength (value) {
+  const length = value.byteLength - value.byteOffset
+  return digitCount(length) + 1 + length
+}
+
+function encodingLength (value) {
+  const length = 0
+
+  if (value == null) return length
+
+  const type = getType(value)
+
+  switch (type) {
+    case 'buffer': return digitCount(value.length) + 1 + value.length
+    case 'arraybufferview': return arrayBufferLength(value)
+    case 'string': return stringLength(value)
+    case 'array': case 'set': return listLength(value)
+    case 'number': return 1 + digitCount(Math.floor(value)) + 1
+    case 'bigint': return 1 + value.toString().length + 1
+    case 'object': return objectLength(value)
+    case 'map': return mapLength(value)
+    default:
+      throw new TypeError(`Unsupported value of type "${type}"`)
+  }
+}
+
+module.exports = encodingLength
 
 
 /***/ }),
@@ -9506,10 +9597,10 @@ module.exports = encode
   \*******************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var bencode = module.exports
+const bencode = module.exports
 
-bencode.encode = __webpack_require__(/*! ./encode */ "./node_modules/bencode/lib/encode.js")
-bencode.decode = __webpack_require__(/*! ./decode */ "./node_modules/bencode/lib/decode.js")
+bencode.encode = __webpack_require__(/*! ./encode.js */ "./node_modules/bencode/lib/encode.js")
+bencode.decode = __webpack_require__(/*! ./decode.js */ "./node_modules/bencode/lib/decode.js")
 
 /**
  * Determines the amount of bytes
@@ -9517,8 +9608,40 @@ bencode.decode = __webpack_require__(/*! ./decode */ "./node_modules/bencode/lib
  * @param  {Object|Array|Buffer|String|Number|Boolean} value
  * @return {Number} byteCount
  */
-bencode.byteLength = bencode.encodingLength = function (value) {
-  return bencode.encode(value).length
+bencode.byteLength = bencode.encodingLength = __webpack_require__(/*! ./encoding-length.js */ "./node_modules/bencode/lib/encoding-length.js")
+
+
+/***/ }),
+
+/***/ "./node_modules/bencode/lib/util.js":
+/*!******************************************!*\
+  !*** ./node_modules/bencode/lib/util.js ***!
+  \******************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+/* provided dependency */ var Buffer = __webpack_require__(/*! ./node_modules/buffer/index.js */ "./node_modules/buffer/index.js")["Buffer"];
+const util = module.exports
+
+util.digitCount = function digitCount (value) {
+  // Add a digit for negative numbers, as the sign will be prefixed
+  const sign = value < 0 ? 1 : 0
+  // Guard against negative numbers & zero going into log10(),
+  // as that would return -Infinity
+  value = Math.abs(Number(value || 1))
+  return Math.floor(Math.log10(value)) + 1 + sign
+}
+
+util.getType = function getType (value) {
+  if (Buffer.isBuffer(value)) return 'buffer'
+  if (ArrayBuffer.isView(value)) return 'arraybufferview'
+  if (Array.isArray(value)) return 'array'
+  if (value instanceof Number) return 'number'
+  if (value instanceof Boolean) return 'boolean'
+  if (value instanceof Set) return 'set'
+  if (value instanceof Map) return 'map'
+  if (value instanceof String) return 'string'
+  if (value instanceof ArrayBuffer) return 'arraybuffer'
+  return typeof value
 }
 
 
@@ -30718,16 +30841,6 @@ const stream = __webpack_require__(/*! readable-stream */ "./node_modules/readab
 
 const getFiles = __webpack_require__(/*! ./get-files */ "?3b18") // browser exclude
 
-// TODO: When Node 10 support is dropped, replace this with Array.prototype.flat
-function flat (arr1) {
-  return arr1.reduce(
-    (acc, val) => Array.isArray(val)
-      ? acc.concat(flat(val))
-      : acc.concat(val),
-    []
-  )
-}
-
 const announceList = [
   ['udp://tracker.leechers-paradise.org:6969'],
   ['udp://tracker.coppersurfer.tk:6969'],
@@ -30909,7 +31022,7 @@ function _parseInput (input, opts, cb) {
       cb(null, file)
     }), (err, files) => {
       if (err) return cb(err)
-      files = flat(files)
+      files = files.flat()
       cb(null, files, isSingleFileTorrent)
     })
   }
@@ -30998,11 +31111,11 @@ function onFiles (files, opts, cb) {
 
   if (!announceList) announceList = []
 
-  if (__webpack_require__.g.WEBTORRENT_ANNOUNCE) {
-    if (typeof __webpack_require__.g.WEBTORRENT_ANNOUNCE === 'string') {
-      announceList.push([[__webpack_require__.g.WEBTORRENT_ANNOUNCE]])
-    } else if (Array.isArray(__webpack_require__.g.WEBTORRENT_ANNOUNCE)) {
-      announceList = announceList.concat(__webpack_require__.g.WEBTORRENT_ANNOUNCE.map(u => [u]))
+  if (globalThis.WEBTORRENT_ANNOUNCE) {
+    if (typeof globalThis.WEBTORRENT_ANNOUNCE === 'string') {
+      announceList.push([[globalThis.WEBTORRENT_ANNOUNCE]])
+    } else if (Array.isArray(globalThis.WEBTORRENT_ANNOUNCE)) {
+      announceList = announceList.concat(globalThis.WEBTORRENT_ANNOUNCE.map(u => [u]))
     }
   }
 
@@ -63560,6 +63673,17 @@ module.exports = typeof queueMicrotask === 'function'
 
 /***/ }),
 
+/***/ "./node_modules/queue-tick/queue-microtask.js":
+/*!****************************************************!*\
+  !*** ./node_modules/queue-tick/queue-microtask.js ***!
+  \****************************************************/
+/***/ ((module) => {
+
+module.exports = typeof queueMicrotask === 'function' ? queueMicrotask : (fn) => Promise.resolve().then(fn)
+
+
+/***/ }),
+
 /***/ "./node_modules/random-iterate/index.js":
 /*!**********************************************!*\
   !*** ./node_modules/random-iterate/index.js ***!
@@ -73194,11 +73318,11 @@ module.exports = function getBuffer (stream, length, cb) {
   \***************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/* provided dependency */ var process = __webpack_require__(/*! process-fast */ "./node_modules/process-fast/index.js");
 const { EventEmitter } = __webpack_require__(/*! events */ "./node_modules/events/events.js")
 const STREAM_DESTROYED = new Error('Stream was destroyed')
 const PREMATURE_CLOSE = new Error('Premature close')
 
+const queueTick = __webpack_require__(/*! queue-tick */ "./node_modules/queue-tick/queue-microtask.js")
 const FIFO = __webpack_require__(/*! fast-fifo */ "./node_modules/fast-fifo/index.js")
 
 /* eslint-disable no-multi-spaces */
@@ -73306,6 +73430,7 @@ class WritableState {
     this.byteLength = byteLengthWritable || byteLength || defaultByteLength
     this.map = mapWritable || map
     this.afterWrite = afterWrite.bind(this)
+    this.afterUpdateNextTick = updateWriteNT.bind(this)
   }
 
   get ended () {
@@ -73395,7 +73520,7 @@ class WritableState {
   updateNextTick () {
     if ((this.stream._duplexState & WRITE_NEXT_TICK) !== 0) return
     this.stream._duplexState |= WRITE_NEXT_TICK
-    process.nextTick(updateWriteNT, this)
+    queueTick(this.afterUpdateNextTick)
   }
 }
 
@@ -73411,6 +73536,7 @@ class ReadableState {
     this.map = mapReadable || map
     this.pipeTo = null
     this.afterRead = afterRead.bind(this)
+    this.afterUpdateNextTick = updateReadNT.bind(this)
   }
 
   get ended () {
@@ -73554,7 +73680,7 @@ class ReadableState {
   updateNextTick () {
     if ((this.stream._duplexState & READ_NEXT_TICK) !== 0) return
     this.stream._duplexState |= READ_NEXT_TICK
-    process.nextTick(updateReadNT, this)
+    queueTick(this.afterUpdateNextTick)
   }
 }
 
@@ -73666,14 +73792,14 @@ function afterRead (err) {
   if ((this.stream._duplexState & READ_SYNC) === 0) this.update()
 }
 
-function updateReadNT (rs) {
-  rs.stream._duplexState &= READ_NOT_NEXT_TICK
-  rs.update()
+function updateReadNT () {
+  this.stream._duplexState &= READ_NOT_NEXT_TICK
+  this.update()
 }
 
-function updateWriteNT (ws) {
-  ws.stream._duplexState &= WRITE_NOT_NEXT_TICK
-  ws.update()
+function updateWriteNT () {
+  this.stream._duplexState &= WRITE_NOT_NEXT_TICK
+  this.update()
 }
 
 function afterOpen (err) {
@@ -78509,17 +78635,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var webtorrent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! webtorrent */ "./node_modules/webtorrent/index.js");
 /* harmony import */ var webtorrent__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(webtorrent__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var range_parser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! range-parser */ "./node_modules/range-parser/index.js");
-/* harmony import */ var range_parser__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(range_parser__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var matroska_subtitles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! matroska-subtitles */ "./node_modules/matroska-subtitles/dist/matroska-subtitles.module.js");
-/* harmony import */ var hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! hybrid-chunk-store */ "./node_modules/hybrid-chunk-store/index.js");
-/* harmony import */ var hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var mime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! mime */ "./node_modules/mime/index.js");
-/* harmony import */ var mime__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(mime__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _lib_subtitles_octopus_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./lib/subtitles-octopus.js */ "./node_modules/webtorrent-player/lib/subtitles-octopus.js");
-/* harmony import */ var _lib_subtitles_octopus_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_lib_subtitles_octopus_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var matroska_subtitles__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! matroska-subtitles */ "./node_modules/matroska-subtitles/dist/matroska-subtitles.module.js");
+/* harmony import */ var hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! hybrid-chunk-store */ "./node_modules/hybrid-chunk-store/index.js");
+/* harmony import */ var hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _lib_subtitles_octopus_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./lib/subtitles-octopus.js */ "./node_modules/webtorrent-player/lib/subtitles-octopus.js");
+/* harmony import */ var _lib_subtitles_octopus_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_lib_subtitles_octopus_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _lib_peer_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./lib/peer.js */ "./node_modules/webtorrent-player/lib/peer.js");
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
-/* eslint-env browser */
 /* global MediaMetadata, navNowPlaying */
 
 
@@ -78527,8 +78649,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-const keepAliveTime = 20000
 const units = [' B', ' KB', ' MB', ' GB', ' TB']
 
 class WebTorrentPlayer extends (webtorrent__WEBPACK_IMPORTED_MODULE_0___default()) {
@@ -78537,11 +78657,21 @@ class WebTorrentPlayer extends (webtorrent__WEBPACK_IMPORTED_MODULE_0___default(
 
     this.storeOpts = options.storeOpts || {}
 
-    this.scope = location.pathname.substr(0, location.pathname.lastIndexOf('/') + 1)
-    this.worker = location.origin + this.scope + 'sw.js' === navigator.serviceWorker?.controller?.scriptURL && navigator.serviceWorker.controller
-    if (!this.worker) {
-      navigator.serviceWorker.register('sw.js', { scope: this.scope }).then(reg => {
-        this.worker = reg.active || reg.waiting || reg.installing
+    const scope = location.pathname.substr(0, location.pathname.lastIndexOf('/') + 1)
+    const worker = location.origin + scope + 'sw.js' === navigator.serviceWorker?.controller?.scriptURL && navigator.serviceWorker.controller
+    const handleWorker = worker => {
+      const checkState = worker => {
+        return worker.state === 'activated' && this.loadWorker(worker)
+      }
+      if (!checkState(worker)) {
+        worker.addEventListener('statechange', ({ target }) => checkState(target))
+      }
+    }
+    if (worker) {
+      handleWorker(worker)
+    } else {
+      navigator.serviceWorker.register('sw.js', { scope }).then(reg => {
+        handleWorker(reg.active || reg.waiting || reg.installing)
       }).catch(e => {
         if (String(e) === 'InvalidStateError: Failed to register a ServiceWorker: The document is in an invalid state.') {
           location.reload() // weird workaround for a weird bug
@@ -78551,53 +78681,8 @@ class WebTorrentPlayer extends (webtorrent__WEBPACK_IMPORTED_MODULE_0___default(
       })
     }
     window.addEventListener('unload', () => {
-      this.cleanupTorrents()
+      this.destroy()
       this.cleanupVideo()
-    })
-    this.workerPortCount = 0
-    // kind of a fetch event from service worker but for the main thread.
-    navigator.serviceWorker.addEventListener('message', event => {
-      const { data } = event
-      if (!data.type || !data.type === 'webtorrent' || !data.url) return null
-      let [infoHash, ...filePath] = data.url.slice(data.url.indexOf(data.scope + 'webtorrent/') + 11 + data.scope.length).split('/')
-      filePath = decodeURI(filePath.join('/'))
-
-      if (!infoHash || !filePath) return null
-
-      const [port] = event.ports
-      const file = this.get(infoHash) && this.get(infoHash).files.find(file => file.path === filePath)
-      if (!file) return null
-      const [response, stream, raw] = this.serveFile(file, data)
-      const asyncIterator = stream && stream[Symbol.asyncIterator]()
-
-      const cleanup = () => {
-        port.onmessage = null
-        stream.destroy()
-        raw && raw.destroy()
-        this.workerPortCount--
-        if (!this.workerPortCount) {
-          clearInterval(this.workerKeepAliveInterval)
-          this.workerKeepAliveInterval = null
-        }
-      }
-
-      port.onmessage = async msg => {
-        if (msg.data) {
-          let chunk
-          try {
-            chunk = (await asyncIterator.next()).value
-          } catch (e) {
-            // chunk is yet to be downloaded or it somehow failed, should this be logged?
-          }
-          port.postMessage(chunk)
-          if (!chunk) cleanup()
-          if (!this.workerKeepAliveInterval) this.workerKeepAliveInterval = setInterval(() => fetch(`${this.worker.scriptURL.substr(0, this.worker.scriptURL.lastIndexOf('/') + 1).slice(window.location.origin.length)}webtorrent/keepalive/`), keepAliveTime)
-        } else {
-          cleanup()
-        }
-      }
-      this.workerPortCount++
-      port.postMessage(response)
     })
 
     this.video = options.video
@@ -78724,6 +78809,26 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     this.video.addEventListener('loadeddata', () => this.hideBuffering())
     this.video.addEventListener('waiting', () => this.showBuffering())
 
+    const handleAvailability = aval => {
+      if (aval) {
+        this.controls.toggleCast.removeAttribute('disabled')
+      } else {
+        this.controls.toggleCast.setAttribute('disabled', '')
+      }
+    }
+    if ('PresentationRequest' in window) {
+      this.presentationRequest = new PresentationRequest(['lib/cast.html'])
+      this.presentationRequest.addEventListener('connectionavailable', this.initCast.bind(this))
+      this.presentationConnection = null
+      navigator.presentation.defaultRequest = this.presentationRequest
+      this.presentationRequest.getAvailability().then(aval => {
+        aval.onchange = e => handleAvailability(e.target.value)
+        handleAvailability(aval.value)
+      })
+    } else {
+      this.controls.toggleCast.setAttribute('disabled', '')
+    }
+
     if ('pictureInPictureEnabled' in document) {
       this.burnIn = options.burnIn
       if (this.controls.togglePopout) this.controls.togglePopout.removeAttribute('disabled')
@@ -78767,7 +78872,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
                   duration += this.video.played.end(index) - this.video.played.start(index)
                 }
                 const rawFPS = metaData.presentedFrames / duration
-                console.log(rawFPS, metaData)
                 if (rawFPS < 28) {
                   resolve(23.976)
                 } else if (rawFPS <= 35) {
@@ -78850,59 +78954,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     })
   }
 
-  serveFile (file, req) {
-    const res = {
-      status: 200,
-      headers: {
-        // Support range-requests
-        'Accept-Ranges': 'bytes',
-        'Content-Type': mime__WEBPACK_IMPORTED_MODULE_4___default().getType(file.name),
-        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
-        Expires: '0'
-      },
-      body: req.method === 'HEAD' ? '' : 'STREAM'
-    }
-    // force the browser to download the file if if it's opened in a new tab
-    if (req.destination === 'document') {
-      res.headers['Content-Type'] = 'application/octet-stream'
-      res.headers['Content-Disposition'] = 'attachment'
-      res.body = 'DOWNLOAD'
-    }
-
-    // `rangeParser` returns an array of ranges, or an error code (number) if
-    // there was an error parsing the range.
-    let range = range_parser__WEBPACK_IMPORTED_MODULE_1___default()(file.length, req.headers.range || '')
-
-    if (range.constructor === Array) {
-      res.status = 206 // indicates that range-request was understood
-
-      // no support for multi-range request, just use the first range
-      range = range[0]
-
-      res.headers['Content-Range'] = `bytes ${range.start}-${range.end}/${file.length}`
-      res.headers['Content-Length'] = `${range.end - range.start + 1}`
-    } else {
-      res.headers['Content-Length'] = file.length
-    }
-    // parser is really a passthrough mkv stream now
-    const stream = req.method === 'GET' && file.createReadStream(range)
-    if (stream && file.name.endsWith('.mkv') && !this.subtitleData.parsed) {
-      this.subtitleData.stream = new matroska_subtitles__WEBPACK_IMPORTED_MODULE_2__.SubtitleStream(this.subtitleData.stream)
-      this.handleSubtitleParser(this.subtitleData.stream)
-      stream.pipe(this.subtitleData.stream)
-      this.subtitleData.stream.on('error', () => {
-        this.subtitleData.stream.destroy()
-        stream.destroy()
-      })
-      this.subtitleData.stream.on('close', () => {
-        this.subtitleData.stream.destroy()
-        stream.destroy()
-      })
-    }
-
-    return [res, this.subtitleData.stream || stream, this.subtitleData.stream && stream]
-  }
-
   async buildVideo (torrent, opts = {}) { // sets video source and creates a bunch of other media stuff
     // play wanted episode from opts, or the 1st episode, or 1st file [batches: plays wanted episode, single: plays the only episode, manually added: plays first or only file]
     this.cleanupVideo()
@@ -78947,15 +78998,29 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         this.postDownload(true)
       })
     }
-    this.video.src = `${this.scope}webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
+    this.currentFile.on('stream', ({ stream, file, req }, cb) => {
+      if (req.destination === 'video' && file.name.endsWith('.mkv') && !this.subtitleData.parsed) {
+        this.subtitleData.stream = new matroska_subtitles__WEBPACK_IMPORTED_MODULE_1__.SubtitleStream(this.subtitleData.stream)
+        this.handleSubtitleParser(this.subtitleData.stream, true)
+        stream.pipe(this.subtitleData.stream)
+        cb(this.subtitleData.stream)
+      }
+    })
+    this.currentFile.streamTo(this.video)
     this.video.load()
     this.playVideo()
 
-    if (this.controls.downloadFile) this.controls.downloadFile.href = `${this.scope}webtorrent/${torrent.infoHash}/${encodeURI(this.currentFile.path)}`
+    if (this.controls.downloadFile) {
+      this.currentFile.getStreamURL((_err, url) => {
+        this.controls.downloadFile.href = url
+      })
+    }
   }
 
   cleanupVideo () { // cleans up objects, attemps to clear as much video caching as possible
-    this.subtitleData.renderer?.dispose()
+    this.presentationConnection?.terminate()
+    if (document.pictureInPictureElement) document.exitPictureInPicture()
+    this.subtitleData.renderer?.destroy()
     this.subtitleData.parser?.destroy()
     this.subtitleData.stream?.destroy()
     this.subtitleData.fonts?.forEach(file => URL.revokeObjectURL(file)) // ideally this should clean up after its been downloaded by the sw renderer, but oh well
@@ -79091,52 +79156,117 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     }, 200)
   }
 
-  togglePopout () {
+  toggleCast () {
     if (this.video.readyState) {
-      if (!(this.burnIn && this.subtitleData.renderer)) {
-        this.video !== document.pictureInPictureElement ? this.video.requestPictureInPicture() : document.exitPictureInPicture()
+      if (this.presentationConnection) {
+        this.presentationConnection?.terminate()
       } else {
-        if (document.pictureInPictureElement && !document.pictureInPictureElement.id) { // only exit if pip is the custom one, else overwrite existing pip with custom
-          document.exitPictureInPicture()
-        } else {
-          const canvas = document.createElement('canvas')
-          const canvasVideo = document.createElement('video')
-          const context = canvas.getContext('2d', { alpha: false })
-          const subtitleCanvas = this.subtitleData.renderer.canvas
-          let running = true
-          canvas.width = this.video.videoWidth
-          canvas.height = this.video.videoHeight
+        this.presentationRequest.start()
+      }
+    }
+  }
 
-          const renderFrame = () => {
-            if (running === true) {
-              context.drawImage(this.video, 0, 0)
-              context.drawImage(subtitleCanvas, 0, 0, canvas.width, canvas.height)
-              requestAnimationFrame(renderFrame)
+  initCast (event) {
+    let peer = new _lib_peer_js__WEBPACK_IMPORTED_MODULE_4__.default({ polite: true })
+
+    this.presentationConnection = event.connection
+    this.presentationConnection.addEventListener('terminate', () => {
+      this.presentationConnection = null
+      this.changeControlsIcon('toggleCast', 'cast')
+      this.player.classList.remove('pip')
+      peer = null
+    })
+
+    peer.signalingPort.onmessage = ({ data }) => {
+      this.presentationConnection.send(data)
+    }
+
+    this.presentationConnection.addEventListener('message', ({ data }) => {
+      peer.signalingPort.postMessage(data)
+    })
+
+    peer.dc.onopen = async () => {
+      await this.fps
+      if (peer && this.presentationConnection) {
+        this.changeControlsIcon('toggleCast', 'cast_connected')
+        this.player.classList.add('pip')
+        const tracks = []
+        const videostream = this.video.captureStream(await this.fps)
+        if (this.burnIn) {
+          const { stream, destroy } = await this.getBurnIn(!this.subtitleData.renderer)
+          tracks.push(stream.getVideoTracks()[0], videostream.getAudioTracks()[0])
+          this.presentationConnection.addEventListener('terminate', destroy)
+        } else {
+          tracks.push(videostream.getVideoTracks()[0], videostream.getAudioTracks()[0])
+        }
+        for (const track of tracks) {
+          peer.pc.addTrack(track)
+        }
+        this.video.play() // video pauses for some reason
+      }
+    }
+  }
+
+  async togglePopout () {
+    if (this.video.readyState) {
+      if (this.burnIn) {
+        await this.fps
+        if (!this.subtitleData.renderer) {
+          this.video !== document.pictureInPictureElement ? this.video.requestPictureInPicture() : document.exitPictureInPicture()
+        } else {
+          if (document.pictureInPictureElement && !document.pictureInPictureElement.id) { // only exit if pip is the custom one, else overwrite existing pip with custom
+            document.exitPictureInPicture()
+          } else {
+            const canvasVideo = document.createElement('video')
+            const { stream, destroy } = await this.getBurnIn()
+            canvasVideo.srcObject = stream
+            canvasVideo.onloadedmetadata = () => {
+              canvasVideo.play()
+              canvasVideo.requestPictureInPicture().then(
+                this.player.classList.add('pip')
+              ).catch(e => {
+                console.warn('Failed To Burn In Subtitles ' + e)
+                destroy()
+                canvasVideo.remove()
+                this.player.classList.remove('pip')
+              })
+            }
+            canvasVideo.onleavepictureinpicture = () => {
+              destroy()
+              canvasVideo.remove()
+              this.player.classList.remove('pip')
             }
           }
-          canvasVideo.srcObject = canvas.captureStream()
-          canvasVideo.onloadedmetadata = () => {
-            canvasVideo.play()
-            canvasVideo.requestPictureInPicture().then(
-              this.player.classList.add('pip')
-            ).catch(e => {
-              console.warn('Failed To Burn In Subtitles ' + e)
-              running = false
-              canvasVideo.remove()
-              canvas.remove()
-              this.player.classList.remove('pip')
-            })
-          }
-          canvasVideo.onleavepictureinpicture = () => {
-            running = false
-            canvasVideo.remove()
-            canvas.remove()
-            this.player.classList.remove('pip')
-          }
+        }
+      } else {
+        this.video !== document.pictureInPictureElement ? this.video.requestPictureInPicture() : document.exitPictureInPicture()
+      }
+    }
+  }
+
+  async getBurnIn (noSubs) {
+    if (this.burnIn) {
+      const canvas = document.createElement('canvas')
+      const context = canvas.getContext('2d', { alpha: false })
+      let running = true
+      canvas.width = this.video.videoWidth
+      canvas.height = this.video.videoHeight
+
+      const renderFrame = () => {
+        if (running === true) {
+          context.drawImage(this.video, 0, 0)
+          if (!noSubs) context.drawImage(this.subtitleData.renderer?.canvas, 0, 0, canvas.width, canvas.height)
           requestAnimationFrame(renderFrame)
         }
       }
+      requestAnimationFrame(renderFrame)
+      const destroy = () => {
+        running = false
+        canvas.remove()
+      }
+      return { stream: canvas.captureStream(await this.fps), destroy }
     }
+    return null
   }
 
   toTS (sec, full) {
@@ -79332,13 +79462,13 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
             ? (track.language || (!Object.values(this.subtitleData.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : track.type)) + (track.name ? ' - ' + track.name : '')
             : (track.language || (!Object.values(this.video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) + (track.label ? ' - ' + track.label : '')
         : 'OFF' // TODO: clean this up, TLDR assume english track if track lang is undefined || 'und' and there isnt an existing eng track already
-      frag.appendChild(input)
-      frag.appendChild(label)
+      frag.append(input)
+      frag.append(label)
       if (type === 'captions') {
-        this.controls.selectCaptions.appendChild(frag)
+        this.controls.selectCaptions.append(frag)
         this.controls.captionsButton.removeAttribute('disabled')
       } else {
-        this.controls.selectAudio.appendChild(frag)
+        this.controls.selectAudio.append(frag)
       }
     }
   }
@@ -79398,7 +79528,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   parseSubtitles (file, skipFiles) { // parse subtitles fully after a download is finished
     return new Promise((resolve) => {
       if (file.name.endsWith('.mkv')) {
-        let parser = new matroska_subtitles__WEBPACK_IMPORTED_MODULE_2__.SubtitleParser()
+        let parser = new matroska_subtitles__WEBPACK_IMPORTED_MODULE_1__.SubtitleParser()
         this.handleSubtitleParser(parser, skipFiles)
         parser.on('finish', () => {
           console.log('Sub parsing finished', this.toTS((performance.now() - t0) / 1000))
@@ -79426,9 +79556,17 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
   initParser (file) {
     return new Promise(resolve => {
-      this.subtitleData.stream = new matroska_subtitles__WEBPACK_IMPORTED_MODULE_2__.SubtitleStream()
+      this.subtitleData.stream = new matroska_subtitles__WEBPACK_IMPORTED_MODULE_1__.SubtitleParser()
       this.handleSubtitleParser(this.subtitleData.stream)
-      this.subtitleData.stream.once('tracks', () => {
+      this.subtitleData.stream.once('tracks', tracks => {
+        if (!tracks.length) {
+          this.subtitleData.parsed = true
+          resolve()
+          this.subtitleData.stream.destroy()
+          fileStreamStream.destroy()
+        }
+      })
+      this.subtitleData.stream.once('subtitle', () => {
         resolve()
         fileStreamStream.destroy()
       })
@@ -79439,19 +79577,23 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
   handleSubtitleParser (parser, skipFile) {
     parser.once('tracks', tracks => {
-      tracks.forEach(track => {
-        if (!this.subtitleData.tracks[track.number]) {
-        // overwrite webvtt or other header with custom one
-          if (track.type !== 'ass') track.header = this.subtitleData.defaultHeader
-          if (!this.subtitleData.current) {
-            this.subtitleData.current = track.number
-            this.createRadioElement(undefined, 'captions')
+      if (!tracks.length) {
+        this.subtitleData.parsed = true
+      } else {
+        tracks.forEach(track => {
+          if (!this.subtitleData.tracks[track.number]) {
+            // overwrite webvtt or other header with custom one
+            if (track.type !== 'ass') track.header = this.subtitleData.defaultHeader
+            if (!this.subtitleData.current) {
+              this.subtitleData.current = track.number
+              this.createRadioElement(undefined, 'captions')
+            }
+            this.subtitleData.tracks[track.number] = new Set()
+            this.subtitleData.headers[track.number] = track
+            this.createRadioElement(track, 'captions')
           }
-          this.subtitleData.tracks[track.number] = new Set()
-          this.subtitleData.headers[track.number] = track
-          this.createRadioElement(track, 'captions')
-        }
-      })
+        })
+      }
     })
     parser.on('subtitle', (subtitle, trackNumber) => {
       if (!this.subtitleData.parsed) {
@@ -79479,7 +79621,6 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         fonts: this.subtitleData.fonts,
         fallbackFont: 'https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4.woff2',
         workerUrl: 'lib/subtitles-octopus-worker.js',
-        timeOffset: 0.041,
         onReady: () => { // weird hack for laggy subtitles, this is some issue in SO
           if (!this.video.paused) {
             this.video.pause()
@@ -79488,7 +79629,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         }
       }
       if (!this.subtitleData.renderer) {
-        this.subtitleData.renderer = new (_lib_subtitles_octopus_js__WEBPACK_IMPORTED_MODULE_5___default())(options)
+        this.subtitleData.renderer = new (_lib_subtitles_octopus_js__WEBPACK_IMPORTED_MODULE_3___default())(options)
         this.selectCaptions(this.subtitleData.current)
       }
     }
@@ -79620,11 +79761,11 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
         destroyStoreOnDestroy: this.destroyStore,
         storeOpts: this.storeOpts,
         storeCacheSlots: 0,
-        store: (hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_3___default()),
+        store: (hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_2___default()),
         announce: this.tracker.announce || [
           'wss://tracker.openwebtorrent.com',
-          'wss://tracker.sloppyta.co:443/announce',
-          'wss://hub.bugout.link:443/announce'
+          'wss://spacetradersapi-chatbox.herokuapp.com:443/announce',
+          'wss://peertube.cpy.re:443/tracker/socket'
         ]
       }, torrent => {
         handleTorrent(torrent, opts)
@@ -79635,19 +79776,19 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   // cleanup torrent and store
   cleanupTorrents () {
   // creates an array of all non-offline store torrents and removes them
-    this.torrents.filter(torrent => !this.offlineTorrents[torrent.infoHash]).forEach(torrent => torrent.destroy({ destroyStore: this.destroyStore }))
+    this.torrents.filter(torrent => !this.offlineTorrents[torrent.infoHash]).forEach(torrent => torrent.destroy())
   }
 
   // add torrent for offline download
   offlineDownload (torrentID) {
     const torrent = this.add(torrentID, {
       storeOpts: this.storeOpts,
-      store: (hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_3___default()),
+      store: (hybrid_chunk_store__WEBPACK_IMPORTED_MODULE_2___default()),
       storeCacheSlots: 0,
       announce: this.tracker.announce || [
         'wss://tracker.openwebtorrent.com',
-        'wss://tracker.sloppyta.co:443/announce',
-        'wss://hub.bugout.link:443/announce'
+        'wss://spacetradersapi-chatbox.herokuapp.com:443/announce',
+        'wss://peertube.cpy.re:443/tracker/socket'
       ]
     })
     torrent.on('metadata', () => {
@@ -79660,6 +79801,155 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 }
 
+
+/***/ }),
+
+/***/ "./node_modules/webtorrent-player/lib/peer.js":
+/*!****************************************************!*\
+  !*** ./node_modules/webtorrent-player/lib/peer.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Peer)
+/* harmony export */ });
+function waitToCompleteIceGathering (pc, state = pc.iceGatheringState) {
+  return state !== 'complete' && new Promise(resolve => {
+    pc.addEventListener('icegatheringstatechange', () => (pc.iceGatheringState === 'complete') && resolve())
+  })
+}
+
+/**
+ * @typedef {AddEventListenerOptions} Test~options
+ * @property {AbortSignal} signal - funkis?
+ */
+
+class Peer {
+  /**
+   * @param {{
+   *   polite: boolean,
+   *   trickle: boolean,
+   *   iceServers: RTCIceServer[]
+   *   signal: AbortSignal
+   * }} [options]
+   */
+  constructor (options = {}) {
+    let { polite = true, trickle = true } = options
+
+    let { port1, port2 } = new MessageChannel()
+    let send = msg => port2.postMessage(JSON.stringify(msg))
+
+    const pc = new RTCPeerConnection({
+      iceServers: options?.iceServers || [{
+        urls: [
+          'stun:stun.l.google.com:19302',
+          'stun:global.stun.twilio.com:3478'
+        ]
+      }]
+    })
+
+    const ctrl = new AbortController()
+
+    /** @type {any} dummy alias for AbortSignal to make TS happy */
+    const signal = { signal: ctrl.signal }
+
+    pc.addEventListener('iceconnectionstatechange', () => {
+      if (
+        pc.iceConnectionState === 'disconnected' ||
+        pc.iceConnectionState === 'failed'
+      ) {
+        ctrl.abort()
+      }
+    }, signal)
+
+    const dc = pc.createDataChannel('both', { negotiated: true, id: 0 })
+
+    this.pc = pc
+    this.dc = dc
+    this.signal = ctrl.signal
+    this.polite = polite
+    this.signalingPort = port1
+
+    this.ready = new Promise(resolve => {
+      dc.addEventListener('open', () => {
+        // At this point we start to trickle over datachannel instead
+        // we also close the message channel as we do not need it anymore
+        trickle = true
+        send = (msg) => dc.send(JSON.stringify(msg))
+        port1.close()
+        port2.close()
+        this.ready = port2 = port1 = port2.onmessage = null
+        resolve()
+      }, { once: true, ...signal })
+    })
+
+    pc.addEventListener('icecandidate', ({ candidate }) => {
+      trickle && send({ candidate })
+    }, { ...signal })
+
+    // The rest is the polite peer negotiation logic, copied from this blog
+
+    let makingOffer = false; let ignoreOffer = false
+
+    pc.addEventListener('negotiationneeded', async () => {
+      makingOffer = true
+      const offer = await pc.createOffer()
+      if (pc.signalingState !== 'stable') return
+      await pc.setLocalDescription(offer)
+      makingOffer = false
+      if (trickle) {
+        send({ description: pc.localDescription })
+      } else {
+        await waitToCompleteIceGathering(pc)
+        const description = pc.localDescription.toJSON()
+        description.sdp = description.sdp.replace(/a=ice-options:trickle\s\n/g, '')
+        send({ description })
+      }
+    }, { ...signal })
+
+    async function onmessage ({ data }) {
+      const { description, candidate } = typeof data === 'string' ? JSON.parse(data) : data
+
+      if (description) {
+        const offerCollision = description.type === 'offer' &&
+          (makingOffer || pc.signalingState !== 'stable')
+
+        ignoreOffer = !this.polite && offerCollision
+        if (ignoreOffer) {
+          return
+        }
+
+        if (offerCollision) {
+          await Promise.all([
+            pc.setLocalDescription({ type: 'rollback' }),
+            pc.setRemoteDescription(description)
+          ])
+        } else {
+          try {
+            (description.type === 'answer' && pc.signalingState === 'stable') ||
+              await pc.setRemoteDescription(description)
+          } catch (err) { }
+        }
+        if (description.type === 'offer') {
+          await pc.setLocalDescription(await pc.createAnswer())
+          // Edge didn't set the state to 'new' after calling the above :[
+          if (!trickle) await waitToCompleteIceGathering(pc, 'new')
+          send({ description: pc.localDescription })
+        }
+      } else if (candidate) {
+        await pc.addIceCandidate(candidate)
+      }
+    }
+
+    port2.onmessage = onmessage.bind(this)
+    dc.addEventListener('message', onmessage.bind(this), { ...signal })
+  }
+}
+window.Peer = Peer
+
+
 /***/ }),
 
 /***/ "./node_modules/webtorrent-player/lib/subtitles-octopus.js":
@@ -79669,6 +79959,13 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
+/*
+  author: Daodor, libass
+  license: MIT
+
+  re-written by: ThaUnknown_
+  license: GPL3
+*/
 class SubtitlesOctopus {
   constructor (options = {}) {
     if (!window.Worker) {
@@ -79848,44 +80145,39 @@ class SubtitlesOctopus {
   setVideo (video) {
     this.video = video
     if (this.video) {
-      const timeupdate = () => {
-        this.setCurrentTime(video.paused, video.currentTime + this.timeOffset)
+      let state = this.video.paused
+      const timeupdate = playing => {
+        if (playing != null) state = playing
+        this.setCurrentTime(this.video.paused || state, video.currentTime + this.timeOffset)
       }
-      this.video.addEventListener('timeupdate', timeupdate, false)
-      this.video.addEventListener('progress', timeupdate, false)
+      this.video.addEventListener('timeupdate', () => timeupdate(), false)
+      this.video.addEventListener('progress', () => timeupdate(), false)
 
-      this.video.addEventListener('pause', timeupdate, false)
+      this.video.addEventListener('waiting', () => timeupdate(true), false)
+      this.video.addEventListener('pause', () => timeupdate(true), false)
+      this.video.addEventListener('seeking', () => timeupdate(true), false)
 
-      this.video.addEventListener('seeking', () => {
-        this.video.removeEventListener('timeupdate', timeupdate)
-      }, false)
+      this.video.addEventListener('playing', () => timeupdate(false), false)
 
       this.video.addEventListener('seeked', () => {
-        this.video.addEventListener('timeupdate', timeupdate, false)
-        this.setCurrentTime(video.currentTime + this.timeOffset)
+        timeupdate(false)
         if (this.renderAhead > 0) {
-          this._cleanPastRendered(video.currentTime + this.timeOffset, true)
+          this._cleanPastRendered(this.video.currentTime + this.timeOffset, true)
         }
       }, false)
 
-      this.video.addEventListener('ratechange', () => {
-        this.setRate(video.playbackRate)
-      }, false)
-
-      this.video.addEventListener('waiting', timeupdate, false)
+      this.video.addEventListener('ratechange', this.setRate.bind(this), false)
 
       // Support Element Resize Observer
       if (typeof ResizeObserver !== 'undefined') {
-        this.ro = new ResizeObserver(() => this.resize())
+        this.ro = new ResizeObserver(this.resize.bind(this, 0, 0, 0, 0))
         this.ro.observe(this.video)
       }
 
       if (this.video.videoWidth > 0) {
         this.resize()
       } else {
-        this.video.addEventListener('loadedmetadata', () => {
-          this.resize()
-        }, false)
+        this.video.addEventListener('loadedmetadata', this.resize.bind(this, 0, 0, 0, 0), false)
       }
     }
   }
@@ -80246,6 +80538,8 @@ class SubtitlesOctopus {
         this.canvas.style.top = top + 'px'
         this.canvas.style.left = left + 'px'
         this.canvas.style.pointerEvents = 'none'
+        this.canvas.style.width = videoSize.width + 'px'
+        this.canvas.style.height = videoSize.height + 'px'
       }
       if (!(this.canvas.width === width && this.canvas.height === height)) {
         // only re-paint if dimensions actually changed
@@ -80287,6 +80581,8 @@ class SubtitlesOctopus {
       this.canvas.style.top = top + 'px'
       this.canvas.style.left = left + 'px'
       this.canvas.style.pointerEvents = 'none'
+      this.canvas.style.width = videoSize.width + 'px'
+      this.canvas.style.height = videoSize.height + 'px'
     }
 
     if (this.renderMode === 'offscreen' && this.initDone) {
@@ -80322,14 +80618,14 @@ class SubtitlesOctopus {
           case 'renderCanvas': {
             if (this.lastRenderTime < data.time) {
               this.lastRenderTime = data.time
-              window.requestAnimationFrame(() => this.renderFrames(data))
+              window.requestAnimationFrame(this.renderFrames.bind(this, data))
             }
             break
           }
           case 'renderFastCanvas': {
             if (this.lastRenderTime < data.time) {
               this.lastRenderTime = data.time
-              window.requestAnimationFrame(() => this.renderFastFrames(data))
+              window.requestAnimationFrame(this.renderFastFrames.bind(this, data))
             }
             break
           }
@@ -80412,14 +80708,14 @@ class SubtitlesOctopus {
     this.resetRenderAheadCache(false)
   }
 
-  setRate (rate) {
+  setRate () {
     this.worker.postMessage({
       target: 'video',
-      rate: rate
+      rate: this.video.playbackRate
     })
   }
 
-  dispose () {
+  destroy () {
     this.worker.postMessage({
       target: 'destroy'
     })
@@ -80491,6 +80787,7 @@ if (true) {
   module.exports = SubtitlesOctopus
 }
 
+
 /***/ }),
 
 /***/ "./node_modules/webtorrent/index.js":
@@ -80502,7 +80799,8 @@ if (true) {
 /* provided dependency */ var Buffer = __webpack_require__(/*! ./node_modules/buffer/index.js */ "./node_modules/buffer/index.js")["Buffer"];
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 /*! webtorrent. MIT License. WebTorrent LLC <https://webtorrent.io/opensource> */
-/* global FileList */
+/* global FileList, ServiceWorker */
+/* eslint-env browser */
 
 const { EventEmitter } = __webpack_require__(/*! events */ "./node_modules/events/events.js")
 const concat = __webpack_require__(/*! simple-concat */ "./node_modules/simple-concat/index.js")
@@ -80516,6 +80814,7 @@ const path = __webpack_require__(/*! path */ "./node_modules/path-browserify/ind
 const Peer = __webpack_require__(/*! simple-peer */ "./node_modules/simple-peer/index.js")
 const queueMicrotask = __webpack_require__(/*! queue-microtask */ "./node_modules/queue-microtask/index.js")
 const randombytes = __webpack_require__(/*! randombytes */ "./node_modules/randombytes/browser.js")
+const sha1 = __webpack_require__(/*! simple-sha1 */ "./node_modules/simple-sha1/browser.js")
 const speedometer = __webpack_require__(/*! speedometer */ "./node_modules/speedometer/index.js")
 const { ThrottleGroup } = __webpack_require__(/*! speed-limiter */ "./node_modules/speed-limiter/index.js")
 
@@ -80583,6 +80882,14 @@ class WebTorrent extends EventEmitter {
     this._downloadLimit = Math.max((typeof opts.downloadLimit === 'number') ? opts.downloadLimit : -1, -1)
     this._uploadLimit = Math.max((typeof opts.uploadLimit === 'number') ? opts.uploadLimit : -1, -1)
 
+    this.serviceWorker = null
+    this.workerKeepAliveInterval = null
+    this.workerPortCount = 0
+
+    if (opts.secure === true) {
+      __webpack_require__(/*! ./lib/peer */ "./node_modules/webtorrent/lib/peer.js").enableSecure()
+    }
+
     this._debug(
       'new webtorrent (peerId %s, nodeId %s, port %s)',
       this.peerId, this.nodeId, this.torrentPort
@@ -80595,7 +80902,7 @@ class WebTorrent extends EventEmitter {
 
     if (this.tracker) {
       if (typeof this.tracker !== 'object') this.tracker = {}
-      if (__webpack_require__.g.WRTC && !this.tracker.wrtc) this.tracker.wrtc = __webpack_require__.g.WRTC
+      if (globalThis.WRTC && !this.tracker.wrtc) this.tracker.wrtc = globalThis.WRTC
     }
 
     if (typeof ConnPool === 'function') {
@@ -80653,6 +80960,68 @@ class WebTorrent extends EventEmitter {
     } else {
       queueMicrotask(ready)
     }
+  }
+
+  /**
+   * Accepts an existing service worker registration [navigator.serviceWorker.controller]
+   * which must be activated, "creates" a file server for streamed file rendering to use.
+   *
+   * @param  {ServiceWorker} controller
+   * @param {function=} cb
+   * @return {null}
+   */
+  loadWorker (controller, cb = () => {}) {
+    if (!(controller instanceof ServiceWorker)) throw new Error('Invalid worker registration')
+    if (controller.state !== 'activated') throw new Error('Worker isn\'t activated')
+    const keepAliveTime = 20000
+
+    this.serviceWorker = controller
+
+    navigator.serviceWorker.addEventListener('message', event => {
+      const { data } = event
+      if (!data.type || !data.type === 'webtorrent' || !data.url) return null
+      let [infoHash, ...filePath] = data.url.slice(data.url.indexOf(data.scope + 'webtorrent/') + 11 + data.scope.length).split('/')
+      filePath = decodeURI(filePath.join('/'))
+      if (!infoHash || !filePath) return null
+
+      const [port] = event.ports
+
+      const file = this.get(infoHash) && this.get(infoHash).files.find(file => file.path === filePath)
+      if (!file) return null
+
+      const [response, stream, raw] = file._serve(data)
+      const asyncIterator = stream && stream[Symbol.asyncIterator]()
+
+      const cleanup = () => {
+        port.onmessage = null
+        if (stream) stream.destroy()
+        if (raw) raw.destroy()
+        this.workerPortCount--
+        if (!this.workerPortCount) {
+          clearInterval(this.workerKeepAliveInterval)
+          this.workerKeepAliveInterval = null
+        }
+      }
+
+      port.onmessage = async msg => {
+        if (msg.data) {
+          let chunk
+          try {
+            chunk = (await asyncIterator.next()).value
+          } catch (e) {
+            // chunk is yet to be downloaded or it somehow failed, should this be logged?
+          }
+          port.postMessage(chunk)
+          if (!chunk) cleanup()
+          if (!this.workerKeepAliveInterval) this.workerKeepAliveInterval = setInterval(() => fetch(`${this.serviceWorker.scriptURL.substr(0, this.serviceWorker.scriptURL.lastIndexOf('/') + 1).slice(window.location.origin.length)}webtorrent/keepalive/`), keepAliveTime)
+        } else {
+          cleanup()
+        }
+      }
+      this.workerPortCount++
+      port.postMessage(response)
+    })
+    cb(this.serviceWorker)
   }
 
   get downloadSpeed () { return this._downloadSpeed() }
@@ -80949,6 +81318,19 @@ class WebTorrent extends EventEmitter {
     args[0] = `[${this._debugId}] ${args[0]}`
     debug(...args)
   }
+
+  _getByHash (infoHashHash) {
+    for (const torrent of this.torrents) {
+      if (!torrent.infoHashHash) {
+        torrent.infoHashHash = sha1.sync(Buffer.from('72657132' /* 'req2' */ + torrent.infoHash, 'hex'))
+      }
+      if (infoHashHash === torrent.infoHashHash) {
+        return torrent
+      }
+    }
+
+    return null
+  }
 }
 
 WebTorrent.WEBRTC_SUPPORT = Peer.WEBRTC_SUPPORT
@@ -81108,6 +81490,9 @@ const streamToBlobURL = __webpack_require__(/*! stream-to-blob-url */ "./node_mo
 const streamToBuffer = __webpack_require__(/*! stream-with-known-length-to-buffer */ "./node_modules/stream-with-known-length-to-buffer/index.js")
 const FileStream = __webpack_require__(/*! ./file-stream */ "./node_modules/webtorrent/lib/file-stream.js")
 const queueMicrotask = __webpack_require__(/*! queue-microtask */ "./node_modules/queue-microtask/index.js")
+const rangeParser = __webpack_require__(/*! range-parser */ "./node_modules/range-parser/index.js")
+const mime = __webpack_require__(/*! mime */ "./node_modules/mime/index.js")
+const eos = __webpack_require__(/*! end-of-stream */ "./node_modules/end-of-stream/index.js")
 
 class File extends EventEmitter {
   constructor (torrent, file) {
@@ -81134,6 +81519,8 @@ class File extends EventEmitter {
       this.done = true
       this.emit('done')
     }
+
+    this._serviceWorker = torrent.client.serviceWorker
   }
 
   get downloaded () {
@@ -81245,6 +81632,77 @@ class File extends EventEmitter {
     render.render(this, elem, opts, cb)
   }
 
+  _serve (req) {
+    const res = {
+      status: 200,
+      headers: {
+        // Support range-requests
+        'Accept-Ranges': 'bytes',
+        'Content-Type': mime.getType(this.name),
+        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+        Expires: '0'
+      },
+      body: req.method === 'HEAD' ? '' : 'STREAM'
+    }
+    // force the browser to download the file if if it's opened in a new tab
+    if (req.destination === 'document') {
+      res.headers['Content-Type'] = 'application/octet-stream'
+      res.headers['Content-Disposition'] = 'attachment'
+      res.body = 'DOWNLOAD'
+    }
+
+    // `rangeParser` returns an array of ranges, or an error code (number) if
+    // there was an error parsing the range.
+    let range = rangeParser(this.length, req.headers.range || '')
+
+    if (range.constructor === Array) {
+      res.status = 206 // indicates that range-request was understood
+
+      // no support for multi-range request, just use the first range
+      range = range[0]
+
+      res.headers['Content-Range'] = `bytes ${range.start}-${range.end}/${this.length}`
+      res.headers['Content-Length'] = `${range.end - range.start + 1}`
+    } else {
+      res.headers['Content-Length'] = this.length
+    }
+
+    const stream = req.method === 'GET' && this.createReadStream(range)
+
+    let pipe = null
+    if (stream) {
+      this.emit('stream', { stream, req, file: this }, piped => {
+        pipe = piped
+
+        // piped stream might not close the original filestream on close/error, this is agressive but necessary
+        eos(piped, () => {
+          if (piped) piped.destroy()
+          stream.destroy()
+        })
+      })
+    }
+
+    return [res, pipe || stream, pipe && stream]
+  }
+
+  getStreamURL (cb = () => {}) {
+    if (typeof window === 'undefined') throw new Error('browser-only method')
+    if (!this._serviceWorker) throw new Error('No worker registered')
+    if (this._serviceWorker.state !== 'activated') throw new Error('Worker isn\'t activated')
+    const workerPath = this._serviceWorker.scriptURL.substr(0, this._serviceWorker.scriptURL.lastIndexOf('/') + 1).slice(window.location.origin.length)
+    const url = `${workerPath}webtorrent/${this._torrent.infoHash}/${encodeURI(this.path)}`
+    cb(null, url)
+  }
+
+  streamTo (elem, cb = () => {}) {
+    if (typeof window === 'undefined') throw new Error('browser-only method')
+    if (!this._serviceWorker) throw new Error('No worker registered')
+    if (this._serviceWorker.state !== 'activated') throw new Error('Worker isn\'t activated')
+    const workerPath = this._serviceWorker.scriptURL.substr(0, this._serviceWorker.scriptURL.lastIndexOf('/') + 1).slice(window.location.origin.length)
+    elem.src = `${workerPath}webtorrent/${this._torrent.infoHash}/${encodeURI(this.path)}`
+    cb(null, elem)
+  }
+
   _getMimeType () {
     return render.mime[path.extname(this.name).toLowerCase()]
   }
@@ -81281,6 +81739,12 @@ const CONNECT_TIMEOUT_TCP = 5000
 const CONNECT_TIMEOUT_UTP = 5000
 const CONNECT_TIMEOUT_WEBRTC = 25000
 const HANDSHAKE_TIMEOUT = 25000
+
+let secure = false
+
+exports.enableSecure = () => {
+  secure = true
+}
 
 /**
  * WebRTC peer connections start out connected, because WebRTC peers require an
@@ -81410,6 +81874,10 @@ class Peer extends EventEmitter {
     this.timeout = null // handshake timeout
     this.retries = 0 // outgoing TCP connection retry count
 
+    this.sentPe1 = false
+    this.sentPe2 = false
+    this.sentPe3 = false
+    this.sentPe4 = false
     this.sentHandshake = false
   }
 
@@ -81439,8 +81907,8 @@ class Peer extends EventEmitter {
       this.destroy(err)
     })
 
-    const wire = this.wire = new Wire()
-    wire.type = this.type
+    const wire = this.wire = new Wire(this.type, this.retries, secure)
+
     wire.once('end', () => {
       this.destroy()
     })
@@ -81454,6 +81922,18 @@ class Peer extends EventEmitter {
       this.destroy(err)
     })
 
+    wire.once('pe1', () => {
+      this.onPe1()
+    })
+    wire.once('pe2', () => {
+      this.onPe2()
+    })
+    wire.once('pe3', () => {
+      this.onPe3()
+    })
+    wire.once('pe4', () => {
+      this.onPe4()
+    })
     wire.once('handshake', (infoHash, peerId) => {
       this.onHandshake(infoHash, peerId)
     })
@@ -81461,7 +81941,53 @@ class Peer extends EventEmitter {
 
     this.setThrottlePipes()
 
-    if (this.swarm && !this.sentHandshake) this.handshake()
+    if (this.swarm) {
+      if (this.type === 'tcpOutgoing') {
+        if (secure && this.retries === 0 && !this.sentPe1) this.sendPe1()
+        else if (!this.sentHandshake) this.handshake()
+      } else if (this.type !== 'tcpIncoming' && !this.sentHandshake) this.handshake()
+    }
+  }
+
+  sendPe1 () {
+    this.wire.sendPe1()
+    this.sentPe1 = true
+  }
+
+  onPe1 () {
+    this.sendPe2()
+  }
+
+  sendPe2 () {
+    this.wire.sendPe2()
+    this.sentPe2 = true
+  }
+
+  onPe2 () {
+    this.sendPe3()
+  }
+
+  sendPe3 () {
+    this.wire.sendPe3(this.swarm.infoHash)
+    this.sentPe3 = true
+  }
+
+  onPe3 (infoHashHash) {
+    if (this.swarm) {
+      if (this.swarm.infoHashHash !== infoHashHash) {
+        this.destroy(new Error('unexpected crypto handshake info hash for this swarm'))
+      }
+      this.sendPe4()
+    }
+  }
+
+  sendPe4 () {
+    this.wire.sendPe4(this.swarm.infoHash)
+    this.sentPe4 = true
+  }
+
+  onPe4 () {
+    if (!this.sentHandshake) this.handshake()
   }
 
   clearPipes () {
@@ -83824,7 +84350,7 @@ module.exports = WebConn
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"webtorrent","description":"Streaming torrent client","version":"1.3.3","author":{"name":"WebTorrent LLC","email":"feross@webtorrent.io","url":"https://webtorrent.io"},"browser":{"./lib/server.js":false,"./lib/conn-pool.js":false,"./lib/utp.js":false,"bittorrent-dht/client":false,"fs":false,"fs-chunk-store":"memory-chunk-store","load-ip-set":false,"net":false,"os":false,"ut_pex":false},"browserify":{"transform":["package-json-versionify"]},"bugs":{"url":"https://github.com/webtorrent/webtorrent/issues"},"chromeapp":{"./lib/utp.js":false,"fs-chunk-store":"memory-chunk-store","http":"http-node","load-ip-set":false,"net":"chrome-net","os":false},"dependencies":{"addr-to-ip-port":"^1.5.1","bitfield":"^4.0.0","bittorrent-dht":"^10.0.1","bittorrent-protocol":"^3.4.2","cache-chunk-store":"^3.2.2","chrome-net":"^3.3.4","chunk-store-stream":"^4.3.0","cpus":"^1.0.3","create-torrent":"^4.7.1","debug":"^4.3.2","end-of-stream":"^1.4.4","escape-html":"^1.0.3","fs-chunk-store":"^2.0.3","http-node":"github:feross/http-node#webtorrent","immediate-chunk-store":"^2.2.0","load-ip-set":"^2.2.1","lt_donthave":"^1.0.1","memory-chunk-store":"^1.3.5","mime":"^2.5.2","multistream":"^4.1.0","package-json-versionify":"^1.0.4","parse-torrent":"^9.1.3","pump":"^3.0.0","queue-microtask":"^1.2.3","random-iterate":"^1.0.1","randombytes":"^2.1.0","range-parser":"^1.2.1","readable-stream":"^3.6.0","render-media":"^4.1.0","run-parallel":"^1.2.0","run-parallel-limit":"^1.1.0","simple-concat":"^1.0.1","simple-get":"^4.0.0","simple-peer":"^9.11.0","simple-sha1":"^3.1.0","speed-limiter":"^1.0.2","speedometer":"^1.1.0","stream-to-blob":"^2.0.1","stream-to-blob-url":"^3.0.2","stream-with-known-length-to-buffer":"^1.0.4","torrent-discovery":"^9.4.0","torrent-piece":"^2.0.1","unordered-array-remove":"^1.0.2","ut_metadata":"^3.5.2","ut_pex":"^3.0.1"},"devDependencies":{"@webtorrent/semantic-release-config":"1.0.5","airtap":"4.0.3","airtap-manual":"1.0.0","airtap-sauce":"1.1.2","babel-minify":"0.5.1","bittorrent-tracker":"9.17.4","browserify":"17.0.0","disc":"1.3.3","finalhandler":"1.1.2","network-address":"1.1.2","run-series":"1.1.9","semantic-release":"17.4.4","serve-static":"1.14.1","standard":"*","tape":"5.2.2","webtorrent-fixtures":"1.7.3"},"optionalDependencies":{"utp-native":"^2.5.3"},"engines":{"node":">=12"},"funding":[{"type":"github","url":"https://github.com/sponsors/feross"},{"type":"patreon","url":"https://www.patreon.com/feross"},{"type":"consulting","url":"https://feross.org/support"}],"homepage":"https://webtorrent.io","keywords":["bittorrent","bittorrent client","download","mad science","p2p","peer-to-peer","peers","streaming","swarm","torrent","web torrent","webrtc","webrtc data","webtorrent"],"license":"MIT","main":"index.js","repository":{"type":"git","url":"git://github.com/webtorrent/webtorrent.git"},"scripts":{"build":"npm run build-js && npm run build-chromeapp","build-chromeapp":"browserify --browser-field=chromeapp --standalone WebTorrent . | minify --mangle=false > webtorrent.chromeapp.js","build-chromeapp-debug":"browserify --browser-field=chromeapp --standalone WebTorrent . > webtorrent.chromeapp.js","build-js":"browserify --standalone WebTorrent . | minify --mangle=false > webtorrent.min.js","build-js-debug":"browserify --standalone WebTorrent . > webtorrent.debug.js","prepublishOnly":"npm run build && npm run update-authors","preversion":"npm run build && npm run update-authors","size":"npm run size-js && npm run size-disc","size-disc":"browserify --full-paths . | discify --open","size-js":"npm run build && cat webtorrent.min.js | gzip | wc -c","test":"standard && npm run test-node && npm run test-browser","test-browser":"airtap --concurrency 1 -- test/*.js test/browser/*.js","test-browser-local":"airtap --preset local -- test/*.js test/browser/*.js","test-node":"tape test/*.js test/node/*.js","update-authors":"./scripts/update-authors.sh"},"standard":{"ignore":["webtorrent.min.js","webtorrent.chromeapp.js"]},"renovate":{"extends":["github>webtorrent/renovate-config"],"lockFileMaintenance":{"enabled":false},"rangeStrategy":"bump"},"release":{"extends":"@webtorrent/semantic-release-config"}}');
+module.exports = JSON.parse('{"name":"webtorrent","description":"Streaming torrent client","version":"1.5.2","author":{"name":"WebTorrent LLC","email":"feross@webtorrent.io","url":"https://webtorrent.io"},"browser":{"./lib/server.js":false,"./lib/conn-pool.js":false,"./lib/utp.js":false,"bittorrent-dht/client":false,"fs":false,"fs-chunk-store":"memory-chunk-store","load-ip-set":false,"net":false,"os":false,"ut_pex":false},"browserify":{"transform":["package-json-versionify"]},"bugs":{"url":"https://github.com/webtorrent/webtorrent/issues"},"chromeapp":{"./lib/utp.js":false,"fs-chunk-store":"memory-chunk-store","http":"http-node","load-ip-set":false,"net":"chrome-net","os":false},"dependencies":{"addr-to-ip-port":"^1.5.4","bitfield":"^4.0.0","bittorrent-dht":"^10.0.2","bittorrent-protocol":"^3.4.3","cache-chunk-store":"^3.2.2","chrome-net":"^3.3.4","chunk-store-stream":"^4.3.0","cpus":"^1.0.3","create-torrent":"^5.0.1","debug":"^4.3.2","end-of-stream":"^1.4.4","escape-html":"^1.0.3","fs-chunk-store":"^2.0.3","http-node":"github:feross/http-node#webtorrent","immediate-chunk-store":"^2.2.0","load-ip-set":"^2.2.1","lt_donthave":"^1.0.1","memory-chunk-store":"^1.3.5","mime":"^2.5.2","multistream":"^4.1.0","package-json-versionify":"^1.0.4","parse-torrent":"^9.1.4","pump":"^3.0.0","queue-microtask":"^1.2.3","random-iterate":"^1.0.1","randombytes":"^2.1.0","range-parser":"^1.2.1","readable-stream":"^3.6.0","render-media":"^4.1.0","run-parallel":"^1.2.0","run-parallel-limit":"^1.1.0","simple-concat":"^1.0.1","simple-get":"^4.0.0","simple-peer":"^9.11.0","simple-sha1":"^3.1.0","speed-limiter":"^1.0.2","speedometer":"^1.1.0","stream-to-blob":"^2.0.1","stream-to-blob-url":"^3.0.2","stream-with-known-length-to-buffer":"^1.0.4","torrent-discovery":"^9.4.4","torrent-piece":"^2.0.1","unordered-array-remove":"^1.0.2","ut_metadata":"^3.5.2","ut_pex":"^3.0.2"},"devDependencies":{"@webtorrent/semantic-release-config":"1.0.6","airtap":"4.0.3","airtap-manual":"1.0.0","airtap-sauce":"1.1.2","babel-minify":"0.5.1","bittorrent-tracker":"9.17.4","browserify":"17.0.0","disc":"1.3.3","finalhandler":"1.1.2","network-address":"1.1.2","run-series":"1.1.9","semantic-release":"17.4.5","serve-static":"1.14.1","standard":"*","tape":"5.3.1","webtorrent-fixtures":"1.7.5"},"optionalDependencies":{"utp-native":"^2.5.3"},"engines":{"node":">=12"},"funding":[{"type":"github","url":"https://github.com/sponsors/feross"},{"type":"patreon","url":"https://www.patreon.com/feross"},{"type":"consulting","url":"https://feross.org/support"}],"homepage":"https://webtorrent.io","keywords":["bittorrent","bittorrent client","download","mad science","p2p","peer-to-peer","peers","streaming","swarm","torrent","web torrent","webrtc","webrtc data","webtorrent"],"license":"MIT","main":"index.js","repository":{"type":"git","url":"git://github.com/webtorrent/webtorrent.git"},"scripts":{"build":"npm run build-js && npm run build-js-worker && npm run build-chromeapp","build-chromeapp":"browserify --browser-field=chromeapp --standalone WebTorrent . | minify --mangle=false > webtorrent.chromeapp.js","build-chromeapp-debug":"browserify --browser-field=chromeapp --standalone WebTorrent . > webtorrent.chromeapp.js","build-js":"browserify --standalone WebTorrent . | minify --mangle=false > webtorrent.min.js","build-js-worker":"browserify ./lib/worker.js | minify --mangle=false > sw.min.js","build-js-debug":"browserify --standalone WebTorrent . > webtorrent.debug.js","build-js-worker-debug":"browserify ./lib/worker.js > sw.debug.js","prepublishOnly":"npm run build && npm run update-authors","preversion":"npm run build && npm run update-authors","size":"npm run size-js && npm run size-disc","size-disc":"browserify --full-paths . | discify --open","size-js":"npm run build && cat webtorrent.min.js | gzip | wc -c","test":"standard && npm run test-node && npm run test-browser","test-browser":"airtap --concurrency 1 -- test/*.js test/browser/*.js","test-browser-local":"airtap --preset local -- test/*.js test/browser/*.js","test-node":"tape test/*.js test/node/*.js","update-authors":"./scripts/update-authors.sh"},"standard":{"ignore":["webtorrent.min.js","sw.min.js","webtorrent.chromeapp.js"]},"renovate":{"extends":["github>webtorrent/renovate-config"],"rangeStrategy":"bump"},"release":{"extends":"@webtorrent/semantic-release-config"}}');
 
 /***/ }),
 

@@ -382,7 +382,7 @@ trailerClose.onclick = () => {
   trailerVideo.src = ''
 }
 
-navNowPlaying.onclick = () => viewMedia(client.nowPlaying?.media)
+navNowPlaying.onclick = () => { if (client.nowPlaying?.media) viewMedia(client.nowPlaying.media) }
 /* global trailerVideo, viewAnime, trailerClose, navNowPlaying */
 const viewNodes = viewAnime.querySelectorAll('*')
 export function viewMedia (input, episode) {

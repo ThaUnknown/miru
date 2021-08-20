@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0;
+        background: #000;
+        width: 100vw;
+        height: 100vh
+      }
+      video {
+        width: 100%;
+        height: 100%
+      }
+    </style>
+  </head>
+  <body>
+    <video></video>
+  </body>
+  <script type="module" src="peer.js"></script>
+  <script type="module">
+let peer = null
+const video = document.querySelector('video')
+
+function addConnection (connection) {
+  peer = new window.Peer({ polite: false })
+  const stream = new MediaStream()
+  video.srcObject = stream
+
+  peer.pc.ontrack = evt => {
+    stream.addTrack(evt.track)
+    video.volume = 1
+    video.muted = false
+    video.play()
+  }
+
+  // only used to signal description and candidates to the other peer
+  // once a connection is establish the DataChannel takes over.
+  peer.signalingPort.onmessage = ({ data }) => {
+    connection.send(data)
+  }
+
+  connection.addEventListener('message', ({ data }) => {
+    peer.signalingPort.postMessage(data)
+  })
+}
+
+if (navigator.presentation.receiver) {
+  navigator.presentation.receiver.connectionList.then(list => {
+    list.connections.map(connection => addConnection(connection))
+    list.addEventListener('connectionavailable', event => {
+      addConnection(event.connection)
+    })
+  })
+}
+
+  </script>
+</html>
