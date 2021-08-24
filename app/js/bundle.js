@@ -17,8 +17,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! halfmoon */ "halfmoon");
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_1__);
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
-/* eslint-env browser */
-/* global */
 
 
 
@@ -328,7 +326,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! anitomyscript */ "anitomyscript");
 /* harmony import */ var anitomyscript__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(anitomyscript__WEBPACK_IMPORTED_MODULE_6__);
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
-/* eslint-env browser */
 /* global searchText */
 
 
@@ -509,6 +506,12 @@ async function resolveFileMedia (opts) {
         }
       } else {
         console.log('error in parsing!', opts.media, tempMedia)
+        halfmoon__WEBPACK_IMPORTED_MODULE_5___default().initStickyAlert({
+          content: `Failed resolving anime episode!<br>${opts.media.title.userPreferred} - ${epMax}`,
+          title: 'Parsing Error',
+          alertType: 'alert-secondary',
+          fillType: ''
+        })
         // something failed, most likely couldnt find an edge or processing failed, force episode number even if its invalid/out of bounds, better than nothing
         if (opts.episode.constructor === Array) {
           episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[praseObj.episode_number.length - 1])}`
@@ -587,7 +590,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./util.js */ "./app/js/util.js");
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! halfmoon */ "halfmoon");
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_6__);
-/* eslint-env browser */
 /* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
 
 // THIS IS WHY YOU FUCKING USE FRAMEWORKS
@@ -695,20 +697,21 @@ function loadHomePage () {
         const pubDate = doc.querySelector('pubDate').textContent
         if (lastRSSDate !== pubDate) {
           if (lastRSSDate) {
+            homeReleases.textContent = ''
             homeReleases.append(...gallerySkeletonFrag(5))
-            ;(0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: doc.querySelector('item title').textContent, isRelease: true }).then(mediaInformation => {
-              if (_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.other1) {
+            if (_settings_js__WEBPACK_IMPORTED_MODULE_3__.settings.other1) {
+              (0,_anime_js__WEBPACK_IMPORTED_MODULE_1__.resolveFileMedia)({ fileName: doc.querySelector('item title').textContent, isRelease: true }).then(mediaInformation => {
                 const notification = new Notification(mediaInformation.media.title.userPreferred, {
                   body: `Episode ${mediaInformation.episodeNumber} was just released!`,
                   icon: mediaInformation.media.coverImage.medium
                 })
                 notification.onclick = async () => {
                   window.parent.focus()
-                  _main_js__WEBPACK_IMPORTED_MODULE_4__.client.playTorrent(doc.querySelector('item link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
                   _anime_js__WEBPACK_IMPORTED_MODULE_1__.relations[mediaInformation.parseObject.anime_title] = (await (0,_anilist_js__WEBPACK_IMPORTED_MODULE_0__.alRequest)({ id: mediaInformation.media.id, method: 'SearchIDSingle' })).data.Media.id
+                  _main_js__WEBPACK_IMPORTED_MODULE_4__.client.playTorrent(doc.querySelector('item link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
                 }
-              }
-            })
+              })
+            }
           }
           lastRSSDate = pubDate
           const cards = await releasesCards(doc.querySelectorAll('item'), 5)
@@ -1232,7 +1235,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _anime_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./anime.js */ "./app/js/anime.js");
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
-/* eslint-env browser */
 /* global torrent4list */
 
 
@@ -1358,7 +1360,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "settings": () => (/* binding */ settings)
 /* harmony export */ });
 /* harmony import */ var idb_keyval__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! idb-keyval */ "./node_modules/idb-keyval/dist/esm/index.js");
-/* eslint-env browser */
 /* global volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent5label, torrent7, torrent8, torrent9, torrent10, other1, other2, setRes, settingsTab, regProtButton, clearRelCache */
 
 const settingsElements = [
@@ -1370,16 +1371,17 @@ volume.addEventListener('click', applySettingsTimeout)
 regProtButton.addEventListener('click', registerProtocol)
 const settings = JSON.parse(localStorage.getItem('settings')) || {}
 
-const customStore = (0,idb_keyval__WEBPACK_IMPORTED_MODULE_0__.createStore)('handle-store', 'handles')
+let customStore
 
-settings.torrent5 = (0,idb_keyval__WEBPACK_IMPORTED_MODULE_0__.get)('directory', customStore).then(handle => {
-  if (handle) {
-    torrent5label.value = 'Folder: ' + handle.name
-    return handle
-  }
-  return null
-})
 if ('showDirectoryPicker' in window) {
+  customStore = (0,idb_keyval__WEBPACK_IMPORTED_MODULE_0__.createStore)('handle-store', 'handles')
+  settings.torrent5 = (0,idb_keyval__WEBPACK_IMPORTED_MODULE_0__.get)('directory', customStore).then(handle => {
+    if (handle) {
+      torrent5label.value = 'Folder: ' + handle.name
+      return handle
+    }
+    return null
+  })
   torrent5.classList.remove('d-none')
   torrent5.onclick = async () => {
     const handle = await window.showDirectoryPicker()
@@ -1402,10 +1404,7 @@ async function saveSettings () {
 if (Object.keys(settings).length !== settingsElements.length + 1) {
   saveSettings()
 }
-function restoreDefaults () {
-  localStorage.removeItem('settings')
-  location.reload()
-}
+
 let applyTimeout
 function applySettingsTimeout () {
   clearTimeout(applyTimeout)
@@ -1422,8 +1421,14 @@ function registerProtocol () {
   }
 }
 
+function restoreDefaults () {
+  localStorage.removeItem('settings')
+  location.reload()
+}
+
 clearRelCache.onclick = () => {
   localStorage.removeItem('relations')
+  location.reload()
 }
 
 for (const setting of Object.entries(settings)) {
@@ -1453,7 +1458,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! halfmoon */ "halfmoon");
 /* harmony import */ var halfmoon__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(halfmoon__WEBPACK_IMPORTED_MODULE_0__);
-/* eslint-env browser */
 
 ;(halfmoon__WEBPACK_IMPORTED_MODULE_0___default().showModal) = id => {
   const t = document.getElementById(id)
@@ -78818,7 +78822,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
     }
     if ('PresentationRequest' in window) {
       this.presentationRequest = new PresentationRequest(['lib/cast.html'])
-      this.presentationRequest.addEventListener('connectionavailable', this.initCast.bind(this))
+      this.presentationRequest.addEventListener('connectionavailable', e => this.initCast(e))
       this.presentationConnection = null
       navigator.presentation.defaultRequest = this.presentationRequest
       this.presentationRequest.getAvailability().then(aval => {
@@ -78861,7 +78865,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
 
     this.fps = 23.976
     this.video.addEventListener('loadedmetadata', () => {
-      if (this.currentFile.name.endsWith('.mkv') && ('requestVideoFrameCallback' in HTMLVideoElement.prototype)) {
+      if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
         this.fps = new Promise(resolve => {
           const resolveFps = () => {
             this.video.removeEventListener('timeupdate', resolveFps)
@@ -79200,7 +79204,7 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
           tracks.push(videostream.getVideoTracks()[0], videostream.getAudioTracks()[0])
         }
         for (const track of tracks) {
-          peer.pc.addTrack(track)
+          peer.pc.addTrack(track, videostream)
         }
         this.video.play() // video pauses for some reason
       }
@@ -79245,28 +79249,25 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
   }
 
   async getBurnIn (noSubs) {
-    if (this.burnIn) {
-      const canvas = document.createElement('canvas')
-      const context = canvas.getContext('2d', { alpha: false })
-      let running = true
-      canvas.width = this.video.videoWidth
-      canvas.height = this.video.videoHeight
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d', { alpha: false })
+    let running = true
+    canvas.width = this.video.videoWidth
+    canvas.height = this.video.videoHeight
 
-      const renderFrame = () => {
-        if (running === true) {
-          context.drawImage(this.video, 0, 0)
-          if (!noSubs) context.drawImage(this.subtitleData.renderer?.canvas, 0, 0, canvas.width, canvas.height)
-          requestAnimationFrame(renderFrame)
-        }
+    const renderFrame = () => {
+      if (running === true) {
+        context.drawImage(this.video, 0, 0)
+        if (!noSubs) context.drawImage(this.subtitleData.renderer?.canvas, 0, 0, canvas.width, canvas.height)
+        requestAnimationFrame(renderFrame)
       }
-      requestAnimationFrame(renderFrame)
-      const destroy = () => {
-        running = false
-        canvas.remove()
-      }
-      return { stream: canvas.captureStream(await this.fps), destroy }
     }
-    return null
+    requestAnimationFrame(renderFrame)
+    const destroy = () => {
+      running = false
+      canvas.remove()
+    }
+    return { stream: canvas.captureStream(await this.fps), destroy }
   }
 
   toTS (sec, full) {
@@ -79642,7 +79643,8 @@ Style: Default,${options.defaultSSAStyles || 'Roboto Medium,26,&H00FFFFFF,&H0000
       if (isAss) {
         callback(subtitles)
       } else {
-        for (const split of buffer.toString().split('\n\n')) {
+        const text = buffer.toString().replace(/\r/g, '')
+        for (const split of text.split('\n\n')) {
           const match = split.match(regex)
           if (match) {
             match[1] = match[1].match(/.*[.,]\d{2}/)[0]

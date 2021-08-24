@@ -24,14 +24,14 @@ const video = document.querySelector('video')
 
 function addConnection (connection) {
   peer = new window.Peer({ polite: false })
-  const stream = new MediaStream()
-  video.srcObject = stream
 
   peer.pc.ontrack = evt => {
-    stream.addTrack(evt.track)
-    video.volume = 1
-    video.muted = false
-    video.play()
+    evt.receiver.playoutDelayHint = 3
+    if (!video.srcObject) {
+      video.srcObject = evt.streams[0]
+      video.volume = 1
+      video.play()
+    }
   }
 
   // only used to signal description and candidates to the other peer

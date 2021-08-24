@@ -1,5 +1,3 @@
-/* eslint-env browser */
-/* global */
 import { alID } from './interface.js'
 import halfmoon from 'halfmoon'
 

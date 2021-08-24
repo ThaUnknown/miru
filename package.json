@@ -33,7 +33,8 @@
     "ignore": [
       "bundle.js",
       "bundle.map.js"
-    ]
+    ],
+    "env": "browser"
   },
   "devDependencies": {
     "node-polyfill-webpack-plugin": "^1.1.4",

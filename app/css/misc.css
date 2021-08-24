@@ -39,6 +39,17 @@ img {
     width: 3rem
 }
 
+.mw-600 {
+    max-width: 60rem;
+}
+
+break {
+    flex-basis: 100%;
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+}
+
 .font-size-30 {
     font-size: 3rem !important
 }

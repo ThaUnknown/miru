@@ -1,4 +1,3 @@
-/* eslint-env browser */
 /* global volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent5label, torrent7, torrent8, torrent9, torrent10, other1, other2, setRes, settingsTab, regProtButton, clearRelCache */
 import { get, set, createStore } from 'idb-keyval'
 export const settingsElements = [
@@ -10,16 +9,17 @@ volume.addEventListener('click', applySettingsTimeout)
 regProtButton.addEventListener('click', registerProtocol)
 export const settings = JSON.parse(localStorage.getItem('settings')) || {}
 
-const customStore = createStore('handle-store', 'handles')
+let customStore
 
-settings.torrent5 = get('directory', customStore).then(handle => {
-  if (handle) {
-    torrent5label.value = 'Folder: ' + handle.name
-    return handle
-  }
-  return null
-})
 if ('showDirectoryPicker' in window) {
+  customStore = createStore('handle-store', 'handles')
+  settings.torrent5 = get('directory', customStore).then(handle => {
+    if (handle) {
+      torrent5label.value = 'Folder: ' + handle.name
+      return handle
+    }
+    return null
+  })
   torrent5.classList.remove('d-none')
   torrent5.onclick = async () => {
     const handle = await window.showDirectoryPicker()
@@ -42,10 +42,7 @@ async function saveSettings () {
 if (Object.keys(settings).length !== settingsElements.length + 1) {
   saveSettings()
 }
-function restoreDefaults () {
-  localStorage.removeItem('settings')
-  location.reload()
-}
+
 let applyTimeout
 function applySettingsTimeout () {
   clearTimeout(applyTimeout)
@@ -62,8 +59,14 @@ function registerProtocol () {
   }
 }
 
+function restoreDefaults () {
+  localStorage.removeItem('settings')
+  location.reload()
+}
+
 clearRelCache.onclick = () => {
   localStorage.removeItem('relations')
+  location.reload()
 }
 
 for (const setting of Object.entries(settings)) {

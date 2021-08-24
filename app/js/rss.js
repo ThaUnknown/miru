@@ -1,4 +1,3 @@
-/* eslint-env browser */
 /* global torrent4list */
 
 import { settings } from './settings.js'

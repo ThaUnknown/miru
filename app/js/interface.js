@@ -1,4 +1,3 @@
-/* eslint-env browser */
 /* global navHome, searchClear, searchWrapper, skeletonCardTemplate, bareCardTemplate, fullCardTemplate, home, searchText, searchGenre, searchYear, searchSeason, searchFormat, searchStatus, searchSort, navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore, homeContinue, homeReleases, homePlanning, homeTrending, homeRomance, homeAction */
 
 // THIS IS WHY YOU FUCKING USE FRAMEWORKS
@@ -106,20 +105,21 @@ export function loadHomePage () {
         const pubDate = doc.querySelector('pubDate').textContent
         if (lastRSSDate !== pubDate) {
           if (lastRSSDate) {
+            homeReleases.textContent = ''
             homeReleases.append(...gallerySkeletonFrag(5))
-            resolveFileMedia({ fileName: doc.querySelector('item title').textContent, isRelease: true }).then(mediaInformation => {
-              if (settings.other1) {
+            if (settings.other1) {
+              resolveFileMedia({ fileName: doc.querySelector('item title').textContent, isRelease: true }).then(mediaInformation => {
                 const notification = new Notification(mediaInformation.media.title.userPreferred, {
                   body: `Episode ${mediaInformation.episodeNumber} was just released!`,
                   icon: mediaInformation.media.coverImage.medium
                 })
                 notification.onclick = async () => {
                   window.parent.focus()
-                  client.playTorrent(doc.querySelector('item link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
                   relations[mediaInformation.parseObject.anime_title] = (await alRequest({ id: mediaInformation.media.id, method: 'SearchIDSingle' })).data.Media.id
+                  client.playTorrent(doc.querySelector('item link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
                 }
-              }
-            })
+              })
+            }
           }
           lastRSSDate = pubDate
           const cards = await releasesCards(doc.querySelectorAll('item'), 5)

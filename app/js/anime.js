@@ -1,4 +1,3 @@
-/* eslint-env browser */
 /* global searchText */
 import { client } from './main.js'
 import { searchParams, DOMPARSER } from './util.js'
@@ -179,6 +178,12 @@ export async function resolveFileMedia (opts) {
         }
       } else {
         console.log('error in parsing!', opts.media, tempMedia)
+        halfmoon.initStickyAlert({
+          content: `Failed resolving anime episode!<br>${opts.media.title.userPreferred} - ${epMax}`,
+          title: 'Parsing Error',
+          alertType: 'alert-secondary',
+          fillType: ''
+        })
         // something failed, most likely couldnt find an edge or processing failed, force episode number even if its invalid/out of bounds, better than nothing
         if (opts.episode.constructor === Array) {
           episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[praseObj.episode_number.length - 1])}`

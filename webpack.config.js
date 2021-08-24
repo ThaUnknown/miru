@@ -5,7 +5,8 @@ module.exports = {
   entry: './app/js/main.js',
   externals: {
     halfmoon: 'halfmoon',
-    anitomyscript: 'anitomyscript'
+    anitomyscript: 'anitomyscript',
+    gapi: 'commonjs gapi'
   },
   output: {
     filename: 'bundle.js',

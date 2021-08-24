@@ -1,4 +1,3 @@
-/* eslint-env browser */
 import halfmoon from 'halfmoon'
 halfmoon.showModal = id => {
   const t = document.getElementById(id)

@@ -13,7 +13,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
   <meta property="og:title" content="Miru">
-  <meta property="og:url" content="https://mirumoe.netlify.app/">
+  <meta property="og:url" content="">
   <meta property="og:description" content="Miru - Torrent streaming made simple!">
   <meta property="og:type" content="video.other">
   <meta property="og:image" content="logo.png">
@@ -851,12 +851,12 @@
           </a>
         </div>
         <div class="h-full">
-          <div class="settingsTabTorrent d-none content flex-column">
+          <div class="settingsTabTorrent d-none content flex-row flex-wrap mw-600">
             <div class="form-control-lg w-600 h-150 mb-10">
               <h1 class="content-title font-size-22">
                 Tracker List
               </h1>
-              <textarea class="form-control w-600 h-100" id="torrent10" value="">wss://tracker.openwebtorrent.com
+              <textarea class="form-control w-600 h-100" id="torrent10">wss://tracker.openwebtorrent.com
 wss://spacetradersapi-chatbox.herokuapp.com:443/announce
 wss://peertube.cpy.re:443/tracker/socket</textarea>
             </div>
@@ -871,7 +871,7 @@ wss://peertube.cpy.re:443/tracker/socket</textarea>
             <div class="input-group w-300 mb-10 form-control-lg" data-toggle="tooltip" data-placement="top"
               data-title="Download/Upload Speed Limit For Torrents, Higher Values Increase CPU Usage">
               <div class="input-group-prepend">
-                <span class="input-group-text">Speed Cap</span>
+                <span class="input-group-text w-150 justify-content-center">Max Speed</span>
               </div>
               <input id="torrent7" type="number" value="10" min="0" max="50"
                 class="form-control text-right form-control-lg">
@@ -879,6 +879,7 @@ wss://peertube.cpy.re:443/tracker/socket</textarea>
                 <span class="input-group-text">MB/s</span>
               </div>
             </div>
+            <break></break>
             <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
               data-title="Only Downloads Pieces Directly Required For Playback Instead Of The Entire File. Recommended Only For Low-End Devices">
               <input type="checkbox" id="torrent8">
@@ -886,11 +887,11 @@ wss://peertube.cpy.re:443/tracker/socket</textarea>
             </div>
 
           </div>
-          <div class="settingsTabPlayer d-none content flex-column">
+          <div class="settingsTabPlayer d-none content flex-row flex-wrap mw-600">
             <div class="input-group mb-10 w-600 form-control-lg" data-toggle="tooltip" data-placement="top"
               data-title="The Default Styles For Subtitles That Don't Have Styles Specified">
               <div class="input-group-prepend">
-                <span class="input-group-text">Default Style</span>
+                <span class="input-group-text w-150 justify-content-center">Default Style</span>
               </div>
               <input id="subtitle1" type="text" list="subtitle1list" class="form-control form-control-lg"
                 autocomplete="off" value="SubsPlease">
@@ -906,23 +907,23 @@ wss://peertube.cpy.re:443/tracker/socket</textarea>
             <div class="input-group w-300 mb-10 form-control-lg" data-toggle="tooltip" data-placement="top"
               data-title="Time For Player Controls To Hide">
               <div class="input-group-prepend">
-                <span class="input-group-text">Immerse After</span>
+                <span class="input-group-text w-150 justify-content-center">Immerse Time</span>
               </div>
               <input id="player2" type="number" value="3" min="1" max="30"
                 class="form-control text-right form-control-lg">
               <div class="input-group-append">
-                <span class="input-group-text">sec</span>
+                <span class="input-group-text w-50 justify-content-center">sec</span>
               </div>
             </div>
             <div class="input-group w-300 mb-10 form-control-lg" data-toggle="tooltip" data-placement="top"
               data-title="How Much To Seek Video">
               <div class="input-group-prepend">
-                <span class="input-group-text">Seek</span>
+                <span class="input-group-text w-150 justify-content-center">Seek Time</span>
               </div>
               <input id="player3" type="number" value="2" min="1" max="30"
                 class="form-control text-right form-control-lg">
               <div class="input-group-append">
-                <span class="input-group-text">sec</span>
+                <span class="input-group-text w-50 justify-content-center">sec</span>
               </div>
             </div>
             <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
@@ -951,11 +952,11 @@ wss://peertube.cpy.re:443/tracker/socket</textarea>
               <label for="other2">Autocomplete Episodes</label>
             </div>
           </div>
-          <div class="settingsTabRSS d-none content flex-column">
+          <div class="settingsTabRSS d-none content flex-row flex-wrap mw-600">
             <div class="input-group mb-10 w-600 form-control-lg" data-toggle="tooltip" data-placement="top"
               data-title="What RSS Feed To Fetch Releases From, Allows For Custom CORS Enabled Feeds">
               <div class="input-group-prepend">
-                <span class="input-group-text">Feed</span>
+                <span class="input-group-text w-100 justify-content-center">Feed</span>
               </div>
               <input id="torrent4" type="text" list="torrent4list" class="form-control form-control-lg"
                 autocomplete="off" value="SubsPlease">
@@ -967,7 +968,7 @@ wss://peertube.cpy.re:443/tracker/socket</textarea>
             <div class="input-group mb-10 w-300 form-control-lg" data-toggle="tooltip" data-placement="top"
               data-title="What Quality To Find Torrents In">
               <div class="input-group-prepend">
-                <span class="input-group-text">Quality</span>
+                <span class="input-group-text w-100 justify-content-center">Quality</span>
               </div>
               <select class="form-control form-control-lg" id="torrent1">
                 <option value="1080" selected>1080p</option>
@@ -975,6 +976,7 @@ wss://peertube.cpy.re:443/tracker/socket</textarea>
                 <option value='480"||"540'>SD</option>
               </select>
             </div>
+            <break></break>
             <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top"
               data-title="Sends A Notification When A New Episode Is Released">
               <input type="checkbox" id="other1">
@@ -1079,6 +1081,7 @@ wss://peertube.cpy.re:443/tracker/socket</textarea>
   </template>
   <script src="https://cdn.jsdelivr.net/gh/halfmoonui/halfmoon@1.1.1/js/halfmoon.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/anitomyscript@2.0.4/dist/anitomyscript.bundle.min.js"></script>
+  <script src="https://apis.google.com/js/api.js"></script>
   <script src="js/bundle.js"></script>
 </body>
 
