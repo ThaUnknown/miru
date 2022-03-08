@@ -1,3 +1,11 @@
+# THIS IS AN ARCHIVE BRANCH, IT WAS PRIVATE FOR A REASON
+
+This branch is entirely for the sake of "I worked on it, I want the commits", it was private because the code was dogshit and honestly a joke, and it's being re-written from scratch for a good reason!!!
+This includes meme commits, testing on production, write your own JS framework and other blantant "don't do you fucking idiot", read the code/commits at your own risk!
+
+<br><br>
+
+
 [![forthebadge](https://forthebadge.com/images/badges/it-works-why.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/works-on-my-machine.svg)](https://forthebadge.com)
 # Miru
 Miru is a simple anime torrent streaming client targetted at normies, meant as a replacement for shitty streaming sites with a lot of extra added functionality.

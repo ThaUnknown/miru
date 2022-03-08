@@ -1,0 +1,76 @@
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @license  MIT
+ */
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <https://feross.org>
+ * @license  MIT
+ */
+
+/*!
+ * range-parser
+ * Copyright(c) 2012-2014 TJ Holowaychuk
+ * Copyright(c) 2015-2016 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+
+/*! bittorrent-protocol. MIT License. WebTorrent LLC <https://webtorrent.io/opensource> */
+
+/*! blob-to-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! cache-chunk-store. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! create-torrent. MIT License. WebTorrent LLC <https://webtorrent.io/opensource> */
+
+/*! https://mths.be/punycode v1.3.2 by @mathias */
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! immediate-chunk-store. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! lt_donthave. MIT License. WebTorrent LLC <https://webtorrent.io/opensource> */
+
+/*! magnet-uri. MIT License. WebTorrent LLC <https://webtorrent.io/opensource> */
+
+/*! mediasource. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! multistream. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! parse-torrent. MIT License. WebTorrent LLC <https://webtorrent.io/opensource> */
+
+/*! queue-microtask. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! render-media. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! run-parallel-limit. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! run-parallel. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! simple-concat. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! simple-get. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! simple-peer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! simple-websocket. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! stream-to-blob-url. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! stream-to-blob. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! stream-with-known-length-to-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! torrent-discovery. MIT License. WebTorrent LLC <https://webtorrent.io/opensource> */
+
+/*! torrent-piece. MIT License. WebTorrent LLC <https://webtorrent.io/opensource> */
+
+/*! ut_metadata. MIT License. WebTorrent LLC <https://webtorrent.io/opensource> */
+
+/*! webtorrent. MIT License. WebTorrent LLC <https://webtorrent.io/opensource> */

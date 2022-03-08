@@ -7,7 +7,6 @@
     "entertainment"
   ],
   "lang": "en-US",
-  "orientation": "landscape",
   "background_color": "#191c20",
   "theme_color": "#191c20",
   "scope": "/app/",
@@ -28,14 +27,14 @@
     }
   },
   "intent_filters": {
-    "scope_url_scheme": "http",
-    "scope_url_host": "localhost",
+    "scope_url_scheme": "https",
+    "scope_url_host": "miru.pages.dev",
     "scope_url_path": "/app/"
   },
   "capture_links": "existing-client-navigate",
   "url_handlers": [
     {
-      "origin": "https://localhost:5500"
+      "origin": "https://miru.pages.dev"
     }
   ],
   "protocol_handlers": [

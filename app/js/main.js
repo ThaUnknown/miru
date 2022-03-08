@@ -7,6 +7,7 @@ import { alEntry } from './anilist.js'
 import { settings } from './settings.js'
 import { cardCreator, initMenu } from './interface.js'
 import halfmoon from 'halfmoon'
+import { GDHandleTorrent } from './webseed.js'
 
 const playerControls = {}
 for (const item of document.getElementsByClassName('ctrl')) {
@@ -16,6 +17,9 @@ for (const item of document.getElementsByClassName('ctrl')) {
     playerControls[item.dataset.name] = [playerControls[item.dataset.name], item]
   }
 }
+window.addEventListener('beforeunload', () => {
+  client.destroy()
+})
 export const client = new WebTorrentPlayer({
   WebTorrentOpts: {
     maxConns: 127,
@@ -23,7 +27,8 @@ export const client = new WebTorrentPlayer({
     uploadLimit: settings.torrent7 * 1572864,
     tracker: {
       announce: settings.torrent10.split('\n')
-    }
+    },
+    destroyStore: true
   },
   controls: playerControls,
   video: video,
@@ -48,6 +53,7 @@ client.on('download-done', ({ file }) => {
     fillType: ''
   })
 })
+client.on('torrent', GDHandleTorrent)
 client.on('watched', ({ filemedia }) => {
   if (filemedia?.media?.episodes || filemedia?.media?.nextAiringEpisode?.episode) {
     if (settings.other2 && (filemedia.media.episodes || filemedia.media.nextAiringEpisode?.episode > filemedia.episodeNumber)) {
@@ -134,8 +140,6 @@ client.on('no peers', torrent => {
 client.nowPlaying = { name: 'Miru' }
 
 window.client = client
-
-window.onbeforeunload = () => { return '' }
 
 if (searchParams.get('file')) client.playTorrent(searchParams.get('file'))
 

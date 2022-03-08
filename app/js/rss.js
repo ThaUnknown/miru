@@ -39,7 +39,7 @@ export async function nyaaRss (media, episode, isOffline) {
   const titles = [...new Set(Object.values(media.title).concat(media.synonyms).filter(name => name != null))].join(')|(').replace(/&/g, '%26')
   const ep = (media.episodes !== 1 && ((media.status === 'FINISHED' && settings.torrent9) ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode}+"|"+${episode}v"|"S01"` : `"+${episode}+"|"+${episode}v"`)) || ''
   const excl = exclusions[userBrowser].join('|')
-  const quality = `"${settings.torrent1}"` || '"1080p"'
+  const quality = `${settings.torrent1}` || '"1080p"'
   const trusted = settings.torrent3 === true ? 2 : 0
   const url = new URL(`https://meowinjapanese.cf/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
 
@@ -101,8 +101,8 @@ export async function nyaaRss (media, episode, isOffline) {
 
 export function getRSSurl () {
   if (Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0]) {
-    return settings.torrent4 === 'Erai-raws' ? new URL(Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0].innerHTML + settings.torrent1 + '-magnet') : new URL(Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0].innerHTML + settings.torrent1)
+    return new URL(Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0].textContent + settings.torrent1)
   } else {
-    return settings.torrent4 + settings.torrent1 // add custom RSS
+    return new URL(settings.torrent4 + settings.torrent1) // add custom RSS
   }
 }

@@ -1,7 +1,7 @@
-/* global volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent5label, torrent7, torrent8, torrent9, torrent10, other1, other2, setRes, settingsTab, regProtButton, clearRelCache */
+/* global volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent5, torrent5label, torrent7, torrent8, torrent9, torrent10, other1, other2, other3, setRes, settingsTab, regProtButton, clearRelCache */
 import { get, set, createStore } from 'idb-keyval'
 export const settingsElements = [
-  volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent7, torrent8, torrent9, torrent10, other1, other2
+  volume, player2, player3, player5, player6, player10, subtitle1, subtitle3, torrent1, torrent2, torrent3, torrent4, torrent7, torrent8, torrent9, torrent10, other1, other2, other3
 ]
 setRes.addEventListener('click', restoreDefaults)
 settingsTab.addEventListener('click', applySettingsTimeout)
@@ -39,10 +39,6 @@ async function saveSettings () {
   }
 }
 
-if (Object.keys(settings).length !== settingsElements.length + 1) {
-  saveSettings()
-}
-
 let applyTimeout
 function applySettingsTimeout () {
   clearTimeout(applyTimeout)
@@ -73,5 +69,7 @@ for (const setting of Object.entries(settings)) {
   const settingElement = settingsElements.filter(e => e.id === setting[0])[0]
   if (settingElement) settingElement.type === 'checkbox' ? settingElement.checked = setting[1] : settingElement.value = setting[1]
 }
+
+saveSettings()
 
 other1.oninput = () => other1.checked && Notification.requestPermission().then(perm => { perm === 'denied' ? other1.checked = false : other1.checked = true })

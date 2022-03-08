@@ -1,4 +1,5 @@
 import { alID } from './interface.js'
+import { settings } from './settings.js'
 import halfmoon from 'halfmoon'
 
 async function handleRequest (opts) {
@@ -71,7 +72,8 @@ export async function alRequest (opts) {
     perPage: opts.perPage || 30,
     status_in: opts.status_in || '[CURRENT,PLANNING]',
     chunk: opts.chunk || 1,
-    perchunk: opts.perChunk || 30
+    perchunk: opts.perChunk || 30,
+    startDate: (!settings.other3 && (opts.startDate || 20210328)) || 10000000
   }
   const options = {
     method: 'POST',
@@ -260,12 +262,12 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
       variables.status = opts.status
       variables.sort = opts.sort || 'SEARCH_MATCH'
       query = ` 
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
+query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat, $startDate: FuzzyDateInt) {
   Page (page: $page, perPage: $perPage) {
     pageInfo {
       hasNextPage
     },
-    media(type: $type, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format) {
+    media(type: $type, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format, startDate_greater: $startDate) {
       ${queryObjects}
     }
   }

@@ -6,14 +6,14 @@ module.exports = {
   externals: {
     halfmoon: 'halfmoon',
     anitomyscript: 'anitomyscript',
-    gapi: 'commonjs gapi'
+    gapi: 'globalThis.gapi'
   },
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'app/js'),
     sourceMapFilename: 'bundle.js.map'
   },
-  mode: 'development',
+  mode: 'production',
   devtool: 'source-map',
   plugins: [
     new webpack.ProvidePlugin({

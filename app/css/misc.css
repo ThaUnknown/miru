@@ -17,6 +17,18 @@ body {
     user-select: none;
 }
 
+noscript {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: #000;
+    z-index: 1000;
+}
+
+#gsignin {
+    background: #000;
+}
+
 .badge-color {
     background-color: var(--color) !important;
     border-color: var(--color) !important;

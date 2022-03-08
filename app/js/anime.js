@@ -111,14 +111,8 @@ export async function resolveFileMedia (opts) {
   async function resolveTitle (title) {
     if (!(title in relations)) {
       // resolve name and shit
-      let method, res
-      if (opts.isRelease) {
-        method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING'], sort: 'SEARCH_MATCH' }
-        // maybe releases should include this and last season? idfk
-      } else {
-        method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
-      }
-      res = await alRequest(method)
+      const method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH', startDate: 10000000 }
+      let res = await alRequest(method)
       if (!res.data.Page.media[0]) {
         const index = method.name.search(/S\d/)
         method.name = ((index !== -1 && method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)) || method.name).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
@@ -138,7 +132,11 @@ export async function resolveFileMedia (opts) {
   const parseObjs = await Promise.all(parsePromises)
   await Promise.all([...new Set(parseObjs.map(obj => obj.anime_title))].map(title => resolveTitle(title)))
   const assoc = {}
-  for (const media of (await alRequest({ method: 'SearchIDS', id: [...new Set(parseObjs.map(obj => relations[obj.anime_title]))], perPage: 50 })).data.Page.media) assoc[media.id] = media
+  for (let ids = [...new Set(parseObjs.map(obj => relations[obj.anime_title]))]; ids.length; ids = ids.slice(50)) {
+    for await (const media of (await alRequest({ method: 'SearchIDS', id: ids.slice(0, 50), perPage: 50 })).data.Page.media) {
+      assoc[media.id] = media
+    }
+  }
   const fileMedias = []
   for (const praseObj of parseObjs) {
     let episode
@@ -161,16 +159,16 @@ export async function resolveFileMedia (opts) {
         tempMedia = opts.media.relations.edges.filter(edge => edge.relationType === 'SEQUEL' && (edge.node.format === 'TV' || 'TV_SHORT'))[0].node
         increment = true
       }
-      if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) > (media.nextAiringEpisode?.episode || media.episodes)) {
+      if (tempMedia?.episodes && epMax - (opts.offset + media.episodes) > (media.nextAiringEpisode?.episode || media.episodes)) {
         // episode is still out of bounds
         const nextEdge = await alRequest({ method: 'SearchIDSingle', id: tempMedia.id })
         await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes, increment: increment })
-      } else if (tempMedia?.episodes && epMax - (opts.offset + tempMedia.episodes) <= (media.nextAiringEpisode?.episode || media.episodes) && epMin - (opts.offset + tempMedia.episodes) > 0) {
+      } else if (tempMedia?.episodes && epMax - (opts.offset + media.episodes) <= (media.nextAiringEpisode?.episode || media.episodes) && epMin - (opts.offset + media.episodes) > 0) {
         // episode is in range, seems good! overwriting media to count up "seasons"
         if (opts.episode.constructor === Array) {
-          episode = `${praseObj.episode_number[0] - (opts.offset + tempMedia.episodes)} ~ ${praseObj.episode_number[praseObj.episode_number.length - 1] - (opts.offset + tempMedia.episodes)}`
+          episode = `${praseObj.episode_number[0] - (opts.offset + media.episodes)} ~ ${praseObj.episode_number[praseObj.episode_number.length - 1] - (opts.offset + media.episodes)}`
         } else {
-          episode = opts.episode - (opts.offset + tempMedia.episodes)
+          episode = opts.episode - (opts.offset + media.episodes)
         }
         if (opts.increment || increment) {
           const nextEdge = await alRequest({ method: 'SearchIDSingle', id: tempMedia.id })

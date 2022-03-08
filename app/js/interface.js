@@ -7,7 +7,7 @@ import { resolveFileMedia, relations, nyaaSearch } from './anime.js'
 import { getRSSurl, getRSSContent } from './rss.js'
 import { settings } from './settings.js'
 import { client } from './main.js'
-import { countdown, flattenObj } from './util.js'
+import { countdown, flattenObj, userBrowser } from './util.js'
 import halfmoon from 'halfmoon'
 export function loadHomePage () {
   const homeLoadElements = [navSchedule, homeContinueMore, homeReleasesMore, homePlanningMore, homeTrendingMore, homeRomanceMore, homeActionMore]
@@ -19,7 +19,7 @@ export function loadHomePage () {
       if (!page) gallerySkeleton(browseGallery)
       const res = await alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, page: page || 1 })
       const mediaList = res.data.Page.mediaList.map(i => i.media).filter(media => {
-        return !(media.status === 'RELEASING' && media.mediaListEntry?.progress === media.nextAiringEpisode?.episode - 1)
+        return media.status !== 'RELEASING' || media.mediaListEntry?.progress < media.nextAiringEpisode?.episode - 1
       })
       galleryAppend({ media: mediaList, gallery: browseGallery, method: 'continue', page: page || 1 })
       return res.data.Page.pageInfo.hasNextPage
@@ -94,7 +94,7 @@ export function loadHomePage () {
     continue: function () {
       alRequest({ method: 'UserLists', status_in: 'CURRENT', id: alID, perPage: 50 }).then(res => {
         const mediaList = res.data.Page.mediaList.filter(({ media }) => {
-          return !(media.status === 'RELEASING' && media.mediaListEntry?.progress === media.nextAiringEpisode?.episode - 1)
+          return media.status !== 'RELEASING' || media.mediaListEntry?.progress < media.nextAiringEpisode?.episode - 1
         }).slice(0, 5).map(i => i.media)
         galleryAppend({ media: mediaList, gallery: homeContinue })
       })
@@ -305,6 +305,7 @@ function genreBadges (genres = []) {
   return badges
 }
 const detailsMap = [
+  { property: 'episode', label: 'Airing', icon: 'schedule', custom: 'property' },
   { property: 'genres', label: 'Genres', icon: 'theater_comedy' },
   { property: 'season', label: 'Season', icon: 'spa', custom: 'property' },
   { property: 'episodes', label: 'Episodes', icon: 'theaters', custom: 'property' },
@@ -316,7 +317,7 @@ const detailsMap = [
   { property: 'averageScore', label: 'Rating', icon: 'trending_up', custom: 'property' },
   { property: 'english', label: 'English', icon: 'title' },
   { property: 'romaji', label: 'Romaji', icon: 'translate' },
-  { property: 'native', label: 'Native', icon: '日本', custom: 'icon' }
+  { property: 'native', label: 'Native', icon: '語', custom: 'icon' }
 ]
 /* global detailTemplate */
 const detailTemp = detailTemplate.cloneNode(true).content
@@ -358,6 +359,8 @@ function mediaDetails (media) {
             nodes[4].textContent = media.averageScore + '%'
           } else if (detail.property === 'season') {
             nodes[4].textContent = [media.season?.toLowerCase(), media.seasonYear].filter(f => f).join(' ')
+          } else if (detail.property === 'episode') {
+            nodes[4].textContent = `Ep ${media.episode}: ${countdown(media.timeUntilAiring)}`
           } else {
             nodes[4].textContent = media[detail.property]
           }
@@ -425,8 +428,8 @@ export function viewMedia (input, episode) {
 
   viewNodes[63].innerHTML = media.description
 
-  viewNodes[68].textContent = ''
-  viewNodes[68].append(...mediaDetails(media))
+  viewNodes[66].textContent = ''
+  viewNodes[66].append(...mediaDetails(media))
 }
 
 export let alID // login icon
@@ -453,4 +456,13 @@ export function initMenu () {
     loadHomePage()
     home.classList.add('noauth')
   }
+}
+
+if (userBrowser === 'firefox') {
+  halfmoon.initStickyAlert({
+    content: 'Your browser will likely not support many video formats, containers and features. Please use Chromium!',
+    title: 'Bad Browser',
+    alertType: 'alert-danger',
+    fillType: ''
+  })
 }
