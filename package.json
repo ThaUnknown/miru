@@ -10,13 +10,15 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
+    "anitomyscript": "^2.0.4",
     "builtin-modules": "^3.2.0",
     "concurrently": "^7.0.0",
     "electron": "^16.0.10",
     "electron-builder": "^22.14.13",
     "svelte": "^3.46.4",
     "vite": "^2.8.6",
-    "vite-plugin-commonjs-externals": "^0.1.1"
+    "vite-plugin-commonjs-externals": "^0.1.1",
+    "webtorrent": "^1.8.5"
   },
   "standard": {
     "ignore": [

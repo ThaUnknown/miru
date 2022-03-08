@@ -8,8 +8,8 @@ let mainWindow
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1600,
+    height: 900,
     backgroundColor: '#2e2c29',
     autoHideMenuBar: true,
     experimentalFeatures: true,
@@ -20,10 +20,10 @@ function createWindow () {
       enableRemoteModule: true,
       backgroundThrottling: false
     },
-    icon: path.join(__dirname, 'public/favicon.png'),
+    icon: path.join(__dirname, '/renderer/public/favicon.ico'),
     show: false
   })
-  // mainWindow.removeMenu()
+  mainWindow.removeMenu()
 
   // This block of code is intended for development purpose only.
   // Delete this entire block of code when you are ready to package the application.
@@ -40,8 +40,8 @@ function createWindow () {
   // loadURL(mainWindow);
 
   // Open the DevTools and also disable Electron Security Warning.
-  // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
-  // mainWindow.webContents.openDevTools();
+  process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
