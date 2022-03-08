@@ -1,0 +1,33 @@
+{
+  "name": "miru",
+  "version": "0.1.0",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "SET NODE_ENV=development & concurrently \"npm run web:watch\" \"npm run electron:start\"",
+    "web:watch": "vite",
+    "electron:start": "electron src",
+    "build": "vite build && electron-builder"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
+    "builtin-modules": "^3.2.0",
+    "concurrently": "^7.0.0",
+    "electron": "^16.0.10",
+    "electron-builder": "^22.14.13",
+    "svelte": "^3.46.4",
+    "vite": "^2.8.6",
+    "vite-plugin-commonjs-externals": "^0.1.1"
+  },
+  "standard": {
+    "ignore": [
+      "bundle.js",
+      "bundle.map.js"
+    ],
+    "env": "browser"
+  },
+  "build": {
+    "files": [
+      "src/**/*"
+    ]
+  }
+}
