@@ -1,6 +1,7 @@
 <script>
+  import { alID } from '@/modules/anilist.js'
   export let page
-  $: links = [
+  const links = [
     {
       click: halfmoon.toggleSidebar.bind(halfmoon),
       image: 'logo_cut.png',
@@ -37,13 +38,24 @@
     },
     {
       click: () => {
-        // TODO: AL login
-        'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token'
+        if (alID) {
+          localStorage.removeItem('ALtoken')
+          location.hash = ''
+          location.reload()
+        } else {
+          location.href = 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token'
+        }
       },
       icon: 'login',
       text: 'Login With AniList'
     }
   ]
+  if (alID) {
+    alID.then(result => {
+      links[links.length - 1].image = result.data.Viewer.avatar.medium
+      links[links.length - 1].text = result.data.Viewer.name
+    })
+  }
 </script>
 
 <div class="sidebar">
@@ -57,10 +69,16 @@
         data-title={text}
         on:click={click}
         class:mt-auto={i === links.length - 2}>
-        <span class="text-nowrap d-flex align-items-center" class:justify-content-between={image}>
+        <span class="text-nowrap d-flex align-items-center" class:justify-content-between={i === 0}>
           {#if image}
-            <img src={image} alt="logo" class="text" />
-            <span class="material-icons menu">{icon}</span>
+            {#if i === 0}
+              <img src={image} alt="logo" class="text" />
+              <span class="material-icons menu">{icon}</span>
+            {:else}
+              <img src={image} alt="logo" />
+              <span class="text">{text}</span>
+              <span class="material-icons menu text">{icon}</span>
+            {/if}
           {:else}
             <span class="material-icons">{icon}</span>
             <span class="text">{text}</span>
@@ -90,6 +108,8 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
+  }
+  .text:not(.material-icons) {
     font-weight: bold;
   }
 
@@ -124,7 +144,7 @@
     align-items: center;
   }
 
-  :not(.brand) :global(img) {
+  :not(.brand) img {
     font-size: 2.2rem;
     width: 3rem;
     height: 3rem;

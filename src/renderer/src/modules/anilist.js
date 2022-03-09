@@ -3,9 +3,7 @@ import { alToken } from '@/lib/pages/Settings.svelte'
 
 export const alID =
   !!alToken &&
-  alRequest({ method: 'Viewer', token: alToken }).then(result => {
-    return result.data.Viewer.id
-  })
+  alRequest({ method: 'Viewer', token: alToken })
 
 async function handleRequest (opts) {
   return await fetch('https://graphql.anilist.co', opts).then(async res => {
@@ -207,7 +205,7 @@ query {
 }`
       break
     } case 'UserLists': {
-      variables.id = await alID
+      variables.id = (await alID).data.Viewer.id
       query = ` 
 query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [MediaListStatus]){
   Page (page: $page, perPage: $perPage) {
@@ -223,7 +221,7 @@ query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [Media
 }`
       break
     } case 'SearchIDStatus': {
-      variables.id = await alID
+      variables.id = (await alID).data.Viewer.id
       variables.mediaId = opts.id
       query = ` 
 query ($id: Int, $mediaId: Int){

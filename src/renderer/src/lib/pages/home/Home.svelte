@@ -37,7 +37,6 @@
       }
     }
   }
-  // TODO: add AL account detection for hiding
   const sections = [
     {
       title: 'Continue Watching',
@@ -48,11 +47,15 @@
           })
         })
       },
-      cards: alRequest({ method: 'UserLists', status_in: 'CURRENT' }).then(res => {
-        return res.data.Page.mediaList.filter(i => {
-          return i.media.status !== 'RELEASING' || i.media.mediaListEntry?.progress < i.media.nextAiringEpisode?.episode - 1
-        }).slice(0, 5)
-      }),
+      cards:
+        alToken &&
+        alRequest({ method: 'UserLists', status_in: 'CURRENT' }).then(res => {
+          return res.data.Page.mediaList
+            .filter(i => {
+              return i.media.status !== 'RELEASING' || i.media.mediaListEntry?.progress < i.media.nextAiringEpisode?.episode - 1
+            })
+            .slice(0, 5)
+        }),
       hide: !alToken
     },
     {
@@ -67,7 +70,7 @@
       click: () => {
         media = alRequest({ method: 'UserLists', status_in: 'PLANNING' }).then(res => res.data.Page.mediaList)
       },
-      cards: alRequest({ method: 'UserLists', status_in: 'PLANNING', perPage: 5 }).then(res => res.data.Page.mediaList),
+      cards: alToken && alRequest({ method: 'UserLists', status_in: 'PLANNING', perPage: 5 }).then(res => res.data.Page.mediaList),
       hide: !alToken
     },
     {

@@ -9,12 +9,6 @@ halfmoon.hideModal = id => {
   t && t.classList.remove('show')
 }
 
-// export const searchParams = new URLSearchParams(location.href)
-// if (searchParams.get('access_token')) {
-//   localStorage.setItem('ALtoken', searchParams.get('access_token'))
-//   window.location = '/app/#home'
-// }
-
 export function countdown (s) {
   const d = Math.floor(s / (3600 * 24))
   s -= d * 3600 * 24
