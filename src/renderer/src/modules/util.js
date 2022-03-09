@@ -1,3 +1,20 @@
+/* global halfmoon */
+halfmoon.showModal = id => {
+  const t = document.getElementById(id)
+  t && t.classList.add('show')
+}
+
+halfmoon.hideModal = id => {
+  const t = document.getElementById(id)
+  t && t.classList.remove('show')
+}
+
+// export const searchParams = new URLSearchParams(location.href)
+// if (searchParams.get('access_token')) {
+//   localStorage.setItem('ALtoken', searchParams.get('access_token'))
+//   window.location = '/app/#home'
+// }
+
 export function countdown (s) {
   const d = Math.floor(s / (3600 * 24))
   s -= d * 3600 * 24
@@ -11,3 +28,7 @@ export function countdown (s) {
   if (d || h || m) tmp.push(m + 'm')
   return tmp.join(' ')
 }
+
+export const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
+
+export const sleep = t => new Promise(resolve => setTimeout(resolve, t))

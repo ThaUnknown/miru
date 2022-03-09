@@ -1,11 +1,13 @@
 <script>
   import Search from './Search.svelte'
   import Section from './Section.svelte'
+  // TODO: add AL account detection for hiding
   const sections = [
     {
       title: 'Continue Watching',
       click: () => {},
-      cards: new Promise(() => {})
+      cards: new Promise(() => {}),
+      hide: true
     },
     {
       title: 'New Releases',
@@ -15,7 +17,8 @@
     {
       title: 'Your List',
       click: () => {},
-      cards: new Promise(() => {})
+      cards: new Promise(() => {}),
+      hide: true
     },
     {
       title: 'Trending Now',
@@ -39,8 +42,10 @@
   <div class="h-full py-10">
     <Search />
     <div>
-      {#each sections as opts, i (i)}
-        <Section {opts} />
+      {#each sections as opts (opts.title)}
+        {#if !opts.hide}
+          <Section {opts} />
+        {/if}
       {/each}
     </div>
   </div>
