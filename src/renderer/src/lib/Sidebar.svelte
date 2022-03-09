@@ -1,4 +1,5 @@
 <script>
+  export let page
   $: links = [
     {
       click: halfmoon.toggleSidebar.bind(halfmoon),
@@ -7,27 +8,36 @@
       text: 'Open Menu'
     },
     {
-      click: () => {},
+      click: () => {
+        page = 'home'
+      },
       icon: 'home',
       text: 'Home Page'
     },
     {
-      click: () => {},
+      click: () => {
+        page = 'schedule'
+      },
       icon: 'schedule',
       text: 'Airing Schedule'
     },
     {
-      click: () => {},
+      click: () => {
+        // TODO: open now playing
+      },
       icon: 'queue_music',
       text: 'Now Playing'
     },
     {
-      click: () => {},
+      click: () => {
+        page = 'settings'
+      },
       icon: 'tune',
       text: 'Settings'
     },
     {
       click: () => {
+        // TODO: AL login
         'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token'
       },
       icon: 'login',
@@ -143,14 +153,8 @@
     will-change: width;
     overflow: visible;
   }
-
-  .nav-hidden > .sidebar {
+  :global(.nav-hidden) > .sidebar {
     left: calc(-1 * var(--sidebar-width)) !important;
-  }
-
-  .nav-hidden > .content-wrapper {
-    left: 0 !important;
-    width: 100% !important;
   }
 
   [data-toggle='tooltip']:not([data-target-breakpoint])::after,
