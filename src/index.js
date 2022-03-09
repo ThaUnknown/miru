@@ -10,7 +10,7 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 900,
-    backgroundColor: '#2e2c29',
+    backgroundColor: '#191c20',
     autoHideMenuBar: true,
     experimentalFeatures: true,
     webPreferences: {
