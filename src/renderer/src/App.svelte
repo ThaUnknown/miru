@@ -37,19 +37,6 @@
     overscroll-behavior: none;
     user-select: none;
   }
-
-  @keyframes load-in {
-    from {
-      bottom: -1.2rem;
-      transform: scale(0.95);
-    }
-
-    to {
-      bottom: 0;
-      transform: scale(1);
-    }
-  }
-
   /* sidebar patches */
   .page-wrapper.with-sidebar[data-sidebar-hidden] {
     --sidebar-width: var(--sidebar-minimised);
