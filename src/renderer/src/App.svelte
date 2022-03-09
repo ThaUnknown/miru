@@ -1,17 +1,13 @@
 <script>
   import Sidebar from './lib/Sidebar.svelte'
   import Router from './lib/Router.svelte'
-  // import anitomyscript from 'anitomyscript'
-  // const WebTorrent = require('webtorrent')
-  // const wt = new WebTorrent()
-  // console.log(wt)
-  // anitomyscript('[GJM] Irozuku Sekai no Ashita kara - 08 [F0C587E8].mkv').then(console.log)
   let page = 'home'
 </script>
 
 <div class="page-wrapper with-sidebar" data-sidebar-type="full-height overlayed-sm-and-down" data-sidebar-hidden="hidden">
   <div class="sticky-alerts" />
-  <div class="sidebar-overlay" onclick="halfmoon.toggleSidebar()" />
+  <!-- svelte-ignore missing-declaration -->
+  <div class="sidebar-overlay" on:click={halfmoon.toggleSidebar.bind(halfmoon)} />
   <Sidebar bind:page />
   <Router bind:page />
 </div>

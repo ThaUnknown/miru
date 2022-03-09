@@ -1,10 +1,6 @@
 <script>
-  import Cards from '../../Cards.svelte'
-  export let opts = {
-    click: () => {},
-    title: '',
-    cards: undefined
-  }
+  import Cards from '@/lib/Cards.svelte'
+  export let opts = {}
 </script>
 
 <span class="d-flex px-20 align-items-end pointer text-decoration-none text-muted" on:click={opts.click}>

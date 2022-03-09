@@ -98,6 +98,14 @@
     height: 27rem !important;
     box-shadow: rgba(0, 4, 12, 0.3) 0px 7px 15px, rgba(0, 4, 12, 0.05) 0px 4px 4px;
   }
+  .card-grid {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+  .badge-color {
+    background-color: var(--color) !important;
+    border-color: var(--color) !important;
+  }
 
   .card:hover {
     transform: scale(1.05);
@@ -110,6 +118,18 @@
 
     to {
       left: 100%;
+    }
+  }
+
+  @keyframes load-in {
+    from {
+      bottom: -1.2rem;
+      transform: scale(0.95);
+    }
+
+    to {
+      bottom: 0;
+      transform: scale(1);
     }
   }
   .skeloader {
@@ -125,5 +145,9 @@
     width: 15rem;
     background: linear-gradient(to right, transparent 0%, #25282c 50%, transparent 100%);
     animation: load 1s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .cover-img {
+    object-fit: cover;
+    background-color: var(--color) !important;
   }
 </style>

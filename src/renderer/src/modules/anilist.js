@@ -1,6 +1,11 @@
 /* global halfmoon */
+import { alToken } from '@/lib/pages/Settings.svelte'
 
-const alID = 'TODO: add al id'
+export const alID =
+  !!alToken &&
+  alRequest({ method: 'Viewer', token: alToken }).then(result => {
+    return result.data.Viewer.id
+  })
 
 async function handleRequest (opts) {
   return await fetch('https://graphql.anilist.co', opts).then(async res => {
@@ -189,6 +194,7 @@ query ($id: [Int], $type: MediaType, $page: Int, $perPage: Int) {
 }`
       break
     } case 'Viewer': {
+      variables.id = alToken
       query = ` 
 query {
   Viewer {
@@ -201,7 +207,7 @@ query {
 }`
       break
     } case 'UserLists': {
-      variables.id = opts.id
+      variables.id = await alID
       query = ` 
 query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [MediaListStatus]){
   Page (page: $page, perPage: $perPage) {
@@ -217,7 +223,7 @@ query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [Media
 }`
       break
     } case 'SearchIDStatus': {
-      variables.id = alID
+      variables.id = await alID
       variables.mediaId = opts.id
       query = ` 
 query ($id: Int, $mediaId: Int){

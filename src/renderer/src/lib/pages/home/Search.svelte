@@ -1,6 +1,14 @@
 <script>
+  import { alRequest } from '@/modules/anilist.js'
   export let search = {}
+  export let media = null
   let searchTimeout = null
+
+  function processMedia(res) {
+    return res.data.Page.media.map(media => {
+      return { media }
+    })
+  }
   function searchClear() {
     search = {
       format: '',
@@ -9,11 +17,12 @@
       sort: '',
       status: ''
     }
-    console.log('// TODO: hide searching state')
+    media = null
   }
+  $: input(search)
   function input() {
     if (!searchTimeout) {
-      console.log('// TODO: present searching state')
+      if (Object.values(search).filter(v => v).length) media = new Promise(() => {})
     } else {
       clearTimeout(searchTimeout)
     }
@@ -33,21 +42,17 @@
       if (value) opts[key] = value
     }
     if (Object.keys(defaults).length !== Object.keys(opts).length) {
-      // const res = await alRequest(opts)
-      // const mediaList = res.data.Page.media
-      // galleryAppend({ media: mediaList, gallery: browseGallery, method: 'search', page: page || 1 })
-      console.log('// TODO: search using `search` object', search)
-      // return res.data.Page.pageInfo.hasNextPage
+      media = alRequest(opts).then(res => {
+        return processMedia(res)
+      })
     } else {
-      console.log('// TODO: hide searching state')
-      return false
+      media = null
     }
   }
 </script>
 
 <div class="container-fluid row p-20">
-  <!-- bad, bubbling cuz lazy applies input event to all child elements -->
-  <div class="col-lg col-4 p-10 d-flex flex-column justify-content-end" on:input={input}> 
+  <div class="col-lg col-4 p-10 d-flex flex-column justify-content-end">
     <div class="pb-10 font-size-24 font-weight-semi-bold d-flex">
       <div class="material-icons mr-10 font-size-30">title</div>
       Title
@@ -60,7 +65,7 @@
         type="search"
         class="form-control bg-dark border-left-0 shadow-none text-capitalize"
         autocomplete="off"
-        bind:value={search.text}
+        bind:value={search.search}
         data-option="search"
         placeholder="Any" />
     </div>
@@ -149,7 +154,7 @@
     </select>
   </div>
   <div class="col-auto p-10 d-flex">
-    <button class="btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0" type="button" on:click={searchClear}>delete</button>
+    <button class="btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0" type="button" on:click={searchClear} class:text-primary={!!media}>delete</button>
   </div>
 </div>
 
@@ -172,5 +177,8 @@
   }
   input:invalid {
     box-shadow: 0 0 0 0.2rem var(--danger-color) !important;
+  }
+  select.form-control:invalid {
+    color: var(--dm-input-placeholder-text-color);
   }
 </style>
