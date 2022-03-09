@@ -58,7 +58,7 @@
   }
 </script>
 
-<div class="sidebar">
+<div class="sidebar shadow-lg">
   <div class="sidebar-menu h-full d-flex flex-column m-0 pb-5">
     {#each links as { click, icon, text, image }, i (i)}
       <div
