@@ -4,7 +4,22 @@
     localStorage.setItem('ALtoken', searchParams.get('access_token'))
   }
   export const alToken = localStorage.getItem('ALtoken') || null
-  export const settings = JSON.parse(localStorage.getItem('settings')) || {}
+  const defaults = {
+    playerAutoplay: true,
+    playerPause: true,
+    playerAutocomplete: true,
+    rssQuality: '1080',
+    rssFeed: 'SubsPlease',
+    rssNotifications: false,
+    rssAutoplay: true,
+    rssTrusted: true,
+    rssBatch: false,
+    torrentSpeed: 10
+  }
+  export let set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
+  function removeRelations() {
+    localStorage.removeItem('relations')
+  }
 </script>
 
 <script>
@@ -27,6 +42,15 @@
       desc: 'Torrent client settings, and preferences.'
     }
   }
+  let settings = set
+  $: saveSettings(settings)
+  function saveSettings() {
+    localStorage.setItem('settings', JSON.stringify(settings))
+  }
+  function restoreSettings() {
+    localStorage.removeItem('settings')
+    settings = { ...defaults }
+  }
 </script>
 
 <Tabs>
@@ -47,6 +71,7 @@
       <p class="text-muted px-20 py-10 m-0 mt-auto">Restart may be required for some settings to take effect.</p>
       <p class="text-muted px-20 m-0">If you don't know what shit does, use default settings.</p>
       <button
+        on:click={restoreSettings}
         class="btn btn-danger mx-20 my-10"
         type="button"
         id="setRes"
@@ -55,7 +80,14 @@
         data-title="Restores All Settings Back To Their Recommended Defaults">
         Restore Defaults
       </button>
-      <button class="btn btn-danger mx-20 mb-20" type="button" id="clearRelCache" data-toggle="tooltip" data-placement="top" data-title="Clears Anime Names Data Cache">
+      <button
+        class="btn btn-danger mx-20 mb-20"
+        type="button"
+        id="clearRelCache"
+        data-toggle="tooltip"
+        data-placement="top"
+        data-title="Clears Anime Names Data Cache"
+        on:click={removeRelations}>
         Clear Name Cache
       </button>
     </div>
@@ -98,8 +130,8 @@
             <div class="input-group-prepend">
               <span class="input-group-text w-100 justify-content-center">Feed</span>
             </div>
-            <input id="torrent4" type="text" list="torrent4list" class="form-control form-control-lg" autocomplete="off" value="SubsPlease" />
-            <datalist id="torrent4list">
+            <input id="rss-feed" type="text" list="rss-feed-list" class="form-control form-control-lg" autocomplete="off" bind:value={settings.rssFeed} />
+            <datalist id="rss-feed-list">
               <option value="SubsPlease">https://nyaa.si/?page=rss&c=0_0&f=0&u=subsplease&q=</option>
               <option value="Erai-raws">https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q=</option>
             </datalist>
@@ -108,7 +140,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text w-100 justify-content-center">Quality</span>
             </div>
-            <select class="form-control form-control-lg" id="torrent1">
+            <select class="form-control form-control-lg" bind:value={settings.rssQuality}>
               <option value="1080" selected>1080p</option>
               <option value="720">720p</option>
               <option value="480||540">SD</option>
@@ -116,33 +148,33 @@
           </div>
           <break />
           <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top" data-title="Sends A Notification When A New Episode Is Released">
-            <input type="checkbox" id="other1" />
-            <label for="other1">Release Notifications</label>
+            <input type="checkbox" id="rss-notifications" bind:checked={settings.rssNotifications} />
+            <label for="rss-notifications">Release Notifications</label>
           </div>
           <div
-            class="custom-swit`c`h mb-10 pl-10 font-size-16 w-300"
+            class="custom-switch mb-10 pl-10 font-size-16 w-300"
             data-toggle="tooltip"
             data-placement="top"
             data-title="Skips The Torrent Selection Popup, Might Lead To Unwanted Videos Being
         Played">
-            <input type="checkbox" id="torrent2" />
-            <label for="torrent2">Auto-Play Torrents</label>
+            <input type="checkbox" id="rss-autoplay" bind:checked={settings.rssAutoplay} />
+            <label for="rss-autoplay">Auto-Play Torrents</label>
           </div>
           <div
             class="custom-switch mb-10 pl-10 font-size-16 w-300"
             data-toggle="tooltip"
             data-placement="top"
             data-title="Finds Only Trusted Torrents, Gives Less Results But Higher Quality And With More Seeders">
-            <input type="checkbox" id="torrent3" checked />
-            <label for="torrent3">Trusted Only</label>
+            <input type="checkbox" id="rss-trusted" bind:checked={settings.rssTrusted} />
+            <label for="rss-trusted">Trusted Only</label>
           </div>
           <div
             class="custom-switch mb-10 pl-10 font-size-16 w-300"
             data-toggle="tooltip"
             data-placement="top"
             data-title="Tries To Find Batches For Finished Shows Instead Of Downloading 1 Episode At A Time">
-            <input type="checkbox" id="torrent9" />
-            <label for="torrent9">Batch Lookup</label>
+            <input type="checkbox" id="rss-batch" bind:checked={settings.rssBatch} />
+            <label for="rss-batch">Batch Lookup</label>
           </div>
         </div>
       </Tab>
@@ -156,7 +188,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text w-150 justify-content-center">Max Speed</span>
             </div>
-            <input id="torrent-speed" type="number" bind:value={settings.torrentSpeed} min="0" max="50" class="form-control text-right form-control-lg" />
+            <input type="number" bind:value={settings.torrentSpeed} min="0" max="50" class="form-control text-right form-control-lg" />
             <div class="input-group-append">
               <span class="input-group-text">MB/s</span>
             </div>
