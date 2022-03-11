@@ -15,7 +15,7 @@
 </script>
 
 <ViewAnime />
-<div class="page-wrapper with-sidebar" data-sidebar-type="full-height overlayed-sm-and-down" data-sidebar-hidden={$sidebar || null}>
+<div class="page-wrapper with-sidebar with-transitions" data-sidebar-type="full-height overlayed-sm-and-down" data-sidebar-hidden={$sidebar || null}>
   <div class="sticky-alerts" />
   <!-- svelte-ignore missing-declaration -->
   <div class="sidebar-overlay" on:click={() => ($sidebar = !$sidebar)} />
