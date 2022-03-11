@@ -1,5 +1,5 @@
 <script>
-  import Cards from '@/lib/Cards.svelte'
+  import Cards from './Cards.svelte'
   export let opts = {}
 </script>
 

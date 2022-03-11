@@ -3,7 +3,6 @@
   import { countdown } from '@/modules/util.js'
 
   let view = getContext('view')
-  $: console.log($view)
   function close() {
     $view = null
   }
@@ -108,7 +107,7 @@
                   <div class="d-flex flex-column flex-wrap">
                     <button class="btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5" type="button">
                       <span class="material-icons mr-10 font-size-24 w-30"> play_arrow </span>
-                      <span>Play</span>
+                      <span>{$view.progress ? 'Continue' : 'Play'}</span>
                     </button>
                     <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16">
                       <span class="material-icons mr-10 font-size-18 w-30"> live_tv </span>
@@ -128,16 +127,7 @@
             <div class="font-size-16 pr-15">
               {@html $view.description}
             </div>
-            <!-- <h1 class="title font-weight-bold text-white pt-20">Episodes</h1>
-          <div class="d-flex flex-wrap justify-content-start"> -->
-            <!-- <div class="position-relative w-250 rounded mr-10 mb-10 overflow-hidden pointer">
-              <img loading="lazy"
-                src="https://img1.ak.crunchyroll.com/i/spire1-tmb/b199406edeebc19a7f4e4412d6e1dfcc1365964779_full.jpg"
-                class="w-full h-full">
-              <div class="position-absolute ep-title w-full p-5 text-truncate bottom-0">Episode 1 - To You, 2,000
-                Years in the Future -The Fall of Zhiganshina (1)</div>
-            </div> -->
-            <!-- </div> -->
+<!-- TODO: episodes list -->
           </div>
           <div class="col-md-3 px-sm-0 px-20">
             <h1 class="title font-weight-bold text-white">Details</h1>

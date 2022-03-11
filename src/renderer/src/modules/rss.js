@@ -1,12 +1,9 @@
-/* global halfmoon */
-
-// import { settings } from './settings.js'
+import { set } from '@/lib/pages/Settings.svelte'
 import { DOMPARSER } from './util.js'
-import { client } from './torrent.js'
+import { add } from './torrent.js'
 import { episodeRx } from './anime.js'
 
-const settings = {}
-// TODO: settings
+const settings = set
 
 export function getRSSContent (url) {
   return fetch(url).then(res => {
@@ -17,12 +14,12 @@ export function getRSSContent (url) {
     }
     throw Error(res.statusText)
   }).catch(error => {
-    halfmoon.initStickyAlert({
-      content: 'Failed fetching RSS!<br>' + error,
-      title: 'Search Failed',
-      alertType: 'alert-danger',
-      fillType: ''
-    })
+    // halfmoon.initStickyAlert({
+    //   content: 'Failed fetching RSS!<br>' + error,
+    //   title: 'Search Failed',
+    //   alertType: 'alert-danger',
+    //   fillType: ''
+    // })
     console.error(error)
   })
 }
@@ -62,12 +59,8 @@ export async function nyaaRss (media, episode, isOffline) {
     media: media
   }
   if (settings.torrent2) {
-    if (isOffline) {
-      client.offlineDownload(entries[0].hash)
-    } else {
-      client.playTorrent(entries[0].hash, { media: fileMedia, episode: episode })
-    }
-    halfmoon.toggleModal('tsearch')
+    add(entries[0].hash)
+    // { media: fileMedia, episode: episode }
   }
   entries.forEach((entry, index) => {
     const template = document.createElement('tr')
@@ -80,12 +73,8 @@ export async function nyaaRss (media, episode, isOffline) {
 <td>${entry.downloads}</td>
 <td class="pointer">Play</td>`
     template.onclick = () => {
-      if (isOffline) {
-        client.offlineDownload(entry.hash)
-      } else {
-        client.playTorrent(entry.hash, { media: fileMedia, episode: episode })
-      }
-      halfmoon.hideModal('tsearch')
+      add(entry.hash)
+      // { media: fileMedia, episode: episode }
     }
     frag.appendChild(template)
   })

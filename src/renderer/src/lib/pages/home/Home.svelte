@@ -2,6 +2,7 @@
   import Search from './Search.svelte'
   import Section from './Section.svelte'
   import Gallery from './Gallery.svelte'
+  import { add } from '@/modules/torrent.js'
   import { alToken } from '../Settings.svelte'
   import { alRequest } from '@/modules/anilist.js'
   import { resolveFileMedia, relations } from '@/modules/anime.js'
@@ -30,7 +31,10 @@
         const items = doc.querySelectorAll('item')
         const media = await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), isRelease: true })
         media.forEach((mediaInformation, index) => {
-          mediaInformation.onclick = () => client.playTorrent(items[index].querySelector('link').textContent, { media: mediaInformation, episode: mediaInformation.episode })
+          mediaInformation.onclick = () => {
+            add(items[index].querySelector('link').textContent)
+            // { media: mediaInformation, episode: mediaInformation.episode }
+          }
         })
         localStorage.setItem('relations', JSON.stringify(relations))
         return media

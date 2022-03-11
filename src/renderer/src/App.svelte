@@ -44,9 +44,19 @@
     overscroll-behavior: none;
     user-select: none;
   }
+  :global(img){
+    -webkit-user-drag: none;
+  }
   /* sidebar patches */
   .page-wrapper.with-sidebar[data-sidebar-hidden] {
     --sidebar-width: var(--sidebar-minimised);
+  }
+  :global(::-webkit-inner-spin-button) {
+    opacity: 1;
+    margin-left: 0.4rem;
+    margin-right: -0.5rem;
+    filter: invert(0.84);
+    padding-top: 2rem;
   }
 
   @media (max-width: 768px) {

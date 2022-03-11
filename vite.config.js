@@ -11,7 +11,8 @@ const commonjsPackages = [
   // 'electron/common',
   // 'electron/renderer',
   // 'original-fs',
-  'webtorrent'
+  'webtorrent',
+  'buffer'
   // ...builtinModules
 ]
 

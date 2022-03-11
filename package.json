@@ -18,7 +18,7 @@
     "svelte": "^3.46.4",
     "vite": "^2.8.6",
     "vite-plugin-commonjs-externals": "^0.1.1",
-    "webtorrent": "^1.8.5"
+    "webtorrent": "^1.7.2"
   },
   "standard": {
     "ignore": [

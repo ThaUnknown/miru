@@ -12,6 +12,6 @@ export function countdown (s) {
   return tmp.join(' ')
 }
 
-export const DOMPARSER = new DOMParser().parseFromString.bind(new DOMParser())
+export const DOMPARSER = DOMParser.prototype.parseFromString.bind(new DOMParser())
 
 export const sleep = t => new Promise(resolve => setTimeout(resolve, t))

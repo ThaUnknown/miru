@@ -1,5 +1,5 @@
 /* global halfmoon */
-import { client } from './torrent.js'
+import { add } from './torrent.js'
 import { DOMPARSER } from './util.js'
 import { alRequest } from './anilist.js'
 import { nyaaRss } from './rss.js'
@@ -18,7 +18,7 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
     item.getAsString(text => {
       if (torrentRx.exec(text)) {
         e.preventDefault()
-        client.playTorrent(text)
+        add(text)
       } else if (imageRx.exec(text)) {
         e.preventDefault()
         traceAnime(text)
