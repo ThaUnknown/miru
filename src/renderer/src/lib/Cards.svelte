@@ -1,6 +1,12 @@
 <script>
   import { countdown } from '../modules/util.js'
+  import { getContext } from 'svelte'
   export let cards = new Promise(() => {})
+
+  const view = getContext('view')
+  function viewMedia(media) {
+    $view = media
+  }
 </script>
 
 {#await cards}
@@ -30,7 +36,7 @@
         </div>
       </div>
     {:else}
-      <div class="card m-0 p-0" on:click={card.onclick} style:--color={card.media.coverImage.color || '#1890ff'}>
+      <div class="card m-0 p-0" on:click={card.onclick || (() => viewMedia(card.media))} style:--color={card.media.coverImage.color || '#1890ff'}>
         <div class="row h-full">
           <div class="col-4">
             <img loading="lazy" src={card.media.coverImage.extraLarge || ''} alt="cover" class="cover-img w-full h-full" />

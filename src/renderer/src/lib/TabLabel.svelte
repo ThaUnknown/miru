@@ -11,4 +11,3 @@
 <div class={'pointer border-bottom ' + ($selectedTab === tab ? 'bg-dark-light' : '')} on:click={() => selectTab(tab)}>
   <slot />
 </div>
-

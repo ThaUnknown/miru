@@ -1,16 +1,19 @@
 <script>
   import Sidebar from './lib/Sidebar.svelte'
   import Router from './lib/Router.svelte'
+  import ViewAnime from './lib/ViewAnime.svelte'
   let page = 'home'
 </script>
 
-<div class="page-wrapper with-sidebar" data-sidebar-type="full-height overlayed-sm-and-down" data-sidebar-hidden="hidden">
-  <div class="sticky-alerts" />
-  <!-- svelte-ignore missing-declaration -->
-  <div class="sidebar-overlay" on:click={halfmoon.toggleSidebar.bind(halfmoon)} />
-  <Sidebar bind:page />
-  <Router bind:page />
-</div>
+<ViewAnime>
+  <div class="page-wrapper with-sidebar" data-sidebar-type="full-height overlayed-sm-and-down" data-sidebar-hidden="hidden">
+    <div class="sticky-alerts" />
+    <!-- svelte-ignore missing-declaration -->
+    <div class="sidebar-overlay" on:click={halfmoon.toggleSidebar.bind(halfmoon)} />
+    <Sidebar bind:page />
+    <Router bind:page />
+  </div>
+</ViewAnime>
 
 <style>
   :root {

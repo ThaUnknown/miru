@@ -104,7 +104,7 @@ export async function resolveFileMedia (opts) {
   async function resolveTitle (title) {
     if (!(title in relations)) {
       // resolve name and shit
-      const method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH', startDate: 10000000 }
+      const method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING'], sort: 'SEARCH_MATCH', startDate: 10000000 }
       let res = await alRequest(method)
       if (!res.data.Page.media[0]) {
         const index = method.name.search(/S\d/)
