@@ -1,14 +1,3 @@
-/* global halfmoon */
-halfmoon.showModal = id => {
-  const t = document.getElementById(id)
-  t && t.classList.add('show')
-}
-
-halfmoon.hideModal = id => {
-  const t = document.getElementById(id)
-  t && t.classList.remove('show')
-}
-
 export function countdown (s) {
   const d = Math.floor(s / (3600 * 24))
   s -= d * 3600 * 24

@@ -1,9 +1,13 @@
 <script>
+  import { getContext } from 'svelte'
   import { alID } from '@/modules/anilist.js'
+  const sidebar = getContext('sidebar')
   export let page
   const links = [
     {
-      click: halfmoon.toggleSidebar.bind(halfmoon),
+      click: ()=>{
+        $sidebar = !$sidebar
+      },
       image: 'logo_cut.png',
       icon: 'menu',
       text: 'Open Menu'

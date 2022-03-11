@@ -2,18 +2,26 @@
   import Sidebar from './lib/Sidebar.svelte'
   import Router from './lib/Router.svelte'
   import ViewAnime from './lib/ViewAnime.svelte'
+  import { setContext } from 'svelte'
+  import { writable } from 'svelte/store'
+
+  let view = writable(null)
+  setContext('view', view)
+
   let page = 'home'
+
+  let sidebar = writable(true)
+  setContext('sidebar', sidebar)
 </script>
 
-<ViewAnime>
-  <div class="page-wrapper with-sidebar" data-sidebar-type="full-height overlayed-sm-and-down" data-sidebar-hidden="hidden">
-    <div class="sticky-alerts" />
-    <!-- svelte-ignore missing-declaration -->
-    <div class="sidebar-overlay" on:click={halfmoon.toggleSidebar.bind(halfmoon)} />
-    <Sidebar bind:page />
-    <Router bind:page />
-  </div>
-</ViewAnime>
+<ViewAnime />
+<div class="page-wrapper with-sidebar" data-sidebar-type="full-height overlayed-sm-and-down" data-sidebar-hidden={$sidebar || null}>
+  <div class="sticky-alerts" />
+  <!-- svelte-ignore missing-declaration -->
+  <div class="sidebar-overlay" on:click={() => ($sidebar = !$sidebar)} />
+  <Sidebar bind:page />
+  <Router bind:page />
+</div>
 
 <style>
   :root {
