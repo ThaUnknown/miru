@@ -1,6 +1,7 @@
 {
-  "name": "miru",
+  "name": "Miru",
   "version": "0.1.0",
+  "author": "ThaUnknown_",
   "main": "src/index.js",
   "scripts": {
     "start": "SET NODE_ENV=development & concurrently \"npm run web:watch\" \"npm run electron:start\"",
@@ -10,16 +11,13 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
-    "anitomyscript": "^2.0.4",
     "builtin-modules": "^3.2.0",
     "concurrently": "^7.0.0",
     "electron": "^16.0.10",
     "electron-builder": "^22.14.13",
-    "matroska-subtitles": "^3.3.2",
     "svelte": "^3.46.4",
     "vite": "^2.8.6",
-    "vite-plugin-commonjs-externals": "^0.1.1",
-    "webtorrent": "^1.7.2"
+    "vite-plugin-commonjs-externals": "^0.1.1"
   },
   "standard": {
     "ignore": [
@@ -32,5 +30,10 @@
     "files": [
       "src/**/*"
     ]
+  },
+  "dependencies": {
+    "anitomyscript": "^2.0.4",
+    "matroska-subtitles": "^3.3.2",
+    "webtorrent": "^1.7.2"
   }
 }

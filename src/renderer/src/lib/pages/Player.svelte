@@ -1,3 +1,31 @@
+<script context="module">
+    async function mediaChange(current, image) {
+    if (current) {
+      const { release_group, anime_title, episode_number, episode_title } = await anitomyscript(current.name)
+      // honestly, this is made for anime, but works fantastic for everything else.
+      const name = [anime_title, episode_number, episode_title].filter(i => i).join(' - ')
+      if ('mediaSession' in navigator) {
+        const metadata = image
+          ? new MediaMetadata({
+              title: name || 'Video Player',
+              artwork: [
+                {
+                  src: image,
+                  sizes: '256x256',
+                  type: 'image/jpg'
+                }
+              ]
+            })
+          : new MediaMetadata({
+              title: name || 'Video Player'
+            })
+        if (release_group) metadata.artist = release_group
+        navigator.mediaSession.metadata = metadata
+      }
+    }
+  }
+</script>
+
 <script>
   import Peer from '@/modules/Peer.js'
   import Subtitles from '@/modules/subtitles.js'
@@ -74,18 +102,18 @@
     })
   }
 
-  if ('PresentationRequest' in window) {
-    const handleAvailability = aval => {
-      canCast = !!aval
-    }
-    presentationRequest = new PresentationRequest(['build/cast.html'])
-    presentationRequest.addEventListener('connectionavailable', e => initCast(e))
-    navigator.presentation.defaultRequest = presentationRequest
-    presentationRequest.getAvailability().then(aval => {
-      aval.onchange = e => handleAvailability(e.target.value)
-      handleAvailability(aval.value)
-    })
-  }
+  // if ('PresentationRequest' in window) {
+  //   const handleAvailability = aval => {
+  //     canCast = !!aval
+  //   }
+  //   presentationRequest = new PresentationRequest(['build/cast.html'])
+  //   presentationRequest.addEventListener('connectionavailable', e => initCast(e))
+  //   navigator.presentation.defaultRequest = presentationRequest
+  //   presentationRequest.getAvailability().then(aval => {
+  //     aval.onchange = e => handleAvailability(e.target.value)
+  //     handleAvailability(aval.value)
+  //   })
+  // }
 
   //document.fullscreenElement isn't reactive
   document.addEventListener('fullscreenchange', () => {
@@ -100,13 +128,10 @@
     if (files && files.length) {
       videos = files.filter(file => videoRx.test(file.name))
       if (videos?.length) {
-        if (!current) {
-          handleCurrent(videos[0])
-        } else {
-          if (subs) {
-            subs.files = files || []
-            subs.findSubtitleFiles(current)
-          }
+        handleCurrent(videos[0])
+        if (subs) {
+          subs.files = files || []
+          subs.findSubtitleFiles(current)
         }
       }
     }
@@ -429,31 +454,6 @@
     playbackRate: 1,
     position: Math.max(duration || 0, currentTime || 0)
   })
-  async function mediaChange(current, image) {
-    if (current) {
-      const { release_group, anime_title, episode_number, episode_title } = await anitomyscript(current.name)
-      // honestly, this is made for anime, but works fantastic for everything else.
-      name = [anime_title, episode_number, episode_title].filter(i => i).join(' - ')
-      if ('mediaSession' in navigator) {
-        const metadata = image
-          ? new MediaMetadata({
-              title: name || 'Video Player',
-              artwork: [
-                {
-                  src: image,
-                  sizes: '256x256',
-                  type: 'image/jpg'
-                }
-              ]
-            })
-          : new MediaMetadata({
-              title: name || 'Video Player'
-            })
-        if (release_group) metadata.artist = release_group
-        navigator.mediaSession.metadata = metadata
-      }
-    }
-  }
   $: mediaChange(current)
 
   if ('mediaSession' in navigator) {
@@ -530,8 +530,8 @@
       }
     }
   }
-  $: initThumbnails(200 / (videoWidth / videoHeight))
-  function initThumbnails(height) {
+  function initThumbnails() {
+    const height = 200 / (videoWidth / videoHeight)
     if (!isNaN(height)) {
       thumbnailData.interval = duration / 300 < 5 ? 5 : duration / 300
       thumbnailData.canvas.height = height
@@ -571,17 +571,14 @@
     thumbnailData.video.load()
     console.log('Thumbnail creating started')
   }
-  let isStandalone = window.matchMedia('(display-mode: standalone)').matches
-  window.matchMedia('(display-mode: standalone)').addEventListener('change', ({ matches }) => {
-    isStandalone = matches
-  })
+
   const isWindows = navigator.appVersion.includes('Windows')
   let innerWidth, innerHeight, videoWidth, videoHeight
   let menubarOffset = 0
-  $: calcMenubarOffset(innerWidth, innerHeight, videoWidth, videoHeight, isStandalone)
-  function calcMenubarOffset(innerWidth, innerHeight, videoWidth, videoHeight, isStandalone) {
+  // $: calcMenubarOffset(innerWidth, innerHeight, videoWidth, videoHeight)
+  function calcMenubarOffset(innerWidth, innerHeight, videoWidth, videoHeight) {
     // outerheight resize and innerheight resize is mutual, additionally update on metadata and app state change
-    if (isStandalone && videoWidth && videoHeight) {
+    if (videoWidth && videoHeight) {
       // so windows is very dumb, and calculates windowed mode as if it was window XP, with the old bars, but not when maximised
       const isMaximised = screen.availWidth === window.outerWidth && screen.availHeight === window.outerHeight
       const menubar = Math.max(0, isWindows && !isMaximised ? window.outerHeight - innerHeight - 8 : window.outerHeight - innerHeight)
@@ -649,6 +646,7 @@
       on:playing={hideBuffering}
       on:loadedmetadata={hideBuffering}
       on:loadedmetadata={getFPS}
+      on:loadedmetadata={initThumbnails}
       on:leavepictureinpicture={() => (pip = false)} />
     {#if stats}
       <div class="position-absolute top-0 bg-tp p-10 m-15 text-monospace rounded z-50">

@@ -13,7 +13,7 @@
 </script>
 
 <div class="overflow-y-hidden content-wrapper">
-  <Player {files} miniplayer={page !=='player'} bind:page />
+  <Player {files} miniplayer={page !== 'player'} bind:page />
   {#if page === 'schedule'}
     <Schedule />
   {:else if page === 'settings'}
@@ -24,7 +24,7 @@
 </div>
 
 <style>
-  .content-wrapper{
+  .content-wrapper {
     will-change: width;
   }
   :global(.nav-hidden) > .content-wrapper {

@@ -1,6 +1,7 @@
 import path from 'path'
 import process from 'process'
 import { defineConfig } from 'vite'
+import { builtinModules } from 'module'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import commonjsExternals from 'vite-plugin-commonjs-externals'
 
@@ -11,7 +12,8 @@ const commonjsPackages = [
   // 'electron/renderer',
   // 'original-fs',
   'webtorrent',
-  'matroska-subtitles'
+  'matroska-subtitles',
+  ...builtinModules
 ]
 
 // https://vitejs.dev/config/
