@@ -8,13 +8,12 @@
   let files = []
   client.on('torrent', torrent => {
     console.log('hash', torrent.infoHash)
-    page = 'player'
     files = torrent.files
   })
 </script>
 
 <div class="overflow-y-hidden content-wrapper">
-  <Player {files} />
+  <Player {files} miniplayer={page !=='player'} bind:page />
   {#if page === 'schedule'}
     <Schedule />
   {:else if page === 'settings'}
@@ -25,6 +24,9 @@
 </div>
 
 <style>
+  .content-wrapper{
+    will-change: width;
+  }
   :global(.nav-hidden) > .content-wrapper {
     left: 0 !important;
     width: 100% !important;

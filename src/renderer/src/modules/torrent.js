@@ -3,6 +3,7 @@ export const client = new WebTorrent()
 window.client = client
 // save loaded torrent for persistence
 
+// should use HTTP createserver... oopps xd
 const scope = location.pathname.substr(0, location.pathname.lastIndexOf('/') + 1)
 const worker = location.origin + scope + 'sw.js' === navigator.serviceWorker?.controller?.scriptURL && navigator.serviceWorker.controller
 const handleWorker = worker => {

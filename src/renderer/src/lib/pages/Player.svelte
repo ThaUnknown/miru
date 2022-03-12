@@ -5,6 +5,8 @@
   import anitomyscript from 'anitomyscript'
   import Keyboard from './Keyboard.svelte'
 
+  export let miniplayer = false
+  export let page
   $: updateFiles(files)
   export let files = []
   export let name = null
@@ -595,6 +597,11 @@
       }
     }
   }
+
+  function toggleDropdown({ target }) {
+    target.classList.toggle('active')
+    target.closest('.dropdown').classList.toggle('show')
+  }
 </script>
 
 <svelte:window on:keydown={handleKeydown} bind:innerWidth bind:innerHeight />
@@ -607,7 +614,9 @@
 <!-- svelte-ignore a11y-media-has-caption -->
 {#if files?.length}
   <div
-    class="player w-full h-full d-flex flex-column"
+    class="player w-full h-full d-flex flex-column overflow-hidden"
+    class:pointer={miniplayer}
+    class:miniplayer
     class:pip
     class:immersed
     class:buffering
@@ -615,7 +624,8 @@
     on:mousemove={resetImmerse}
     on:touchmove={resetImmerse}
     on:keypress={resetImmerse}
-    on:mouseleave={immersePlayer}>
+    on:mouseleave={immersePlayer}
+    on:click={() => (page = 'player')}>
     <video
       class="position-absolute h-full w-full"
       style={`margin-top: ${menubarOffset}px`}
@@ -681,7 +691,7 @@
       </div>
       <!-- svelte-ignore missing-declaration -->
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
-        <div class="audio-tracks dropdown dropup with-arrow">
+        <div class="audio-tracks dropdown dropup with-arrow" on:click={toggleDropdown}>
           <span class="material-icons ctrl" title="Audio Tracks" id="baudio" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="audioButton">
             queue_music
           </span>
@@ -721,7 +731,7 @@
         <div class="ts">{toTS(duration - targetTime, duration > 3600 ? 2 : 3)}</div>
       </div>
       {#if subHeaders?.length}
-        <div class="subtitles dropdown dropup with-arrow">
+        <div class="subtitles dropdown dropup with-arrow" on:click={toggleDropdown}>
           <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="captionsButton">
             subtitles
           </span>
@@ -760,6 +770,23 @@
 {/if}
 
 <style>
+  .miniplayer {
+    transition: width 0.2s ease;
+    width: 25vw !important;
+    height: auto !important;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 5;
+    position: absolute !important;
+  }
+  .miniplayer .top,
+  .miniplayer .middle,
+  .miniplayer .bottom {
+    display: none !important;
+  }
+  .miniplayer video {
+    position: relative !important;
+  }
   .bg-tp {
     background: #000000bb;
     backdrop-filter: blur(10px);
@@ -783,8 +810,8 @@
   .player {
     user-select: none;
     font-family: Roboto, Arial, Helvetica, sans-serif;
-    transition: width 0.2s ease;
     background: #000;
+    will-change: width;
   }
 
   .pip :global(canvas) {
