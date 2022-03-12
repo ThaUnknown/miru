@@ -1,11 +1,13 @@
 <script>
   import { getContext } from 'svelte'
   import { alID } from '@/modules/anilist.js'
+  import { media } from './pages/Player.svelte'
   const sidebar = getContext('sidebar')
+  const view = getContext('view')
   export let page
   const links = [
     {
-      click: ()=>{
+      click: () => {
         $sidebar = !$sidebar
       },
       image: 'logo_cut.png',
@@ -28,7 +30,7 @@
     },
     {
       click: () => {
-        // TODO: open now playing
+        if (media) $view = media
       },
       icon: 'queue_music',
       text: 'Now Playing'

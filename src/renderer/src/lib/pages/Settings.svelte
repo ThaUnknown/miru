@@ -54,12 +54,12 @@
 </script>
 
 <Tabs>
-  <div class="d-flex w-full h-full root">
+  <div class="d-flex w-full h-full">
     <div class="d-flex flex-column h-full w-300 bg-dark border-left">
-      <div class="px-20 py-15 font-size-20 font-weight-semi-bold border-bottom">Settings</div>
+      <div class="px-20 py-15 font-size-20 font-weight-semi-bold border-bottom root">Settings</div>
       {#each Object.values(groups) as group}
         <TabLabel>
-          <div class="px-20 py-15 d-flex">
+          <div class="px-20 py-15 d-flex root">
             <span class="material-icons font-size-24 pr-10">{group.icon}</span>
             <div>
               <div class="font-weight-bold font-size-16">{group.name}</div>

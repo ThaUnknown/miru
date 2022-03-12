@@ -24,7 +24,7 @@ async function handleRequest (opts) {
 }
 
 export function alEntry (filemedia) {
-  if (filemedia.media && localStorage.getItem('ALtoken')) {
+  if (filemedia.media && alToken) {
     alRequest({ method: 'SearchIDStatus', id: filemedia.media.id }).then(res => {
       if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= filemedia.episodeNumber || filemedia.episodes === 1) {
         const query = `
@@ -51,7 +51,7 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
         const options = {
           method: 'POST',
           headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('ALtoken'),
+            Authorization: 'Bearer ' + alToken,
             'Content-Type': 'application/json',
             Accept: 'application/json'
           },

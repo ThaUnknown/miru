@@ -1,37 +1,51 @@
 <script context="module">
-    async function mediaChange(current, image) {
-    if (current) {
-      const { release_group, anime_title, episode_number, episode_title } = await anitomyscript(current.name)
-      // honestly, this is made for anime, but works fantastic for everything else.
-      const name = [anime_title, episode_number, episode_title].filter(i => i).join(' - ')
-      if ('mediaSession' in navigator) {
-        const metadata = image
-          ? new MediaMetadata({
-              title: name || 'Video Player',
-              artwork: [
-                {
-                  src: image,
-                  sizes: '256x256',
-                  type: 'image/jpg'
-                }
-              ]
-            })
-          : new MediaMetadata({
-              title: name || 'Video Player'
-            })
-        if (release_group) metadata.artist = release_group
-        navigator.mediaSession.metadata = metadata
-      }
-    }
+  export let media = null
+  let fileMedia = null
+  let hadImage = false
+  export function updateMedia(fileMed) {
+    fileMedia = fileMed
+    media = fileMedia.media
+    const name = [fileMedia.mediaTitle, fileMedia.episodeNumber, fileMedia.episodeTitle].filter(i => i).join(' - ')
+
+    fileMedia.episodeThumbnail = !!fileMedia.episodeThumbnail
+    const metadata =
+      fileMedia.episodeThumbnail || fileMedia.mediaCover
+        ? new MediaMetadata({
+            title: name || 'Miru',
+            artwork: [
+              {
+                src: fileMedia.episodeThumbnail || fileMedia.mediaCover,
+                sizes: '256x256',
+                type: 'image/jpg'
+              }
+            ]
+          })
+        : new MediaMetadata({
+            title: name || 'Miru'
+          })
+    if (fileMedia.parseObject.release_group) metadata.artist = fileMedia.parseObject.release_group
+    navigator.mediaSession.metadata = metadata
   }
 </script>
 
 <script>
+  import { alEntry } from '@/modules/anilist.js'
+  import { resolveFileMedia } from '@/modules/anime.js'
   import Peer from '@/modules/Peer.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, videoRx } from '@/modules/util.js'
-  import anitomyscript from 'anitomyscript'
   import Keyboard from './Keyboard.svelte'
+
+  async function mediaChange(current, image) {
+    if (current && 'mediaSession' in navigator) {
+      if (!media || (!hadImage && image)) {
+        // filename is already mapped so this *should* be fine
+        const data = await resolveFileMedia({ fileName: current.name })
+        if (image) data.episodeThumbnail = image
+        updateMedia(data)
+      }
+    }
+  }
 
   export let miniplayer = false
   export let page
@@ -145,10 +159,14 @@
         interval: undefined,
         video: undefined
       })
+      src = ''
+      video?.load()
+      completed = false
       file.getStreamURL((err, url) => {
         src = url
         current = file
         video?.load()
+        currentTime = 0
       })
     }
   }
@@ -599,6 +617,18 @@
     target.classList.toggle('active')
     target.closest('.dropdown').classList.toggle('show')
   }
+
+  let completed = false
+  function checkCompletion() {
+    if (!completed && duration - 180 < currentTime) {
+      if (fileMedia?.media?.episodes || fileMedia?.media?.nextAiringEpisode?.episode) {
+        if (fileMedia.media.episodes || fileMedia.media.nextAiringEpisode?.episode > fileMedia.episodeNumber) {
+          completed = true
+          alEntry(fileMedia)
+        }
+      }
+    }
+  }
 </script>
 
 <svelte:window on:keydown={handleKeydown} bind:innerWidth bind:innerHeight />
@@ -640,6 +670,7 @@
       bind:muted
       bind:playbackRate
       on:timeupdate={() => createThumbnail()}
+      on:timeupdate={checkCompletion}
       on:waiting={showBuffering}
       on:loadeddata={hideBuffering}
       on:canplay={hideBuffering}

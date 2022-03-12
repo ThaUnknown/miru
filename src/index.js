@@ -37,7 +37,7 @@ function createWindow () {
     icon: path.join(__dirname, '/renderer/public/favicon.ico'),
     show: false
   })
-  mainWindow.removeMenu()
+  // mainWindow.removeMenu()
   mainWindow.webContents.session.webRequest.onBeforeSendHeaders(
     (details, callback) => {
       const { requestHeaders } = details
