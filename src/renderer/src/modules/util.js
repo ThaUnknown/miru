@@ -10,7 +10,14 @@ export function countdown (s) {
   if (d || h) tmp.push(h + 'h')
   if (d || h || m) tmp.push(m + 'm')
   return tmp.join(' ')
-  
+}
+
+const units = [' B', ' kB', ' MB', ' GB', ' TB']
+export function fastPrettyBytes (num) {
+  if (isNaN(num)) return '0 B'
+  if (num < 1) return num + ' B'
+  const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1)
+  return Number((num / Math.pow(1000, exponent)).toFixed(2)) + units[exponent]
 }
 
 export const DOMPARSER = DOMParser.prototype.parseFromString.bind(new DOMParser())

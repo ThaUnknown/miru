@@ -30,10 +30,11 @@
 
 <script>
   import { alEntry } from '@/modules/anilist.js'
+  import { client } from '@/modules/torrent.js'
   import { resolveFileMedia } from '@/modules/anime.js'
   import Peer from '@/modules/Peer.js'
   import Subtitles from '@/modules/subtitles.js'
-  import { toTS, videoRx } from '@/modules/util.js'
+  import { toTS, videoRx, fastPrettyBytes } from '@/modules/util.js'
   import Keyboard from './Keyboard.svelte'
 
   async function mediaChange(current, image) {
@@ -629,6 +630,13 @@
       }
     }
   }
+  const torrent = {}
+  function updateStats() {
+    torrent.peers = (client?.torrents.length && client?.torrents[0].numPeers) || 0
+    torrent.up = (client?.torrents.length && client?.torrents[0].uploadSpeed) || 0
+    torrent.down = (client?.torrents.length && client?.torrents[0].downloadSpeed) || 0
+  }
+  setInterval(updateStats, 200)
 </script>
 
 <svelte:window on:keydown={handleKeydown} bind:innerWidth bind:innerHeight />
@@ -691,7 +699,16 @@
         Buffer health: {stats.buffer || 0}
       </div>
     {/if}
-    <div class="top z-40 d-flex flex-row-reverse">
+    <div class="top z-40 d-flex justify-content-between">
+      <div />
+      <div class="d-flex">
+        <span class="material-icons" data-name="peers"> people </span>
+        <span class="stats">{torrent.peers}</span>
+        <span class="material-icons"> arrow_downward </span>
+        <span class="stats">{fastPrettyBytes(torrent.up)}/s</span>
+        <span class="material-icons"> arrow_upward </span>
+        <span class="stats">{fastPrettyBytes(torrent.down)}/s</span>
+      </div>
       <span class="material-icons ctrl font-size-12 p-10" title="Keybinds [`]" data-name="togglePopout" on:click={() => (showKeybinds = true)}> help_outline </span>
     </div>
     <div class="middle d-flex align-items-center justify-content-center flex-grow-1 z-40 position-relative">
@@ -799,6 +816,13 @@
 {/if}
 
 <style>
+  .stats {
+    font-size: 1.8rem !important;
+    white-space: nowrap;
+    align-self: center;
+    font-weight: 600;
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+  }
   .miniplayer {
     transition: width 0.2s ease;
     width: 25vw !important;
