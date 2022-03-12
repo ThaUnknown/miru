@@ -1,7 +1,31 @@
-const WebTorrent = require('webtorrent')
+import WebTorrent from 'webtorrent'
 export const client = new WebTorrent()
 window.client = client
 // save loaded torrent for persistence
+
+const scope = location.pathname.substr(0, location.pathname.lastIndexOf('/') + 1)
+const worker = location.origin + scope + 'sw.js' === navigator.serviceWorker?.controller?.scriptURL && navigator.serviceWorker.controller
+const handleWorker = worker => {
+  const checkState = worker => {
+    return worker.state === 'activated' && client.loadWorker(worker)
+  }
+  if (!checkState(worker)) {
+    worker.addEventListener('statechange', ({ target }) => checkState(target))
+  }
+}
+if (worker) {
+  handleWorker(worker)
+} else {
+  navigator.serviceWorker.register('sw.js', { scope }).then(reg => {
+    handleWorker(reg.active || reg.waiting || reg.installing)
+  }).catch(e => {
+    if (String(e) === 'InvalidStateError: Failed to register a ServiceWorker: The document is in an invalid state.') {
+      location.reload() // weird workaround for a weird bug
+    } else {
+      throw e
+    }
+  })
+}
 
 export function add (torrentID) {
   if (torrentID) {

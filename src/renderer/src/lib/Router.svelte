@@ -3,17 +3,23 @@
   import Player from './pages/Player.svelte'
   import Settings from './pages/Settings.svelte'
   import Schedule from './pages/Schedule.svelte'
+  import { client } from '@/modules/torrent.js'
   export let page = 'home'
+  let files = []
+  client.on('torrent', torrent => {
+    console.log('hash', torrent.infoHash)
+    page = 'player'
+    files = torrent.files
+  })
 </script>
 
 <div class="overflow-y-hidden content-wrapper">
-  {#if page === 'player'}
-    <Player />
-  {:else if page === 'schedule'}
+  <Player {files} />
+  {#if page === 'schedule'}
     <Schedule />
   {:else if page === 'settings'}
     <Settings />
-  {:else}
+  {:else if page === 'home'}
     <Home />
   {/if}
 </div>

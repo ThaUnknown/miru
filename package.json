@@ -15,6 +15,7 @@
     "concurrently": "^7.0.0",
     "electron": "^16.0.10",
     "electron-builder": "^22.14.13",
+    "matroska-subtitles": "^3.3.2",
     "svelte": "^3.46.4",
     "vite": "^2.8.6",
     "vite-plugin-commonjs-externals": "^0.1.1",
