@@ -145,8 +145,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {#each Array(Math.min($view.episodes, $view.nextAiringEpisode?.episode - 1)) as _, i}
-                  {@const index = Math.min($view.episodes, $view.nextAiringEpisode?.episode - 1) - i - 1}
+                  {#each Array($view.nextAiringEpisode?.episode - 1 || $view.episodes) as _, i}
+                    {@const index = ($view.nextAiringEpisode?.episode - 1 || $view.episodes) - i - 1}
                     <tr class="font-size-20 py-10 pointer" on:click={() => playAnime(index + 1)}>
                       <td class="w-full">Episode {index + 1}</td>
                       <td class="material-icons text-right">play_arrow</td>
