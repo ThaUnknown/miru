@@ -53,7 +53,7 @@
   function handleFolder({ target }) {
     if (target.files.length) {
       const filepath = target.files[0].path
-      const path = filepath.slice(0, (filepath.lastIndexOf('\\') || filepath.lastIndexOf('/')) + 1)
+      const path = filepath.slice(0, filepath.lastIndexOf('\\') + 1 || filepath.lastIndexOf('/')) + 1
       settings.torrentPath = path
     }
   }

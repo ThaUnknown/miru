@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, protocol } = require('electron')
 const path = require('path')
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -37,6 +37,12 @@ function createWindow () {
     icon: path.join(__dirname, '/renderer/public/logo.ico'),
     show: false
   })
+
+  protocol.registerHttpProtocol('miru', (req, cb) => {
+    const token = req.url.slice(7)
+    mainWindow.loadURL(path.join(__dirname, '/renderer/dist/index.html' + token))
+  })
+
   // mainWindow.removeMenu()
   mainWindow.webContents.session.webRequest.onBeforeSendHeaders(
     (details, callback) => {

@@ -10,12 +10,12 @@ async function handleRequest (opts) {
     const json = await res.json()
     if (!res.ok) {
       for (const error of json.errors) {
-        halfmoon.initStickyAlert({
-          content: `Failed making request to anilist!<br>${error.status} - ${error.message}`,
-          title: 'Search Failed',
-          alertType: 'alert-danger',
-          fillType: ''
-        })
+        // halfmoon.initStickyAlert({
+        //   content: `Failed making request to anilist!<br>${error.status} - ${error.message}`,
+        //   title: 'Search Failed',
+        //   alertType: 'alert-danger',
+        //   fillType: ''
+        // })
         console.error(error)
       }
     }
