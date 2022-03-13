@@ -7,12 +7,10 @@
   import { alRequest } from '@/modules/anilist.js'
   import { resolveFileMedia, relations } from '@/modules/anime.js'
   import { getRSSContent, getRSSurl } from '@/lib/RSSView.svelte'
-  import { set } from '../Settings.svelte'
 
   let media = null
   let search
 
-  const settings = set
 
   function processMedia(res) {
     return res.data.Page.media.map(media => {
@@ -36,7 +34,6 @@
         media.forEach((mediaInformation, index) => {
           mediaInformation.onclick = () => {
             add(items[index].querySelector('link').textContent)
-            // { media: mediaInformation, episode: mediaInformation.episode }
           }
         })
         localStorage.setItem('relations', JSON.stringify(relations))

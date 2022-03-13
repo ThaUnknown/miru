@@ -186,25 +186,25 @@ export async function resolveFileMedia (opts) {
     // resolve episode, if movie, dont.
     if ((media?.format !== 'MOVIE' || (media.episodes || media.nextAiringEpisode.episode)) && praseObj.episode_number) {
       if (praseObj.episode_number.constructor === Array) {
-      // is an episode range
+        // is an episode range
         if (parseInt(praseObj.episode_number[0]) === 1) {
-        // if it starts with #1 and overflows then it includes more than 1 season in a batch, cant fix this cleanly, name is parsed per file basis so this shouldnt be an issue
+          // if it starts with #1 and overflows then it includes more than 1 season in a batch, cant fix this cleanly, name is parsed per file basis so this shouldnt be an issue
           episode = `${praseObj.episode_number[0]} ~ ${praseObj.episode_number[praseObj.episode_number.length - 1]}`
         } else {
           if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(praseObj.episode_number[praseObj.episode_number.length - 1]) > (media.episodes || media.nextAiringEpisode.episode)) {
-          // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
+            // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
             await resolveSeason({ media: media, episode: praseObj.episode_number, offset: 0 })
           } else {
-          // cant find ep count or range seems fine
+            // cant find ep count or range seems fine
             episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[praseObj.episode_number.length - 1])}`
           }
         }
       } else {
         if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(praseObj.episode_number) > (media.episodes || media.nextAiringEpisode.episode)) {
-        // value bigger than episode count
+          // value bigger than episode count
           await resolveSeason({ media: media, episode: praseObj.episode_number, offset: 0 })
         } else {
-        // cant find ep count or episode seems fine
+          // cant find ep count or episode seems fine
           episode = Number(praseObj.episode_number)
         }
       }

@@ -45,6 +45,8 @@
 
   let table = null
 
+  let fileMedia = null
+
   export async function parseRss({ media, episode }) {
     if (!media) return
     const titles = [
@@ -82,7 +84,7 @@
     }
     entries.sort((a, b) => b.seeders - a.seeders)
     const streamingEpisode = media?.streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(episode))[0]
-    const fileMedia = {
+    fileMedia = {
       mediaTitle: media?.title.userPreferred,
       episodeNumber: Number(episode),
       episodeTitle: streamingEpisode ? episodeRx.exec(streamingEpisode.title)[2] : undefined,
@@ -91,8 +93,8 @@
       name: 'Miru',
       media: media
     }
-    updateMedia(fileMedia)
     if (settings.rssAutoplay) {
+      updateMedia(fileMedia)
       add(entries[0].link)
     } else {
       table = entries
@@ -102,6 +104,7 @@
     table = null
   }
   function play(link) {
+    updateMedia(fileMedia)
     add(link)
     table = null
   }
