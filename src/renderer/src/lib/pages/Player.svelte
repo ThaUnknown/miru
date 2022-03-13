@@ -647,7 +647,7 @@
   </div>
 {/if}
 <!-- svelte-ignore a11y-media-has-caption -->
-{#if files?.length}
+{#if files?.length || !miniplayer}
   <div
     class="player w-full h-full d-flex flex-column overflow-hidden"
     class:pointer={miniplayer}

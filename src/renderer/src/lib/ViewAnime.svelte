@@ -6,6 +6,7 @@
   let rss = getContext('rss')
   function playAnime() {
     $rss = { media: $view, episode: 1 }
+    $view = null
   }
   function close() {
     $view = null

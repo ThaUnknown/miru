@@ -1,5 +1,6 @@
 import WebTorrent from 'webtorrent'
 import { set } from '@/lib/pages/Settings.svelte'
+import { page } from '@/App.svelte'
 export const client = new WebTorrent({
   maxConns: 127,
   downloadLimit: set.torrentSpeed * 1048576 || 0,
@@ -36,6 +37,7 @@ if (worker) {
 export function add (torrentID) {
   if (torrentID) {
     if (client.torrents.length) client.remove(client.torrents[0].infoHash)
+    page.set('player')
     client.add(torrentID, {
       path: set.torrentPath,
       destroyStoreOnDestroy: !set.torrentPersist,
@@ -55,7 +57,9 @@ client.on('torrent', torrent => {
 })
 
 // load last used torrent
-if (localStorage.getItem('torrent')) {
-  const buffer = Buffer.from(JSON.parse(localStorage.getItem('torrent')))
-  add(buffer)
-}
+queueMicrotask(() => {
+  if (localStorage.getItem('torrent')) {
+    const buffer = Buffer.from(JSON.parse(localStorage.getItem('torrent')))
+    add(buffer)
+  }
+})

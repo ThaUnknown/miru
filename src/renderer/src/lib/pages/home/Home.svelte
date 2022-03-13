@@ -7,10 +7,10 @@
   import { alRequest } from '@/modules/anilist.js'
   import { resolveFileMedia, relations } from '@/modules/anime.js'
   import { getRSSContent, getRSSurl } from '@/lib/RSSView.svelte'
+  import { getContext } from 'svelte'
 
-  let media = null
+  let media = getContext('gallery')
   let search
-
 
   function processMedia(res) {
     return res.data.Page.media.map(media => {
@@ -45,7 +45,7 @@
     {
       title: 'Continue Watching',
       click: () => {
-        media = alRequest({ method: 'UserLists', status_in: 'CURRENT' }).then(res => {
+        $media = alRequest({ method: 'UserLists', status_in: 'CURRENT' }).then(res => {
           return res.data.Page.mediaList.filter(i => {
             return i.media.status !== 'RELEASING' || i.media.mediaListEntry?.progress < i.media.nextAiringEpisode?.episode - 1
           })
@@ -65,14 +65,14 @@
     {
       title: 'New Releases',
       click: () => {
-        media = releasesCards(200, true)
+        $media = releasesCards(200, true)
       },
       cards: releasesCards(5)
     },
     {
       title: 'Your List',
       click: () => {
-        media = alRequest({ method: 'UserLists', status_in: 'PLANNING' }).then(res => res.data.Page.mediaList)
+        $media = alRequest({ method: 'UserLists', status_in: 'PLANNING' }).then(res => res.data.Page.mediaList)
       },
       cards: alToken && alRequest({ method: 'UserLists', status_in: 'PLANNING', perPage: 5 }).then(res => res.data.Page.mediaList),
       hide: !alToken
@@ -105,9 +105,9 @@
 
 <div class="d-flex h-full flex-column overflow-y-scroll root">
   <div class="h-full py-10">
-    <Search bind:media bind:search />
-    {#if media}
-      <Gallery {media} />
+    <Search bind:media={$media} bind:search />
+    {#if $media}
+      <Gallery media={$media} />
     {:else}
       <div>
         {#each sections as opts (opts.title)}

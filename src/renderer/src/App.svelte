@@ -1,18 +1,24 @@
+<script context="module">
+  import { setContext } from 'svelte'
+  import { writable } from 'svelte/store'
+
+  export let page = writable('home')
+</script>
+
 <script>
   import Sidebar from './lib/Sidebar.svelte'
   import Router from './lib/Router.svelte'
   import ViewAnime from './lib/ViewAnime.svelte'
   import RSSView from './lib/RSSView.svelte'
-  import { setContext } from 'svelte'
-  import { writable } from 'svelte/store'
 
   let view = writable(null)
   setContext('view', view)
 
-  let page = 'home'
-
   let sidebar = writable(true)
   setContext('sidebar', sidebar)
+
+  let gallery = writable(null)
+  setContext('gallery', gallery)
 
   let rss = writable({})
   setContext('rss', rss)
@@ -24,8 +30,8 @@
   <div class="sticky-alerts" />
   <!-- svelte-ignore missing-declaration -->
   <div class="sidebar-overlay" on:click={() => ($sidebar = !$sidebar)} />
-  <Sidebar bind:page />
-  <Router bind:page />
+  <Sidebar bind:page={$page} />
+  <Router bind:page={$page} />
 </div>
 
 <style>

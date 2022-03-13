@@ -4,6 +4,7 @@
   import { media } from './pages/Player.svelte'
   const sidebar = getContext('sidebar')
   const view = getContext('view')
+  const gallery = getContext('gallery')
   export let page
   const links = [
     {
@@ -17,6 +18,7 @@
     {
       click: () => {
         page = 'home'
+        $gallery = null
       },
       icon: 'home',
       text: 'Home Page'
