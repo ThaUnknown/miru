@@ -2,7 +2,6 @@
 import { add } from './torrent.js'
 import { DOMPARSER } from './util.js'
 import { alRequest } from './anilist.js'
-import { nyaaRss } from './rss.js'
 import anitomyscript from 'anitomyscript'
 
 const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
@@ -74,27 +73,27 @@ function traceAnime (image, type) { // WAIT lookup logic
 }
 export const episodeRx = /Episode (\d+) - (.*)/
 
-export async function nyaaSearch (media, episode, isOffline) {
-  if (parseInt(episode) < 10) {
-    episode = `0${episode}`
-  }
+// export async function nyaaSearch (media, episode, isOffline) {
+//   if (parseInt(episode) < 10) {
+//     episode = `0${episode}`
+//   }
 
-  const table = document.querySelector('tbody.results')
-  const results = await nyaaRss(media, episode, isOffline)
+//   const table = document.querySelector('tbody.results')
+//   const results = await nyaaRss(media, episode, isOffline)
 
-  if (results.children.length === 0) {
-    halfmoon.initStickyAlert({
-      content: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
-      title: 'Search Failed',
-      alertType: 'alert-danger',
-      fillType: ''
-    })
-  } else {
-    table.innerHTML = ''
-    table.appendChild(results)
-    halfmoon.toggleModal('tsearch')
-  }
-}
+//   if (results.children.length === 0) {
+//     halfmoon.initStickyAlert({
+//       content: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
+//       title: 'Search Failed',
+//       alertType: 'alert-danger',
+//       fillType: ''
+//     })
+//   } else {
+//     table.innerHTML = ''
+//     table.appendChild(results)
+//     halfmoon.toggleModal('tsearch')
+//   }
+// }
 
 // resolve anime name based on file name and store it
 

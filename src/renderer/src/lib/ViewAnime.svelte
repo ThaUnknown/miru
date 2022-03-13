@@ -3,6 +3,10 @@
   import { countdown } from '@/modules/util.js'
 
   let view = getContext('view')
+  let rss = getContext('rss')
+  function playAnime() {
+    $rss = { media: $view, episode: 1 }
+  }
   function close() {
     $view = null
   }
@@ -105,7 +109,7 @@
                 </div>
                 <div class="col-md-4 d-flex justify-content-end flex-column">
                   <div class="d-flex flex-column flex-wrap">
-                    <button class="btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5" type="button">
+                    <button class="btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5" type="button" on:click={playAnime}>
                       <span class="material-icons mr-10 font-size-24 w-30"> play_arrow </span>
                       <span>{$view.progress ? 'Continue' : 'Play'}</span>
                     </button>
@@ -127,7 +131,7 @@
             <div class="font-size-16 pr-15">
               {@html $view.description}
             </div>
-<!-- TODO: episodes list -->
+            <!-- TODO: episodes list -->
           </div>
           <div class="col-md-3 px-sm-0 px-20">
             <h1 class="title font-weight-bold text-white">Details</h1>

@@ -24,7 +24,7 @@
         : new MediaMetadata({
             title: name || 'Miru'
           })
-    if (fileMedia.parseObject.release_group) metadata.artist = fileMedia.parseObject.release_group
+    if (fileMedia.parseObject?.release_group) metadata.artist = fileMedia.parseObject.release_group
     navigator.mediaSession.metadata = metadata
   }
 </script>

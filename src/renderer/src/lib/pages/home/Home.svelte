@@ -6,7 +6,7 @@
   import { alToken } from '../Settings.svelte'
   import { alRequest } from '@/modules/anilist.js'
   import { resolveFileMedia, relations } from '@/modules/anime.js'
-  import { getRSSContent, getRSSurl } from '@/modules/rss.js'
+  import { getRSSContent, getRSSurl } from '@/lib/RSSView.svelte'
 
   let media = null
   let search

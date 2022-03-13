@@ -2,6 +2,7 @@
   import Sidebar from './lib/Sidebar.svelte'
   import Router from './lib/Router.svelte'
   import ViewAnime from './lib/ViewAnime.svelte'
+  import RSSView from './lib/RSSView.svelte'
   import { setContext } from 'svelte'
   import { writable } from 'svelte/store'
 
@@ -12,9 +13,13 @@
 
   let sidebar = writable(true)
   setContext('sidebar', sidebar)
+
+  let rss = writable({})
+  setContext('rss', rss)
 </script>
 
 <ViewAnime />
+<RSSView />
 <div class="page-wrapper with-sidebar with-transitions" data-sidebar-type="full-height overlayed-sm-and-down" data-sidebar-hidden={$sidebar || null}>
   <div class="sticky-alerts" />
   <!-- svelte-ignore missing-declaration -->
@@ -44,7 +49,7 @@
     overscroll-behavior: none;
     user-select: none;
   }
-  :global(img){
+  :global(img) {
     -webkit-user-drag: none;
   }
   /* sidebar patches */
