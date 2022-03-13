@@ -10,7 +10,6 @@
     playerAutocomplete: true,
     rssQuality: '1080',
     rssFeed: 'SubsPlease',
-    rssNotifications: false,
     rssAutoplay: true,
     rssTrusted: true,
     rssBatch: false,
@@ -50,6 +49,13 @@
   function restoreSettings() {
     localStorage.removeItem('settings')
     settings = { ...defaults }
+  }
+  function handleFolder({ target }) {
+    if (target.files.length) {
+      const filepath = target.files[0].path
+      const path = filepath.slice(0, (filepath.lastIndexOf('\\') || filepath.lastIndexOf('/')) + 1)
+      settings.torrentPath = path
+    }
   }
 </script>
 
@@ -125,7 +131,7 @@
           <div
             class="input-group mb-10 w-600 form-control-lg"
             data-toggle="tooltip"
-            data-placement="top"
+            data-placement="bottom"
             data-title="What RSS Feed To Fetch Releases From, Allows For Custom CORS Enabled Feeds">
             <div class="input-group-prepend">
               <span class="input-group-text w-100 justify-content-center">Feed</span>
@@ -144,17 +150,13 @@
               <option value="1080" selected>1080p</option>
               <option value="720">720p</option>
               <option value="480||540">SD</option>
+              <option value="">None</option>
             </select>
-          </div>
-          <break />
-          <div class="custom-switch mb-10 pl-10 font-size-16 w-300" data-toggle="tooltip" data-placement="top" data-title="Sends A Notification When A New Episode Is Released">
-            <input type="checkbox" id="rss-notifications" bind:checked={settings.rssNotifications} />
-            <label for="rss-notifications">Release Notifications</label>
           </div>
           <div
             class="custom-switch mb-10 pl-10 font-size-16 w-300"
             data-toggle="tooltip"
-            data-placement="top"
+            data-placement="bottom"
             data-title="Skips The Torrent Selection Popup, Might Lead To Unwanted Videos Being
         Played">
             <input type="checkbox" id="rss-autoplay" bind:checked={settings.rssAutoplay} />
@@ -163,7 +165,7 @@
           <div
             class="custom-switch mb-10 pl-10 font-size-16 w-300"
             data-toggle="tooltip"
-            data-placement="top"
+            data-placement="bottom"
             data-title="Finds Only Trusted Torrents, Gives Less Results But Higher Quality And With More Seeders">
             <input type="checkbox" id="rss-trusted" bind:checked={settings.rssTrusted} />
             <label for="rss-trusted">Trusted Only</label>
@@ -171,7 +173,7 @@
           <div
             class="custom-switch mb-10 pl-10 font-size-16 w-300"
             data-toggle="tooltip"
-            data-placement="top"
+            data-placement="bottom"
             data-title="Tries To Find Batches For Finished Shows Instead Of Downloading 1 Episode At A Time">
             <input type="checkbox" id="rss-batch" bind:checked={settings.rssBatch} />
             <label for="rss-batch">Batch Lookup</label>
@@ -181,9 +183,20 @@
       <Tab>
         <div class="root">
           <div
-            class="input-group w-300 mb-10 form-control-lg"
+            class="input-group input-group-lg form-control-lg mb-10 w-500"
             data-toggle="tooltip"
-            data-placement="top"
+            data-placement="bottom"
+            data-title="Path To Folder Which To Use To Store Torrent Files">
+            <div class="input-group-prepend">
+              <input type="file" class="d-none" id="torrent-directory" webkitdirectory directory on:change={handleFolder} />
+              <label for="torrent-directory" class="btn btn-primary input-group-append">Select Folder</label>
+            </div>
+            <input type="text" class="form-control" bind:value={settings.torrentPath} placeholder="Folder Path" />
+          </div>
+          <div
+            class="input-group w-300 form-control-lg mb-10"
+            data-toggle="tooltip"
+            data-placement="bottom"
             data-title="Download/Upload Speed Limit For Torrents, Higher Values Increase CPU Usage">
             <div class="input-group-prepend">
               <span class="input-group-text w-150 justify-content-center">Max Speed</span>
@@ -193,11 +206,18 @@
               <span class="input-group-text">MB/s</span>
             </div>
           </div>
+          <div
+            class="custom-switch mb-10 pl-10 font-size-16 w-300"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            data-title="Doesn't Delete Files Of Old Torrents When A New Torrent Is Played">
+            <input type="checkbox" id="rss-batch" bind:checked={settings.torrentPersist} />
+            <label for="rss-batch">Persist Files</label>
+          </div>
         </div>
       </Tab>
     </div>
-  </div>
-</Tabs>
+  </div></Tabs>
 
 <style>
   .root {

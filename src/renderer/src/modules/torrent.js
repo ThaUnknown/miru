@@ -1,5 +1,10 @@
 import WebTorrent from 'webtorrent'
-export const client = new WebTorrent()
+import { set } from '@/lib/pages/Settings.svelte'
+export const client = new WebTorrent({
+  maxConns: 127,
+  downloadLimit: set.torrentSpeed * 1048576 || 0,
+  uploadLimit: set.torrentSpeed * 1572864 || 0 // :trolled:
+})
 window.client = client
 // save loaded torrent for persistence
 
@@ -32,8 +37,8 @@ export function add (torrentID) {
   if (torrentID) {
     if (client.torrents.length) client.remove(client.torrents[0].infoHash)
     client.add(torrentID, {
-      path: 'E:\\videos\\testing\\',
-      // destroyStoreOnDestroy: true,
+      path: set.torrentPath,
+      destroyStoreOnDestroy: !set.torrentPersist,
       announce: [
         'wss://tracker.openwebtorrent.com',
         'wss://spacetradersapi-chatbox.herokuapp.com:443/announce',

@@ -6,11 +6,6 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 import commonjsExternals from 'vite-plugin-commonjs-externals'
 
 const commonjsPackages = [
-  // 'electron',
-  // 'electron/main',
-  // 'electron/common',
-  // 'electron/renderer',
-  // 'original-fs',
   'webtorrent',
   'matroska-subtitles',
   ...builtinModules

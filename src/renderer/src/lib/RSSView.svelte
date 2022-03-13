@@ -1,6 +1,9 @@
 <script context="module">
   import { DOMPARSER } from '@/modules/util.js'
   import { updateMedia } from './pages/Player.svelte'
+  import { set } from './pages/Settings.svelte'
+
+  const settings = set
 
   export function getRSSContent(url) {
     return fetch(url)
@@ -22,20 +25,17 @@
         console.error(error)
       })
   }
-
+  const rssmap = {
+    SubsPlease: 'https://nyaa.si/?page=rss&c=0_0&f=0&u=subsplease&q=',
+    'Erai-raws': 'https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q='
+  }
   export function getRSSurl() {
-    // TODO: settings shit
-    return 'https://nyaa.si/?page=rss&c=0_0&f=0&u=subsplease&q="1080"'
-    // if (Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0]) {
-    //   return new URL(Object.values(torrent4list.options).filter(item => item.value === settings.torrent4)[0].textContent + settings.torrent1)
-    // } else {
-    //   return new URL(settings.torrent4 + settings.torrent1) // add custom RSS
-    // }
+    let rss = rssmap[settings.rssFeed] || settings.rssFeed
+    return new URL(`${rss}${settings.rssQuality ? `"${settings.rssQuality}"` : ''}`)
   }
 </script>
 
 <script>
-  import { set } from './pages/Settings.svelte'
   import { getContext } from 'svelte'
   import { add } from '@/modules/torrent.js'
   import { episodeRx } from '@/modules/anime.js'
@@ -44,8 +44,6 @@
   $: parseRss($media)
 
   let table = null
-
-  const settings = set
 
   export async function parseRss({ media, episode }) {
     if (!media) return
