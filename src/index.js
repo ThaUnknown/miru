@@ -34,7 +34,7 @@ function createWindow () {
       enableRemoteModule: true,
       backgroundThrottling: false
     },
-    icon: path.join(__dirname, '/renderer/public/favicon.ico'),
+    icon: path.join(__dirname, '/renderer/public/logo.ico'),
     show: false
   })
   // mainWindow.removeMenu()
@@ -69,7 +69,7 @@ function createWindow () {
 
   // Open the DevTools and also disable Electron Security Warning.
   process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {

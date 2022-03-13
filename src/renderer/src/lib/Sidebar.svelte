@@ -150,7 +150,7 @@
     align-items: center;
   }
 
-  :not(.brand) img {
+  .sidebar-link:not(.brand) img {
     font-size: 2.2rem;
     width: 3rem;
     height: 3rem;

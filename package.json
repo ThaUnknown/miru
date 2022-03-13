@@ -27,9 +27,22 @@
     "env": "browser"
   },
   "build": {
+    "productName": "Miru",
     "files": [
       "src/**/*"
-    ]
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "src/renderer/public/logo.ico"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "nsis": {
+      "installerIcon": "src/renderer/public/logo.ico",
+      "installerHeaderIcon": "src/renderer/public/logo.ico",
+      "deleteAppDataOnUninstall": true
+    }
   },
   "dependencies": {
     "anitomyscript": "^2.0.4",
