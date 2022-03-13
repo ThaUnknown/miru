@@ -76,10 +76,10 @@
       entries.push({
         title: item.querySelector('title')?.textContent || '?',
         link: item.querySelector('link')?.textContent || '?',
-        seeders: item.querySelector('seeders')?.textContent || '?',
-        leechers: item.querySelector('leechers')?.textContent || '?',
-        downloads: item.querySelector('downloads')?.textContent || '?',
-        size: item.querySelector('downloads')?.size || '?'
+        seeders: item.querySelector('seeders')?.textContent ?? '?',
+        leechers: item.querySelector('leechers')?.textContent ?? '?',
+        downloads: item.querySelector('downloads')?.textContent ?? '?',
+        size: item.querySelector('size')?.size ?? '?'
       })
     }
     entries.sort((a, b) => b.seeders - a.seeders)
@@ -117,7 +117,7 @@
         <button class="close pointer" type="button" on:click={close}>
           <span>&times;</span>
         </button>
-        <table class="table">
+        <table class="table table-hover">
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -129,7 +129,7 @@
               <th scope="col">Play</th>
             </tr>
           </thead>
-          <tbody class="results">
+          <tbody class="results pointer">
             {#each table as row, index}
               <tr on:click={() => play(row.link)}>
                 <th>{index + 1}</th>
@@ -138,7 +138,7 @@
                 <td>{row.seeders}</td>
                 <td>{row.leechers}</td>
                 <td>{row.downloads}</td>
-                <td class="pointer">Play</td>
+                <td class="material-icons font-size-20">play_arrow</td>
               </tr>
             {/each}
           </tbody>

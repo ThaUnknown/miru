@@ -863,8 +863,12 @@
   .player {
     user-select: none;
     font-family: Roboto, Arial, Helvetica, sans-serif;
-    background: #000;
+    background-color: var(--dark-color-light);
     will-change: width;
+  }
+  .player.miniplayer{
+    background: #00000066;
+    backdrop-filter: blur(3px);
   }
 
   .pip :global(canvas) {

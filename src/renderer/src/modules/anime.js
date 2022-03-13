@@ -37,15 +37,15 @@ function traceAnime (image, type) { // WAIT lookup logic
   if (type === 'file') {
     const reader = new FileReader()
     reader.onload = e => {
-      halfmoon.initStickyAlert({
-        content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${e.target.result}">`
-      })
+      // halfmoon.initStickyAlert({
+      //   content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${e.target.result}">`
+      // })
     }
     reader.readAsDataURL(image.get('image'))
   } else {
-    halfmoon.initStickyAlert({
-      content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
-    })
+    // halfmoon.initStickyAlert({
+    //   content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
+    // })
   }
   let options
   let url = `https://api.trace.moe/search?cutBorders&url=${image}`
@@ -62,12 +62,12 @@ function traceAnime (image, type) { // WAIT lookup logic
       // viewMedia(res.data.Media, result[0].episode)
       // TODO: view media
     } else {
-      halfmoon.initStickyAlert({
-        content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
-        title: 'Search Failed',
-        alertType: 'alert-danger',
-        fillType: ''
-      })
+      // halfmoon.initStickyAlert({
+      //   content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
+      //   title: 'Search Failed',
+      //   alertType: 'alert-danger',
+      //   fillType: ''
+      // })
     }
   })
 }
@@ -168,12 +168,12 @@ export async function resolveFileMedia (opts) {
         }
       } else {
         console.log('error in parsing!', opts.media, tempMedia)
-        halfmoon.initStickyAlert({
-          content: `Failed resolving anime episode!<br>${opts.media.title.userPreferred} - ${epMax}`,
-          title: 'Parsing Error',
-          alertType: 'alert-secondary',
-          fillType: ''
-        })
+        // halfmoon.initStickyAlert({
+        //   content: `Failed resolving anime episode!<br>${opts.media.title.userPreferred} - ${epMax}`,
+        //   title: 'Parsing Error',
+        //   alertType: 'alert-secondary',
+        //   fillType: ''
+        // })
         // something failed, most likely couldnt find an edge or processing failed, force episode number even if its invalid/out of bounds, better than nothing
         if (opts.episode.constructor === Array) {
           episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[praseObj.episode_number.length - 1])}`

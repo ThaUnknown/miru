@@ -4,8 +4,8 @@
 
   let view = getContext('view')
   let rss = getContext('rss')
-  function playAnime() {
-    $rss = { media: $view, episode: 1 }
+  function playAnime(episode = 1) {
+    $rss = { media: $view, episode }
     $view = null
   }
   function close() {
@@ -110,9 +110,12 @@
                 </div>
                 <div class="col-md-4 d-flex justify-content-end flex-column">
                   <div class="d-flex flex-column flex-wrap">
-                    <button class="btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5" type="button" on:click={playAnime}>
+                    <button
+                      class="btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5"
+                      type="button"
+                      on:click={() => playAnime($view.mediaListEntry?.progress + 1)}>
                       <span class="material-icons mr-10 font-size-24 w-30"> play_arrow </span>
-                      <span>{$view.progress ? 'Continue' : 'Play'}</span>
+                      <span>{$view.mediaListEntry?.progress ? 'Continue' : 'Play'}</span>
                     </button>
                     <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16">
                       <span class="material-icons mr-10 font-size-18 w-30"> live_tv </span>
@@ -132,7 +135,26 @@
             <div class="font-size-16 pr-15">
               {@html $view.description}
             </div>
-            <!-- TODO: episodes list -->
+
+            {#if $view.episodes || $view.nextAiringEpisode?.episode}
+              <table class="table table-hover w-500 table-auto">
+                <thead>
+                  <tr>
+                    <th class="px-0"><h2 class="title font-weight-bold text-white pt-20 mb-5">Episodes</h2></th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {#each Array(Math.min($view.episodes, $view.nextAiringEpisode?.episode - 1)) as _, i}
+                  {@const index = Math.min($view.episodes, $view.nextAiringEpisode?.episode - 1) - i - 1}
+                    <tr class="font-size-20 py-10 pointer" on:click={() => playAnime(index + 1)}>
+                      <td class="w-full">Episode {index + 1}</td>
+                      <td class="material-icons text-right">play_arrow</td>
+                    </tr>
+                  {/each}
+                </tbody>
+              </table>
+            {/if}
           </div>
           <div class="col-md-3 px-sm-0 px-20">
             <h1 class="title font-weight-bold text-white">Details</h1>
