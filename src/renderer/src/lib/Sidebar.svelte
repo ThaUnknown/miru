@@ -23,13 +23,13 @@
       icon: 'home',
       text: 'Home Page'
     },
-    {
-      click: () => {
-        page = 'schedule'
-      },
-      icon: 'schedule',
-      text: 'Airing Schedule'
-    },
+    // {
+    //   click: () => {
+    //     page = 'schedule'
+    //   },
+    //   icon: 'schedule',
+    //   text: 'Airing Schedule'
+    // },
     {
       click: () => {
         if (media) $view = media

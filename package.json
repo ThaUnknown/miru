@@ -40,8 +40,7 @@
     },
     "nsis": {
       "installerIcon": "src/renderer/public/logo.ico",
-      "installerHeaderIcon": "src/renderer/public/logo.ico",
-      "deleteAppDataOnUninstall": true
+      "installerHeaderIcon": "src/renderer/public/logo.ico"
     }
   },
   "dependencies": {

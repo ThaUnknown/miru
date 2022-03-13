@@ -13,7 +13,8 @@
     rssAutoplay: true,
     rssTrusted: true,
     rssBatch: false,
-    torrentSpeed: 10
+    torrentSpeed: 10,
+    torrentPersist: false
   }
   export let set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
   function removeRelations() {
@@ -53,7 +54,7 @@
   function handleFolder({ target }) {
     if (target.files.length) {
       const filepath = target.files[0].path
-      const path = filepath.slice(0, filepath.lastIndexOf('\\') + 1 || filepath.lastIndexOf('/')) + 1
+      const path = filepath.slice(0, filepath.lastIndexOf('\\') + 1 || filepath.lastIndexOf('/') + 1)
       settings.torrentPath = path
     }
   }

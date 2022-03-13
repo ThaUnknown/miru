@@ -2,11 +2,9 @@ import WebTorrent from 'webtorrent'
 import { set } from '@/lib/pages/Settings.svelte'
 import { page } from '@/App.svelte'
 export const client = new WebTorrent({
-  maxConns: 127,
   downloadLimit: set.torrentSpeed * 1048576 || 0,
   uploadLimit: set.torrentSpeed * 1572864 || 0 // :trolled:
 })
-window.client = client
 // save loaded torrent for persistence
 
 // should use HTTP createserver... oopps xd
