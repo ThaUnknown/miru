@@ -1,4 +1,5 @@
 <script context="module">
+  import { set } from './Settings.svelte'
   import { playAnime } from '../RSSView.svelte'
   export let media = null
   let fileMedia = null
@@ -242,6 +243,19 @@
   function toggleMute() {
     muted = !muted
   }
+  document.addEventListener('visibilitychange', () => {
+    if (!video.ended && set.playerPause) {
+      if (document.visibilityState === 'hidden') {
+        wasPaused = paused
+        paused = true
+      } else {
+        if (wasPaused) paused = false
+      }
+    }
+  })
+  function tryPlayNext() {
+    if (set.playerAutoplay) playNext()
+  }
   function playNext() {
     const index = videos.indexOf(current)
     if (index + 2 < videos.length) {
@@ -334,67 +348,69 @@
   }
   let showKeybinds = false
   async function handleKeydown({ key }) {
-    switch (key) {
-      case 'r':
-        seek(-90)
-        break
-      case ',':
-        seek(-1 / (await video.fps) || 0)
-        break
-      case '.':
-        seek(1 / (await video.fps) || 0)
-        break
-      case 'i':
-        toggleStats()
-        break
-      case '`':
-        showKeybinds = !showKeybinds
-        break
-      case ' ':
-        playPause()
-        break
-      case 'n':
-        playNext()
-        break
-      case 'm':
-        muted = !muted
-        break
-      case 'p':
-        togglePopout()
-        break
-      case 'f':
-        toggleFullscreen()
-        break
-      case 's':
-        seek(85)
-        break
-      case 'd':
-        toggleCast()
-        break
-      case 'c':
-        cycleSubtitles()
-        break
-      case 'ArrowLeft':
-        rewind()
-        break
-      case 'ArrowRight':
-        forward()
-        break
-      case 'ArrowUp':
-        volume = Math.min(1, volume + 0.05)
-        break
-      case 'ArrowDown':
-        volume = Math.max(0, volume - 0.05)
-        break
-      case '[':
-        playbackRate -= 0.1
-        break
-      case ']':
-        playbackRate += 0.1
-        break
-      case '\\':
-        playbackRate = 1
-        break
+    if (!miniplayer) {
+      switch (key) {
+        case 'r':
+          seek(-90)
+          break
+        case ',':
+          seek(-1 / (await video.fps) || 0)
+          break
+        case '.':
+          seek(1 / (await video.fps) || 0)
+          break
+        case 'i':
+          toggleStats()
+          break
+        case '`':
+          showKeybinds = !showKeybinds
+          break
+        case ' ':
+          playPause()
+          break
+        case 'n':
+          playNext()
+          break
+        case 'm':
+          muted = !muted
+          break
+        case 'p':
+          togglePopout()
+          break
+        case 'f':
+          toggleFullscreen()
+          break
+        case 's':
+          seek(85)
+          break
+        case 'd':
+          toggleCast()
+          break
+        case 'c':
+          cycleSubtitles()
+          break
+        case 'ArrowLeft':
+          rewind()
+          break
+        case 'ArrowRight':
+          forward()
+          break
+        case 'ArrowUp':
+          volume = Math.min(1, volume + 0.05)
+          break
+        case 'ArrowDown':
+          volume = Math.max(0, volume - 0.05)
+          break
+        case '[':
+          playbackRate -= 0.1
+          break
+        case ']':
+          playbackRate += 0.1
+          break
+        case '\\':
+          playbackRate = 1
+          break
+      }
     }
   }
 
@@ -719,6 +735,7 @@
       on:loadeddata={hideBuffering}
       on:canplay={hideBuffering}
       on:playing={hideBuffering}
+      on:ended={tryPlayNext}
       on:loadedmetadata={hideBuffering}
       on:loadedmetadata={getFPS}
       on:loadedmetadata={initThumbnails}
