@@ -34,6 +34,7 @@
   .draggable {
     -webkit-app-region: drag;
     color: var(--dm-text-muted-color);
+    font-size: 11.2px;
   }
   .menu-shadow {
     left: var(--sidebar-width);
