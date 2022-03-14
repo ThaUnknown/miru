@@ -3,7 +3,15 @@
   import { updateMedia } from './pages/Player.svelte'
   import { set } from './pages/Settings.svelte'
 
+  import { writable } from 'svelte/store'
+
+  const rss = writable({})
+
   const settings = set
+
+  export function playAnime(media, episode){
+    rss.set({ media, episode })
+  }
 
   export function getRSSContent(url) {
     return fetch(url)
@@ -36,12 +44,10 @@
 </script>
 
 <script>
-  import { getContext } from 'svelte'
   import { add } from '@/modules/torrent.js'
   import { episodeRx } from '@/modules/anime.js'
 
-  const media = getContext('rss')
-  $: parseRss($media)
+  $: parseRss($rss)
 
   let table = null
 

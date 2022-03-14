@@ -1,4 +1,5 @@
 <script context="module">
+  import { playAnime } from '../RSSView.svelte'
   export let media = null
   let fileMedia = null
   let hadImage = false
@@ -45,6 +46,7 @@
         const data = await resolveFileMedia({ fileName: current.name })
         if (image) data.episodeThumbnail = image
         updateMedia(data)
+        checkAvail(current)
       }
     }
   }
@@ -173,10 +175,30 @@
         current = file
         video?.load()
         paused = false
+        checkAvail(current)
       })
     }
   }
   $: initSubs(current, video)
+
+  let hasNext = false
+  let hasLast = false
+  function checkAvail(current) {
+    if ((media?.nextAiringEpisode?.episode - 1 || media?.episodes) > fileMedia?.episodeNumber) {
+      hasNext = true
+    } else if (videos.indexOf(current) !== videos.length - 1) {
+      hasNext = true
+    } else {
+      hasNext = false
+    }
+    if (media && fileMedia?.episodeNumber > 1) {
+      hasLast = true
+    } else if (videos.indexOf(current) > 0) {
+      hasLast = true
+    } else {
+      hasLast = false
+    }
+  }
 
   function initSubs(current, video) {
     if (current && video) {
@@ -221,11 +243,20 @@
     muted = !muted
   }
   function playNext() {
-    handleCurrent(videos[(videos.indexOf(current) + 1) % videos.length])
+    const index = videos.indexOf(current)
+    if (index + 2 < videos.length) {
+      handleCurrent(videos[(index + 1) % videos.length])
+    } else if (media?.nextAiringEpisode?.episode - 1 || media?.episodes > fileMedia?.episodeNumber) {
+      playAnime(media, fileMedia?.episodeNumber + 1)
+    }
   }
   function playLast() {
     const index = videos.indexOf(current)
-    handleCurrent(videos[index === 0 ? videos.length - 1 : index - 1])
+    if (index > 1) {
+      handleCurrent(videos[index - 1])
+    } else if (media && fileMedia?.episodeNumber > 1) {
+      playAnime(media, fileMedia?.episodeNumber - 1)
+    }
   }
   function toggleFullscreen() {
     document.fullscreenElement ? document.exitFullscreen() : container.requestFullscreen()
@@ -720,20 +751,20 @@
       <div class="position-absolute w-full h-full" on:dblclick={toggleFullscreen}>
         <div class="play-overlay w-full h-full" on:click={playPause} />
       </div>
-      {#if videos?.length > 1}
+      {#if hasLast}
         <span class="material-icons ctrl" data-name="playLast" on:click={playLast}> skip_previous </span>
       {/if}
       <span class="material-icons ctrl" data-name="rewind" on:click={rewind}> fast_rewind </span>
       <span class="material-icons ctrl" data-name="playPause" on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
       <span class="material-icons ctrl" data-name="forward" on:click={forward}> fast_forward </span>
-      {#if videos?.length > 1}
+      {#if hasNext}
         <span class="material-icons ctrl" data-name="playNext" on:click={playNext}> skip_next </span>
       {/if}
       <div data-name="bufferingDisplay" class="position-absolute" />
     </div>
     <div class="bottom d-flex z-40">
       <span class="material-icons ctrl" title="Play/Pause [Space]" data-name="playPause" on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
-      {#if videos?.length > 1}
+      {#if hasNext}
         <span class="material-icons ctrl" title="Next [N]" data-name="playNext" on:click={playNext}> skip_next </span>
       {/if}
       <div class="d-flex w-auto volume">

@@ -20,8 +20,6 @@
   let gallery = writable(null)
   setContext('gallery', gallery)
 
-  let rss = writable({})
-  setContext('rss', rss)
 </script>
 
 <ViewAnime />

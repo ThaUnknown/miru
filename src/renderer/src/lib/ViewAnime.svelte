@@ -1,13 +1,9 @@
 <script>
+  import { playAnime } from './RSSView.svelte'
   import { getContext } from 'svelte'
   import { countdown } from '@/modules/util.js'
 
   let view = getContext('view')
-  let rss = getContext('rss')
-  function playAnime(episode = 1) {
-    $rss = { media: $view, episode }
-    $view = null
-  }
   function close() {
     $view = null
   }
@@ -113,7 +109,10 @@
                     <button
                       class="btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5"
                       type="button"
-                      on:click={() => playAnime($view.mediaListEntry?.progress + 1)}>
+                      on:click={() => {
+                        playAnime($view, $view.mediaListEntry?.progress + 1)
+                        close()
+                      }}>
                       <span class="material-icons mr-10 font-size-24 w-30"> play_arrow </span>
                       <span>{$view.mediaListEntry?.progress ? 'Continue' : 'Play'}</span>
                     </button>
@@ -147,7 +146,12 @@
                 <tbody>
                   {#each Array($view.nextAiringEpisode?.episode - 1 || $view.episodes) as _, i}
                     {@const index = ($view.nextAiringEpisode?.episode - 1 || $view.episodes) - i - 1}
-                    <tr class="font-size-20 py-10 pointer" on:click={() => playAnime(index + 1)}>
+                    <tr
+                      class="font-size-20 py-10 pointer"
+                      on:click={() => {
+                        playAnime($view, index + 1)
+                        close()
+                      }}>
                       <td class="w-full">Episode {index + 1}</td>
                       <td class="material-icons text-right">play_arrow</td>
                     </tr>
