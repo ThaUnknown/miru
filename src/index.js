@@ -1,5 +1,7 @@
 const { app, BrowserWindow, protocol } = require('electron')
 const path = require('path')
+const remote = require('@electron/remote/main')
+remote.initialize()
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -24,6 +26,7 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 900,
+    frame: false,
     backgroundColor: '#191c20',
     autoHideMenuBar: true,
     experimentalFeatures: true,
@@ -31,12 +34,14 @@ function createWindow () {
       nodeIntegration: true,
       contextIsolation: false,
       enableBlinkFeatures: 'AudioVideoTracks',
-      // enableRemoteModule: true,
+      enableRemoteModule: true,
       backgroundThrottling: false
     },
     icon: path.join(__dirname, '/renderer/public/logo.ico'),
     show: false
   })
+  mainWindow.setMenuBarVisibility(false)
+  remote.enable(mainWindow.webContents)
 
   protocol.registerHttpProtocol('miru', (req, cb) => {
     const token = req.url.slice(7)

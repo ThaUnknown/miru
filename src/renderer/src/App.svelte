@@ -10,6 +10,7 @@
   import Router from './lib/Router.svelte'
   import ViewAnime from './lib/ViewAnime.svelte'
   import RSSView from './lib/RSSView.svelte'
+  import Menubar from './lib/Menubar.svelte'
 
   let view = writable(null)
   setContext('view', view)
@@ -24,16 +25,18 @@
 
 <ViewAnime />
 <RSSView />
-<div class="page-wrapper with-sidebar with-transitions" data-sidebar-type="full-height overlayed-sm-and-down" data-sidebar-hidden={$sidebar || null}>
+<div class="page-wrapper with-navbar with-sidebar with-transitions" data-sidebar-type="overlayed-sm-and-down" data-sidebar-hidden={$sidebar || null}>
   <div class="sticky-alerts" />
   <!-- svelte-ignore missing-declaration -->
   <div class="sidebar-overlay" on:click={() => ($sidebar = !$sidebar)} />
+  <Menubar />
   <Sidebar bind:page={$page} />
   <Router bind:page={$page} />
 </div>
 
 <style>
   :root {
+    --navbar-height: 28px;
     --accent-color: #e5204c;
     --dm-link-text-color: var(--dm-muted-text-color) !important;
     --dm-link-text-color-hover: var(--dm-text-color) !important;

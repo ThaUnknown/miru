@@ -10,6 +10,7 @@
     "build": "vite build && electron-builder"
   },
   "devDependencies": {
+    "@electron/remote": "^2.0.7",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
     "builtin-modules": "^3.2.0",
     "concurrently": "^7.0.0",
