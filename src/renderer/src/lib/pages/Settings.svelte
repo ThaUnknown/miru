@@ -14,7 +14,9 @@
     rssTrusted: true,
     rssBatch: false,
     torrentSpeed: 10,
-    torrentPersist: false
+    torrentPersist: false,
+    torrentDHT: false,
+    torrentPeX: false
   }
   export let set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
   function removeRelations() {
@@ -23,6 +25,7 @@
 </script>
 
 <script>
+  const { dialog } = require('@electron/remote')
   import { Tabs, TabLabel, Tab } from '../Tabination.js'
 
   const groups = {
@@ -51,10 +54,19 @@
     localStorage.removeItem('settings')
     settings = { ...defaults }
   }
-  function handleFolder({ target }) {
-    if (target.files.length) {
-      const filepath = target.files[0].path
-      const path = filepath.slice(0, filepath.lastIndexOf('\\') + 1 || filepath.lastIndexOf('/') + 1)
+  async function handleFolder() {
+    const { filePaths } = await dialog.showOpenDialog({
+      properties: ['openDirectory']
+    })
+    if (filePaths.length) {
+      let path = filePaths[0]
+      if (!(path.endsWith('\\') || path.endsWith('/'))) {
+        if (path.indexOf('\\') !== -1) {
+          path += '\\'
+        } else if (path.indexOf('/') !== -1) {
+          path += '/'
+        }
+      }
       settings.torrentPath = path
     }
   }
@@ -62,7 +74,7 @@
 
 <Tabs>
   <div class="d-flex w-full h-full">
-    <div class="d-flex flex-column h-full w-300 bg-dark border-left">
+    <div class="d-flex flex-column h-full w-300 bg-dark">
       <div class="px-20 py-15 font-size-20 font-weight-semi-bold border-bottom root">Settings</div>
       {#each Object.values(groups) as group}
         <TabLabel>
@@ -189,8 +201,7 @@
             data-placement="bottom"
             data-title="Path To Folder Which To Use To Store Torrent Files">
             <div class="input-group-prepend">
-              <input type="file" class="d-none" id="torrent-directory" webkitdirectory directory on:change={handleFolder} />
-              <label for="torrent-directory" class="btn btn-primary input-group-append">Select Folder</label>
+              <button type="button" on:click={handleFolder} class="btn btn-primary input-group-append">Select Folder</button>
             </div>
             <input type="text" class="form-control" bind:value={settings.torrentPath} placeholder="Folder Path" />
           </div>
@@ -214,6 +225,22 @@
             data-title="Doesn't Delete Files Of Old Torrents When A New Torrent Is Played">
             <input type="checkbox" id="rss-batch" bind:checked={settings.torrentPersist} />
             <label for="rss-batch">Persist Files</label>
+          </div>
+          <div
+            class="custom-switch mb-10 pl-10 font-size-16 w-300"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            data-title="Disables Distributed Hash Tables For Use In Private Trackers To Improve Piracy">
+            <input type="checkbox" id="rss-batch" bind:checked={settings.torrentDHT} />
+            <label for="rss-batch">Disable DHT</label>
+          </div>
+          <div
+            class="custom-switch mb-10 pl-10 font-size-16 w-300"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            data-title="Disables Peer Exchange For Use In Private Trackers To Improve Piracy">
+            <input type="checkbox" id="rss-batch" bind:checked={settings.torrentPeX} />
+            <label for="rss-batch">Disable PeX</label>
           </div>
         </div>
       </Tab>

@@ -174,8 +174,7 @@
       file.getStreamURL((err, url) => {
         src = url
         current = file
-        video?.load()
-        paused = false
+        video?.play()
         checkAvail(current)
       })
     }

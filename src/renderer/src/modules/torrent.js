@@ -3,6 +3,7 @@ import { set } from '@/lib/pages/Settings.svelte'
 import { files } from '@/lib/Router.svelte'
 import { page } from '@/App.svelte'
 export const client = new WebTorrent({
+  dht: !set.torrentDHT,
   downloadLimit: set.torrentSpeed * 1048576 || 0,
   uploadLimit: set.torrentSpeed * 1572864 || 0 // :trolled:
 })
@@ -44,6 +45,7 @@ export function add (torrentID) {
     files.set([])
     page.set('player')
     client.add(torrentID, {
+      private: set.torrentPeX,
       path: set.torrentPath,
       destroyStoreOnDestroy: !set.torrentPersist,
       announce: [
