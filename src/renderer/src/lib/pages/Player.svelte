@@ -149,6 +149,13 @@
           subs.findSubtitleFiles(current)
         }
       }
+    } else {
+      media = null
+      fileMedia = null
+      hadImage = false
+      src = ''
+      video?.load()
+      currentTime = 0
     }
   }
 
@@ -160,14 +167,12 @@
         interval: undefined,
         video: undefined
       })
-      src = ''
-      video?.load()
       completed = false
       file.getStreamURL((err, url) => {
         src = url
         current = file
         video?.load()
-        currentTime = 0
+        paused = false
       })
     }
   }
@@ -703,7 +708,7 @@
       <div />
       <div class="d-flex">
         <span class="material-icons" data-name="peers"> people </span>
-        <span class="stats">{torrent.peers}</span>
+        <span class="stats">{torrent.peers || 0}</span>
         <span class="material-icons"> arrow_downward </span>
         <span class="stats">{fastPrettyBytes(torrent.down)}/s</span>
         <span class="material-icons"> arrow_upward </span>
@@ -866,7 +871,7 @@
     background-color: var(--dark-color-light);
     will-change: width;
   }
-  .player.miniplayer{
+  .player.miniplayer {
     background: #00000066;
     backdrop-filter: blur(3px);
   }

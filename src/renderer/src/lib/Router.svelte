@@ -1,19 +1,20 @@
+<script context='module'>
+  import { writable } from 'svelte/store'
+
+  export const files = writable([])
+
+  </script>
+
 <script>
   import Home from './pages/home/Home.svelte'
   import Player from './pages/Player.svelte'
   import Settings from './pages/Settings.svelte'
   import Schedule from './pages/Schedule.svelte'
-  import { client } from '@/modules/torrent.js'
   export let page = 'home'
-  let files = []
-  client.on('torrent', torrent => {
-    console.log('hash', torrent.infoHash)
-    files = torrent.files
-  })
 </script>
 
 <div class="overflow-y-hidden content-wrapper">
-  <Player {files} miniplayer={page !== 'player'} bind:page />
+  <Player files={$files} miniplayer={page !== 'player'} bind:page />
   {#if page === 'schedule'}
     <Schedule />
   {:else if page === 'settings'}

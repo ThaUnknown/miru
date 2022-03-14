@@ -40,7 +40,11 @@ function createWindow () {
 
   protocol.registerHttpProtocol('miru', (req, cb) => {
     const token = req.url.slice(7)
-    mainWindow.loadURL(path.join(__dirname, '/renderer/dist/index.html' + token))
+    if (process.env.NODE_ENV !== 'development ') {
+      mainWindow.loadURL(path.join(__dirname, '/renderer/dist/index.html' + token))
+    } else {
+      mainWindow.loadURL('http://localhost:3000/' + token)
+    }
   })
 
   // mainWindow.removeMenu()

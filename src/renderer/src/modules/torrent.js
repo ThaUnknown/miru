@@ -1,5 +1,6 @@
 import WebTorrent from 'webtorrent'
 import { set } from '@/lib/pages/Settings.svelte'
+import { files } from '@/lib/Router.svelte'
 import { page } from '@/App.svelte'
 export const client = new WebTorrent({
   downloadLimit: set.torrentSpeed * 1048576 || 0,
@@ -31,10 +32,16 @@ if (worker) {
     }
   })
 }
+window.client = client
+client.on('torrent', torrent => {
+  console.log('hash', torrent.infoHash)
+  files.set(torrent.files)
+})
 
 export function add (torrentID) {
   if (torrentID) {
     if (client.torrents.length) client.remove(client.torrents[0].infoHash)
+    files.set([])
     page.set('player')
     client.add(torrentID, {
       path: set.torrentPath,
