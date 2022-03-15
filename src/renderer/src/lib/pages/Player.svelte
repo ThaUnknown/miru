@@ -243,7 +243,7 @@
     muted = !muted
   }
   document.addEventListener('visibilitychange', () => {
-    if (!video.ended && set.playerPause) {
+    if (!video?.ended && set.playerPause) {
       if (document.visibilityState === 'hidden') {
         wasPaused = paused
         paused = true
@@ -522,7 +522,7 @@
   $: navigator.mediaSession?.setPositionState({
     duration: Math.max(0, duration || 0),
     playbackRate: 1,
-    position: Math.max(duration || 0, currentTime || 0)
+    position: Math.min(duration || 0, currentTime || 0)
   })
   $: mediaChange(current)
 

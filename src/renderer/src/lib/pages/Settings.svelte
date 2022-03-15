@@ -223,24 +223,24 @@
             data-toggle="tooltip"
             data-placement="bottom"
             data-title="Doesn't Delete Files Of Old Torrents When A New Torrent Is Played">
-            <input type="checkbox" id="rss-batch" bind:checked={settings.torrentPersist} />
-            <label for="rss-batch">Persist Files</label>
+            <input type="checkbox" id="torrent-persist" bind:checked={settings.torrentPersist} />
+            <label for="torrent-persist">Persist Files</label>
           </div>
           <div
             class="custom-switch mb-10 pl-10 font-size-16 w-300"
             data-toggle="tooltip"
             data-placement="bottom"
             data-title="Disables Distributed Hash Tables For Use In Private Trackers To Improve Piracy">
-            <input type="checkbox" id="rss-batch" bind:checked={settings.torrentDHT} />
-            <label for="rss-batch">Disable DHT</label>
+            <input type="checkbox" id="torrent-dht" bind:checked={settings.torrentDHT} />
+            <label for="torrent-dht">Disable DHT</label>
           </div>
           <div
             class="custom-switch mb-10 pl-10 font-size-16 w-300"
             data-toggle="tooltip"
             data-placement="bottom"
             data-title="Disables Peer Exchange For Use In Private Trackers To Improve Piracy">
-            <input type="checkbox" id="rss-batch" bind:checked={settings.torrentPeX} />
-            <label for="rss-batch">Disable PeX</label>
+            <input type="checkbox" id="torrent-pex" bind:checked={settings.torrentPeX} />
+            <label for="torrent-pex">Disable PeX</label>
           </div>
         </div>
       </Tab>

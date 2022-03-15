@@ -35,7 +35,6 @@ if (worker) {
 }
 window.client = client
 client.on('torrent', torrent => {
-  console.log('hash', torrent.infoHash)
   files.set(torrent.files)
 })
 

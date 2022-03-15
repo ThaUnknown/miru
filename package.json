@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "author": "ThaUnknown_",
   "main": "src/index.js",
   "scripts": {
@@ -47,6 +47,6 @@
     "@electron/remote": "^2.0.7",
     "anitomyscript": "^2.0.4",
     "matroska-subtitles": "^3.3.2",
-    "webtorrent": "^1.7.2"
+    "webtorrent": "^1.5.0"
   }
 }
