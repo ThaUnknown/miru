@@ -1,6 +1,12 @@
 const { app, BrowserWindow, protocol } = require('electron')
 const path = require('path')
 const remote = require('@electron/remote/main')
+const log = require('electron-log')
+const { autoUpdater } = require('electron-updater')
+
+autoUpdater.logger = log
+autoUpdater.logger.transports.file.level = 'info'
+
 remote.initialize()
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -22,6 +28,8 @@ function UpsertKeyValue (obj, keyToChange, value) {
 }
 
 function createWindow () {
+  autoUpdater.checkForUpdatesAndNotify()
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1600,

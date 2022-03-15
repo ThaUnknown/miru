@@ -1,13 +1,14 @@
 {
   "name": "Miru",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "author": "ThaUnknown_",
   "main": "src/index.js",
   "scripts": {
     "start": "SET NODE_ENV=development & concurrently \"npm run web:watch\" \"npm run electron:start\"",
     "web:watch": "vite",
     "electron:start": "electron src",
-    "build": "vite build && electron-builder"
+    "build": "vite build && electron-builder",
+    "publish": "vite build && electron-builder -p always"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
@@ -15,6 +16,7 @@
     "concurrently": "^7.0.0",
     "electron": "^16.0.10",
     "electron-builder": "^22.14.13",
+    "electron-notarize": "^1.1.1",
     "svelte": "^3.46.4",
     "vite": "^2.8.6",
     "vite-plugin-commonjs-externals": "^0.1.1"
@@ -27,18 +29,32 @@
     "env": "browser"
   },
   "build": {
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "ThaUnknown",
+        "repo": "miru"
+      }
+    ],
+    "afterSign": "./build/notarize.js",
+    "appId": "com.github.thaunknown.miru",
     "productName": "Miru",
     "files": [
       "src/**/*"
     ],
+    "mac": {
+      "category": "public.app-category.video"
+    },
     "win": {
       "target": "nsis",
       "icon": "src/renderer/public/logo.ico"
     },
     "linux": {
+      "category": "Video",
       "target": "AppImage"
     },
     "nsis": {
+      "oneClick": false,
       "installerIcon": "src/renderer/public/logo.ico",
       "installerHeaderIcon": "src/renderer/public/logo.ico"
     }
@@ -46,6 +62,8 @@
   "dependencies": {
     "@electron/remote": "^2.0.7",
     "anitomyscript": "^2.0.4",
+    "electron-log": "^4.4.6",
+    "electron-updater": "^4.6.5",
     "matroska-subtitles": "^3.3.2",
     "webtorrent": "^1.5.0"
   }
