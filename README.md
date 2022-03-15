@@ -1,5 +1,7 @@
 # Miru
 
+Discord link: https://discord.gg/Z87Nh7c4Ac
+
 Originally a joke project, turned out to be semi-viable.
 
 A pure JS BitTorrent streaming environment, with a built-in list manager. Imagine qBit + Taiga + MPV, all in a single package, but streamed real-time.
