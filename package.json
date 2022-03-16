@@ -1,7 +1,7 @@
 {
   "name": "Miru",
-  "version": "0.6.2",
-  "author": "ThaUnknown_",
+  "version": "0.6.3",
+  "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "main": "src/index.js",
   "scripts": {
     "start": "SET NODE_ENV=development & concurrently \"npm run web:watch\" \"npm run electron:start\"",
@@ -46,12 +46,41 @@
       "category": "public.app-category.video"
     },
     "win": {
-      "target": "nsis",
+      "artifactName": "${name}-${os}-${arch}-${version}.${ext}",
+      "target": [
+        {
+          "arch": [
+            "ia32",
+            "x64"
+          ],
+          "target": "nsis"
+        }
+      ],
       "icon": "src/renderer/public/logo.ico"
     },
     "linux": {
-      "category": "Video",
-      "target": "AppImage"
+      "artifactName": "${name}-${os}-${arch}-${version}.${ext}",
+      "category": "Video;Anime",
+      "description": "Bittorrent streaming software for cats",
+      "icon": "src/renderer/public/logo_cut.png",
+      "desktop": {
+        "Name": "Miru",
+        "Comment": "Bittorrent streaming software for cats",
+        "Keywords": "miru;anime",
+        "Type": "Application",
+        "MimeType": "x-scheme-handler/miru;"
+      },
+      "target": [
+        {
+          "arch": "x64",
+          "target": "AppImage"
+        },
+        {
+          "arch": "x64",
+          "target": "deb"
+        }
+      ],
+      "mimeTypes": ["x-scheme-handler/miru"]
     },
     "nsis": {
       "oneClick": false,
