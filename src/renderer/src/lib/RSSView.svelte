@@ -9,7 +9,8 @@
 
   const settings = set
 
-  export function playAnime(media, episode){
+  export function playAnime(media, episode = 1) {
+    episode = isNaN(episode) ? 1 : episode;
     rss.set({ media, episode })
   }
 
