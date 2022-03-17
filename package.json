@@ -72,7 +72,9 @@
           "target": "deb"
         }
       ],
-      "mimeTypes": ["x-scheme-handler/miru"]
+      "mimeTypes": [
+        "x-scheme-handler/miru"
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -85,7 +87,7 @@
     "anitomyscript": "^2.0.4",
     "electron-log": "^4.4.6",
     "electron-updater": "^4.6.5",
-    "matroska-subtitles": "^3.3.2",
+    "matroska-subtitles": "github:ThaUnknown/matroska-subtitles#patch",
     "webtorrent": "^1.5.0"
   }
 }
