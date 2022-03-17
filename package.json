@@ -47,15 +47,7 @@
     },
     "win": {
       "artifactName": "${name}-${os}-${arch}-${version}.${ext}",
-      "target": [
-        {
-          "arch": [
-            "ia32",
-            "x64"
-          ],
-          "target": "nsis"
-        }
-      ],
+      "target": "nsis",
       "icon": "src/renderer/public/logo.ico"
     },
     "linux": {
