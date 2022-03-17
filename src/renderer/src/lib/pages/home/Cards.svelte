@@ -2,7 +2,6 @@
   import { countdown } from '@/modules/util.js'
   import { getContext } from 'svelte'
   export let cards = new Promise(() => {})
-
   const view = getContext('view')
   function viewMedia(media) {
     $view = media
@@ -24,64 +23,62 @@
   {/each}
 {:then cards}
   {#each cards as card}
-    {#key card}
-      {#if !card.media}
-        <div class="card m-0 p-0" on:click={card.onclick}>
-          <div class="row h-full">
-            <div class="col-4 skeloader" />
-            <div class="col-8 bg-very-dark px-15 py-10">
-              <h5 class="m-0 text-capitalize font-weight-bold pb-10">{[card.parseObject.anime_title, card.parseObject.episode_number].filter(s => s).join(' - ')}</h5>
-              <p class="skeloader w-150 h-10 rounded bg-dark" />
-              <p class="skeloader w-150 h-10 rounded bg-dark" />
-            </div>
+    {#if !card.media}
+      <div class="card m-0 p-0" on:click={card.onclick}>
+        <div class="row h-full">
+          <div class="col-4 skeloader" />
+          <div class="col-8 bg-very-dark px-15 py-10">
+            <h5 class="m-0 text-capitalize font-weight-bold pb-10">{[card.parseObject.anime_title, card.parseObject.episode_number].filter(s => s).join(' - ')}</h5>
+            <p class="skeloader w-150 h-10 rounded bg-dark" />
+            <p class="skeloader w-150 h-10 rounded bg-dark" />
           </div>
         </div>
-      {:else}
-        <div class="card m-0 p-0" on:click={card.onclick || (() => viewMedia(card.media))} style:--color={card.media.coverImage.color || '#1890ff'}>
-          <div class="row h-full">
-            <div class="col-4">
-              <img loading="lazy" src={card.media.coverImage.extraLarge || ''} alt="cover" class="cover-img w-full h-full" />
-            </div>
-            <div class="col-8 h-full card-grid">
-              <div class="px-15 py-10 bg-very-dark">
-                <h5 class="m-0 text-capitalize font-weight-bold">{[card.media.title.userPreferred, card.episodeNumber].filter(s => s).join(' - ')}</h5>
-                {#if card.schedule && card.media.nextAiringEpisode}
-                  <span class="text-muted font-weight-bold">
-                    {'EP ' + card.media.nextAiringEpisode.episode + ' in ' + countdown(card.media.nextAiringEpisode.timeUntilAiring)}
-                  </span>
+      </div>
+    {:else}
+      <div class="card m-0 p-0" on:click={card.onclick || (() => viewMedia(card.media))} style:--color={card.media.coverImage.color || '#1890ff'}>
+        <div class="row h-full">
+          <div class="col-4">
+            <img loading="lazy" src={card.media.coverImage.extraLarge || ''} alt="cover" class="cover-img w-full h-full" />
+          </div>
+          <div class="col-8 h-full card-grid">
+            <div class="px-15 py-10 bg-very-dark">
+              <h5 class="m-0 text-capitalize font-weight-bold">{[card.media.title.userPreferred, card.episodeNumber].filter(s => s).join(' - ')}</h5>
+              {#if card.schedule && card.media.nextAiringEpisode}
+                <span class="text-muted font-weight-bold">
+                  {'EP ' + card.media.nextAiringEpisode.episode + ' in ' + countdown(card.media.nextAiringEpisode.timeUntilAiring)}
+                </span>
+              {/if}
+              <p class="text-muted m-0 text-capitalize details">
+                {#if card.media.format === 'TV'}
+                  <span>TV Show</span>
+                {:else if card.media.format}
+                  <span>{card.media.format?.toLowerCase().replace(/_/g, ' ')}</span>
                 {/if}
-                <p class="text-muted m-0 text-capitalize details">
-                  {#if card.media.format === 'TV'}
-                    <span>TV Show</span>
-                  {:else if card.media.format}
-                    <span>{card.media.format?.toLowerCase().replace(/_/g, ' ')}</span>
-                  {/if}
-                  {#if card.media.episodes}
-                    <span>{card.media.episodes + ' Episodes'}</span>
-                  {:else if card.media.duration}
-                    <span>{card.media.duration + ' Minutes'}</span>
-                  {/if}
-                  {#if card.media.status}
-                    <span>{card.media.status?.toLowerCase().replace(/_/g, ' ')}</span>
-                  {/if}
-                  <span>
-                    {[card.media.season?.toLowerCase(), card.media.seasonYear].filter(s => s).join(' ')}
-                  </span>
-                </p>
-              </div>
-              <div class="overflow-y-auto px-15 pb-5 bg-very-dark card-desc">
-                {@html card.media.description}
-              </div>
-              <div class="px-15 pb-10 pt-5 genres">
-                {#each card.media.genres as genre}
-                  <span class="badge badge-pill badge-color text-dark mt-5 mr-5 font-weight-bold">{genre}</span>
-                {/each}
-              </div>
+                {#if card.media.episodes}
+                  <span>{card.media.episodes + ' Episodes'}</span>
+                {:else if card.media.duration}
+                  <span>{card.media.duration + ' Minutes'}</span>
+                {/if}
+                {#if card.media.status}
+                  <span>{card.media.status?.toLowerCase().replace(/_/g, ' ')}</span>
+                {/if}
+                <span>
+                  {[card.media.season?.toLowerCase(), card.media.seasonYear].filter(s => s).join(' ')}
+                </span>
+              </p>
+            </div>
+            <div class="overflow-y-auto px-15 pb-5 bg-very-dark card-desc">
+              {@html card.media.description}
+            </div>
+            <div class="px-15 pb-10 pt-5 genres">
+              {#each card.media.genres as genre}
+                <span class="badge badge-pill badge-color text-dark mt-5 mr-5 font-weight-bold">{genre}</span>
+              {/each}
             </div>
           </div>
         </div>
-      {/if}
-    {/key}
+      </div>
+    {/if}
   {/each}
 {/await}
 

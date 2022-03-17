@@ -877,7 +877,7 @@
   }
   .miniplayer {
     transition: width 0.2s ease;
-    width: 25vw !important;
+    width: min(40rem, 25vw) !important;
     height: auto !important;
     bottom: 2rem;
     right: 2rem;

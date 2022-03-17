@@ -1,8 +1,6 @@
 <script>
   import Cards from './Cards.svelte'
 
-  // TODO: infinite scrolling
-
   export let media
   $: update(media)
   let loading = true

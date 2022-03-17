@@ -1,4 +1,3 @@
-/* global halfmoon */
 import { add } from './torrent.js'
 import { DOMPARSER } from './util.js'
 import { alRequest } from './anilist.js'
@@ -72,28 +71,6 @@ function traceAnime (image, type) { // WAIT lookup logic
   })
 }
 export const episodeRx = /Episode (\d+) - (.*)/
-
-// export async function nyaaSearch (media, episode, isOffline) {
-//   if (parseInt(episode) < 10) {
-//     episode = `0${episode}`
-//   }
-
-//   const table = document.querySelector('tbody.results')
-//   const results = await nyaaRss(media, episode, isOffline)
-
-//   if (results.children.length === 0) {
-//     halfmoon.initStickyAlert({
-//       content: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
-//       title: 'Search Failed',
-//       alertType: 'alert-danger',
-//       fillType: ''
-//     })
-//   } else {
-//     table.innerHTML = ''
-//     table.appendChild(results)
-//     halfmoon.toggleModal('tsearch')
-//   }
-// }
 
 // resolve anime name based on file name and store it
 
