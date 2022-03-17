@@ -38,22 +38,35 @@ client.on('torrent', torrent => {
   files.set(torrent.files)
 })
 
-export function add (torrentID) {
+export async function add (torrentID) {
   if (torrentID) {
     if (client.torrents.length) client.remove(client.torrents[0].infoHash)
     files.set([])
     page.set('player')
-    client.add(torrentID, {
-      private: set.torrentPeX,
-      path: set.torrentPath,
-      destroyStoreOnDestroy: !set.torrentPersist,
-      announce: [
-        'wss://tracker.openwebtorrent.com',
-        'wss://spacetradersapi-chatbox.herokuapp.com:443/announce',
-        'wss://peertube.cpy.re:443/tracker/socket'
-      ]
-    })
+    if (typeof torrentID === 'string' && !torrentID.startsWith('magnet:')) {
+      const res = await fetch(torrentID)
+      const buffer = await res.arrayBuffer()
+      const file = new File([buffer], 'file.torrent', {
+        type: 'application/x-bittorrent'
+      })
+      addTorrent(file)
+    } else {
+      addTorrent(torrentID)
+    }
   }
+}
+
+function addTorrent (id) {
+  client.add(id, {
+    private: set.torrentPeX,
+    path: set.torrentPath,
+    destroyStoreOnDestroy: !set.torrentPersist,
+    announce: [
+      'wss://tracker.openwebtorrent.com',
+      'wss://spacetradersapi-chatbox.herokuapp.com:443/announce',
+      'wss://peertube.cpy.re:443/tracker/socket'
+    ]
+  })
 }
 
 client.on('torrent', torrent => {
