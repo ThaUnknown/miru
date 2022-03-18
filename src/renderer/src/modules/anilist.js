@@ -4,7 +4,7 @@ export const alID =
   !!alToken &&
   alRequest({ method: 'Viewer', token: alToken })
 
-async function handleRequest (opts) {
+async function handleRequest(opts) {
   return await fetch('https://graphql.anilist.co', opts).then(async res => {
     const json = await res.json()
     if (!res.ok) {
@@ -22,8 +22,8 @@ async function handleRequest (opts) {
   })
 }
 
-export function alEntry (filemedia) {
-  if (filemedia.media && alToken) {
+export function alEntry(filemedia) {
+  if (filemedia.media && alToken && (filemedia.media.nextAiringEpisode?.episode || filemedia.media.episodes) <= filemedia.episodeNumber) {
     alRequest({ method: 'SearchIDStatus', id: filemedia.media.id }).then(res => {
       if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= filemedia.episodeNumber || filemedia.episodes === 1) {
         const query = `
@@ -65,7 +65,7 @@ mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
   }
 }
 
-export async function alRequest (opts) {
+export async function alRequest(opts) {
   let query
   const variables = {
     type: 'ANIME',

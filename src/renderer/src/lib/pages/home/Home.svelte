@@ -70,7 +70,7 @@
     continue: {
       title: 'Continue Watching',
       load: (page = 1, perPage = 50) => {
-        return alRequest({ method: 'UserLists', status_in: 'CURRENT', page, perPage }).then(res => {
+        return alRequest({ method: 'UserLists', status_in: 'CURRENT', page }).then(res => {
           hasNext = res.data.Page.pageInfo.hasNextPage
           return res.data.Page.mediaList
             .filter(i => {

@@ -176,11 +176,7 @@
       file.getStreamURL((err, url) => {
         src = url
         current = file
-        if (miniplayer) {
-          video?.load()
-        } else {
-          video?.play()
-        }
+        video?.load()
         checkAvail(current)
       })
     }
@@ -242,6 +238,9 @@
     targetTime = target.value * duration
   }
 
+  function autoPlay() {
+    if (!miniplayer) video.play()
+  }
   function playPause() {
     paused = !paused
   }
@@ -745,6 +744,7 @@
     on:loadedmetadata={hideBuffering}
     on:loadedmetadata={getFPS}
     on:loadedmetadata={initThumbnails}
+    on:loadedmetadata={autoPlay}
     on:leavepictureinpicture={() => (pip = false)} />
   {#if stats}
     <div class="position-absolute top-0 bg-tp p-10 m-15 text-monospace rounded z-50">
