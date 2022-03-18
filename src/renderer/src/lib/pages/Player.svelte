@@ -84,6 +84,7 @@
   function getFPS() {
     video.fps = new Promise(resolve => {
       let lastmeta = null
+      let wasPaused = !!paused
       let count = 0
 
       function handleFrames(now, metadata) {
@@ -106,6 +107,7 @@
             } else {
               resolve(rawFPS)
             }
+            paused = wasPaused
           } else {
             lastmeta = metadata
             video.requestVideoFrameCallback(handleFrames)
@@ -174,7 +176,11 @@
       file.getStreamURL((err, url) => {
         src = url
         current = file
-        video?.play()
+        if (miniplayer) {
+          video?.load()
+        } else {
+          video?.play()
+        }
         checkAvail(current)
       })
     }
@@ -698,174 +704,170 @@
   </div>
 {/if}
 <!-- svelte-ignore a11y-media-has-caption -->
-{#if files?.length || !miniplayer}
-  <div
-    class="player w-full h-full d-flex flex-column overflow-hidden"
-    class:pointer={miniplayer}
-    class:miniplayer
-    class:pip
-    class:immersed
-    class:buffering
-    bind:this={container}
-    on:mousemove={resetImmerse}
-    on:touchmove={resetImmerse}
-    on:keypress={resetImmerse}
-    on:mouseleave={immersePlayer}
-    on:click={() => (page = 'player')}>
-    <video
-      class="position-absolute h-full w-full"
-      style={`margin-top: ${menubarOffset}px`}
-      autoplay
-      preload="auto"
-      {src}
-      bind:videoHeight
-      bind:videoWidth
-      bind:this={video}
-      bind:volume
-      bind:duration
-      bind:currentTime
-      bind:paused
-      bind:ended
-      bind:muted
-      bind:playbackRate
-      on:timeupdate={() => createThumbnail()}
-      on:timeupdate={checkCompletion}
-      on:waiting={showBuffering}
-      on:loadeddata={hideBuffering}
-      on:canplay={hideBuffering}
-      on:playing={hideBuffering}
-      on:ended={tryPlayNext}
-      on:loadedmetadata={hideBuffering}
-      on:loadedmetadata={getFPS}
-      on:loadedmetadata={initThumbnails}
-      on:leavepictureinpicture={() => (pip = false)} />
-    {#if stats}
-      <div class="position-absolute top-0 bg-tp p-10 m-15 text-monospace rounded z-50">
-        <button class="close" type="button" on:click={toggleStats}><span>×</span></button>
-        FPS: {stats.fps}<br />
-        Presented frames: {stats.presented}<br />
-        Dropped frames: {stats.dropped}<br />
-        Frame time: {stats.processing}<br />
-        Viewport: {stats.viewport}<br />
-        Resolution: {stats.resolution}<br />
-        Buffer health: {stats.buffer || 0}
+<div
+  class="player w-full h-full d-flex flex-column overflow-hidden"
+  class:pointer={miniplayer}
+  class:miniplayer
+  class:pip
+  class:immersed
+  class:buffering
+  bind:this={container}
+  on:mousemove={resetImmerse}
+  on:touchmove={resetImmerse}
+  on:keypress={resetImmerse}
+  on:mouseleave={immersePlayer}>
+  <video
+    class="position-absolute h-full w-full"
+    style={`margin-top: ${menubarOffset}px`}
+    preload="auto"
+    {src}
+    bind:videoHeight
+    bind:videoWidth
+    bind:this={video}
+    bind:volume
+    bind:duration
+    bind:currentTime
+    bind:paused
+    bind:ended
+    bind:muted
+    bind:playbackRate
+    on:timeupdate={() => createThumbnail()}
+    on:timeupdate={checkCompletion}
+    on:waiting={showBuffering}
+    on:loadeddata={hideBuffering}
+    on:canplay={hideBuffering}
+    on:playing={hideBuffering}
+    on:ended={tryPlayNext}
+    on:loadedmetadata={hideBuffering}
+    on:loadedmetadata={getFPS}
+    on:loadedmetadata={initThumbnails}
+    on:leavepictureinpicture={() => (pip = false)} />
+  {#if stats}
+    <div class="position-absolute top-0 bg-tp p-10 m-15 text-monospace rounded z-50">
+      <button class="close" type="button" on:click={toggleStats}><span>×</span></button>
+      FPS: {stats.fps}<br />
+      Presented frames: {stats.presented}<br />
+      Dropped frames: {stats.dropped}<br />
+      Frame time: {stats.processing}<br />
+      Viewport: {stats.viewport}<br />
+      Resolution: {stats.resolution}<br />
+      Buffer health: {stats.buffer || 0}
+    </div>
+  {/if}
+  <div class="top z-40 d-flex justify-content-between">
+    <div />
+    <div class="d-flex">
+      <span class="material-icons" data-name="peers"> people </span>
+      <span class="stats">{torrent.peers || 0}</span>
+      <span class="material-icons"> arrow_downward </span>
+      <span class="stats">{fastPrettyBytes(torrent.down)}/s</span>
+      <span class="material-icons"> arrow_upward </span>
+      <span class="stats">{fastPrettyBytes(torrent.up)}/s</span>
+    </div>
+    <span class="material-icons ctrl font-size-12 p-10" title="Keybinds [`]" on:click={() => (showKeybinds = true)}> help_outline </span>
+  </div>
+  <div class="middle d-flex align-items-center justify-content-center flex-grow-1 z-40 position-relative">
+    <div class="position-absolute w-full h-full" on:dblclick={toggleFullscreen} on:click|self={() => (page = 'player')}>
+      <div class="play-overlay w-full h-full" on:click={playPause} />
+    </div>
+    {#if hasLast}
+      <span class="material-icons ctrl" data-name="playLast" on:click={playLast}> skip_previous </span>
+    {/if}
+    <span class="material-icons ctrl" data-name="rewind" on:click={rewind}> fast_rewind </span>
+    <span class="material-icons ctrl" data-name="playPause" on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
+    <span class="material-icons ctrl" data-name="forward" on:click={forward}> fast_forward </span>
+    {#if hasNext}
+      <span class="material-icons ctrl" data-name="playNext" on:click={playNext}> skip_next </span>
+    {/if}
+    <div data-name="bufferingDisplay" class="position-absolute" />
+  </div>
+  <div class="bottom d-flex z-40">
+    <span class="material-icons ctrl" title="Play/Pause [Space]" data-name="playPause" on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
+    {#if hasNext}
+      <span class="material-icons ctrl" title="Next [N]" data-name="playNext" on:click={playNext}> skip_next </span>
+    {/if}
+    <div class="d-flex w-auto volume">
+      <span class="material-icons ctrl" title="Mute [M]" data-name="toggleMute" on:click={toggleMute}> {muted ? 'volume_off' : 'volume_up'} </span>
+      <input class="ctrl" type="range" min="0" max="1" step="any" data-name="setVolume" bind:value={volume} style="--value: {volume * 100}%" />
+    </div>
+    <!-- svelte-ignore missing-declaration -->
+    {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
+      <div class="audio-tracks dropdown dropup with-arrow" on:click={toggleDropdown}>
+        <span class="material-icons ctrl" title="Audio Tracks" id="baudio" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="audioButton">
+          queue_music
+        </span>
+        <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize" aria-labelledby="baudio" data-name="selectAudio">
+          {#each video.audioTracks as track}
+            <input name="audio-radio-set" type="radio" id="audio-{track.id}-radio" value={track.id} checked={track.enabled} />
+            <label for="audio-{track.id}-radio" on:click={() => selectAudio(track.id)} class="text-truncate pb-5">
+              {(track.language || (!Object.values(video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) +
+                (track.label ? ' - ' + track.label : '')}</label>
+          {/each}
+        </div>
       </div>
     {/if}
-    <div class="top z-40 d-flex justify-content-between">
-      <div />
-      <div class="d-flex">
-        <span class="material-icons" data-name="peers"> people </span>
-        <span class="stats">{torrent.peers || 0}</span>
-        <span class="material-icons"> arrow_downward </span>
-        <span class="stats">{fastPrettyBytes(torrent.down)}/s</span>
-        <span class="material-icons"> arrow_upward </span>
-        <span class="stats">{fastPrettyBytes(torrent.up)}/s</span>
+    <div class="w-full d-flex align-items-center" data-name="progressWrapper">
+      <div class="ts">{toTS(targetTime, duration > 3600 ? 2 : 3)}</div>
+      <div class="w-full h-full position-relative">
+        <input
+          class="ctrl w-full h-full"
+          type="range"
+          min="0"
+          max="1"
+          step="any"
+          data-name="setProgress"
+          bind:value={progress}
+          on:mousedown={handleMouseDown}
+          on:mouseup={handleMouseUp}
+          on:mousemove={handleHover}
+          on:input={handleProgress}
+          on:touchstart={handleMouseDown}
+          on:touchend={handleMouseUp}
+          style="--value: {progress * 100}%" />
+        <div class="hover position-absolute d-flex flex-column align-items-center" bind:this={hover}>
+          <img alt="thumbnail" class="w-full mb-5 shadow-lg" src={thumbnail} />
+          <div class="ts">{toTS(hoverTime)}</div>
+        </div>
       </div>
-      <span class="material-icons ctrl font-size-12 p-10" title="Keybinds [`]" on:click={() => (showKeybinds = true)}> help_outline </span>
+      <div class="ts">{toTS(duration - targetTime, duration > 3600 ? 2 : 3)}</div>
     </div>
-    <div class="middle d-flex align-items-center justify-content-center flex-grow-1 z-40 position-relative">
-      <div class="position-absolute w-full h-full" on:dblclick={toggleFullscreen}>
-        <div class="play-overlay w-full h-full" on:click={playPause} />
-      </div>
-      {#if hasLast}
-        <span class="material-icons ctrl" data-name="playLast" on:click={playLast}> skip_previous </span>
-      {/if}
-      <span class="material-icons ctrl" data-name="rewind" on:click={rewind}> fast_rewind </span>
-      <span class="material-icons ctrl" data-name="playPause" on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
-      <span class="material-icons ctrl" data-name="forward" on:click={forward}> fast_forward </span>
-      {#if hasNext}
-        <span class="material-icons ctrl" data-name="playNext" on:click={playNext}> skip_next </span>
-      {/if}
-      <div data-name="bufferingDisplay" class="position-absolute" />
-    </div>
-    <div class="bottom d-flex z-40">
-      <span class="material-icons ctrl" title="Play/Pause [Space]" data-name="playPause" on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
-      {#if hasNext}
-        <span class="material-icons ctrl" title="Next [N]" data-name="playNext" on:click={playNext}> skip_next </span>
-      {/if}
-      <div class="d-flex w-auto volume">
-        <span class="material-icons ctrl" title="Mute [M]" data-name="toggleMute" on:click={toggleMute}> {muted ? 'volume_off' : 'volume_up'} </span>
-        <input class="ctrl" type="range" min="0" max="1" step="any" data-name="setVolume" bind:value={volume} style="--value: {volume * 100}%" />
-      </div>
-      <!-- svelte-ignore missing-declaration -->
-      {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
-        <div class="audio-tracks dropdown dropup with-arrow" on:click={toggleDropdown}>
-          <span class="material-icons ctrl" title="Audio Tracks" id="baudio" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="audioButton">
-            queue_music
-          </span>
-          <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize" aria-labelledby="baudio" data-name="selectAudio">
-            {#each video.audioTracks as track}
-              <input name="audio-radio-set" type="radio" id="audio-{track.id}-radio" value={track.id} checked={track.enabled} />
-              <label for="audio-{track.id}-radio" on:click={() => selectAudio(track.id)} class="text-truncate pb-5">
-                {(track.language || (!Object.values(video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) +
-                  (track.label ? ' - ' + track.label : '')}</label>
-            {/each}
-          </div>
-        </div>
-      {/if}
-      <div class="w-full d-flex align-items-center" data-name="progressWrapper">
-        <div class="ts">{toTS(targetTime, duration > 3600 ? 2 : 3)}</div>
-        <div class="w-full h-full position-relative">
-          <input
-            class="ctrl w-full h-full"
-            type="range"
-            min="0"
-            max="1"
-            step="any"
-            data-name="setProgress"
-            bind:value={progress}
-            on:mousedown={handleMouseDown}
-            on:mouseup={handleMouseUp}
-            on:mousemove={handleHover}
-            on:input={handleProgress}
-            on:touchstart={handleMouseDown}
-            on:touchend={handleMouseUp}
-            style="--value: {progress * 100}%" />
-          <div class="hover position-absolute d-flex flex-column align-items-center" bind:this={hover}>
-            <img alt="thumbnail" class="w-full mb-5 shadow-lg" src={thumbnail} />
-            <div class="ts">{toTS(hoverTime)}</div>
-          </div>
-        </div>
-        <div class="ts">{toTS(duration - targetTime, duration > 3600 ? 2 : 3)}</div>
-      </div>
-      {#if subHeaders?.length}
-        <div class="subtitles dropdown dropup with-arrow" on:click={toggleDropdown}>
-          <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="captionsButton">
-            subtitles
-          </span>
-          <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize w-200" aria-labelledby="bcap" data-name="selectCaptions">
-            <input name="subtitle-radio-set" type="radio" id="subtitle-off-radio" value="off" checked={subHeaders && subs?.current === -1} />
-            <label for="subtitle-off-radio" on:click={() => subs.selectCaptions(-1)} class="text-truncate pb-5"> OFF </label>
-            {#each subHeaders as track}
-              {#if track}
-                <input name="subtitle-radio-set" type="radio" id="subtitle-{track.number}-radio" value={track.numer} checked={track.number === subs.current} />
-                <label for="subtitle-{track.nubmer}-radio" on:click={() => subs.selectCaptions(track.number)} class="text-truncate pb-5">
-                  {(track.language || (!Object.values(subs.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : track.type)) +
-                    (track.name ? ' - ' + track.name : '')}
-                </label>
-              {/if}
-            {/each}
-            <input type="number" step="0.1" bind:value={subDelay} class="form-control text-right form-control-sm" />
-          </div>
-        </div>
-      {/if}
-      <!-- svelte-ignore missing-declaration -->
-      {#if 'PresentationRequest' in window && canCast && current}
-        <span class="material-icons ctrl" title="Cast Video [D]" data-name="toggleCast" on:click={toggleCast}>
-          {presentationConnection ? 'cast_connected' : 'cast'}
+    {#if subHeaders?.length}
+      <div class="subtitles dropdown dropup with-arrow" on:click={toggleDropdown}>
+        <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="captionsButton">
+          subtitles
         </span>
-      {/if}
-      {#if 'pictureInPictureEnabled' in document}
-        <span class="material-icons ctrl" title="Popout Window [P]" data-name="togglePopout" on:click={togglePopout}>
-          {pip ? 'featured_video' : 'picture_in_picture'}
-        </span>
-      {/if}
-      <span class="material-icons ctrl" title="Fullscreen [F]" data-name="toggleFullscreen" on:click={toggleFullscreen}>
-        {isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
+        <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize w-200" aria-labelledby="bcap" data-name="selectCaptions">
+          <input name="subtitle-radio-set" type="radio" id="subtitle-off-radio" value="off" checked={subHeaders && subs?.current === -1} />
+          <label for="subtitle-off-radio" on:click={() => subs.selectCaptions(-1)} class="text-truncate pb-5"> OFF </label>
+          {#each subHeaders as track}
+            {#if track}
+              <input name="subtitle-radio-set" type="radio" id="subtitle-{track.number}-radio" value={track.numer} checked={track.number === subs.current} />
+              <label for="subtitle-{track.nubmer}-radio" on:click={() => subs.selectCaptions(track.number)} class="text-truncate pb-5">
+                {(track.language || (!Object.values(subs.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : track.type)) +
+                  (track.name ? ' - ' + track.name : '')}
+              </label>
+            {/if}
+          {/each}
+          <input type="number" step="0.1" bind:value={subDelay} class="form-control text-right form-control-sm" />
+        </div>
+      </div>
+    {/if}
+    <!-- svelte-ignore missing-declaration -->
+    {#if 'PresentationRequest' in window && canCast && current}
+      <span class="material-icons ctrl" title="Cast Video [D]" data-name="toggleCast" on:click={toggleCast}>
+        {presentationConnection ? 'cast_connected' : 'cast'}
       </span>
-    </div>
+    {/if}
+    {#if 'pictureInPictureEnabled' in document}
+      <span class="material-icons ctrl" title="Popout Window [P]" data-name="togglePopout" on:click={togglePopout}>
+        {pip ? 'featured_video' : 'picture_in_picture'}
+      </span>
+    {/if}
+    <span class="material-icons ctrl" title="Fullscreen [F]" data-name="toggleFullscreen" on:click={toggleFullscreen}>
+      {isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
+    </span>
   </div>
-{/if}
+</div>
 
 <style>
   .stats {
@@ -877,7 +879,7 @@
   }
   .miniplayer {
     transition: width 0.2s ease;
-    width: min(40rem, 25vw) !important;
+    width: 35rem !important;
     height: auto !important;
     bottom: 2rem;
     right: 2rem;
@@ -885,7 +887,6 @@
     position: absolute !important;
   }
   .miniplayer .top,
-  .miniplayer .middle,
   .miniplayer .bottom {
     display: none !important;
   }
@@ -987,15 +988,30 @@
     display: none;
   }
 
-  @media (pointer: none), (pointer: coarse) {
+  /* @media (pointer: none), (pointer: coarse) {
     .middle .ctrl {
       display: flex;
     }
     .middle .play-overlay {
       display: none !important;
     }
+  } */
+  .miniplayer .middle {
+    position: absolute !important;
+    width: 100%;
+    height: 100%;
   }
-
+  .miniplayer .middle .ctrl {
+    display: flex;
+    font-size: 2.8rem;
+    margin: 0.6rem;
+  }
+  .miniplayer .middle .play-overlay {
+    display: none !important;
+  }
+  .miniplayer .middle .ctrl[data-name='playPause'] {
+    font-size: 5rem;
+  }
   .middle .ctrl[data-name='playPause'] {
     font-size: 6rem;
   }

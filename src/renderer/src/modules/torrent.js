@@ -38,11 +38,11 @@ client.on('torrent', torrent => {
   files.set(torrent.files)
 })
 
-export async function add (torrentID) {
+export async function add(torrentID, hide) {
   if (torrentID) {
     if (client.torrents.length) client.remove(client.torrents[0].infoHash)
     files.set([])
-    page.set('player')
+    if (!hide) page.set('player')
     if (typeof torrentID === 'string' && !torrentID.startsWith('magnet:')) {
       // IMPORTANT, this is because node's get bypasses proxies, wut????
       const res = await fetch(torrentID)
@@ -73,6 +73,6 @@ client.on('torrent', torrent => {
 queueMicrotask(() => {
   if (localStorage.getItem('torrent')) {
     const buffer = Buffer.from(JSON.parse(localStorage.getItem('torrent')))
-    add(buffer)
+    add(buffer, true)
   }
 })
