@@ -262,19 +262,23 @@
     if (set.playerAutoplay) playNext()
   }
   function playNext() {
-    const index = videos.indexOf(current)
-    if (index + 2 < videos.length) {
-      handleCurrent(videos[(index + 1) % videos.length])
-    } else if (media?.nextAiringEpisode?.episode - 1 || media?.episodes > fileMedia?.episodeNumber) {
-      playAnime(media, fileMedia?.episodeNumber + 1)
+    if (hasNext) {
+      const index = videos.indexOf(current)
+      if (index + 2 < videos.length) {
+        handleCurrent(videos[(index + 1) % videos.length])
+      } else if (media?.nextAiringEpisode?.episode - 1 || media?.episodes > fileMedia?.episodeNumber) {
+        playAnime(media, fileMedia?.episodeNumber + 1)
+      }
     }
   }
   function playLast() {
-    const index = videos.indexOf(current)
-    if (index > 1) {
-      handleCurrent(videos[index - 1])
-    } else if (media && fileMedia?.episodeNumber > 1) {
-      playAnime(media, fileMedia?.episodeNumber - 1)
+    if (hasLast) {
+      const index = videos.indexOf(current)
+      if (index > 1) {
+        handleCurrent(videos[index - 1])
+      } else if (media && fileMedia?.episodeNumber > 1) {
+        playAnime(media, fileMedia?.episodeNumber - 1)
+      }
     }
   }
   function toggleFullscreen() {
@@ -770,15 +774,11 @@
     <div class="position-absolute w-full h-full" on:dblclick={toggleFullscreen} on:click|self={() => (page = 'player')}>
       <div class="play-overlay w-full h-full" on:click={playPause} />
     </div>
-    {#if hasLast}
-      <span class="material-icons ctrl" data-name="playLast" on:click={playLast}> skip_previous </span>
-    {/if}
+    <span class="material-icons ctrl" class:text-muted={!hasNext} class:disabled={!hasNext} data-name="playLast" on:click={playLast}> skip_previous </span>
     <span class="material-icons ctrl" data-name="rewind" on:click={rewind}> fast_rewind </span>
     <span class="material-icons ctrl" data-name="playPause" on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
     <span class="material-icons ctrl" data-name="forward" on:click={forward}> fast_forward </span>
-    {#if hasNext}
-      <span class="material-icons ctrl" data-name="playNext" on:click={playNext}> skip_next </span>
-    {/if}
+    <span class="material-icons ctrl" class:text-muted={!hasNext} class:disabled={!hasNext} data-name="playNext" on:click={playNext}> skip_next </span>
     <div data-name="bufferingDisplay" class="position-absolute" />
   </div>
   <div class="bottom d-flex z-40">
@@ -966,6 +966,9 @@
     transition: 0.5s opacity ease;
     filter: drop-shadow(0 0 8px #000);
   }
+  .disabled {
+    cursor: not-allowed !important;
+  }
 
   .buffering .middle div[data-name='bufferingDisplay'] {
     opacity: 1 !important;
@@ -997,6 +1000,7 @@
     }
   } */
   .miniplayer .middle {
+    transition: background 0.2s ease;
     position: absolute !important;
     width: 100%;
     height: 100%;
@@ -1011,6 +1015,9 @@
   }
   .miniplayer .middle .ctrl[data-name='playPause'] {
     font-size: 5rem;
+  }
+  .miniplayer:hover .middle {
+    background: #00000066;
   }
   .middle .ctrl[data-name='playPause'] {
     font-size: 6rem;
