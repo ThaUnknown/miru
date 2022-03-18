@@ -1,4 +1,3 @@
-/* global halfmoon */
 import { alToken } from '@/lib/pages/Settings.svelte'
 
 export const alID =
@@ -162,7 +161,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
     pageInfo {
       hasNextPage
     },
-    media(type: $type, search: $search, sort: $sort, status_in: $status) {
+    media(type: $type, search: $search, sort: $sort, status_in: $status, isAdult: false) {
       ${queryObjects}
     }
   }
@@ -249,7 +248,7 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
       episode,
       timeUntilAiring,
       airingAt,
-      media{
+      media(isAdult: false){
         ${queryObjects}
       }
     }
@@ -265,12 +264,12 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
       variables.status = opts.status
       variables.sort = opts.sort || 'SEARCH_MATCH'
       query = ` 
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat, $startDate: FuzzyDateInt) {
+query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
   Page (page: $page, perPage: $perPage) {
     pageInfo {
       hasNextPage
     },
-    media(type: $type, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format, startDate_greater: $startDate) {
+    media(type: $type, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format, isAdult: false) {
       ${queryObjects}
     }
   }

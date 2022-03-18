@@ -10,17 +10,45 @@
   import { getContext } from 'svelte'
 
   let media = getContext('gallery')
-  let search
+  let search = {}
+  let current = null
+  let page = 1
+
+  $: if (!$media) {
+    current = null
+    canScroll = true
+  }
+
+  let canScroll = true
+  let hasNext = true
+  async function infiniteScroll() {
+    if (current && canScroll && hasNext && this.scrollTop + this.clientHeight > this.scrollHeight - 800) {
+      canScroll = false
+      const res = await sections[current].load(++page)
+      $media = $media.then(old => {
+        return old.concat(res)
+      })
+      canScroll = hasNext
+    }
+  }
+
+  $: load(current)
+  function load(current) {
+    if (sections[current]) {
+      page = 1
+      $media = sections[current].load(1)
+    } else {
+      $media = null
+      canScroll = true
+    }
+  }
 
   function processMedia(res) {
+    hasNext = res.data.Page.pageInfo.hasNextPage
     return res.data.Page.media.map(media => {
       return { media }
     })
   }
-  setInterval(async () => {
-    const media = await releasesCards(5)
-    if (media) sections[1].cards = media
-  }, 30000)
 
   let lastRSSDate = 0
   async function releasesCards(limit, force) {
@@ -41,78 +69,84 @@
       }
     }
   }
-  const sections = [
-    {
+  const sections = {
+    continue: {
       title: 'Continue Watching',
-      click: () => {
-        $media = alRequest({ method: 'UserLists', status_in: 'CURRENT' }).then(res => {
-          return res.data.Page.mediaList.filter(i => {
-            return i.media.status !== 'RELEASING' || i.media.mediaListEntry?.progress < i.media.nextAiringEpisode?.episode - 1
-          })
-        })
-      },
-      cards:
-        alToken &&
-        alRequest({ method: 'UserLists', status_in: 'CURRENT' }).then(res => {
+      load: (page = 1, perPage = 50) => {
+        return alRequest({ method: 'UserLists', status_in: 'CURRENT', page, perPage }).then(res => {
+          hasNext = res.data.Page.pageInfo.hasNextPage
           return res.data.Page.mediaList
             .filter(i => {
               return i.media.status !== 'RELEASING' || i.media.mediaListEntry?.progress < i.media.nextAiringEpisode?.episode - 1
             })
-            .slice(0, 5)
-        }),
+            .slice(0, perPage)
+        })
+      },
       hide: !alToken
     },
-    {
+    releases: {
       title: 'New Releases',
-      click: () => {
-        $media = releasesCards(200, true)
-      },
-      cards: releasesCards(5)
+      releases: true,
+      load: (force, perPage = 50) => {
+        hasNext = false
+        return releasesCards(perPage, force)
+      }
     },
-    {
+    planning: {
       title: 'Your List',
-      click: () => {
-        $media = alRequest({ method: 'UserLists', status_in: 'PLANNING' }).then(res => res.data.Page.mediaList)
+      load: (page = 1, perPage = 50) => {
+        return alRequest({ method: 'UserLists', page, perPage, status_in: 'PLANNING' }).then(res => {
+          hasNext = res.data.Page.pageInfo.hasNextPage
+          return res.data.Page.mediaList
+        })
       },
-      cards: alToken && alRequest({ method: 'UserLists', status_in: 'PLANNING', perPage: 5 }).then(res => res.data.Page.mediaList),
       hide: !alToken
     },
-    {
+    trending: {
       title: 'Trending Now',
-      click: () => {
-        search.sort = 'TRENDING_DESC'
-      },
-      cards: alRequest({ method: 'Search', perPage: 5, sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+      load: (page = 1, perPage = 50) => {
+        return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+      }
     },
-    {
+    romance: {
       title: 'Romance',
-      click: () => {
-        search.sort = 'TRENDING_DESC'
-        search.genre = 'romance'
-      },
-      cards: alRequest({ method: 'Search', perPage: 5, genre: 'Romance', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+      load: (page = 1, perPage = 50) => {
+        return alRequest({ method: 'Search', page, perPage, genre: 'Romance', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+      }
     },
-    {
+    action: {
       title: 'Action',
-      click: () => {
-        search.sort = 'TRENDING_DESC'
-        search.genre = 'action'
-      },
-      cards: alRequest({ method: 'Search', perPage: 5, genre: 'Action', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+      load: (page = 1, perPage = 50) => {
+        return alRequest({ method: 'Search', page, perPage, genre: 'Action', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+      }
+    },
+    search: {
+      hide: true,
+      load: (page = 1, perPage = 50) => {
+        const opts = {
+          method: 'Search',
+          page,
+          perPage
+        }
+        for (const [key, value] of Object.entries(search)) {
+          if (value) opts[key] = value
+        }
+        return alRequest(opts).then(res => processMedia(res))
+      }
     }
-  ]
+  }
 </script>
 
-<div class="d-flex h-full flex-column overflow-y-scroll root">
+<div class="d-flex h-full flex-column overflow-y-scroll root" on:scroll={infiniteScroll}>
   <div class="h-full py-10">
-    <Search bind:media={$media} bind:search />
+    <Search bind:media={$media} bind:search bind:current />
     {#if $media}
       <Gallery media={$media} />
     {:else}
       <div>
-        {#each sections as opts (opts.title)}
+        {#each Object.entries(sections) as [key, opts] (opts.title)}
           {#if !opts.hide}
-            <Section {opts} />
+            <Section opts={{ ...opts, onclick: () => (current = key) }} />
           {/if}
         {/each}
       </div>

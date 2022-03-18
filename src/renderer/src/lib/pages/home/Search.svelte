@@ -1,14 +1,9 @@
 <script>
-  import { alRequest } from '@/modules/anilist.js'
-  export let search = {}
+  export let search
+  export let current
   export let media = null
   let searchTimeout = null
 
-  function processMedia(res) {
-    return res.data.Page.media.map(media => {
-      return { media }
-    })
-  }
   function searchClear() {
     search = {
       format: '',
@@ -17,9 +12,8 @@
       sort: '',
       status: ''
     }
-    media = null
+    current = null
   }
-  $: input(search)
   function input() {
     if (!searchTimeout) {
       if (Object.values(search).filter(v => v).length) media = new Promise(() => {})
@@ -27,31 +21,14 @@
       clearTimeout(searchTimeout)
     }
     searchTimeout = setTimeout(() => {
-      handleSearch()
+      current = null
+      current = 'search'
       searchTimeout = null
     }, 500)
   }
-  export async function handleSearch(page) {
-    const defaults = {
-      method: 'Search',
-      page: page || 1
-    }
-    const opts = {}
-    Object.assign(opts, defaults)
-    for (const [key, value] of Object.entries(search)) {
-      if (value) opts[key] = value
-    }
-    if (Object.keys(defaults).length !== Object.keys(opts).length) {
-      media = alRequest(opts).then(res => {
-        return processMedia(res)
-      })
-    } else {
-      media = null
-    }
-  }
 </script>
 
-<div class="container-fluid row p-20">
+<div class="container-fluid row p-20" on:change={input}>
   <div class="col-lg col-4 p-10 d-flex flex-column justify-content-end">
     <div class="pb-10 font-size-24 font-weight-semi-bold d-flex">
       <div class="material-icons mr-10 font-size-30">title</div>
@@ -61,7 +38,14 @@
       <div class="input-group-prepend">
         <span class="input-group-text d-flex material-icons bg-dark pr-0 font-size-18">search</span>
       </div>
+      <!-- svelte-ignore missing-declaration -->
       <input
+        on:input={({ target }) => {
+          queueMicrotask(() => {
+            search.search = target.value
+            input()
+          })
+        }}
         type="search"
         class="form-control bg-dark border-left-0 shadow-none text-capitalize"
         autocomplete="off"
@@ -154,7 +138,8 @@
     </select>
   </div>
   <div class="col-auto p-10 d-flex">
-    <button class="btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0" type="button" on:click={searchClear} class:text-primary={!!media}>delete</button>
+    <button class="btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0" type="button" on:click={searchClear} class:text-primary={!!current}
+      >delete</button>
   </div>
 </div>
 

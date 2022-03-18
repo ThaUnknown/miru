@@ -1,14 +1,27 @@
 <script>
+  import { onDestroy } from 'svelte'
+
   import Cards from './Cards.svelte'
-  export let opts = {}
+  export let opts
+  let cards = opts.load(1, 5)
+  let interval = null
+  if (opts.releases) {
+    interval = setInterval(async () => {
+      const media = await opts.load(false, 5)
+      if (media) cards = media
+    }, 30000)
+  }
+  onDestroy(() => {
+    if (interval) clearInterval(interval)
+  })
 </script>
 
-<span class="d-flex px-20 align-items-end pointer text-decoration-none text-muted" on:click={opts.click}>
+<span class="d-flex px-20 align-items-end pointer text-decoration-none text-muted" on:click={opts.onclick}>
   <div class="pl-10 font-size-24 font-weight-semi-bold">{opts.title}</div>
   <div class="pr-10 ml-auto font-size-12">View More</div>
 </span>
 <div class="gallery pt-10 pb-20 w-full overflow-x-hidden position-relative">
-  <Cards cards={opts.cards} />
+  <Cards {cards} />
 </div>
 
 <style>
