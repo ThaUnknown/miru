@@ -7,17 +7,11 @@
   import { alRequest } from '@/modules/anilist.js'
   import { resolveFileMedia, relations } from '@/modules/anime.js'
   import { getRSSContent, getRSSurl } from '@/lib/RSSView.svelte'
-  import { getContext } from 'svelte'
 
-  let media = getContext('gallery')
+  let media = null
   let search = {}
-  let current = null
+  export let current = null
   let page = 1
-
-  $: if (!$media) {
-    current = null
-    canScroll = true
-  }
 
   let canScroll = true
   let hasNext = true
@@ -25,7 +19,7 @@
     if (current && canScroll && hasNext && this.scrollTop + this.clientHeight > this.scrollHeight - 800) {
       canScroll = false
       const res = await sections[current].load(++page)
-      $media = $media.then(old => {
+      media = media.then(old => {
         return old.concat(res)
       })
       canScroll = hasNext
@@ -36,12 +30,15 @@
   function load(current) {
     if (sections[current]) {
       page = 1
-      $media = sections[current].load(1)
+      media = sections[current].load(1)
     } else {
-      $media = null
+      media = null
       canScroll = true
+      lastDate = null
     }
   }
+
+  let lastDate = null
 
   function processMedia(res) {
     hasNext = res.data.Page.pageInfo.hasNextPage
@@ -120,7 +117,28 @@
         return alRequest({ method: 'Search', page, perPage, genre: 'Action', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
       }
     },
+    schedule: {
+      title: 'Schedule',
+      hide: true,
+      load: (page = 1) => {
+        return alRequest({ method: 'AiringSchedule', page }).then(res => {
+          const entries = res.data.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && !entry.media.isAdult)
+          const media = []
+          hasNext = res.data.Page.pageInfo.hasNextPage
+          let date = new Date()
+          for (const entry of entries) {
+            if (entry.timeUntilAiring && (!lastDate || new Date(+date + entry.timeUntilAiring * 1000).getDay() !== lastDate.getDay())) {
+              lastDate = new Date(+date + entry.timeUntilAiring * 1000)
+              media.push(lastDate.toLocaleDateString('en-US', { weekday: 'long' }))
+            }
+            media.push(entry)
+          }
+          return media
+        })
+      }
+    },
     search: {
+      title: 'Search',
       hide: true,
       load: (page = 1, perPage = 50) => {
         const opts = {
@@ -139,9 +157,9 @@
 
 <div class="d-flex h-full flex-column overflow-y-scroll root" on:scroll={infiniteScroll}>
   <div class="h-full py-10">
-    <Search bind:media={$media} bind:search bind:current />
-    {#if $media}
-      <Gallery media={$media} />
+    <Search bind:media bind:search bind:current />
+    {#if media}
+      <Gallery {media} />
     {:else}
       <div>
         {#each Object.entries(sections) as [key, opts] (opts.title)}

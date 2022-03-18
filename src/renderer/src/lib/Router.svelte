@@ -1,26 +1,24 @@
-<script context='module'>
+<script context="module">
   import { writable } from 'svelte/store'
 
   export const files = writable([])
-
-  </script>
+</script>
 
 <script>
+  import { getContext } from 'svelte'
   import Home from './pages/home/Home.svelte'
   import Player from './pages/Player.svelte'
   import Settings from './pages/Settings.svelte'
-  import Schedule from './pages/Schedule.svelte'
   export let page = 'home'
+  const current = getContext('gallery')
 </script>
 
 <div class="overflow-y-hidden content-wrapper">
   <Player files={$files} miniplayer={page !== 'player'} bind:page />
-  {#if page === 'schedule'}
-    <Schedule />
-  {:else if page === 'settings'}
+  {#if page === 'settings'}
     <Settings />
   {:else if page === 'home'}
-    <Home />
+    <Home bind:current={$current} />
   {/if}
 </div>
 

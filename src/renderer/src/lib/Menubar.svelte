@@ -10,7 +10,7 @@
       <img src="./logo.ico" alt="ico" />
       {document.title}
     </div>
-    <div class="controls d-flex h-full">
+    <div class="controls d-flex h-full pointer">
       <div class="d-flex align-items-center" on:click={() => window.minimize()}>
         <svg viewBox="0 0 24 24">
           <path d="M19 13H5v-2h14v2z" />

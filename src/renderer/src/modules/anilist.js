@@ -248,7 +248,7 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
       episode,
       timeUntilAiring,
       airingAt,
-      media(isAdult: false){
+      media{
         ${queryObjects}
       }
     }

@@ -44,6 +44,7 @@ export async function add (torrentID) {
     files.set([])
     page.set('player')
     if (typeof torrentID === 'string' && !torrentID.startsWith('magnet:')) {
+      // IMPORTANT, this is because node's get bypasses proxies, wut????
       const res = await fetch(torrentID)
       torrentID = new File([await res.arrayBuffer()], 'file.torrent', {
         type: 'application/x-bittorrent'

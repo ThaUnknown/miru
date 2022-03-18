@@ -23,7 +23,9 @@
   {/each}
 {:then cards}
   {#each cards as card}
-    {#if !card.media}
+    {#if typeof card === 'string'}
+      <div class="day-row font-size-24 font-weight-bold h-50 d-flex align-items-end">{card}</div>
+    {:else if !card.media}
       <div class="card m-0 p-0" on:click={card.onclick}>
         <div class="row h-full">
           <div class="col-4 skeloader" />
@@ -154,5 +156,8 @@
   .cover-img {
     object-fit: cover;
     background-color: var(--color) !important;
+  }
+  .day-row {
+    grid-column: 1 / -1;
   }
 </style>
