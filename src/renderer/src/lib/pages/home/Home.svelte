@@ -66,6 +66,8 @@
       }
     }
   }
+  const seasons = ['SUMMER', 'FALL', 'WINTER', 'SPRING']
+  const getSeason = d => seasons[Math.floor((d.getMonth() / 12 * 4)) % 4]
   const sections = {
     continue: {
       title: 'Continue Watching',
@@ -102,18 +104,29 @@
     trending: {
       title: 'Trending Now',
       load: (page = 1, perPage = 50) => {
+        if (perPage !== 5) {
+          search.sort = 'TRENDING_DESC'
+        }
         return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC' }).then(res => processMedia(res))
       }
     },
     romance: {
       title: 'Romance',
       load: (page = 1, perPage = 50) => {
+        if (perPage !== 5) {
+          search.sort = 'TRENDING_DESC'
+          search.genre = 'romance'
+        }
         return alRequest({ method: 'Search', page, perPage, genre: 'Romance', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
       }
     },
     action: {
       title: 'Action',
       load: (page = 1, perPage = 50) => {
+        if (perPage !== 5) {
+          search.sort = 'TRENDING_DESC'
+          search.genre = 'action'
+        }
         return alRequest({ method: 'Search', page, perPage, genre: 'Action', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
       }
     },
@@ -121,6 +134,11 @@
       title: 'Schedule',
       hide: true,
       load: (page = 1) => {
+        search.sort = 'START_DATE_DESC'
+        search.status = 'RELEASING'
+        const date = new Date()
+        search.season = getSeason(date)
+        search.year = date.getFullYear()
         return alRequest({ method: 'AiringSchedule', page }).then(res => {
           const entries = res.data.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && !entry.media.isAdult)
           const media = []
