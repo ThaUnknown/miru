@@ -7,6 +7,9 @@
   function close() {
     $view = null
   }
+  function checkClose({ keyCode }) {
+    if (keyCode == 27) close()
+  }
   const detailsMap = [
     { property: 'episode', label: 'Airing', icon: 'schedule', custom: 'property' },
     { property: 'genres', label: 'Genres', icon: 'theater_comedy' },
@@ -24,8 +27,8 @@
   ]
   function getCustomProperty(detail, media) {
     if (detail.property === 'episodes') {
-      if (media.progress) {
-        return `Watched <b>${media.progress}</b> of <b>${media.episodes}</b>`
+      if (media.mediaListEntry?.progress) {
+        return `Watched <b>${media.mediaListEntry.progress}</b> of <b>${media.episodes}</b>`
       }
       return `${media.episodes} Episodes`
     } else if (detail.property === 'averageScore') {
@@ -50,10 +53,10 @@
   }
 </script>
 
-<div class="modal modal-full" class:show={$view} id="viewAnime" tabindex="-1" role="dialog">
+<div class="modal modal-full" class:show={$view} id="viewAnime" tabindex="-1" role="dialog" on:keydown={checkClose}>
   {#if $view}
     <div class="h-full modal-content bg-very-dark p-0 overflow-y-auto">
-      <button class="close pointer z-30 bg-dark shadow-lg border" type="button" on:click={close}>
+      <button class="d-flex justify-content-center align-items-center close pointer z-30 bg-dark shadow-lg border top-20 right-0" type="button" on:click={close}>
         <span>×</span>
       </button>
       <div class="h-md-half w-full position-relative z-20">
@@ -114,7 +117,7 @@
                         close()
                       }}>
                       <span class="material-icons mr-10 font-size-24 w-30"> play_arrow </span>
-                      <span>{$view.mediaListEntry?.progress ? 'Continue' : 'Play'}</span>
+                      <span>{$view.mediaListEntry?.progress ? 'Continue ' + ($view.mediaListEntry?.progress + 1): 'Play'}</span>
                     </button>
                     <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16">
                       <span class="material-icons mr-10 font-size-18 w-30"> live_tv </span>
@@ -173,7 +176,7 @@
                     <div class="d-flex flex-column justify-content-center text-nowrap">
                       <div class="font-weight-bold">
                         {#if detail.custom === 'property'}
-                          {getCustomProperty(detail, $view)}
+                          {@html getCustomProperty(detail, $view)}
                         {:else if property.constructor === Array}
                           {property === 'nodes' ? property[0] && property[0].name : property.join(', ').replace(/_/g, ' ').toLowerCase()}
                         {:else}
@@ -225,7 +228,11 @@
   .title {
     font-size: 4rem;
   }
-
+  .close {
+    top: 1rem !important;
+    left: unset;
+    right: 2.5rem !important;
+  }
   .badge {
     background-color: var(--dm-button-bg-color) !important;
     padding: 0.6rem 2rem;

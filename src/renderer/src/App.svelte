@@ -11,6 +11,7 @@
   import ViewAnime from './lib/ViewAnime.svelte'
   import RSSView from './lib/RSSView.svelte'
   import Menubar from './lib/Menubar.svelte'
+  import Toasts from './lib/Toasts.svelte'
 
   let view = writable(null)
   setContext('view', view)
@@ -23,6 +24,7 @@
 
 </script>
 
+<Toasts />
 <ViewAnime />
 <RSSView />
 <div class="page-wrapper with-navbar with-sidebar with-transitions" data-sidebar-type="overlayed-sm-and-down" data-sidebar-hidden={$sidebar || null}>

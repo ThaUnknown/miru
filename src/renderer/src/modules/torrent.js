@@ -38,7 +38,7 @@ client.on('torrent', torrent => {
   files.set(torrent.files)
 })
 
-export async function add(torrentID, hide) {
+export async function add (torrentID, hide) {
   if (torrentID) {
     if (client.torrents.length) client.remove(client.torrents[0].infoHash)
     files.set([])

@@ -2,6 +2,7 @@ import { add } from './torrent.js'
 import { DOMPARSER } from './util.js'
 import { alRequest } from './anilist.js'
 import anitomyscript from 'anitomyscript'
+import { addToast } from '@/lib/Toasts.svelte'
 
 const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
@@ -145,12 +146,11 @@ export async function resolveFileMedia (opts) {
         }
       } else {
         console.log('error in parsing!', opts.media, tempMedia)
-        // halfmoon.initStickyAlert({
-        //   content: `Failed resolving anime episode!<br>${opts.media.title.userPreferred} - ${epMax}`,
-        //   title: 'Parsing Error',
-        //   alertType: 'alert-secondary',
-        //   fillType: ''
-        // })
+        addToast({
+          text: `Failed resolving anime episode!<br>${opts.media.title.userPreferred} - ${epMax}`,
+          title: 'Parsing Error',
+          type: 'secondary'
+        })
         // something failed, most likely couldnt find an edge or processing failed, force episode number even if its invalid/out of bounds, better than nothing
         if (opts.episode.constructor === Array) {
           episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[praseObj.episode_number.length - 1])}`

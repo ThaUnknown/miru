@@ -2,6 +2,7 @@
   import { DOMPARSER } from '@/modules/util.js'
   import { updateMedia } from './pages/Player.svelte'
   import { set } from './pages/Settings.svelte'
+  import { addToast } from '@/lib/Toasts.svelte'
 
   import { writable } from 'svelte/store'
 
@@ -10,7 +11,7 @@
   const settings = set
 
   export function playAnime(media, episode = 1) {
-    episode = isNaN(episode) ? 1 : episode;
+    episode = isNaN(episode) ? 1 : episode
     rss.set({ media, episode })
   }
 
@@ -25,12 +26,11 @@
         throw Error(res.statusText)
       })
       .catch(error => {
-        // halfmoon.initStickyAlert({
-        //   content: 'Failed fetching RSS!<br>' + error,
-        //   title: 'Search Failed',
-        //   alertType: 'alert-danger',
-        //   fillType: ''
-        // })
+        addToast({
+          text: 'Failed fetching RSS!<br>' + error,
+          title: 'Search Failed',
+          alertType: 'danger'
+        })
         console.error(error)
       })
   }
@@ -101,8 +101,7 @@
       media: media
     }
     if (settings.rssAutoplay) {
-      updateMedia(fileMedia)
-      add(entries[0].link)
+      play(entries[0])
     } else {
       table = entries
     }
@@ -110,9 +109,16 @@
   function close() {
     table = null
   }
-  function play(link) {
+  function play(entry) {
     updateMedia(fileMedia)
-    add(link)
+    if (entry.seeders !== '?' && entry.seeders <= 15) {
+      addToast({
+        text: 'This release is poorly seeded and likely will have playback issues such as buffering!',
+        title: 'Availability Warning',
+        type: 'secondary'
+      })
+    }
+    add(entry.link)
     table = null
   }
 </script>
@@ -138,7 +144,7 @@
           </thead>
           <tbody class="results pointer">
             {#each table as row, index}
-              <tr on:click={() => play(row.link)}>
+              <tr on:click={() => play(row)}>
                 <th>{index + 1}</th>
                 <td>{row.title}</td>
                 <td>{row.size}</td>
