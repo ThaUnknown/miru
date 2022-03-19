@@ -1,3 +1,8 @@
+<script context="module">
+  import { writable } from 'svelte/store'
+  export const title = writable('Miru')
+</script>
+
 <script>
   const { getCurrentWindow } = require('@electron/remote')
   const window = getCurrentWindow()
@@ -8,7 +13,7 @@
   <div class="w-full h-full bg-dark z-10 d-flex">
     <div class="d-flex w-full draggable h-full align-items-center">
       <img src="./logo.ico" alt="ico" />
-      {document.title}
+      {$title}
     </div>
     <div class="controls d-flex h-full pointer">
       <div class="d-flex align-items-center" on:click={() => window.minimize()}>

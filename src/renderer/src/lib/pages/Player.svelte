@@ -1,20 +1,28 @@
 <script context="module">
   import { set } from './Settings.svelte'
   import { playAnime } from '../RSSView.svelte'
+  import { title } from '../Menubar.svelte'
+  const { Client } = require('discord-rpc')
+  const discord = new Client({
+    transport: 'ipc'
+  })
   export let media = null
   let fileMedia = null
   let hadImage = false
   export function updateMedia(fileMed) {
+    if (discord.user && !fileMedia) {
+      setDiscordRPC(fileMed)
+    }
     fileMedia = fileMed
     media = fileMedia.media
     const name = [fileMedia.mediaTitle, fileMedia.episodeNumber, fileMedia.episodeTitle, 'Miru'].filter(i => i).join(' - ')
-    document.title = name || 'Miru'
+    title.set(name)
 
     fileMedia.episodeThumbnail = !!fileMedia.episodeThumbnail
     const metadata =
       fileMedia.episodeThumbnail || fileMedia.mediaCover
         ? new MediaMetadata({
-            title: name || 'Miru',
+            title: name,
             artwork: [
               {
                 src: fileMedia.episodeThumbnail || fileMedia.mediaCover,
@@ -23,12 +31,43 @@
               }
             ]
           })
-        : new MediaMetadata({
-            title: name || 'Miru'
-          })
+        : new MediaMetadata({ title: name })
     if (fileMedia.parseObject?.release_group) metadata.artist = fileMedia.parseObject.release_group
     navigator.mediaSession.metadata = metadata
   }
+  function setDiscordRPC(fileMedia) {
+    if (fileMedia && !process.env.NODE_ENV !== 'development ') {
+      discord.request('SET_ACTIVITY', {
+        pid: process.pid,
+        activity: {
+          details: fileMedia.media.title.userPreferred,
+          state: 'Watching Episode' + (!fileMedia.media.episodes ? ` ${fileMedia.episodeNumber}` : ''),
+          timestamps: {
+            start: Date.now()
+          },
+          party: {
+            size: fileMedia.episodeNumber && fileMedia.media.episodes && [fileMedia.episodeNumber, fileMedia.media.episodes]
+          },
+          assets: {
+            large_text: fileMedia.media.title.userPreferred,
+            large_image: fileMedia.media.coverImage.extraLarge,
+            small_image: 'logo',
+            small_text: 'https://github.com/ThaUnknown/miru'
+          },
+          instance: true
+        }
+      })
+    }
+  }
+  discord.on('ready', () => {
+    setDiscordRPC(fileMedia)
+  })
+  function loginRPC() {
+    discord.login({ clientId: '954855428355915797' }).catch(() => {
+      setTimeout(loginRPC, 5000)
+    })
+  }
+  loginRPC()
 </script>
 
 <script>

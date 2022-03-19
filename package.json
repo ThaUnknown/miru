@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "main": "src/index.js",
   "scripts": {
@@ -85,6 +85,7 @@
   "dependencies": {
     "@electron/remote": "^2.0.7",
     "anitomyscript": "^2.0.4",
+    "discord-rpc": "^4.0.1",
     "electron-log": "^4.4.6",
     "electron-updater": "^4.6.5",
     "matroska-subtitles": "github:ThaUnknown/matroska-subtitles#patch",
