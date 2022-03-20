@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "main": "src/index.js",
   "scripts": {
