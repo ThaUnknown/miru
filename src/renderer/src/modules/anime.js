@@ -3,17 +3,27 @@ import { DOMPARSER } from './util.js'
 import { alRequest } from './anilist.js'
 import anitomyscript from 'anitomyscript'
 import { addToast } from '@/lib/Toasts.svelte'
+import { view } from '@/App.svelte'
 
 const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
+
+fetch('https://nyaa.si').catch(() => {
+  addToast({
+    text: 'Failed connecting to Nyaa!<br>Visit https://wiki.piracy.moe/en/tutorials/unblock<br>for a guide on how to bypass ISP blocks.',
+    title: 'Nyaa Blocked',
+    type: 'danger'
+  })
+})
+
 window.addEventListener('paste', async e => { // WAIT image lookup on paste, or add torrent on paste
   const item = e.clipboardData.items[0]
-  if (item && item.type.indexOf('image') === 0) {
+  if (item?.type.indexOf('image') === 0) {
     e.preventDefault()
     const formData = new FormData()
     formData.append('image', item.getAsFile())
     traceAnime(formData, 'file')
-  } else if (item && item.type === 'text/plain') {
+  } else if (item?.type === 'text/plain') {
     item.getAsString(text => {
       if (torrentRx.exec(text)) {
         e.preventDefault()
@@ -37,15 +47,17 @@ function traceAnime (image, type) { // WAIT lookup logic
   if (type === 'file') {
     const reader = new FileReader()
     reader.onload = e => {
-      // halfmoon.initStickyAlert({
-      //   content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${e.target.result}">`
-      // })
+      addToast({
+        title: 'Looking up anime for image',
+        text: `<img class="w-200 rounded pt-5" src="${e.target.result}">`
+      })
     }
     reader.readAsDataURL(image.get('image'))
   } else {
-    // halfmoon.initStickyAlert({
-    //   content: `Looking up anime for image.<br><img class="w-200 rounded pt-5" src="${image}">`
-    // })
+    addToast({
+      title: 'Looking up anime for image',
+      text: `<img class="w-200 rounded pt-5" src="${image}">`
+    })
   }
   let options
   let url = `https://api.trace.moe/search?cutBorders&url=${image}`
@@ -58,16 +70,14 @@ function traceAnime (image, type) { // WAIT lookup logic
   }
   fetch(url, options).then(res => res.json()).then(async ({ result }) => {
     if (result && result[0].similarity >= 0.85) {
-      // const res = await alRequest({ method: 'SearchIDSingle', id: result[0].anilist })
-      // viewMedia(res.data.Media, result[0].episode)
-      // TODO: view media
+      const res = await alRequest({ method: 'SearchIDSingle', id: result[0].anilist })
+      view.set(res.data.Media)
     } else {
-      // halfmoon.initStickyAlert({
-      //   content: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
-      //   title: 'Search Failed',
-      //   alertType: 'alert-danger',
-      //   fillType: ''
-      // })
+      addToast({
+        text: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
+        title: 'Search Failed',
+        type: 'danger'
+      })
     }
   })
 }

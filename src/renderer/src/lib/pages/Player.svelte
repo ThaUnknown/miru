@@ -123,7 +123,6 @@
   function getFPS() {
     video.fps = new Promise(resolve => {
       let lastmeta = null
-      let wasPaused = !!paused
       let count = 0
 
       function handleFrames(now, metadata) {
@@ -146,14 +145,14 @@
             } else {
               resolve(rawFPS)
             }
-            paused = wasPaused
+            paused = !!miniplayer
           } else {
             lastmeta = metadata
             video.requestVideoFrameCallback(handleFrames)
           }
         } else {
           count++
-          paused = false
+          paused = !!miniplayer
           video.requestVideoFrameCallback(handleFrames)
         }
       }

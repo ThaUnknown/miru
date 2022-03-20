@@ -2,7 +2,8 @@
   import { setContext } from 'svelte'
   import { writable } from 'svelte/store'
 
-  export let page = writable('home')
+  export const page = writable('home')
+  export const view = writable(null)
 </script>
 
 <script>
@@ -13,7 +14,6 @@
   import Menubar from './lib/Menubar.svelte'
   import Toasts from './lib/Toasts.svelte'
 
-  let view = writable(null)
   setContext('view', view)
 
   let sidebar = writable(true)
