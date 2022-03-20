@@ -46,7 +46,7 @@
             start: Date.now()
           },
           party: {
-            size: fileMedia.episodeNumber && fileMedia.media.episodes && [fileMedia.episodeNumber, fileMedia.media.episodes]
+            size: (fileMedia.episodeNumber && fileMedia.media.episodes && [fileMedia.episodeNumber, fileMedia.media.episodes]) || undefined
           },
           assets: {
             large_text: fileMedia.media.title.userPreferred,
