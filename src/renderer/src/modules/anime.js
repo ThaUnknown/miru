@@ -85,27 +85,26 @@ export const episodeRx = /Episode (\d+) - (.*)/
 
 // resolve anime name based on file name and store it
 
-export async function resolveFileMedia (opts) {
-  // opts.fileName opts.isRelease
-
-  async function resolveTitle (title) {
-    if (!(title in relations)) {
-      // resolve name and shit
-      const method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING'], sort: 'SEARCH_MATCH', startDate: 10000000 }
-      let res = await alRequest(method)
-      if (!res.data.Page.media[0]) {
-        const index = method.name.search(/S\d/)
-        method.name = ((index !== -1 && method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)) || method.name).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
-        method.status = ['RELEASING', 'FINISHED']
-        res = await alRequest(method)
-      }
-      if (res.data.Page.media[0]) {
-        relations[title] = res.data.Page.media[0].id
-      } else {
-        relations[title] = null
-      }
+async function resolveTitle (title) {
+  if (!(title in relations)) {
+    // resolve name and shit
+    const method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
+    let res = await alRequest(method)
+    if (!res.data.Page.media[0]) {
+      const index = method.name.search(/S\d/)
+      method.name = ((index !== -1 && method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)) || method.name).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
+      res = await alRequest(method)
+    }
+    if (res.data.Page.media[0]) {
+      relations[title] = res.data.Page.media[0].id
+    } else {
+      relations[title] = null
     }
   }
+}
+
+export async function resolveFileMedia (opts) {
+  // opts.fileName
   const parsePromises = opts.fileName.constructor === Array
     ? opts.fileName.map(name => anitomyscript(name))
     : [anitomyscript(opts.fileName)]
@@ -121,75 +120,31 @@ export async function resolveFileMedia (opts) {
   for (const praseObj of parseObjs) {
     let episode
     let media = assoc[relations[praseObj.anime_title]]
-    async function resolveSeason (opts) {
-      // opts.media, opts.episode, opts.increment, opts.offset
-      let epMin, epMax
-      if (opts.episode.constructor === Array) { // support batch episode ranges
-        epMin = Number(opts.episode[0])
-        epMax = Number(opts.episode[opts.episode.length - 1])
-      } else {
-        epMin = epMax = Number(opts.episode)
-      }
-      let tempMedia, increment
-      if (opts.media.relations.edges.some(edge => edge.relationType === 'PREQUEL' && (edge.node.format === 'TV' || 'TV_SHORT')) && !opts.increment) {
-        // media has prequel and we dont want to move up in the tree
-        tempMedia = opts.media.relations.edges.filter(edge => edge.relationType === 'PREQUEL' && (edge.node.format === 'TV' || 'TV_SHORT'))[0].node
-      } else if (opts.media.relations.edges.some(edge => edge.relationType === 'SEQUEL' && (edge.node.format === 'TV' || 'TV_SHORT'))) {
-        // media doesnt have prequel, or we want to move up in the tree
-        tempMedia = opts.media.relations.edges.filter(edge => edge.relationType === 'SEQUEL' && (edge.node.format === 'TV' || 'TV_SHORT'))[0].node
-        increment = true
-      }
-      if (tempMedia?.episodes && epMax - (opts.offset + media.episodes) > (media.nextAiringEpisode?.episode || media.episodes)) {
-        // episode is still out of bounds
-        const nextEdge = await alRequest({ method: 'SearchIDSingle', id: tempMedia.id })
-        await resolveSeason({ media: nextEdge.data.Media, episode: opts.episode, offset: opts.offset + nextEdge.data.Media.episodes, increment: increment })
-      } else if (tempMedia?.episodes && epMax - (opts.offset + media.episodes) <= (media.nextAiringEpisode?.episode || media.episodes) && epMin - (opts.offset + media.episodes) > 0) {
-        // episode is in range, seems good! overwriting media to count up "seasons"
-        if (opts.episode.constructor === Array) {
-          episode = `${praseObj.episode_number[0] - (opts.offset + media.episodes)} ~ ${praseObj.episode_number[praseObj.episode_number.length - 1] - (opts.offset + media.episodes)}`
-        } else {
-          episode = opts.episode - (opts.offset + media.episodes)
-        }
-        if (opts.increment || increment) {
-          const nextEdge = await alRequest({ method: 'SearchIDSingle', id: tempMedia.id })
-          media = nextEdge.data.Media
-        }
-      } else {
-        console.log('error in parsing!', opts.media, tempMedia)
-        addToast({
-          text: `Failed resolving anime episode!<br>${opts.media.title.userPreferred} - ${epMax}`,
-          title: 'Parsing Error',
-          type: 'secondary'
-        })
-        // something failed, most likely couldnt find an edge or processing failed, force episode number even if its invalid/out of bounds, better than nothing
-        if (opts.episode.constructor === Array) {
-          episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[praseObj.episode_number.length - 1])}`
-        } else {
-          episode = Number(opts.episode)
-        }
-      }
-    }
-
     // resolve episode, if movie, dont.
-    if ((media?.format !== 'MOVIE' || (media.episodes || media.nextAiringEpisode.episode)) && praseObj.episode_number) {
+    if ((media?.format !== 'MOVIE' || (media.episodes || media.nextAiringEpisode?.episode)) && praseObj.episode_number) {
       if (praseObj.episode_number.constructor === Array) {
         // is an episode range
         if (parseInt(praseObj.episode_number[0]) === 1) {
           // if it starts with #1 and overflows then it includes more than 1 season in a batch, cant fix this cleanly, name is parsed per file basis so this shouldnt be an issue
-          episode = `${praseObj.episode_number[0]} ~ ${praseObj.episode_number[praseObj.episode_number.length - 1]}`
+          episode = `${praseObj.episode_number[0]} ~ ${praseObj.episode_number[1]}`
         } else {
-          if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(praseObj.episode_number[praseObj.episode_number.length - 1]) > (media.episodes || media.nextAiringEpisode.episode)) {
+          if ((media?.nextAiringEpisode?.episode || media.episodes) && parseInt(praseObj.episode_number[1]) > (media.nextAiringEpisode.episode || media.episodes)) {
             // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
-            await resolveSeason({ media: media, episode: praseObj.episode_number, offset: 0 })
+            const result = await resolveSeason({ media, episode: praseObj.episode_number[1] })
+            media = result.rootMedia
+            const diff = praseObj.episode_number[1] - result.episode
+            episode = `${praseObj.episode_number[0] - diff} ~ ${result.episode}`
           } else {
             // cant find ep count or range seems fine
-            episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[praseObj.episode_number.length - 1])}`
+            episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[1])}`
           }
         }
       } else {
         if ((media?.episodes || media?.nextAiringEpisode?.episode) && parseInt(praseObj.episode_number) > (media.episodes || media.nextAiringEpisode.episode)) {
           // value bigger than episode count
-          await resolveSeason({ media: media, episode: praseObj.episode_number, offset: 0 })
+          const result = await resolveSeason({ media, episode: parseInt(praseObj.episode_number) })
+          media = result.rootMedia
+          episode = result.episode
         } else {
           // cant find ep count or episode seems fine
           episode = Number(praseObj.episode_number)
@@ -209,6 +164,57 @@ export async function resolveFileMedia (opts) {
     })
   }
   return fileMedias.length === 1 ? fileMedias[0] : fileMedias
+}
+
+function findEdge (media, type, formats = ['TV', 'TV_SHORT'], skip) {
+  let res = media.relations.edges.find(edge => {
+    if (edge.relationType === type) {
+      return formats.includes(edge.node.format)
+    }
+    return false
+  })
+  if (!res && !skip) res = findEdge(media, type, formats = ['TV', 'TV_SHORT', 'MOVIE', 'ONA', 'OVA'], true)
+  return res
+}
+
+async function resolveSeason (opts) {
+  // media, episode, increment, offset, force
+  if (!opts.media || !opts.episode) throw new Error('No episode or media for season resolve!')
+
+  let { media, episode, increment, offset = 0, rootMedia = opts.media, force } = opts
+
+  const rootHighest = (rootMedia.nextAiringEpisode?.episode || rootMedia.episodes)
+
+  const prequel = !increment && findEdge(media, 'PREQUEL')?.node
+  const sequel = !prequel && findEdge(media, 'SEQUEL')?.node
+  const edge = prequel || sequel
+  increment = !prequel
+
+  if (!prequel && !sequel) {
+    const obj = { media, episode: episode - offset, offset, increment, rootMedia }
+    if (!force) {
+      console.warn('Error in parsing!', obj)
+      addToast({
+        text: `Failed resolving anime episode!<br>${media.title.userPreferred} - ${episode - offset}`,
+        title: 'Parsing Error',
+        type: 'secondary'
+      })
+    }
+    return obj
+  }
+  const temp = (await alRequest({ method: 'SearchIDSingle', id: edge.id })).data.Media
+
+  const highest = temp.nextAiringEpisode?.episode || temp.episodes
+
+  const diff = episode - (highest + offset)
+  media = temp
+  offset += highest
+  if (diff <= rootHighest) {
+    episode -= offset
+    if (sequel) rootMedia = temp
+    return { media, episode, offset, increment, rootMedia }
+  }
+  return resolveSeason({ media, episode, increment, offset, rootMedia, force })
 }
 
 export const relations = JSON.parse(localStorage.getItem('relations')) || {}
