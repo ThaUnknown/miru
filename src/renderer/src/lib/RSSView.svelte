@@ -77,7 +77,14 @@
     const url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
 
     const nodes = (await getRSSContent(url)).querySelectorAll('item')
-    if (!nodes.length) return
+    if (!nodes.length) {
+      addToast({
+        content: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
+        title: 'Search Failed',
+        type: 'danger'
+      })
+      return
+    }
     const entries = []
     for (const item of nodes) {
       entries.push({
