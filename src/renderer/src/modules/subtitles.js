@@ -28,18 +28,17 @@ export default class Subtitles {
     this.timeout = null
 
     if (this.selected.name.endsWith('.mkv') && this.selected.createReadStream) {
-      let lastStream = null
-      this.selected.on('stream', ({ stream }) => { lastStream = stream })
-      this.initParser(this.selected).then(() => {
-        this.selected.on('stream', ({ stream, file, req }, cb) => {
-          if (req.destination === 'video' && !this.parsed) {
-            this.stream = new SubtitleStream(this.stream)
-            this.handleSubtitleParser(this.stream, true)
-            stream.pipe(this.stream)
-            cb(this.stream)
-          }
-        })
-        lastStream?.destroy()
+      if (this.selected.done) this.parseSubtitles()
+      this.selected.on('done', this.parseSubtitles.bind(this))
+
+      this.parseFonts(this.selected)
+      this.selected.on('stream', ({ stream, req }, cb) => {
+        if (req.destination === 'video' && !this.parsed) {
+          this.stream = new SubtitleStream(this.stream)
+          this.handleSubtitleParser(this.stream, true)
+          stream.pipe(this.stream)
+          cb(this.stream)
+        }
       })
     }
     this.findSubtitleFiles(this.selected)
@@ -98,10 +97,8 @@ export default class Subtitles {
         fonts: this.fonts,
         workerUrl: 'lib/subtitles-octopus-worker.js'
       }
-      if (!this.renderer) {
-        this.renderer = new SubtitlesOctopus(options)
-        this.selectCaptions(this.current)
-      }
+      this.renderer = new SubtitlesOctopus(options)
+      this.selectCaptions(this.current)
     }
   }
 
@@ -235,25 +232,25 @@ export default class Subtitles {
     })
   }
 
-  initParser (file) {
-    return new Promise(resolve => {
-      this.stream = new SubtitleParser()
-      this.handleSubtitleParser(this.stream)
-      this.stream.once('tracks', tracks => {
-        if (!tracks.length) {
-          this.parsed = true
-          resolve()
-          this.stream.destroy()
-          fileStreamStream.destroy()
-        }
-      })
-      this.stream.once('subtitle', () => {
-        resolve()
+  parseFonts (file) {
+    this.stream = new SubtitleParser()
+    this.handleSubtitleParser(this.stream)
+    this.stream.once('tracks', tracks => {
+      if (!tracks.length) {
+        this.parsed = true
+        this.stream.destroy()
         fileStreamStream.destroy()
-      })
-      const fileStreamStream = file.createReadStream()
-      fileStreamStream.pipe(this.stream)
+      }
     })
+    this.stream.once('subtitle', () => {
+      fileStreamStream.destroy()
+      this.renderer?.destroy()
+      this.renderer = null
+      this.initSubtitleRenderer()
+      // re-create renderer with fonts
+    })
+    const fileStreamStream = file.createReadStream()
+    fileStreamStream.pipe(this.stream)
   }
 
   handleSubtitleParser (parser, skipFile) {
@@ -306,6 +303,7 @@ export default class Subtitles {
   }
 
   destroy () {
+    this.selected.removeListener('done', this.parseSubtitles.bind(this))
     this.stream?.destroy()
     this.parser?.destroy()
     this.renderer?.destroy()
