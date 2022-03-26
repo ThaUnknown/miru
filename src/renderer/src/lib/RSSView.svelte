@@ -29,7 +29,7 @@
         addToast({
           text: 'Failed fetching RSS!<br>' + error,
           title: 'Search Failed',
-          alertType: 'danger'
+          type: 'danger'
         })
         console.error(error)
       })
@@ -79,7 +79,7 @@
     const nodes = (await getRSSContent(url)).querySelectorAll('item')
     if (!nodes.length) {
       addToast({
-        content: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
+        text: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
         title: 'Search Failed',
         type: 'danger'
       })
