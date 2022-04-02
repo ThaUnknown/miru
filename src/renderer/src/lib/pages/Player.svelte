@@ -2,15 +2,11 @@
   import { set } from './Settings.svelte'
   import { playAnime } from '../RSSView.svelte'
   import { title } from '../Menubar.svelte'
-  const { Client } = require('discord-rpc')
-  const discord = new Client({
-    transport: 'ipc'
-  })
   export let media = null
   let fileMedia = null
   let hadImage = false
   export function updateMedia(fileMed) {
-    if (discord.user && !fileMedia) {
+    if (!fileMedia) {
       setDiscordRPC(fileMed)
     }
     fileMedia = fileMed
@@ -36,9 +32,8 @@
     navigator.mediaSession.metadata = metadata
   }
   function setDiscordRPC(fileMedia) {
-    if (fileMedia && !process.env.NODE_ENV !== 'development ') {
-      discord.request('SET_ACTIVITY', {
-        pid: process.pid,
+    if (fileMedia) {
+      window.IPC.emit('discord', {
         activity: {
           details: fileMedia.media.title.userPreferred,
           state: 'Watching Episode' + (!fileMedia.media.episodes ? ` ${fileMedia.episodeNumber}` : ''),
@@ -59,15 +54,6 @@
       })
     }
   }
-  discord.on('ready', () => {
-    setDiscordRPC(fileMedia)
-  })
-  function loginRPC() {
-    discord.login({ clientId: '954855428355915797' }).catch(() => {
-      setTimeout(loginRPC, 5000)
-    })
-  }
-  loginRPC()
 </script>
 
 <script>
@@ -119,7 +105,7 @@
   let ended = false
   let volume = localStorage.getItem('volume') || 1
   let playbackRate = 1
-  $: localStorage.setItem('volume', volume)
+  $: localStorage.setItem('volume', volume || 0)
   function getFPS() {
     video.fps = new Promise(resolve => {
       let lastmeta = null
@@ -211,15 +197,14 @@
         video: undefined
       })
       completed = false
-      file.getStreamURL((err, url) => {
-        src = url
-        current = file
-        video?.load()
-        checkAvail(current)
-      })
+      current = file
+      initSubs()
+      src = file.url
+      window.IPC.emit('current', file)
+      video?.load()
+      checkAvail(current)
     }
   }
-  $: initSubs(current, video)
 
   let hasNext = false
   let hasLast = false
@@ -240,11 +225,9 @@
     }
   }
 
-  function initSubs(current, video) {
-    if (current && video) {
-      if (subs) subs.destroy()
-      subs = new Subtitles(video, files, current, handleHeaders)
-    }
+  function initSubs() {
+    if (subs) subs.destroy()
+    subs = new Subtitles(video, files, current, handleHeaders)
   }
   function cycleSubtitles() {
     if (current && subs?.headers) {
@@ -729,12 +712,12 @@
     }
   }
   const torrent = {}
-  function updateStats() {
-    torrent.peers = (client?.torrents.length && client?.torrents[0].numPeers) || 0
-    torrent.up = (client?.torrents.length && client?.torrents[0].uploadSpeed) || 0
-    torrent.down = (client?.torrents.length && client?.torrents[0].downloadSpeed) || 0
+  window.IPC.on('stats', updateStats)
+  function updateStats(stats) {
+    torrent.peers = stats.numPeers || 0
+    torrent.up = stats.uploadSpeed || 0
+    torrent.down = stats.downloadSpeed || 0
   }
-  setInterval(updateStats, 200)
 </script>
 
 <svelte:window on:keydown={handleKeydown} bind:innerWidth bind:innerHeight />
@@ -758,6 +741,7 @@
   on:keypress={resetImmerse}
   on:mouseleave={immersePlayer}>
   <video
+    crossorigin="anonymous"
     class="position-absolute h-full w-full"
     style={`margin-top: ${menubarOffset}px`}
     preload="auto"

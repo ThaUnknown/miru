@@ -23,10 +23,12 @@
   function removeRelations() {
     localStorage.removeItem('relations')
   }
+  window.IPC.on('path', data => {
+    set.torrentPath = data
+  })
 </script>
 
 <script>
-  const { dialog } = require('@electron/remote')
   import { Tabs, TabLabel, Tab } from '../Tabination.js'
 
   const groups = {
@@ -55,21 +57,8 @@
     localStorage.removeItem('settings')
     settings = { ...defaults }
   }
-  async function handleFolder() {
-    const { filePaths } = await dialog.showOpenDialog({
-      properties: ['openDirectory']
-    })
-    if (filePaths.length) {
-      let path = filePaths[0]
-      if (!(path.endsWith('\\') || path.endsWith('/'))) {
-        if (path.indexOf('\\') !== -1) {
-          path += '\\'
-        } else if (path.indexOf('/') !== -1) {
-          path += '/'
-        }
-      }
-      settings.torrentPath = path
-    }
+  function handleFolder() {
+    window.IPC.emit('dialog')
   }
 </script>
 

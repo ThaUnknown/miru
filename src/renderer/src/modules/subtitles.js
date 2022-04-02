@@ -1,7 +1,6 @@
 /* eslint-env browser */
 import SubtitlesOctopus from './subtitles-octopus.js'
 import { toTS, videoRx, subRx } from './util.js'
-import { SubtitleParser, SubtitleStream } from 'matroska-subtitles'
 
 const defaultHeader = `[V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
@@ -26,22 +25,50 @@ export default class Subtitles {
     this.videoFiles = files.filter(file => videoRx.test(file.name))
     this.subtitleFiles = []
     this.timeout = null
+    window.IPC.on('tracks', (...args) => this.handleTracks(...args))
+    window.IPC.on('subtitle', (...args) => this.handleSubtitle(...args))
+    window.IPC.on('fonts', (...args) => this.handleFonts(...args))
+    window.IPC.on('file', (...args) => this.handleFile(...args))
+  }
 
-    if (this.selected.name.endsWith('.mkv') && this.selected.createReadStream) {
-      if (this.selected.done) this.parseSubtitles()
-      this.selected.on('done', this.parseSubtitles.bind(this))
-
-      this.parseFonts(this.selected)
-      this.selected.on('stream', ({ stream, req }, cb) => {
-        if (req.destination === 'video' && !this.parsed) {
-          this.stream = new SubtitleStream(this.stream)
-          this.handleSubtitleParser(this.stream, true)
-          stream.pipe(this.stream)
-          cb(this.stream)
-        }
-      })
+  handleFile (file) {
+    if (this.selected) {
+      this.fonts.push(URL.createObjectURL(new Blob([file.data], { type: file.mimetype })))
     }
-    this.findSubtitleFiles(this.selected)
+  }
+
+  handleFonts () {
+    if (this.selected) {
+      this.renderer?.destroy()
+      this.renderer = null
+      this.initSubtitleRenderer()
+      // re-create renderer with fonts
+    }
+  }
+
+  handleSubtitle ({ subtitle, trackNumber }) {
+    if (this.selected) {
+      if (!this.renderer) this.initSubtitleRenderer()
+      this.tracks[trackNumber].add(this.constructor.constructSub(subtitle, this.headers[trackNumber].type !== 'ass'))
+      if (this.current === trackNumber) this.selectCaptions(trackNumber) // yucky
+    }
+  }
+
+  handleTracks (tracks) {
+    if (this.selected) {
+      for (const track of tracks) {
+        if (!this.tracks[track.number]) {
+          // overwrite webvtt or other header with custom one
+          if (track.type !== 'ass') track.header = defaultHeader
+          if (!this.current) {
+            this.current = track.number
+          }
+          this.tracks[track.number] = new Set()
+          this.headers[track.number] = track
+          this.onHeader()
+        }
+      }
+    }
   }
 
   findSubtitleFiles (targetFile) {
@@ -201,94 +228,6 @@ export default class Subtitles {
       subtitle.text || ''
   }
 
-  parseSubtitles () { // parse all existing subtitles for a file
-    return new Promise((resolve) => {
-      if (this.selected.name.endsWith('.mkv')) {
-        let parser = new SubtitleParser()
-        this.handleSubtitleParser(parser, true)
-        const finish = () => {
-          console.log('Sub parsing finished', toTS((performance.now() - t0) / 1000))
-          this.parsed = true
-          this.stream?.destroy()
-          fileStream?.destroy()
-          this.parser?.destroy()
-          this.stream = undefined
-          this.parser = undefined
-          this.selectCaptions(this.current)
-          parser = undefined
-          resolve()
-        }
-        parser.once('tracks', tracks => {
-          if (!tracks.length) finish()
-        })
-        parser.once('finish', finish)
-        const t0 = performance.now()
-        console.log('Sub parsing started')
-        const fileStream = this.selected.createReadStream()
-        this.parser = fileStream.pipe(parser)
-      } else {
-        resolve()
-      }
-    })
-  }
-
-  parseFonts (file) {
-    this.stream = new SubtitleParser()
-    this.handleSubtitleParser(this.stream)
-    this.stream.once('tracks', tracks => {
-      if (!tracks.length) {
-        this.parsed = true
-        this.stream.destroy()
-        fileStreamStream.destroy()
-      }
-    })
-    this.stream.once('subtitle', () => {
-      fileStreamStream.destroy()
-      this.renderer?.destroy()
-      this.renderer = null
-      this.initSubtitleRenderer()
-      // re-create renderer with fonts
-    })
-    const fileStreamStream = file.createReadStream()
-    fileStreamStream.pipe(this.stream)
-  }
-
-  handleSubtitleParser (parser, skipFile) {
-    parser.once('tracks', tracks => {
-      if (!tracks.length) {
-        this.parsed = true
-        parser?.destroy()
-      } else {
-        for (const track of tracks) {
-          if (!this.tracks[track.number]) {
-            // overwrite webvtt or other header with custom one
-            if (track.type !== 'ass') track.header = defaultHeader
-            if (!this.current) {
-              this.current = track.number
-            }
-            this.tracks[track.number] = new Set()
-            this.headers[track.number] = track
-            this.onHeader()
-          }
-        }
-      }
-    })
-    parser.on('subtitle', (subtitle, trackNumber) => {
-      if (!this.parsed) {
-        if (!this.renderer) this.initSubtitleRenderer()
-        this.tracks[trackNumber].add(this.constructor.constructSub(subtitle, this.headers[trackNumber].type !== 'ass'))
-        if (this.current === trackNumber) this.selectCaptions(trackNumber) // yucky
-      }
-    })
-    if (!skipFile) {
-      parser.on('file', file => {
-        if (file.mimetype === 'application/x-truetype-font' || file.mimetype === 'application/font-woff' || file.mimetype === 'application/vnd.ms-opentype') {
-          this.fonts.push(URL.createObjectURL(new Blob([file.data], { type: file.mimetype })))
-        }
-      })
-    }
-  }
-
   selectCaptions (trackNumber) {
     if (trackNumber !== undefined) {
       this.current = Number(trackNumber)
@@ -303,7 +242,6 @@ export default class Subtitles {
   }
 
   destroy () {
-    this.selected.removeListener('done', this.parseSubtitles.bind(this))
     this.stream?.destroy()
     this.parser?.destroy()
     this.renderer?.destroy()

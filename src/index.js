@@ -3,6 +3,8 @@ const path = require('path')
 const remote = require('@electron/remote/main')
 const log = require('electron-log')
 const { autoUpdater } = require('electron-updater')
+require('./main/torrent.js')
+require('./main/misc.js')
 
 autoUpdater.logger = log
 autoUpdater.logger.transports.file.level = 'info'
@@ -39,11 +41,9 @@ function createWindow () {
     autoHideMenuBar: true,
     experimentalFeatures: true,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
       enableBlinkFeatures: 'AudioVideoTracks',
-      enableRemoteModule: true,
-      backgroundThrottling: false
+      backgroundThrottling: false,
+      preload: path.join(__dirname, '/preload.js')
     },
     icon: path.join(__dirname, '/renderer/public/logo.ico'),
     show: false
