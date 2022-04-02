@@ -1,13 +1,18 @@
-const {
-  BrowserWindow,
-  ipcMain
-} = require('electron')
+const { app, ipcMain } = require('electron')
 const WebTorrent = require('webtorrent')
 const http = require('http')
 const pump = require('pump')
 const rangeParser = require('range-parser')
 const mime = require('mime')
 const { SubtitleParser, SubtitleStream } = require('matroska-subtitles')
+
+let window = null
+app.on('browser-window-created', (event, data) => {
+  window = data
+  window.on('closed', () => {
+    window = null
+  })
+})
 
 let client = null
 
@@ -89,7 +94,6 @@ function parseSubtitles () {
 }
 
 function parseFonts (file) {
-  const window = BrowserWindow.getAllWindows()[0]
   const stream = new SubtitleParser()
   handleSubtitleParser(stream)
   stream.once('tracks', tracks => {
@@ -102,29 +106,28 @@ function parseFonts (file) {
   stream.once('subtitle', () => {
     fileStreamStream.destroy()
     stream.destroy()
-    window.webContents.send('fonts')
+    window?.webContents.send('fonts')
   })
   const fileStreamStream = file.createReadStream()
   fileStreamStream.pipe(stream)
 }
 
 function handleSubtitleParser (parser, skipFile) {
-  const window = BrowserWindow.getAllWindows()[0]
   parser.once('tracks', tracks => {
     if (!tracks.length) {
       parsed = true
       parser?.destroy()
     } else {
-      window.webContents.send('tracks', tracks)
+      window?.webContents.send('tracks', tracks)
     }
   })
   parser.on('subtitle', (subtitle, trackNumber) => {
-    window.webContents.send('subtitle', { subtitle, trackNumber })
+    window?.webContents.send('subtitle', { subtitle, trackNumber })
   })
   if (!skipFile) {
     parser.on('file', file => {
       if (file.mimetype === 'application/x-truetype-font' || file.mimetype === 'application/font-woff' || file.mimetype === 'application/vnd.ms-opentype') {
-        window.webContents.send('file', { mimetype: file.mimetype, data: Array.from(file.data) })
+        window?.webContents.send('file', { mimetype: file.mimetype, data: Array.from(file.data) })
       }
     })
   }
@@ -154,14 +157,13 @@ ipcMain.on('settings', (event, data) => {
     downloadLimit: settings.torrentSpeed * 1048576 || 0,
     uploadLimit: settings.torrentSpeed * 1572864 || 0 // :trolled:
   })
-  const window = BrowserWindow.getAllWindows()[0]
   setInterval(() => {
     window?.webContents?.send('stats', {
       numPeers: (client?.torrents.length && client?.torrents[0].numPeers) || 0,
       uploadSpeed: (client?.torrents.length && client?.torrents[0].uploadSpeed) || 0,
       downloadSpeed: (client?.torrents.length && client?.torrents[0].downloadSpeed) || 0
     })
-  }, 200).unref()
+  }, 200)
   client.on('torrent', torrent => {
     const files = torrent.files.map(file => {
       return {
@@ -173,8 +175,8 @@ ipcMain.on('settings', (event, data) => {
         url: encodeURI('http://localhost:420/webtorrent/' + torrent.infoHash + '/' + file.path)
       }
     })
-    window.webContents.send('files', files)
-    window.webContents.send('torrent', Array.from(torrent.torrentFile))
+    window?.webContents.send('files', files)
+    window?.webContents.send('torrent', Array.from(torrent.torrentFile))
   })
 })
 
