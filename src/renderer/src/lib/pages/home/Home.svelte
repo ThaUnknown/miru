@@ -35,6 +35,13 @@
       media = null
       canScroll = true
       lastDate = null
+      search = {
+        format: '',
+        genre: '',
+        season: '',
+        sort: '',
+        status: ''
+      }
     }
   }
 
@@ -67,7 +74,7 @@
     }
   }
   const seasons = ['SUMMER', 'FALL', 'WINTER', 'SPRING']
-  const getSeason = d => seasons[Math.floor((d.getMonth() / 12 * 4)) % 4]
+  const getSeason = d => seasons[Math.floor((d.getMonth() / 12) * 4) % 4]
   const sections = {
     continue: {
       title: 'Continue Watching',

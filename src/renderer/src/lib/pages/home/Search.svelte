@@ -28,7 +28,7 @@
   }
 </script>
 
-<div class="container-fluid row p-20" on:change={input}>
+<div class="container-fluid row p-20" on:input={input}>
   <div class="col-lg col-4 p-10 d-flex flex-column justify-content-end">
     <div class="pb-10 font-size-24 font-weight-semi-bold d-flex">
       <div class="material-icons mr-10 font-size-30">title</div>
