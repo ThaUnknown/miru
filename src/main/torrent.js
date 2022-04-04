@@ -66,7 +66,7 @@ const server = http.createServer((request, response) => {
   pump(stream, response)
 })
 
-server.listen(420)
+server.listen(41785)
 
 let current = null
 let parsed = false
@@ -172,7 +172,7 @@ ipcMain.on('settings', (event, data) => {
         type: file._getMimeType(),
         size: file.size,
         path: file.path,
-        url: encodeURI('http://localhost:420/webtorrent/' + torrent.infoHash + '/' + file.path)
+        url: encodeURI('http://localhost:41785/webtorrent/' + torrent.infoHash + '/' + file.path)
       }
     })
     window?.webContents.send('files', files)

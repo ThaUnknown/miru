@@ -1,6 +1,8 @@
 <script>
   import { playAnime } from './RSSView.svelte'
+  import { alRequest } from '@/modules/anilist.js'
   import { getContext } from 'svelte'
+  import { alToken } from '@/lib/pages/Settings.svelte'
   import { countdown } from '@/modules/util.js'
 
   let view = getContext('view')
@@ -51,9 +53,24 @@
     }
     return media[property]
   }
+  async function addToList(media) {
+    if (media.mediaListEntry?.status !== 'CURRENT' && media.mediaListEntry?.status !== 'COMPLETED') {
+      const variables = {
+        method: media.mediaListEntry?.status !== 'PLANNING' ? 'Entry' : 'Delete',
+        id: media.mediaListEntry?.status !== 'PLANNING' ? media.id : media.mediaListEntry.id,
+        status: 'PLANNING'
+      }
+      await alRequest(variables)
+      $view = (await alRequest({ method: 'SearchIDSingle', id: media.id })).data.Media
+    }
+  }
+  let trailer = getContext('trailer')
+  function viewTrailer(media) {
+    $trailer = media.trailer.id
+  }
 </script>
 
-<div class="modal modal-full" class:show={$view} id="viewAnime" tabindex="-1" role="dialog" on:keydown={checkClose}>
+<div class="modal modal-full" class:show={$view} on:keydown={checkClose}>
   {#if $view}
     <div class="h-full modal-content bg-very-dark p-0 overflow-y-auto">
       <button class="d-flex justify-content-center align-items-center close pointer z-30 bg-dark shadow-lg border top-20 right-0" type="button" on:click={close}>
@@ -74,23 +91,25 @@
                       {$view.title.userPreferred}
                     </span>
                     <div class="d-flex flex-row font-size-18 pb-sm-15">
-                      <span class="material-icons mr-10 font-size-24"> trending_up </span>
-                      <span>
-                        Rating: {$view.averageScore + '%'}
-                        <span class="font-weight-bold mr-20" />
-                      </span>
+                      {#if $view.averageScore}
+                        <span class="material-icons mr-10 font-size-24"> trending_up </span>
+                        <span>
+                          Rating: {$view.averageScore + '%'}
+                          <span class="font-weight-bold mr-20" />
+                        </span>
+                      {/if}
                       <span class="material-icons mx-10 font-size-24"> monitor </span>
                       <span>
                         Format: {'TV' ? $view.format : $view.format?.toLowerCase()}
                         <span class="font-weight-bold mr-20 text-capitalize" />
                       </span>
-                      {#if $view.episodes === 1 || (!$view.episodes && !$view.nextAiringEpisode?.episode)}
+                      {#if $view.episodes !== 1 && ($view.episodes || $view.nextAiringEpisode?.episode)}
                         <span class="material-icons mx-10 font-size-24"> theaters </span>
                         <span>
-                          Episodes: {$view.episodes}
+                          Episodes: {$view.episodes || $view.nextAiringEpisode?.episode}
                           <span class="font-weight-bold mr-20" />
                         </span>
-                      {:else}
+                      {:else if $view.duration}
                         <span class="material-icons mx-10 font-size-24"> timer </span>
                         <span>
                           Length: {$view.duration + ' min'}
@@ -117,12 +136,20 @@
                         close()
                       }}>
                       <span class="material-icons mr-10 font-size-24 w-30"> play_arrow </span>
-                      <span>{$view.mediaListEntry?.progress ? 'Continue ' + ($view.mediaListEntry?.progress + 1): 'Play'}</span>
+                      <span>{$view.mediaListEntry?.progress ? 'Continue ' + (Math.min($view.episodes || $view.nextAiringEpisode?.episode, $view.mediaListEntry?.progress + 1)) : 'Play'}</span>
                     </button>
-                    <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16">
-                      <span class="material-icons mr-10 font-size-18 w-30"> live_tv </span>
-                      Trailer
-                    </button>
+                    {#if alToken && $view.mediaListEntry?.status !== 'CURRENT' && $view.mediaListEntry?.status !== 'COMPLETED'}
+                      <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16 btn-primary" on:click={() => addToList($view)}>
+                        <span class="material-icons mr-10 font-size-18 w-30"> {$view.mediaListEntry?.status !== 'PLANNING' ? 'add' : 'remove'} </span>
+                        {$view.mediaListEntry?.status !== 'PLANNING' ? 'Add To List' : 'Remove From List'}
+                      </button>
+                    {/if}
+                    {#if $view.trailer}
+                      <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16" on:click={() => viewTrailer($view)}>
+                        <span class="material-icons mr-10 font-size-18 w-30"> live_tv </span>
+                        Trailer
+                      </button>
+                    {/if}
                   </div>
                 </div>
               </div>
@@ -156,7 +183,7 @@
                         close()
                       }}>
                       <td class="w-full">Episode {index + 1}</td>
-                      <td class="material-icons text-right">play_arrow</td>
+                      <td class="material-icons text-right h-full d-table-cell">play_arrow</td>
                     </tr>
                   {/each}
                 </tbody>
@@ -203,21 +230,13 @@
     background-image: linear-gradient(0deg, rgba(17, 20, 23, 1) 0%, rgba(17, 20, 23, 0.8) 25%, rgba(17, 20, 23, 0.4) 50%, rgba(37, 40, 44, 0) 100%), var(--bannerurl) !important;
   }
 
+  .d-table-cell {
+    display: table-cell !important;
+  }
+
   .top {
     backdrop-filter: blur(10px);
   }
-
-  /* #viewEpisodesWrapper.hidden {
-    opacity: 0;
-    height: 0
-}
-
-#viewEpisodesWrapper {
-    opacity: 1;
-    height: auto;
-    transition: opacity .2s cubic-bezier(.25, .8, .25, 1);
-    overflow: hidden;
-} */
 
   .card {
     background-color: var(--dm-button-bg-color) !important;

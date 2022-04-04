@@ -24,44 +24,20 @@ async function handleRequest (opts) {
 
 export function alEntry (filemedia) {
   if (filemedia.media && alToken && (filemedia.media.nextAiringEpisode?.episode || filemedia.media.episodes) >= filemedia.episodeNumber) {
-    alRequest({ method: 'SearchIDStatus', id: filemedia.media.id }).then(res => {
-      if ((res.errors && res.errors[0].status === 404) || res.data.MediaList.progress <= filemedia.episodeNumber || filemedia.episodes === 1) {
-        const query = `
-mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
-  SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
-    id,
-    status,
-    progress,
-    repeat
-  }
-}`
-        const variables = {
-          repeat: 0,
-          id: filemedia.media.id,
-          status: 'CURRENT',
-          episode: filemedia.episodeNumber || 1
-        }
-        if (filemedia.episodeNumber === filemedia.media.episodes || filemedia.episodes === 1) {
-          variables.status = 'COMPLETED'
-          if (res.data.MediaList.status === 'COMPLETED') {
-            variables.repeat = res.data.MediaList.repeat + 1
-          }
-        }
-        const options = {
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer ' + alToken,
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          },
-          body: JSON.stringify({
-            query: query,
-            variables: variables
-          })
-        }
-        handleRequest(options)
+    if (!filemedia.media.mediaListEntry || filemedia.media.mediaListEntry?.progress <= filemedia.episodeNumber || filemedia.media.episodes === 1) {
+      const variables = {
+        method: 'Entry',
+        repeat: 0,
+        id: filemedia.media.id,
+        status: 'CURRENT',
+        episode: filemedia.episodeNumber || 1
       }
-    })
+      if (filemedia.episodeNumber === filemedia.media.episodes || filemedia.media.episodes === 1) {
+        variables.status = 'COMPLETED'
+        if (filemedia.media.mediaListEntry.status === 'COMPLETED') variables.repeat = filemedia.media.mediaListEntry.repeat + 1
+      }
+      alRequest(variables)
+    }
   }
 }
 
@@ -124,7 +100,10 @@ streamingEpisodes {
   thumbnail
 },
 mediaListEntry {
-  progress
+  id,
+  progress,
+  repeat,
+  status
 },
 source,
 studios(isMain: true) {
@@ -151,7 +130,7 @@ relations {
   }
 }`
   if (opts.status) variables.status = opts.status
-  if (localStorage.getItem('ALtoken')) options.headers.Authorization = localStorage.getItem('ALtoken')
+  if (localStorage.getItem('ALtoken')) options.headers.Authorization = alToken
   switch (opts.method) {
     case 'SearchName': {
       variables.search = opts.name
@@ -261,7 +240,6 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
       variables.year = opts.year
       variables.season = opts.season
       variables.format = opts.format
-      variables.status = opts.status
       variables.sort = opts.sort || 'SEARCH_MATCH'
       query = ` 
 query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
@@ -274,6 +252,30 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
     }
   }
 }`
+      break
+    } case 'Entry': {
+      variables.repeat = opts.repeat
+      variables.id = opts.id
+      variables.status = opts.status
+      variables.episode = opts.episode
+      query = `
+      mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
+        SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
+          id,
+          status,
+          progress,
+          repeat
+        }
+      }`
+      break
+    } case 'Delete': {
+      variables.id = opts.id
+      query = `
+      mutation ($id: Int) {
+        DeleteMediaListEntry (id: $id){
+          deleted
+        }
+      }`
     }
   }
   options.body = JSON.stringify({

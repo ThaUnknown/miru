@@ -121,7 +121,7 @@ export async function resolveFileMedia (opts) {
     let episode
     let media = assoc[relations[praseObj.anime_title]]
     // resolve episode, if movie, dont.
-    const maxep = media.nextAiringEpisode?.episode || media.episodes
+    const maxep = media?.nextAiringEpisode?.episode || media?.episodes
     if ((media?.format !== 'MOVIE' || maxep) && praseObj.episode_number) {
       if (praseObj.episode_number.constructor === Array) {
         // is an episode range

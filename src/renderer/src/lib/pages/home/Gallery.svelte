@@ -4,10 +4,10 @@
   export let media
   $: update(media)
   let loading = true
-  async function update(media) {
+  async function update(med) {
     loading = true
-    await media
-    loading = false
+    await med
+    if (med === media) loading = false
   }
 </script>
 

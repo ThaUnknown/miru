@@ -702,7 +702,7 @@
 
   let completed = false
   function checkCompletion() {
-    if (!completed && duration - 180 < currentTime) {
+    if (!completed && duration && video?.readyState && duration - 180 < currentTime) {
       if (fileMedia?.media?.episodes || fileMedia?.media?.nextAiringEpisode?.episode) {
         if (fileMedia.media.episodes || fileMedia.media.nextAiringEpisode?.episode > fileMedia.episodeNumber) {
           completed = true

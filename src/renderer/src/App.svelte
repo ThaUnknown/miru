@@ -10,6 +10,7 @@
   import Sidebar from './lib/Sidebar.svelte'
   import Router from './lib/Router.svelte'
   import ViewAnime from './lib/ViewAnime.svelte'
+  import ViewTrailer from './lib/ViewTrailer.svelte'
   import RSSView from './lib/RSSView.svelte'
   import Menubar from './lib/Menubar.svelte'
   import Toasts from './lib/Toasts.svelte'
@@ -19,13 +20,14 @@
   let sidebar = writable(true)
   setContext('sidebar', sidebar)
 
-  let gallery = writable(null)
-  setContext('gallery', gallery)
+  setContext('gallery', writable(null))
 
+  setContext('trailer', writable(null))
 </script>
 
 <Toasts />
 <ViewAnime />
+<ViewTrailer />
 <RSSView />
 <div class="page-wrapper with-navbar with-sidebar with-transitions" data-sidebar-type="overlayed-sm-and-down" data-sidebar-hidden={$sidebar || null}>
   <div class="sticky-alerts" />
