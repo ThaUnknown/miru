@@ -168,16 +168,18 @@ export async function resolveFileMedia (opts) {
 }
 
 function findEdge (media, type, formats = ['TV', 'TV_SHORT'], skip) {
-  let res = media.relations.edges.find(edge => {
+  const res = media.relations.edges.find(edge => {
     if (edge.relationType === type) {
       return formats.includes(edge.node.format)
     }
     return false
   })
-  if (!res && !skip) res = findEdge(media, type, formats = ['TV', 'TV_SHORT', 'MOVIE', 'ONA', 'OVA'], true)
+  // this is hit-miss
+  // if (!res && !skip) res = findEdge(media, type, formats = ['TV', 'TV_SHORT', 'MOVIE', 'ONA', 'OVA'], true)
   return res
 }
 
+// note: this doesnt cover anime which uses partially relative and partially absolute episode number, BUT IT COULD!
 async function resolveSeason (opts) {
   // media, episode, increment, offset, force
   if (!opts.media || !opts.episode) throw new Error('No episode or media for season resolve!')
@@ -203,18 +205,20 @@ async function resolveSeason (opts) {
     }
     return obj
   }
-  const temp = (await alRequest({ method: 'SearchIDSingle', id: edge.id })).data.Media
+  media = (await alRequest({ method: 'SearchIDSingle', id: edge.id })).data.Media
 
-  const highest = temp.nextAiringEpisode?.episode || temp.episodes
+  const highest = media.nextAiringEpisode?.episode || media.episodes
 
   const diff = episode - (highest + offset)
-  media = temp
-  offset += highest
+  offset += increment ? rootHighest : highest
+  if (increment) rootMedia = media
+
+  // force marches till end of tree, no need for checks
   if (!force && diff <= rootHighest) {
     episode -= offset
-    if (sequel) rootMedia = temp
     return { media, episode, offset, increment, rootMedia }
   }
+
   return resolveSeason({ media, episode, increment, offset, rootMedia, force })
 }
 
