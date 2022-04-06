@@ -168,14 +168,14 @@ export async function resolveFileMedia (opts) {
 }
 
 export function findEdge (media, type, formats = ['TV', 'TV_SHORT'], skip) {
-  let res = media.relations.edges.find(edge => {
+  const res = media.relations.edges.find(edge => {
     if (edge.relationType === type) {
       return formats.includes(edge.node.format)
     }
     return false
   })
   // this is hit-miss
-  if (!res && !skip) res = findEdge(media, type, formats = ['TV', 'TV_SHORT', 'MOVIE'], true)
+  // if (!res && !skip) res = findEdge(media, type, formats = ['TV', 'TV_SHORT', 'MOVIE'], true)
   return res
 }
 
