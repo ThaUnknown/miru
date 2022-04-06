@@ -47,6 +47,7 @@
 <script>
   import { add } from '@/modules/torrent.js'
   import { episodeRx } from '@/modules/anime.js'
+  import { findEdge, resolveSeason } from '@/modules/anime.js'
 
   $: parseRss($rss)
 
@@ -65,12 +66,17 @@
     ]
       .join(')|(')
       .replace(/&/g, '%26')
-    const ep =
-      (media.episodes !== 1 &&
-        (media.status === 'FINISHED' && settings.rssBatch
-          ? `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode > 9 ? episode : `0${episode}`}+"|"+${episode > 9 ? episode : `0${episode}`}v"|"S01"`
-          : `"+${episode > 9 ? episode : `0${episode}`}+"|"+${episode > 9 ? episode : `0${episode}`}v"`)) ||
-      ''
+    const absolute = !!findEdge(media, 'PREQUEL')?.node && (await resolveSeason({ media, episode, force: true })).offset + episode
+    const episodes = [episode, absolute].filter(e => e)
+    let ep = ''
+    if (media.episodes !== 1) {
+      if (media.status === 'FINISHED' && settings.rssBatch) {
+        ep = `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode > 9 ? episode : `0${episode}`}+"|"+${episode > 9 ? episode : `0${episode}`}v"|"S01"`
+      } else {
+        ep = `(${episodes.map(episode => `"+${episode > 9 ? episode : `0${episode}`}+"|"+${episode > 9 ? episode : `0${episode}`}v"`).join('|')})`
+      }
+    }
+
     const excl = ['DTS', 'AC3', 'HEVC', 'x265', 'H.265'].join('|')
     const quality = `"${settings.rssQuality}"` || '"1080p"'
     const trusted = settings.rssTrusted === true ? 2 : 0

@@ -167,20 +167,20 @@ export async function resolveFileMedia (opts) {
   return fileMedias.length === 1 ? fileMedias[0] : fileMedias
 }
 
-function findEdge (media, type, formats = ['TV', 'TV_SHORT'], skip) {
-  const res = media.relations.edges.find(edge => {
+export function findEdge (media, type, formats = ['TV', 'TV_SHORT'], skip) {
+  let res = media.relations.edges.find(edge => {
     if (edge.relationType === type) {
       return formats.includes(edge.node.format)
     }
     return false
   })
   // this is hit-miss
-  // if (!res && !skip) res = findEdge(media, type, formats = ['TV', 'TV_SHORT', 'MOVIE', 'ONA', 'OVA'], true)
+  if (!res && !skip) res = findEdge(media, type, formats = ['TV', 'TV_SHORT', 'MOVIE'], true)
   return res
 }
 
 // note: this doesnt cover anime which uses partially relative and partially absolute episode number, BUT IT COULD!
-async function resolveSeason (opts) {
+export async function resolveSeason (opts) {
   // media, episode, increment, offset, force
   if (!opts.media || !opts.episode) throw new Error('No episode or media for season resolve!')
 
@@ -188,8 +188,8 @@ async function resolveSeason (opts) {
 
   const rootHighest = (rootMedia.nextAiringEpisode?.episode || rootMedia.episodes)
 
-  const prequel = !increment && findEdge(media, 'PREQUEL', undefined, force)?.node
-  const sequel = !prequel && (increment || increment == null) && findEdge(media, 'SEQUEL', undefined, force)?.node
+  const prequel = !increment && findEdge(media, 'PREQUEL')?.node
+  const sequel = !prequel && (increment || increment == null) && findEdge(media, 'SEQUEL')?.node
   const edge = prequel || sequel
   increment = increment ?? !prequel
 
