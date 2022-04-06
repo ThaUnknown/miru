@@ -76,12 +76,6 @@ function createWindow () {
     mainWindow.webContents.openDevTools()
   }
 
-  // Uncomment the following line of code when app is ready to be packaged.
-  // loadURL(mainWindow);
-
-  // Open the DevTools and also disable Electron Security Warning.
-  process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
-
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
     // Dereference the window object, usually you would store windows

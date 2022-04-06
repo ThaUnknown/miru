@@ -186,12 +186,12 @@ async function resolveSeason (opts) {
 
   const rootHighest = (rootMedia.nextAiringEpisode?.episode || rootMedia.episodes)
 
-  const prequel = !increment && findEdge(media, 'PREQUEL')?.node
-  const sequel = !prequel && findEdge(media, 'SEQUEL')?.node
+  const prequel = !increment && findEdge(media, 'PREQUEL', undefined, force)?.node
+  const sequel = !prequel && (increment || increment == null) && findEdge(media, 'SEQUEL', undefined, force)?.node
   const edge = prequel || sequel
-  increment = !prequel
+  increment = increment ?? !prequel
 
-  if (!prequel && !sequel) {
+  if (!edge) {
     const obj = { media, episode: episode - offset, offset, increment, rootMedia }
     if (!force) {
       console.warn('Error in parsing!', obj)
@@ -210,7 +210,7 @@ async function resolveSeason (opts) {
   const diff = episode - (highest + offset)
   media = temp
   offset += highest
-  if (diff <= rootHighest) {
+  if (!force && diff <= rootHighest) {
     episode -= offset
     if (sequel) rootMedia = temp
     return { media, episode, offset, increment, rootMedia }
