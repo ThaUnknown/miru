@@ -22,6 +22,7 @@
   export let set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
   function removeRelations() {
     localStorage.removeItem('relations')
+    location.reload()
   }
   window.IPC.on('path', data => {
     set.torrentPath = data
