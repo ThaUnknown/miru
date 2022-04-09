@@ -22,7 +22,7 @@
     }
     searchTimeout = setTimeout(() => {
       current = null
-      current = 'search'
+      if (Object.values(search).filter(v => v).length) current = 'search'
       searchTimeout = null
     }, 500)
   }

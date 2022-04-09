@@ -10,7 +10,7 @@ const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 
 fetch('https://nyaa.si').catch(() => {
   addToast({
-    text: 'Failed connecting to Nyaa!<br>Visit https://wiki.piracy.moe/en/tutorials/unblock<br>for a guide on how to bypass ISP blocks.',
+    text: 'Failed connecting to Nyaa! Visit<br>wiki.piracy.moe/en/tutorials/unblock<br>for a guide on how to bypass ISP blocks.',
     title: 'Nyaa Blocked',
     type: 'danger'
   })
@@ -84,22 +84,51 @@ function traceAnime (image, type) { // WAIT lookup logic
 export const episodeRx = /Episode (\d+) - (.*)/
 
 // resolve anime name based on file name and store it
+const postfix = {
+  1: 'st',
+  2: 'nd',
+  3: 'rd'
+}
 
-async function resolveTitle (title) {
-  if (!(title in relations)) {
-    // resolve name and shit
-    const method = { name: title, method: 'SearchName', perPage: 1, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
-    let res = await alRequest(method)
-    if (!res.data.Page.media[0]) {
-      const index = method.name.search(/S\d/)
-      method.name = ((index !== -1 && method.name.slice(0, index) + method.name.slice(index + 1, method.name.length)) || method.name).replace('(TV)', '').replace(/ (19[5-9]\d|20[0-6]\d)/, '').replace('-', '')
-      res = await alRequest(method)
-    }
-    if (res.data.Page.media[0]) {
-      relations[title] = res.data.Page.media[0].id
+async function resolveTitle (name) {
+  if (!(name in relations)) {
+    const method = { name, method: 'SearchName', perPage: 1, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
+
+    // inefficient but readable
+
+    let media = null
+    // change S2 into Season 2 or 2nd Season
+    const match = method.name.match(/ S(\d)$/)
+    const oldname = method.name
+    if (match) {
+      method.name = method.name.replace(/ S(\d)$/, ` ${match[1]}${postfix[match[1]] || 'th'} Season`)
+      media = (await alRequest(method)).data.Page.media[0]
+      if (!media) {
+        method.name = oldname.replace(/ S(\d)$/, ` Season ${match[1]}`)
+        media = (await alRequest(method)).data.Page.media[0]
+      }
     } else {
-      relations[title] = null
+      media = (await alRequest(method)).data.Page.media[0]
     }
+
+    // remove (TV)
+    if (!media) {
+      const match = method.name.match(/\(TV\)/)
+      if (match) {
+        method.name = name.replace('(TV)', '').replace('-', '')
+        media = (await alRequest(method)).data.Page.media[0]
+      }
+    }
+    // remove 2020
+    if (!media) {
+      const match = method.name.match(/ (19[5-9]\d|20\d{2})/)
+      if (match) {
+        method.name = method.name.replace(/ (19[5-9]\d|20\d{2})/, '')
+        media = (await alRequest(method)).data.Page.media[0]
+      }
+    }
+
+    relations[name] = media?.id || null
   }
 }
 
