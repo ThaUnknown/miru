@@ -552,7 +552,7 @@
   $: navigator.mediaSession?.setPositionState({
     duration: Math.max(0, duration || 0),
     playbackRate: 1,
-    position: Math.min(duration || 0, currentTime || 0)
+    position: Math.max(0, Math.min(duration || 0, currentTime || 0))
   })
   $: mediaChange(current)
 

@@ -60,9 +60,7 @@ const codes = {
   511: 'Network Authentication Required'
 }
 
-export const alID =
-  !!alToken &&
-  alRequest({ method: 'Viewer', token: alToken })
+export const alID = !!alToken && alRequest({ method: 'Viewer', token: alToken })
 
 function printError (error) {
   console.warn(error)
