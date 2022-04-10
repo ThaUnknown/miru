@@ -50,3 +50,14 @@ export function toTS (sec, full) {
   if (seconds < 10) seconds = '0' + seconds
   return (hours > 0 || full === 1 || full === 2) ? hours + ':' + minutes + ':' + seconds : minutes + ':' + seconds
 }
+
+export async function PromiseBatch (task, items, batchSize) {
+  let position = 0
+  let results = []
+  while (position < items.length) {
+    const itemsForBatch = items.slice(position, position + batchSize)
+    results = [...results, ...await Promise.all(itemsForBatch.map(item => task(item)))]
+    position += batchSize
+  }
+  return results
+}

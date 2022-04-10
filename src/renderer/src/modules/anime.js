@@ -1,5 +1,5 @@
 import { add } from './torrent.js'
-import { DOMPARSER } from './util.js'
+import { DOMPARSER, PromiseBatch } from './util.js'
 import { alRequest } from './anilist.js'
 import anitomyscript from 'anitomyscript'
 import { addToast } from '@/lib/Toasts.svelte'
@@ -100,35 +100,37 @@ async function resolveTitle (name) {
     // change S2 into Season 2 or 2nd Season
     const match = method.name.match(/ S(\d)$/)
     const oldname = method.name
-    if (match) {
-      method.name = method.name.replace(/ S(\d)$/, ` ${match[1]}${postfix[match[1]] || 'th'} Season`)
-      media = (await alRequest(method)).data.Page.media[0]
+    try {
+      if (match) {
+        method.name = method.name.replace(/ S(\d)$/, ` ${match[1]}${postfix[match[1]] || 'th'} Season`)
+        media = (await alRequest(method)).data.Page.media[0]
+        if (!media) {
+          method.name = oldname.replace(/ S(\d)$/, ` Season ${match[1]}`)
+          media = (await alRequest(method)).data.Page.media[0]
+        }
+      } else {
+        media = (await alRequest(method)).data.Page.media[0]
+      }
+
+      // remove (TV)
       if (!media) {
-        method.name = oldname.replace(/ S(\d)$/, ` Season ${match[1]}`)
-        media = (await alRequest(method)).data.Page.media[0]
+        const match = method.name.match(/\(TV\)/)
+        if (match) {
+          method.name = name.replace('(TV)', '').replace('-', '')
+          media = (await alRequest(method)).data.Page.media[0]
+        }
       }
-    } else {
-      media = (await alRequest(method)).data.Page.media[0]
-    }
+      // remove 2020
+      if (!media) {
+        const match = method.name.match(/ (19[5-9]\d|20\d{2})/)
+        if (match) {
+          method.name = method.name.replace(/ (19[5-9]\d|20\d{2})/, '')
+          media = (await alRequest(method)).data.Page.media[0]
+        }
+      }
+    } catch (e) {}
 
-    // remove (TV)
-    if (!media) {
-      const match = method.name.match(/\(TV\)/)
-      if (match) {
-        method.name = name.replace('(TV)', '').replace('-', '')
-        media = (await alRequest(method)).data.Page.media[0]
-      }
-    }
-    // remove 2020
-    if (!media) {
-      const match = method.name.match(/ (19[5-9]\d|20\d{2})/)
-      if (match) {
-        method.name = method.name.replace(/ (19[5-9]\d|20\d{2})/, '')
-        media = (await alRequest(method)).data.Page.media[0]
-      }
-    }
-
-    relations[name] = media?.id || null
+    if (media?.id) relations[name] = media.id
   }
 }
 
@@ -138,10 +140,10 @@ export async function resolveFileMedia (opts) {
     ? opts.fileName.map(name => anitomyscript(name))
     : [anitomyscript(opts.fileName)]
   const parseObjs = await Promise.all(parsePromises)
-  await Promise.all([...new Set(parseObjs.map(obj => obj.anime_title))].map(title => resolveTitle(title)))
+  await PromiseBatch(resolveTitle, [...new Set(parseObjs.map(obj => obj.anime_title).filter(title => !(title in relations)))], 10)
   const assoc = {}
   for (let ids = [...new Set(parseObjs.map(obj => relations[obj.anime_title]))]; ids.length; ids = ids.slice(50)) {
-    for await (const media of (await alRequest({ method: 'SearchIDS', id: ids.slice(0, 50), perPage: 50 })).data.Page.media) {
+    for await (const media of (await alRequest({ method: 'SearchIDS', id: ids.slice(0, 50), perPage: 50 }))?.data?.Page.media || []) {
       assoc[media.id] = media
     }
   }
@@ -251,4 +253,4 @@ export async function resolveSeason (opts) {
   return resolveSeason({ media, episode, increment, offset, rootMedia, force })
 }
 
-export const relations = JSON.parse(localStorage.getItem('relations')) || {}
+export const relations = {}

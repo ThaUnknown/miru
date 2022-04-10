@@ -19,11 +19,8 @@
     torrentDHT: false,
     torrentPeX: false
   }
+  localStorage.removeItem('relations') // TODO: remove
   export let set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
-  function removeRelations() {
-    localStorage.removeItem('relations')
-    location.reload()
-  }
   window.IPC.on('path', data => {
     set.torrentPath = data
   })
@@ -82,23 +79,13 @@
       <p class="text-muted px-20 m-0">If you don't know what shit does, use default settings.</p>
       <button
         on:click={restoreSettings}
-        class="btn btn-danger mx-20 my-10"
+        class="btn btn-danger mx-20 mt-10 mb-20"
         type="button"
         id="setRes"
         data-toggle="tooltip"
         data-placement="top"
         data-title="Restores All Settings Back To Their Recommended Defaults">
         Restore Defaults
-      </button>
-      <button
-        class="btn btn-danger mx-20 mb-20"
-        type="button"
-        id="clearRelCache"
-        data-toggle="tooltip"
-        data-placement="top"
-        data-title="Clears Anime Names Data Cache"
-        on:click={removeRelations}>
-        Clear Name Cache
       </button>
     </div>
     <div class="h-full p-20 m-20">

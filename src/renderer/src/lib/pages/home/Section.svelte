@@ -7,7 +7,7 @@
   let interval = null
   if (opts.releases) {
     interval = setInterval(async () => {
-      const media = await opts.load(false, 5)
+      const media = await opts.load(1, 5, false)
       if (media) cards = media
     }, 30000)
   }

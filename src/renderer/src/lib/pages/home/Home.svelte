@@ -5,7 +5,7 @@
   import { add } from '@/modules/torrent.js'
   import { alToken } from '../Settings.svelte'
   import { alRequest } from '@/modules/anilist.js'
-  import { resolveFileMedia, relations } from '@/modules/anime.js'
+  import { resolveFileMedia } from '@/modules/anime.js'
   import { getRSSContent, getRSSurl } from '@/lib/RSSView.svelte'
 
   let media = null
@@ -48,27 +48,28 @@
   let lastDate = null
 
   function processMedia(res) {
-    hasNext = res.data.Page.pageInfo.hasNextPage
-    return res.data.Page.media.map(media => {
+    hasNext = res?.data?.Page.pageInfo.hasNextPage
+    return res?.data?.Page.media.map(media => {
       return { media }
     })
   }
 
   let lastRSSDate = 0
-  async function releasesCards(limit, force) {
+  async function releasesCards(page, limit, force) {
     const doc = await getRSSContent(getRSSurl())
     if (doc) {
       const pubDate = doc.querySelector('pubDate').textContent
       if (force || lastRSSDate !== pubDate) {
         lastRSSDate = pubDate
-        const items = doc.querySelectorAll('item')
-        const media = await resolveFileMedia({ fileName: [...items].map(item => item.querySelector('title').textContent).slice(0, limit), isRelease: true })
+        const index = (page - 1) * limit
+        const items = [...doc.querySelectorAll('item')].slice(index, index + limit)
+        hasNext = items.length === limit
+        const media = await resolveFileMedia({ fileName: items.map(item => item.querySelector('title').textContent), isRelease: true })
         media.forEach((mediaInformation, index) => {
           mediaInformation.onclick = () => {
             add(items[index].querySelector('link').textContent)
           }
         })
-        localStorage.setItem('relations', JSON.stringify(relations))
         return media
       }
     }
@@ -80,8 +81,8 @@
       title: 'Continue Watching',
       load: (page = 1, perPage = 50) => {
         return alRequest({ method: 'UserLists', status_in: 'CURRENT', page }).then(res => {
-          hasNext = res.data.Page.pageInfo.hasNextPage
-          return res.data.Page.mediaList
+          hasNext = res?.data?.Page.pageInfo.hasNextPage
+          return res?.data?.Page.mediaList
             .filter(i => {
               return i.media.status !== 'RELEASING' || i.media.mediaListEntry?.progress < i.media.nextAiringEpisode?.episode - 1
             })
@@ -93,17 +94,16 @@
     releases: {
       title: 'New Releases',
       releases: true,
-      load: (force, perPage = 50) => {
-        hasNext = false
-        return releasesCards(perPage, force)
+      load: (page = 1, perPage = 20, force = true) => {
+        return releasesCards(page, perPage, force)
       }
     },
     planning: {
       title: 'Your List',
       load: (page = 1, perPage = 50) => {
         return alRequest({ method: 'UserLists', page, perPage, status_in: 'PLANNING' }).then(res => {
-          hasNext = res.data.Page.pageInfo.hasNextPage
-          return res.data.Page.mediaList
+          hasNext = res?.data?.Page.pageInfo.hasNextPage
+          return res?.data?.Page.mediaList
         })
       },
       hide: !alToken
@@ -147,9 +147,9 @@
         search.season = getSeason(date)
         search.year = date.getFullYear()
         return alRequest({ method: 'AiringSchedule', page }).then(res => {
-          const entries = res.data.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && !entry.media.isAdult)
+          const entries = res?.data?.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && !entry.media.isAdult) || []
           const media = []
-          hasNext = res.data.Page.pageInfo.hasNextPage
+          hasNext = res?.data?.Page.pageInfo.hasNextPage
           let date = new Date()
           for (const entry of entries) {
             if (entry.timeUntilAiring && (!lastDate || new Date(+date + entry.timeUntilAiring * 1000).getDay() !== lastDate.getDay())) {

@@ -69,7 +69,8 @@ function printError (error) {
   addToast({
     text: `Failed making request to anilist!<br>Try again in a minute.<br>${error.status} - ${error.message || codes[error.status]}`,
     title: 'Search Failed',
-    type: 'danger'
+    type: 'danger',
+    duration: 3000
   })
 }
 
@@ -79,11 +80,7 @@ async function handleRequest (opts) {
   try {
     json = await res.json()
   } catch (error) {
-    if (!res.ok) {
-      printError({ status: res.status, message: res.statusText })
-    } else {
-      printError(error)
-    }
+    if (res.ok) printError(error)
   }
   if (!res.ok && json) {
     for (const error of json.errors) {

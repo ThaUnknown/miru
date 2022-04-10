@@ -9,7 +9,7 @@
       toasts[i] = opts
       setTimeout(() => {
         close(i)
-      }, 10000)
+      }, opts.duration || 10000)
       return toasts
     })
   }

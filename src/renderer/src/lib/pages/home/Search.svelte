@@ -160,7 +160,7 @@
   .bg-dark::-webkit-inner-spin-button {
     filter: invert(0.942);
   }
-  input:invalid {
+  :global(input:invalid) {
     box-shadow: 0 0 0 0.2rem var(--danger-color) !important;
   }
   select.form-control:invalid {
