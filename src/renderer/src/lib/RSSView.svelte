@@ -51,23 +51,46 @@
 
   $: parseRss($rss)
 
-  let table = null
-
-  let fileMedia = null
-
-  export async function parseRss({ media, episode }) {
-    if (!media) return
-    const titles = [
+  // create an array of potentially valid titles from a given media
+  function createTitle(media) {
+    // group and de-duplicate
+    const grouped = [
       ...new Set(
         Object.values(media.title)
           .concat(media.synonyms)
           .filter(name => name != null)
       )
     ]
-      .join(')|(')
-      .replace(/&/g, '%26')
-    const absolute = !!findEdge(media, 'PREQUEL')?.node && (await resolveSeason({ media, episode, force: true })).offset + episode
-    const episodes = [episode, absolute].filter(e => e)
+    let titles = []
+    for (const t of grouped) {
+      // replace & with encoded
+      let title = t.replace(/&/g, '%26')
+      titles.push(title)
+
+      // replace Season 2 with S2, else replace 2nd Season with S2, but keep the original title
+      const match1 = title.match(/(\d)(?:nd|rd|th) Season/i)
+      const match2 = title.match(/Season (\d)/i)
+
+      if (match2) {
+        titles.push(title.replace(/Season \d/i, `S${match2[1]}`))
+      } else if (match1) {
+        titles.push(title.replace(/(\d)(?:nd|rd|th) Season/i, `S${match1[1]}`))
+      }
+    }
+    return titles
+  }
+
+  let table = null
+
+  let fileMedia = null
+
+  export async function parseRss({ media, episode }) {
+    if (!media) return
+    const titles = createTitle(media).join(')|(')
+
+    const absolute = !!findEdge(media, 'PREQUEL')?.node && (await resolveSeason({ media, episode, force: true }))
+    const episodes = [episode]
+    if (absolute) episodes.push(absolute.offset + episode)
     let ep = ''
     if (media.episodes !== 1) {
       if (media.status === 'FINISHED' && settings.rssBatch) {
@@ -77,12 +100,20 @@
       }
     }
 
-    const excl = ['DTS', 'AC3', 'HEVC', 'x265', 'H.265'].join('|')
+    const excl = ['DTS', 'AC3', 'AC-3', 'HEVC', 'x265', 'H.265'].join('|')
     const quality = `"${settings.rssQuality}"` || '"1080p"'
     const trusted = settings.rssTrusted === true ? 2 : 0
     const url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
 
-    const nodes = (await getRSSContent(url)).querySelectorAll('item')
+    let nodes = [...(await getRSSContent(url)).querySelectorAll('item')]
+    if (absolute && !settings.rssBatch) {
+      const titles = createTitle(absolute.media).join(')|(')
+
+      const ep = `"+${episodes[1] > 9 ? episodes[1] : `0${episodes[1]}`}+"|"+${episodes[1] > 9 ? episodes[1] : `0${episodes[1]}`}v"`
+
+      const url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
+      nodes = [...nodes, ...(await getRSSContent(url)).querySelectorAll('item')]
+    }
     if (!nodes.length) {
       addToast({
         text: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
@@ -99,7 +130,7 @@
         seeders: item.querySelector('seeders')?.textContent ?? '?',
         leechers: item.querySelector('leechers')?.textContent ?? '?',
         downloads: item.querySelector('downloads')?.textContent ?? '?',
-        size: item.querySelector('size')?.size ?? '?'
+        size: item.querySelector('size')?.textContent ?? '?'
       })
     }
     entries.sort((a, b) => b.seeders - a.seeders)

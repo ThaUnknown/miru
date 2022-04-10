@@ -83,7 +83,7 @@ async function handleRequest (opts) {
     if (res.ok) printError(error)
   }
   if (!res.ok && json) {
-    for (const error of json.errors) {
+    for (const error of json?.errors || []) {
       printError(error)
     }
   }
