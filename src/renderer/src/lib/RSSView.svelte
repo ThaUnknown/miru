@@ -97,9 +97,9 @@
     let ep = ''
     if (media.episodes !== 1) {
       if (media.status === 'FINISHED' && settings.rssBatch) {
-        ep = `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"+${episode > 9 ? episode : `0${episode}`}+"|"+${episode > 9 ? episode : `0${episode}`}v"|"S01"`
+        ep = `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"${episode > 9 ? episode : `0${episode}`}+"|"${episode > 9 ? episode : `0${episode}`}v"|"S01"`
       } else {
-        ep = `(${episodes.map(episode => `"+${episode > 9 ? episode : `0${episode}`}+"|"+${episode > 9 ? episode : `0${episode}`}v"`).join('|')})`
+        ep = `(${episodes.map(episode => `"${episode > 9 ? episode : `0${episode}`}+"|"${episode > 9 ? episode : `0${episode}`}v"`).join('|')})`
       }
     }
 
