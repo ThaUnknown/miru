@@ -88,7 +88,10 @@
     if (!media) return
     const titles = createTitle(media).join(')|(')
 
-    const absolute = !!findEdge(media, 'PREQUEL')?.node && (await resolveSeason({ media, episode, force: true }))
+    const prequel = findEdge(media, 'PREQUEL')?.node
+    const sequel = findEdge(media, 'SEQUEL')?.node
+
+    const absolute = prequel && (await resolveSeason({ media, episode, force: true }))
     const episodes = [episode]
     if (absolute) episodes.push(absolute.offset + episode)
     let ep = ''
@@ -123,15 +126,30 @@
       return
     }
     const entries = []
+
+    const checkDate = media.status === 'FINISHED' && !prequel && (sequel?.status === 'FINISHED' || sequel?.status === 'RELEASING') && sequel.startDate
+
+    const targetDate = new Date(Object.values(checkDate).join(' '))
+
     for (const item of nodes) {
-      entries.push({
+      const pubDate = item.querySelector('pubDate')?.textContent
+
+      const itemDate = pubDate && new Date(pubDate)
+
+      const obj = {
         title: item.querySelector('title')?.textContent || '?',
         link: item.querySelector('link')?.textContent || '?',
         seeders: item.querySelector('seeders')?.textContent ?? '?',
         leechers: item.querySelector('leechers')?.textContent ?? '?',
         downloads: item.querySelector('downloads')?.textContent ?? '?',
         size: item.querySelector('size')?.textContent ?? '?'
-      })
+      }
+
+      if (itemDate && targetDate) {
+        if (itemDate < targetDate) entries.push(obj)
+      } else {
+        entries.push(obj)
+      }
     }
     entries.sort((a, b) => b.seeders - a.seeders)
     const streamingEpisode = media?.streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(episode))[0]

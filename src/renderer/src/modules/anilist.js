@@ -191,7 +191,12 @@ relations {
       type,
       status,
       format,
-      episodes
+      episodes,
+      startDate {
+        year,
+        month,
+        day
+      }
     }
   }
 }`
