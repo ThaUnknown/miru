@@ -70,7 +70,7 @@
   }
 </script>
 
-<div class="modal modal-full" class:show={$view} on:keydown={checkClose}>
+<div class="modal modal-full" class:show={$view} on:keydown={checkClose} tabindex="-1">
   {#if $view}
     <div class="h-full modal-content bg-very-dark p-0 overflow-y-auto">
       <button class="d-flex justify-content-center align-items-center close pointer z-30 bg-dark shadow-lg border top-20 right-0" type="button" on:click={close}>
@@ -136,7 +136,10 @@
                         close()
                       }}>
                       <span class="material-icons mr-10 font-size-24 w-30"> play_arrow </span>
-                      <span>{$view.mediaListEntry?.progress ? 'Continue ' + (Math.min($view.episodes || $view.nextAiringEpisode?.episode, $view.mediaListEntry?.progress + 1)) : 'Play'}</span>
+                      <span
+                        >{$view.mediaListEntry?.progress
+                          ? 'Continue ' + Math.min($view.episodes || $view.nextAiringEpisode?.episode, $view.mediaListEntry?.progress + 1)
+                          : 'Play'}</span>
                     </button>
                     {#if alToken && $view.mediaListEntry?.status !== 'CURRENT' && $view.mediaListEntry?.status !== 'COMPLETED'}
                       <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16 btn-primary" on:click={() => addToList($view)}>

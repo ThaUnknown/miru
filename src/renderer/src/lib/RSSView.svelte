@@ -64,7 +64,7 @@
     let titles = []
     for (const t of grouped) {
       // replace & with encoded
-      let title = t.replace(/&/g, '%26')
+      let title = t.replace(/&/g, '%26').replace(/\?/g, '%3F').replace(/#/g, '%23')
       titles.push(title)
 
       // replace Season 2 with S2, else replace 2nd Season with S2, but keep the original title
@@ -172,6 +172,9 @@
   function close() {
     table = null
   }
+  function checkClose({ keyCode }) {
+    if (keyCode == 27) close()
+  }
   function play(entry) {
     updateMedia(fileMedia)
     if (entry.seeders !== '?' && entry.seeders <= 15) {
@@ -186,9 +189,9 @@
   }
 </script>
 
-<div class="modal" class:show={table} id="viewAnime" tabindex="-1" role="dialog">
+<div class="modal" class:show={table} id="viewAnime" on:keydown={checkClose} tabindex="-1">
   {#if table}
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog" role="document" on:click|self={close}>
       <div class="modal-content w-auto">
         <button class="close pointer" type="button" on:click={close}>
           <span>&times;</span>
@@ -223,3 +226,14 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .trailer {
+    padding-bottom: 56.25%;
+  }
+  .close {
+    top: 1rem !important;
+    left: unset;
+    right: 2.5rem !important;
+  }
+</style>

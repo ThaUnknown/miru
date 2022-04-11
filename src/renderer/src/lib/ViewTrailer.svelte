@@ -10,9 +10,9 @@
   }
 </script>
 
-<div class="modal" class:show={$url} on:keydown={checkClose}>
+<div class="modal" class:show={$url} on:keydown={checkClose} tabindex="-1">
   {#if $url}
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog" role="document" on:click|self={close}>
       <div class="modal-content w-three-quarter h-full bg-transparent d-flex justify-content-center flex-column">
         <button class="d-flex justify-content-center align-items-center close pointer z-30 bg-dark shadow-lg border top-20 right-0" type="button" on:click={close}>
           <span>×</span>
