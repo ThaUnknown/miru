@@ -1,9 +1,41 @@
-const { app, BrowserWindow, protocol } = require('electron')
+const { app, BrowserWindow, protocol, shell, ipcMain } = require('electron')
 const path = require('path')
 const log = require('electron-log')
 const { autoUpdater } = require('electron-updater')
 require('./main/torrent.js')
 require('./main/misc.js')
+
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient('miru', process.execPath, [path.resolve(process.argv[1])])
+  }
+} else {
+  app.setAsDefaultProtocolClient('miru')
+}
+
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+    }
+    const token = commandLine[commandLine.length - 1].slice(7)
+    if (process.env.NODE_ENV !== 'development ') {
+      mainWindow.loadURL(path.join(__dirname, '/renderer/dist/index.html' + token))
+    } else {
+      mainWindow.loadURL('http://localhost:3000/' + token)
+    }
+  })
+}
+
+ipcMain.on('open', (event, url) => {
+  shell.openExternal(url)
+})
 
 autoUpdater.logger = log
 autoUpdater.logger.transports.file.level = 'info'

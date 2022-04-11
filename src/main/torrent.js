@@ -66,6 +66,8 @@ const server = http.createServer((request, response) => {
   pump(stream, response)
 })
 
+server.on('error', console.log)
+
 server.listen(41785)
 
 let current = null

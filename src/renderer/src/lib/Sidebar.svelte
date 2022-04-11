@@ -52,7 +52,7 @@
           location.hash = ''
           location.reload()
         } else {
-          location.href = 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token'
+          window.IPC.emit('open','https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token')
           const searchParams = new URLSearchParams(location.href)
           if (searchParams.get('access_token')) {
             localStorage.setItem('ALtoken', searchParams.get('access_token'))
