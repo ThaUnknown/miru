@@ -120,7 +120,7 @@
 
     const entries = []
 
-    const checkDate = media.status === 'FINISHED' && !prequel && (sequel?.status === 'FINISHED' || sequel?.status === 'RELEASING') && sequel.startDate
+    const checkDate = media.status === 'FINISHED' && (sequel?.status === 'FINISHED' || sequel?.status === 'RELEASING') && sequel.startDate
 
     const targetDate = checkDate && new Date(Object.values(checkDate).join(' '))
 
