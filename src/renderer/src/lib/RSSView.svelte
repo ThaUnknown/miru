@@ -117,21 +117,14 @@
       const url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
       nodes = [...nodes, ...(await getRSSContent(url)).querySelectorAll('item')]
     }
-    if (!nodes.length) {
-      addToast({
-        text: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
-        title: 'Search Failed',
-        type: 'danger'
-      })
-      return
-    }
+
     const entries = []
 
     const checkDate = media.status === 'FINISHED' && !prequel && (sequel?.status === 'FINISHED' || sequel?.status === 'RELEASING') && sequel.startDate
 
-    const targetDate = new Date(Object.values(checkDate).join(' '))
+    const targetDate = checkDate && new Date(Object.values(checkDate).join(' '))
 
-    for (const item of nodes) {
+    for (const item of nodes || []) {
       const pubDate = item.querySelector('pubDate')?.textContent
 
       const itemDate = pubDate && new Date(pubDate)
@@ -150,6 +143,14 @@
       } else {
         entries.push(obj)
       }
+    }
+    if (!entries.length) {
+      addToast({
+        text: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
+        title: 'Search Failed',
+        type: 'danger'
+      })
+      return
     }
     entries.sort((a, b) => b.seeders - a.seeders)
     const streamingEpisode = media?.streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(episode))[0]
