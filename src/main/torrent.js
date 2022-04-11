@@ -165,6 +165,9 @@ ipcMain.on('settings', (event, data) => {
         downloadSpeed: (client?.torrents.length && client?.torrents[0].downloadSpeed) || 0
       })
     }, 200)
+    setInterval(() => {
+      if (client?.torrents[0]?.pieces) window?.webContents?.send('pieces', [...client?.torrents[0]?.pieces.map(piece => piece === null ? 77 : 33)])
+    }, 2000)
     client.on('torrent', torrent => {
       const files = torrent.files.map(file => {
         return {
@@ -177,6 +180,7 @@ ipcMain.on('settings', (event, data) => {
         }
       })
       window?.webContents.send('files', files)
+      window?.webContents.send('pieces', torrent.pieces.length)
       window?.webContents.send('torrent', Array.from(torrent.torrentFile))
     })
   }

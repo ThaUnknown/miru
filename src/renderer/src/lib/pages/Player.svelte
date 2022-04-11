@@ -2,6 +2,7 @@
   import { set } from './Settings.svelte'
   import { playAnime } from '../RSSView.svelte'
   import { title } from '../Menubar.svelte'
+  import { onMount } from 'svelte'
   export let media = null
   let fileMedia = null
   let hadImage = false
@@ -203,6 +204,7 @@
       window.IPC.emit('current', file)
       video?.load()
       checkAvail(current)
+      clearCanvas()
     }
   }
 
@@ -718,6 +720,35 @@
     torrent.up = stats.uploadSpeed || 0
     torrent.down = stats.downloadSpeed || 0
   }
+  let bufferCanvas = null
+  let ctx = null
+  onMount(() => {
+    ctx = bufferCanvas.getContext('2d')
+    clearCanvas()
+  })
+  function clearCanvas() {
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
+    ctx.fillRect(0, 0, bufferCanvas.width, 1)
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
+  }
+  let imageData = null
+  function handlePieces(data) {
+    if (data.constructor === Array) {
+      if (imageData) {
+        for (let i = 0; i < data.length; ++i) {
+          imageData.data[i * 4 + 3] = data[i]
+        }
+        ctx.putImageData(imageData, 0, 0)
+      }
+    } else {
+      const uint32 = new Uint32Array(data)
+      uint32.fill(872415231) // rgba(255, 255, 255, 0.2) to HEX to DEC
+      imageData = new ImageData(new Uint8ClampedArray(uint32.buffer), data, 1)
+      bufferCanvas.width = data
+      clearCanvas()
+    }
+  }
+  window.IPC.on('pieces', handlePieces)
 </script>
 
 <svelte:window on:keydown={handleKeydown} bind:innerWidth bind:innerHeight />
@@ -831,8 +862,9 @@
     <div class="w-full d-flex align-items-center" data-name="progressWrapper">
       <div class="ts">{toTS(targetTime, duration > 3600 ? 2 : 3)}</div>
       <div class="w-full h-full position-relative">
+        <canvas class="position-absolute buffer w-full" height="1px" bind:this={bufferCanvas} />
         <input
-          class="ctrl w-full h-full"
+          class="ctrl w-full h-full prog"
           type="range"
           min="0"
           max="1"
@@ -1123,6 +1155,15 @@
   }
   input[type='range']::-webkit-slider-runnable-track {
     background: linear-gradient(90deg, #ff3c00 var(--value), rgba(255, 255, 255, 0.2) var(--value));
+  }
+  input[type='range'].prog::-webkit-slider-runnable-track {
+    background: linear-gradient(90deg, #ff3c00 var(--value), #00000000 var(--value)) !important;
+  }
+  canvas.buffer {
+    height: 3px;
+    top: 50%;
+    transform: translate(0, -50%);
+    z-index: -1;
   }
   .bottom .volume:hover input[type='range'] {
     width: 5vw;
