@@ -24,7 +24,7 @@ if (!gotTheLock) {
       if (mainWindow.isMinimized()) mainWindow.restore()
       mainWindow.focus()
     }
-    const token = commandLine[commandLine.length - 1].slice(7)
+    const token = commandLine[commandLine.length - 1].slice(8)
     if (process.env.NODE_ENV !== 'development ') {
       mainWindow.loadURL(path.join(__dirname, '/renderer/dist/index.html' + token))
     } else {
