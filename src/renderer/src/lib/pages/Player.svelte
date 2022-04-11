@@ -861,7 +861,7 @@
     {/if}
     <div class="w-full d-flex align-items-center" data-name="progressWrapper">
       <div class="ts">{toTS(targetTime, duration > 3600 ? 2 : 3)}</div>
-      <div class="w-full h-full position-relative">
+      <div class="w-full h-full position-relative d-flex align-items-center">
         <canvas class="position-absolute buffer w-full" height="1px" bind:this={bufferCanvas} />
         <input
           class="ctrl w-full h-full prog"
@@ -1161,8 +1161,6 @@
   }
   canvas.buffer {
     height: 3px;
-    top: 50%;
-    transform: translate(0, -50%);
     z-index: -1;
   }
   .bottom .volume:hover input[type='range'] {
