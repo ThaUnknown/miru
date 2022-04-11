@@ -24,11 +24,16 @@ if (!gotTheLock) {
       if (mainWindow.isMinimized()) mainWindow.restore()
       mainWindow.focus()
     }
-    const token = commandLine[commandLine.length - 1].slice(8)
-    if (process.env.NODE_ENV !== 'development ') {
-      mainWindow.loadURL(path.join(__dirname, '/renderer/dist/index.html' + token))
-    } else {
-      mainWindow.loadURL('http://localhost:3000/' + token)
+    if (commandLine.length === 4) {
+      let token = commandLine[3].slice(9)
+      if (token.endsWith('/')) token = token.slice(0, -1)
+      if (token) {
+        if (process.env.NODE_ENV !== 'development ') {
+          mainWindow.loadURL(path.join(__dirname, '/renderer/dist/index.html#' + token))
+        } else {
+          mainWindow.loadURL('http://localhost:3000#' + token)
+        }
+      }
     }
   })
 }

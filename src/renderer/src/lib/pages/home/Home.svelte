@@ -137,6 +137,36 @@
         return alRequest({ method: 'Search', page, perPage, genre: 'Action', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
       }
     },
+    adventure: {
+      title: 'Adventure',
+      load: (page = 1, perPage = 50) => {
+        if (perPage !== 5) {
+          search.sort = 'TRENDING_DESC'
+          search.genre = 'adventure'
+        }
+        return alRequest({ method: 'Search', page, perPage, genre: 'Adventure', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+      }
+    },
+    fantasy: {
+      title: 'Fantasy',
+      load: (page = 1, perPage = 50) => {
+        if (perPage !== 5) {
+          search.sort = 'TRENDING_DESC'
+          search.genre = 'fantasy'
+        }
+        return alRequest({ method: 'Search', page, perPage, genre: 'Fantasy', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+      }
+    },
+    comedy: {
+      title: 'Comedy',
+      load: (page = 1, perPage = 50) => {
+        if (perPage !== 5) {
+          search.sort = 'TRENDING_DESC'
+          search.genre = 'comedy'
+        }
+        return alRequest({ method: 'Search', page, perPage, genre: 'Comedy', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+      }
+    },
     schedule: {
       title: 'Schedule',
       hide: true,
