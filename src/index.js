@@ -24,8 +24,8 @@ if (!gotTheLock) {
       if (mainWindow.isMinimized()) mainWindow.restore()
       mainWindow.focus()
     }
-    if (commandLine.length === 4) {
-      let token = commandLine[3].slice(9)
+    if (commandLine.length === 3) {
+      let token = commandLine[2].slice(9)
       if (token.endsWith('/')) token = token.slice(0, -1)
       if (token) {
         if (process.env.NODE_ENV !== 'development ') {
