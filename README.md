@@ -10,7 +10,8 @@
   <a href="#about">About</a> •
   <a href="#features">Features</a> •
   <a href="./docs/faq.md">Frequently Asked Questions</a> •
-  <a href="#building-and-development">Building and Development</a>
+  <a href="#building-and-development">Building and Development</a> •
+  <a href="https://github.com/ThaUnknown/miru/releases/latest">Download</a>
 </p>
 <p align="center">
   <img src="./docs/show.gif" alt="chat">
