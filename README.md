@@ -16,10 +16,11 @@
 <p align="center">
   <img src="./docs/show.gif" alt="chat">
     <a href="https://discord.gg/Z87Nh7c4Ac">
-    <img src="https://img.shields.io/discord/953341991134064651?style=flat-square" alt="chat">
-    <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/ThaUnknown/miru/total?style=flat-square">
-  </a>
-  
+      <img src="https://img.shields.io/discord/953341991134064651?style=flat-square" alt="chat">
+    </a>
+    <a href="https://github.com/ThaUnknown/miru/releases/latest">
+      <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/ThaUnknown/miru/total?style=flat-square">
+    </a>
 </p>
 
 ## **About**
