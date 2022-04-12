@@ -24,14 +24,14 @@ if (!gotTheLock) {
       if (mainWindow.isMinimized()) mainWindow.restore()
       mainWindow.focus()
     }
-    if (commandLine.length === 3) {
-      let token = commandLine[2].slice(9)
-      if (token.endsWith('/')) token = token.slice(0, -1)
-      if (token) {
-        if (process.env.NODE_ENV !== 'development ') {
-          mainWindow.loadURL(path.join(__dirname, '/renderer/dist/index.html#' + token))
-        } else {
-          mainWindow.loadURL('http://localhost:3000#' + token)
+    // There's probably a better way to do this instead of a for loop and split[1][0]
+    // but for now it works as a way to fix multiple OS's commandLine differences
+    for (const line of commandLine) {
+      if (line.startsWith('miru://')) {
+        let token = line.split('access_token=')[1].split('&token_type')[0]
+        if (token) {
+          if (token.endsWith('/')) token = token.slice(0, -1)
+          mainWindow.webContents.send('altoken', token)
         }
       }
     }

@@ -1,15 +1,5 @@
 <script context="module">
-  function checkToken() {
-    const searchParams = new URLSearchParams(location.href)
-    if (searchParams.get('access_token')) {
-      localStorage.setItem('ALtoken', searchParams.get('access_token'))
-      location.hash = ''
-      location.reload()
-    }
-  }
-  checkToken()
-  window.addEventListener('hashchange', checkToken)
-  export const alToken = localStorage.getItem('ALtoken') || null
+  export let alToken = localStorage.getItem('ALtoken') || null
   const defaults = {
     playerAutoplay: true,
     playerPause: true,
@@ -28,6 +18,11 @@
   export let set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
   window.IPC.on('path', data => {
     set.torrentPath = data
+  })
+  window.IPC.on('altoken', data => {
+    localStorage.setItem('ALtoken', data)
+    alToken = data
+    location.reload()
   })
 </script>
 
