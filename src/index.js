@@ -27,15 +27,21 @@ if (!gotTheLock) {
     // There's probably a better way to do this instead of a for loop and split[1][0]
     // but for now it works as a way to fix multiple OS's commandLine differences
     for (const line of commandLine) {
-      if (line.startsWith('miru://')) {
-        let token = line.split('access_token=')[1].split('&token_type')[0]
-        if (token) {
-          if (token.endsWith('/')) token = token.slice(0, -1)
-          mainWindow.webContents.send('altoken', token)
-        }
-      }
+      if (line.startsWith('miru://')) return sendToken(line)
     }
   })
+}
+app.on('open-url', (event, url) => {
+  event.preventDefault()
+  if (url.startsWith('miru://')) sendToken(url)
+})
+
+function sendToken (line) {
+  let token = line.split('access_token=')[1].split('&token_type')[0]
+  if (token) {
+    if (token.endsWith('/')) token = token.slice(0, -1)
+    mainWindow.webContents.send('altoken', token)
+  }
 }
 
 ipcMain.on('open', (event, url) => {
