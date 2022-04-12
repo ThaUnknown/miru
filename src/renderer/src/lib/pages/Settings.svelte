@@ -29,6 +29,10 @@
   window.IPC.on('path', data => {
     set.torrentPath = data
   })
+  window.IPC.on('altoken', data => {
+    localStorage.setItem('ALtoken', data)
+    location.reload()
+  })
 </script>
 
 <script>
