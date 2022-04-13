@@ -24,6 +24,15 @@
     alToken = data
     location.reload()
   })
+  const platformMap = {
+    aix: 'Aix',
+    darwin: 'MacOS',
+    freebsd: 'Linux',
+    linux: 'Linux',
+    openbsd: 'Linux',
+    sunos: 'SunOS',
+    win32: 'Windows'
+  }
 </script>
 
 <script>
@@ -79,7 +88,7 @@
       <p class="text-muted px-20 m-0">If you don't know what shit does, use default settings.</p>
       <button
         on:click={restoreSettings}
-        class="btn btn-danger mx-20 mt-10 mb-20"
+        class="btn btn-danger mx-20 my-10"
         type="button"
         id="setRes"
         data-toggle="tooltip"
@@ -87,6 +96,7 @@
         data-title="Restores All Settings Back To Their Recommended Defaults">
         Restore Defaults
       </button>
+      <p class="text-muted px-20 m-0 mb-20">v{window.version.version} {platformMap[window.version.platform]} {window.version.arch}</p>
     </div>
     <div class="h-full p-20 m-20">
       <Tab>

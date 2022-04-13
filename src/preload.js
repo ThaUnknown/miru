@@ -9,3 +9,8 @@ contextBridge.exposeInMainWorld('IPC', {
     ipcRenderer.on(event, (event, ...args) => callback(...args))
   }
 })
+contextBridge.exposeInMainWorld('version', {
+  version: process.env.npm_package_version,
+  arch: process.arch,
+  platform: process.platform
+})
