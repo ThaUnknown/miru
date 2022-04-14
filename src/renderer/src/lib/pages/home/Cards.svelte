@@ -81,10 +81,19 @@
         </div>
       </div>
     {/if}
+  {:else}
+    <div class="empty d-flex flex-column align-items-center justify-content-center">
+      <h2 class="font-weight-semi-bold mb-10">Ooops!</h2>
+      <div>Looks like there's nothing here.</div>
+    </div>
   {/each}
 {/await}
 
 <style>
+  .empty {
+    height: 27rem;
+    grid-column: 1 / -1;
+  }
   .h-10 {
     height: 1rem !important;
   }

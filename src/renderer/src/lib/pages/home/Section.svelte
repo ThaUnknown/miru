@@ -38,6 +38,10 @@
     grid-template-columns: repeat(5, 50rem);
   }
 
+  .gallery :global(.empty) {
+    grid-column: 1/3 !important;
+  }
+
   .gallery:after {
     content: '';
     position: absolute;
