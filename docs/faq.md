@@ -20,6 +20,9 @@ One of four reasons:
 - the app couldn't find a matching torrent for the anime
 - your ISP blocks Nyaa, see [this tutorial](https://wiki.piracy.moe/en/tutorials/unblock) for a fix
 
+## **Will you make an android version?**
+No. This app cannot be ported to android in any way.
+
 ## **Can I play my own torrents?**
 Yes. For the home menu you can specify a different RSS feed to check when the app looks for new releases. Additionally you can just paste a torrent file/magnet link anywhere when using the app, and it will auto-detect what anime is playing.
 
