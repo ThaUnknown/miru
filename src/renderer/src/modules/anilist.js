@@ -177,6 +177,11 @@ studios(isMain: true) {
     name
   }
 },
+airingSchedule(page: 1, perPage: 1, notYetAired: true) {
+  nodes {
+    episode
+  }
+},
 relations {
   edges {
     relationType(version:2)

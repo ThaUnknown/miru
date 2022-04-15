@@ -68,14 +68,19 @@
   function viewTrailer(media) {
     $trailer = media.trailer.id
   }
+  function getMediaMaxEp(media, playable) {
+    if (playable) {
+      return media.nextAiringEpisode?.episode - 1 || media.airingSchedule?.nodes?.[0].episode - 1 || media.episodes
+    } else {
+      return media.episodes || media.nextAiringEpisode?.episode - 1 || media.airingSchedule?.nodes?.[0].episode - 1
+    }
+  }
 </script>
 
 <div class="modal modal-full" class:show={$view} on:keydown={checkClose} tabindex="-1">
   {#if $view}
     <div class="h-full modal-content bg-very-dark p-0 overflow-y-auto">
-      <button class="close pointer z-30 bg-dark shadow-lg top-20 right-0" type="button" on:click={close}>
-        &times;
-      </button>
+      <button class="close pointer z-30 bg-dark shadow-lg top-20 right-0" type="button" on:click={close}> &times; </button>
       <div class="h-md-half w-full position-relative z-20">
         <div class="h-full w-full position-absolute bg-dark-light banner" style:--bannerurl={`url('${$view.bannerImage || ''}')`} />
         <div class="d-flex h-full top w-full">
@@ -103,10 +108,10 @@
                         Format: {'TV' ? $view.format : $view.format?.toLowerCase()}
                         <span class="font-weight-bold mr-20 text-capitalize" />
                       </span>
-                      {#if $view.episodes !== 1 && ($view.episodes || $view.nextAiringEpisode?.episode)}
+                      {#if $view.episodes !== 1 && getMediaMaxEp($view)}
                         <span class="material-icons mx-10 font-size-24"> theaters </span>
                         <span>
-                          Episodes: {$view.episodes || $view.nextAiringEpisode?.episode}
+                          Episodes: {getMediaMaxEp($view)}
                           <span class="font-weight-bold mr-20" />
                         </span>
                       {:else if $view.duration}
@@ -136,10 +141,7 @@
                         close()
                       }}>
                       <span class="material-icons mr-10 font-size-24 w-30"> play_arrow </span>
-                      <span
-                        >{$view.mediaListEntry?.progress
-                          ? 'Continue ' + Math.min($view.episodes || $view.nextAiringEpisode?.episode, $view.mediaListEntry?.progress + 1)
-                          : 'Play'}</span>
+                      <span>{$view.mediaListEntry?.progress ? 'Continue ' + Math.min(getMediaMaxEp($view), $view.mediaListEntry?.progress + 1) : 'Play'}</span>
                     </button>
                     {#if alToken && $view.mediaListEntry?.status !== 'CURRENT' && $view.mediaListEntry?.status !== 'COMPLETED'}
                       <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16 btn-primary" on:click={() => addToList($view)}>
@@ -168,7 +170,7 @@
               {@html $view.description}
             </div>
 
-            {#if $view.episodes || $view.nextAiringEpisode?.episode}
+            {#if getMediaMaxEp($view)}
               <table class="table table-hover w-500 table-auto">
                 <thead>
                   <tr>
@@ -177,8 +179,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {#each Array($view.nextAiringEpisode?.episode - 1 || $view.episodes) as _, i}
-                    {@const index = ($view.nextAiringEpisode?.episode - 1 || $view.episodes) - i - 1}
+                  {#each Array(getMediaMaxEp($view, true)) as _, i}
+                    {@const index = getMediaMaxEp($view, true) - i - 1}
                     <tr
                       class="font-size-20 py-10 pointer"
                       on:click={() => {
