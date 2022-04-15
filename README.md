@@ -27,15 +27,20 @@
 ## **About**
 A pure JS BitTorrent streaming environment, with a built-in list manager. Imagine qBit + Taiga + MPV, all in a single package, but streamed real-time. Completly ad free with no tracking/data collection.
 
+This app is meant to feel look, work and perform like a streaming website/app, while providing all the advantages of torrenting, like file downloads, higher download speeds, better video quality and quicker releases.
+
 Unlike qBit's sequential, seeking into undownloaded data will prioritise downloading that data, instead of flat out closing MPV.
 ## **Features**
 ### **Anime:**
 - full AniList integration
   - filter anime by name, genre, season, year, format, status
   - view anime on your planning and watching list
+  - add and remove anime from your planning list
   - automatically mark episodes as complete as you watch them
+  - view trailers/previews for anime
 - automatically find torrents for desired episodes
 - automatically detect what anime a torrent is
+- view latest releases on any custom RSS
 - airing schedule
 - find anime by image [just paste an image into the app]
 ### **Video:**
@@ -71,6 +76,7 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritise downloa
 - pause on lost focus
 - autoplay next episode
 - multi-audio support
+- torrent download progress on the seek bar
 ### **Torrent:**
 - select downloads folder
 - specify download/upload speeds
