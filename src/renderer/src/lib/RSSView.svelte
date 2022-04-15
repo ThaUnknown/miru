@@ -195,7 +195,7 @@
     <div class="modal-dialog" role="document" on:click|self={close}>
       <div class="modal-content w-auto">
         <button class="close pointer" type="button" on:click={close}>
-          <span>&times;</span>
+          &times;
         </button>
         <table class="table table-hover">
           <thead>

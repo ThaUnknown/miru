@@ -73,8 +73,8 @@
 <div class="modal modal-full" class:show={$view} on:keydown={checkClose} tabindex="-1">
   {#if $view}
     <div class="h-full modal-content bg-very-dark p-0 overflow-y-auto">
-      <button class="d-flex justify-content-center align-items-center close pointer z-30 bg-dark shadow-lg border top-20 right-0" type="button" on:click={close}>
-        <span>×</span>
+      <button class="close pointer z-30 bg-dark shadow-lg top-20 right-0" type="button" on:click={close}>
+        &times;
       </button>
       <div class="h-md-half w-full position-relative z-20">
         <div class="h-full w-full position-absolute bg-dark-light banner" style:--bannerurl={`url('${$view.bannerImage || ''}')`} />
