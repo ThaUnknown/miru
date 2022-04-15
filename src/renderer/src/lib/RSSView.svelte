@@ -36,7 +36,8 @@
   }
   const rssmap = {
     SubsPlease: 'https://nyaa.si/?page=rss&c=0_0&f=0&u=subsplease&q=',
-    'Erai-raws': 'https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q='
+    'Erai-raws [Multi-Sub]': 'https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q=',
+    NanDesuKa: 'https://nyaa.si/?page=rss&c=0_0&f=0&u=NanDesuKa&q='
   }
   export function getRSSurl() {
     let rss = rssmap[settings.rssFeed] || settings.rssFeed

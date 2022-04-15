@@ -10,7 +10,6 @@ contextBridge.exposeInMainWorld('IPC', {
   }
 })
 contextBridge.exposeInMainWorld('version', {
-  version: process.env.npm_package_version,
   arch: process.arch,
   platform: process.platform
 })

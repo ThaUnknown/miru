@@ -1,4 +1,4 @@
-const { dialog, ipcMain, BrowserWindow } = require('electron')
+const { dialog, ipcMain, BrowserWindow, app } = require('electron')
 
 ipcMain.on('dialog', async (event, data) => {
   const { filePaths } = await dialog.showOpenDialog({
@@ -17,11 +17,11 @@ ipcMain.on('dialog', async (event, data) => {
   }
 })
 
-ipcMain.on('minimize', () => {
-  BrowserWindow.getAllWindows()[0].minimize()
+ipcMain.on('minimize', (event) => {
+  BrowserWindow.fromWebContents(event.sender).minimize()
 })
-ipcMain.on('maximize', () => {
-  const window = BrowserWindow.getAllWindows()[0]
+ipcMain.on('maximize', (event) => {
+  const window = BrowserWindow.fromWebContents(event.sender)
   if (window.isMaximized()) {
     window.unmaximize()
   } else {
@@ -51,3 +51,7 @@ function loginRPC () {
   })
 }
 loginRPC()
+
+ipcMain.on('version', (event) => {
+  event.sender.send('version', app.getVersion()) // fucking stupid
+})

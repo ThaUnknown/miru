@@ -13,9 +13,7 @@ if (process.defaultApp) {
   app.setAsDefaultProtocolClient('miru')
 }
 
-const gotTheLock = app.requestSingleInstanceLock()
-
-if (!gotTheLock) {
+if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
   app.on('second-instance', (event, commandLine, workingDirectory) => {

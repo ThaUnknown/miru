@@ -33,6 +33,9 @@
     sunos: 'SunOS',
     win32: 'Windows'
   }
+  let version = '1.0.0'
+  window.IPC.on('version', data => (version = data))
+  window.IPC.emit('version')
 </script>
 
 <script>
@@ -96,7 +99,7 @@
         data-title="Restores All Settings Back To Their Recommended Defaults">
         Restore Defaults
       </button>
-      <p class="text-muted px-20 m-0 mb-20">v{window.version.version} {platformMap[window.version.platform]} {window.version.arch}</p>
+      <p class="text-muted px-20 m-0 mb-20">v{version} {platformMap[window.version.platform]} {window.version.arch}</p>
     </div>
     <div class="h-full p-20 m-20">
       <Tab>
@@ -140,7 +143,8 @@
             <input id="rss-feed" type="text" list="rss-feed-list" class="form-control form-control-lg" autocomplete="off" bind:value={settings.rssFeed} />
             <datalist id="rss-feed-list">
               <option value="SubsPlease">https://nyaa.si/?page=rss&c=0_0&f=0&u=subsplease&q=</option>
-              <option value="Erai-raws">https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q=</option>
+              <option value="Erai-raws [Multi-Sub]">https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q=</option>
+              <option value="NanDesuKa">https://nyaa.si/?page=rss&c=0_0&f=0&u=NanDesuKa&q=</option>
             </datalist>
           </div>
           <div class="input-group mb-10 w-300 form-control-lg" data-toggle="tooltip" data-placement="top" data-title="What Quality To Find Torrents In">
