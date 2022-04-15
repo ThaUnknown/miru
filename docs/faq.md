@@ -17,8 +17,9 @@ Not really. The underlying source of video are still torrents, which aren't alwa
 One of four reasons:
 - the anime isn't seeded
 - your download speed isn't fast enough
-- the app couldn't find a matching torrent for the anime
 - your ISP blocks Nyaa, see [this tutorial](https://wiki.piracy.moe/en/tutorials/unblock) for a fix
+- the app couldn't find a matching torrent for the anime
+  - you can POTENTIALLY fix this by disabling `Trusted Only` in `RSS Settings`, but this might cause false-positives when finding torrents, so I'd also disable `Auto-play torrents`, and pick torrents manually.
 
 ## **Will you make an android version?**
 No. This app cannot be ported to android in any way.
