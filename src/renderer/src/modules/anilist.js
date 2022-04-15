@@ -196,6 +196,11 @@ relations {
         year,
         month,
         day
+      },
+      endDate {
+        year,
+        month,
+        day
       }
     }
   }

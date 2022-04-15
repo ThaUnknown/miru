@@ -6,7 +6,7 @@
   import { alToken } from '../Settings.svelte'
   import { alRequest } from '@/modules/anilist.js'
   import { resolveFileMedia } from '@/modules/anime.js'
-  import { getRSSContent, getRSSurl } from '@/lib/RSSView.svelte'
+  import { getRSSContent, getReleasesRSSurl } from '@/lib/RSSView.svelte'
 
   let media = null
   let search = {}
@@ -56,7 +56,7 @@
 
   let lastRSSDate = 0
   async function releasesCards(page, limit, force) {
-    const doc = await getRSSContent(getRSSurl())
+    const doc = await getRSSContent(getReleasesRSSurl())
     if (doc) {
       const pubDate = doc.querySelector('pubDate').textContent
       if (force || lastRSSDate !== pubDate) {

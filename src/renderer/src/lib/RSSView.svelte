@@ -3,6 +3,7 @@
   import { updateMedia } from './pages/Player.svelte'
   import { set } from './pages/Settings.svelte'
   import { addToast } from '@/lib/Toasts.svelte'
+  import { alRequest } from '@/modules/anilist.js'
 
   import { writable } from 'svelte/store'
 
@@ -39,7 +40,7 @@
     'Erai-raws [Multi-Sub]': 'https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q=',
     NanDesuKa: 'https://nyaa.si/?page=rss&c=0_0&f=0&u=NanDesuKa&q='
   }
-  export function getRSSurl() {
+  export function getReleasesRSSurl() {
     let rss = rssmap[settings.rssFeed] || settings.rssFeed
     return new URL(`${rss}${settings.rssQuality ? `"${settings.rssQuality}"` : ''}`)
   }
@@ -85,14 +86,14 @@
 
   let fileMedia = null
 
-  export async function parseRss({ media, episode }) {
-    if (!media) return
+  async function getRSSEntries({ media, episode, mode }) {
+    // mode cuts down on the amt of queries made
     const titles = createTitle(media).join(')|(')
 
     const prequel = findEdge(media, 'PREQUEL')?.node
     const sequel = findEdge(media, 'SEQUEL')?.node
 
-    const absolute = prequel && (await resolveSeason({ media, episode, force: true }))
+    const absolute = prequel && mode !== 'check' && (await resolveSeason({ media, episode, force: true }))
     const episodes = [episode]
     if (absolute) episodes.push(absolute.offset + episode)
     let ep = ''
@@ -100,7 +101,9 @@
       if (media.status === 'FINISHED' && settings.rssBatch) {
         ep = `"01-${media.episodes}"|"01~${media.episodes}"|"Batch"|"Complete"|"${episode > 9 ? episode : `0${episode}`}+"|"${episode > 9 ? episode : `0${episode}`}v"|"S01"`
       } else {
-        ep = `(${episodes.map(episode => `"${episode > 9 ? episode : `0${episode}`}+"|"${episode > 9 ? episode : `0${episode}`}v"`).join('|')})`
+        ep = `(${episodes
+          .map(episode => `"${episode > 9 ? episode : `E0${episode}`}+"|"${episode > 9 ? episode : `+0${episode}`}+"|"${episode > 9 ? episode : `0${episode}`}v"`)
+          .join('|')})`
       }
     }
 
@@ -118,34 +121,60 @@
       const url = new URL(`https://nyaa.si/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
       nodes = [...nodes, ...(await getRSSContent(url)).querySelectorAll('item')]
     }
+    if (!nodes?.length) return null
 
-    const entries = []
+    const checkSequelDate = media.status === 'FINISHED' && (sequel?.status === 'FINISHED' || sequel?.status === 'RELEASING') && sequel.startDate
 
-    const checkDate = media.status === 'FINISHED' && (sequel?.status === 'FINISHED' || sequel?.status === 'RELEASING') && sequel.startDate
+    const sequelStartDate = checkSequelDate && new Date(Object.values(checkSequelDate).join(' '))
 
-    const targetDate = checkDate && new Date(Object.values(checkDate).join(' '))
+    const sequelEntries =
+      (sequel?.status === 'FINISHED' || sequel?.status === 'RELEASING') &&
+      (await getRSSEntries({ media: (await alRequest({ method: 'SearchIDSingle', id: sequel.id })).data.Media, episode, mode: 'check' }))
 
-    for (const item of nodes || []) {
+    const checkPrequelDate = (media.status === 'FINISHED' || media.status === 'RELEASING') && prequel?.status === 'FINISHED' && prequel?.endDate
+
+    const prequelEndDate = checkPrequelDate && new Date(Object.values(checkPrequelDate).join(' '))
+
+    let entries = nodes.map(item => {
       const pubDate = item.querySelector('pubDate')?.textContent
 
-      const itemDate = pubDate && new Date(pubDate)
-
-      const obj = {
+      return {
         title: item.querySelector('title')?.textContent || '?',
         link: item.querySelector('link')?.textContent || '?',
         seeders: item.querySelector('seeders')?.textContent ?? '?',
         leechers: item.querySelector('leechers')?.textContent ?? '?',
         downloads: item.querySelector('downloads')?.textContent ?? '?',
-        size: item.querySelector('size')?.textContent ?? '?'
+        size: item.querySelector('size')?.textContent ?? '?',
+        date: pubDate && new Date(pubDate)
       }
+    })
 
-      if (itemDate && targetDate) {
-        if (itemDate < targetDate) entries.push(obj)
+    // 1 week in date numbers, a bit of jitter for pre-releases and releasers being late as fuck, lets hope it doesnt cause issues
+    const week = 2674848460
+
+    if (prequelEndDate) {
+      entries = entries.filter(entry => entry.date > new Date(prequelEndDate + week))
+    }
+
+    if (sequelStartDate && media.format === 'TV') {
+      entries = entries.filter(entry => entry.date < new Date(sequelStartDate - week))
+    }
+
+    if (sequelEntries?.length) {
+      if (mode === 'check') {
+        entries = [...entries, ...sequelEntries]
       } else {
-        entries.push(obj)
+        entries = entries.filter(entry => !sequelEntries.find(sequel => sequel.link === entry.link))
       }
     }
-    if (!entries.length) {
+
+    return entries
+  }
+
+  export async function parseRss({ media, episode }) {
+    if (!media) return
+    const entries = await getRSSEntries({ media, episode })
+    if (!entries?.length) {
       addToast({
         text: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
         title: 'Search Failed',
@@ -194,9 +223,7 @@
   {#if table}
     <div class="modal-dialog" role="document" on:click|self={close}>
       <div class="modal-content w-auto">
-        <button class="close pointer" type="button" on:click={close}>
-          &times;
-        </button>
+        <button class="close pointer" type="button" on:click={close}> &times; </button>
         <table class="table table-hover">
           <thead>
             <tr>

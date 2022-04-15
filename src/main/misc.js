@@ -1,4 +1,5 @@
 const { dialog, ipcMain, BrowserWindow, app } = require('electron')
+const { Client } = require('discord-rpc')
 
 ipcMain.on('dialog', async (event, data) => {
   const { filePaths } = await dialog.showOpenDialog({
@@ -30,7 +31,6 @@ ipcMain.on('maximize', (event) => {
 })
 
 let status = null
-const { Client } = require('discord-rpc')
 const discord = new Client({
   transport: 'ipc'
 })
