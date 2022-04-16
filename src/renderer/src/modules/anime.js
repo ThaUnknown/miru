@@ -166,7 +166,6 @@ export async function resolveFileMedia (opts) {
             // if they didnt use an accurate title then its likely an absolute numbering scheme
             // parent check is to break out of those incorrectly resolved OVA's
             const prequel = findEdge(media, 'PREQUEL')?.node || ((media.format === 'OVA' || media.format === 'ONA') && findEdge(media, 'PARENT')?.node)
-            console.log(prequel)
             const root = prequel && (await resolveSeason({ media: (await alRequest({ method: 'SearchIDSingle', id: prequel.id })).data.Media, force: true })).media
 
             // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
@@ -183,7 +182,6 @@ export async function resolveFileMedia (opts) {
         if (maxep && parseInt(praseObj.episode_number) > maxep) {
           // see big comment above
           const prequel = findEdge(media, 'PREQUEL')?.node || ((media.format === 'OVA' || media.format === 'ONA') && findEdge(media, 'PARENT')?.node)
-          console.log(prequel)
           const root = prequel && (await resolveSeason({ media: (await alRequest({ method: 'SearchIDSingle', id: prequel.id })).data.Media, force: true })).media
 
           // value bigger than episode count

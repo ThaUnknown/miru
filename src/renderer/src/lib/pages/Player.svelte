@@ -591,7 +591,8 @@
         processing: metadata.processingDuration + ' ms',
         viewport: video.clientWidth + 'x' + video.clientHeight,
         resolution: videoWidth + 'x' + videoHeight,
-        buffer: getBufferHealth(metadata.mediaTime) + ' s'
+        buffer: getBufferHealth(metadata.mediaTime) + ' s',
+        speed: video.playbackRate || 1
       }
       setTimeout(() => video.requestVideoFrameCallback(handleStats), 200)
     }
@@ -808,7 +809,8 @@
       Frame time: {stats.processing}<br />
       Viewport: {stats.viewport}<br />
       Resolution: {stats.resolution}<br />
-      Buffer health: {stats.buffer || 0}
+      Buffer health: {stats.buffer || 0}<br />
+      Playback speed: x{stats.speed?.toFixed(1)}
     </div>
   {/if}
   <div class="top z-40 d-flex justify-content-between">
