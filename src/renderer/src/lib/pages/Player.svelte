@@ -59,12 +59,22 @@
 
 <script>
   import { alEntry } from '@/modules/anilist.js'
-  import { client } from '@/modules/torrent.js'
   import { resolveFileMedia } from '@/modules/anime.js'
   import Peer from '@/modules/Peer.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, videoRx, fastPrettyBytes } from '@/modules/util.js'
   import Keyboard from './Keyboard.svelte'
+
+  import { w2gEmitter } from './watchtogether/WatchTogether.svelte'
+
+  w2gEmitter.on('playerupdate',({detail})=>{
+    currentTime = detail.time
+    paused = detail.paused
+  })
+
+  function updatew2g() {
+    w2gEmitter.emit('player', { time: Math.floor(currentTime), paused })
+  }
 
   async function mediaChange(current, image) {
     if (current && 'mediaSession' in navigator) {
@@ -788,6 +798,9 @@
     bind:ended
     bind:muted
     bind:playbackRate
+    on:pause={updatew2g}
+    on:play={updatew2g}
+    on:seeked={updatew2g}
     on:timeupdate={() => createThumbnail()}
     on:timeupdate={checkCompletion}
     on:waiting={showBuffering}

@@ -61,3 +61,13 @@ export async function PromiseBatch (task, items, batchSize) {
   }
   return results
 }
+
+export function generateRandomHexCode (len) {
+  let hexCode = ''
+
+  while (hexCode.length < len) {
+    hexCode += (Math.round(Math.random() * 15)).toString(16)
+  }
+
+  return hexCode
+}

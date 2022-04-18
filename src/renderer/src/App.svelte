@@ -75,6 +75,21 @@
     padding-top: 2rem;
   }
 
+  :global(.root) {
+    animation: 0.3s ease 0s 1 root-load-in;
+  }
+  @keyframes root-load-in {
+    from {
+      bottom: -1.2rem;
+      transform: scale(0.95);
+    }
+
+    to {
+      bottom: 0;
+      transform: scale(1);
+    }
+  }
+
   @media (max-width: 768px) {
     .page-wrapper.with-sidebar[data-sidebar-type~='overlayed-sm-and-down'] > :global(.content-wrapper) {
       left: var(--sidebar-minimised);

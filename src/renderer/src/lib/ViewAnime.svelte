@@ -70,9 +70,9 @@
   }
   function getMediaMaxEp(media, playable) {
     if (playable) {
-      return media.nextAiringEpisode?.episode - 1 || media.airingSchedule?.nodes?.[0].episode - 1 || media.episodes
+      return media.nextAiringEpisode?.episode - 1 || media.airingSchedule?.nodes?.[0]?.episode - 1 || media.episodes
     } else {
-      return media.episodes || media.nextAiringEpisode?.episode - 1 || media.airingSchedule?.nodes?.[0].episode - 1
+      return media.episodes || media.nextAiringEpisode?.episode - 1 || media.airingSchedule?.nodes?.[0]?.episode - 1
     }
   }
 </script>

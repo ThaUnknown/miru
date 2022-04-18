@@ -1,0 +1,93 @@
+<script>
+  export let state
+  export let peer
+  export let cancel
+
+  let values = []
+  let code = ''
+  peer.signalingPort.onmessage = ({ data }) => {
+    const { description, candidate } = typeof data === 'string' ? JSON.parse(data) : data
+    if (description) {
+      if (description.type === 'answer') values = []
+      values.push(description.sdp)
+    } else if (candidate) {
+      values.push(candidate.candidate)
+    }
+    code = btoa(JSON.stringify(values))
+  }
+
+  $: value = (step?.mode === 'copy' && code) || null
+
+  function handleInput({ target }) {
+    const val = JSON.parse(atob(target.value))
+    const [description, ...candidates] = val
+    peer.signalingPort.postMessage({
+      description: {
+        type: state === 'host' ? 'answer' : 'offer',
+        sdp: description
+      }
+    })
+    for (const candidate of candidates) {
+      peer.signalingPort.postMessage({
+        candidate: {
+          candidate,
+          sdpMid: '0',
+          sdpMLineIndex: 0
+        }
+      })
+    }
+    value = null
+    index = index + 1
+  }
+
+  function copyData() {
+    navigator.clipboard.writeText(value)
+    index = index + 1
+  }
+
+  let index = 0
+  $: step = map[state]?.[index]
+
+  let map = {
+    guest: [
+      {
+        title: 'Paste Invite Code',
+        description: 'Paste the one time invite code sent to you by the lobby host.',
+        mode: 'paste'
+      },
+      {
+        title: 'Copy Invite Confirmation',
+        description: 'Send the host this code, which required to request a connection.',
+        mode: 'copy'
+      }
+    ],
+    host: [
+      {
+        title: 'Copy Invite Code',
+        description: 'Copy the one time invite code, and send it to the person you wish to invite.',
+        mode: 'copy'
+      },
+      {
+        title: 'Paste Invite Confirmation',
+        description: 'Paste the code sent to you by the user which wants to join your lobby.',
+        mode: 'paste'
+      }
+    ]
+  }
+</script>
+
+<div class="h-full d-flex flex-column justify-content-center mb-20 pb-20 root container">
+  {#if step}
+    <h1 class="font-weight-bold">
+      {step.title}
+    </h1>
+    <p class="font-size-18 mt-0">
+      {step.description}
+    </p>
+    <textarea disabled={step.mode === 'copy'} on:input={handleInput} bind:value class="form-control h-300 w-full mb-15" />
+    {#if step.mode === 'copy' && value}
+      <button class="btn btn-primary mt-5" type="button" on:click={copyData} disabled={!value}>Copy</button>
+    {/if}
+  {/if}
+  <button class="btn btn-danger mt-5" type="button" on:click={cancel}>Cancel</button>
+</div>

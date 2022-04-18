@@ -40,6 +40,13 @@
     },
     {
       click: () => {
+        page = 'watchtogether'
+      },
+      icon: 'groups',
+      text: 'Watch Together'
+    },
+    {
+      click: () => {
         page = 'settings'
       },
       icon: 'tune',

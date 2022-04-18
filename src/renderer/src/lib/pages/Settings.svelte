@@ -238,20 +238,3 @@
       </Tab>
     </div>
   </div></Tabs>
-
-<style>
-  .root {
-    animation: 0.3s ease 0s 1 load-in;
-  }
-  @keyframes load-in {
-    from {
-      bottom: -1.2rem;
-      transform: scale(0.95);
-    }
-
-    to {
-      bottom: 0;
-      transform: scale(1);
-    }
-  }
-</style>

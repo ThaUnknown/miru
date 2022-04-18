@@ -9,6 +9,7 @@
   import Home from './pages/home/Home.svelte'
   import Player from './pages/Player.svelte'
   import Settings from './pages/Settings.svelte'
+  import WatchTogether from './pages/watchtogether/WatchTogether.svelte'
   export let page = 'home'
   const current = getContext('gallery')
 </script>
@@ -19,6 +20,8 @@
     <Settings />
   {:else if page === 'home'}
     <Home bind:current={$current} />
+  {:else if page === 'watchtogether'}
+    <WatchTogether />
   {/if}
 </div>
 
