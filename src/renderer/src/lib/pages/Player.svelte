@@ -158,10 +158,10 @@
 
   // plays one frame
   function playFrame() {
+    let wasPaused = false
     video.requestVideoFrameCallback(() => {
       if (wasPaused) paused = true
     })
-    let wasPaused = false
     if (paused) {
       wasPaused = true
       paused = false
@@ -291,13 +291,14 @@
   function toggleMute() {
     muted = !muted
   }
+  let visibilityPaused = true
   document.addEventListener('visibilitychange', () => {
     if (!video?.ended && set.playerPause) {
       if (document.visibilityState === 'hidden') {
-        wasPaused = paused
+        visibilityPaused = paused
         paused = true
       } else {
-        if (wasPaused) paused = false
+        if (!visibilityPaused) paused = false
       }
     }
   })
