@@ -293,7 +293,7 @@
   }
   let visibilityPaused = true
   document.addEventListener('visibilitychange', () => {
-    if (!video?.ended && set.playerPause) {
+    if (!video?.ended && set.playerPause && !pip) {
       if (document.visibilityState === 'hidden') {
         visibilityPaused = paused
         paused = true
