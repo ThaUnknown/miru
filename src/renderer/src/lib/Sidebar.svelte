@@ -2,6 +2,8 @@
   import { getContext } from 'svelte'
   import { alID } from '@/modules/anilist.js'
   import { media } from './pages/Player.svelte'
+  import { platformMap } from './pages/Settings.svelte'
+  import { addToast } from './Toasts.svelte'
   const sidebar = getContext('sidebar')
   const view = getContext('view')
   const gallery = getContext('gallery')
@@ -59,7 +61,15 @@
           location.hash = ''
           location.reload()
         } else {
-          window.IPC.emit('open','https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token')
+          window.IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token')
+          if (platformMap[window.version.platform] === 'Linux') {
+            addToast({
+              text: 'If your linux distribution doesn\'t support custom protocol handlers, you can simply paste the full URL into the app.',
+              title: 'Support Notification',
+              type: 'secondary',
+              duration: '300000'
+            })
+          }
         }
       },
       icon: 'login',

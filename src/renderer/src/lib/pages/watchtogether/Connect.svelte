@@ -6,6 +6,7 @@
   let values = []
   let code = ''
   peer.signalingPort.onmessage = ({ data }) => {
+    console.log(data)
     const { description, candidate } = typeof data === 'string' ? JSON.parse(data) : data
     if (description) {
       if (description.type === 'answer') values = []

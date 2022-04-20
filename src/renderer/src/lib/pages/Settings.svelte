@@ -19,12 +19,26 @@
   window.IPC.on('path', data => {
     set.torrentPath = data
   })
-  window.IPC.on('altoken', data => {
+  window.addEventListener('paste', ({ clipboardData }) => {
+    if (clipboardData.items?.[0]) {
+      if (clipboardData.items[0].type === 'text/plain' && clipboardData.items[0].kind === 'string') {
+        clipboardData.items[0].getAsString(text => {
+          let token = text.split('access_token=')?.[1]?.split('&token_type')?.[0]
+          if (token) {
+            if (token.endsWith('/')) token = token.slice(0, -1)
+            handleToken(token)
+          }
+        })
+      }
+    }
+  })
+  window.IPC.on('altoken', handleToken)
+  function handleToken(data) {
     localStorage.setItem('ALtoken', data)
     alToken = data
     location.reload()
-  })
-  const platformMap = {
+  }
+  export const platformMap = {
     aix: 'Aix',
     darwin: 'MacOS',
     freebsd: 'Linux',
@@ -237,4 +251,5 @@
         </div>
       </Tab>
     </div>
-  </div></Tabs>
+  </div>
+</Tabs>
