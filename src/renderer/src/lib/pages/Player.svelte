@@ -67,7 +67,7 @@
 
   import { w2gEmitter } from './watchtogether/WatchTogether.svelte'
 
-  w2gEmitter.on('playerupdate',({detail})=>{
+  w2gEmitter.on('playerupdate', ({ detail }) => {
     currentTime = detail.time
     paused = detail.paused
   })
@@ -142,19 +142,30 @@
             } else {
               resolve(rawFPS)
             }
-            paused = !!miniplayer
           } else {
             lastmeta = metadata
             video.requestVideoFrameCallback(handleFrames)
           }
         } else {
           count++
-          paused = !!miniplayer
           video.requestVideoFrameCallback(handleFrames)
         }
       }
       video.requestVideoFrameCallback(handleFrames)
+      playFrame()
     })
+  }
+
+  // plays one frame
+  function playFrame() {
+    video.requestVideoFrameCallback(() => {
+      if (wasPaused) paused = true
+    })
+    let wasPaused = false
+    if (paused) {
+      wasPaused = true
+      paused = false
+    }
   }
 
   // if ('PresentationRequest' in window) {
@@ -348,9 +359,8 @@
       }
     }
   }
-  async function togglePopout() {
+  function togglePopout() {
     if (video.readyState) {
-      await video.fps
       if (!subs?.renderer) {
         if (video !== document.pictureInPictureElement) {
           video.requestPictureInPicture()
@@ -366,23 +376,26 @@
           pip = false
         } else {
           const canvasVideo = document.createElement('video')
-          const { stream, destroy } = await getBurnIn()
+          const { stream, destroy } = getBurnIn()
+          const cleanup = () => {
+            pip = false
+            destroy()
+            canvasVideo.remove()
+          }
           pip = true
           canvasVideo.srcObject = stream
           canvasVideo.onloadedmetadata = () => {
             canvasVideo.play()
-            canvasVideo.requestPictureInPicture().catch(e => {
-              pip = false
-              console.warn('Failed To Burn In Subtitles ' + e)
-              destroy()
-              canvasVideo.remove()
-            })
+            if (pip) {
+              canvasVideo.requestPictureInPicture().catch(e => {
+                cleanup()
+                console.warn('Failed To Burn In Subtitles ' + e)
+              })
+            } else {
+              cleanup()
+            }
           }
-          canvasVideo.onleavepictureinpicture = () => {
-            destroy()
-            canvasVideo.remove()
-            pip = false
-          }
+          canvasVideo.onleavepictureinpicture = cleanup
         }
       }
     }
@@ -455,7 +468,7 @@
     }
   }
 
-  async function getBurnIn(noSubs) {
+  function getBurnIn(noSubs) {
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')
     let loop = null
@@ -467,7 +480,7 @@
       if (!noSubs) context.drawImage(subs.renderer?._canvas, 0, 0, canvas.width, canvas.height)
       loop = video.requestVideoFrameCallback(renderFrame)
     }
-    loop = video.requestVideoFrameCallback(renderFrame)
+    renderFrame()
     destroy = () => {
       video.cancelVideoFrameCallback(loop)
       canvas.remove()
@@ -519,7 +532,7 @@
         const videostream = video.captureStream(await video.fps)
         if (true) {
           // TODO: check if cast supports codecs
-          const { stream, destroy } = await getBurnIn(!subs?.renderer)
+          const { stream, destroy } = getBurnIn(!subs?.renderer)
           tracks.push(stream.getVideoTracks()[0], videostream.getAudioTracks()[0])
           presentationConnection.addEventListener('terminate', destroy)
         } else {
@@ -993,7 +1006,7 @@
     backdrop-filter: blur(3px);
   }
 
-  .pip :global(canvas) {
+  .pip :global(canvas:not(.w-full)) {
     left: 99.9% !important;
     /*hack to hide the canvas but still keep it updating*/
   }
