@@ -11,7 +11,7 @@
   function rej() {
     addToast({
       text: 'Could not establish connection, please try again.',
-      title: 'Connection Timed Out.',
+      title: 'Connection Timed Out',
       type: 'danger'
     })
 
@@ -38,7 +38,17 @@
   $: value = (step?.mode === 'copy' && code) || null
 
   function handleInput({ target }) {
-    const val = JSON.parse(atob(target.value))
+    let val = null
+    try {
+      val = JSON.parse(atob(target.value))
+    } catch (e) {
+      addToast({
+        text: 'The provided invite code was invalid, try copying it again?',
+        title: 'Invalid Invite Code',
+        type: 'danger'
+      })
+    }
+    if (!val) return
     const [description, ...candidates] = val
 
     if (state === 'guest') timeout = setTimeout(rej, 10000)
