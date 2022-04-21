@@ -122,8 +122,7 @@ export default class Subtitles {
         video: this.video,
         subContent: this.headers[this.current].header.slice(0, -1),
         fonts: this.fonts,
-        workerUrl: 'lib/subtitles-octopus-worker.js',
-        offscreenRender: false
+        workerUrl: 'lib/subtitles-octopus-worker.js'
       }
       this.renderer = new SubtitlesOctopus(options)
       this.selectCaptions(this.current)
