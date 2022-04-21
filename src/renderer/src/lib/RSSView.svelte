@@ -150,14 +150,14 @@
     })
 
     // 1 month in MS, a bit of jitter for pre-releases and releasers being late as fuck, lets hope it doesnt cause issues
-    const month = 2674848460    
+    const month = 2674848460
 
     if (prequelEndDate) {
-      entries = entries.filter(entry => entry.date > new Date(prequelEndDate + month))
+      entries = entries.filter(entry => entry.date > new Date(+prequelEndDate + month))
     }
 
     if (sequelStartDate && media.format === 'TV') {
-      entries = entries.filter(entry => entry.date < new Date(sequelStartDate - month))
+      entries = entries.filter(entry => entry.date < new Date(+sequelStartDate - month))
     }
 
     if (sequelEntries?.length) {
