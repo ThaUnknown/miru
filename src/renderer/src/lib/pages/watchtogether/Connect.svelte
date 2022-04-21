@@ -1,10 +1,23 @@
 <script>
+  import { addToast } from '@/lib/Toasts.svelte'
   export let state
   export let peer
   export let cancel
 
   let values = []
   let code = ''
+  let timeout = null
+
+  function rej() {
+    addToast({
+      text: 'Could not establish connection, please try again.',
+      title: 'Connection Timed Out.',
+      type: 'danger'
+    })
+
+    cancel()
+  }
+
   peer.signalingPort.onmessage = ({ data }) => {
     console.log(data)
     const { description, candidate } = typeof data === 'string' ? JSON.parse(data) : data
@@ -12,16 +25,24 @@
       if (description.type === 'answer') values = []
       values.push(description.sdp)
     } else if (candidate) {
-      values.push(candidate.candidate)
+      if (candidate.candidate.includes('srflx')) values.push(candidate.candidate)
     }
-    code = btoa(JSON.stringify(values))
+    if (values.length > 1) {
+      code = btoa(JSON.stringify(values))
+      clearTimeout(timeout)
+    }
   }
+
+  if (state === 'host') timeout = setTimeout(rej, 10000)
 
   $: value = (step?.mode === 'copy' && code) || null
 
   function handleInput({ target }) {
     const val = JSON.parse(atob(target.value))
     const [description, ...candidates] = val
+
+    if (state === 'guest') timeout = setTimeout(rej, 10000)
+
     peer.signalingPort.postMessage({
       description: {
         type: state === 'host' ? 'answer' : 'offer',
@@ -78,7 +99,7 @@
 </script>
 
 <div class="h-full d-flex flex-column justify-content-center mb-20 pb-20 root container">
-  {#if step}
+  {#if step && (value || step.mode === 'paste')}
     <h1 class="font-weight-bold">
       {step.title}
     </h1>
@@ -89,6 +110,8 @@
     {#if step.mode === 'copy' && value}
       <button class="btn btn-primary mt-5" type="button" on:click={copyData} disabled={!value}>Copy</button>
     {/if}
+  {:else}
+    <h1 class="font-weight-bold">Connecting...</h1>
   {/if}
   <button class="btn btn-danger mt-5" type="button" on:click={cancel}>Cancel</button>
 </div>

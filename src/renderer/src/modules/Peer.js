@@ -28,7 +28,9 @@ export default class Peer {
       iceServers: options?.iceServers || [{
         urls: [
           'stun:stun.l.google.com:19302',
-          'stun:global.stun.twilio.com:3478'
+          'stun:stun1.l.google.com:19302',
+          'stun:global.stun.twilio.com:3478',
+          'stun:stun.nextcloud.com:443'
         ]
       }]
     })

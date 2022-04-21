@@ -63,8 +63,10 @@
   })
 
   window.IPC.on('torrent', file => {
-    playerState.file = file
-    emit('torrent', { file })
+    if (!playerState.file.every((v, i) => v === file[i])) {
+      playerState.file = file
+      emit('torrent', { file })
+    }
   })
 
   function emit(type, data) {
@@ -83,7 +85,7 @@
     pending.update(peer => {
       peer.pc.close()
     })
-    state.set(null)
+    if (get(state) === 'guest') state.set(null)
   }
 
   function cleanup() {
@@ -122,6 +124,7 @@
 
   function handleMessage(data, channel, peer) {
     console.log(data)
+    if (get(state) === 'host') emit(data.type, data)
     switch (data.type) {
       case 'init':
         {
