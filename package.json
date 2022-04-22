@@ -58,7 +58,12 @@
     },
     "win": {
       "artifactName": "${name}-${os}-${arch}-${version}.${ext}",
-      "target": "nsis"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        }
+      ]
     },
     "linux": {
       "artifactName": "${name}-${os}-${arch}-${version}.${ext}",
@@ -77,7 +82,7 @@
           "target": "AppImage"
         },
         {
-          "arch": "x64",
+          "arch": ["x64", "ia32", "arm64", "armv7l"],
           "target": "deb"
         }
       ],
@@ -87,6 +92,7 @@
     },
     "nsis": {
       "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
       "oneClick": false
     }
   },
