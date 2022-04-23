@@ -92,6 +92,7 @@
   },
   "dependencies": {
     "anitomyscript": "^2.0.4",
+    "browser-event-target-emitter": "^1.0.0",
     "discord-rpc": "^4.0.1",
     "electron-log": "^4.4.6",
     "electron-updater": "^4.6.5",

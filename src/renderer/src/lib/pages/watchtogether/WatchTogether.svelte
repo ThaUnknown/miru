@@ -5,10 +5,9 @@
   import Peer from '@/modules/Peer.js'
   import { generateRandomHexCode } from '@/modules/util.js'
   import { addToast } from '@/lib/Toasts.svelte'
+  import 'browser-event-target-emitter'
 
   export const w2gEmitter = new EventTarget()
-  w2gEmitter.emit = (type, detail) => w2gEmitter.dispatchEvent(new CustomEvent(type, { detail }))
-  w2gEmitter.on = w2gEmitter.addEventListener.bind(w2gEmitter)
 
   const state = writable(null)
 
@@ -63,7 +62,7 @@
   })
 
   window.IPC.on('torrent', file => {
-    if (!playerState.file.every((v, i) => v === file[i])) {
+    if (!file.every((v, i) => v === playerState.file[i])) {
       playerState.file = file
       emit('torrent', { file })
     }
@@ -150,7 +149,10 @@
         break
       }
       case 'torrent': {
-        if (!playerState.file.every((v, i) => v === data.file[i])) add(data.file)
+        if (!data.file.every((v, i) => v === playerState.file[i])) {
+          playerState.file = data.file
+          add(data.file)
+        }
         break
       }
       default: {
