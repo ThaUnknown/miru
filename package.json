@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "main": "src/index.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
@@ -50,18 +50,21 @@
     "appId": "com.github.thaunknown.miru",
     "productName": "Miru",
     "files": [
-      "src/**/*"
+      "src/*",
+      "src/main/*",
+      "src/renderer/dist/**/*"
     ],
     "mac": {
+      "artifactName": "${os}-${name}-${version}.${ext}",
       "category": "public.app-category.video",
       "icon": "build/icon.icns"
     },
     "win": {
-      "artifactName": "${name}-${os}-${arch}-${version}.${ext}",
+      "artifactName": "${os}-${name}-${version}.${ext}",
       "target": "nsis"
     },
     "linux": {
-      "artifactName": "${name}-${os}-${arch}-${version}.${ext}",
+      "artifactName": "${os}-${name}-${version}.${ext}",
       "category": "Video;Anime",
       "description": "Bittorrent streaming software for cats",
       "desktop": {
