@@ -166,4 +166,7 @@
   select.form-control:invalid {
     color: var(--dm-input-placeholder-text-color);
   }
+  .font-size-30 {
+    font-size: 3rem !important;
+  }
 </style>

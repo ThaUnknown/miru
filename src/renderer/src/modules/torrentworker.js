@@ -119,7 +119,7 @@ class TorrentClient extends WebTorrent {
         break
       }
       case 'torrent': {
-        if (this.torrents.length) this.remove(client.torrents[0].infoHash)
+        if (this.torrents.length) this.remove(this.torrents[0].infoHash)
 
         const id = typeof data.data !== 'string' ? Buffer.from(data.data) : data.data
         this.add(id, {

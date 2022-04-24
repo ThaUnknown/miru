@@ -14,9 +14,11 @@
     <button class="btn btn-danger ml-20 btn-lg" type="button" on:click={cleanup}>Leave lobby</button>
   </div>
   {#each Object.values(peers) as peer}
-    <div class="d-flex align-items-center ">
+    <div class="d-flex align-items-center pb-10">
       {#if peer.user?.avatar?.medium}
-        <img src={peer.user?.avatar?.medium} alt="avatar" class="w-50 img-fluid rounded" />
+        <img src={peer.user?.avatar?.medium} alt="avatar" class="w-50 h-50 img-fluid rounded" />
+      {:else}
+        <span class="material-icons w-50 h-50 anon"> person </span>
       {/if}
       <h4 class="my-0 pl-20 mr-auto">{peer.user?.name || 'Anonymous'}</h4>
       {#if peer.user?.name}
@@ -28,3 +30,9 @@
     </div>
   {/each}
 </div>
+
+<style>
+  .anon {
+    font-size: 5rem;
+  }
+</style>
