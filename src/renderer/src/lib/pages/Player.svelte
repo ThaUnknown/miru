@@ -1074,6 +1074,9 @@
     z-index: 3;
     display: none;
   }
+  :fullscreen {
+    background: #000 !important;
+  }
 
   /* @media (pointer: none), (pointer: coarse) {
     .middle .ctrl {
