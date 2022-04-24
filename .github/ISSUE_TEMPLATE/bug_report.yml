@@ -62,8 +62,3 @@ body:
     attributes:
       label: Screenshots
       description: If applicable, add screenshots to help explain your problem.
-  - type: markdown
-    attributes:
-      value: >-
-        This template was generated with [Issue Forms
-        Creator](https://www.issue-forms-creator.app/)
