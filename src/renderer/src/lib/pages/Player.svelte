@@ -3,6 +3,7 @@
   import { playAnime } from '../RSSView.svelte'
   import { title } from '../Menubar.svelte'
   import { onMount } from 'svelte'
+  import { client } from '@/modules/torrent.js'
   export let media = null
   let fileMedia = null
   let hadImage = false
@@ -222,7 +223,7 @@
       current = file
       initSubs()
       src = file.url
-      window.IPC.emit('current', file)
+      client.send('current', file)
       video?.load()
       checkAvail(current)
       clearCanvas()
@@ -739,11 +740,11 @@
     }
   }
   const torrent = {}
-  window.IPC.on('stats', updateStats)
-  function updateStats(stats) {
-    torrent.peers = stats.numPeers || 0
-    torrent.up = stats.uploadSpeed || 0
-    torrent.down = stats.downloadSpeed || 0
+  client.on('stats', updateStats)
+  function updateStats({ detail }) {
+    torrent.peers = detail.numPeers || 0
+    torrent.up = detail.uploadSpeed || 0
+    torrent.down = detail.downloadSpeed || 0
   }
   let bufferCanvas = null
   let ctx = null
@@ -757,23 +758,23 @@
     ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
   }
   let imageData = null
-  function handlePieces(data) {
-    if (data.constructor === Array) {
+  function handlePieces({ detail }) {
+    if (detail.constructor === Array) {
       if (imageData) {
-        for (let i = 0; i < data.length; ++i) {
-          imageData.data[i * 4 + 3] = data[i]
+        for (let i = 0; i < detail.length; ++i) {
+          imageData.data[i * 4 + 3] = detail[i]
         }
         ctx.putImageData(imageData, 0, 0)
       }
     } else {
-      const uint32 = new Uint32Array(data)
+      const uint32 = new Uint32Array(detail)
       uint32.fill(872415231) // rgba(255, 255, 255, 0.2) to HEX to DEC
-      imageData = new ImageData(new Uint8ClampedArray(uint32.buffer), data, 1)
-      bufferCanvas.width = data
+      imageData = new ImageData(new Uint8ClampedArray(uint32.buffer), detail, 1)
+      bufferCanvas.width = detail
       clearCanvas()
     }
   }
-  window.IPC.on('pieces', handlePieces)
+  client.on('pieces', handlePieces)
 </script>
 
 <svelte:window on:keydown={handleKeydown} bind:innerWidth bind:innerHeight />

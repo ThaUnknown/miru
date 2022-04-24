@@ -256,9 +256,6 @@
 </div>
 
 <style>
-  .trailer {
-    padding-bottom: 56.25%;
-  }
   .close {
     top: 1rem !important;
     left: unset;

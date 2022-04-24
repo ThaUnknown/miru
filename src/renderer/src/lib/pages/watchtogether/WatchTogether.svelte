@@ -7,6 +7,8 @@
   import { addToast } from '@/lib/Toasts.svelte'
   import 'browser-event-target-emitter'
 
+  import { client } from '@/modules/torrent.js'
+
   export const w2gEmitter = new EventTarget()
 
   const state = writable(null)
@@ -61,11 +63,13 @@
     if (setPlayerState(detail)) emit('player', detail)
   })
 
-  window.IPC.on('torrent', file => {
-    if (!file.every((v, i) => v === playerState.file[i])) {
-      playerState.file = file
-      emit('torrent', { file })
-    }
+  queueMicrotask(() => {
+    client.on('torrent', ({ detail }) => {
+      if (!detail.every((v, i) => v === playerState.file[i])) {
+        playerState.file = detail
+        emit('torrent', { file: detail })
+      }
+    })
   })
 
   function emit(type, data) {

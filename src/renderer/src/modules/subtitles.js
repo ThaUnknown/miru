@@ -2,6 +2,8 @@
 import SubtitlesOctopus from './subtitles-octopus.js'
 import { toTS, videoRx, subRx } from './util.js'
 
+import { client } from '@/modules/torrent.js'
+
 const defaultHeader = `[V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Default, Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
@@ -25,15 +27,15 @@ export default class Subtitles {
     this.videoFiles = files.filter(file => videoRx.test(file.name))
     this.subtitleFiles = []
     this.timeout = null
-    window.IPC.on('tracks', (...args) => this.handleTracks(...args))
-    window.IPC.on('subtitle', (...args) => this.handleSubtitle(...args))
-    window.IPC.on('fonts', (...args) => this.handleFonts(...args))
-    window.IPC.on('file', (...args) => this.handleFile(...args))
+    client.on('tracks', this.handleTracks.bind(this))
+    client.on('subtitle', this.handleSubtitle.bind(this))
+    client.on('fonts', this.handleFonts.bind(this))
+    client.on('file', this.handleFile.bind(this))
   }
 
-  handleFile (file) {
+  handleFile ({ detail }) {
     if (this.selected) {
-      this.fonts.push(URL.createObjectURL(new Blob([file.data], { type: file.mimetype })))
+      this.fonts.push(URL.createObjectURL(new Blob([detail.data], { type: detail.mimetype })))
     }
   }
 
@@ -46,7 +48,8 @@ export default class Subtitles {
     }
   }
 
-  handleSubtitle ({ subtitle, trackNumber }) {
+  handleSubtitle ({ detail }) {
+    const { subtitle, trackNumber } = detail
     if (this.selected) {
       if (!this.renderer) this.initSubtitleRenderer()
       this.tracks[trackNumber].add(this.constructor.constructSub(subtitle, this.headers[trackNumber].type !== 'ass'))
@@ -54,9 +57,9 @@ export default class Subtitles {
     }
   }
 
-  handleTracks (tracks) {
+  handleTracks ({ detail }) {
     if (this.selected) {
-      for (const track of tracks) {
+      for (const track of detail) {
         if (!this.tracks[track.number]) {
           // overwrite webvtt or other header with custom one
           if (track.type !== 'ass') track.header = defaultHeader
@@ -242,6 +245,10 @@ export default class Subtitles {
   }
 
   destroy () {
+    client.removeListener('tracks', this.handleTracks.bind(this))
+    client.removeListener('subtitle', this.handleSubtitle.bind(this))
+    client.removeListener('fonts', this.handleFonts.bind(this))
+    client.removeListener('file', this.handleFile.bind(this))
     this.stream?.destroy()
     this.parser?.destroy()
     this.renderer?.destroy()

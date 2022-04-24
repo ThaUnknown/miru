@@ -64,7 +64,7 @@
           window.IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token')
           if (platformMap[window.version.platform] === 'Linux') {
             addToast({
-              text: 'If your linux distribution doesn\'t support custom protocol handlers, you can simply paste the full URL into the app.',
+              text: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
               title: 'Support Notification',
               type: 'secondary',
               duration: '300000'
@@ -78,8 +78,10 @@
   ]
   if (alID) {
     alID.then(result => {
-      links[links.length - 1].image = result.data.Viewer.avatar.medium
-      links[links.length - 1].text = result.data.Viewer.name
+      if (result?.data?.Viewer) {
+        links[links.length - 1].image = result.data.Viewer.avatar.medium
+        links[links.length - 1].text = result.data.Viewer.name + '\nLogout'
+      }
     })
   }
 </script>
@@ -158,6 +160,9 @@
     font-size: 1.4rem;
     padding: 0.75rem 1.5rem;
     height: 5.5rem;
+  }
+  .sidebar-link::after {
+    white-space: pre !important;
   }
 
   .material-icons {

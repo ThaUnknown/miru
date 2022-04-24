@@ -2,7 +2,6 @@ const { app, BrowserWindow, protocol, shell, ipcMain } = require('electron')
 const path = require('path')
 const log = require('electron-log')
 const { autoUpdater } = require('electron-updater')
-require('./main/torrent.js')
 require('./main/misc.js')
 
 if (process.defaultApp) {
@@ -81,6 +80,7 @@ function createWindow () {
     webPreferences: {
       enableBlinkFeatures: 'AudioVideoTracks',
       backgroundThrottling: false,
+      nodeIntegrationInWorker: true,
       preload: path.join(__dirname, '/preload.js')
     },
     icon: path.join(__dirname, '/renderer/public/logo.ico'),

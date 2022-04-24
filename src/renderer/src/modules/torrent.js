@@ -3,12 +3,27 @@ import { set } from '@/lib/pages/Settings.svelte'
 import { files } from '@/lib/Router.svelte'
 import { page } from '@/App.svelte'
 
-export const client = null
+class TorrentWorker extends Worker {
+  constructor (opts) {
+    super(opts)
+    this.onmessage = this.handleMessage.bind(this)
+  }
 
-window.IPC.emit('settings', { ...set })
+  handleMessage ({ data }) {
+    this.emit(data.type, data.data)
+  }
 
-window.IPC.on('files', arr => {
-  files.set(arr)
+  send (type, data) {
+    this.postMessage({ type, data })
+  }
+}
+
+export const client = new TorrentWorker(new URL('./torrentworker.js', import.meta.url))
+
+client.send('settings', { ...set })
+
+client.on('files', ({ detail }) => {
+  files.set(detail)
 })
 
 export async function add (torrentID, hide) {
@@ -20,17 +35,17 @@ export async function add (torrentID, hide) {
       const res = await fetch(torrentID)
       torrentID = Array.from(new Uint8Array(await res.arrayBuffer()))
     }
-    window.IPC.emit('torrent', torrentID)
+    client.send('torrent', torrentID)
   }
 }
 
-window.IPC.on('torrent', file => {
-  localStorage.setItem('torrent', JSON.stringify(file))
+client.on('torrent', ({ detail }) => {
+  localStorage.setItem('torrent', JSON.stringify(detail))
 })
 
 // load last used torrent
 queueMicrotask(() => {
   if (localStorage.getItem('torrent')) {
-    window.IPC.emit('torrent', JSON.parse(localStorage.getItem('torrent')))
+    client.send('torrent', JSON.parse(localStorage.getItem('torrent')))
   }
 })
