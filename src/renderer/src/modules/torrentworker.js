@@ -41,6 +41,7 @@ class TorrentClient extends WebTorrent {
       })
       this.dispatch('files', files)
       this.dispatch('pieces', torrent.pieces.length)
+      this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
       this.dispatch('torrent', Array.from(torrent.torrentFile))
     })
 

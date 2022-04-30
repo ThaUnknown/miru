@@ -64,10 +64,10 @@
   })
 
   queueMicrotask(() => {
-    client.on('torrent', ({ detail }) => {
-      if (!detail.every((v, i) => v === playerState.file[i])) {
-        playerState.file = detail
-        emit('torrent', { file: detail })
+    client.on('magnet', ({ detail }) => {
+      if (detail.hash !== playerState.hash) {
+        playerState.hash = detail.hash
+        emit('torrent', detail)
       }
     })
   })
@@ -81,7 +81,7 @@
   const playerState = {
     paused: null,
     time: null,
-    file: []
+    hash: null
   }
 
   function cancel() {
@@ -153,9 +153,9 @@
         break
       }
       case 'torrent': {
-        if (!data.file.every((v, i) => v === playerState.file[i])) {
-          playerState.file = data.file
-          add(data.file)
+        if (data.hash !== playerState.hash) {
+          playerState.hash = data.hash
+          add(data.magnet)
         }
         break
       }
