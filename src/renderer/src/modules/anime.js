@@ -149,6 +149,7 @@ export async function resolveFileMedia (opts) {
   }
   const fileMedias = []
   for (const praseObj of parseObjs) {
+    let failed = false
     let episode
     let media = assoc[relations[praseObj.anime_title]]
     // resolve episode, if movie, dont.
@@ -173,6 +174,7 @@ export async function resolveFileMedia (opts) {
             media = result.rootMedia
             const diff = praseObj.episode_number[1] - result.episode
             episode = `${praseObj.episode_number[0] - diff} ~ ${result.episode}`
+            failed = result.failed
           } else {
             // cant find ep count or range seems fine
             episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[1])}`
@@ -188,6 +190,7 @@ export async function resolveFileMedia (opts) {
           const result = await resolveSeason({ media: root || media, episode: parseInt(praseObj.episode_number) })
           media = result.rootMedia
           episode = result.episode
+          failed = result.failed
         } else {
           // cant find ep count or episode seems fine
           episode = Number(praseObj.episode_number)
@@ -203,7 +206,8 @@ export async function resolveFileMedia (opts) {
       mediaCover: media?.coverImage.medium,
       name: 'Miru',
       parseObject: praseObj,
-      media: media
+      media: media,
+      failed
     })
   }
   return fileMedias.length === 1 ? fileMedias[0] : fileMedias
@@ -236,7 +240,7 @@ export async function resolveSeason (opts) {
   increment = increment ?? !prequel
 
   if (!edge) {
-    const obj = { media, episode: episode - offset, offset, increment, rootMedia }
+    const obj = { media, episode: episode - offset, offset, increment, rootMedia, failed: true }
     if (!force) {
       console.warn('Error in parsing!', obj)
       addToast({

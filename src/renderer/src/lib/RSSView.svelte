@@ -86,6 +86,18 @@
 
   let fileMedia = null
 
+  const exclusions = ['DTS']
+
+  const video = document.createElement('video')
+
+  if (!video.canPlayType('video/mp4; codecs="hvc1.1.L0.0"')) {
+    exclusions.push('HEVC', 'x265', 'H.265')
+  }
+  if (!video.canPlayType('audio/mp4; codecs="ac-3"')) {
+    exclusions.push('AC3', 'AC-3')
+  }
+  video.remove()
+
   async function getRSSEntries({ media, episode, mode }) {
     // mode cuts down on the amt of queries made
     const titles = createTitle(media).join(')|(')
@@ -107,10 +119,12 @@
       }
     }
 
-    const excl = ['DTS', 'AC3', 'AC-3', 'HEVC', 'x265', 'H.265'].join('|')
+    const excl = exclusions.join('|')
     const quality = `"${settings.rssQuality}"` || '"1080p"'
     const trusted = settings.rssTrusted === true ? 2 : 0
-    const url = new URL(`https://${media.isAdult ? 'sukebei.nyaa.si/?page=rss&c=1_1' : 'nyaa.si/?page=rss&c=1_2'}&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
+    const url = new URL(
+      `https://${media.isAdult ? 'sukebei.nyaa.si/?page=rss&c=1_1' : 'nyaa.si/?page=rss&c=1_2'}&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`
+    )
 
     let nodes = [...(await getRSSContent(url)).querySelectorAll('item')]
     if (absolute && !settings.rssBatch) {
@@ -118,7 +132,9 @@
 
       const ep = `"+${episodes[1] > 9 ? episodes[1] : `0${episodes[1]}`}+"|"+${episodes[1] > 9 ? episodes[1] : `0${episodes[1]}`}v"`
 
-      const url = new URL(`https://${media.isAdult ? 'sukebei.nyaa.si/?page=rss&c=1_1' : 'nyaa.si/?page=rss&c=1_2'}&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
+      const url = new URL(
+        `https://${media.isAdult ? 'sukebei.nyaa.si/?page=rss&c=1_1' : 'nyaa.si/?page=rss&c=1_2'}&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`
+      )
       nodes = [...nodes, ...(await getRSSContent(url)).querySelectorAll('item')]
     }
     if (!nodes?.length) return null

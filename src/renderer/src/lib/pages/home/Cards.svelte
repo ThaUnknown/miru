@@ -44,7 +44,12 @@
           </div>
           <div class="col-8 h-full card-grid">
             <div class="px-15 py-10 bg-very-dark">
-              <h5 class="m-0 text-capitalize font-weight-bold">{[card.media.title.userPreferred, card.episodeNumber].filter(s => s).join(' - ')}</h5>
+              <h5 class="m-0 text-capitalize font-weight-bold">
+                {#if card.failed}
+                  <span class="badge badge-secondary">Uncertain</span>
+                {/if}
+                {[card.media.title.userPreferred, card.episodeNumber].filter(s => s).join(' - ')}
+              </h5>
               {#if card.schedule && card.media.nextAiringEpisode}
                 <span class="text-muted font-weight-bold">
                   {'EP ' + card.media.nextAiringEpisode.episode + ' in ' + countdown(card.media.nextAiringEpisode.timeUntilAiring)}

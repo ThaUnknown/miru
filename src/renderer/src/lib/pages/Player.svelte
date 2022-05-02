@@ -65,6 +65,7 @@
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, videoRx, fastPrettyBytes } from '@/modules/util.js'
   import Keyboard from './Keyboard.svelte'
+  import { addToast } from '../Toasts.svelte'
 
   import { w2gEmitter } from './watchtogether/WatchTogether.svelte'
 
@@ -118,6 +119,16 @@
   let volume = localStorage.getItem('volume') || 1
   let playbackRate = 1
   $: localStorage.setItem('volume', volume || 0)
+
+  function checkAudio() {
+    if ('audioTracks' in HTMLVideoElement.prototype && !video.audioTracks.length) {
+      addToast({
+        text: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in RSS settings.",
+        title: 'Audio Codec Unsupported',
+        type: 'danger'
+      })
+    }
+  }
   function getFPS() {
     video.fps = new Promise(resolve => {
       let lastmeta = null
@@ -823,10 +834,10 @@
     on:canplay={hideBuffering}
     on:playing={hideBuffering}
     on:ended={tryPlayNext}
-    on:loadedmetadata={hideBuffering}
     on:loadedmetadata={getFPS}
     on:loadedmetadata={initThumbnails}
     on:loadedmetadata={autoPlay}
+    on:loadedmetadata={checkAudio}
     on:leavepictureinpicture={() => (pip = false)} />
   {#if stats}
     <div class="position-absolute top-0 bg-tp p-10 m-15 text-monospace rounded z-50">

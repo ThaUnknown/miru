@@ -186,6 +186,7 @@
               lastDate = new Date(+date + entry.timeUntilAiring * 1000)
               media.push(lastDate.toLocaleDateString('en-US', { weekday: 'long' }))
             }
+            entry.schedule = true
             media.push(entry)
           }
           return media
