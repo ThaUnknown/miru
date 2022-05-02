@@ -60,7 +60,7 @@
       ...new Set(
         Object.values(media.title)
           .concat(media.synonyms)
-          .filter(name => name != null)
+          .filter(name => name != null && name.length > 3)
       )
     ]
     let titles = []

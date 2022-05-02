@@ -29,27 +29,6 @@
     if (peer) peer.ready.then(() => handlePeer(peer))
   })
 
-  w2gEmitter.on('pause', ({ detail }) => {
-    if (playerState.paused !== true) {
-      playerState.paused = true
-      playerState.time = detail.time
-      emit('pause', detail)
-    }
-  })
-  w2gEmitter.on('play', ({ detail }) => {
-    if (playerState.paused !== false) {
-      playerState.paused = false
-      playerState.time = detail.time
-      emit('play', detail)
-    }
-  })
-  w2gEmitter.on('seeked', ({ detail }) => {
-    if (playerState.time !== detail.time) {
-      playerState.time = detail.time
-      emit('seeked', detail)
-    }
-  })
-
   function setPlayerState(detail) {
     let emit = false
     for (const key of ['paused', 'time']) {
