@@ -6,10 +6,11 @@
   function viewMedia(media) {
     $view = media
   }
+  export let length = 5
 </script>
 
 {#await cards}
-  {#each Array(5) as _}
+  {#each Array(length) as _}
     <div class="card m-0 p-0">
       <div class="row h-full">
         <div class="col-4 skeloader" />

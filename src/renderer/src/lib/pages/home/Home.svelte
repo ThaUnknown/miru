@@ -8,31 +8,46 @@
   import { resolveFileMedia } from '@/modules/anime.js'
   import { getRSSContent, getReleasesRSSurl } from '@/lib/RSSView.svelte'
 
-  let media = null
+  let media = []
   let search = {}
   export let current = null
   let page = 1
 
   let canScroll = true
   let hasNext = true
+  let container = null
+
+  function sanitiseObject(object) {
+    const safe = {}
+    for (const [key, value] of Object.entries(object)) {
+      if (value) safe[key] = value
+    }
+    return safe
+  }
   async function infiniteScroll() {
     if (current && canScroll && hasNext && this.scrollTop + this.clientHeight > this.scrollHeight - 800) {
       canScroll = false
-      const res = await sections[current].load(++page)
-      media = media.then(old => {
-        return old.concat(res)
-      })
+      const res = sections[current].load(++page)
+      media.push(res)
+      media = media
+      await res
       canScroll = hasNext
     }
   }
 
   $: load(current)
-  function load(current) {
+  async function load(current) {
+    console.log(current)
     if (sections[current]) {
       page = 1
-      media = sections[current].load(1)
+      canScroll = false
+      const res = sections[current].load(1)
+      media = [res]
+      await res
+      canScroll = hasNext
     } else {
-      media = null
+      if (container) container.scrollTop = 0
+      media = []
       canScroll = true
       lastDate = null
       search = {
@@ -80,6 +95,7 @@
     continue: {
       title: 'Continue Watching',
       load: (page = 1, perPage = 50) => {
+        if (perPage !== 5) search.sort = 'UPDATED_TIME_DESC'
         return alRequest({ method: 'UserLists', status_in: 'CURRENT', page }).then(res => {
           hasNext = res?.data?.Page.pageInfo.hasNextPage
           return res?.data?.Page.mediaList
@@ -95,12 +111,14 @@
       title: 'New Releases',
       releases: true,
       load: (page = 1, perPage = 20, force = true) => {
+        if (perPage !== 5) search.sort = 'START_DATE_DESC'
         return releasesCards(page, perPage, force)
       }
     },
     planning: {
       title: 'Your List',
       load: (page = 1, perPage = 50) => {
+        if (perPage !== 5) search.sort = 'UPDATED_TIME_DESC'
         return alRequest({ method: 'UserLists', page, perPage, status_in: 'PLANNING' }).then(res => {
           hasNext = res?.data?.Page.pageInfo.hasNextPage
           return res?.data?.Page.mediaList
@@ -111,10 +129,8 @@
     trending: {
       title: 'Trending Now',
       load: (page = 1, perPage = 50) => {
-        if (perPage !== 5) {
-          search.sort = 'TRENDING_DESC'
-        }
-        return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+        if (perPage !== 5) search.sort = 'TRENDING_DESC'
+        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     romance: {
@@ -124,7 +140,7 @@
           search.sort = 'TRENDING_DESC'
           search.genre = 'romance'
         }
-        return alRequest({ method: 'Search', page, perPage, genre: 'Romance', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     action: {
@@ -134,7 +150,7 @@
           search.sort = 'TRENDING_DESC'
           search.genre = 'action'
         }
-        return alRequest({ method: 'Search', page, perPage, genre: 'Action', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     adventure: {
@@ -144,7 +160,7 @@
           search.sort = 'TRENDING_DESC'
           search.genre = 'adventure'
         }
-        return alRequest({ method: 'Search', page, perPage, genre: 'Adventure', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     fantasy: {
@@ -154,7 +170,7 @@
           search.sort = 'TRENDING_DESC'
           search.genre = 'fantasy'
         }
-        return alRequest({ method: 'Search', page, perPage, genre: 'Fantasy', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     comedy: {
@@ -164,7 +180,7 @@
           search.sort = 'TRENDING_DESC'
           search.genre = 'comedy'
         }
-        return alRequest({ method: 'Search', page, perPage, genre: 'Comedy', sort: 'TRENDING_DESC' }).then(res => processMedia(res))
+        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     schedule: {
@@ -200,10 +216,8 @@
         const opts = {
           method: 'Search',
           page,
-          perPage
-        }
-        for (const [key, value] of Object.entries(search)) {
-          if (value) opts[key] = value
+          perPage,
+          ...sanitiseObject(search)
         }
         return alRequest(opts).then(res => processMedia(res))
       }
@@ -211,10 +225,10 @@
   }
 </script>
 
-<div class="d-flex h-full flex-column overflow-y-scroll root" on:scroll={infiniteScroll}>
+<div class="d-flex h-full flex-column overflow-y-scroll root" on:scroll={infiniteScroll} bind:this={container}>
   <div class="h-full py-10">
     <Search bind:media bind:search bind:current />
-    {#if media}
+    {#if media.length}
       <Gallery {media} />
     {:else}
       <div>

@@ -6,13 +6,16 @@
   let loading = true
   async function update(med) {
     loading = true
-    await med
-    if (med === media) loading = false
+    const index = med.length - 1
+    await med[index]
+    if (index === med.length - 1) loading = false
   }
 </script>
 
 <div class="gallery browse" class:loading>
-  <Cards cards={media} />
+  {#each media as cards, i (i)}
+    <Cards {cards} length={4} />
+  {/each}
 </div>
 
 <style>
@@ -26,17 +29,12 @@
     position: relative;
   }
 
-  .loading {
-    height: 30rem !important;
-    overflow-y: hidden !important;
-  }
-
   .loading:after {
     content: '';
     position: absolute;
     bottom: 0;
-    height: 10rem;
+    height: 40rem;
     width: 100%;
-    background: linear-gradient(0deg, rgba(37, 40, 44, 1) 0%, rgba(37, 40, 44, 1) 15%, rgba(37, 40, 44, 0.45) 70%, rgba(37, 40, 44, 0) 100%);
+    background: linear-gradient(0deg, rgba(37, 40, 44, 1) 0%, rgba(37, 40, 44, 1) 70%, rgba(37, 40, 44, 1) 75%, rgba(37, 40, 44, 0.45) 90%, rgba(37, 40, 44, 0) 100%);
   }
 </style>

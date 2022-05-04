@@ -16,13 +16,14 @@
   }
   function input() {
     if (!searchTimeout) {
-      if (Object.values(search).filter(v => v).length) media = new Promise(() => {})
+      if (Object.values(search).filter(v => v).length) media = [new Promise(() => {})]
     } else {
       clearTimeout(searchTimeout)
     }
     searchTimeout = setTimeout(() => {
+      const old = current
       current = null
-      if (Object.values(search).filter(v => v).length) current = 'search'
+      if (Object.values(search).filter(v => v).length) current = old || 'search'
       searchTimeout = null
     }, 500)
   }
@@ -135,11 +136,13 @@
       <option value="SCORE_DESC">Score</option>
       <option value="POPULARITY_DESC">Popularity</option>
       <option value="TRENDING_DESC">Trending</option>
+      <option value="UPDATED_TIME_DESC" disabled hidden>Updated Date</option>
     </select>
   </div>
   <div class="col-auto p-10 d-flex">
-    <button class="btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0" type="button" on:click={searchClear} class:text-primary={!!current}
-      >delete</button>
+    <button class="btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0" type="button" on:click={searchClear} class:text-primary={!!current}>
+      delete
+    </button>
   </div>
 </div>
 
