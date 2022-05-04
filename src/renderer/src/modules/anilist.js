@@ -271,7 +271,7 @@ query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [Media
     pageInfo {
       hasNextPage
     },
-    mediaList (userId: $id, type: $type, status_in: $status_in) {
+    mediaList (userId: $id, type: $type, status_in: $status_in, sort: UPDATED_TIME_DESC) {
       media {
         ${queryObjects}
       }
