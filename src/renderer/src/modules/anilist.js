@@ -89,20 +89,34 @@ async function handleRequest (opts) {
 }
 
 export function alEntry (filemedia) {
-  if (filemedia.media && alToken && (filemedia.media.nextAiringEpisode?.episode || filemedia.media.episodes) >= filemedia.episodeNumber) {
-    if (!filemedia.media.mediaListEntry || filemedia.media.mediaListEntry?.progress <= filemedia.episodeNumber || filemedia.media.episodes === 1) {
-      const variables = {
-        method: 'Entry',
-        repeat: 0,
-        id: filemedia.media.id,
-        status: 'CURRENT',
-        episode: filemedia.episodeNumber || 1
+  console.log(filemedia)
+  // check if values exist
+  if (filemedia.media && alToken) {
+    const { media } = filemedia
+    // check if media can even be watched, ex: it was resolved incorrectly
+    if (media.status === 'FINISHED' || media.status === 'RELEASING') {
+      // some anime/OVA's can have a single episode, or some movies can have multiple episodes
+      const singleEpisode = (!media.episodes || (media.format === 'MOVIE' && media.episodes === 1)) && 1
+      const videoEpisode = filemedia.episodeNumber || singleEpisode
+      const mediaEpisode = media.nextAiringEpisode?.episode || media.episodes || singleEpisode
+      // check episode range
+      if (videoEpisode && mediaEpisode && mediaEpisode >= videoEpisode) {
+        // check user's own watch progress
+        if (!media.mediaListEntry || media.mediaListEntry?.progress <= videoEpisode || singleEpisode) {
+          const variables = {
+            method: 'Entry',
+            repeat: 0,
+            id: media.id,
+            status: 'CURRENT',
+            episode: videoEpisode
+          }
+          if (videoEpisode === mediaEpisode) {
+            variables.status = 'COMPLETED'
+            if (media.mediaListEntry?.status === 'COMPLETED') variables.repeat = media.mediaListEntry.repeat + 1
+          }
+          alRequest(variables)
+        }
       }
-      if (filemedia.episodeNumber === filemedia.media.episodes || filemedia.media.episodes === 1) {
-        variables.status = 'COMPLETED'
-        if (filemedia.media.mediaListEntry.status === 'COMPLETED') variables.repeat = filemedia.media.mediaListEntry.repeat + 1
-      }
-      alRequest(variables)
     }
   }
 }
