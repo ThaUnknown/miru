@@ -8,7 +8,7 @@
     loading = true
     const index = med.length - 1
     await med[index]
-    if (index === med.length - 1) loading = false
+    if (med[index] === media[media.length - 1]) loading = false
   }
 </script>
 

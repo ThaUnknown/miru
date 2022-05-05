@@ -24,6 +24,24 @@
     }
     return safe
   }
+  function customFilter(mediaList) {
+    return mediaList?.filter(({ media }) => {
+      let condition = true
+      if (search.genre && !media.genres?.includes(search.genre)) condition = false
+      if (search.season && media.season !== search.season) condition = false
+      if (search.year && media.seasonYear !== search.year) condition = false
+      if (search.format && media.format !== search.format) condition = false
+      if (search.status && media.status !== search.status) condition = false
+      if (search.search) {
+        const titles = Object.values(media.title)
+          .concat(media.synonyms)
+          .filter(name => name != null)
+          .map(title => title.toLowerCase())
+        if (!titles.find(title => title.includes(search.search.toLowerCase()))) condition = false
+      }
+      return condition
+    })
+  }
   async function infiniteScroll() {
     if (current && canScroll && hasNext && this.scrollTop + this.clientHeight > this.scrollHeight - 800) {
       canScroll = false
@@ -37,7 +55,6 @@
 
   $: load(current)
   async function load(current) {
-    console.log(current)
     if (sections[current]) {
       page = 1
       canScroll = false
@@ -98,11 +115,13 @@
         if (perPage !== 5) search.sort = 'UPDATED_TIME_DESC'
         return alRequest({ method: 'UserLists', status_in: 'CURRENT', page }).then(res => {
           hasNext = res?.data?.Page.pageInfo.hasNextPage
-          return res?.data?.Page.mediaList
-            .filter(i => {
-              return i.media.status !== 'RELEASING' || i.media.mediaListEntry?.progress < i.media.nextAiringEpisode?.episode - 1
-            })
-            .slice(0, perPage)
+          return customFilter(
+            res?.data?.Page.mediaList
+              .filter(i => {
+                return i.media.status !== 'RELEASING' || i.media.mediaListEntry?.progress < i.media.nextAiringEpisode?.episode - 1
+              })
+              .slice(0, perPage)
+          )
         })
       },
       hide: !alToken
@@ -110,9 +129,9 @@
     releases: {
       title: 'New Releases',
       releases: true,
-      load: (page = 1, perPage = 20, force = true) => {
+      load: async (page = 1, perPage = 20, force = true) => {
         if (perPage !== 5) search.sort = 'START_DATE_DESC'
-        return releasesCards(page, perPage, force)
+        return customFilter(await releasesCards(page, perPage, force))
       }
     },
     planning: {
@@ -121,7 +140,7 @@
         if (perPage !== 5) search.sort = 'UPDATED_TIME_DESC'
         return alRequest({ method: 'UserLists', page, perPage, status_in: 'PLANNING' }).then(res => {
           hasNext = res?.data?.Page.pageInfo.hasNextPage
-          return res?.data?.Page.mediaList
+          return customFilter(res?.data?.Page.mediaList)
         })
       },
       hide: !alToken

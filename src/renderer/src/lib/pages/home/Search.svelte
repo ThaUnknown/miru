@@ -62,24 +62,24 @@
     </div>
     <select class="form-control bg-dark shadow-lg" required bind:value={search.genre}>
       <option value selected disabled hidden>Any</option>
-      <option value="action">Action</option>
-      <option value="adventure">Adventure</option>
-      <option value="comedy">Comedy</option>
-      <option value="drama">Drama</option>
-      <option value="ecchi">Ecchi</option>
-      <option value="fantasy">Fantasy</option>
-      <option value="horror">Horror</option>
-      <option value="mahou shoujo">Mahou Shoujo</option>
-      <option value="mecha">Mecha</option>
-      <option value="music">Music</option>
-      <option value="mystery">Mystery</option>
-      <option value="psychological">Psychological</option>
-      <option value="romance">Romance</option>
-      <option value="sci-fi">Sci-Fi</option>
-      <option value="slice of life">Slice of Life</option>
-      <option value="sports">Sports</option>
-      <option value="supernatural">Supernatural</option>
-      <option value="thriller">Thriller</option>
+      <option value="Action">Action</option>
+      <option value="Adventure">Adventure</option>
+      <option value="Comedy">Comedy</option>
+      <option value="Drama">Drama</option>
+      <option value="Ecchi">Ecchi</option>
+      <option value="Fantasy">Fantasy</option>
+      <option value="Horror">Horror</option>
+      <option value="Mahou Shoujo">Mahou Shoujo</option>
+      <option value="Mecha">Mecha</option>
+      <option value="Music">Music</option>
+      <option value="Mystery">Mystery</option>
+      <option value="Psychological">Psychological</option>
+      <option value="Romance">Romance</option>
+      <option value="Sci-Fi">Sci-Fi</option>
+      <option value="Slice of Life">Slice of Life</option>
+      <option value="Sports">Sports</option>
+      <option value="Supernatural">Supernatural</option>
+      <option value="Thriller">Thriller</option>
     </select>
   </div>
   <div class="col-lg col-4 p-10 d-flex flex-column justify-content-end">
