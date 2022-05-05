@@ -149,7 +149,7 @@
       title: 'Trending Now',
       load: (page = 1, perPage = 50) => {
         if (perPage !== 5) search.sort = 'TRENDING_DESC'
-        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
+        return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     romance: {
@@ -157,9 +157,9 @@
       load: (page = 1, perPage = 50) => {
         if (perPage !== 5) {
           search.sort = 'TRENDING_DESC'
-          search.genre = 'romance'
+          search.genre = 'Romance'
         }
-        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
+        return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', genre: 'Romance', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     action: {
@@ -167,9 +167,9 @@
       load: (page = 1, perPage = 50) => {
         if (perPage !== 5) {
           search.sort = 'TRENDING_DESC'
-          search.genre = 'action'
+          search.genre = 'Action'
         }
-        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
+        return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', genre: 'Action', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     adventure: {
@@ -177,9 +177,9 @@
       load: (page = 1, perPage = 50) => {
         if (perPage !== 5) {
           search.sort = 'TRENDING_DESC'
-          search.genre = 'adventure'
+          search.genre = 'Adventure'
         }
-        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
+        return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', genre: 'Adventure', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     fantasy: {
@@ -187,9 +187,9 @@
       load: (page = 1, perPage = 50) => {
         if (perPage !== 5) {
           search.sort = 'TRENDING_DESC'
-          search.genre = 'fantasy'
+          search.genre = 'Fantasy'
         }
-        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
+        return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', genre: 'Fantasy', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     comedy: {
@@ -197,9 +197,9 @@
       load: (page = 1, perPage = 50) => {
         if (perPage !== 5) {
           search.sort = 'TRENDING_DESC'
-          search.genre = 'comedy'
+          search.genre = 'Comedy'
         }
-        return alRequest({ method: 'Search', page, perPage, ...sanitiseObject(search) }).then(res => processMedia(res))
+        return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', genre: 'Comedy', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     schedule: {
