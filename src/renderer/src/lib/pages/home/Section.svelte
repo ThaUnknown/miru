@@ -3,11 +3,11 @@
 
   import Cards from './Cards.svelte'
   export let opts
-  let cards = opts.load(1, 5)
+  let cards = opts.load(1, 6)
   let interval = null
   if (opts.releases) {
     interval = setInterval(async () => {
-      const media = await opts.load(1, 5, false)
+      const media = await opts.load(1, 6, false, false)
       if (media) cards = media
     }, 30000)
   }
@@ -35,7 +35,7 @@
     padding: 2rem 4rem;
     position: relative;
     padding: 0.7rem 4rem;
-    grid-template-columns: repeat(5, 50rem);
+    grid-template-columns: repeat(6, 50rem);
   }
 
   .gallery :global(.empty) {

@@ -45,8 +45,8 @@
     --dm-link-text-color: var(--dm-muted-text-color) !important;
     --dm-link-text-color-hover: var(--dm-text-color) !important;
     --base-html-font-size: 50%;
-    --base-html-font-size-1600: 62.5%;
-    --base-html-font-size-1920: 70%;
+    --base-html-font-size-1600: 50%;
+    --base-html-font-size-1920: 62.5%;
     --tooltip-width: 17rem;
     --card-border-width: 0;
     --sidebar-border-width: 0;

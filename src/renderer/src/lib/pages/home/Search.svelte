@@ -2,6 +2,7 @@
   export let search
   export let current
   export let media = null
+  export let loadCurrent
   let searchTimeout = null
 
   function searchClear() {
@@ -21,9 +22,11 @@
       clearTimeout(searchTimeout)
     }
     searchTimeout = setTimeout(() => {
-      const old = current
-      current = null
-      if (Object.values(search).filter(v => v).length) current = old || 'search'
+      if (current === null) {
+        if (Object.values(search).filter(v => v).length) current = 'search'
+      } else {
+        loadCurrent(false)
+      }
       searchTimeout = null
     }, 500)
   }

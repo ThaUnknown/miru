@@ -966,7 +966,7 @@
 
 <style>
   .stats {
-    font-size: 1.8rem !important;
+    font-size: 2.3rem !important;
     white-space: nowrap;
     align-self: center;
     font-weight: 600;
@@ -1025,8 +1025,8 @@
   }
 
   .material-icons {
-    font-size: 2.2rem;
-    padding: 1.2rem;
+    font-size: 2.6rem;
+    padding: 1.5rem;
     transition: all 0.2s ease;
     display: flex;
   }
@@ -1112,13 +1112,13 @@
     display: none !important;
   }
   .miniplayer .middle .ctrl[data-name='playPause'] {
-    font-size: 5rem;
+    font-size: 5.625rem;
   }
   .miniplayer:hover .middle {
     background: #00000066;
   }
   .middle .ctrl[data-name='playPause'] {
-    font-size: 6rem;
+    font-size: 6.75rem;
   }
 
   .middle .ctrl,
@@ -1211,7 +1211,7 @@
     width: 5vw;
     display: inline-block;
     transition: all 0.1s ease;
-    margin-right: 1rem;
+    margin-right: 1.125rem;
   }
 
   .bottom .volume input[type='range'] {
@@ -1223,7 +1223,7 @@
   .bottom [data-name='setProgress'] ~ .hover {
     pointer-events: none;
     opacity: 0;
-    top: 1.2rem;
+    top: 1.35rem;
     transform: translate(-50%, -100%);
     position: absolute;
     font-family: Roboto, Arial, Helvetica, sans-serif;
@@ -1239,11 +1239,11 @@
 
   .bottom div[data-name='progressWrapper'] .ts {
     color: #ececec;
-    font-size: 1.8rem !important;
+    font-size: 2.3rem !important;
     white-space: nowrap;
     align-self: center;
     line-height: var(--base-line-height);
-    padding: 0 1.2rem;
+    padding: 0 1.56rem;
     font-weight: 600;
   }
 

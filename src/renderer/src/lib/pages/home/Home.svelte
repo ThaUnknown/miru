@@ -27,6 +27,7 @@
   function customFilter(mediaList) {
     return mediaList?.filter(({ media }) => {
       let condition = true
+      if (!media) return condition
       if (search.genre && !media.genres?.includes(search.genre)) condition = false
       if (search.season && media.season !== search.season) condition = false
       if (search.year && media.seasonYear !== search.year) condition = false
@@ -53,15 +54,19 @@
     }
   }
 
+  async function loadCurrent(initial = true) {
+    page = 1
+    canScroll = false
+    const res = sections[current].load(1, 50, initial)
+    media = [res]
+    await res
+    canScroll = hasNext
+  }
+
   $: load(current)
   async function load(current) {
     if (sections[current]) {
-      page = 1
-      canScroll = false
-      const res = sections[current].load(1)
-      media = [res]
-      await res
-      canScroll = hasNext
+      loadCurrent()
     } else {
       if (container) container.scrollTop = 0
       media = []
@@ -102,17 +107,18 @@
             add(items[index].querySelector('link').textContent)
           }
         })
+        media.hasNext = hasNext
         return media
       }
     }
   }
-  const seasons = ['SUMMER', 'FALL', 'WINTER', 'SPRING']
+  const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL']
   const getSeason = d => seasons[Math.floor((d.getMonth() / 12) * 4) % 4]
   const sections = {
     continue: {
       title: 'Continue Watching',
-      load: (page = 1, perPage = 50) => {
-        if (perPage !== 5) search.sort = 'UPDATED_TIME_DESC'
+      load: (page = 1, perPage = 50, initial = false) => {
+        if (initial) search.sort = 'UPDATED_TIME_DESC'
         return alRequest({ method: 'UserLists', status_in: 'CURRENT', page }).then(res => {
           hasNext = res?.data?.Page.pageInfo.hasNextPage
           return customFilter(
@@ -129,15 +135,15 @@
     releases: {
       title: 'New Releases',
       releases: true,
-      load: async (page = 1, perPage = 20, force = true) => {
-        if (perPage !== 5) search.sort = 'START_DATE_DESC'
+      load: async (page = 1, perPage = 20, initial = false, force = true) => {
+        if (initial) search.sort = 'START_DATE_DESC'
         return customFilter(await releasesCards(page, perPage, force))
       }
     },
     planning: {
       title: 'Your List',
-      load: (page = 1, perPage = 50) => {
-        if (perPage !== 5) search.sort = 'UPDATED_TIME_DESC'
+      load: (page = 1, perPage = 50, initial = false) => {
+        if (initial) search.sort = 'UPDATED_TIME_DESC'
         return alRequest({ method: 'UserLists', page, perPage, status_in: 'PLANNING' }).then(res => {
           hasNext = res?.data?.Page.pageInfo.hasNextPage
           return customFilter(res?.data?.Page.mediaList)
@@ -147,15 +153,36 @@
     },
     trending: {
       title: 'Trending Now',
-      load: (page = 1, perPage = 50) => {
-        if (perPage !== 5) search.sort = 'TRENDING_DESC'
+      load: (page = 1, perPage = 50, initial = false) => {
+        if (initial) search.sort = 'TRENDING_DESC'
         return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', ...sanitiseObject(search) }).then(res => processMedia(res))
+      }
+    },
+    seasonal: {
+      title: 'Popular This Season',
+      load: (page = 1, perPage = 50, initial = false) => {
+        const date = new Date()
+        if (initial) {
+          search.season = getSeason(date)
+          search.year = date.getFullYear()
+          search.sort = 'POPULARITY_DESC'
+        }
+        return alRequest({ method: 'Search', page, perPage, year: date.getFullYear(), season: getSeason(date), sort: 'POPULARITY_DESC', ...sanitiseObject(search) }).then(res =>
+          processMedia(res)
+        )
+      }
+    },
+    popular: {
+      title: 'All Time Popular',
+      load: (page = 1, perPage = 50, initial = false) => {
+        if (initial) search.sort = 'POPULARITY_DESC'
+        return alRequest({ method: 'Search', page, perPage, sort: 'POPULARITY_DESC', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     romance: {
       title: 'Romance',
-      load: (page = 1, perPage = 50) => {
-        if (perPage !== 5) {
+      load: (page = 1, perPage = 50, initial = false) => {
+        if (initial) {
           search.sort = 'TRENDING_DESC'
           search.genre = 'Romance'
         }
@@ -164,8 +191,8 @@
     },
     action: {
       title: 'Action',
-      load: (page = 1, perPage = 50) => {
-        if (perPage !== 5) {
+      load: (page = 1, perPage = 50, initial = false) => {
+        if (initial) {
           search.sort = 'TRENDING_DESC'
           search.genre = 'Action'
         }
@@ -174,8 +201,8 @@
     },
     adventure: {
       title: 'Adventure',
-      load: (page = 1, perPage = 50) => {
-        if (perPage !== 5) {
+      load: (page = 1, perPage = 50, initial = false) => {
+        if (initial) {
           search.sort = 'TRENDING_DESC'
           search.genre = 'Adventure'
         }
@@ -184,8 +211,8 @@
     },
     fantasy: {
       title: 'Fantasy',
-      load: (page = 1, perPage = 50) => {
-        if (perPage !== 5) {
+      load: (page = 1, perPage = 50, initial = false) => {
+        if (initial) {
           search.sort = 'TRENDING_DESC'
           search.genre = 'Fantasy'
         }
@@ -194,8 +221,8 @@
     },
     comedy: {
       title: 'Comedy',
-      load: (page = 1, perPage = 50) => {
-        if (perPage !== 5) {
+      load: (page = 1, perPage = 50, initial = false) => {
+        if (initial) {
           search.sort = 'TRENDING_DESC'
           search.genre = 'Comedy'
         }
@@ -205,19 +232,20 @@
     schedule: {
       title: 'Schedule',
       hide: true,
-      load: (page = 1) => {
-        search.sort = 'START_DATE_DESC'
-        search.status = 'RELEASING'
+      load: (page = 1, perPage = 50, initial = false) => {
         const date = new Date()
-        search.season = getSeason(date)
-        search.year = date.getFullYear()
-        return alRequest({ method: 'AiringSchedule', page }).then(res => {
-          const entries = res?.data?.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && !entry.media.isAdult) || []
+        if (initial) {
+          search.sort = 'START_DATE_DESC'
+          search.status = 'RELEASING'
+        }
+        if (perPage !== 6) date.setHours(0, 0, 0, 0)
+        return alRequest({ method: 'AiringSchedule', page, from: parseInt(date.getTime() / 1000) }).then(res => {
+          const entries = customFilter(res?.data?.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && !entry.media.isAdult) || []).slice(0, perPage)
           const media = []
           hasNext = res?.data?.Page.pageInfo.hasNextPage
           let date = new Date()
           for (const entry of entries) {
-            if (entry.timeUntilAiring && (!lastDate || new Date(+date + entry.timeUntilAiring * 1000).getDay() !== lastDate.getDay())) {
+            if (entry.timeUntilAiring && perPage !== 6 && (!lastDate || new Date(+date + entry.timeUntilAiring * 1000).getDay() !== lastDate.getDay())) {
               lastDate = new Date(+date + entry.timeUntilAiring * 1000)
               media.push(lastDate.toLocaleDateString('en-US', { weekday: 'long' }))
             }
@@ -246,7 +274,7 @@
 
 <div class="d-flex h-full flex-column overflow-y-scroll root" on:scroll={infiniteScroll} bind:this={container}>
   <div class="h-full py-10">
-    <Search bind:media bind:search bind:current />
+    <Search bind:media bind:search bind:current {loadCurrent} />
     {#if media.length}
       <Gallery {media} />
     {:else}

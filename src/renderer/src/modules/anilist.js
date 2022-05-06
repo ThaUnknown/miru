@@ -89,7 +89,6 @@ async function handleRequest (opts) {
 }
 
 export function alEntry (filemedia) {
-  console.log(filemedia)
   // check if values exist
   if (filemedia.media && alToken) {
     const { media } = filemedia
@@ -306,12 +305,8 @@ query ($id: Int, $mediaId: Int){
 }`
       break
     } case 'AiringSchedule': {
-      const date = new Date()
-      const diff = date.getDay() >= 1 ? date.getDay() - 1 : 6 - date.getDay()
-      date.setDate(date.getDate() - diff)
-      date.setHours(0, 0, 0, 0)
-      variables.from = date.getTime() / 1000
-      variables.to = (date.getTime() + 7 * 24 * 60 * 60 * 1000) / 1000
+      variables.from = opts.from
+      variables.to = (variables.from + 7 * 24 * 60 * 60)
       query = ` 
 query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
   Page (page: $page, perPage: $perPage) {
