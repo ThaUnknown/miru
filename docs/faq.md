@@ -13,6 +13,9 @@ I recommend you read the [guide about basics of piracy.](https://wiki.piracy.moe
 ## **Will this replace streaming sites?**
 Not really. The underlying source of video are still torrents, which aren't always seeded, so anime that's a few years old might not play back smoothly.
 
+## **Can I log in with MAL?**
+No. You can however migrate MAL to AL, see [this guide.](https://anilist.co/forum/thread/3393)
+
 ## **Why is anime X not playing?**
 One of four reasons:
 - the anime isn't seeded
