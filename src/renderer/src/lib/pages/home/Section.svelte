@@ -5,12 +5,11 @@
   export let opts
   let cards = [opts.load(1, 6)]
   let interval = null
-  let scrolled = false
   let canScroll = true
   let page = 1
   if (opts.releases) {
     interval = setInterval(async () => {
-      const media = await opts.load(1, scrolled ? 50 : 6, false, false)
+      const media = await opts.load(1, 6, false, false)
       if (media) cards = [media]
     }, 30000)
   }
@@ -18,21 +17,12 @@
     if (interval) clearInterval(interval)
   })
   async function scroll() {
-    if (!scrolled) {
-      scrolled = true;
-      const media = await opts.load(1, 50, false, false)
-      if (media) cards = [media]
-      console.log("Loading all base releases")
-    }
     if (canScroll && this.scrollLeft + this.clientWidth > this.scrollWidth - 800) {
       canScroll = false
-      console.log("Loading next page", cards)
-      const res = opts.load(++page)
-      console.log("res", res)
+      const res = opts.load(++page, 6, false, false);
       cards.push(res)
       cards = cards
       canScroll = !!(await res)
-      console.log("res2", await res, !!(await res))
     }
   }
 </script>
