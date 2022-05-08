@@ -112,7 +112,6 @@
     content: ' • ';
   }
   .card {
-    will-change: transform, bottom;
     animation: 0.3s ease 0s 1 load-in;
     cursor: pointer;
     overflow: hidden;
