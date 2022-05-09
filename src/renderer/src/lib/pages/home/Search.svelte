@@ -153,7 +153,6 @@
   .container-fluid > div > :nth-child(2),
   .container-fluid button {
     transition: transform 0.2s ease;
-    will-change: transform;
   }
 
   .container-fluid > div > :nth-child(2):hover {
