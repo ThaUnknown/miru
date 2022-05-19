@@ -74,6 +74,10 @@
     paused = detail.paused
   })
 
+  w2gEmitter.on('setindex', ({ detail }) => {
+    handleCurrent(videos?.[detail])
+  })
+
   function updatew2g () {
     w2gEmitter.emit('player', { time: Math.floor(currentTime), paused })
   }
@@ -203,7 +207,7 @@
   }
 
   function updateFiles (files) {
-    if (files && files.length) {
+    if (files?.length) {
       videos = files.filter(file => videoRx.test(file.name))
       if (videos?.length) {
         handleCurrent(videos[0])
@@ -219,6 +223,7 @@
       src = ''
       video?.load()
       currentTime = 0
+      targetTime = 0
     }
   }
 
@@ -230,6 +235,11 @@
         interval: undefined,
         video: undefined
       })
+      currentTime = 0
+      targetTime = 0
+      media = null
+      fileMedia = null
+      hadImage = false
       completed = false
       current = file
       initSubs()
@@ -321,7 +331,9 @@
     if (hasNext) {
       const index = videos.indexOf(current)
       if (index + 2 < videos.length) {
-        handleCurrent(videos[(index + 1) % videos.length])
+        const target = (index + 1) % videos.length
+        handleCurrent(videos[target])
+        w2gEmitter.emit('index', { index: target })
       } else if (media?.nextAiringEpisode?.episode - 1 || media?.episodes > fileMedia?.episodeNumber) {
         playAnime(media, fileMedia?.episodeNumber + 1)
       }
@@ -332,6 +344,7 @@
       const index = videos.indexOf(current)
       if (index > 1) {
         handleCurrent(videos[index - 1])
+        w2gEmitter.emit('index', { index: index - 1 })
       } else if (media && fileMedia?.episodeNumber > 1) {
         playAnime(media, fileMedia?.episodeNumber - 1)
       }

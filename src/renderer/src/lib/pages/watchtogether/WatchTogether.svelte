@@ -1,13 +1,11 @@
 <script context="module">
   import { writable, get } from 'svelte/store'
   import { alID } from '@/modules/anilist.js'
-  import { add } from '@/modules/torrent.js'
+  import { add, client } from '@/modules/torrent.js'
   import Peer from '@/modules/Peer.js'
   import { generateRandomHexCode } from '@/modules/util.js'
   import { addToast } from '@/lib/Toasts.svelte'
   import 'browser-event-target-emitter'
-
-  import { client } from '@/modules/torrent.js'
 
   export const w2gEmitter = new EventTarget()
 
@@ -21,7 +19,7 @@
 
   const pending = writable(null)
 
-  function invite() {
+  function invite () {
     pending.set(new Peer({ polite: false }))
   }
 
@@ -29,7 +27,7 @@
     if (peer) peer.ready.then(() => handlePeer(peer))
   })
 
-  function setPlayerState(detail) {
+  function setPlayerState (detail) {
     let emit = false
     for (const key of ['paused', 'time']) {
       emit = emit || detail[key] !== playerState[key]
@@ -42,16 +40,24 @@
     if (setPlayerState(detail)) emit('player', detail)
   })
 
+  w2gEmitter.on('index', ({ detail }) => {
+    if (playerState.index !== detail.index) {
+      emit('index', detail)
+      playerState.index = detail.index
+    }
+  })
+
   queueMicrotask(() => {
     client.on('magnet', ({ detail }) => {
       if (detail.hash !== playerState.hash) {
         playerState.hash = detail.hash
+        playerState.index = 0
         emit('torrent', detail)
       }
     })
   })
 
-  function emit(type, data) {
+  function emit (type, data) {
     for (const peer of Object.values(peersExternal)) {
       peer.channel.send(JSON.stringify({ type, ...data }))
     }
@@ -60,17 +66,18 @@
   const playerState = {
     paused: null,
     time: null,
-    hash: null
+    hash: null,
+    index: 0
   }
 
-  function cancel() {
+  function cancel () {
     pending.update(peer => {
       peer.pc.close()
     })
     if (get(state) === 'guest') state.set(null)
   }
 
-  function cleanup() {
+  function cleanup () {
     if (get(state)) {
       addToast({
         text: 'The lobby you were previously in has disbanded.',
@@ -86,7 +93,7 @@
     }
   }
 
-  function handlePeer(peer) {
+  function handlePeer (peer) {
     pending.set(null)
     if (get(state) === 'guest') peer.dc.onclose = cleanup
     // add event listeners and store in peers
@@ -104,27 +111,25 @@
     }
   }
 
-  function handleMessage(data, channel, peer) {
+  function handleMessage (data, channel, peer) {
     console.log(data)
     if (get(state) === 'host') emit(data.type, data)
     switch (data.type) {
       case 'init':
-        {
+        peers.update(object => {
+          object[data.id] = {
+            peer,
+            channel,
+            user: data.user
+          }
+          return object
+        })
+
+        channel.onclose = () => {
           peers.update(object => {
-            object[data.id] = {
-              peer,
-              channel,
-              user: data.user
-            }
+            delete object[data.id]
             return object
           })
-
-          channel.onclose = () => {
-            peers.update(object => {
-              delete object[data.id]
-              return object
-            })
-          }
         }
         break
       case 'player': {
@@ -138,13 +143,20 @@
         }
         break
       }
+      case 'index': {
+        if (playerState.index !== data.index) {
+          playerState.index = data.index
+          w2gEmitter.emit('setindex', data.index)
+        }
+        break
+      }
       default: {
         console.error('Invalid message type', data, channel)
       }
     }
   }
 
-  function setState(newstate) {
+  function setState (newstate) {
     if (newstate === 'guest') {
       const peer = new Peer({ polite: true })
       pending.set(peer)
