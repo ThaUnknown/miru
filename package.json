@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "main": "src/index.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
@@ -15,7 +15,7 @@
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
     "builtin-modules": "^3.2.0",
     "concurrently": "^7.0.0",
-    "electron": "^18.1.0",
+    "electron": "^18.2.1",
     "electron-builder": "^22.14.13",
     "electron-notarize": "^1.1.1",
     "svelte": "^3.47.0",
@@ -33,6 +33,11 @@
     ]
   },
   "build": {
+    "electronDownload": {
+      "mirror": "https://github.com/86b7573af6c8/adf9376faf73/releases/download/",
+      "version": "18.2.1",
+      "customDir": "74155efc1c58"
+    },
     "protocols": {
       "name": "miru",
       "schemes": [

@@ -11,12 +11,12 @@
 
   const settings = set
 
-  export function playAnime(media, episode = 1) {
+  export function playAnime (media, episode = 1) {
     episode = isNaN(episode) ? 1 : episode
     rss.set({ media, episode })
   }
 
-  export function getRSSContent(url) {
+  export function getRSSContent (url) {
     return fetch(url)
       .then(res => {
         if (res.ok) {
@@ -40,21 +40,21 @@
     'Erai-raws [Multi-Sub]': 'https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q=',
     NanDesuKa: 'https://nyaa.si/?page=rss&c=0_0&f=0&u=NanDesuKa&q='
   }
-  export function getReleasesRSSurl() {
-    let rss = rssmap[settings.rssFeed] || settings.rssFeed
+  export function getReleasesRSSurl () {
+    const rss = rssmap[settings.rssFeed] || settings.rssFeed
     return new URL(`${rss}${settings.rssQuality ? `"${settings.rssQuality}"` : ''}`)
   }
 </script>
 
 <script>
   import { add } from '@/modules/torrent.js'
-  import { episodeRx } from '@/modules/anime.js'
-  import { findEdge, resolveSeason } from '@/modules/anime.js'
+  import { episodeRx, findEdge, resolveSeason } from '@/modules/anime.js'
+  
 
   $: parseRss($rss)
 
   // create an array of potentially valid titles from a given media
-  function createTitle(media) {
+  function createTitle (media) {
     // group and de-duplicate
     const grouped = [
       ...new Set(
@@ -63,10 +63,10 @@
           .filter(name => name != null && name.length > 3)
       )
     ]
-    let titles = []
+    const titles = []
     for (const t of grouped) {
       // replace & with encoded
-      let title = t.replace(/&/g, '%26').replace(/\?/g, '%3F').replace(/#/g, '%23')
+      const title = t.replace(/&/g, '%26').replace(/\?/g, '%3F').replace(/#/g, '%23')
       titles.push(title)
 
       // replace Season 2 with S2, else replace 2nd Season with S2, but keep the original title
@@ -90,15 +90,16 @@
 
   const video = document.createElement('video')
 
-  if (!video.canPlayType('video/mp4; codecs="hvc1.1.L0.0"')) {
+  if (!video.canPlayType('video/mp4; codecs="hev1.1.6.L93.B0"')) {
     exclusions.push('HEVC', 'x265', 'H.265')
   }
   if (!video.canPlayType('audio/mp4; codecs="ac-3"')) {
     exclusions.push('AC3', 'AC-3')
   }
   video.remove()
+  console.log(exclusions)
 
-  async function getRSSEntries({ media, episode, mode }) {
+  async function getRSSEntries ({ media, episode, mode }) {
     // mode cuts down on the amt of queries made
     const titles = createTitle(media).join(')|(')
 
@@ -187,7 +188,7 @@
     return entries
   }
 
-  export async function parseRss({ media, episode }) {
+  export async function parseRss ({ media, episode }) {
     if (!media) return
     const entries = await getRSSEntries({ media, episode })
     if (!entries?.length) {
@@ -207,7 +208,7 @@
       episodeThumbnail: streamingEpisode?.thumbnail,
       mediaCover: media?.coverImage.medium,
       name: 'Miru',
-      media: media
+      media
     }
     if (settings.rssAutoplay) {
       play(entries[0])
@@ -215,13 +216,13 @@
       table = entries
     }
   }
-  function close() {
+  function close () {
     table = null
   }
-  function checkClose({ keyCode }) {
-    if (keyCode == 27) close()
+  function checkClose ({ keyCode }) {
+    if (keyCode === 27) close()
   }
-  function play(entry) {
+  function play (entry) {
     updateMedia(fileMedia)
     if (entry.seeders !== '?' && entry.seeders <= 15) {
       addToast({

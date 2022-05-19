@@ -3,7 +3,7 @@
   import { getContext } from 'svelte'
   export let cards = new Promise(() => {})
   const view = getContext('view')
-  function viewMedia(media) {
+  function viewMedia (media) {
     $view = media
   }
   export let length = 5
