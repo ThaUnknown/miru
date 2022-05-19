@@ -91,47 +91,51 @@ const postfix = {
 }
 
 async function resolveTitle (name) {
-  if (!(name in relations)) {
-    const method = { name, method: 'SearchName', perPage: 1, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
+  const method = { name, method: 'SearchName', perPage: 1, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
 
-    // inefficient but readable
+  // inefficient but readable
 
-    let media = null
-    // change S2 into Season 2 or 2nd Season
-    const match = method.name.match(/ S(\d)$/)
-    const oldname = method.name
-    try {
+  let media = null
+  // change S2 into Season 2 or 2nd Season
+  const match = method.name.match(/ S(\d)$/)
+  const oldname = method.name
+  try {
+    if (match) {
+      method.name = method.name.replace(/ S(\d)$/, ` ${match[1]}${postfix[match[1]] || 'th'} Season`)
+      media = (await alRequest(method)).data.Page.media[0]
+      if (!media) {
+        method.name = oldname.replace(/ S(\d)$/, ` Season ${match[1]}`)
+        media = (await alRequest(method)).data.Page.media[0]
+      }
+    } else {
+      media = (await alRequest(method)).data.Page.media[0]
+    }
+
+    // remove (TV)
+    if (!media) {
+      const match = method.name.match(/\(TV\)/)
       if (match) {
-        method.name = method.name.replace(/ S(\d)$/, ` ${match[1]}${postfix[match[1]] || 'th'} Season`)
-        media = (await alRequest(method)).data.Page.media[0]
-        if (!media) {
-          method.name = oldname.replace(/ S(\d)$/, ` Season ${match[1]}`)
-          media = (await alRequest(method)).data.Page.media[0]
-        }
-      } else {
+        method.name = name.replace('(TV)', '').replace('-', '')
         media = (await alRequest(method)).data.Page.media[0]
       }
-
-      // remove (TV)
-      if (!media) {
-        const match = method.name.match(/\(TV\)/)
-        if (match) {
-          method.name = name.replace('(TV)', '').replace('-', '')
-          media = (await alRequest(method)).data.Page.media[0]
-        }
+    }
+    // remove 2020
+    if (!media) {
+      const match = method.name.match(/ (19[5-9]\d|20\d{2})/)
+      if (match) {
+        method.name = method.name.replace(/ (19[5-9]\d|20\d{2})/, '')
+        media = (await alRequest(method)).data.Page.media[0]
       }
-      // remove 2020
-      if (!media) {
-        const match = method.name.match(/ (19[5-9]\d|20\d{2})/)
-        if (match) {
-          method.name = method.name.replace(/ (19[5-9]\d|20\d{2})/, '')
-          media = (await alRequest(method)).data.Page.media[0]
-        }
-      }
-    } catch (e) { }
+    }
+  } catch (e) { }
 
-    if (media?.id) relations[name] = media.id
-  }
+  if (media) relations[name] = media
+}
+
+function getParseObjTitle (obj) {
+  let title = obj.anime_title
+  if (obj.anime_season) title += ' S' + obj.anime_season
+  return title
 }
 
 export async function resolveFileMedia (opts) {
@@ -140,28 +144,23 @@ export async function resolveFileMedia (opts) {
     ? opts.fileName.map(name => anitomyscript(name))
     : [anitomyscript(opts.fileName)]
   const parseObjs = await Promise.all(parsePromises)
-  await PromiseBatch(resolveTitle, [...new Set(parseObjs.map(obj => obj.anime_title).filter(title => !(title in relations)))], 10)
-  const assoc = {}
-  for (let ids = [...new Set(parseObjs.map(obj => relations[obj.anime_title]))]; ids.length; ids = ids.slice(50)) {
-    for await (const media of (await alRequest({ method: 'SearchIDS', id: ids.slice(0, 50), perPage: 50 }))?.data?.Page.media || []) {
-      assoc[media.id] = media
-    }
-  }
+  // batches promises in 10 at a time, because of CF burst protection, which still sometimes gets triggered :/
+  await PromiseBatch(resolveTitle, [...new Set(parseObjs.map(obj => getParseObjTitle(obj)))].filter(title => !(title in relations)), 10)
   const fileMedias = []
-  for (const praseObj of parseObjs) {
+  for (const parseObj of parseObjs) {
     let failed = false
     let episode
-    let media = assoc[relations[praseObj.anime_title]]
+    let media = relations[getParseObjTitle(parseObj)]
     // resolve episode, if movie, dont.
     const maxep = media?.nextAiringEpisode?.episode || media?.episodes
-    if ((media?.format !== 'MOVIE' || maxep) && praseObj.episode_number) {
-      if (praseObj.episode_number.constructor === Array) {
+    if ((media?.format !== 'MOVIE' || maxep) && parseObj.episode_number) {
+      if (parseObj.episode_number.constructor === Array) {
         // is an episode range
-        if (parseInt(praseObj.episode_number[0]) === 1) {
+        if (parseInt(parseObj.episode_number[0]) === 1) {
           // if it starts with #1 and overflows then it includes more than 1 season in a batch, cant fix this cleanly, name is parsed per file basis so this shouldnt be an issue
-          episode = `${praseObj.episode_number[0]} ~ ${praseObj.episode_number[1]}`
+          episode = `${parseObj.episode_number[0]} ~ ${parseObj.episode_number[1]}`
         } else {
-          if (maxep && parseInt(praseObj.episode_number[1]) > maxep) {
+          if (maxep && parseInt(parseObj.episode_number[1]) > maxep) {
             // get root media to start at S1, instead of S2 or some OVA due to parsing errors
             // this is most likely safe, if it was relative episodes then it would likely use an accurate title for the season
             // if they didnt use an accurate title then its likely an absolute numbering scheme
@@ -170,43 +169,43 @@ export async function resolveFileMedia (opts) {
             const root = prequel && (await resolveSeason({ media: (await alRequest({ method: 'SearchIDSingle', id: prequel.id })).data.Media, force: true })).media
 
             // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
-            const result = await resolveSeason({ media: root || media, episode: praseObj.episode_number[1] })
+            const result = await resolveSeason({ media: root || media, episode: parseObj.episode_number[1] })
             media = result.rootMedia
-            const diff = praseObj.episode_number[1] - result.episode
-            episode = `${praseObj.episode_number[0] - diff} ~ ${result.episode}`
+            const diff = parseObj.episode_number[1] - result.episode
+            episode = `${parseObj.episode_number[0] - diff} ~ ${result.episode}`
             failed = result.failed
           } else {
             // cant find ep count or range seems fine
-            episode = `${Number(praseObj.episode_number[0])} ~ ${Number(praseObj.episode_number[1])}`
+            episode = `${Number(parseObj.episode_number[0])} ~ ${Number(parseObj.episode_number[1])}`
           }
         }
       } else {
-        if (maxep && parseInt(praseObj.episode_number) > maxep) {
+        if (maxep && parseInt(parseObj.episode_number) > maxep) {
           // see big comment above
           const prequel = findEdge(media, 'PREQUEL')?.node || ((media.format === 'OVA' || media.format === 'ONA') && findEdge(media, 'PARENT')?.node)
           const root = prequel && (await resolveSeason({ media: (await alRequest({ method: 'SearchIDSingle', id: prequel.id })).data.Media, force: true })).media
 
           // value bigger than episode count
-          const result = await resolveSeason({ media: root || media, episode: parseInt(praseObj.episode_number) })
+          const result = await resolveSeason({ media: root || media, episode: parseInt(parseObj.episode_number) })
           media = result.rootMedia
           episode = result.episode
           failed = result.failed
         } else {
           // cant find ep count or episode seems fine
-          episode = Number(praseObj.episode_number)
+          episode = Number(parseObj.episode_number)
         }
       }
     }
-    const streamingEpisode = media?.streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(praseObj.episode_number))[0]
+    const streamingEpisode = media?.streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(parseObj.episode_number))[0]
     fileMedias.push({
-      mediaTitle: media?.title.userPreferred,
-      episodeNumber: episode,
+      mediaTitle: media?.title.userPreferred || parseObj.anime_title,
+      episodeNumber: episode || parseObj.episode_number,
       episodeTitle: streamingEpisode && episodeRx.exec(streamingEpisode.title)[2],
       episodeThumbnail: streamingEpisode?.thumbnail,
       mediaCover: media?.coverImage.medium,
       name: 'Miru',
-      parseObject: praseObj,
-      media: media,
+      parseObject: parseObj,
+      media,
       failed
     })
   }
@@ -268,4 +267,4 @@ export async function resolveSeason (opts) {
   return resolveSeason({ media, episode, increment, offset, rootMedia, force })
 }
 
-export const relations = {}
+const relations = {}

@@ -370,7 +370,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
   }
   options.body = JSON.stringify({
     query: query.replace(/\s/g, ''),
-    variables: variables
+    variables
   })
 
   return await handleRequest(options)

@@ -97,7 +97,6 @@
     exclusions.push('AC3', 'AC-3')
   }
   video.remove()
-  console.log(exclusions)
 
   async function getRSSEntries ({ media, episode, mode }) {
     // mode cuts down on the amt of queries made

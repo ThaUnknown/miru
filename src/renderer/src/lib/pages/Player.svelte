@@ -7,7 +7,7 @@
   export let media = null
   let fileMedia = null
   let hadImage = false
-  export function updateMedia(fileMed) {
+  export function updateMedia (fileMed) {
     if (!fileMedia) {
       setDiscordRPC(fileMed)
     }
@@ -20,34 +20,34 @@
     const metadata =
       fileMedia.episodeThumbnail || fileMedia.mediaCover
         ? new MediaMetadata({
-            title: name,
-            artwork: [
-              {
-                src: fileMedia.episodeThumbnail || fileMedia.mediaCover,
-                sizes: '256x256',
-                type: 'image/jpg'
-              }
-            ]
-          })
+          title: name,
+          artwork: [
+            {
+              src: fileMedia.episodeThumbnail || fileMedia.mediaCover,
+              sizes: '256x256',
+              type: 'image/jpg'
+            }
+          ]
+        })
         : new MediaMetadata({ title: name })
     if (fileMedia.parseObject?.release_group) metadata.artist = fileMedia.parseObject.release_group
     navigator.mediaSession.metadata = metadata
   }
-  function setDiscordRPC(fileMedia) {
+  function setDiscordRPC (fileMedia) {
     if (fileMedia) {
       window.IPC.emit('discord', {
         activity: {
-          details: fileMedia.media.title.userPreferred,
-          state: 'Watching Episode' + (!fileMedia.media.episodes ? ` ${fileMedia.episodeNumber}` : ''),
+          details: fileMedia.media?.title.userPreferred || fileMedia.parseObject.anime_title,
+          state: 'Watching Episode ' + ((!fileMedia.media?.episodes && fileMedia.episodeNumber) || ''),
           timestamps: {
             start: Date.now()
           },
           party: {
-            size: (fileMedia.episodeNumber && fileMedia.media.episodes && [fileMedia.episodeNumber, fileMedia.media.episodes]) || undefined
+            size: (fileMedia.episodeNumber && fileMedia.media?.episodes && [fileMedia.episodeNumber, fileMedia.media.episodes]) || undefined
           },
           assets: {
-            large_text: fileMedia.media.title.userPreferred,
-            large_image: fileMedia.media.coverImage.extraLarge,
+            large_text: fileMedia.media?.title.userPreferred,
+            large_image: fileMedia.media?.coverImage.extraLarge,
             small_image: 'logo',
             small_text: 'https://github.com/ThaUnknown/miru'
           },
@@ -74,11 +74,11 @@
     paused = detail.paused
   })
 
-  function updatew2g() {
+  function updatew2g () {
     w2gEmitter.emit('player', { time: Math.floor(currentTime), paused })
   }
 
-  async function mediaChange(current, image) {
+  async function mediaChange (current, image) {
     if (current && 'mediaSession' in navigator) {
       if (!media || (!hadImage && image)) {
         // filename is already mapped so this *should* be fine
@@ -92,8 +92,8 @@
 
   export let miniplayer = false
   export let page
-  $: updateFiles(files)
   export let files = []
+  $: updateFiles(files)
   let src = null
   let video = null
   let container = null
@@ -111,16 +111,16 @@
   let bufferTimeout = null
   let subHeaders = null
   let pip = false
-  let presentationRequest = null
+  const presentationRequest = null
   let presentationConnection = null
-  let canCast = false
+  const canCast = false
   let isFullscreen = false
   let ended = false
   let volume = localStorage.getItem('volume') || 1
   let playbackRate = 1
   $: localStorage.setItem('volume', volume || 0)
 
-  function checkAudio() {
+  function checkAudio () {
     if ('audioTracks' in HTMLVideoElement.prototype && !video.audioTracks.length) {
       addToast({
         text: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in RSS settings.",
@@ -129,12 +129,12 @@
       })
     }
   }
-  function getFPS() {
+  function getFPS () {
     video.fps = new Promise(resolve => {
       let lastmeta = null
       let count = 0
 
-      function handleFrames(now, metadata) {
+      function handleFrames (now, metadata) {
         if (count) {
           // resolve on 2nd frame, 1st frame might be a cut-off
           if (lastmeta) {
@@ -169,7 +169,7 @@
   }
 
   // plays one frame
-  function playFrame() {
+  function playFrame () {
     let wasPaused = false
     video.requestVideoFrameCallback(() => {
       if (wasPaused) paused = true
@@ -193,16 +193,16 @@
   //   })
   // }
 
-  //document.fullscreenElement isn't reactive
+  // document.fullscreenElement isn't reactive
   document.addEventListener('fullscreenchange', () => {
     isFullscreen = !!document.fullscreenElement
   })
 
-  function handleHeaders() {
+  function handleHeaders () {
     subHeaders = subs?.headers
   }
 
-  function updateFiles(files) {
+  function updateFiles (files) {
     if (files && files.length) {
       videos = files.filter(file => videoRx.test(file.name))
       if (videos?.length) {
@@ -222,7 +222,7 @@
     }
   }
 
-  async function handleCurrent(file) {
+  async function handleCurrent (file) {
     if (file) {
       if (thumbnailData.video?.src) URL.revokeObjectURL(video?.src)
       Object.assign(thumbnailData, {
@@ -243,7 +243,7 @@
 
   let hasNext = false
   let hasLast = false
-  function checkAvail(current) {
+  function checkAvail (current) {
     if ((media?.nextAiringEpisode?.episode - 1 || media?.episodes) > fileMedia?.episodeNumber) {
       hasNext = true
     } else if (videos.indexOf(current) !== videos.length - 1) {
@@ -260,11 +260,11 @@
     }
   }
 
-  function initSubs() {
+  function initSubs () {
     if (subs) subs.destroy()
     subs = new Subtitles(video, files, current, handleHeaders)
   }
-  function cycleSubtitles() {
+  function cycleSubtitles () {
     if (current && subs?.headers) {
       const tracks = subs.headers.filter(header => header)
       const index = tracks.indexOf(subs.headers[subs.current]) + 1
@@ -274,33 +274,33 @@
 
   let subDelay = 0
   $: updateDelay(subDelay)
-  function updateDelay(delay) {
+  function updateDelay (delay) {
     if (subs?.renderer) subs.renderer.timeOffset = delay
   }
 
   let currentTime = 0
   $: progress = currentTime / duration
   $: targetTime = (!paused && currentTime) || targetTime
-  function handleMouseDown({ target }) {
+  function handleMouseDown ({ target }) {
     wasPaused = paused
     paused = true
     targetTime = target.value * duration
   }
-  function handleMouseUp() {
+  function handleMouseUp () {
     paused = wasPaused
     currentTime = targetTime
   }
-  function handleProgress({ target }) {
+  function handleProgress ({ target }) {
     targetTime = target.value * duration
   }
 
-  function autoPlay() {
+  function autoPlay () {
     if (!miniplayer) video.play()
   }
-  function playPause() {
+  function playPause () {
     paused = !paused
   }
-  function toggleMute() {
+  function toggleMute () {
     muted = !muted
   }
   let visibilityPaused = true
@@ -314,10 +314,10 @@
       }
     }
   })
-  function tryPlayNext() {
+  function tryPlayNext () {
     if (set.playerAutoplay) playNext()
   }
-  function playNext() {
+  function playNext () {
     if (hasNext) {
       const index = videos.indexOf(current)
       if (index + 2 < videos.length) {
@@ -327,7 +327,7 @@
       }
     }
   }
-  function playLast() {
+  function playLast () {
     if (hasLast) {
       const index = videos.indexOf(current)
       if (index > 1) {
@@ -337,10 +337,10 @@
       }
     }
   }
-  function toggleFullscreen() {
+  function toggleFullscreen () {
     document.fullscreenElement ? document.exitFullscreen() : container.requestFullscreen()
   }
-  function seek(time) {
+  function seek (time) {
     if (time === 85 && currentTime < 10) {
       targetTime = currentTime = 90
     } else if (time === 85 && duration - currentTime < 90) {
@@ -349,13 +349,13 @@
       targetTime = currentTime += time
     }
   }
-  function forward() {
+  function forward () {
     seek(2)
   }
-  function rewind() {
+  function rewind () {
     seek(-2)
   }
-  function selectAudio(id) {
+  function selectAudio (id) {
     if (id !== undefined) {
       for (const track of video.audioTracks) {
         track.enabled = track.id === id
@@ -363,7 +363,7 @@
       seek(-0.5) // stupid fix because video freezes up when chaging tracks
     }
   }
-  function toggleCast() {
+  function toggleCast () {
     if (video.readyState) {
       if (presentationConnection) {
         presentationConnection?.terminate()
@@ -372,7 +372,7 @@
       }
     }
   }
-  function togglePopout() {
+  function togglePopout () {
     if (video.readyState) {
       if (!subs?.renderer) {
         if (video !== document.pictureInPictureElement) {
@@ -414,7 +414,7 @@
     }
   }
   let showKeybinds = false
-  async function handleKeydown({ key }) {
+  async function handleKeydown ({ key }) {
     if (!miniplayer) {
       switch (key) {
         case 'r':
@@ -481,7 +481,7 @@
     }
   }
 
-  function getBurnIn(noSubs) {
+  function getBurnIn (noSubs) {
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')
     let loop = null
@@ -502,7 +502,7 @@
     return { stream: canvas.captureStream(), destroy }
   }
 
-  function initCast(event) {
+  function initCast (event) {
     // these quality settings are likely to make cast overheat, oh noes!
     let peer = new Peer({
       polite: true,
@@ -559,12 +559,12 @@
     }
   }
 
-  function immersePlayer() {
+  function immersePlayer () {
     immersed = true
     immerseTimeout = undefined
   }
 
-  function resetImmerse() {
+  function resetImmerse () {
     if (immerseTimeout) {
       clearTimeout(immerseTimeout)
     } else {
@@ -573,7 +573,7 @@
     immerseTimeout = setTimeout(immersePlayer, 8 * 1000)
   }
 
-  function hideBuffering() {
+  function hideBuffering () {
     if (bufferTimeout) {
       clearTimeout(bufferTimeout)
       bufferTimeout = null
@@ -581,7 +581,7 @@
     }
   }
 
-  function showBuffering() {
+  function showBuffering () {
     bufferTimeout = setTimeout(() => {
       buffering = true
       resetImmerse()
@@ -604,7 +604,7 @@
   }
   let stats = null
   let requestCallback = null
-  function toggleStats() {
+  function toggleStats () {
     if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
       if (requestCallback) {
         stats = null
@@ -618,7 +618,7 @@
       }
     }
   }
-  async function handleStats(now, metadata) {
+  async function handleStats (now, metadata) {
     if (stats) {
       stats = {
         fps: await video.fps,
@@ -633,8 +633,8 @@
       setTimeout(() => video.requestVideoFrameCallback(handleStats), 200)
     }
   }
-  function getBufferHealth(time) {
-    for (let index = video.buffered.length; index--; ) {
+  function getBufferHealth (time) {
+    for (let index = video.buffered.length; index--;) {
       if (time < video.buffered.end(index) && time > video.buffered.start(index)) {
         return parseInt(video.buffered.end(index) - time)
       }
@@ -652,13 +652,13 @@
   let hover = null
   let hoverTime = 0
   let hoverOffset = 0
-  function handleHover({ offsetX, target }) {
+  function handleHover ({ offsetX, target }) {
     hoverOffset = offsetX / target.clientWidth
     hoverTime = duration * hoverOffset
     hover.style.setProperty('left', hoverOffset * 100 + '%')
     thumbnail = thumbnailData.thumbnails[Math.floor(hoverTime / thumbnailData.interval)] || ' '
   }
-  function createThumbnail(vid = video) {
+  function createThumbnail (vid = video) {
     if (vid?.readyState >= 2) {
       const index = Math.floor(vid.currentTime / thumbnailData.interval)
       if (!thumbnailData.thumbnails[index]) {
@@ -669,7 +669,7 @@
       }
     }
   }
-  function initThumbnails() {
+  function initThumbnails () {
     const height = 200 / (videoWidth / videoHeight)
     if (!isNaN(height)) {
       thumbnailData.interval = duration / 300 < 5 ? 5 : duration / 300
@@ -677,7 +677,7 @@
     }
   }
 
-  function finishThumbnails() {
+  function finishThumbnails () {
     const t0 = performance.now()
     const video = document.createElement('video')
     let index = 0
@@ -715,7 +715,7 @@
   let innerWidth, innerHeight, videoWidth, videoHeight
   let menubarOffset = 0
   // $: calcMenubarOffset(innerWidth, innerHeight, videoWidth, videoHeight)
-  function calcMenubarOffset(innerWidth, innerHeight, videoWidth, videoHeight) {
+  function calcMenubarOffset (innerWidth, innerHeight, videoWidth, videoHeight) {
     // outerheight resize and innerheight resize is mutual, additionally update on metadata and app state change
     if (videoWidth && videoHeight) {
       // so windows is very dumb, and calculates windowed mode as if it was window XP, with the old bars, but not when maximised
@@ -734,13 +734,13 @@
     }
   }
 
-  function toggleDropdown({ target }) {
+  function toggleDropdown ({ target }) {
     target.classList.toggle('active')
     target.closest('.dropdown').classList.toggle('show')
   }
 
   let completed = false
-  function checkCompletion() {
+  function checkCompletion () {
     if (!completed && duration && video?.readyState && duration - 180 < currentTime) {
       if (fileMedia?.media?.episodes || fileMedia?.media?.nextAiringEpisode?.episode) {
         if (fileMedia.media.episodes || fileMedia.media.nextAiringEpisode?.episode > fileMedia.episodeNumber) {
@@ -752,7 +752,7 @@
   }
   const torrent = {}
   client.on('stats', updateStats)
-  function updateStats({ detail }) {
+  function updateStats ({ detail }) {
     torrent.peers = detail.numPeers || 0
     torrent.up = detail.uploadSpeed || 0
     torrent.down = detail.downloadSpeed || 0
@@ -763,13 +763,13 @@
     ctx = bufferCanvas.getContext('2d')
     clearCanvas()
   })
-  function clearCanvas() {
+  function clearCanvas () {
     ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
     ctx.fillRect(0, 0, bufferCanvas.width, 1)
     ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
   }
   let imageData = null
-  function handlePieces({ detail }) {
+  function handlePieces ({ detail }) {
     if (detail.constructor === Array) {
       if (imageData) {
         for (let i = 0; i < detail.length; ++i) {
