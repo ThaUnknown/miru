@@ -877,7 +877,7 @@
     </div>
     <span class="material-icons ctrl font-size-12 p-10" title="Keybinds [`]" on:click={() => (showKeybinds = true)}> help_outline </span>
   </div>
-  <div class="middle d-flex align-items-center justify-content-center flex-grow-1 z-40 position-relative">
+  <div class="middle d-flex align-items-center justify-content-center flex-grow-1 position-relative">
     <div class="position-absolute w-full h-full" on:dblclick={toggleFullscreen} on:click|self={() => (page = 'player')}>
       <div class="play-overlay w-full h-full" on:click={playPause} />
     </div>
@@ -986,13 +986,7 @@
     font-family: Roboto, Arial, Helvetica, sans-serif;
   }
   .miniplayer {
-    transition: width 0.2s ease;
-    width: 35rem !important;
     height: auto !important;
-    bottom: 2rem;
-    right: 2rem;
-    z-index: 5;
-    position: absolute !important;
   }
   .miniplayer .top,
   .miniplayer .bottom {

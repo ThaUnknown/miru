@@ -10,12 +10,15 @@
   import Player from './pages/Player.svelte'
   import Settings from './pages/Settings.svelte'
   import WatchTogether from './pages/watchtogether/WatchTogether.svelte'
+  import Miniplayer from 'svelte-miniplayer'
   export let page = 'home'
   const current = getContext('gallery')
 </script>
 
-<div class="overflow-y-hidden content-wrapper">
-  <Player files={$files} miniplayer={page !== 'player'} bind:page />
+<div class="overflow-hidden content-wrapper">
+  <Miniplayer active={page !== 'player'} class='bg-dark z-10 {page === 'player' ? 'h-full' : ''}' minwidth='35rem' maxwidth='45rem' width='300px' padding='2rem'>
+    <Player files={$files} miniplayer={page !== 'player'} bind:page />
+  </Miniplayer>
   {#if page === 'settings'}
     <Settings />
   {:else if page === 'home'}
