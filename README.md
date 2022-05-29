@@ -85,6 +85,29 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritise downloa
 - change what resolution to find torrents in
 - stream real-time with no waiting for downloads
 
+## **Linux Installation**
+
+### Arch
+
+If you use paru:
+```bash
+paru -S miru-bin
+```
+
+If you use yay:
+
+```bash
+yay -S miru-bin
+```
+
+### Debian/Ubuntu
+
+- Download the `linux-Miru-version.deb` from the [releases](https://github.com/ThaUnknown/miru/releases/latest) page.
+- Install the deb file with package manager.
+```bash
+apt install linux-Miru-*.deb
+```
+
 ## **Building and Development**
 
 Dependencies:
