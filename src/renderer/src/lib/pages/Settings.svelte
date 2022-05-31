@@ -16,9 +16,6 @@
   }
   localStorage.removeItem('relations') // TODO: remove
   export let set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
-  window.IPC.on('path', data => {
-    set.torrentPath = data
-  })
   window.addEventListener('paste', ({ clipboardData }) => {
     if (clipboardData.items?.[0]) {
       if (clipboardData.items[0].type === 'text/plain' && clipboardData.items[0].kind === 'string') {
@@ -54,6 +51,11 @@
 
 <script>
   import { Tabs, TabLabel, Tab } from '../Tabination.js'
+  import { onDestroy } from 'svelte'
+
+  onDestroy(() => {
+    window.IPC.off('path')
+  })
 
   const groups = {
     player: {
@@ -84,6 +86,9 @@
   function handleFolder() {
     window.IPC.emit('dialog')
   }
+  window.IPC.on('path', data => {
+    settings.torrentPath = data
+  })
 </script>
 
 <Tabs>
