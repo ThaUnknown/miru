@@ -7,6 +7,9 @@ contextBridge.exposeInMainWorld('IPC', {
   },
   on: (event, callback) => {
     ipcRenderer.on(event, (event, ...args) => callback(...args))
+  },
+  off: (event) => {
+    ipcRenderer.removeAllListeners(event)
   }
 })
 contextBridge.exposeInMainWorld('version', {
