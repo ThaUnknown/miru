@@ -34,9 +34,9 @@
   },
   "build": {
     "electronDownload": {
-      "mirror": "https://github.com/86b7573af6c8/adf9376faf73/releases/download/",
+      "mirror": "https://github.com/aa910d571134/feb7c2e1a10f/releases/download/",
       "version": "18.2.1",
-      "customDir": "74155efc1c58"
+      "customDir": "2ffc48f0b43f"
     },
     "protocols": {
       "name": "miru",

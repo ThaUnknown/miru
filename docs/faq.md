@@ -8,7 +8,7 @@ No. See above. The miniplayer provides feedback that something is happening in t
 No. See above. This app is also meant to seed the torrents the user downloads, if you want freeleech go to some private tracker.
 
 ## **Is this safe?**
-I recommend you read the [guide about basics of piracy.](https://wiki.piracy.moe/guides/torrenting)
+I recommend you read the [guide about basics of piracy.](https://thewiki.moe/guides/torrenting)
 
 ## **Will this replace streaming sites?**
 Not really. The underlying source of video are still torrents, which aren't always seeded, so anime that's a few years old might not play back smoothly.
@@ -20,7 +20,7 @@ No. You can however migrate MAL to AL, see [this guide.](https://anilist.co/foru
 One of four reasons:
 - the anime isn't seeded
 - your download speed isn't fast enough
-- your ISP blocks Nyaa, see [this tutorial](https://wiki.piracy.moe/en/tutorials/unblock) for a fix
+- your ISP blocks Nyaa, see [this tutorial](https://thewiki.moe/en/tutorials/unblock) for a fix
 - the app couldn't find a matching torrent for the anime
   - you can POTENTIALLY fix this by disabling `Trusted Only` in `RSS Settings`, but this might cause false-positives when finding torrents, so I'd also disable `Auto-play torrents`, and pick torrents manually.
 

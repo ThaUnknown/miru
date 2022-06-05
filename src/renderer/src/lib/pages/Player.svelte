@@ -701,15 +701,17 @@
       } else {
         requestCallback = video.requestVideoFrameCallback((a, b) => {
           stats = {}
-          handleStats(a, b)
+          handleStats(a, b, b)
         })
       }
     }
   }
-  async function handleStats (now, metadata) {
+  async function handleStats (now, metadata, lastmeta) {
     if (stats) {
+      const msbf = (metadata.mediaTime - lastmeta.mediaTime) / (metadata.presentedFrames - lastmeta.presentedFrames)
+      const fps = (1 / msbf).toFixed(3)
       stats = {
-        fps: await video.fps,
+        fps,
         presented: metadata.presentedFrames,
         dropped: video.getVideoPlaybackQuality()?.droppedVideoFrames,
         processing: metadata.processingDuration + ' ms',
@@ -718,7 +720,7 @@
         buffer: getBufferHealth(metadata.mediaTime) + ' s',
         speed: video.playbackRate || 1
       }
-      setTimeout(() => video.requestVideoFrameCallback(handleStats), 200)
+      setTimeout(() => video.requestVideoFrameCallback((n, m) => handleStats(n, m, metadata)), 200)
     }
   }
   function getBufferHealth (time) {
@@ -727,6 +729,7 @@
         return parseInt(video.buffered.end(index) - time)
       }
     }
+    return 0
   }
   const thumbCanvas = document.createElement('canvas')
   thumbCanvas.width = 200
@@ -941,7 +944,7 @@
       Frame time: {stats.processing}<br />
       Viewport: {stats.viewport}<br />
       Resolution: {stats.resolution}<br />
-      Buffer health: {stats.buffer || 0}<br />
+      Buffer health: {stats.buffer}<br />
       Playback speed: x{stats.speed?.toFixed(1)}
     </div>
   {/if}
@@ -955,7 +958,7 @@
       <span class="material-icons"> arrow_upward </span>
       <span class="stats">{fastPrettyBytes(torrent.up)}/s</span>
     </div>
-    <span class="material-icons ctrl font-size-12 p-10" title="Keybinds [`]" on:click={() => (showKeybinds = true)}> help_outline </span>
+    <span class="material-icons ctrl" title="Keybinds [`]" on:click={() => (showKeybinds = true)}> help_outline </span>
   </div>
   <div class="middle d-flex align-items-center justify-content-center flex-grow-1 position-relative">
     <div class="position-absolute w-full h-full" on:dblclick={toggleFullscreen} on:click|self={() => (page = 'player')}>

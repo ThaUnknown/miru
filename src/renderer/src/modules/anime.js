@@ -10,7 +10,7 @@ const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 
 fetch('https://nyaa.si').catch(() => {
   addToast({
-    text: 'Failed connecting to Nyaa! Visit<br>wiki.piracy.moe/en/tutorials/unblock<br>for a guide on how to bypass ISP blocks.',
+    text: 'Failed connecting to Nyaa! Visit<br><a href="https://thewiki.moe/en/tutorials/unblock">thewiki.moe/en/tutorials/unblock</a><br>for a guide on how to bypass ISP blocks.',
     title: 'Nyaa Blocked',
     type: 'danger'
   })
