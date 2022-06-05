@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
   "scripts": {
-    "start": "SET NODE_ENV=development & concurrently \"npm run web:watch\" \"npm run electron:start\"",
+    "start": "SET NODE_ENV=development & concurrently \"pnpm run web:watch\" \"pnpm run electron:start\"",
     "web:watch": "vite",
     "electron:start": "electron src",
     "build": "vite build && electron-builder",

@@ -112,18 +112,19 @@ apt install linux-Miru-*.deb
 
 Dependencies:
  - Node 16 or above
+ - PNPM
 
 To build/develop, in the root folder of the repo you need to first run:
 ```bash
-npm install
+pnpm install
 ```
 
 To build for your OS just run:
 ```bash
-npm run build
+pnpm run build
 ```
 
 To run the development server run:
 ```bash
-npm start
+pnpm start
 ``` 
