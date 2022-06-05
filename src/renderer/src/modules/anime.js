@@ -96,16 +96,21 @@ async function resolveTitle (name) {
   // inefficient but readable
 
   let media = null
-  // change S2 into Season 2 or 2nd Season
-  const match = method.name.match(/ S(\d)$/)
-  const oldname = method.name
   try {
+    // change S2 into Season 2 or 2nd Season
+    const match = method.name.match(/ S(\d+)/)
+    const oldname = method.name
     if (match) {
-      method.name = method.name.replace(/ S(\d)$/, ` ${match[1]}${postfix[match[1]] || 'th'} Season`)
-      media = (await alRequest(method)).data.Page.media[0]
-      if (!media) {
-        method.name = oldname.replace(/ S(\d)$/, ` Season ${match[1]}`)
+      if (Number(match[1]) === 1) { // if this is S1, remove the " S1" or " S01"
+        method.name = method.name.replace(/ S(\d+)/, '')
         media = (await alRequest(method)).data.Page.media[0]
+      } else {
+        method.name = method.name.replace(/ S(\d+)/, ` ${Number(match[1])}${postfix[Number(match[1])] || 'th'} Season`)
+        media = (await alRequest(method)).data.Page.media[0]
+        if (!media) {
+          method.name = oldname.replace(/ S(\d+)/, ` Season ${Number(match[1])}`)
+          media = (await alRequest(method)).data.Page.media[0]
+        }
       }
     } else {
       media = (await alRequest(method)).data.Page.media[0]
@@ -115,7 +120,15 @@ async function resolveTitle (name) {
     if (!media) {
       const match = method.name.match(/\(TV\)/)
       if (match) {
-        method.name = name.replace('(TV)', '').replace('-', '')
+        method.name = method.name.replace('(TV)', '')
+        media = (await alRequest(method)).data.Page.media[0]
+      }
+    }
+    // remove - :
+    if (!media) {
+      const match = method.name.match(/[-:]/g)
+      if (match) {
+        method.name = method.name.replace(/[-:]/g, '')
         media = (await alRequest(method)).data.Page.media[0]
       }
     }
@@ -134,7 +147,14 @@ async function resolveTitle (name) {
 
 function getParseObjTitle (obj) {
   let title = obj.anime_title
-  if (obj.anime_season) title += ' S' + obj.anime_season
+  const match = title.match(/ S(\d{1,2})E(\d{1,2})v\d/)
+  if (match) {
+    obj.episode_number = match[2]
+    obj.anime_season = match[1]
+    obj.anime_title = title.replace(/ S(\d{1,2})E(\d{1,2})v\d/, '')
+    title = obj.anime_title
+  }
+  if (obj.anime_season > 1) title += ' S' + obj.anime_season
   return title
 }
 
