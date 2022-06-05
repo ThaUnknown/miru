@@ -64,10 +64,10 @@
   import Peer from '@/modules/Peer.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, videoRx, fastPrettyBytes } from '@/modules/util.js'
-  import Keyboard from './Keyboard.svelte'
   import { addToast } from '../Toasts.svelte'
 
   import { w2gEmitter } from './watchtogether/WatchTogether.svelte'
+  import Keybinds, { loadWithDefaults } from 'svelte-keybinds'
 
   w2gEmitter.on('playerupdate', ({ detail }) => {
     currentTime = detail.time
@@ -373,7 +373,15 @@
       for (const track of video.audioTracks) {
         track.enabled = track.id === id
       }
-      seek(-0.5) // stupid fix because video freezes up when chaging tracks
+      seek(-0.2) // stupid fix because video freezes up when chaging tracks
+    }
+  }
+  function selectVideo (id) {
+    if (id !== undefined) {
+      for (const track of video.videoTracks) {
+        track.selected = track.id === id
+      }
+      setTimeout(() => subs?.renderer?.resize(), 200) // stupid fix because video metadata doesnt update for multiple frames
     }
   }
   function toggleCast () {
@@ -383,6 +391,28 @@
       } else {
         presentationRequest.start()
       }
+    }
+  }
+  async function screenshot () {
+    if ('clipboard' in navigator) {
+      const canvas = document.createElement('canvas')
+      const context = canvas.getContext('2d')
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+      context.drawImage(video, 0, 0)
+      if (subs?.renderer) {
+        subs.renderer.resize(video.videoWidth, video.videoHeight)
+        await new Promise(resolve => setTimeout(resolve, 1000)) // this is hacky, but TLDR wait for canvas to update and re-render, in practice this will take at MOST 100ms, but just to be safe
+        context.drawImage(subs.renderer._canvas, 0, 0, canvas.width, canvas.height)
+        subs.renderer.resize(0, 0, 0, 0) // undo resize
+      }
+      const blob = await new Promise(resolve => canvas.toBlob(resolve))
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          [blob.type]: blob
+        })
+      ])
+      canvas.remove()
     }
   }
   function togglePopout () {
@@ -427,87 +457,125 @@
     }
   }
   let showKeybinds = false
-  async function handleKeydown ({ key }) {
-    if (!miniplayer) {
-      switch (key) {
-        case 'r':
-          seek(-90)
-          break
-        case ',':
-          seek(-1 / (await video.fps) || 0)
-          break
-        case '.':
-          seek(1 / (await video.fps) || 0)
-          break
-        case 'i':
-          toggleStats()
-          break
-        case '`':
-          showKeybinds = !showKeybinds
-          break
-        case ' ':
-          playPause()
-          break
-        case 'n':
-          playNext()
-          break
-        case 'm':
-          muted = !muted
-          break
-        case 'p':
-          togglePopout()
-          break
-        case 'f':
-          toggleFullscreen()
-          break
-        case 's':
-          seek(85)
-          break
-        case 'd':
-          toggleCast()
-          break
-        case 'c':
-          cycleSubtitles()
-          break
-        case 'ArrowLeft':
-          rewind()
-          break
-        case 'ArrowRight':
-          forward()
-          break
-        case 'ArrowUp':
-          volume = Math.min(1, volume + 0.05)
-          break
-        case 'ArrowDown':
-          volume = Math.max(0, volume - 0.05)
-          break
-        case '[':
-          playbackRate -= 0.1
-          break
-        case ']':
-          playbackRate += 0.1
-          break
-        case '\\':
-          playbackRate = 1
-          break
-      }
+  loadWithDefaults({
+    KeyX: {
+      fn: () => screenshot(),
+      id: 'screenshot_monitor',
+      type: 'icon'
+    },
+    KeyR: {
+      fn: () => seek(-90),
+      id: '-90'
+    },
+    Comma: {
+      fn: async () => seek(-1 / (await video.fps) || 0),
+      id: 'fast_rewind',
+      type: 'icon'
+    },
+    Period: {
+      fn: async () => seek(1 / (await video.fps) || 0),
+      id: 'fast_forward',
+      type: 'icon'
+    },
+    KeyI: {
+      fn: () => toggleStats(),
+      id: 'list',
+      type: 'icon'
+    },
+    Backquote: {
+      fn: () => (showKeybinds = !showKeybinds),
+      id: 'help_outline',
+      type: 'icon'
+    },
+    Space: {
+      fn: () => playPause(),
+      id: 'play_arrow',
+      type: 'icon'
+    },
+    KeyN: {
+      fn: () => playNext(),
+      id: 'skip_next',
+      type: 'icon'
+    },
+    KeyM: {
+      fn: () => (muted = !muted),
+      id: 'volume_off',
+      type: 'icon'
+    },
+    KeyP: {
+      fn: () => togglePopout(),
+      id: 'picture_in_picture',
+      type: 'icon'
+    },
+    KeyF: {
+      fn: () => toggleFullscreen(),
+      id: 'fullscreen',
+      type: 'icon'
+    },
+    KeyS: {
+      fn: () => seek(85),
+      id: '+90'
+    },
+    KeyD: {
+      fn: () => toggleCast(),
+      id: 'cast',
+      type: 'icon'
+    },
+    KeyC: {
+      fn: () => cycleSubtitles(),
+      id: 'subtitles',
+      type: 'icon'
+    },
+    ArrowLeft: {
+      fn: () => rewind(),
+      id: '-2'
+    },
+    ArrowRight: {
+      fn: () => forward(),
+      id: '+2'
+    },
+    ArrowUp: {
+      fn: () => (volume = Math.min(1, volume + 0.05)),
+      id: 'volume_up',
+      type: 'icon'
+    },
+    ArrowDown: {
+      fn: () => (volume = Math.max(0, volume - 0.05)),
+      id: 'volume_down',
+      type: 'icon'
+    },
+    BracketLeft: {
+      fn: () => (playbackRate -= 0.1),
+      id: 'history',
+      type: 'icon'
+    },
+    BracketRight: {
+      fn: () => (playbackRate += 0.1),
+      id: 'update',
+      type: 'icon'
+    },
+    Backslash: {
+      fn: () => (playbackRate = 1),
+      id: 'schedule',
+      type: 'icon'
     }
-  }
+  })
 
   function getBurnIn (noSubs) {
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')
     let loop = null
-    let destroy = null
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
+    if (!noSubs) subs.renderer.resize(video.videoWidth, video.videoHeight)
     const renderFrame = () => {
       context.drawImage(video, 0, 0)
       if (!noSubs) context.drawImage(subs.renderer?._canvas, 0, 0, canvas.width, canvas.height)
       loop = video.requestVideoFrameCallback(renderFrame)
     }
     renderFrame()
-    destroy = () => {
+    const destroy = () => {
+      if (!noSubs) subs.renderer.resize()
       video.cancelVideoFrameCallback(loop)
       canvas.remove()
     }
@@ -552,10 +620,10 @@
       peer.signalingPort.postMessage(data)
     })
 
-    peer.dc.onopen = async () => {
+    peer.dc.onopen = () => {
       if (peer && presentationConnection) {
         const tracks = []
-        const videostream = video.captureStream(await video.fps)
+        const videostream = video.captureStream()
         if (true) {
           // TODO: check if cast supports codecs
           const { stream, destroy } = getBurnIn(!subs?.renderer)
@@ -682,6 +750,7 @@
       }
     }
   }
+  let videoWidth, videoHeight
   function initThumbnails () {
     const height = 200 / (videoWidth / videoHeight)
     if (!isNaN(height)) {
@@ -725,7 +794,7 @@
   }
 
   const isWindows = navigator.appVersion.includes('Windows')
-  let innerWidth, innerHeight, videoWidth, videoHeight
+  let innerWidth, innerHeight
   let menubarOffset = 0
   // $: calcMenubarOffset(innerWidth, innerHeight, videoWidth, videoHeight)
   function calcMenubarOffset (innerWidth, innerHeight, videoWidth, videoHeight) {
@@ -801,11 +870,13 @@
   client.on('pieces', handlePieces)
 </script>
 
-<svelte:window on:keydown={handleKeydown} bind:innerWidth bind:innerHeight />
+<svelte:window bind:innerWidth bind:innerHeight />
 {#if showKeybinds}
-  <div class="position-absolute bg-tp w-full h-full z-50 p-20 d-flex align-items-center justify-content-center" on:click|self={() => (showKeybinds = false)}>
+  <div class="position-absolute bg-tp w-full h-full z-50 font-size-12 p-20 d-flex align-items-center justify-content-center" on:click|self={() => (showKeybinds = false)}>
     <button class="close" type="button" on:click={() => (showKeybinds = false)}><span>×</span></button>
-    <Keyboard />
+    <Keybinds let:prop={item} autosave={true} clickable={true}>
+      <div class:material-icons={item?.type} class="bind">{item?.id || ''}</div>
+    </Keybinds>
   </div>
 {/if}
 <!-- svelte-ignore a11y-media-has-caption -->
@@ -825,6 +896,7 @@
     crossorigin="anonymous"
     class="position-absolute h-full w-full"
     style={`margin-top: ${menubarOffset}px`}
+    autoplay
     preload="auto"
     {src}
     bind:videoHeight
@@ -846,6 +918,7 @@
     on:loadeddata={hideBuffering}
     on:canplay={hideBuffering}
     on:playing={hideBuffering}
+    on:loadedmetadata={hideBuffering}
     on:ended={tryPlayNext}
     on:loadedmetadata={getFPS}
     on:loadedmetadata={initThumbnails}
@@ -899,7 +972,7 @@
     </div>
     <!-- svelte-ignore missing-declaration -->
     {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
-      <div class="audio-tracks dropdown dropup with-arrow" on:click={toggleDropdown}>
+      <div class="dropdown dropup with-arrow" on:click={toggleDropdown}>
         <span class="material-icons ctrl" title="Audio Tracks" id="baudio" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="audioButton">
           queue_music
         </span>
@@ -913,6 +986,22 @@
         </div>
       </div>
     {/if}
+    <!-- svelte-ignore missing-declaration -->
+    {#if 'videoTracks' in HTMLVideoElement.prototype && video?.videoTracks?.length > 1}
+    <div class="dropdown dropup with-arrow">
+      <span class="material-icons ctrl" title="Video Tracks" id="bvideo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="videoButton">
+        playlist_play
+      </span>
+      <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize" aria-labelledby="bvideo" data-name="selectVideo">
+        {#each video.videoTracks as track}
+          <input name="video-radio-set" type="radio" id="video-{track.id}-radio" value={track.id} checked={track.selected} />
+          <label for="video-{track.id}-radio" on:click={() => selectVideo(track.id)} class="text-truncate pb-5">
+            {(track.language || (!Object.values(video.videoTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) +
+              (track.label ? ' - ' + track.label : '')}</label>
+        {/each}
+      </div>
+    </div>
+  {/if}
     <div class="w-full d-flex align-items-center" data-name="progressWrapper">
       <div class="ts">{toTS(targetTime, duration > 3600 ? 2 : 3)}</div>
       <div class="w-full h-full position-relative d-flex align-items-center">
@@ -978,6 +1067,21 @@
 </div>
 
 <style>
+  .bind {
+    font-size: 1.8rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  .bind.material-icons {
+    font-size: 2.2rem !important;
+    font-weight: unset !important;
+  }
   .stats {
     font-size: 2.3rem !important;
     white-space: nowrap;

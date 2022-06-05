@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "main": "src/index.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
@@ -108,6 +108,7 @@
     "mime": "^3.0.0",
     "pump": "^3.0.0",
     "range-parser": "^1.2.1",
+    "svelte-keybinds": "^1.0.4",
     "svelte-miniplayer": "^1.0.1",
     "webtorrent": "^1.8.14"
   }
