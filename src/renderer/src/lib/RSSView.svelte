@@ -86,7 +86,7 @@
 
   let fileMedia = null
 
-  const exclusions = ['DTS']
+  const exclusions = ['DTS', '[ASW]']
 
   const video = document.createElement('video')
 

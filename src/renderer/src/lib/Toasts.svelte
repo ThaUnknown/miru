@@ -2,7 +2,7 @@
   import { writable } from 'svelte/store'
   const toasts = writable({})
   let index = 0
-  export function addToast(opts) {
+  export function addToast (opts) {
     // type, click, title, text
     toasts.update(toasts => {
       const i = ++index
@@ -13,7 +13,7 @@
       return toasts
     })
   }
-  function close(index) {
+  function close (index) {
     toasts.update(toasts => {
       if (toasts[index]) {
         delete toasts[index]
