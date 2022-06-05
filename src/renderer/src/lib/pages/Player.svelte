@@ -67,7 +67,7 @@
   import { addToast } from '../Toasts.svelte'
 
   import { w2gEmitter } from './watchtogether/WatchTogether.svelte'
-  import Keybinds, { loadWithDefaults } from 'svelte-keybinds'
+  import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
 
   w2gEmitter.on('playerupdate', ({ detail }) => {
     currentTime = detail.time
@@ -95,6 +95,8 @@
   }
 
   export let miniplayer = false
+  // eslint-disable-next-line prefer-const
+  $condition = () => !miniplayer
   export let page
   export let files = []
   $: updateFiles(files)
