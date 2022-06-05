@@ -196,7 +196,7 @@ class TorrentClient extends WebTorrent {
     })
     if (!skipFile) {
       parser.on('file', file => {
-        if (file.mimetype === 'application/x-truetype-font' || file.mimetype === 'application/font-woff' || file.mimetype === 'application/vnd.ms-opentype') {
+        if (file.mimetype === 'application/x-truetype-font' || file.mimetype === 'application/font-woff' || file.mimetype === 'application/vnd.ms-opentype' || file.mimetype === 'font/sfnt' || file.mimetype.startsWith('font/') || file.filename.toLowerCase().endsWith('.ttf')) {
           this.dispatch('file', { mimetype: file.mimetype, data: Array.from(file.data) })
         }
       })

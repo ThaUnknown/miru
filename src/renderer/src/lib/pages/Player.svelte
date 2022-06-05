@@ -413,6 +413,11 @@
         })
       ])
       canvas.remove()
+      addToast({
+        text: 'Saved screenshot to clipboard.',
+        title: 'Screenshot',
+        type: 'success'
+      })
     }
   }
   function togglePopout () {
