@@ -45,7 +45,9 @@ client.on('torrent', ({ detail }) => {
 
 // load last used torrent
 queueMicrotask(() => {
-  if (localStorage.getItem('torrent')) {
-    client.send('torrent', JSON.parse(localStorage.getItem('torrent')))
-  }
+  setTimeout(() => {
+    if (localStorage.getItem('torrent')) {
+      client.send('torrent', JSON.parse(localStorage.getItem('torrent')))
+    }
+  }, 3000)
 })
