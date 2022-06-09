@@ -75,11 +75,11 @@
       ]
     },
     "win": {
-      "artifactName": "${os}-${arch}-${name}-${version}.${ext}",
+      "artifactName": "${os}-${name}-${version}.${ext}",
       "target": "nsis"
     },
     "linux": {
-      "artifactName": "${os}-${name}-${version}.${ext}",
+      "artifactName": "${os}-${arch}-${name}-${version}.${ext}",
       "category": "Video;Anime",
       "description": "Bittorrent streaming software for cats",
       "desktop": {
