@@ -58,6 +58,7 @@
     'Erai-raws [Multi-Sub]': 'https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q=',
     NanDesuKa: 'https://nyaa.si/?page=rss&c=0_0&f=0&u=NanDesuKa&q='
   }
+  const epstring = ep => `"E${pl(ep)}+"|"E${pl(ep)}v"|"+${pl(ep)}+"|"+${pl(ep)}v"`
   export function getReleasesRSSurl () {
     const rss = rssmap[settings.rssFeed] || settings.rssFeed
     return new URL(`${rss}${settings.rssQuality ? `"${settings.rssQuality}"` : ''}`)
@@ -89,7 +90,7 @@
       if (isBatch) {
         ep = `"01-${pl(media.episodes)}"|"01~${pl(media.episodes)}"|"Batch"|"Complete"|"${pl(episode)}+"|"${pl(episode)}v"|"S01"`
       } else {
-        ep = `(${episodes.map(episode => `"E${pl(episode)}+"|"${pl(episode)}+"|"${pl(episode)}v"`).join('|')})`
+        ep = `(${episodes.map(epstring).join('|')})`
       }
     }
 
@@ -108,10 +109,8 @@
       // we want the dates of the target media as the S1 title might be used for SX releases
       const titles = createTitle(absolute.media).join(')|(')
 
-      const ep = `"E${pl(absoluteep)}+"|"${pl(absoluteep)}+"|"${pl(absoluteep)}v"`
-
       const url = new URL(
-        `https://nyaa.si/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`
+        `https://nyaa.si/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${epstring(absoluteep)}${quality}-(${excl})`
       )
       nodes = [...nodes, ...(await getRSSContent(url)).querySelectorAll('item')]
     }
