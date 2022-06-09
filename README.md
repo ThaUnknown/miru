@@ -38,6 +38,8 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritise downloa
   - add and remove anime from your planning list
   - automatically mark episodes as complete as you watch them
   - view trailers/previews for anime
+  - score anime
+  - view anime relations
 - automatically find torrents for desired episodes
 - automatically detect what anime a torrent is
 - view latest releases on any custom RSS
@@ -68,6 +70,7 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritise downloa
   - **\\** - reset playback speed to 1
   - **I** - view video stats for nerds
   - **`** - open keybinds UI
+- editable keybinds **`** allows drag dropping any key
 - miniplayer
 - media session display
 - media keys support
