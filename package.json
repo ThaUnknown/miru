@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "2.4.6",
+  "version": "2.4.7",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "main": "src/index.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
@@ -60,12 +60,22 @@
       "src/renderer/dist/**/*"
     ],
     "mac": {
-      "artifactName": "${os}-${name}-${version}.${ext}",
+      "artifactName": "${os}-${arch}-${name}-${version}.${ext}",
       "category": "public.app-category.video",
-      "icon": "build/icon.icns"
+      "icon": "build/icon.icns",
+      "target": [
+        {
+          "arch": "x64",
+          "target": "dmg"
+        },
+        {
+          "arch": "arm64",
+          "target": "dmg"
+        }
+      ]
     },
     "win": {
-      "artifactName": "${os}-${name}-${version}.${ext}",
+      "artifactName": "${os}-${arch}-${name}-${version}.${ext}",
       "target": "nsis"
     },
     "linux": {
@@ -86,6 +96,14 @@
         },
         {
           "arch": "x64",
+          "target": "deb"
+        },
+        {
+          "arch": "arm64",
+          "target": "AppImage"
+        },
+        {
+          "arch": "arm64",
           "target": "deb"
         }
       ],
