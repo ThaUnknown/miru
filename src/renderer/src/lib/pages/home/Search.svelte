@@ -5,7 +5,7 @@
   export let loadCurrent
   let searchTimeout = null
 
-  function searchClear() {
+  function searchClear () {
     search = {
       format: '',
       genre: '',
@@ -15,7 +15,7 @@
     }
     current = null
   }
-  function input() {
+  function input () {
     if (!searchTimeout) {
       if (Object.values(search).filter(v => v).length) media = [new Promise(() => {})]
     } else {

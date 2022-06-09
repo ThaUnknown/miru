@@ -10,6 +10,8 @@
   function close () {
     $view = null
   }
+  $: media = $view
+  $: maxPlayEp = getMediaMaxEp($view || {}, true)
   function checkClose ({ keyCode }) {
     if (keyCode === 27) close()
   }
@@ -31,9 +33,9 @@
   function getCustomProperty (detail, media) {
     if (detail.property === 'episodes') {
       if (media.mediaListEntry?.progress) {
-        return `Watched <b>${media.mediaListEntry.progress}</b> of <b>${media.episodes}</b>`
+        return `Watched <b>${media.mediaListEntry.progress}</b> of <b>${getMediaMaxEp(media)}</b>`
       }
-      return `${media.episodes} Episodes`
+      return `${getMediaMaxEp(media)} Episodes`
     } else if (detail.property === 'averageScore') {
       return media.averageScore + '%'
     } else if (detail.property === 'duration') {
@@ -65,59 +67,68 @@
       $view = (await alRequest({ method: 'SearchIDSingle', id: media.id })).data.Media
     }
   }
+  async function score (media, score) {
+    const variables = {
+      method: 'Entry',
+      id: media.id,
+      score: score * 10
+    }
+    await alRequest(variables)
+    $view = (await alRequest({ method: 'SearchIDSingle', id: media.id })).data.Media
+  }
   const trailer = getContext('trailer')
   function viewTrailer (media) {
     $trailer = media.trailer.id
   }
 </script>
 
-<div class="modal modal-full" class:show={$view} on:keydown={checkClose} tabindex="-1">
-  {#if $view}
+<div class="modal modal-full" class:show={media} on:keydown={checkClose} tabindex="-1">
+  {#if media}
     <div class="h-full modal-content bg-very-dark p-0 overflow-y-auto">
       <button class="close pointer z-30 bg-dark shadow-lg top-20 right-0" type="button" on:click={close}> &times; </button>
       <div class="h-md-half w-full position-relative z-20">
-        <div class="h-full w-full position-absolute bg-dark-light banner" style:--bannerurl={`url('${$view.bannerImage || ''}')`} />
+        <div class="h-full w-full position-absolute bg-dark-light banner" style:--bannerurl={`url('${media.bannerImage || ''}')`} />
         <div class="d-flex h-full top w-full">
           <div class="container-xl w-full">
             <div class="row d-flex justify-content-end flex-row h-full px-20 pt-20 px-xl-0">
               <div class="col-md-3 col-4 d-flex h-full justify-content-end flex-column pb-15 align-items-center">
-                <img class="contain-img rounded mw-full mh-full shadow" alt="cover" src={$view.coverImage?.extraLarge || $view.coverImage?.medium} />
+                <img class="contain-img rounded mw-full mh-full shadow" alt="cover" src={media.coverImage?.extraLarge || media.coverImage?.medium} />
               </div>
               <div class="col-md-9 col-8 row align-content-end pl-20">
                 <div class="col-md-8 col-12 d-flex justify-content-end flex-column">
                   <div class="px-md-20 d-flex flex-column font-size-12">
                     <span class="title font-weight-bold pb-sm-15 text-white">
-                      {$view.title.userPreferred}
+                      {media.title.userPreferred}
                     </span>
                     <div class="d-flex flex-row font-size-18 pb-sm-15">
-                      {#if $view.averageScore}
+                      {#if media.averageScore}
                         <span class="material-icons mr-10 font-size-24"> trending_up </span>
                         <span>
-                          Rating: {$view.averageScore + '%'}
+                          Rating: {media.averageScore + '%'}
                           <span class="font-weight-bold mr-20" />
                         </span>
                       {/if}
                       <span class="material-icons mx-10 font-size-24"> monitor </span>
                       <span>
-                        Format: {$view.format === 'TV' ? $view.format : $view.format?.toLowerCase()}
+                        Format: {media.format === 'TV' ? media.format : media.format?.toLowerCase()}
                         <span class="font-weight-bold mr-20 text-capitalize" />
                       </span>
-                      {#if $view.episodes !== 1 && getMediaMaxEp($view)}
+                      {#if media.episodes !== 1 && getMediaMaxEp(media)}
                         <span class="material-icons mx-10 font-size-24"> theaters </span>
                         <span>
-                          Episodes: {getMediaMaxEp($view)}
+                          Episodes: {getMediaMaxEp(media)}
                           <span class="font-weight-bold mr-20" />
                         </span>
-                      {:else if $view.duration}
+                      {:else if media.duration}
                         <span class="material-icons mx-10 font-size-24"> timer </span>
                         <span>
-                          Length: {$view.duration + ' min'}
+                          Length: {media.duration + ' min'}
                           <span class="font-weight-bold mr-20" />
                         </span>
                       {/if}
                     </div>
                     <div class="pb-15 pt-5 overflow-x-auto text-nowrap font-weight-bold">
-                      {#each $view.genres as genre}
+                      {#each media.genres as genre}
                         <div class="badge badge-pill shadow">
                           {genre}
                         </div>
@@ -128,24 +139,44 @@
                 <div class="col-md-4 d-flex justify-content-end flex-column">
                   <div class="d-flex flex-column flex-wrap">
                     <button
-                      class="btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5"
+                      class="btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5 shadow-lg"
                       type="button"
                       on:click={() => {
-                        playAnime($view, Math.min(getMediaMaxEp($view), $view.mediaListEntry?.progress + 1))
+                        playAnime(media, Math.min(maxPlayEp, media.mediaListEntry?.progress + 1))
                         close()
                       }}>
                       <span class="material-icons mr-10 font-size-24 w-30"> play_arrow </span>
-                      <span>{$view.mediaListEntry?.progress ? 'Continue ' + Math.min(getMediaMaxEp($view), $view.mediaListEntry?.progress + 1) : 'Play'}</span>
+                      <span>{(media.mediaListEntry?.progress && media.mediaListEntry?.status !== 'COMPLETED') ? 'Continue ' + Math.min(maxPlayEp, media.mediaListEntry?.progress + 1) : 'Play'}</span>
                     </button>
-                    {#if alToken && $view.mediaListEntry?.status !== 'CURRENT' && $view.mediaListEntry?.status !== 'COMPLETED'}
-                      <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16 btn-primary" on:click={() => addToList($view)}>
-                        <span class="material-icons mr-10 font-size-18 w-30"> {$view.mediaListEntry?.status !== 'PLANNING' ? 'add' : 'remove'} </span>
-                        {$view.mediaListEntry?.status !== 'PLANNING' ? 'Add To List' : 'Remove From List'}
-                      </button>
+                    {#if alToken}
+                      {#if media.mediaListEntry?.status !== 'CURRENT' && media.mediaListEntry?.status !== 'COMPLETED'}
+                        <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16 btn-primary shadow-lg" on:click={() => addToList(media)}>
+                          <span class="material-icons mr-10 font-size-18 w-30"> {media.mediaListEntry?.status !== 'PLANNING' ? 'add' : 'remove'} </span>
+                          {media.mediaListEntry?.status !== 'PLANNING' ? 'Add To List' : 'Remove From List'}
+                        </button>
+                      {/if}
+                      <div class="input-group shadow-lg mb-5 font-size-16">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text bg-tp pl-15 d-flex material-icons font-size-18">hotel_class</span>
+                        </div>
+                        <select class="form-control" required value={(media.mediaListEntry?.score || '').toString()} on:change={({ target }) => { score(media, target.value) }}>
+                          <option value selected disabled hidden>Score</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                          <option value="6">6</option>
+                          <option value="7">7</option>
+                          <option value="8">8</option>
+                          <option value="9">9</option>
+                          <option value="10">10</option>
+                        </select>
+                      </div>
                     {/if}
-                    {#if $view.trailer}
-                      <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16" on:click={() => viewTrailer($view)}>
-                        <span class="material-icons mr-10 font-size-18 w-30"> live_tv </span>
+                    {#if media.trailer}
+                      <button class="btn d-flex align-items-center mb-5 font-weight-bold font-size-16 shadow-lg" on:click={() => viewTrailer(media)}>
+                        <span class="material-icons mr-15 font-size-18 w-30"> live_tv </span>
                         Trailer
                       </button>
                     {/if}
@@ -161,10 +192,20 @@
           <div class="col-md-9 px-20">
             <h1 class="title font-weight-bold text-white">Sypnosis</h1>
             <div class="font-size-16 pr-15">
-              {@html $view.description}
+              {@html media.description}
             </div>
-
-            {#if getMediaMaxEp($view)}
+            {#if media.relations?.edges?.filter(({ node }) => node.type === 'ANIME').length}
+              <div class="d-flex text-capitalize flex-wrap pt-20 justify-center">
+                {#each media.relations?.edges.filter(({ node }) => node.type === 'ANIME') as { relationType, node }}
+                  <div class="w-150 mx-15 mb-10 rel pointer" on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: node.id })).data.Media }}>
+                    <img loading="lazy" src={node.coverImage.medium || ''} alt="cover" class="cover-img w-full h-200 rel-img" />
+                    <div class="pt-5">{relationType.replace(/_/g, ' ').toLowerCase()}</div>
+                    <h5 class="font-weight-bold text-white">{node.title.userPreferred}</h5>
+                  </div>
+                {/each}
+              </div>
+            {/if}
+            {#if maxPlayEp}
               <table class="table table-hover w-500 table-auto">
                 <thead>
                   <tr>
@@ -173,15 +214,14 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {#each Array(getMediaMaxEp($view, true)) as _, i}
-                    {@const index = getMediaMaxEp($view, true) - i - 1}
-                    <tr
-                      class="font-size-20 py-10 pointer"
+                  {#each Array(maxPlayEp) as _, i}
+                    {@const ep = maxPlayEp - i}
+                    <tr class="font-size-20 py-10 pointer {ep <= media.mediaListEntry?.progress ? 'text-muted' : 'text-white'}"
                       on:click={() => {
-                        playAnime($view, index + 1)
+                        playAnime(media, ep)
                         close()
                       }}>
-                      <td class="w-full">Episode {index + 1}</td>
+                      <td class="w-full font-weight-semi-bold">Episode {ep}</td>
                       <td class="material-icons text-right h-full d-table-cell">play_arrow</td>
                     </tr>
                   {/each}
@@ -193,7 +233,7 @@
             <h1 class="title font-weight-bold text-white">Details</h1>
             <div class="card m-0 px-20 py-10 d-flex flex-md-column flex-row overflow-x-auto text-capitalize" id="viewDetails">
               {#each detailsMap as detail}
-                {@const property = getProperty(detail.property, $view)}
+                {@const property = getProperty(detail.property, media)}
                 {#if property}
                   <div class="d-flex flex-row px-10 py-5">
                     <div class={'mr-10 ' + (detail.custom === 'icon' ? 'd-flex align-items-center text-nowrap font-size-20 font-weight-bold' : 'material-icons font-size-24')}>
@@ -202,7 +242,7 @@
                     <div class="d-flex flex-column justify-content-center text-nowrap">
                       <div class="font-weight-bold">
                         {#if detail.custom === 'property'}
-                          {@html getCustomProperty(detail, $view)}
+                          {@html getCustomProperty(detail, media)}
                         {:else if property.constructor === Array}
                           {property === 'nodes' ? property[0] && property[0].name : property.join(', ').replace(/_/g, ' ').toLowerCase()}
                         {:else}
@@ -229,6 +269,25 @@
     background-image: linear-gradient(0deg, rgba(17, 20, 23, 1) 0%, rgba(17, 20, 23, 0.8) 25%, rgba(17, 20, 23, 0.4) 50%, rgba(37, 40, 44, 0) 100%), var(--bannerurl) !important;
   }
 
+  select.form-control:invalid {
+    color: var(--dm-input-placeholder-text-color);
+  }
+
+  .rel-img{
+    height: 27rem;
+    width: 17rem
+  }
+
+  .cover-img {
+    object-fit: cover;
+  }
+
+  .rel {
+    transition: transform 0.2s ease;
+  }
+  .rel:hover {
+    transform: scale(1.05);
+  }
   .d-table-cell {
     display: table-cell !important;
   }
@@ -241,6 +300,10 @@
     background-color: var(--dm-button-bg-color) !important;
     background-image: var(--dm-button-bg-image) !important;
     box-shadow: var(--dm-button-box-shadow) !important;
+  }
+
+  .bg-tp {
+    background-color: var(--dm-button-bg-color) !important;
   }
 
   .title {

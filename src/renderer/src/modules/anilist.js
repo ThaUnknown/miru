@@ -182,7 +182,8 @@ mediaListEntry {
   id,
   progress,
   repeat,
-  status
+  status,
+  score(format: POINT_10)
 },
 source,
 studios(isMain: true) {
@@ -348,9 +349,10 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
       variables.id = opts.id
       variables.status = opts.status
       variables.episode = opts.episode
+      variables.score = opts.score
       query = `
-      mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int) {
-        SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat) {
+      mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int, $score: Int) {
+        SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat, scoreRaw: $score) {
           id,
           status,
           progress,
