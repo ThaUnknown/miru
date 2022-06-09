@@ -1,16 +1,17 @@
 <script>
   import { playAnime } from './RSSView.svelte'
   import { alRequest } from '@/modules/anilist.js'
+  import { getMediaMaxEp } from '@/modules/anime.js'
   import { getContext } from 'svelte'
   import { alToken } from '@/lib/pages/Settings.svelte'
   import { countdown } from '@/modules/util.js'
 
-  let view = getContext('view')
-  function close() {
+  const view = getContext('view')
+  function close () {
     $view = null
   }
-  function checkClose({ keyCode }) {
-    if (keyCode == 27) close()
+  function checkClose ({ keyCode }) {
+    if (keyCode === 27) close()
   }
   const detailsMap = [
     { property: 'episode', label: 'Airing', icon: 'schedule', custom: 'property' },
@@ -27,7 +28,7 @@
     { property: 'romaji', label: 'Romaji', icon: 'translate' },
     { property: 'native', label: 'Native', icon: '語', custom: 'icon' }
   ]
-  function getCustomProperty(detail, media) {
+  function getCustomProperty (detail, media) {
     if (detail.property === 'episodes') {
       if (media.mediaListEntry?.progress) {
         return `Watched <b>${media.mediaListEntry.progress}</b> of <b>${media.episodes}</b>`
@@ -45,7 +46,7 @@
       return media[detail.property]
     }
   }
-  function getProperty(property, media) {
+  function getProperty (property, media) {
     if (property === 'episode') {
       return media.nextAiringEpisode?.episode
     } else if (property === 'english' || property === 'romaji' || property === 'native') {
@@ -53,7 +54,7 @@
     }
     return media[property]
   }
-  async function addToList(media) {
+  async function addToList (media) {
     if (media.mediaListEntry?.status !== 'CURRENT' && media.mediaListEntry?.status !== 'COMPLETED') {
       const variables = {
         method: media.mediaListEntry?.status !== 'PLANNING' ? 'Entry' : 'Delete',
@@ -64,16 +65,9 @@
       $view = (await alRequest({ method: 'SearchIDSingle', id: media.id })).data.Media
     }
   }
-  let trailer = getContext('trailer')
-  function viewTrailer(media) {
+  const trailer = getContext('trailer')
+  function viewTrailer (media) {
     $trailer = media.trailer.id
-  }
-  function getMediaMaxEp(media, playable) {
-    if (playable) {
-      return media.nextAiringEpisode?.episode - 1 || media.airingSchedule?.nodes?.[0]?.episode - 1 || media.episodes
-    } else {
-      return media.episodes || media.nextAiringEpisode?.episode - 1 || media.airingSchedule?.nodes?.[0]?.episode - 1
-    }
   }
 </script>
 
@@ -105,7 +99,7 @@
                       {/if}
                       <span class="material-icons mx-10 font-size-24"> monitor </span>
                       <span>
-                        Format: {'TV' ? $view.format : $view.format?.toLowerCase()}
+                        Format: {$view.format === 'TV' ? $view.format : $view.format?.toLowerCase()}
                         <span class="font-weight-bold mr-20 text-capitalize" />
                       </span>
                       {#if $view.episodes !== 1 && getMediaMaxEp($view)}
@@ -137,7 +131,7 @@
                       class="btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5"
                       type="button"
                       on:click={() => {
-                        playAnime($view, $view.mediaListEntry?.progress + 1)
+                        playAnime($view, Math.min(getMediaMaxEp($view), $view.mediaListEntry?.progress + 1))
                         close()
                       }}>
                       <span class="material-icons mr-10 font-size-24 w-30"> play_arrow </span>

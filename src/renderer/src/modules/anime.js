@@ -81,6 +81,15 @@ function traceAnime (image, type) { // WAIT lookup logic
     }
   })
 }
+
+export function getMediaMaxEp (media, playable) {
+  if (playable) {
+    return media.nextAiringEpisode?.episode - 1 || media.airingSchedule?.nodes?.[0]?.episode - 1 || media.episodes
+  } else {
+    return media.episodes || media.nextAiringEpisode?.episode - 1 || media.airingSchedule?.nodes?.[0]?.episode - 1
+  }
+}
+
 export const episodeRx = /Episode (\d+) - (.*)/
 
 // resolve anime name based on file name and store it
