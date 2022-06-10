@@ -60,16 +60,12 @@
       "src/renderer/dist/**/*"
     ],
     "mac": {
-      "artifactName": "${os}-${arch}-${name}-${version}.${ext}",
+      "artifactName": "${os}-${name}-${version}.${ext}",
       "category": "public.app-category.video",
       "icon": "build/icon.icns",
       "target": [
         {
           "arch": "x64",
-          "target": "dmg"
-        },
-        {
-          "arch": "arm64",
           "target": "dmg"
         }
       ]
