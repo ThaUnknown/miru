@@ -23,7 +23,7 @@
     </div>
   {/each}
 {:then cards}
-  {#each cards as card}
+  {#each cards || [] as card}
     {#if typeof card === 'string'}
       <div class="day-row font-size-24 font-weight-bold h-50 d-flex align-items-end">{card}</div>
     {:else if !card.media}

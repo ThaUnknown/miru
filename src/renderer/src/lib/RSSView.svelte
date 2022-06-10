@@ -35,7 +35,7 @@
   }
 
   export function getRSSContent (url) {
-    return fetch(url)
+    return url && fetch(url)
       .then(res => {
         if (res.ok) {
           return res.text().then(xmlTxt => {
@@ -59,9 +59,9 @@
     NanDesuKa: 'https://nyaa.si/?page=rss&c=0_0&f=0&u=NanDesuKa&q='
   }
   const epstring = ep => `"E${pl(ep)}+"|"E${pl(ep)}v"|"+${pl(ep)}+"|"+${pl(ep)}v"`
-  export function getReleasesRSSurl () {
-    const rss = rssmap[settings.rssFeed] || settings.rssFeed
-    return new URL(`${rss}${settings.rssQuality ? `"${settings.rssQuality}"` : ''}`)
+  export function getReleasesRSSurl (val) {
+    const rss = rssmap[val] || val
+    return rss && new URL(rssmap[val] ? `${rss}${settings.rssQuality ? `"${settings.rssQuality}"` : ''}` : rss)
   }
   // matches: OP01 ED01 EP01 E01 01v -01- _01_ with spaces and stuff
   const epNumRx = /[EO]?[EPD _-]\d{2}[v _-]|\d{2}[-~]\d{2}/i

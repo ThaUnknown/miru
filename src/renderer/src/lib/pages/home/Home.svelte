@@ -3,7 +3,7 @@
   import Section from './Section.svelte'
   import Gallery from './Gallery.svelte'
   import { add } from '@/modules/torrent.js'
-  import { alToken } from '../Settings.svelte'
+  import { alToken, set } from '../Settings.svelte'
   import { alRequest } from '@/modules/anilist.js'
   import { resolveFileMedia } from '@/modules/anime.js'
   import { getRSSContent, getReleasesRSSurl } from '@/lib/RSSView.svelte'
@@ -17,14 +17,14 @@
   let hasNext = true
   let container = null
 
-  function sanitiseObject(object) {
+  function sanitiseObject (object) {
     const safe = {}
     for (const [key, value] of Object.entries(object)) {
       if (value) safe[key] = value
     }
     return safe
   }
-  function customFilter(mediaList) {
+  function customFilter (mediaList) {
     return mediaList?.filter(({ media }) => {
       let condition = true
       if (!media) return condition
@@ -43,7 +43,7 @@
       return condition
     })
   }
-  async function infiniteScroll() {
+  async function infiniteScroll () {
     if (current && canScroll && hasNext && this.scrollTop + this.clientHeight > this.scrollHeight - 800) {
       canScroll = false
       const res = sections[current].load(++page)
@@ -54,7 +54,7 @@
     }
   }
 
-  async function loadCurrent(initial = true) {
+  async function loadCurrent (initial = true) {
     page = 1
     canScroll = false
     const res = sections[current].load(1, 50, initial)
@@ -64,7 +64,7 @@
   }
 
   $: load(current)
-  async function load(current) {
+  async function load (current) {
     if (sections[current]) {
       loadCurrent()
     } else {
@@ -84,7 +84,7 @@
 
   let lastDate = null
 
-  function processMedia(res) {
+  function processMedia (res) {
     hasNext = res?.data?.Page.pageInfo.hasNextPage
     return res?.data?.Page.media.map(media => {
       return { media }
@@ -92,8 +92,8 @@
   }
 
   let lastRSSDate = 0
-  async function releasesCards(page, limit, force) {
-    const doc = await getRSSContent(getReleasesRSSurl())
+  async function releasesCards (page, limit, force, val) {
+    const doc = await getRSSContent(getReleasesRSSurl(val))
     if (doc) {
       const pubDate = doc.querySelector('pubDate').textContent
       if (force || lastRSSDate !== pubDate) {
@@ -114,7 +114,7 @@
   }
   const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL']
   const getSeason = d => seasons[Math.floor((d.getMonth() / 12) * 4) % 4]
-  const sections = {
+  let sections = {
     continue: {
       title: 'Continue Watching',
       load: (page = 1, perPage = 50, initial = false) => {
@@ -131,14 +131,6 @@
         })
       },
       hide: !alToken
-    },
-    releases: {
-      title: 'New Releases',
-      releases: true,
-      load: async (page = 1, perPage = 20, initial = false, force = true) => {
-        if (initial) search.sort = 'START_DATE_DESC'
-        return customFilter(await releasesCards(page, perPage, force))
-      }
     },
     planning: {
       title: 'Your List',
@@ -243,7 +235,7 @@
           const entries = customFilter(res?.data?.Page.airingSchedules.filter(entry => entry.media.countryOfOrigin !== 'CN' && !entry.media.isAdult) || []).slice(0, perPage)
           const media = []
           hasNext = res?.data?.Page.pageInfo.hasNextPage
-          let date = new Date()
+          const date = new Date()
           for (const entry of entries) {
             if (entry.timeUntilAiring && perPage !== 6 && (!lastDate || new Date(+date + entry.timeUntilAiring * 1000).getDay() !== lastDate.getDay())) {
               lastDate = new Date(+date + entry.timeUntilAiring * 1000)
@@ -270,6 +262,20 @@
       }
     }
   }
+  for (let i = 0; i < set.rssFeeds.length; ++i) {
+    const [title, val] = set.rssFeeds[i]
+    sections = {
+      ['releases-' + i]: {
+        title,
+        releases: true,
+        load: async (page = 1, perPage = 20, initial = false, force = true) => {
+          if (initial) search.sort = 'START_DATE_DESC'
+          return customFilter(await releasesCards(page, perPage, force, val))
+        }
+      },
+      ...sections
+    }
+  }
 </script>
 
 <div class="d-flex h-full flex-column overflow-y-scroll root" on:scroll={infiniteScroll} bind:this={container}>
@@ -279,7 +285,7 @@
       <Gallery {media} />
     {:else}
       <div>
-        {#each Object.entries(sections) as [key, opts] (opts.title)}
+        {#each Object.entries(sections) as [key, opts] (key)}
           {#if !opts.hide}
             <Section opts={{ ...opts, onclick: () => (current = key) }} />
           {/if}

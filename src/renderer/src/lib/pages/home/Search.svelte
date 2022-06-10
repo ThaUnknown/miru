@@ -25,7 +25,11 @@
       if (current === null) {
         if (Object.values(search).filter(v => v).length) current = 'search'
       } else {
-        loadCurrent(false)
+        if (Object.values(search).filter(v => v).length) {
+          loadCurrent(false)
+        } else {
+          current = null
+        }
       }
       searchTimeout = null
     }, 500)

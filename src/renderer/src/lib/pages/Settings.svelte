@@ -6,7 +6,7 @@
     playerPause: true,
     playerAutocomplete: true,
     rssQuality: '1080',
-    rssFeed: 'SubsPlease',
+    rssFeeds: [['New Releases', 'SubsPlease']],
     rssAutoplay: true,
     rssTrusted: true,
     rssBatch: false,
@@ -17,6 +17,13 @@
   }
   localStorage.removeItem('relations') // TODO: remove
   export let set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
+  if (!set.rssFeeds) { // TODO: remove ;-;
+    if (set.rssFeed) {
+      set.rssFeeds = [['New Releases', set.rssFeed]]
+    } else {
+      set.rssFeeds = [['New Releases', 'SubsPlease']]
+    }
+  }
   window.addEventListener('paste', ({ clipboardData }) => {
     if (clipboardData.items?.[0]) {
       if (clipboardData.items[0].type === 'text/plain' && clipboardData.items[0].kind === 'string') {
@@ -180,20 +187,29 @@
       </Tab>
       <Tab>
         <div class="root">
-          <div
-            class="input-group mb-10 w-600 form-control-lg"
-            data-toggle="tooltip"
-            data-placement="bottom"
-            data-title="What RSS Feed To Fetch Releases From, Allows For Custom CORS Enabled Feeds">
-            <div class="input-group-prepend">
-              <span class="input-group-text w-100 justify-content-center">Feed</span>
+          {#each settings.rssFeeds as _, i}
+            <div
+              class="input-group mb-10 w-700 form-control-lg"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              data-title="What RSS Feed To Fetch Releases From, Allows For Custom CORS Enabled Feeds">
+              <div class="input-group-prepend">
+                <span class="input-group-text w-100 justify-content-center">Feed</span>
+              </div>
+              <input type="text" class="form-control form-control-lg w-150 flex-reset" placeholder='New Releases' autocomplete="off" bind:value={settings.rssFeeds[i][0]} />
+              <input id="rss-feed-{i}" type="text" list="rss-feed-list-{i}" class="w-400 form-control form-control-lg" placeholder='https://nyaa.si/?page=rss&c=0_0&f=0&q=' autocomplete="off" bind:value={settings.rssFeeds[i][1]} />
+              <datalist id="rss-feed-list-{i}">
+                <option value="SubsPlease">https://nyaa.si/?page=rss&c=0_0&f=0&u=subsplease&q=</option>
+                <option value="Erai-raws [Multi-Sub]">https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q=</option>
+                <option value="NanDesuKa">https://nyaa.si/?page=rss&c=0_0&f=0&u=NanDesuKa&q=</option>
+              </datalist>
+              <div class="input-group-append">
+                <button type="button" on:click={() => { settings.rssFeeds.splice(i, 1); settings.rssFeeds = settings.rssFeeds }} class="btn btn-danger btn-lg input-group-append">Remove</button>
+              </div>
             </div>
-            <input id="rss-feed" type="text" list="rss-feed-list" class="form-control form-control-lg" autocomplete="off" bind:value={settings.rssFeed} />
-            <datalist id="rss-feed-list">
-              <option value="SubsPlease">https://nyaa.si/?page=rss&c=0_0&f=0&u=subsplease&q=</option>
-              <option value="Erai-raws [Multi-Sub]">https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q=</option>
-              <option value="NanDesuKa">https://nyaa.si/?page=rss&c=0_0&f=0&u=NanDesuKa&q=</option>
-            </datalist>
+          {/each}
+          <div class="input-group input-group-lg form-control-lg mb-10 w-500">
+            <button type="button" on:click={() => { settings.rssFeeds[settings.rssFeeds.length] = ['New Releases', null] }} class="btn btn-lg btn-primary mb-10">Add Feed</button>
           </div>
           <div class="input-group mb-10 w-300 form-control-lg" data-toggle="tooltip" data-placement="top" data-title="What Quality To Find Torrents In">
             <div class="input-group-prepend">
@@ -287,3 +303,9 @@
     </div>
   </div>
 </Tabs>
+
+<style>
+  select.form-control:invalid {
+    color: var(--dm-input-placeholder-text-color);
+  }
+</style>
