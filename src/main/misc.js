@@ -1,5 +1,7 @@
 const { dialog, ipcMain, BrowserWindow, app } = require('electron')
 const { Client } = require('discord-rpc')
+const log = require('electron-log')
+const { autoUpdater } = require('electron-updater')
 
 ipcMain.on('dialog', async (event, data) => {
   const { filePaths } = await dialog.showOpenDialog({
@@ -47,11 +49,22 @@ discord.on('ready', () => {
 })
 function loginRPC () {
   discord.login({ clientId: '954855428355915797' }).catch(() => {
-    setTimeout(loginRPC, 5000)
+    setTimeout(loginRPC, 5000).unref()
   })
 }
 loginRPC()
 
 ipcMain.on('version', (event) => {
   event.sender.send('version', app.getVersion()) // fucking stupid
+})
+
+autoUpdater.logger = log
+autoUpdater.logger.transports.file.level = 'info'
+ipcMain.on('update', () => {
+  autoUpdater.checkForUpdatesAndNotify()
+})
+
+autoUpdater.checkForUpdatesAndNotify()
+autoUpdater.on('update-available', () => {
+  BrowserWindow.getAllWindows()[0]?.send('update', true)
 })

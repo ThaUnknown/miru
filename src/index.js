@@ -1,7 +1,5 @@
 const { app, BrowserWindow, protocol, shell, ipcMain } = require('electron')
 const path = require('path')
-const log = require('electron-log')
-const { autoUpdater } = require('electron-updater')
 require('./main/misc.js')
 
 if (process.defaultApp) {
@@ -45,8 +43,6 @@ ipcMain.on('open', (event, url) => {
   shell.openExternal(url)
 })
 
-autoUpdater.logger = log
-autoUpdater.logger.transports.file.level = 'info'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -67,8 +63,6 @@ function UpsertKeyValue (obj, keyToChange, value) {
 }
 
 function createWindow () {
-  autoUpdater.checkForUpdatesAndNotify()
-
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1600,

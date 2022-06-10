@@ -1,4 +1,5 @@
 <script context="module">
+  import { addToast } from '@/lib/Toasts.svelte'
   export let alToken = localStorage.getItem('ALtoken') || null
   const defaults = {
     playerAutoplay: true,
@@ -30,7 +31,7 @@
     }
   })
   window.IPC.on('altoken', handleToken)
-  function handleToken(data) {
+  function handleToken (data) {
     localStorage.setItem('ALtoken', data)
     alToken = data
     location.reload()
@@ -47,6 +48,17 @@
   let version = '1.0.0'
   window.IPC.on('version', data => (version = data))
   window.IPC.emit('version')
+
+  window.IPC.on('update', () => {
+    addToast({
+      title: 'Auto Updater',
+      text: 'A new version of Miru is available. Downloading!'
+    })
+  })
+  function checkUpdate () {
+    window.IPC.emit('update')
+  }
+  setInterval(checkUpdate, 1200000)
 </script>
 
 <script>
@@ -76,14 +88,14 @@
   }
   let settings = set
   $: saveSettings(settings)
-  function saveSettings() {
+  function saveSettings () {
     localStorage.setItem('settings', JSON.stringify(settings))
   }
-  function restoreSettings() {
+  function restoreSettings () {
     localStorage.removeItem('settings')
     settings = { ...defaults }
   }
-  function handleFolder() {
+  function handleFolder () {
     window.IPC.emit('dialog')
   }
   window.IPC.on('path', data => {
@@ -106,18 +118,35 @@
           </div>
         </TabLabel>
       {/each}
-      <p class="text-muted px-20 py-10 m-0 mt-auto">Restart may be required for some settings to take effect.</p>
-      <p class="text-muted px-20 m-0">If you don't know what shit does, use default settings.</p>
+      <button
+        on:click={() => window.IPC.emit('open', 'https://ko-fi.com/thaunknown_')}
+        class="btn btn-secondary mx-20 mt-auto"
+        type="button"
+        data-toggle="tooltip"
+        data-placement="top"
+        data-title="Opens The Donate Site">
+        Donate
+      </button>
+      <button
+        on:click={checkUpdate}
+        class="btn btn-primary mx-20 mt-10"
+        type="button"
+        data-toggle="tooltip"
+        data-placement="top"
+        data-title="Checks For Available Updates And Notifies The User">
+        Check For Updates
+      </button>
       <button
         on:click={restoreSettings}
-        class="btn btn-danger mx-20 my-10"
+        class="btn btn-danger mx-20 mt-10"
         type="button"
-        id="setRes"
         data-toggle="tooltip"
         data-placement="top"
         data-title="Restores All Settings Back To Their Recommended Defaults">
         Restore Defaults
       </button>
+      <p class="text-muted px-20 py-10 m-0">Restart may be required for some settings to take effect.</p>
+      <p class="text-muted px-20 pb-10 m-0">If you don't know what shit does, use default settings.</p>
       <p class="text-muted px-20 m-0 mb-20">v{version} {platformMap[window.version.platform]} {window.version.arch}</p>
     </div>
     <div class="h-full p-20 m-20">

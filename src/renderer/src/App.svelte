@@ -17,7 +17,7 @@
 
   setContext('view', view)
 
-  let sidebar = writable(true)
+  const sidebar = writable(true)
   setContext('sidebar', sidebar)
 
   setContext('gallery', writable(null))
