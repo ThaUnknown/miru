@@ -8,7 +8,7 @@
   let code = ''
   let timeout = null
 
-  function rej() {
+  function rej () {
     addToast({
       text: 'Could not establish connection, please try again.',
       title: 'Connection Timed Out',
@@ -37,7 +37,7 @@
 
   $: value = (step?.mode === 'copy' && code) || null
 
-  function handleInput({ target }) {
+  function handleInput ({ target }) {
     let val = null
     try {
       val = JSON.parse(atob(target.value))
@@ -72,15 +72,14 @@
     index = index + 1
   }
 
-  function copyData() {
+  function copyData () {
     navigator.clipboard.writeText(value)
     index = index + 1
   }
 
   let index = 0
-  $: step = map[state]?.[index]
 
-  let map = {
+  const map = {
     guest: [
       {
         title: 'Paste Invite Code',
@@ -106,6 +105,8 @@
       }
     ]
   }
+
+  $: step = map[state]?.[index]
 </script>
 
 <div class="h-full d-flex flex-column justify-content-center mb-20 pb-20 root container">

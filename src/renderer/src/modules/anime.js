@@ -49,14 +49,14 @@ function traceAnime (image, type) { // WAIT lookup logic
     reader.onload = e => {
       addToast({
         title: 'Looking up anime for image',
-        text: `<img class="w-200 rounded pt-5" src="${e.target.result}">`
+        text: /* html */`<img class="w-200 rounded pt-5" src="${e.target.result}">`
       })
     }
     reader.readAsDataURL(image.get('image'))
   } else {
     addToast({
       title: 'Looking up anime for image',
-      text: `<img class="w-200 rounded pt-5" src="${image}">`
+      text: /* html */`<img class="w-200 rounded pt-5" src="${image}">`
     })
   }
   let options
@@ -272,7 +272,7 @@ export async function resolveSeason (opts) {
     if (!force) {
       console.warn('Error in parsing!', obj)
       addToast({
-        text: `Failed resolving anime episode!<br>${media.title.userPreferred} - ${episode - offset}`,
+        text: /* html */`Failed resolving anime episode!<br>${media.title.userPreferred} - ${episode - offset}`,
         title: 'Parsing Error',
         type: 'secondary'
       })

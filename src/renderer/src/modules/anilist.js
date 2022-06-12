@@ -65,7 +65,7 @@ export const alID = !!alToken && alRequest({ method: 'Viewer', token: alToken })
 function printError (error) {
   console.warn(error)
   addToast({
-    text: `Failed making request to anilist!<br>Try again in a minute.<br>${error.status} - ${error.message || codes[error.status]}`,
+    text: /* html */`Failed making request to anilist!<br>Try again in a minute.<br>${error.status} - ${error.message || codes[error.status]}`,
     title: 'Search Failed',
     type: 'danger',
     duration: 3000
@@ -138,7 +138,7 @@ export async function alRequest (opts) {
       Accept: 'application/json'
     }
   }
-  const queryObjects = `
+  const queryObjects = /* js */`
 id,
 title {
   romaji,
@@ -146,9 +146,7 @@ title {
   native,
   userPreferred
 },
-description(
-  asHtml: true
-),
+description(asHtml: true),
 season,
 seasonYear,
 format,
@@ -229,7 +227,7 @@ relations {
   switch (opts.method) {
     case 'SearchName': {
       variables.search = opts.name
-      query = ` 
+      query = /* js */` 
 query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: [MediaStatus]) {
   Page (page: $page, perPage: $perPage) {
     pageInfo {
@@ -243,7 +241,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
       break
     } case 'SearchIDSingle': {
       variables.id = opts.id
-      query = ` 
+      query = /* js */` 
 query ($id: Int, $type: MediaType) { 
   Media (id: $id, type: $type) {
     ${queryObjects}
@@ -252,7 +250,7 @@ query ($id: Int, $type: MediaType) {
       break
     } case 'SearchIDS': {
       variables.id = opts.id
-      query = ` 
+      query = /* js */` 
 query ($id: [Int], $type: MediaType, $page: Int, $perPage: Int) { 
   Page (page: $page, perPage: $perPage) {
     pageInfo {
@@ -266,7 +264,7 @@ query ($id: [Int], $type: MediaType, $page: Int, $perPage: Int) {
       break
     } case 'Viewer': {
       variables.id = alToken
-      query = ` 
+      query = /* js */` 
 query {
   Viewer {
     avatar {
@@ -279,7 +277,7 @@ query {
       break
     } case 'UserLists': {
       variables.id = (await alID)?.data?.Viewer?.id
-      query = ` 
+      query = /* js */` 
 query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [MediaListStatus]){
   Page (page: $page, perPage: $perPage) {
     pageInfo {
@@ -296,7 +294,7 @@ query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [Media
     } case 'SearchIDStatus': {
       variables.id = (await alID)?.data?.Viewer?.id
       variables.mediaId = opts.id
-      query = ` 
+      query = /* js */` 
 query ($id: Int, $mediaId: Int){
   MediaList(userId: $id, mediaId: $mediaId) {
     status,
@@ -308,7 +306,7 @@ query ($id: Int, $mediaId: Int){
     } case 'AiringSchedule': {
       variables.from = opts.from
       variables.to = (variables.from + 7 * 24 * 60 * 60)
-      query = ` 
+      query = /* js */` 
 query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
   Page (page: $page, perPage: $perPage) {
     pageInfo {
@@ -332,7 +330,7 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
       variables.season = opts.season
       variables.format = opts.format
       variables.sort = opts.sort || 'SEARCH_MATCH'
-      query = ` 
+      query = /* js */` 
 query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
   Page (page: $page, perPage: $perPage) {
     pageInfo {
@@ -350,7 +348,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
       variables.status = opts.status
       variables.episode = opts.episode
       variables.score = opts.score
-      query = `
+      query = /* js */`
       mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int, $score: Int) {
         SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat, scoreRaw: $score) {
           id,
@@ -362,7 +360,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
       break
     } case 'Delete': {
       variables.id = opts.id
-      query = `
+      query = /* js */`
       mutation ($id: Int) {
         DeleteMediaListEntry (id: $id){
           deleted

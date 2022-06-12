@@ -229,7 +229,7 @@
     const entries = await getRSSEntries({ media, episode })
     if (!entries?.length) {
       addToast({
-        text: `Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
+        text: /* html */`Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
         title: 'Search Failed',
         type: 'danger'
       })
