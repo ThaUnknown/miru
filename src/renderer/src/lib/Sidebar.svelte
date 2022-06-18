@@ -203,6 +203,8 @@
     transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
     will-change: width;
     overflow: visible;
+    visibility: visible !important;
+    top: var(--navbar-height);
   }
   :global(.nav-hidden) > .sidebar {
     left: calc(-1 * var(--sidebar-width)) !important;

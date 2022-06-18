@@ -31,6 +31,7 @@
 <style>
   .content-wrapper {
     will-change: width;
+    top: 0 !important;
   }
   :global(.nav-hidden) > .content-wrapper {
     left: 0 !important;
