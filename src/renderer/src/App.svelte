@@ -1,9 +1,14 @@
 <script context="module">
   import { setContext } from 'svelte'
   import { writable } from 'svelte/store'
+  import { alRequest } from '@/modules/anilist.js'
 
   export const page = writable('home')
   export const view = writable(null)
+  export async function handleAnime(anime) {
+    view.set(null)
+    view.set((await alRequest({ method: 'SearchIDSingle', id: anime })).data.Media)
+  }
 </script>
 
 <script>
@@ -23,6 +28,7 @@
   setContext('gallery', writable(null))
 
   setContext('trailer', writable(null))
+  window.IPC.on('open-anime', handleAnime)
 </script>
 
 <Toasts />

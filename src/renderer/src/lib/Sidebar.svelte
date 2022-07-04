@@ -61,7 +61,7 @@
           location.hash = ''
           location.reload()
         } else {
-          window.IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token')
+          window.IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') //Change redirect_url to miru://auth
           if (platformMap[window.version.platform] === 'Linux') {
             addToast({
               text: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",

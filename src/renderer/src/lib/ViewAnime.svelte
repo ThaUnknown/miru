@@ -5,6 +5,7 @@
   import { getContext } from 'svelte'
   import { alToken } from '@/lib/pages/Settings.svelte'
   import { countdown } from '@/modules/util.js'
+  import { addToast } from './Toasts.svelte'
 
   const view = getContext('view')
   function close () {
@@ -79,6 +80,18 @@
   const trailer = getContext('trailer')
   function viewTrailer (media) {
     $trailer = media.trailer.id
+  }
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text)
+    addToast({
+      title: 'Copied to clipboard',
+      text: 'Copied share URL to clipboard',
+      type: 'primary',
+      duration: '5000'
+    })
+  }
+  function openInBrowser(url) {
+    window.IPC.emit('open', url)
   }
 </script>
 
@@ -180,6 +193,16 @@
                         Trailer
                       </button>
                     {/if}
+                    <div class="d-flex mb-5 w-full">
+                      <button class="btn flex-fill font-weight-bold font-size-16 shadow-lg d-flex align-items-center" on:click={() => {openInBrowser(`https://anilist.co/anime/${media.id}`)}}>
+                        <span class="material-icons mr-5 font-size-18 w-30"> open_in_new </span>
+                        Open
+                      </button>
+                      <button class="btn flex-fill font-weight-bold font-size-16 shadow-lg d-flex align-items-center" on:click={() => {copyToClipboard(`<miru://anime/${media.id}>`)}}>
+                        <span class="material-icons mr-5 font-size-18 w-30"> share </span>
+                        Share
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
