@@ -11,6 +11,7 @@
   function close () {
     $view = null
   }
+  $: console.log(media)
   $: media = $view
   let modal
   $: media && modal?.focus()
@@ -288,7 +289,7 @@
               <h6 class="ml-auto font-size-12 more text-muted">{showMoreRecommendations ? 'Show Less' : 'Show More'}</h6>
             </span>
               <div class="d-flex text-capitalize flex-wrap pt-20 justify-center">
-                {#each media.recommendations.edges.slice(0, showMoreRecommendations ? 100 : 4) as { node }}
+                {#each media.recommendations.edges.filter(edge => edge.node.mediaRecommendation).slice(0, showMoreRecommendations ? 100 : 4) as { node }}
                   <div class="w-150 mx-15 mb-10 rel pointer" on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: node.mediaRecommendation.id })).data.Media }}>
                     <img loading="lazy" src={node.mediaRecommendation.coverImage.medium || ''} alt="cover" class="cover-img w-full h-200 rel-img" />
                     <h5 class="font-weight-bold text-white">{node.mediaRecommendation.title.userPreferred}</h5>
