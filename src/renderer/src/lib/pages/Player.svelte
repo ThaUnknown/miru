@@ -61,7 +61,7 @@
 <script>
   import { alEntry } from '@/modules/anilist.js'
   import { resolveFileMedia } from '@/modules/anime.js'
-  import Peer from '@/modules/Peer.js'
+  // import Peer from '@/modules/Peer.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, videoRx, fastPrettyBytes } from '@/modules/util.js'
   import { addToast } from '../Toasts.svelte'
@@ -118,7 +118,7 @@
   let subHeaders = null
   let pip = false
   const presentationRequest = null
-  let presentationConnection = null
+  const presentationConnection = null
   const canCast = false
   let isFullscreen = false
   let ended = false
@@ -590,62 +590,62 @@
     return { stream: canvas.captureStream(), destroy }
   }
 
-  function initCast (event) {
-    // these quality settings are likely to make cast overheat, oh noes!
-    let peer = new Peer({
-      polite: true,
-      quality: {
-        audio: {
-          stereo: 1,
-          'sprop-stereo': 1,
-          maxaveragebitrate: 510000,
-          maxplaybackrate: 510000,
-          cbr: 0,
-          useinbandfec: 1,
-          usedtx: 1,
-          maxptime: 20,
-          minptime: 10
-        },
-        video: {
-          bitrate: 2000000,
-          codecs: ['VP9', 'VP8', 'H264']
-        }
-      }
-    })
+  // function initCast (event) {
+  //   // these quality settings are likely to make cast overheat, oh noes!
+  //   let peer = new Peer({
+  //     polite: true,
+  //     quality: {
+  //       audio: {
+  //         stereo: 1,
+  //         'sprop-stereo': 1,
+  //         maxaveragebitrate: 510000,
+  //         maxplaybackrate: 510000,
+  //         cbr: 0,
+  //         useinbandfec: 1,
+  //         usedtx: 1,
+  //         maxptime: 20,
+  //         minptime: 10
+  //       },
+  //       video: {
+  //         bitrate: 2000000,
+  //         codecs: ['VP9', 'VP8', 'H264']
+  //       }
+  //     }
+  //   })
 
-    presentationConnection = event.connection
-    presentationConnection.addEventListener('terminate', () => {
-      presentationConnection = null
-      peer = null
-    })
+  //   presentationConnection = event.connection
+  //   presentationConnection.addEventListener('terminate', () => {
+  //     presentationConnection = null
+  //     peer = null
+  //   })
 
-    peer.signalingPort.onmessage = ({ data }) => {
-      presentationConnection.send(data)
-    }
+  //   peer.signalingPort.onmessage = ({ data }) => {
+  //     presentationConnection.send(data)
+  //   }
 
-    presentationConnection.addEventListener('message', ({ data }) => {
-      peer.signalingPort.postMessage(data)
-    })
+  //   presentationConnection.addEventListener('message', ({ data }) => {
+  //     peer.signalingPort.postMessage(data)
+  //   })
 
-    peer.dc.onopen = () => {
-      if (peer && presentationConnection) {
-        const tracks = []
-        const videostream = video.captureStream()
-        if (true) {
-          // TODO: check if cast supports codecs
-          const { stream, destroy } = getBurnIn(!subs?.renderer)
-          tracks.push(stream.getVideoTracks()[0], videostream.getAudioTracks()[0])
-          presentationConnection.addEventListener('terminate', destroy)
-        } else {
-          tracks.push(videostream.getVideoTracks()[0], videostream.getAudioTracks()[0])
-        }
-        for (const track of tracks) {
-          peer.pc.addTrack(track, videostream)
-        }
-        paused = false // video pauses for some reason
-      }
-    }
-  }
+  //   peer.dc.onopen = () => {
+  //     if (peer && presentationConnection) {
+  //       const tracks = []
+  //       const videostream = video.captureStream()
+  //       if (true) {
+  //         // TODO: check if cast supports codecs
+  //         const { stream, destroy } = getBurnIn(!subs?.renderer)
+  //         tracks.push(stream.getVideoTracks()[0], videostream.getAudioTracks()[0])
+  //         presentationConnection.addEventListener('terminate', destroy)
+  //       } else {
+  //         tracks.push(videostream.getVideoTracks()[0], videostream.getAudioTracks()[0])
+  //       }
+  //       for (const track of tracks) {
+  //         peer.pc.addTrack(track, videostream)
+  //       }
+  //       paused = false // video pauses for some reason
+  //     }
+  //   }
+  // }
 
   function immersePlayer () {
     immersed = true
@@ -769,62 +769,62 @@
     }
   }
 
-  function finishThumbnails () {
-    const t0 = performance.now()
-    const video = document.createElement('video')
-    let index = 0
-    video.preload = 'none'
-    video.volume = 0
-    video.playbackRate = 0
-    video.addEventListener('loadeddata', () => loadTime())
-    video.addEventListener('canplay', () => {
-      createThumbnail(thumbnailData.video)
-      loadTime()
-    })
-    thumbnailData.video = video
-    const loadTime = () => {
-      while (thumbnailData.thumbnails[index] && index <= Math.floor(thumbnailData.video.duration / thumbnailData.interval)) {
-        // only create thumbnails that are missing
-        index++
-      }
-      if (thumbnailData.video?.currentTime !== thumbnailData.video?.duration && thumbnailData.video) {
-        thumbnailData.video.currentTime = index * thumbnailData.interval
-      } else {
-        thumbnailData.video?.removeAttribute('src')
-        thumbnailData.video?.load()
-        thumbnailData.video?.remove()
-        delete thumbnailData.video
-        console.log('Thumbnail creating finished', index, toTS((performance.now() - t0) / 1000))
-      }
-      index++
-    }
-    thumbnailData.video.src = current.url
-    thumbnailData.video.load()
-    console.log('Thumbnail creating started')
-  }
+  // function finishThumbnails () {
+  //   const t0 = performance.now()
+  //   const video = document.createElement('video')
+  //   let index = 0
+  //   video.preload = 'none'
+  //   video.volume = 0
+  //   video.playbackRate = 0
+  //   video.addEventListener('loadeddata', () => loadTime())
+  //   video.addEventListener('canplay', () => {
+  //     createThumbnail(thumbnailData.video)
+  //     loadTime()
+  //   })
+  //   thumbnailData.video = video
+  //   const loadTime = () => {
+  //     while (thumbnailData.thumbnails[index] && index <= Math.floor(thumbnailData.video.duration / thumbnailData.interval)) {
+  //       // only create thumbnails that are missing
+  //       index++
+  //     }
+  //     if (thumbnailData.video?.currentTime !== thumbnailData.video?.duration && thumbnailData.video) {
+  //       thumbnailData.video.currentTime = index * thumbnailData.interval
+  //     } else {
+  //       thumbnailData.video?.removeAttribute('src')
+  //       thumbnailData.video?.load()
+  //       thumbnailData.video?.remove()
+  //       delete thumbnailData.video
+  //       console.log('Thumbnail creating finished', index, toTS((performance.now() - t0) / 1000))
+  //     }
+  //     index++
+  //   }
+  //   thumbnailData.video.src = current.url
+  //   thumbnailData.video.load()
+  //   console.log('Thumbnail creating started')
+  // }
 
-  const isWindows = navigator.appVersion.includes('Windows')
+  // const isWindows = navigator.appVersion.includes('Windows')
   let innerWidth, innerHeight
-  let menubarOffset = 0
+  const menubarOffset = 0
   // $: calcMenubarOffset(innerWidth, innerHeight, videoWidth, videoHeight)
-  function calcMenubarOffset (innerWidth, innerHeight, videoWidth, videoHeight) {
-    // outerheight resize and innerheight resize is mutual, additionally update on metadata and app state change
-    if (videoWidth && videoHeight) {
-      // so windows is very dumb, and calculates windowed mode as if it was window XP, with the old bars, but not when maximised
-      const isMaximised = screen.availWidth === window.outerWidth && screen.availHeight === window.outerHeight
-      const menubar = Math.max(0, isWindows && !isMaximised ? window.outerHeight - innerHeight - 8 : window.outerHeight - innerHeight)
-      // element ratio calc
-      const videoRatio = videoWidth / videoHeight
-      const { offsetWidth, offsetHeight } = video
-      const elementRatio = offsetWidth / offsetHeight
-      // video is shorter than element && has space for menubar offset
-      if (!document.fullscreenElement && menubar && elementRatio <= videoRatio && offsetHeight - offsetWidth / videoRatio > menubar) {
-        menubarOffset = (menubar / 2) * -1
-      } else {
-        menubarOffset = 0
-      }
-    }
-  }
+  // function calcMenubarOffset (innerWidth, innerHeight, videoWidth, videoHeight) {
+  //   // outerheight resize and innerheight resize is mutual, additionally update on metadata and app state change
+  //   if (videoWidth && videoHeight) {
+  //     // so windows is very dumb, and calculates windowed mode as if it was window XP, with the old bars, but not when maximised
+  //     const isMaximised = screen.availWidth === window.outerWidth && screen.availHeight === window.outerHeight
+  //     const menubar = Math.max(0, isWindows && !isMaximised ? window.outerHeight - innerHeight - 8 : window.outerHeight - innerHeight)
+  //     // element ratio calc
+  //     const videoRatio = videoWidth / videoHeight
+  //     const { offsetWidth, offsetHeight } = video
+  //     const elementRatio = offsetWidth / offsetHeight
+  //     // video is shorter than element && has space for menubar offset
+  //     if (!document.fullscreenElement && menubar && elementRatio <= videoRatio && offsetHeight - offsetWidth / videoRatio > menubar) {
+  //       menubarOffset = (menubar / 2) * -1
+  //     } else {
+  //       menubarOffset = 0
+  //     }
+  //   }
+  // }
 
   function toggleDropdown ({ target }) {
     target.classList.toggle('active')
@@ -878,6 +878,49 @@
     }
   }
   client.on('pieces', handlePieces)
+
+  function checkError ({ target }) {
+    // video playback failed - show a message saying why
+    switch (target.error?.code) {
+      case target.error.MEDIA_ERR_ABORTED:
+        console.log('You aborted the video playback.')
+        break
+      case target.error.MEDIA_ERR_NETWORK:
+        console.warn('A network error caused the video download to fail part-way.', target.error)
+        addToast({
+          text: 'A network error caused the video download to fail part-way. Click here to reload the video.',
+          title: 'Video Network Error',
+          type: 'danger',
+          duration: 1000000,
+          click: () => target.load()
+        })
+        break
+      case target.error.MEDIA_ERR_DECODE:
+        console.warn('The video playback was aborted due to a corruption problem or because the video used features your browser did not support.', target.error)
+        addToast({
+          text: 'The video playback was aborted due to a corruption problem. Click here to reload the video.',
+          title: 'Video Decode Error',
+          type: 'danger',
+          duration: 1000000,
+          click: () => target.load()
+        })
+        break
+      case target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+        if (target.error.message !== 'MEDIA_ELEMENT_ERROR: Empty src attribute') {
+          console.warn('The video could not be loaded, either because the server or network failed or because the format is not supported.', target.error)
+          addToast({
+            text: 'The video could not be loaded, either because the server or network failed or because the format is not supported. Try a different release by disabling Autoplay Torrents in RSS settings.',
+            title: 'Video Codec Unsupported',
+            type: 'danger',
+            duration: 300000
+          })
+        }
+        break
+      default:
+        console.warn('An unknown error occurred.')
+        break
+    }
+  }
 </script>
 
 <svelte:window bind:innerWidth bind:innerHeight />
@@ -919,6 +962,7 @@
     bind:ended
     bind:muted
     bind:playbackRate
+    on:error={checkError}
     on:pause={updatew2g}
     on:play={updatew2g}
     on:seeked={updatew2g}

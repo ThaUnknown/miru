@@ -36,7 +36,7 @@ class TorrentClient extends WebTorrent {
           type: file._getMimeType(),
           size: file.size,
           path: file.path,
-          url: encodeURI('http://localhost:41785/webtorrent/' + torrent.infoHash + '/' + file.path)
+          url: encodeURI(`http://localhost:${this.server.address().port}/webtorrent/${torrent.infoHash}/${file.path}`)
         }
       })
       this.dispatch('files', files)
@@ -93,9 +93,9 @@ class TorrentClient extends WebTorrent {
       pump(stream, response)
     })
 
-    this.server.on('error', console.log)
+    this.server.on('error', console.warn)
 
-    this.server.listen(41785)
+    this.server.listen(0)
 
     onmessage = this.handleMessage.bind(this)
   }
