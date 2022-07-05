@@ -1,25 +1,22 @@
 <script>
-  import { addToast } from '@/lib/Toasts.svelte'
+  import { handleCode } from './WatchTogether.svelte'
   export let state
   export let peer
   export let cancel
 
   let values = []
   let code = ''
-  let timeout = null
 
-  function rej () {
-    addToast({
-      text: 'Could not establish connection, please try again.',
-      title: 'Connection Timed Out',
-      type: 'danger'
-    })
-
-    cancel()
-  }
+  peer.pc.addEventListener('signalingstatechange', () => {
+    console.log(peer.pc.signalingState)
+    if (peer.pc.signalingState === 'have-remote-offer') {
+      value = null
+      index = index + 1
+    }
+  })
 
   peer.signalingPort.onmessage = ({ data }) => {
-    console.log(data)
+    // console.log(data)
     const { description, candidate } = typeof data === 'string' ? JSON.parse(data) : data
     if (description) {
       if (description.type === 'answer') values = []
@@ -29,51 +26,17 @@
     }
     if (values.length > 1) {
       code = btoa(JSON.stringify(values))
-      clearTimeout(timeout)
     }
   }
-
-  if (state === 'host') timeout = setTimeout(rej, 10000)
-
   $: value = (step?.mode === 'copy' && code) || null
 
   function handleInput ({ target }) {
-    let val = null
-    try {
-      val = JSON.parse(atob(target.value))
-    } catch (e) {
-      addToast({
-        text: 'The provided invite code was invalid, try copying it again?',
-        title: 'Invalid Invite Code',
-        type: 'danger'
-      })
-    }
-    if (!val) return
-    const [description, ...candidates] = val
-
-    if (state === 'guest') timeout = setTimeout(rej, 10000)
-
-    peer.signalingPort.postMessage({
-      description: {
-        type: state === 'host' ? 'answer' : 'offer',
-        sdp: description
-      }
-    })
-    for (const candidate of candidates) {
-      peer.signalingPort.postMessage({
-        candidate: {
-          candidate,
-          sdpMid: '0',
-          sdpMLineIndex: 0
-        }
-      })
-    }
+    handleCode(target.value)
     value = null
-    index = index + 1
   }
 
   function copyData () {
-    navigator.clipboard.writeText(value)
+    navigator.clipboard.writeText(`<miru://w2g/${state === 'host' ? 'invite' : 'join'}/${value}>`)
     index = index + 1
   }
 

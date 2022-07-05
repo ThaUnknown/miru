@@ -5,10 +5,11 @@
 
   export const page = writable('home')
   export const view = writable(null)
-  export async function handleAnime(anime) {
+  export async function handleAnime (anime) {
     view.set(null)
     view.set((await alRequest({ method: 'SearchIDSingle', id: anime })).data.Media)
   }
+  window.IPC.on('open-anime', handleAnime)
 </script>
 
 <script>
@@ -28,7 +29,6 @@
   setContext('gallery', writable(null))
 
   setContext('trailer', writable(null))
-  window.IPC.on('open-anime', handleAnime)
 </script>
 
 <Toasts />

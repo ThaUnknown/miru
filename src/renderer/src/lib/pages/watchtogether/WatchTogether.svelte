@@ -5,6 +5,7 @@
   import Peer from '@/modules/Peer.js'
   import { generateRandomHexCode } from '@/modules/util.js'
   import { addToast } from '@/lib/Toasts.svelte'
+  import { page } from '@/App.svelte'
   import 'browser-event-target-emitter'
 
   export const w2gEmitter = new EventTarget()
@@ -110,9 +111,46 @@
       )
     }
   }
+  
+  const base64Rx = /((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)/
+  export function handleCode (text) {
+    console.log(text)
+    const match = text.match(base64Rx)
+    if (match) {
+      const code = match[1]
+      const pend = get(pending)
+      let val = null
+      try {
+        val = JSON.parse(atob(code))
+      } catch (e) {
+        addToast({
+          text: 'The provided invite code was invalid, try copying it again?',
+          title: 'Invalid Invite Code',
+          type: 'danger'
+        })
+      }
+      if (!val) return
+      const [description, ...candidates] = val
+
+      pend.signalingPort.postMessage({
+        description: {
+          type: get(state) === 'host' ? 'answer' : 'offer',
+          sdp: description
+        }
+      })
+      for (const candidate of candidates) {
+        pend.signalingPort.postMessage({
+          candidate: {
+            candidate,
+            sdpMid: '0',
+            sdpMLineIndex: 0
+          }
+        })
+      }
+    }
+  }
 
   function handleMessage (data, channel, peer) {
-    console.log(data)
     if (get(state) === 'host') emit(data.type, data)
     switch (data.type) {
       case 'init':
@@ -163,6 +201,31 @@
     }
     state.set(newstate)
   }
+
+  function waitToCompleteIceGathering (pc, state = pc.iceGatheringState) {
+    return state !== 'complete' && new Promise(resolve => {
+      pc.addEventListener('icegatheringstatechange', () => (pc.iceGatheringState === 'complete') && resolve())
+    })
+  }
+  const linkRx = /(invite|join)\/(.*)/i
+  window.IPC.on('w2glink', async link => {
+    const match = link.match(linkRx)
+    console.log(link, match)
+    if (match) {
+      page.set('watchtogether')
+      if (match[1] === 'join') {
+        if (get(state)) {
+          handleCode(match[2])
+        } else {
+          console.log('no')
+        }
+      } else {
+        if (!get(state)) setState('guest')
+        await waitToCompleteIceGathering(get(pending).pc)
+        handleCode(match[2])
+      }
+    }
+  })
 </script>
 
 <script>

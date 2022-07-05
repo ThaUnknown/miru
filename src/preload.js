@@ -1,4 +1,4 @@
-/* eslint node/no-callback-literal: 0 */
+/* eslint n/no-callback-literal: 0 */
 const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('IPC', {

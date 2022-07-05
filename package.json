@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "2.7.5",
+  "version": "2.8.0",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "main": "src/index.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
@@ -118,7 +118,7 @@
     "discord-rpc": "^4.0.1",
     "electron-log": "^4.4.6",
     "electron-updater": "^4.6.5",
-    "jassub": "^1.1.5",
+    "jassub": "^1.1.7",
     "matroska-subtitles": "github:ThaUnknown/matroska-subtitles#patch",
     "mime": "^3.0.0",
     "pump": "^3.0.0",

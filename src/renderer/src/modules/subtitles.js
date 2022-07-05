@@ -1,5 +1,6 @@
 import JASSUB from 'jassub'
-import JASSUBWorker from 'jassub/dist/jassub-worker.js?url'
+import workerUrl from 'jassub/dist/jassub-worker.js?url'
+import 'jassub/dist/jassub-worker.wasm?raw'
 import { toTS, videoRx, subRx } from './util.js'
 
 import { client } from '@/modules/torrent.js'
@@ -138,7 +139,7 @@ export default class Subtitles {
           'roboto medium': '/Roboto.ttf'
         },
         useLocalFonts: true,
-        workerUrl: JASSUBWorker
+        workerUrl
       })
       this.selectCaptions(this.current)
     }

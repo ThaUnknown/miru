@@ -22,16 +22,30 @@ if (!app.requestSingleInstanceLock()) {
     // There's probably a better way to do this instead of a for loop and split[1][0]
     // but for now it works as a way to fix multiple OS's commandLine differences
     for (const line of commandLine) {
-      if (line.startsWith('miru://auth')) return sendToken(line)
-      if (line.startsWith('miru://anime/')) return openAnime(line)
+      handleProtocol(line)
     }
   })
 }
 app.on('open-url', (event, url) => {
   event.preventDefault()
-  if (url.startsWith('miru://auth')) sendToken(url)
-  if (url.startsWith('miru://anime/')) openAnime(url)
+  handleProtocol(url)
 })
+
+// schema: miru://key/value
+const protocolMap = {
+  auth: sendToken,
+  anime: openAnime,
+  w2g: joinLobby
+}
+const protocolRx = /miru:\/\/([a-z0-9]+)\/(.+)/i
+function handleProtocol (text) {
+  const match = text.match(protocolRx)
+  if (match) protocolMap[match[1]]?.(match[2])
+}
+
+function joinLobby (link) {
+  mainWindow.webContents.send('w2glink', link)
+}
 
 function sendToken (line) {
   let token = line.split('access_token=')[1].split('&token_type')[0]
@@ -41,11 +55,8 @@ function sendToken (line) {
   }
 }
 
-function openAnime (url) {
-  const animeId = url.split('anime/')[1]
-  if (animeId) {
-    mainWindow.webContents.send('open-anime', animeId)
-  }
+function openAnime (id) {
+  if (!isNaN(id)) mainWindow.webContents.send('open-anime', id)
 }
 
 ipcMain.on('open', (event, url) => {
