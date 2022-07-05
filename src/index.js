@@ -22,13 +22,15 @@ if (!app.requestSingleInstanceLock()) {
     // There's probably a better way to do this instead of a for loop and split[1][0]
     // but for now it works as a way to fix multiple OS's commandLine differences
     for (const line of commandLine) {
-      if (line.startsWith('miru://')) return sendToken(line)
+      if (line.startsWith('miru://auth')) return sendToken(line)
+      if (line.startsWith('miru://anime/')) return openAnime(line)
     }
   })
 }
 app.on('open-url', (event, url) => {
   event.preventDefault()
-  if (url.startsWith('miru://')) sendToken(url)
+  if (url.startsWith('miru://auth')) sendToken(url)
+  if (url.startsWith('miru://anime/')) openAnime(url)
 })
 
 function sendToken (line) {
@@ -36,6 +38,13 @@ function sendToken (line) {
   if (token) {
     if (token.endsWith('/')) token = token.slice(0, -1)
     mainWindow.webContents.send('altoken', token)
+  }
+}
+
+function openAnime (url) {
+  const animeId = url.split('anime/')[1]
+  if (animeId) {
+    mainWindow.webContents.send('open-anime', animeId)
   }
 }
 
