@@ -118,6 +118,13 @@ function createWindow () {
     mainWindow = null
   })
 
+  mainWindow.webContents.on('render-process-gone', (e, { reason }) => {
+    if (reason === 'crashed') {
+      app.relaunch()
+      app.quit()
+    }
+  })
+
   // Emitted when the window is ready to be shown
   // This helps in showing the window gracefully.
   mainWindow.once('ready-to-show', () => {
