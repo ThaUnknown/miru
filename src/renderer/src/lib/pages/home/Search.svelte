@@ -1,10 +1,16 @@
 <script>
+  import { getContext } from 'svelte'
+
   export let search
   export let current
   export let media = null
   export let loadCurrent
   let searchTimeout = null
+  let searchTextInput
 
+  const view = getContext('view')
+
+  $: !$view && searchTextInput?.focus()
   function searchClear () {
     search = {
       format: '',
@@ -14,6 +20,7 @@
       status: ''
     }
     current = null
+    searchTextInput?.focus()
   }
   function input () {
     if (!searchTimeout) {
@@ -47,6 +54,7 @@
         <span class="input-group-text d-flex material-icons bg-dark pr-0 font-size-18">search</span>
       </div>
       <!-- svelte-ignore missing-declaration -->
+      <!-- svelte-ignore a11y-autofocus -->
       <input
         on:input={({ target }) => {
           queueMicrotask(() => {
@@ -54,6 +62,8 @@
             input()
           })
         }}
+        bind:this={searchTextInput}
+        autofocus
         type="search"
         class="form-control bg-dark border-left-0 shadow-none text-capitalize"
         autocomplete="off"
@@ -102,7 +112,13 @@
         <option value="SUMMER">Summer</option>
         <option value="FALL">Fall</option>
       </select>
-      <input type="number" placeholder="Any" min="1940" max="2100" class="form-control bg-dark shadow-none" bind:value={search.year} />
+      <input type="number" placeholder="Any" min="1940" max="2100" list="search-year" class="form-control bg-dark shadow-none" bind:value={search.year} />
+      <datalist id="search-year">
+        {#each Array(new Date().getFullYear() - 1940 + 2) as _, i}
+          {@const year = new Date().getFullYear() + 2 - i}
+          <option>{year}</option>
+        {/each}
+      </datalist>
     </div>
   </div>
   <div class="col p-10 d-flex flex-column justify-content-end">

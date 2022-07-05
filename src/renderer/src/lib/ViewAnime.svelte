@@ -12,9 +12,28 @@
     $view = null
   }
   $: media = $view
+  let modal
+  $: media && modal?.focus()
+  $: !$trailer && modal?.focus()
+  let following = null
+  async function updateFollowing (media) {
+    if (media) {
+      following = null
+      following = (await alRequest({ method: 'Following', id: media.id })).data?.Page?.mediaList
+    }
+  }
+  $: updateFollowing(media)
   $: maxPlayEp = getMediaMaxEp($view || {}, true)
   function checkClose ({ keyCode }) {
     if (keyCode === 27) close()
+  }
+  const statusMap = {
+    CURRENT: 'Watching',
+    PLANNING: 'Planning',
+    COMPLETED: 'Completed',
+    DROPPED: 'Dropped',
+    PAUSED: 'Paused',
+    REPEATING: 'Re-Watching'
   }
   const detailsMap = [
     { property: 'episode', label: 'Airing', icon: 'schedule', custom: 'property' },
@@ -93,9 +112,17 @@
   function openInBrowser (url) {
     window.IPC.emit('open', url)
   }
+  let showMoreRelations = false
+  function toggleRelations () {
+    showMoreRelations = !showMoreRelations
+  }
+  let showMoreRecommendations = false
+  function toggleRecommendations () {
+    showMoreRecommendations = !showMoreRecommendations
+  }
 </script>
 
-<div class="modal modal-full" class:show={media} on:keydown={checkClose} tabindex="-1">
+<div class="modal modal-full" class:show={media} on:keydown={checkClose} tabindex="-1" bind:this={modal}>
   {#if media}
     <div class="h-full modal-content bg-very-dark p-0 overflow-y-auto">
       <button class="close pointer z-30 bg-dark shadow-lg top-20 right-0" type="button" on:click={close}> &times; </button>
@@ -213,13 +240,17 @@
       <div class="container-xl bg-very-dark z-10">
         <div class="row p-20 px-xl-0 flex-column-reverse flex-md-row">
           <div class="col-md-9 px-20">
-            <h1 class="title font-weight-bold text-white">Sypnosis</h1>
+            <h1 class="title font-weight-bold text-white">Synopsis</h1>
             <div class="font-size-16 pr-15">
               {@html media.description}
             </div>
             {#if media.relations?.edges?.filter(({ node }) => node.type === 'ANIME').length}
+            <span class="d-flex align-items-end pointer text-decoration-none mt-20 pt-20" on:click={toggleRelations}>
+              <h1 class="font-weight-bold text-white">Relations</h1>
+              <h6 class="ml-auto font-size-12 more text-muted">{showMoreRelations ? 'Show Less' : 'Show More'}</h6>
+            </span>
               <div class="d-flex text-capitalize flex-wrap pt-20 justify-center">
-                {#each media.relations?.edges.filter(({ node }) => node.type === 'ANIME') as { relationType, node }}
+                {#each media.relations?.edges.filter(({ node }) => node.type === 'ANIME').slice(0, showMoreRelations ? 100 : 4) as { relationType, node }}
                   <div class="w-150 mx-15 mb-10 rel pointer" on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: node.id })).data.Media }}>
                     <img loading="lazy" src={node.coverImage.medium || ''} alt="cover" class="cover-img w-full h-200 rel-img" />
                     <div class="pt-5">{relationType.replace(/_/g, ' ').toLowerCase()}</div>
@@ -251,10 +282,24 @@
                 </tbody>
               </table>
             {/if}
+            {#if media.recommendations?.edges?.length}
+            <span class="d-flex align-items-end pointer text-decoration-none mt-20 pt-20" on:click={toggleRecommendations}>
+              <h1 class="font-weight-bold text-white">Recommendations</h1>
+              <h6 class="ml-auto font-size-12 more text-muted">{showMoreRecommendations ? 'Show Less' : 'Show More'}</h6>
+            </span>
+              <div class="d-flex text-capitalize flex-wrap pt-20 justify-center">
+                {#each media.recommendations.edges.slice(0, showMoreRecommendations ? 100 : 4) as { node }}
+                  <div class="w-150 mx-15 mb-10 rel pointer" on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: node.mediaRecommendation.id })).data.Media }}>
+                    <img loading="lazy" src={node.mediaRecommendation.coverImage.medium || ''} alt="cover" class="cover-img w-full h-200 rel-img" />
+                    <h5 class="font-weight-bold text-white">{node.mediaRecommendation.title.userPreferred}</h5>
+                  </div>
+                {/each}
+              </div>
+            {/if}
           </div>
           <div class="col-md-3 px-sm-0 px-20">
             <h1 class="title font-weight-bold text-white">Details</h1>
-            <div class="card m-0 px-20 py-10 d-flex flex-md-column flex-row overflow-x-auto text-capitalize" id="viewDetails">
+            <div class="card m-0 px-20 py-10 d-flex flex-md-column flex-row overflow-x-auto text-capitalize">
               {#each detailsMap as detail}
                 {@const property = getProperty(detail.property, media)}
                 {#if property}
@@ -278,6 +323,19 @@
                 {/if}
               {/each}
             </div>
+            {#if following?.length}
+              <h2 class="font-weight-bold text-white mt-20">Following</h2>
+              <div class="card m-0 px-20 pt-15 pb-5 flex-column">
+                {#each following as friend}
+                  <div class="d-flex align-items-center w-full pb-10 px-10">
+                    <img src={friend.user.avatar.medium} alt="avatar" class="w-30 h-30 img-fluid rounded" />
+                    <span class="my-0 pl-10 mr-auto text-truncate">{friend.user.name}</span>
+                    <span class="my-0 px-10 text-capitalize">{statusMap[friend.status]}</span>
+                    <span class="material-icons pointer text-primary font-size-18" on:click={() => window.IPC.emit('open', 'https://anilist.co/user/' + friend.user.name)}> open_in_new </span>
+                  </div>
+                {/each}
+              </div>
+            {/if}
           </div>
         </div>
       </div>
@@ -286,6 +344,9 @@
 </div>
 
 <style>
+  .more:hover {
+    color: var(--dm-link-text-color-hover) !important;
+  }
   .banner {
     background: no-repeat center center;
     background-size: cover;
@@ -343,5 +404,11 @@
     font-size: 1.4rem;
     border: none;
     margin-right: 0.6rem;
+  }
+  .w-30 {
+    width: 3rem
+  }
+  .h-30 {
+    height: 3rem
   }
 </style>

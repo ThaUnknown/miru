@@ -221,6 +221,21 @@ relations {
       }
     }
   }
+},
+recommendations {
+  edges {
+    node {
+      mediaRecommendation {
+        id,
+        title {
+          userPreferred
+        },
+        coverImage {
+          medium
+        }
+      }
+    }
+  }
 }`
   if (opts.status) variables.status = opts.status
   if (localStorage.getItem('ALtoken')) options.headers.Authorization = alToken
@@ -366,6 +381,38 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
           deleted
         }
       }`
+      break
+    } case 'Following': {
+      variables.id = opts.id
+      query = /* js */`
+      query($id: Int) {
+        Page {
+          pageInfo {
+            total,
+            perPage,
+            currentPage,
+            lastPage,
+            hasNextPage
+          },
+          mediaList(mediaId: $id, isFollowing: true, sort: UPDATED_TIME_DESC) {
+            id,
+            status,
+            score,
+            progress,
+            user {
+              id,
+              name,
+              avatar {
+                medium
+              },
+              mediaListOptions {
+                scoreFormat
+              }
+            }
+          }
+        }
+      }`
+      break
     }
   }
   options.body = JSON.stringify({

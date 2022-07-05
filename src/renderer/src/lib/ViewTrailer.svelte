@@ -2,15 +2,17 @@
   import { getContext } from 'svelte'
   const url = getContext('trailer')
 
-  function close() {
+  let modal
+  function close () {
     $url = null
   }
-  function checkClose({ keyCode }) {
-    if (keyCode == 27) close()
+  function checkClose ({ keyCode }) {
+    if (keyCode === 27) close()
   }
+  $: $url && modal?.focus()
 </script>
 
-<div class="modal" class:show={$url} on:keydown={checkClose} tabindex="-1">
+<div class="modal" class:show={$url} on:keydown={checkClose} tabindex="-1" bind:this={modal}>
   {#if $url}
     <div class="modal-dialog" role="document" on:click|self={close}>
       <div class="modal-content w-three-quarter h-full bg-transparent d-flex justify-content-center flex-column">
