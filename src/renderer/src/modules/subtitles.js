@@ -1,4 +1,5 @@
-import SubtitlesOctopus from './subtitles-octopus.js'
+import JASSUB from 'jassub'
+import JASSUBWorker from 'jassub/dist/jassub-worker.js?url'
 import { toTS, videoRx, subRx } from './util.js'
 
 import { client } from '@/modules/torrent.js'
@@ -21,7 +22,7 @@ export default class Subtitles {
     this._stylesMap = {
       Default: 0
     }
-    this.fonts = ['Roboto.ttf']
+    this.fonts = ['/Roboto.ttf']
     this.renderer = null
     this.parsed = false
     this.stream = null
@@ -33,29 +34,20 @@ export default class Subtitles {
     this.timeout = null
     client.on('tracks', this.handleTracks.bind(this))
     client.on('subtitle', this.handleSubtitle.bind(this))
-    client.on('fonts', this.handleFonts.bind(this))
     client.on('file', this.handleFile.bind(this))
   }
 
   handleFile ({ detail }) {
     if (this.selected) {
-      this.fonts.push(URL.createObjectURL(new Blob([detail.data], { type: detail.mimetype })))
-    }
-  }
-
-  handleFonts () {
-    if (this.selected) {
-      this.renderer?.destroy()
-      this.renderer = null
-      this.initSubtitleRenderer()
-      // re-create renderer with fonts
+      const uint8 = new Uint8Array(detail.data)
+      this.fonts.push(uint8)
+      this.renderer.addFont(uint8)
     }
   }
 
   handleSubtitle ({ detail }) {
     const { subtitle, trackNumber } = detail
     if (this.selected) {
-      if (!this.renderer) this.initSubtitleRenderer()
       const string = JSON.stringify(subtitle)
       if (!this._tracksString[trackNumber].has(string)) {
         this._tracksString[trackNumber].add(string)
@@ -87,6 +79,7 @@ export default class Subtitles {
           this.onHeader()
         }
       }
+      this.initSubtitleRenderer()
     }
   }
 
@@ -127,7 +120,7 @@ export default class Subtitles {
       }
       if (!this.current) {
         this.current = 0
-        if (!this.renderer) this.initSubtitleRenderer()
+        this.initSubtitleRenderer()
         this.selectCaptions(this.current)
         this.onHeader()
       }
@@ -136,12 +129,16 @@ export default class Subtitles {
 
   initSubtitleRenderer () {
     if (!this.renderer) {
-      this.renderer = new SubtitlesOctopus({
+      this.renderer = new JASSUB({
         video: this.video,
-        blendMode: 'js',
         subContent: this.headers[this.current].header.slice(0, -1),
         fonts: this.fonts,
-        workerUrl: 'lib/subtitles-octopus-worker.js'
+        fallbackFont: 'roboto medium',
+        availableFonts: {
+          'roboto medium': '/Roboto.ttf'
+        },
+        useLocalFonts: true,
+        workerUrl: JASSUBWorker
       })
       this.selectCaptions(this.current)
     }
@@ -264,7 +261,6 @@ export default class Subtitles {
   destroy () {
     client.removeListener('tracks', this.handleTracks.bind(this))
     client.removeListener('subtitle', this.handleSubtitle.bind(this))
-    client.removeListener('fonts', this.handleFonts.bind(this))
     client.removeListener('file', this.handleFile.bind(this))
     this.stream?.destroy()
     this.parser?.destroy()
@@ -275,6 +271,5 @@ export default class Subtitles {
     this.tracks = null
     this.headers = null
     this.onHeader()
-    this.fonts?.forEach(file => URL.revokeObjectURL(file))
   }
 }

@@ -176,7 +176,6 @@ class TorrentClient extends WebTorrent {
     stream.once('subtitle', () => {
       fileStreamStream.destroy()
       stream.destroy()
-      this.dispatch('fonts')
     })
     const fileStreamStream = file.createReadStream()
     fileStreamStream.pipe(stream)

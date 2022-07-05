@@ -70,9 +70,8 @@ function createWindow () {
     frame: false,
     backgroundColor: '#191c20',
     autoHideMenuBar: true,
-    experimentalFeatures: true,
     webPreferences: {
-      enableBlinkFeatures: 'AudioVideoTracks',
+      enableBlinkFeatures: 'FontAccess, AudioVideoTracks',
       backgroundThrottling: false,
       nodeIntegrationInWorker: true,
       preload: path.join(__dirname, '/preload.js')
