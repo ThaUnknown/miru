@@ -1,6 +1,6 @@
 import JASSUB from 'jassub'
 import workerUrl from 'jassub/dist/jassub-worker.js?url'
-import 'jassub/dist/jassub-worker.wasm?raw'
+import 'jassub/dist/jassub-worker.wasm?url'
 import { toTS, videoRx, subRx } from './util.js'
 
 import { client } from '@/modules/torrent.js'

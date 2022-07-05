@@ -21,5 +21,12 @@ export default defineConfig({
   },
   plugins: [commonjsExternals({ externals: commonjsPackages }), svelte()],
   root: path.resolve(process.cwd(), 'src/renderer'),
-  base: './'
+  base: './',
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: '[name].[ext]'
+      }
+    }
+  }
 })
