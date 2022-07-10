@@ -136,7 +136,7 @@ export default class Subtitles {
         fonts: this.fonts,
         fallbackFont: 'roboto medium',
         availableFonts: {
-          'roboto medium': '/Roboto.ttf'
+          'roboto medium': './Roboto.ttf'
         },
         useLocalFonts: true,
         workerUrl
