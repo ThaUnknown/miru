@@ -20,6 +20,7 @@
   import RSSView from './lib/RSSView.svelte'
   import Menubar from './lib/Menubar.svelte'
   import Toasts from './lib/Toasts.svelte'
+  import 'quartermoon/css/quartermoon-variables.css'
 
   setContext('view', view)
 

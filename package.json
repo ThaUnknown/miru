@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "2.9.3",
+  "version": "2.9.4",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "main": "src/index.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
@@ -122,6 +122,7 @@
     "matroska-subtitles": "github:ThaUnknown/matroska-subtitles#patch",
     "mime": "^3.0.0",
     "pump": "^3.0.0",
+    "quartermoon": "^1.2.0",
     "range-parser": "^1.2.1",
     "svelte-keybinds": "^1.0.4",
     "svelte-miniplayer": "^1.0.2",
