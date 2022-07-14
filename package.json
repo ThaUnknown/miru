@@ -12,14 +12,14 @@
     "publish": "vite build && electron-builder -p always"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
+    "@sveltejs/vite-plugin-svelte": "^1.0.1",
     "builtin-modules": "^3.2.0",
     "concurrently": "^7.0.0",
     "electron": "^18.2.1",
     "electron-builder": "^22.14.13",
     "electron-notarize": "^1.1.1",
     "svelte": "^3.47.0",
-    "vite": "^2.8.6",
+    "vite": "^3.0.0",
     "vite-plugin-commonjs-externals": "^0.1.1"
   },
   "standard": {

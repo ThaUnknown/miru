@@ -106,7 +106,7 @@ function createWindow () {
     if (process.env.NODE_ENV !== 'development ') {
       mainWindow.loadURL(path.join(__dirname, '/renderer/dist/index.html' + token))
     } else {
-      mainWindow.loadURL('http://localhost:3000/' + token)
+      mainWindow.loadURL('http://localhost:5173/' + token)
     }
   })
 
@@ -126,7 +126,7 @@ function createWindow () {
   } else {
     // Load vite dev server page
     console.log('Development mode')
-    mainWindow.loadURL('http://localhost:3000/')
+    mainWindow.loadURL('http://localhost:5173/')
     mainWindow.webContents.openDevTools()
   }
 
