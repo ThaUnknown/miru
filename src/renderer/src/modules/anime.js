@@ -2,7 +2,7 @@ import { add } from './torrent.js'
 import { DOMPARSER, PromiseBatch } from './util.js'
 import { alRequest } from './anilist.js'
 import anitomyscript from 'anitomyscript'
-import 'anitomyscript/dist/anitomyscript.wasm'
+import 'anitomyscript/build/anitomyscript.wasm?url'
 import { addToast } from '@/lib/Toasts.svelte'
 import { view } from '@/App.svelte'
 

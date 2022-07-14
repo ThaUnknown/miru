@@ -37,7 +37,7 @@
   .alert {
     display: block !important;
     animation: 0.3s ease 0s 1 fly-in;
-    right: 0;
+    right: 0 !important;
   }
 
   @keyframes fly-in {
