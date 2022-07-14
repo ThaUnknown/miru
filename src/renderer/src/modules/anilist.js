@@ -111,7 +111,7 @@ export function alEntry (filemedia) {
           }
           if (videoEpisode === mediaEpisode) {
             variables.status = 'COMPLETED'
-            if (media.mediaListEntry?.status === 'COMPLETED') variables.repeat = media.mediaListEntry.repeat + 1
+            if (media.mediaListEntry?.status === 'COMPLETED' || media.mediaListEntry.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
           }
           alRequest(variables)
         }
