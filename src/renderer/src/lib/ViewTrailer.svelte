@@ -39,7 +39,7 @@
   }
   .close {
     top: 1rem !important;
-    left: unset;
+    left: unset !important;
     right: 2.5rem !important;
   }
 </style>
