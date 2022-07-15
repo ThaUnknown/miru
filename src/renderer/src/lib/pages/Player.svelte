@@ -357,12 +357,13 @@
   }
   function seek (time) {
     if (time === 85 && currentTime < 10) {
-      targetTime = currentTime = 90
+      currentTime = currentTime = 90
     } else if (time === 85 && duration - currentTime < 90) {
-      targetTime = currentTime = duration
+      currentTime = currentTime = duration
     } else {
-      targetTime = currentTime += time
+      currentTime = currentTime += time
     }
+    targetTime = currentTime
   }
   function forward () {
     seek(2)
@@ -1015,49 +1016,8 @@
     <span class="material-icons ctrl" class:text-muted={!hasNext} class:disabled={!hasNext} data-name="playNext" on:click={playNext}> skip_next </span>
     <div data-name="bufferingDisplay" class="position-absolute" />
   </div>
-  <div class="bottom d-flex z-40">
-    <span class="material-icons ctrl" title="Play/Pause [Space]" data-name="playPause" on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
-    {#if hasNext}
-      <span class="material-icons ctrl" title="Next [N]" data-name="playNext" on:click={playNext}> skip_next </span>
-    {/if}
-    <div class="d-flex w-auto volume">
-      <span class="material-icons ctrl" title="Mute [M]" data-name="toggleMute" on:click={toggleMute}> {muted ? 'volume_off' : 'volume_up'} </span>
-      <input class="ctrl" type="range" min="0" max="1" step="any" data-name="setVolume" bind:value={volume} style="--value: {volume * 100}%" />
-    </div>
-    <!-- svelte-ignore missing-declaration -->
-    {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
-      <div class="dropdown dropup with-arrow" on:click={toggleDropdown}>
-        <span class="material-icons ctrl" title="Audio Tracks" id="baudio" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="audioButton">
-          queue_music
-        </span>
-        <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize" aria-labelledby="baudio" data-name="selectAudio">
-          {#each video.audioTracks as track}
-            <input name="audio-radio-set" type="radio" id="audio-{track.id}-radio" value={track.id} checked={track.enabled} />
-            <label for="audio-{track.id}-radio" on:click={() => selectAudio(track.id)} class="text-truncate pb-5">
-              {(track.language || (!Object.values(video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) +
-                (track.label ? ' - ' + track.label : '')}</label>
-          {/each}
-        </div>
-      </div>
-    {/if}
-    <!-- svelte-ignore missing-declaration -->
-    {#if 'videoTracks' in HTMLVideoElement.prototype && video?.videoTracks?.length > 1}
-    <div class="dropdown dropup with-arrow">
-      <span class="material-icons ctrl" title="Video Tracks" id="bvideo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="videoButton">
-        playlist_play
-      </span>
-      <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize" aria-labelledby="bvideo" data-name="selectVideo">
-        {#each video.videoTracks as track}
-          <input name="video-radio-set" type="radio" id="video-{track.id}-radio" value={track.id} checked={track.selected} />
-          <label for="video-{track.id}-radio" on:click={() => selectVideo(track.id)} class="text-truncate pb-5">
-            {(track.language || (!Object.values(video.videoTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) +
-              (track.label ? ' - ' + track.label : '')}</label>
-        {/each}
-      </div>
-    </div>
-  {/if}
-    <div class="w-full d-flex align-items-center" data-name="progressWrapper">
-      <div class="ts">{toTS(targetTime, duration > 3600 ? 2 : 3)}</div>
+  <div class="bottom d-flex z-40 flex-column px-20">
+    <div class="w-full d-flex align-items-center h-20 mb--5">
       <div class="w-full h-full position-relative d-flex align-items-center">
         <canvas class="position-absolute buffer w-full" height="1px" bind:this={bufferCanvas} />
         <input
@@ -1074,49 +1034,92 @@
           on:input={handleProgress}
           on:touchstart={handleMouseDown}
           on:touchend={handleMouseUp}
+          on:keydown|preventDefault
           style="--value: {progress * 100}%" />
         <div class="hover position-absolute d-flex flex-column align-items-center" bind:this={hover}>
           <img alt="thumbnail" class="w-full mb-5 shadow-lg" src={thumbnail} />
           <div class="ts">{toTS(hoverTime)}</div>
         </div>
       </div>
-      <div class="ts">{toTS(duration - targetTime, duration > 3600 ? 2 : 3)}</div>
     </div>
-    {#if subHeaders?.length}
-      <div class="subtitles dropdown dropup with-arrow" on:click={toggleDropdown}>
-        <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="captionsButton">
-          subtitles
-        </span>
-        <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize w-200" aria-labelledby="bcap" data-name="selectCaptions">
-          <input name="subtitle-radio-set" type="radio" id="subtitle-off-radio" value="off" checked={subHeaders && subs?.current === -1} />
-          <label for="subtitle-off-radio" on:click={() => subs.selectCaptions(-1)} class="text-truncate pb-5"> OFF </label>
-          {#each subHeaders as track}
-            {#if track}
-              <input name="subtitle-radio-set" type="radio" id="subtitle-{track.number}-radio" value={track.numer} checked={track.number === subs.current} />
-              <label for="subtitle-{track.nubmer}-radio" on:click={() => subs.selectCaptions(track.number)} class="text-truncate pb-5">
-                {(track.language || (!Object.values(subs.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : track.type)) +
-                  (track.name ? ' - ' + track.name : '')}
-              </label>
-            {/if}
-          {/each}
-          <input type="number" step="0.1" bind:value={subDelay} class="form-control text-right form-control-sm" />
-        </div>
+    <div class="d-flex">
+      <span class="material-icons ctrl" title="Play/Pause [Space]" data-name="playPause" on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
+      {#if hasNext}
+        <span class="material-icons ctrl" title="Next [N]" data-name="playNext" on:click={playNext}> skip_next </span>
+      {/if}
+      <div class="d-flex w-auto volume">
+        <span class="material-icons ctrl" title="Mute [M]" data-name="toggleMute" on:click={toggleMute}> {muted ? 'volume_off' : 'volume_up'} </span>
+        <input class="ctrl" type="range" min="0" max="1" step="any" data-name="setVolume" bind:value={volume} style="--value: {volume * 100}%" />
       </div>
-    {/if}
-    <!-- svelte-ignore missing-declaration -->
-    {#if 'PresentationRequest' in window && canCast && current}
-      <span class="material-icons ctrl" title="Cast Video [D]" data-name="toggleCast" on:click={toggleCast}>
-        {presentationConnection ? 'cast_connected' : 'cast'}
+      <div class="ts mr-auto">{toTS(targetTime, duration > 3600 ? 2 : 3)} / {toTS(duration - targetTime, duration > 3600 ? 2 : 3)}</div>
+      <!-- svelte-ignore missing-declaration -->
+      {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
+        <div class="dropdown dropup with-arrow" on:click={toggleDropdown}>
+          <span class="material-icons ctrl" title="Audio Tracks" id="baudio" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="audioButton">
+            queue_music
+          </span>
+          <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize" aria-labelledby="baudio" data-name="selectAudio">
+            {#each video.audioTracks as track}
+              <input name="audio-radio-set" type="radio" id="audio-{track.id}-radio" value={track.id} checked={track.enabled} />
+              <label for="audio-{track.id}-radio" on:click={() => selectAudio(track.id)} class="text-truncate pb-5">
+                {(track.language || (!Object.values(video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) +
+                  (track.label ? ' - ' + track.label : '')}</label>
+            {/each}
+          </div>
+        </div>
+      {/if}
+      <!-- svelte-ignore missing-declaration -->
+      {#if 'videoTracks' in HTMLVideoElement.prototype && video?.videoTracks?.length > 1}
+        <div class="dropdown dropup with-arrow">
+          <span class="material-icons ctrl" title="Video Tracks" id="bvideo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="videoButton">
+            playlist_play
+          </span>
+          <div class="dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize" aria-labelledby="bvideo" data-name="selectVideo">
+            {#each video.videoTracks as track}
+              <input name="video-radio-set" type="radio" id="video-{track.id}-radio" value={track.id} checked={track.selected} />
+              <label for="video-{track.id}-radio" on:click={() => selectVideo(track.id)} class="text-truncate pb-5">
+                {(track.language || (!Object.values(video.videoTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) +
+                  (track.label ? ' - ' + track.label : '')}</label>
+            {/each}
+          </div>
+        </div>
+      {/if}
+      {#if subHeaders?.length}
+        <div class="subtitles dropdown dropup with-arrow" on:click={toggleDropdown}>
+          <span class="material-icons ctrl" title="Subtitles [C]" id="bcap" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-name="captionsButton">
+            subtitles
+          </span>
+          <div class="dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize w-200" aria-labelledby="bcap" data-name="selectCaptions">
+            <input name="subtitle-radio-set" type="radio" id="subtitle-off-radio" value="off" checked={subHeaders && subs?.current === -1} />
+            <label for="subtitle-off-radio" on:click={() => subs.selectCaptions(-1)} class="text-truncate pb-5"> OFF </label>
+            {#each subHeaders as track}
+              {#if track}
+                <input name="subtitle-radio-set" type="radio" id="subtitle-{track.number}-radio" value={track.numer} checked={track.number === subs.current} />
+                <label for="subtitle-{track.nubmer}-radio" on:click={() => subs.selectCaptions(track.number)} class="text-truncate pb-5">
+                  {(track.language || (!Object.values(subs.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : track.type)) +
+                    (track.name ? ' - ' + track.name : '')}
+                </label>
+              {/if}
+            {/each}
+            <input type="number" step="0.1" bind:value={subDelay} class="form-control text-right form-control-sm" />
+          </div>
+        </div>
+      {/if}
+      <!-- svelte-ignore missing-declaration -->
+      {#if 'PresentationRequest' in window && canCast && current}
+        <span class="material-icons ctrl" title="Cast Video [D]" data-name="toggleCast" on:click={toggleCast}>
+          {presentationConnection ? 'cast_connected' : 'cast'}
+        </span>
+      {/if}
+      {#if 'pictureInPictureEnabled' in document}
+        <span class="material-icons ctrl" title="Popout Window [P]" data-name="togglePopout" on:click={togglePopout}>
+          {pip ? 'featured_video' : 'picture_in_picture'}
+        </span>
+      {/if}
+      <span class="material-icons ctrl" title="Fullscreen [F]" data-name="toggleFullscreen" on:click={toggleFullscreen}>
+        {isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
       </span>
-    {/if}
-    {#if 'pictureInPictureEnabled' in document}
-      <span class="material-icons ctrl" title="Popout Window [P]" data-name="togglePopout" on:click={togglePopout}>
-        {pip ? 'featured_video' : 'picture_in_picture'}
-      </span>
-    {/if}
-    <span class="material-icons ctrl" title="Fullscreen [F]" data-name="toggleFullscreen" on:click={toggleFullscreen}>
-      {isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
-    </span>
+    </div>
   </div>
 </div>
 
@@ -1192,7 +1195,6 @@
   .material-icons {
     font-size: 2.6rem;
     padding: 1.5rem;
-    transition: all 0.2s ease;
     display: flex;
   }
 
@@ -1294,7 +1296,7 @@
   }
 
   .bottom {
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4) 25%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.1) 75%, transparent);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6) 25%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.1) 75%, transparent);
     transition: 0.5s opacity ease;
   }
   .top {
@@ -1375,20 +1377,19 @@
   .bottom .volume:hover input[type='range'] {
     width: 5vw;
     display: inline-block;
-    transition: all 0.1s ease;
     margin-right: 1.125rem;
   }
 
   .bottom .volume input[type='range'] {
     width: 0;
-    transition: all 0.1s ease;
+    transition: width 0.1s ease;
     height: 100%;
   }
 
   .bottom [data-name='setProgress'] ~ .hover {
     pointer-events: none;
     opacity: 0;
-    top: 1.35rem;
+    top: 0;
     transform: translate(-50%, -100%);
     position: absolute;
     font-family: Roboto, Arial, Helvetica, sans-serif;
@@ -1401,10 +1402,16 @@
   .bottom [data-name='setProgress']:hover ~ .hover {
     opacity: 1;
   }
+  .h-20 {
+    height: 2rem
+  }
+  .mb--5 {
+    margin-bottom: -.5rem;
+  }
 
-  .bottom div[data-name='progressWrapper'] .ts {
+  .bottom .ts {
     color: #ececec;
-    font-size: 2.3rem !important;
+    font-size: 2rem !important;
     white-space: nowrap;
     align-self: center;
     line-height: var(--base-line-height);
