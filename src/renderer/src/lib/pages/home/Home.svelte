@@ -296,7 +296,7 @@ for (let i = 0; i < set.rssFeeds.length; ++i) {
   <div class='h-full py-10'>
     <Search bind:media bind:search bind:current {loadCurrent} />
     <div class='container'>
-      We're ${100 - $progress} short of our monthly goal! That's only {Math.ceil(20 / $progress)} people donating $5.00!
+      We're ${100 - $progress} short of our monthly goal! That's only {Math.ceil((100 - $progress) / 5)} people donating $5.00!
       <div class='progress-group py-5'>
         <div class='progress'>
           <div class='progress-bar progress-bar-animated' role='progressbar' style='width: {$progress}%;'></div>
