@@ -1,115 +1,115 @@
 <script>
-  import { getContext } from 'svelte'
-  import { alID } from '@/modules/anilist.js'
-  import { media } from './pages/Player.svelte'
-  import { platformMap } from './pages/Settings.svelte'
-  import { addToast } from './Toasts.svelte'
-  const sidebar = getContext('sidebar')
-  const view = getContext('view')
-  const gallery = getContext('gallery')
-  export let page
-  const links = [
-    {
-      click: () => {
-        $sidebar = !$sidebar
-      },
-      image: 'logo_cut.png',
-      icon: 'menu',
-      text: 'Open Menu'
+import { getContext } from 'svelte'
+import { alID } from '@/modules/anilist.js'
+import { media } from './pages/Player.svelte'
+import { platformMap } from './pages/Settings.svelte'
+import { addToast } from './Toasts.svelte'
+const sidebar = getContext('sidebar')
+const view = getContext('view')
+const gallery = getContext('gallery')
+export let page
+const links = [
+  {
+    click: () => {
+      $sidebar = !$sidebar
     },
-    {
-      click: () => {
-        page = 'home'
-        $gallery = null
-      },
-      icon: 'home',
-      text: 'Home Page'
+    image: 'logo_cut.png',
+    icon: 'menu',
+    text: 'Open Menu'
+  },
+  {
+    click: () => {
+      page = 'home'
+      $gallery = null
     },
-    {
-      click: () => {
-        page = 'home'
-        $gallery = 'schedule'
-      },
-      icon: 'schedule',
-      text: 'Airing Schedule'
+    icon: 'home',
+    text: 'Home Page'
+  },
+  {
+    click: () => {
+      page = 'home'
+      $gallery = 'schedule'
     },
-    {
-      click: () => {
-        if (media) $view = media
-      },
-      icon: 'queue_music',
-      text: 'Now Playing'
+    icon: 'schedule',
+    text: 'Airing Schedule'
+  },
+  {
+    click: () => {
+      if (media) $view = media
     },
-    {
-      click: () => {
-        page = 'watchtogether'
-      },
-      icon: 'groups',
-      text: 'Watch Together'
+    icon: 'queue_music',
+    text: 'Now Playing'
+  },
+  {
+    click: () => {
+      page = 'watchtogether'
     },
-    {
-      click: () => {
-        page = 'settings'
-      },
-      icon: 'tune',
-      text: 'Settings'
+    icon: 'groups',
+    text: 'Watch Together'
+  },
+  {
+    click: () => {
+      page = 'settings'
     },
-    {
-      click: () => {
-        if (alID) {
-          localStorage.removeItem('ALtoken')
-          location.hash = ''
-          location.reload()
-        } else {
-          window.IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
-          if (platformMap[window.version.platform] === 'Linux') {
-            addToast({
-              text: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
-              title: 'Support Notification',
-              type: 'secondary',
-              duration: '300000'
-            })
-          }
+    icon: 'tune',
+    text: 'Settings'
+  },
+  {
+    click: () => {
+      if (alID) {
+        localStorage.removeItem('ALtoken')
+        location.hash = ''
+        location.reload()
+      } else {
+        window.IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
+        if (platformMap[window.version.platform] === 'Linux') {
+          addToast({
+            text: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
+            title: 'Support Notification',
+            type: 'secondary',
+            duration: '300000'
+          })
         }
-      },
-      icon: 'login',
-      text: 'Login With AniList'
-    }
-  ]
-  if (alID) {
-    alID.then(result => {
-      if (result?.data?.Viewer) {
-        links[links.length - 1].image = result.data.Viewer.avatar.medium
-        links[links.length - 1].text = result.data.Viewer.name + '\nLogout'
       }
-    })
+    },
+    icon: 'login',
+    text: 'Login With AniList'
   }
+]
+if (alID) {
+  alID.then(result => {
+    if (result?.data?.Viewer) {
+      links[links.length - 1].image = result.data.Viewer.avatar.medium
+      links[links.length - 1].text = result.data.Viewer.name + '\nLogout'
+    }
+  })
+}
 </script>
 
-<div class="sidebar shadow-lg">
-  <div class="sidebar-menu h-full d-flex flex-column m-0 pb-5">
+<div class='sidebar shadow-lg'>
+  <div class='sidebar-menu h-full d-flex flex-column m-0 pb-5'>
     {#each links as { click, icon, text, image }, i (i)}
       <div
-        class="sidebar-link sidebar-link-with-icon pointer"
+        class='sidebar-link sidebar-link-with-icon pointer'
         class:brand={i === 0}
-        data-toggle="tooltip"
-        data-placement="right"
+        data-toggle='tooltip'
+        data-placement='right'
         data-title={text}
         on:click={click}
         class:mt-auto={i === links.length - 2}>
-        <span class="text-nowrap d-flex align-items-center" class:justify-content-between={i === 0}>
+        <span class='text-nowrap d-flex align-items-center' class:justify-content-between={i === 0}>
           {#if image}
             {#if i === 0}
-              <img src={image} alt="logo" class="text" />
-              <span class="material-icons menu">{icon}</span>
+              <img src={image} alt='logo' class='text' />
+              <span class='material-icons menu'>{icon}</span>
             {:else}
-              <img src={image} alt="logo" />
-              <span class="text">{text}</span>
-              <span class="material-icons menu text">{icon}</span>
+              <img src={image} alt='logo' />
+              <span class='text'>{text}</span>
+              <span class='material-icons menu text'>{icon}</span>
             {/if}
           {:else}
-            <span class="material-icons">{icon}</span>
-            <span class="text">{text}</span>
+            <span class='material-icons'>{icon}</span>
+            <span class='text'>{text}</span>
           {/if}
         </span>
       </div>

@@ -1,18 +1,18 @@
 <script>
-  import Cards from './Cards.svelte'
+import Cards from './Cards.svelte'
 
-  export let media
-  $: update(media)
-  let loading = true
-  async function update(med) {
-    loading = true
-    const index = med.length - 1
-    await med[index]
-    if (med[index] === media[media.length - 1]) loading = false
-  }
+export let media
+$: update(media)
+let loading = true
+async function update (med) {
+  loading = true
+  const index = med.length - 1
+  await med[index]
+  if (med[index] === media[media.length - 1]) loading = false
+}
 </script>
 
-<div class="gallery browse" class:loading>
+<div class='gallery browse' class:loading>
   {#each media as cards, i (i)}
     <Cards {cards} length={4} />
   {/each}

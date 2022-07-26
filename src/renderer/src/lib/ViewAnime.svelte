@@ -1,72 +1,72 @@
 <script>
-  import { playAnime } from './RSSView.svelte'
-  import { alRequest } from '@/modules/anilist.js'
-  import { getMediaMaxEp } from '@/modules/anime.js'
-  import { getContext } from 'svelte'
-  import Details from './ViewAnime/Details.svelte'
-  import Following from './ViewAnime/Following.svelte'
-  import Controls from './ViewAnime/Controls.svelte'
-  import ToggleList from './ViewAnime/ToggleList.svelte'
+import { playAnime } from './RSSView.svelte'
+import { alRequest } from '@/modules/anilist.js'
+import { getMediaMaxEp } from '@/modules/anime.js'
+import { getContext } from 'svelte'
+import Details from './ViewAnime/Details.svelte'
+import Following from './ViewAnime/Following.svelte'
+import Controls from './ViewAnime/Controls.svelte'
+import ToggleList from './ViewAnime/ToggleList.svelte'
 
-  const view = getContext('view')
-  const trailer = getContext('trailer')
-  function close () {
-    $view = null
-  }
-  $: media = $view
-  let modal
-  $: media && modal?.focus()
-  $: !$trailer && modal?.focus()
-  $: maxPlayEp = getMediaMaxEp($view || {}, true)
-  function checkClose ({ keyCode }) {
-    if (keyCode === 27) close()
-  }
+const view = getContext('view')
+const trailer = getContext('trailer')
+function close () {
+  $view = null
+}
+$: media = $view
+let modal
+$: media && modal?.focus()
+$: !$trailer && modal?.focus()
+$: maxPlayEp = getMediaMaxEp($view || {}, true)
+function checkClose ({ keyCode }) {
+  if (keyCode === 27) close()
+}
 </script>
 
-<div class="modal modal-full" class:show={media} on:keydown={checkClose} tabindex="-1" bind:this={modal}>
+<div class='modal modal-full' class:show={media} on:keydown={checkClose} tabindex='-1' bind:this={modal}>
   {#if media}
-    <div class="h-full modal-content bg-very-dark p-0 overflow-y-auto">
-      <button class="close pointer z-30 bg-dark shadow-lg top-20 right-0" type="button" on:click={close}> &times; </button>
-      <div class="h-md-half w-full position-relative z-20">
-        <div class="h-full w-full position-absolute bg-dark-light banner" style:--bannerurl={`url('${media.bannerImage || ''}')`} />
-        <div class="d-flex h-full top w-full">
-          <div class="container-xl w-full">
-            <div class="row d-flex justify-content-end flex-row h-full px-20 pt-20 px-xl-0">
-              <div class="col-md-3 col-4 d-flex h-full justify-content-end flex-column pb-15 align-items-center">
-                <img class="contain-img rounded mw-full mh-full shadow" alt="cover" src={media.coverImage?.extraLarge || media.coverImage?.medium} />
+    <div class='h-full modal-content bg-very-dark p-0 overflow-y-auto'>
+      <button class='close pointer z-30 bg-dark shadow-lg top-20 right-0' type='button' on:click={close}> &times; </button>
+      <div class='h-md-half w-full position-relative z-20'>
+        <div class='h-full w-full position-absolute bg-dark-light banner' style:--bannerurl={`url('${media.bannerImage || ''}')`} />
+        <div class='d-flex h-full top w-full'>
+          <div class='container-xl w-full'>
+            <div class='row d-flex justify-content-end flex-row h-full px-20 pt-20 px-xl-0'>
+              <div class='col-md-3 col-4 d-flex h-full justify-content-end flex-column pb-15 align-items-center'>
+                <img class='contain-img rounded mw-full mh-full shadow' alt='cover' src={media.coverImage?.extraLarge || media.coverImage?.medium} />
               </div>
-              <div class="col-md-9 col-8 row align-content-end pl-20">
-                <div class="col-md-8 col-12 d-flex justify-content-end flex-column">
-                  <div class="px-md-20 d-flex flex-column font-size-12">
-                    <span class="title font-weight-bold pb-sm-15 text-white">
+              <div class='col-md-9 col-8 row align-content-end pl-20'>
+                <div class='col-md-8 col-12 d-flex justify-content-end flex-column'>
+                  <div class='px-md-20 d-flex flex-column font-size-12'>
+                    <span class='title font-weight-bold pb-sm-15 text-white'>
                       {media.title.userPreferred}
                     </span>
-                    <div class="d-flex flex-row font-size-18 pb-sm-15">
+                    <div class='d-flex flex-row font-size-18 pb-sm-15'>
                       {#if media.averageScore}
-                        <span class="material-icons mr-10 font-size-24"> trending_up </span>
-                        <span class="mr-20">
+                        <span class='material-icons mr-10 font-size-24'> trending_up </span>
+                        <span class='mr-20'>
                           Rating: {media.averageScore + '%'}
                         </span>
                       {/if}
-                      <span class="material-icons mx-10 font-size-24"> monitor </span>
-                      <span class="mr-20 text-capitalize">
+                      <span class='material-icons mx-10 font-size-24'> monitor </span>
+                      <span class='mr-20 text-capitalize'>
                         Format: {media.format === 'TV' ? media.format : media.format?.replace(/_/g, ' ').toLowerCase()}
                       </span>
                       {#if media.episodes !== 1 && getMediaMaxEp(media)}
-                        <span class="material-icons mx-10 font-size-24"> theaters </span>
-                        <span class="mr-20">
+                        <span class='material-icons mx-10 font-size-24'> theaters </span>
+                        <span class='mr-20'>
                           Episodes: {getMediaMaxEp(media)}
                         </span>
                       {:else if media.duration}
-                        <span class="material-icons mx-10 font-size-24"> timer </span>
-                        <span class="mr-20">
+                        <span class='material-icons mx-10 font-size-24'> timer </span>
+                        <span class='mr-20'>
                           Length: {media.duration + ' min'}
                         </span>
                       {/if}
                     </div>
-                    <div class="pb-15 pt-5 overflow-x-auto text-nowrap font-weight-bold">
+                    <div class='pb-15 pt-5 overflow-x-auto text-nowrap font-weight-bold'>
                       {#each media.genres as genre}
-                        <div class="badge badge-pill shadow">
+                        <div class='badge badge-pill shadow'>
                           {genre}
                         </div>
                       {/each}
@@ -79,25 +79,25 @@
           </div>
         </div>
       </div>
-      <div class="container-xl bg-very-dark z-10">
-        <div class="row p-20 px-xl-0 flex-column-reverse flex-md-row">
-          <div class="col-md-9 px-20">
-            <h1 class="title font-weight-bold text-white">Synopsis</h1>
-            <div class="font-size-16 pr-15">
+      <div class='container-xl bg-very-dark z-10'>
+        <div class='row p-20 px-xl-0 flex-column-reverse flex-md-row'>
+          <div class='col-md-9 px-20'>
+            <h1 class='title font-weight-bold text-white'>Synopsis</h1>
+            <div class='font-size-16 pr-15'>
               {@html media.description}
             </div>
             <ToggleList list={media.relations?.edges?.filter(({ node }) => node.type === 'ANIME')} let:item>
-              <div class="w-150 mx-15 mb-10 rel pointer" on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media }}>
-                <img loading="lazy" src={item.node.coverImage.medium || ''} alt="cover" class="cover-img w-full h-200 rel-img" />
-                <div class="pt-5">{item.relationType.replace(/_/g, ' ').toLowerCase()}</div>
-                <h5 class="font-weight-bold text-white">{item.node.title.userPreferred}</h5>
+              <div class='w-150 mx-15 mb-10 rel pointer' on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media }}>
+                <img loading='lazy' src={item.node.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img' />
+                <div class='pt-5'>{item.relationType.replace(/_/g, ' ').toLowerCase()}</div>
+                <h5 class='font-weight-bold text-white'>{item.node.title.userPreferred}</h5>
               </div>
             </ToggleList>
             {#if maxPlayEp}
-              <table class="table table-hover w-500 table-auto">
+              <table class='table table-hover w-500 table-auto'>
                 <thead>
                   <tr>
-                    <th class="px-0"><h2 class="title font-weight-bold text-white pt-20 mb-5">Episodes</h2></th>
+                    <th class='px-0'><h2 class='title font-weight-bold text-white pt-20 mb-5'>Episodes</h2></th>
                     <th />
                   </tr>
                 </thead>
@@ -109,21 +109,21 @@
                         playAnime(media, ep)
                         close()
                       }}>
-                      <td class="w-full font-weight-semi-bold">Episode {ep}</td>
-                      <td class="material-icons text-right h-full d-table-cell">play_arrow</td>
+                      <td class='w-full font-weight-semi-bold'>Episode {ep}</td>
+                      <td class='material-icons text-right h-full d-table-cell'>play_arrow</td>
                     </tr>
                   {/each}
                 </tbody>
               </table>
             {/if}
             <ToggleList list={media.recommendations.edges.filter(edge => edge.node.mediaRecommendation)} let:item>
-              <div class="w-150 mx-15 mb-10 rel pointer" on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.mediaRecommendation.id })).data.Media }}>
-                <img loading="lazy" src={item.node.mediaRecommendation.coverImage.medium || ''} alt="cover" class="cover-img w-full h-200 rel-img" />
-                <h5 class="font-weight-bold text-white">{item.node.mediaRecommendation.title.userPreferred}</h5>
+              <div class='w-150 mx-15 mb-10 rel pointer' on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.mediaRecommendation.id })).data.Media }}>
+                <img loading='lazy' src={item.node.mediaRecommendation.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img' />
+                <h5 class='font-weight-bold text-white'>{item.node.mediaRecommendation.title.userPreferred}</h5>
               </div>
             </ToggleList>
           </div>
-          <div class="col-md-3 px-sm-0 px-20">
+          <div class='col-md-3 px-sm-0 px-20'>
             <Details {media}/>
             <Following {media}/>
           </div>
