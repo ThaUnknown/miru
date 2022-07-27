@@ -3,6 +3,7 @@ const { Client } = require('discord-rpc')
 const log = require('electron-log')
 const { autoUpdater } = require('electron-updater')
 const fs = require('fs')
+const path = require('path')
 
 ipcMain.on('dialog', async (event, data) => {
   const { filePaths } = await dialog.showOpenDialog({
@@ -61,8 +62,9 @@ ipcMain.on('version', (event) => {
 
 ipcMain.on('save-file', (event, data) => {
   const buffer = Buffer.from(data.data)
-  fs.writeFile(data.name, buffer, err => {
-    event.reply('save-reply', err)
+  const filePath = path.join(data.folder, data.name)
+  fs.writeFile(filePath, buffer, err => {
+    event.reply('save-file-reply', err)
   })
 })
 

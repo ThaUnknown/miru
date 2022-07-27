@@ -103,12 +103,12 @@ function restoreSettings () {
   localStorage.removeItem('settings')
   settings = { ...defaults }
 }
-function handleFolder () {
+function handleFolder(setting) {
+  window.IPC.on('path', data => {
+    settings[setting] = data
+  })
   window.IPC.emit('dialog')
 }
-window.IPC.on('path', data => {
-  settings.torrentPath = data
-})
 </script>
 
 <Tabs>

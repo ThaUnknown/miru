@@ -39,8 +39,8 @@
     const shotNumber = (shotsPerFilename[filename] || 0) + 1
 
     const shortNumberAsString = String(shotNumber).padStart(4, '0')
-    const filenameToSave = `${location}${filename}-${shortNumberAsString}.png`
-    window.IPC.on('save-reply', err => {
+    const filenameToSave = `${filename}-${shortNumberAsString}.png`
+    window.IPC.on('save-file-reply', err => {
       console.log(err)
       if (err) {
         addToast({
@@ -58,7 +58,7 @@
       }
     })
     const arr = await blob.arrayBuffer()
-    window.IPC.emit('save-file', {data: arr, name: filenameToSave})
+    window.IPC.emit('save-file', {data: arr, name: filenameToSave, folder: location})
   }
 
   async function saveToClipboard(blob) {
