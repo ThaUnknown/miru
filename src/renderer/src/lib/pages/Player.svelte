@@ -1,21 +1,21 @@
 <script context='module'>
-  import { set } from './Settings.svelte'
-  import { playAnime } from '../RSSView.svelte'
-  import { title } from '../Menubar.svelte'
-  import { onMount } from 'svelte'
-  import { client } from '@/modules/torrent.js'
-  import { takeScreenshot } from '@/lib/Screenshot.js'
-  export let media = null
-  let fileMedia = null
-  let hadImage = false
-  export function updateMedia (fileMed) {
-    if (!fileMedia) {
-      setDiscordRPC(fileMed)
-    }
-    fileMedia = fileMed
-    media = fileMedia.media
-    const name = [fileMedia.mediaTitle, fileMedia.episodeNumber, fileMedia.episodeTitle, 'Miru'].filter(i => i).join(' - ')
-    title.set(name)
+import { set } from './Settings.svelte'
+import { playAnime } from '../RSSView.svelte'
+import { title } from '../Menubar.svelte'
+import { onMount } from 'svelte'
+import { client } from '@/modules/torrent.js'
+import { takeScreenshot } from '@/lib/Screenshot.js'
+export let media = null
+let fileMedia = null
+let hadImage = false
+export function updateMedia (fileMed) {
+  if (!fileMedia) {
+    setDiscordRPC(fileMed)
+  }
+  fileMedia = fileMed
+  media = fileMedia.media
+  const name = [fileMedia.mediaTitle, fileMedia.episodeNumber, fileMedia.episodeTitle, 'Miru'].filter(i => i).join(' - ')
+  title.set(name)
 
   fileMedia.episodeThumbnail = !!fileMedia.episodeThumbnail
   const metadata =
