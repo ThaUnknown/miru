@@ -61,6 +61,14 @@ const codes = {
 }
 
 export const alID = !!alToken && alRequest({ method: 'Viewer', token: alToken })
+if (alID) {
+  alID.then(result => {
+    const lists = result?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
+    if (!lists.includes('Watched using Miru')) {
+      alRequest({ method: 'CustomList', lists })
+    }
+  })
+}
 
 function printError (error) {
   console.warn(error)
@@ -96,22 +104,27 @@ export function alEntry (filemedia) {
     if (media.status === 'FINISHED' || media.status === 'RELEASING') {
       // some anime/OVA's can have a single episode, or some movies can have multiple episodes
       const singleEpisode = (!media.episodes || (media.format === 'MOVIE' && media.episodes === 1)) && 1
-      const videoEpisode = filemedia.episodeNumber || singleEpisode
+      const videoEpisode = Number(filemedia.episodeNumber) || singleEpisode
       const mediaEpisode = media.nextAiringEpisode?.episode || media.episodes || singleEpisode
       // check episode range
       if (videoEpisode && mediaEpisode && mediaEpisode >= videoEpisode) {
         // check user's own watch progress
+        const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name)
         if (!media.mediaListEntry || media.mediaListEntry?.progress <= videoEpisode || singleEpisode) {
           const variables = {
             method: 'Entry',
             repeat: 0,
             id: media.id,
             status: 'CURRENT',
-            episode: videoEpisode
+            episode: videoEpisode,
+            lists
           }
           if (videoEpisode === mediaEpisode) {
             variables.status = 'COMPLETED'
             if (media.mediaListEntry?.status === 'COMPLETED' || media.mediaListEntry.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
+          }
+          if (!lists.includes('Watched using Miru')) {
+            variables.lists.push('Watched using Miru')
           }
           alRequest(variables)
         }
@@ -181,6 +194,7 @@ mediaListEntry {
   progress,
   repeat,
   status,
+  customLists(asArray: true),
   score(format: POINT_10)
 },
 source,
@@ -286,7 +300,12 @@ query {
       medium
     },
     name,
-    id
+    id,
+    mediaListOptions {
+      animeList {
+        customLists
+      }
+    }
   }
 }`
       break
@@ -363,9 +382,10 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
       variables.status = opts.status
       variables.episode = opts.episode
       variables.score = opts.score
+      variables.lists = opts.lists
       query = /* js */`
-      mutation ($id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int, $score: Int) {
-        SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat, scoreRaw: $score) {
+      mutation ($lists: [String], $id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int, $score: Int) {
+        SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat, scoreRaw: $score, customLists: $lists) {
           id,
           status,
           progress,
@@ -410,6 +430,15 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
               }
             }
           }
+        }
+      }`
+      break
+    } case 'CustomList':{
+      variables.lists = ['Watched using Miru', ...opts.lists]
+      query = /* js */`
+      mutation($lists: [String]) {
+        UpdateUser(animeListOptions: { customLists: $lists }){
+          id
         }
       }`
       break
