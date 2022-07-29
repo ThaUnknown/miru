@@ -9,14 +9,6 @@ import { view } from '@/App.svelte'
 const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 
-fetch('https://nyaa.si').catch(() => {
-  addToast({
-    text: 'Failed connecting to Nyaa! Visit<br><a href="https://thewiki.moe/en/tutorials/unblock">thewiki.moe/en/tutorials/unblock</a><br>for a guide on how to bypass ISP blocks.',
-    title: 'Nyaa Blocked',
-    type: 'danger'
-  })
-})
-
 window.addEventListener('paste', async e => { // WAIT image lookup on paste, or add torrent on paste
   const item = e.clipboardData.items[0]
   if (item?.type.indexOf('image') === 0) {

@@ -1,45 +1,46 @@
-<script context="module">
-  import { setContext } from 'svelte'
-  import { writable } from 'svelte/store'
-  import { alRequest } from '@/modules/anilist.js'
+<script context='module'>
+import { setContext } from 'svelte'
+import { writable } from 'svelte/store'
+import { alRequest } from '@/modules/anilist.js'
 
-  export const page = writable('home')
-  export const view = writable(null)
-  export async function handleAnime (anime) {
-    view.set(null)
-    view.set((await alRequest({ method: 'SearchIDSingle', id: anime })).data.Media)
-  }
-  window.IPC.on('open-anime', handleAnime)
+export const page = writable('home')
+export const view = writable(null)
+export async function handleAnime (anime) {
+  view.set(null)
+  view.set((await alRequest({ method: 'SearchIDSingle', id: anime })).data.Media)
+}
+window.IPC.on('open-anime', handleAnime)
 </script>
 
 <script>
-  import Sidebar from './lib/Sidebar.svelte'
-  import Router from './lib/Router.svelte'
-  import ViewAnime from './lib/ViewAnime.svelte'
-  import ViewTrailer from './lib/ViewTrailer.svelte'
-  import RSSView from './lib/RSSView.svelte'
-  import Menubar from './lib/Menubar.svelte'
-  import Toasts from './lib/Toasts.svelte'
-  import 'quartermoon/css/quartermoon-variables.css'
+import Sidebar from './lib/Sidebar.svelte'
+import Router from './lib/Router.svelte'
+import ViewAnime from './lib/ViewAnime.svelte'
+import ViewTrailer from './lib/ViewTrailer.svelte'
+import RSSView from './lib/RSSView.svelte'
+import Menubar from './lib/Menubar.svelte'
+import Toasts from './lib/Toasts.svelte'
+import 'quartermoon/css/quartermoon-variables.css'
+import NyaaBlock from './lib/NyaaBlock.svelte'
 
-  setContext('view', view)
+setContext('view', view)
 
-  const sidebar = writable(true)
-  setContext('sidebar', sidebar)
+const sidebar = writable(true)
+setContext('sidebar', sidebar)
 
-  setContext('gallery', writable(null))
+setContext('gallery', writable(null))
 
-  setContext('trailer', writable(null))
+setContext('trailer', writable(null))
 </script>
 
 <Toasts />
 <ViewAnime />
 <ViewTrailer />
 <RSSView />
-<div class="page-wrapper with-navbar with-sidebar with-transitions" data-sidebar-type="overlayed-sm-and-down" data-sidebar-hidden={$sidebar || null}>
-  <div class="sticky-alerts" />
-  <!-- svelte-ignore missing-declaration -->
-  <div class="sidebar-overlay" on:click={() => ($sidebar = !$sidebar)} />
+<div class='page-wrapper with-navbar with-sidebar with-transitions' data-sidebar-type='overlayed-sm-and-down' data-sidebar-hidden={$sidebar || null}>
+  <div class='sticky-alerts' />
+  <div class='sidebar-overlay' on:click={() => ($sidebar = !$sidebar)} />
+  <NyaaBlock />
   <Menubar />
   <Sidebar bind:page={$page} />
   <Router bind:page={$page} />
