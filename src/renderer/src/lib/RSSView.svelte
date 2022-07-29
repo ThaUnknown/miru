@@ -63,8 +63,8 @@ export function getReleasesRSSurl (val) {
   const rss = rssmap[val] || val
   return rss && new URL(rssmap[val] ? `${rss}${settings.rssQuality ? `"${settings.rssQuality}"` : ''}` : rss)
 }
-// matches: OP01 ED01 EP01 E01 01v -01- _01_ with spaces and stuff
-const epNumRx = /[EO]?[EPD _-]\d{2}[v _-]|\d{2}[-~]\d{2}/i
+// matches: OP01 ED01 EP01 E01 01v 01. -01- _01_ with spaces and stuff
+const epNumRx = /[EO]?[EPD _-—]\d{2}[v _.-—]|\d{2} ?[-~—] ?\d{2}/i
 async function getRSSEntries ({ media, episode, mode, ignoreQuality }) {
   // mode cuts down on the amt of queries made 'check' || 'batch'
   const titles = createTitle(media).join(')|(')
