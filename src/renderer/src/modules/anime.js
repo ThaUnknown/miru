@@ -13,9 +13,7 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
   const item = e.clipboardData.items[0]
   if (item?.type.indexOf('image') === 0) {
     e.preventDefault()
-    const formData = new FormData()
-    formData.append('image', item.getAsFile())
-    traceAnime(formData, 'file')
+    traceAnime(item.getAsFile(), 'file')
   } else if (item?.type === 'text/plain') {
     item.getAsString(text => {
       if (torrentRx.exec(text)) {
@@ -36,16 +34,16 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
     })
   }
 })
-function traceAnime (image, type) { // WAIT lookup logic
+export function traceAnime (image, type) { // WAIT lookup logic
   if (type === 'file') {
     const reader = new FileReader()
     reader.onload = e => {
       addToast({
         title: 'Looking up anime for image',
-        text: /* html */`<img class="w-200 rounded pt-5" src="${e.target.result}">`
+        text: /* html */`You can also paste an URL to an image!<br><img class="w-200 rounded pt-5" src="${e.target.result}">`
       })
     }
-    reader.readAsDataURL(image.get('image'))
+    reader.readAsDataURL(image)
   } else {
     addToast({
       title: 'Looking up anime for image',
@@ -55,9 +53,11 @@ function traceAnime (image, type) { // WAIT lookup logic
   let options
   let url = `https://api.trace.moe/search?cutBorders&url=${image}`
   if (type === 'file') {
+    const formData = new FormData()
+    formData.append('image', image)
     options = {
       method: 'POST',
-      body: image
+      body: formData
     }
     url = 'https://api.trace.moe/search'
   }

@@ -1,5 +1,6 @@
 <script>
 import { getContext } from 'svelte'
+import { traceAnime } from '@/modules/anime.js'
 
 export let search
 export let current
@@ -40,6 +41,13 @@ function input () {
     }
     searchTimeout = null
   }, 500)
+}
+function handleFile ({ target }) {
+  const { files } = target
+  if (files?.[0]) {
+    traceAnime(files[0], 'file')
+    target.value = null
+  }
 }
 </script>
 
@@ -161,6 +169,14 @@ function input () {
       <option value='TRENDING_DESC'>Trending</option>
       <option value='UPDATED_TIME_DESC' disabled hidden>Updated Date</option>
     </select>
+  </div>
+  <input type='file' class='d-none' id='search-image' accept='image/*' on:input={handleFile}>
+  <div class='col-auto p-10 d-flex'>
+    <button class='btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0' type='button' on:click={searchClear} class:text-primary={!!current}>
+      <label for='search-image' class='pointer'>
+        image
+      </label>
+    </button>
   </div>
   <div class='col-auto p-10 d-flex'>
     <button class='btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0' type='button' on:click={searchClear} class:text-primary={!!current}>

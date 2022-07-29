@@ -1,5 +1,5 @@
 <script>
-let block = true
+let block = false
 
 async function testConnection () {
   try {
