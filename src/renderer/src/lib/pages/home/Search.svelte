@@ -172,7 +172,7 @@ function handleFile ({ target }) {
   </div>
   <input type='file' class='d-none' id='search-image' accept='image/*' on:input={handleFile}>
   <div class='col-auto p-10 d-flex'>
-    <button class='btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0' type='button' on:click={searchClear} class:text-primary={!!current}>
+    <button class='btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0' type='button'>
       <label for='search-image' class='pointer'>
         image
       </label>
