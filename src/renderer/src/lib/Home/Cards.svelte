@@ -75,8 +75,8 @@ export let length = 5
                 </span>
               </p>
             </div>
-            <div class='overflow-y-auto px-15 pb-5 bg-very-dark card-desc'>
-              {@html card.media.description}
+            <div class='overflow-y-auto px-15 pb-5 bg-very-dark card-desc pre-wrap'>
+              {card.media.description.replace(/<[^>]*>/g, '')}
             </div>
             <div class='px-15 pb-10 pt-5 genres'>
               {#each card.media.genres as genre}
@@ -96,6 +96,9 @@ export let length = 5
 {/await}
 
 <style>
+  .pre-wrap {
+    white-space: pre-wrap
+  }
   .empty {
     height: 27rem;
     grid-column: 1 / -1;

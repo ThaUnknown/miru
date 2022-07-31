@@ -159,7 +159,7 @@ title {
   native,
   userPreferred
 },
-description(asHtml: true),
+description(asHtml: false),
 season,
 seasonYear,
 format,

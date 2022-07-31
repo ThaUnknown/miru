@@ -21,7 +21,7 @@ const detailsMap = [
 function getCustomProperty (detail, media) {
   if (detail.property === 'episodes') {
     if (media.mediaListEntry?.progress) {
-      return `Watched <b>${media.mediaListEntry.progress}</b> of <b>${getMediaMaxEp(media)}</b>`
+      return `Watched ${media.mediaListEntry.progress} of ${getMediaMaxEp(media)}`
     }
     return `${getMediaMaxEp(media)} Episodes`
   } else if (detail.property === 'averageScore') {
@@ -58,7 +58,7 @@ function getProperty (property, media) {
         <div class='d-flex flex-column justify-content-center text-nowrap'>
           <div class='font-weight-bold'>
             {#if detail.custom === 'property'}
-              {@html getCustomProperty(detail, media)}
+              {getCustomProperty(detail, media)}
             {:else if property.constructor === Array}
               {property === 'nodes' ? property[0] && property[0].name : property.join(', ').replace(/_/g, ' ').toLowerCase()}
             {:else}
