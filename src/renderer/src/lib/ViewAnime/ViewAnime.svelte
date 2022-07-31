@@ -1,12 +1,12 @@
 <script>
-import { playAnime } from './RSSView.svelte'
+import { playAnime } from '../RSSView.svelte'
 import { alRequest } from '@/modules/anilist.js'
 import { getMediaMaxEp } from '@/modules/anime.js'
 import { getContext } from 'svelte'
-import Details from './ViewAnime/Details.svelte'
-import Following from './ViewAnime/Following.svelte'
-import Controls from './ViewAnime/Controls.svelte'
-import ToggleList from './ViewAnime/ToggleList.svelte'
+import Details from './Details.svelte'
+import Following from './Following.svelte'
+import Controls from './Controls.svelte'
+import ToggleList from './ToggleList.svelte'
 
 const view = getContext('view')
 const trailer = getContext('trailer')

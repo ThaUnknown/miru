@@ -1,4 +1,4 @@
-import { alToken } from '@/lib/pages/Settings.svelte'
+import { alToken } from '@/lib/Settings.svelte'
 import { addToast } from '@/lib/Toasts.svelte'
 
 const codes = {

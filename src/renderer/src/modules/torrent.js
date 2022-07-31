@@ -1,5 +1,5 @@
 // import WebTorrent from 'webtorrent'
-import { set } from '@/lib/pages/Settings.svelte'
+import { set } from '@/lib/Settings.svelte'
 import { files } from '@/lib/Router.svelte'
 import { page } from '@/App.svelte'
 

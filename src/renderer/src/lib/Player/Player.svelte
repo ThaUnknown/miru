@@ -1,5 +1,5 @@
 <script context='module'>
-import { set } from './Settings.svelte'
+import { set } from '../Settings.svelte'
 import { playAnime } from '../RSSView.svelte'
 import { title } from '../Menubar.svelte'
 import { onMount } from 'svelte'
@@ -77,7 +77,7 @@ import Subtitles from '@/modules/subtitles.js'
 import { toTS, videoRx, fastPrettyBytes } from '@/modules/util.js'
 import { addToast } from '../Toasts.svelte'
 
-import { w2gEmitter } from './watchtogether/WatchTogether.svelte'
+import { w2gEmitter } from '../WatchTogether/WatchTogether.svelte'
 import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
 
 w2gEmitter.on('playerupdate', ({ detail }) => {

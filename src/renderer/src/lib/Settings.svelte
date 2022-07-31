@@ -1,5 +1,5 @@
 <script context='module'>
-import { addToast } from '@/lib/Toasts.svelte'
+import { addToast } from './Toasts.svelte'
 export let alToken = localStorage.getItem('ALtoken') || null
 const defaults = {
   playerAutoplay: true,
@@ -69,7 +69,7 @@ setInterval(checkUpdate, 1200000)
 </script>
 
 <script>
-import { Tabs, TabLabel, Tab } from '../Tabination.js'
+import { Tabs, TabLabel, Tab } from './Tabination.js'
 import { onDestroy } from 'svelte'
 
 onDestroy(() => {

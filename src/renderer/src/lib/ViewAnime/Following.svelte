@@ -1,5 +1,5 @@
 <script>
-import { alToken } from '@/lib/pages/Settings.svelte'
+import { alToken } from '../Settings.svelte'
 import { alRequest } from '@/modules/anilist.js'
 export let media = null
 let following = null

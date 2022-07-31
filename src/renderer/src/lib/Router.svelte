@@ -6,10 +6,10 @@ export const files = writable([])
 
 <script>
 import { getContext } from 'svelte'
-import Home from './pages/home/Home.svelte'
-import Player from './pages/Player.svelte'
-import Settings from './pages/Settings.svelte'
-import WatchTogether from './pages/watchtogether/WatchTogether.svelte'
+import Home from './Home/Home.svelte'
+import Player from './Player/Player.svelte'
+import Settings from './Settings.svelte'
+import WatchTogether from './WatchTogether/WatchTogether.svelte'
 import Miniplayer from 'svelte-miniplayer'
 export let page = 'home'
 const current = getContext('gallery')

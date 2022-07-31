@@ -1,8 +1,8 @@
 <script context='module'>
 import { DOMPARSER } from '@/modules/util.js'
-import { updateMedia } from './pages/Player.svelte'
-import { set } from './pages/Settings.svelte'
-import { addToast } from '@/lib/Toasts.svelte'
+import { updateMedia } from './Player/Player.svelte'
+import { set } from './Settings.svelte'
+import { addToast } from './Toasts.svelte'
 import { alRequest } from '@/modules/anilist.js'
 import { episodeRx, findEdge, resolveSeason, getMediaMaxEp } from '@/modules/anime.js'
 

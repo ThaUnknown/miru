@@ -1,8 +1,8 @@
 <script>
 import { getContext } from 'svelte'
 import { alID } from '@/modules/anilist.js'
-import { media } from './pages/Player.svelte'
-import { platformMap } from './pages/Settings.svelte'
+import { media } from './Player/Player.svelte'
+import { platformMap } from './Settings.svelte'
 import { addToast } from './Toasts.svelte'
 const sidebar = getContext('sidebar')
 const view = getContext('view')

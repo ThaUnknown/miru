@@ -1,5 +1,5 @@
 <script>
-import { alToken } from '@/lib/pages/Settings.svelte'
+import { alToken } from '../Settings.svelte'
 import { addToast } from '../Toasts.svelte'
 import { alRequest } from '@/modules/anilist.js'
 import { getContext } from 'svelte'

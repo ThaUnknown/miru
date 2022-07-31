@@ -15,8 +15,8 @@ window.IPC.on('open-anime', handleAnime)
 <script>
 import Sidebar from './lib/Sidebar.svelte'
 import Router from './lib/Router.svelte'
-import ViewAnime from './lib/ViewAnime.svelte'
-import ViewTrailer from './lib/ViewTrailer.svelte'
+import ViewAnime from './lib/ViewAnime/ViewAnime.svelte'
+import ViewTrailer from './lib/ViewAnime/ViewTrailer.svelte'
 import RSSView from './lib/RSSView.svelte'
 import Menubar from './lib/Menubar.svelte'
 import Toasts from './lib/Toasts.svelte'
