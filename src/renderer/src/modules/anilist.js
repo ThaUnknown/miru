@@ -104,7 +104,7 @@ export function alEntry (filemedia) {
     if (media.status === 'FINISHED' || media.status === 'RELEASING') {
       // some anime/OVA's can have a single episode, or some movies can have multiple episodes
       const singleEpisode = (!media.episodes || (media.format === 'MOVIE' && media.episodes === 1)) && 1
-      const videoEpisode = Number(filemedia.episodeNumber) || singleEpisode
+      const videoEpisode = Number(filemedia.episode) || singleEpisode
       const mediaEpisode = media.nextAiringEpisode?.episode || media.episodes || singleEpisode
       // check episode range
       if (videoEpisode && mediaEpisode && mediaEpisode >= videoEpisode) {
@@ -113,7 +113,7 @@ export function alEntry (filemedia) {
         if (!media.mediaListEntry || media.mediaListEntry?.progress <= videoEpisode || singleEpisode) {
           const variables = {
             method: 'Entry',
-            repeat: 0,
+            repeat: media.mediaListEntry?.repeat || 0,
             id: media.id,
             status: 'CURRENT',
             episode: videoEpisode,
@@ -121,7 +121,7 @@ export function alEntry (filemedia) {
           }
           if (videoEpisode === mediaEpisode) {
             variables.status = 'COMPLETED'
-            if (media.mediaListEntry?.status === 'COMPLETED' || media.mediaListEntry.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
+            if (media.mediaListEntry.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
           }
           if (!lists.includes('Watched using Miru')) {
             variables.lists.push('Watched using Miru')

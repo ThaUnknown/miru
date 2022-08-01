@@ -31,7 +31,7 @@ export let length = 5
         <div class='row h-full'>
           <div class='col-4 skeloader' />
           <div class='col-8 bg-very-dark px-15 py-10'>
-            <h5 class='m-0 text-capitalize font-weight-bold pb-10'>{[card.parseObject.anime_title, card.parseObject.episode_number].filter(s => s).join(' - ')}</h5>
+            <h5 class='m-0 text-capitalize font-weight-bold pb-10'>{[card.parseObject.anime_title, card.episode].filter(s => s).join(' - ')}</h5>
             <p class='skeloader w-150 h-10 rounded bg-dark' />
             <p class='skeloader w-150 h-10 rounded bg-dark' />
           </div>
@@ -49,7 +49,7 @@ export let length = 5
                 {#if card.failed}
                   <span class='badge badge-secondary'>Uncertain</span>
                 {/if}
-                {[card.media.title.userPreferred, card.episodeNumber].filter(s => s).join(' - ')}
+                {[card.media.title.userPreferred, card.episode].filter(s => s).join(' - ')}
               </h5>
               {#if card.schedule && card.media.nextAiringEpisode}
                 <span class='text-muted font-weight-bold'>
@@ -76,7 +76,7 @@ export let length = 5
               </p>
             </div>
             <div class='overflow-y-auto px-15 pb-5 bg-very-dark card-desc pre-wrap'>
-              {card.media.description.replace(/<[^>]*>/g, '')}
+              {card.media.description?.replace(/<[^>]*>/g, '') || ''}
             </div>
             <div class='px-15 pb-10 pt-5 genres'>
               {#each card.media.genres as genre}

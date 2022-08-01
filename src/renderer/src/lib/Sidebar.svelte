@@ -1,7 +1,7 @@
 <script>
 import { getContext } from 'svelte'
 import { alID } from '@/modules/anilist.js'
-import { media } from './Player/Player.svelte'
+import { media } from './Player/MediaHandler.svelte'
 import { platformMap } from './Settings.svelte'
 import { addToast } from './Toasts.svelte'
 const sidebar = getContext('sidebar')
@@ -35,7 +35,7 @@ const links = [
   },
   {
     click: () => {
-      if (media) $view = media
+      if ($media) $view = $media.media
     },
     icon: 'queue_music',
     text: 'Now Playing'

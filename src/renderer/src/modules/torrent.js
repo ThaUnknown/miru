@@ -1,7 +1,8 @@
 // import WebTorrent from 'webtorrent'
 import { set } from '@/lib/Settings.svelte'
-import { files } from '@/lib/Router.svelte'
+import { files } from '@/lib/Player/MediaHandler.svelte'
 import { page } from '@/App.svelte'
+import 'browser-event-target-emitter'
 
 class TorrentWorker extends Worker {
   constructor (opts) {

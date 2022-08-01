@@ -115,7 +115,7 @@ async function releasesCards (page, limit, force, val) {
       const index = (page - 1) * limit
       const items = [...doc.querySelectorAll('item')].slice(index, index + limit)
       hasNext = items.length === limit
-      const media = await resolveFileMedia({ fileName: items.map(item => item.querySelector('title').textContent), isRelease: true })
+      const media = await resolveFileMedia(items.map(item => item.querySelector('title').textContent))
       media.forEach((mediaInformation, index) => {
         mediaInformation.onclick = () => {
           add(items[index].querySelector('link').textContent)

@@ -83,8 +83,6 @@ export function getMediaMaxEp (media, playable) {
   }
 }
 
-export const episodeRx = /Episode (\d+) - (.*)/
-
 // resolve anime name based on file name and store it
 const postfix = {
   1: 'st',
@@ -160,12 +158,10 @@ function getParseObjTitle (obj) {
   return title
 }
 
-export async function resolveFileMedia (opts) {
-  // opts.fileName
-  const parsePromises = opts.fileName.constructor === Array
-    ? opts.fileName.map(name => anitomyscript(name))
-    : [anitomyscript(opts.fileName)]
-  const parseObjs = await Promise.all(parsePromises)
+export async function resolveFileMedia (fileName) {
+  let parseObjs = await anitomyscript(fileName)
+
+  if (parseObjs.constructor !== Array) parseObjs = [parseObjs]
   // batches promises in 10 at a time, because of CF burst protection, which still sometimes gets triggered :/
   await PromiseBatch(resolveTitle, [...new Set(parseObjs.map(obj => getParseObjTitle(obj)))].filter(title => !(title in relations)), 10)
   const fileMedias = []
@@ -218,20 +214,14 @@ export async function resolveFileMedia (opts) {
         }
       }
     }
-    const streamingEpisode = media?.streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(parseObj.episode_number))[0]
     fileMedias.push({
-      mediaTitle: media?.title.userPreferred || parseObj.anime_title,
-      episodeNumber: episode || parseObj.episode_number,
-      episodeTitle: streamingEpisode && episodeRx.exec(streamingEpisode.title)[2],
-      episodeThumbnail: streamingEpisode?.thumbnail,
-      mediaCover: media?.coverImage.medium,
-      name: 'Miru',
+      episode: episode || parseObj.episode_number,
       parseObject: parseObj,
       media,
       failed
     })
   }
-  return fileMedias.length === 1 ? fileMedias[0] : fileMedias
+  return fileMedias
 }
 
 export function findEdge (media, type, formats = ['TV', 'TV_SHORT'], skip) {

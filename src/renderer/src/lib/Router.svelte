@@ -1,13 +1,7 @@
-<script context='module'>
-import { writable } from 'svelte/store'
-
-export const files = writable([])
-</script>
-
 <script>
 import { getContext } from 'svelte'
 import Home from './Home/Home.svelte'
-import Player from './Player/Player.svelte'
+import MediaHandler from './Player/MediaHandler.svelte'
 import Settings from './Settings.svelte'
 import WatchTogether from './WatchTogether/WatchTogether.svelte'
 import Miniplayer from 'svelte-miniplayer'
@@ -17,7 +11,7 @@ const current = getContext('gallery')
 
 <div class='overflow-hidden content-wrapper'>
   <Miniplayer active={page !== 'player'} class='bg-dark z-10 {page === 'player' ? 'h-full' : ''}' minwidth='35rem' maxwidth='45rem' width='300px' padding='2rem'>
-    <Player files={$files} miniplayer={page !== 'player'} bind:page />
+    <MediaHandler miniplayer={page !== 'player'} bind:page />
   </Miniplayer>
   {#if page === 'settings'}
     <Settings />

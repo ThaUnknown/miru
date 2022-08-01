@@ -1,10 +1,10 @@
 <script context='module'>
 import { DOMPARSER } from '@/modules/util.js'
-import { updateMedia } from './Player/Player.svelte'
 import { set } from './Settings.svelte'
 import { addToast } from './Toasts.svelte'
 import { alRequest } from '@/modules/anilist.js'
-import { episodeRx, findEdge, resolveSeason, getMediaMaxEp } from '@/modules/anime.js'
+import { findEdge, resolveSeason, getMediaMaxEp } from '@/modules/anime.js'
+import { findInCurrent } from './Player/MediaHandler.svelte'
 
 import { writable } from 'svelte/store'
 
@@ -26,6 +26,7 @@ video.remove()
 
 export function playAnime (media, episode = 1) {
   episode = isNaN(episode) ? 1 : episode
+  if (findInCurrent({ media, episode })) return
   rss.set({ media, episode })
 }
 
@@ -216,12 +217,11 @@ function createTitle (media) {
 
 <script>
 import { add } from '@/modules/torrent.js'
+import { media } from './Player/MediaHandler.svelte'
 
 $: parseRss($rss)
 
 let table = null
-
-let fileMedia = null
 
 export async function parseRss ({ media, episode }) {
   if (!media) return
@@ -235,16 +235,6 @@ export async function parseRss ({ media, episode }) {
     return
   }
   entries.sort((a, b) => b.seeders - a.seeders)
-  const streamingEpisode = media?.streamingEpisodes.filter(episode => episodeRx.exec(episode.title) && Number(episodeRx.exec(episode.title)[1]) === Number(episode))[0]
-  fileMedia = {
-    mediaTitle: media?.title.userPreferred,
-    episodeNumber: Number(episode),
-    episodeTitle: streamingEpisode ? episodeRx.exec(streamingEpisode.title)[2] : undefined,
-    episodeThumbnail: streamingEpisode?.thumbnail,
-    mediaCover: media?.coverImage.medium,
-    name: 'Miru',
-    media
-  }
   if (settings.rssAutoplay) {
     play(entries[0])
   } else {
@@ -258,7 +248,7 @@ function checkClose ({ keyCode }) {
   if (keyCode === 27) close()
 }
 function play (entry) {
-  updateMedia(fileMedia)
+  $media = $rss
   if (entry.seeders !== '?' && entry.seeders <= 15) {
     addToast({
       text: 'This release is poorly seeded and likely will have playback issues such as buffering!',

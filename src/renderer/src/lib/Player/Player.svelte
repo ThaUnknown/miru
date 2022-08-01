@@ -1,77 +1,9 @@
-<script context='module'>
+<script>
 import { set } from '../Settings.svelte'
 import { playAnime } from '../RSSView.svelte'
-import { title } from '../Menubar.svelte'
-import { onMount } from 'svelte'
 import { client } from '@/modules/torrent.js'
-export let media = null
-let fileMedia = null
-let hadImage = false
-export function updateMedia (fileMed) {
-  if (!fileMedia) {
-    setDiscordRPC(fileMed)
-  }
-  fileMedia = fileMed
-  media = fileMedia.media
-  const name = [fileMedia.mediaTitle, fileMedia.episodeNumber, fileMedia.episodeTitle, 'Miru'].filter(i => i).join(' - ')
-  title.set(name)
-
-  fileMedia.episodeThumbnail = !!fileMedia.episodeThumbnail
-  const metadata =
-    fileMedia.episodeThumbnail || fileMedia.mediaCover
-      ? new MediaMetadata({
-        title: name,
-        artwork: [
-          {
-            src: fileMedia.episodeThumbnail || fileMedia.mediaCover,
-            sizes: '256x256',
-            type: 'image/jpg'
-          }
-        ]
-      })
-      : new MediaMetadata({ title: name })
-  if (fileMedia.parseObject?.release_group) metadata.artist = fileMedia.parseObject.release_group
-  navigator.mediaSession.metadata = metadata
-}
-function setDiscordRPC (fileMedia) {
-  if (fileMedia) {
-    window.IPC.emit('discord', {
-      activity: {
-        details: fileMedia.media?.title.userPreferred || fileMedia.parseObject.anime_title,
-        state: 'Watching Episode ' + ((!fileMedia.media?.episodes && fileMedia.episodeNumber) || ''),
-        timestamps: {
-          start: Date.now()
-        },
-        party: {
-          size: (fileMedia.episodeNumber && fileMedia.media?.episodes && [fileMedia.episodeNumber, fileMedia.media.episodes]) || undefined
-        },
-        assets: {
-          large_text: fileMedia.media?.title.userPreferred,
-          large_image: fileMedia.media?.coverImage.extraLarge,
-          small_image: 'logo',
-          small_text: 'https://github.com/ThaUnknown/miru'
-        },
-        instance: true,
-        type: 3,
-        buttons: [
-          {
-            label: 'Download app',
-            url: 'https://github.com/ThaUnknown/miru/releases/latest'
-          },
-          {
-            label: 'Watch on Miru',
-            url: `miru://anime/${fileMedia.media?.id}`
-          }
-        ]
-      }
-    })
-  }
-}
-</script>
-
-<script>
+import { onMount, createEventDispatcher } from 'svelte'
 import { alEntry } from '@/modules/anilist.js'
-import { resolveFileMedia } from '@/modules/anime.js'
 // import Peer from '@/modules/Peer.js'
 import Subtitles from '@/modules/subtitles.js'
 import { toTS, videoRx, fastPrettyBytes } from '@/modules/util.js'
@@ -80,29 +12,27 @@ import { addToast } from '../Toasts.svelte'
 import { w2gEmitter } from '../WatchTogether/WatchTogether.svelte'
 import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
 
+const emit = createEventDispatcher()
+
 w2gEmitter.on('playerupdate', ({ detail }) => {
   currentTime = detail.time
   paused = detail.paused
 })
 
 w2gEmitter.on('setindex', ({ detail }) => {
-  handleCurrent(videos?.[detail])
+  playFile(detail)
 })
+
+export function playFile (file) {
+  if (typeof value === 'number') {
+    handleCurrent(videos?.[file])
+  } else if (videos.includes(file)) {
+    handleCurrent(file)
+  }
+}
 
 function updatew2g () {
   w2gEmitter.emit('player', { time: Math.floor(currentTime), paused })
-}
-
-async function mediaChange (current, image) {
-  if (current && 'mediaSession' in navigator) {
-    if (!media || (!hadImage && image)) {
-      // filename is already mapped so this *should* be fine
-      const data = await resolveFileMedia({ fileName: current.name })
-      if (image) data.episodeThumbnail = image
-      updateMedia(data)
-      checkAvail(current)
-    }
-  }
 }
 
 export let miniplayer = false
@@ -136,6 +66,8 @@ let ended = false
 let volume = localStorage.getItem('volume') || 1
 let playbackRate = 1
 $: localStorage.setItem('volume', volume || 0)
+
+export let media
 
 function checkAudio () {
   if ('audioTracks' in HTMLVideoElement.prototype && !video.audioTracks.length) {
@@ -230,9 +162,6 @@ function updateFiles (files) {
       }
     }
   } else {
-    media = null
-    fileMedia = null
-    hadImage = false
     src = ''
     video?.load()
     currentTime = 0
@@ -250,11 +179,9 @@ async function handleCurrent (file) {
     })
     currentTime = 0
     targetTime = 0
-    media = null
-    fileMedia = null
-    hadImage = false
     completed = false
     current = file
+    emit('current', current)
     initSubs()
     src = file.url
     client.send('current', file)
@@ -267,14 +194,14 @@ async function handleCurrent (file) {
 let hasNext = false
 let hasLast = false
 function checkAvail (current) {
-  if ((media?.nextAiringEpisode?.episode - 1 || media?.episodes) > fileMedia?.episodeNumber) {
+  if ((media?.media?.nextAiringEpisode?.episode - 1 || media?.media?.episodes) > media?.episode) {
     hasNext = true
   } else if (videos.indexOf(current) !== videos.length - 1) {
     hasNext = true
   } else {
     hasNext = false
   }
-  if (media && fileMedia?.episodeNumber > 1) {
+  if (media?.episode > 1) {
     hasLast = true
   } else if (videos.indexOf(current) > 0) {
     hasLast = true
@@ -347,8 +274,8 @@ function playNext () {
       const target = (index + 1) % videos.length
       handleCurrent(videos[target])
       w2gEmitter.emit('index', { index: target })
-    } else if (media?.nextAiringEpisode?.episode - 1 || media?.episodes > fileMedia?.episodeNumber) {
-      playAnime(media, fileMedia?.episodeNumber + 1)
+    } else if (media?.media?.nextAiringEpisode?.episode - 1 || media?.media?.episodes > media?.episode) {
+      playAnime(media.media, media.episode + 1)
     }
   }
 }
@@ -358,8 +285,8 @@ function playLast () {
     if (index > 1) {
       handleCurrent(videos[index - 1])
       w2gEmitter.emit('index', { index: index - 1 })
-    } else if (media && fileMedia?.episodeNumber > 1) {
-      playAnime(media, fileMedia?.episodeNumber - 1)
+    } else if (media?.episode > 1) {
+      playAnime(media.media, media.episode - 1)
     }
   }
 }
@@ -692,7 +619,6 @@ $: navigator.mediaSession?.setPositionState({
   playbackRate: 1,
   position: Math.max(0, Math.min(duration || 0, currentTime || 0))
 })
-$: mediaChange(current)
 
 if ('mediaSession' in navigator) {
   navigator.mediaSession.setActionHandler('play', playPause)
@@ -768,7 +694,6 @@ function createThumbnail (vid = video) {
       thumbnailData.context.fillRect(0, 0, 200, thumbnailData.canvas.height)
       thumbnailData.context.drawImage(vid, 0, 0, 200, thumbnailData.canvas.height)
       thumbnailData.thumbnails[index] = thumbnailData.canvas.toDataURL('image/jpeg')
-      if (index === 5) mediaChange(current, thumbnailData.thumbnails[index])
     }
   }
 }
@@ -846,10 +771,10 @@ function toggleDropdown ({ target }) {
 let completed = false
 function checkCompletion () {
   if (!completed && duration && video?.readyState && duration - 180 < currentTime) {
-    if (fileMedia?.media?.episodes || fileMedia?.media?.nextAiringEpisode?.episode) {
-      if (fileMedia.media.episodes || fileMedia.media.nextAiringEpisode?.episode > fileMedia.episodeNumber) {
+    if (media?.media?.episodes || media?.media?.nextAiringEpisode?.episode) {
+      if (media.media.episodes || media.media.nextAiringEpisode?.episode > media.episode) {
         completed = true
-        alEntry(fileMedia)
+        alEntry(media)
       }
     }
   }

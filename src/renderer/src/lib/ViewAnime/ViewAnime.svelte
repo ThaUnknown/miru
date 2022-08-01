@@ -84,7 +84,7 @@ function checkClose ({ keyCode }) {
           <div class='col-md-9 px-20'>
             <h1 class='title font-weight-bold text-white'>Synopsis</h1>
             <div class='font-size-16 pr-15 pre-wrap'>
-              {media.description.replace(/<[^>]*>/g, '')}
+              {media.description?.replace(/<[^>]*>/g, '') || ''}
             </div>
             <ToggleList list={media.relations?.edges?.filter(({ node }) => node.type === 'ANIME')} let:item>
               <div class='w-150 mx-15 mb-10 rel pointer' on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media }}>
