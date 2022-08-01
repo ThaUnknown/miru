@@ -83,7 +83,7 @@ async function handleFiles (files) {
 
   const nowPlaying = get(media)
 
-  if (nowPlaying?.media) videoFiles = videoFiles.filter(file => file.media.media.id === nowPlaying.media.id)
+  if (nowPlaying?.media) videoFiles = videoFiles.filter(file => file.media?.media?.id === nowPlaying.media.id)
 
   videoFiles.sort((a, b) => a.media.episode - b.media.episode)
 
