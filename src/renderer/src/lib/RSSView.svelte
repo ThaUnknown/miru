@@ -72,7 +72,7 @@ async function getRSSEntries ({ media, episode, mode, ignoreQuality }) {
 
   const prequel = findEdge(media, 'PREQUEL')?.node
   const sequel = findEdge(media, 'SEQUEL')?.node
-  const isBatch = media.status === 'FINISHED' && settings.rssBatch && media.episodes !== 1
+  const isBatch = media.status === 'FINISHED' && media.episodes !== 1
 
   // if media has multiple seasons, and this S is > 1, then get the absolute episode number of the episode
   const absolute = prequel && !mode && (await resolveSeason({ media, episode, force: true }))
