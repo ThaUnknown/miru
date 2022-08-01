@@ -23,6 +23,8 @@ let p2pcf = null
 function joinLobby (code = generateRandomHexCode(16)) {
   p2pcf = new P2PCF(generateRandomHexCode(16), code)
   p2pcf.on('peerconnect', async peer => {
+    console.log(peer.id)
+    console.log('connect')
     const user = (await alID)?.data?.Viewer || {}
     peer.send(
       JSON.stringify({
@@ -34,6 +36,8 @@ function joinLobby (code = generateRandomHexCode(16)) {
   })
   p2pcf.on('peerclose', peer => {
     peers.update(object => {
+      console.log(peer.id)
+      console.log('close', object[peer.id])
       delete object[peer.id]
       return object
     })
@@ -43,6 +47,7 @@ function joinLobby (code = generateRandomHexCode(16)) {
     console.log(data)
     switch (data.type) {
       case 'init':
+        console.log('init', data.user)
         peers.update(object => {
           object[peer.id] = {
             peer,

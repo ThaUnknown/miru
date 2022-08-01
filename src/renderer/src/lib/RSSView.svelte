@@ -14,12 +14,48 @@ const settings = set
 
 const exclusions = ['DTS', '[ASW]']
 
+function binarySearch (arr, el) {
+  let left = 0
+  let right = arr.length - 1
+
+  while (left <= right) {
+    // Using bitwise or instead of Math.floor as it is slightly faster
+    const mid = ((right + left) / 2) | 0
+    if (arr[mid] === el) {
+      return true
+    } else if (el < arr[mid]) {
+      right = mid - 1
+    } else {
+      left = mid + 1
+    }
+  }
+
+  return false
+}
+
+let seadex = []
+requestIdleCallback(async () => {
+  const res = await fetch('https://sneedex.moe/api/public/nyaa')
+  const json = await res.json()
+  seadex = json.flatMap(({ nyaaIDs }) => nyaaIDs).sort((a, b) => a - b) // sort for binary search
+})
+
+function mapBestRelease (entries) {
+  return entries.map(entry => {
+    const match = entry.link.match(/\d+/i)
+    if (match && binarySearch(seadex, Number(match[0]))) entry.best = true
+    return entry
+  })
+}
+
+const isDev = location.hostname === 'localhost'
+
 const video = document.createElement('video')
 
-if (!video.canPlayType('video/mp4; codecs="hev1.1.6.L93.B0"')) {
+if (!isDev && !video.canPlayType('video/mp4; codecs="hev1.1.6.L93.B0"')) {
   exclusions.push('HEVC', 'x265', 'H.265')
 }
-if (!video.canPlayType('audio/mp4; codecs="ac-3"')) {
+if (!isDev && !video.canPlayType('audio/mp4; codecs="ac-3"')) {
   exclusions.push('AC3', 'AC-3')
 }
 video.remove()
@@ -64,8 +100,10 @@ export function getReleasesRSSurl (val) {
   const rss = rssmap[val] || val
   return rss && new URL(rssmap[val] ? `${rss}${settings.rssQuality ? `"${settings.rssQuality}"` : ''}` : rss)
 }
+// [EO]?[-EPD _—]\d{2}(?:[-v _.—]|$)
+// /[EO]?[-EPD]\d{2}(?:[-v.]|$)|[EO]?[EPD ]\d{2}(?:[v .]|$)|[EO]?[EPD_]\d{2}(?:[v_.]|$)|[EO]?[EPD—]\d{2}(?:[v.—]|$)|\d{2} ?[-~—] ?\d{2}/i
 // matches: OP01 ED01 EP01 E01 01v 01. -01- _01_ with spaces and stuff
-const epNumRx = /[EO]?[-EPD _—]\d{2}(?:[-v _.—]|$)|\d{2} ?[-~—] ?\d{2}/i
+const epNumRx = /[EO]?[-EPD]\d{2}(?:[-v.]|$)|[EO]?[EPD ]\d{2}(?:[v .]|$)|[EO]?[EPD_]\d{2}(?:[v_.]|$)|[EO]?[EPD—]\d{2}(?:[v.—]|$)|\d{2} ?[-~—] ?\d{2}/i
 async function getRSSEntries ({ media, episode, mode, ignoreQuality }) {
   // mode cuts down on the amt of queries made 'check' || 'batch'
   const titles = createTitle(media).join(')|(')
@@ -166,7 +204,7 @@ async function getRSSEntries ({ media, episode, mode, ignoreQuality }) {
 
   // dedupe
   const ids = entries.map(e => e.link)
-  return entries.filter(({ link }, index) => !ids.includes(link, index + 1))
+  return mapBestRelease(entries.filter(({ link }, index) => !ids.includes(link, index + 1)))
 }
 
 function parseRSSNodes (nodes) {
@@ -223,7 +261,7 @@ $: parseRss($rss)
 
 let table = null
 
-export async function parseRss ({ media, episode }) {
+async function parseRss ({ media, episode }) {
   if (!media) return
   const entries = await getRSSEntries({ media, episode })
   if (!entries?.length) {
@@ -236,7 +274,12 @@ export async function parseRss ({ media, episode }) {
   }
   entries.sort((a, b) => b.seeders - a.seeders)
   if (settings.rssAutoplay) {
-    play(entries[0])
+    const best = entries.find(entry => entry.best)
+    if (best.seeders > 20) { // only play best if it actually has a lot of seeders, 20 might be too little for those overkill blurays
+      play(best)
+    } else {
+      play(entries[0])
+    }
   } else {
     table = entries
   }
@@ -280,7 +323,7 @@ function play (entry) {
           </thead>
           <tbody class='results pointer'>
             {#each table as row, index}
-              <tr on:click={() => play(row)}>
+              <tr class:text-secondary={row.best} on:click={() => play(row)}>
                 <th>{index + 1}</th>
                 <td>{row.title}</td>
                 <td>{row.size}</td>
