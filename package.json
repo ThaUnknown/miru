@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "2.11.3",
+  "version": "2.12.0",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "main": "src/index.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
@@ -20,7 +20,7 @@
     "electron-notarize": "^1.1.1",
     "svelte": "^3.47.0",
     "vite": "^3.0.0",
-    "vite-plugin-commonjs-externals": "^0.1.1"
+    "vite-plugin-commonjs": "^0.5.2"
   },
   "standard": {
     "ignore": [
@@ -121,6 +121,7 @@
     "jassub": "^1.1.8",
     "matroska-subtitles": "github:ThaUnknown/matroska-subtitles#patch",
     "mime": "^3.0.0",
+    "p2pcf": "^1.2.1",
     "pump": "^3.0.0",
     "quartermoon": "^1.2.1",
     "range-parser": "^1.2.1",

@@ -1,32 +1,83 @@
 <script context='module'>
-import { writable, get } from 'svelte/store'
+import { writable } from 'svelte/store'
 import { alID } from '@/modules/anilist.js'
 import { add, client } from '@/modules/torrent.js'
-import Peer from '@/modules/Peer.js'
 import { generateRandomHexCode } from '@/modules/util.js'
-import { addToast } from '@/lib/Toasts.svelte'
+// import { addToast } from '@/lib/Toasts.svelte'
 import { page } from '@/App.svelte'
 import 'browser-event-target-emitter'
 
+import P2PCF from 'p2pcf'
+
 export const w2gEmitter = new EventTarget()
 
-const state = writable(null)
+const decode = TextDecoder.prototype.decode.bind(new TextDecoder('utf-8'))
+const encode = TextEncoder.prototype.encode.bind(new TextEncoder())
 
 const peers = writable({})
 
-let peersExternal = {}
+const state = writable(false)
 
-peers.subscribe(value => (peersExternal = value))
+let p2pcf = null
 
-const pending = writable(null)
-
-function invite () {
-  pending.set(new Peer({ polite: false }))
+function joinLobby (code = generateRandomHexCode(16)) {
+  p2pcf = new P2PCF(generateRandomHexCode(16), code)
+  p2pcf.on('peerconnect', async peer => {
+    const user = (await alID)?.data?.Viewer || {}
+    peer.send(
+      JSON.stringify({
+        type: 'init',
+        id: user.id || generateRandomHexCode(16),
+        user
+      })
+    )
+  })
+  p2pcf.on('peerclose', peer => {
+    peers.update(object => {
+      delete object[peer.id]
+      return object
+    })
+  })
+  p2pcf.on('msg', (peer, data) => {
+    data = typeof data === 'string' ? JSON.parse(data) : JSON.parse(decode(data))
+    console.log(data)
+    switch (data.type) {
+      case 'init':
+        peers.update(object => {
+          object[peer.id] = {
+            peer,
+            user: data.user
+          }
+          return object
+        })
+        break
+      case 'player': {
+        if (setPlayerState(data)) w2gEmitter.emit('playerupdate', data)
+        break
+      }
+      case 'torrent': {
+        if (data.hash !== playerState.hash) {
+          playerState.hash = data.hash
+          add(data.magnet)
+        }
+        break
+      }
+      case 'index': {
+        if (playerState.index !== data.index) {
+          playerState.index = data.index
+          w2gEmitter.emit('setindex', data.index)
+        }
+        break
+      }
+      default: {
+        console.error('Invalid message type', data)
+      }
+    }
+  })
+  p2pcf.start()
+  state.set(true)
+  console.log(p2pcf)
 }
-
-pending.subscribe(peer => {
-  if (peer) peer.ready.then(() => handlePeer(peer))
-})
 
 function setPlayerState (detail) {
   let emit = false
@@ -48,20 +99,16 @@ w2gEmitter.on('index', ({ detail }) => {
   }
 })
 
-queueMicrotask(() => {
-  client.on('magnet', ({ detail }) => {
-    if (detail.hash !== playerState.hash) {
-      playerState.hash = detail.hash
-      playerState.index = 0
-      emit('torrent', detail)
-    }
-  })
+client.on('magnet', ({ detail }) => {
+  if (detail.hash !== playerState.hash) {
+    playerState.hash = detail.hash
+    playerState.index = 0
+    emit('torrent', detail)
+  }
 })
 
 function emit (type, data) {
-  for (const peer of Object.values(peersExternal)) {
-    peer.channel.send(JSON.stringify({ type, ...data }))
-  }
+  p2pcf?.broadcast(encode(JSON.stringify({ type, ...data })))
 }
 
 const playerState = {
@@ -71,166 +118,25 @@ const playerState = {
   index: 0
 }
 
-function cancel () {
-  pending.update(peer => {
-    peer.pc.close()
-  })
-  if (get(state) === 'guest') state.set(null)
-}
-
-function cleanup () {
-  if (get(state)) {
-    addToast({
-      text: 'The lobby you were previously in has disbanded.',
-      title: 'Lobby Disbanded',
-      type: 'danger'
-    })
-    state.set(null)
-    pending.set(null)
-    peers.update(peers => {
-      for (const peer of Object.values(peers)) peer?.peer?.pc.close()
-      return {}
-    })
-  }
-}
-
-function handlePeer (peer) {
-  pending.set(null)
-  if (get(state) === 'guest') peer.dc.onclose = cleanup
-  // add event listeners and store in peers
-  const protocolChannel = peer.pc.createDataChannel('w2gprotocol', { negotiated: true, id: 2 })
-  protocolChannel.onopen = async () => {
-    protocolChannel.onmessage = ({ data }) => handleMessage(JSON.parse(data), protocolChannel, peer)
-    const user = (await alID)?.data?.Viewer || {}
-    protocolChannel.send(
-      JSON.stringify({
-        type: 'init',
-        id: user.id || generateRandomHexCode(16),
-        user
-      })
-    )
-  }
-}
-
-const base64Rx = /((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)/
-export function handleCode (text) {
-  console.log(text)
-  const match = text.match(base64Rx)
-  if (match) {
-    const code = match[1]
-    const pend = get(pending)
-    let val = null
-    try {
-      val = JSON.parse(atob(code))
-    } catch (e) {
-      addToast({
-        text: 'The provided invite code was invalid, try copying it again?',
-        title: 'Invalid Invite Code',
-        type: 'danger'
-      })
-    }
-    if (!val) return
-    const [description, ...candidates] = val
-
-    pend.signalingPort.postMessage({
-      description: {
-        type: get(state) === 'host' ? 'answer' : 'offer',
-        sdp: description
-      }
-    })
-    for (const candidate of candidates) {
-      pend.signalingPort.postMessage({
-        candidate: {
-          candidate,
-          sdpMid: '0',
-          sdpMLineIndex: 0
-        }
-      })
-    }
-  }
-}
-
-function handleMessage (data, channel, peer) {
-  if (get(state) === 'host') emit(data.type, data)
-  switch (data.type) {
-    case 'init':
-      peers.update(object => {
-        object[data.id] = {
-          peer,
-          channel,
-          user: data.user
-        }
-        return object
-      })
-
-      channel.onclose = () => {
-        peers.update(object => {
-          delete object[data.id]
-          return object
-        })
-      }
-      break
-    case 'player': {
-      if (setPlayerState(data)) w2gEmitter.emit('playerupdate', data)
-      break
-    }
-    case 'torrent': {
-      if (data.hash !== playerState.hash) {
-        playerState.hash = data.hash
-        add(data.magnet)
-      }
-      break
-    }
-    case 'index': {
-      if (playerState.index !== data.index) {
-        playerState.index = data.index
-        w2gEmitter.emit('setindex', data.index)
-      }
-      break
-    }
-    default: {
-      console.error('Invalid message type', data, channel)
-    }
-  }
-}
-
-function setState (newstate) {
-  if (newstate === 'guest') {
-    const peer = new Peer({ polite: true })
-    pending.set(peer)
-  }
-  state.set(newstate)
-}
-
-function waitToCompleteIceGathering (pc, state = pc.iceGatheringState) {
-  return state !== 'complete' && new Promise(resolve => {
-    pc.addEventListener('icegatheringstatechange', () => (pc.iceGatheringState === 'complete') && resolve())
-  })
-}
-const linkRx = /(invite|join)\/(.*)/i
+const linkRx = /(.*)/i
 window.IPC.on('w2glink', async link => {
   const match = link.match(linkRx)
-  console.log(link, match)
   if (match) {
     page.set('watchtogether')
-    if (match[1] === 'join') {
-      if (get(state)) {
-        handleCode(match[2])
-      } else {
-        console.log('no')
-      }
-    } else {
-      if (!get(state)) setState('guest')
-      await waitToCompleteIceGathering(get(pending).pc)
-      handleCode(match[2])
-    }
+    joinLobby(match[1])
   }
 })
+
+function cleanup () {
+  state.set(false)
+  peers.set({})
+  p2pcf.destroy()
+  p2pcf = null
+}
 </script>
 
 <script>
 import Lobby from './Lobby.svelte'
-import Connect from './Connect.svelte'
 </script>
 
 <div class='d-flex h-full align-items-center flex-column content'>
@@ -239,17 +145,15 @@ import Connect from './Connect.svelte'
     <div class='d-flex flex-row flex-wrap justify-content-center align-items-center h-full mb-20 pb-20 root'>
       <div class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'>
         <span class='font-size-80 material-icons d-flex align-items-center h-full'>add</span>
-        <button class='btn btn-primary btn-lg mt-10 btn-block' type='button' on:click={() => setState('host')}>Create Lobby</button>
+        <button class='btn btn-primary btn-lg mt-10 btn-block' type='button' on:click={() => joinLobby()}>Create Lobby</button>
       </div>
       <div class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'>
         <span class='font-size-80 material-icons d-flex align-items-center h-full'>group_add</span>
-        <button class='btn btn-primary btn-lg mt-10 btn-block' type='button' on:click={() => setState('guest')}>Join Lobby</button>
+        <button class='btn btn-primary btn-lg mt-10 btn-block' type='button' on:click={() => {}}>Join Lobby</button>
       </div>
     </div>
-  {:else if $pending}
-    <Connect bind:state={$state} peer={$pending} {cancel} />
   {:else}
-    <Lobby bind:state={$state} bind:peers={$peers} {invite} {cleanup} />
+    <Lobby peers={$peers} {cleanup} />
   {/if}
 </div>
 

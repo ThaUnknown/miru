@@ -1,6 +1,5 @@
 <script>
 export let peers
-export let state
 export let invite
 export let cleanup
 </script>
@@ -8,9 +7,7 @@ export let cleanup
 <div class='d-flex flex-column py-20 root container card'>
   <div class='d-flex align-items-center w-full'>
     <h1 class='font-weight-bold mr-auto'>Lobby</h1>
-    {#if state === 'host'}
-      <button class='btn btn-success btn-lg ml-20' type='button' on:click={invite}>Invite To Lobby</button>
-    {/if}
+    <button class='btn btn-success btn-lg ml-20' type='button' on:click={invite}>Invite To Lobby</button>
     <button class='btn btn-danger ml-20 btn-lg' type='button' on:click={cleanup}>Leave lobby</button>
   </div>
   {#each Object.values(peers) as peer}
@@ -24,9 +21,9 @@ export let cleanup
       {#if peer.user?.name}
         <span class='material-icons pointer text-primary' on:click={() => window.IPC.emit('open', 'https://anilist.co/user/' + peer.user?.name)}> open_in_new </span>
       {/if}
-      {#if state === 'host'}
+      <!-- {#if state === 'host'}
         <span class='material-icons ml-15 pointer text-danger' on:click={() => peer.peer.pc.close()}> logout </span>
-      {/if}
+      {/if} -->
     </div>
   {/each}
 </div>
