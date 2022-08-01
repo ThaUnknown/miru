@@ -16,7 +16,7 @@ const processed = writable([])
 
 const noop = () => {}
 
-let playFile = noop
+let playFile
 
 media.subscribe((media) => {
   handleMedia(media || {})

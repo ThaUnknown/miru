@@ -3,7 +3,7 @@ import { writable } from 'svelte/store'
 import { alID } from '@/modules/anilist.js'
 import { add, client } from '@/modules/torrent.js'
 import { generateRandomHexCode } from '@/modules/util.js'
-// import { addToast } from '@/lib/Toasts.svelte'
+import { addToast } from '@/lib/Toasts.svelte'
 import { page } from '@/App.svelte'
 import 'browser-event-target-emitter'
 
@@ -118,14 +118,18 @@ const playerState = {
   index: 0
 }
 
-const linkRx = /(.*)/i
-window.IPC.on('w2glink', async link => {
-  const match = link.match(linkRx)
-  if (match) {
-    page.set('watchtogether')
-    joinLobby(match[1])
+function checkInvite (invite) {
+  if (invite) {
+    const match = invite.match(inviteRx)
+    if (match) {
+      page.set('watchtogether')
+      joinLobby(match[1])
+    }
   }
-})
+}
+
+const inviteRx = /([A-z0-9]{16})/i
+window.IPC.on('w2glink', checkInvite)
 
 function cleanup () {
   state.set(false)
@@ -133,10 +137,26 @@ function cleanup () {
   p2pcf.destroy()
   p2pcf = null
 }
+
+function invite () {
+  if (p2pcf) {
+    navigator.clipboard.writeText(`<miru://w2g/${p2pcf.roomId}>`)
+    addToast({
+      title: 'Copied to clipboard',
+      text: 'Copied invite URL to clipboard',
+      type: 'primary',
+      duration: '5000'
+    })
+  }
+}
 </script>
 
 <script>
 import Lobby from './Lobby.svelte'
+
+let joinText
+
+$: checkInvite(joinText)
 </script>
 
 <div class='d-flex h-full align-items-center flex-column content'>
@@ -149,11 +169,18 @@ import Lobby from './Lobby.svelte'
       </div>
       <div class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'>
         <span class='font-size-80 material-icons d-flex align-items-center h-full'>group_add</span>
-        <button class='btn btn-primary btn-lg mt-10 btn-block' type='button' on:click={() => {}}>Join Lobby</button>
+        <h2 class='font-weight-bold'>Join Lobby</h2>
+        <input
+          type='text'
+          class='form-control h-50'
+          autocomplete='off'
+          bind:value={joinText}
+          data-option='search'
+          placeholder='Lobby code or link' />
       </div>
     </div>
   {:else}
-    <Lobby peers={$peers} {cleanup} />
+    <Lobby peers={$peers} {cleanup} {invite} />
   {/if}
 </div>
 

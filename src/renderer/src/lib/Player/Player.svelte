@@ -67,8 +67,6 @@ let volume = localStorage.getItem('volume') || 1
 let playbackRate = 1
 $: localStorage.setItem('volume', volume || 0)
 
-export let media
-
 function checkAudio () {
   if ('audioTracks' in HTMLVideoElement.prototype && !video.audioTracks.length) {
     addToast({
@@ -186,14 +184,17 @@ async function handleCurrent (file) {
     src = file.url
     client.send('current', file)
     video?.load()
-    checkAvail(current)
     clearCanvas()
   }
 }
 
+export let media
+
+$: checkAvail(media)
 let hasNext = false
 let hasLast = false
-function checkAvail (current) {
+function checkAvail () {
+  console.log(media)
   if ((media?.media?.nextAiringEpisode?.episode - 1 || media?.media?.episodes) > media?.episode) {
     hasNext = true
   } else if (videos.indexOf(current) !== videos.length - 1) {
@@ -441,6 +442,11 @@ loadWithDefaults({
   KeyN: {
     fn: () => playNext(),
     id: 'skip_next',
+    type: 'icon'
+  },
+  KeyB: {
+    fn: () => playLast(),
+    id: 'skip_previous',
     type: 'icon'
   },
   KeyM: {
@@ -945,7 +951,7 @@ function checkError ({ target }) {
     <div class='position-absolute w-full h-full' on:dblclick={toggleFullscreen} on:click|self={() => (page = 'player')}>
       <div class='play-overlay w-full h-full' on:click={playPause} />
     </div>
-    <span class='material-icons ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} data-name='playLast' on:click={playLast}> skip_previous </span>
+    <span class='material-icons ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} data-name='playLast' on:click={playLast}> skip_previous </span>
     <span class='material-icons ctrl' data-name='rewind' on:click={rewind}> fast_rewind </span>
     <span class='material-icons ctrl' data-name='playPause' on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
     <span class='material-icons ctrl' data-name='forward' on:click={forward}> fast_forward </span>
@@ -980,6 +986,9 @@ function checkError ({ target }) {
     </div>
     <div class='d-flex'>
       <span class='material-icons ctrl' title='Play/Pause [Space]' data-name='playPause' on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
+      {#if hasLast}
+        <span class='material-icons ctrl' title='Last [B]' data-name='playLast' on:click={playLast}> skip_previous </span>
+      {/if}
       {#if hasNext}
         <span class='material-icons ctrl' title='Next [N]' data-name='playNext' on:click={playNext}> skip_next </span>
       {/if}
