@@ -275,7 +275,7 @@ async function parseRss ({ media, episode }) {
   entries.sort((a, b) => b.seeders - a.seeders)
   if (settings.rssAutoplay) {
     const best = entries.find(entry => entry.best)
-    if (best.seeders > 20) { // only play best if it actually has a lot of seeders, 20 might be too little for those overkill blurays
+    if (best?.seeders > 20) { // only play best if it actually has a lot of seeders, 20 might be too little for those overkill blurays
       play(best)
     } else {
       play(entries[0])
