@@ -31,7 +31,7 @@ export function findInCurrent (obj) {
   const oldNowPlaying = get(nowPlaying)
   const fileList = get(files)
 
-  const targetFile = fileList.find(file => file.media.media.id === obj.media.id && file.media.episode === obj.episode)
+  const targetFile = fileList.find(file => file.media?.media?.id === obj.media.id && file.media?.episode === obj.episode)
   if (!targetFile) return false
   if (oldNowPlaying.media.id !== obj.media.id) {
     // mediachange, filelist change
