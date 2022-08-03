@@ -1,6 +1,8 @@
 import { alToken } from '@/lib/Settings.svelte'
 import { addToast } from '@/lib/Toasts.svelte'
 
+import Bottleneck from 'bottleneck'
+
 const codes = {
   100: 'Continue',
   101: 'Switching Protocols',
@@ -80,6 +82,9 @@ function printError (error) {
   })
 }
 
+const limiter = new Bottleneck({ maxConcurrent: 100, minTime: 600 })
+const limit = limiter.wrap(handleRequest)
+
 async function handleRequest (opts) {
   const res = await fetch('https://graphql.anilist.co', opts)
   let json = null
@@ -87,11 +92,13 @@ async function handleRequest (opts) {
     json = await res.json()
   } catch (error) {
     if (res.ok) printError(error)
+    if (error.status === 429) return await limit(opts)
   }
   if (!res.ok && json) {
     for (const error of json?.errors || []) {
       printError(error)
     }
+    if (res.status === 429) return await limit(opts)
   }
   return json
 }
