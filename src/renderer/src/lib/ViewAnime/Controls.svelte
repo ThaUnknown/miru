@@ -77,7 +77,7 @@ function getPlayText (media) {
     const { status, progress } = media.mediaListEntry
     if (progress) {
       if (status === 'COMPLETED') return 'Rewatch'
-      return 'Continue ' + Math.min(getMediaMaxEp(media), progress + 1)
+      return 'Continue ' + Math.min(getMediaMaxEp(media, true), progress + 1)
     }
   }
   return 'Play'
@@ -94,7 +94,7 @@ async function play () {
       }
     }
   }
-  playAnime(media, ep)
+  playAnime(media, ep, true)
   media = null
 }
 </script>

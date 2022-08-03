@@ -26,7 +26,7 @@ w2gEmitter.on('setindex', ({ detail }) => {
 export function playFile (file) {
   if (typeof value === 'number') {
     handleCurrent(videos?.[file])
-  } else if (videos.includes(file)) {
+  } else {
     handleCurrent(file)
   }
 }
@@ -194,7 +194,6 @@ $: checkAvail(media)
 let hasNext = false
 let hasLast = false
 function checkAvail () {
-  console.log(media)
   if ((media?.media?.nextAiringEpisode?.episode - 1 || media?.media?.episodes) > media?.episode) {
     hasNext = true
   } else if (videos.indexOf(current) !== videos.length - 1) {

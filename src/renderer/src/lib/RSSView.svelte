@@ -60,9 +60,10 @@ if (!isDev && !video.canPlayType('audio/mp4; codecs="ac-3"')) {
 }
 video.remove()
 
-export function playAnime (media, episode = 1) {
+export function playAnime (media, episode = 1, force) {
+  episode = Number(episode)
   episode = isNaN(episode) ? 1 : episode
-  if (findInCurrent({ media, episode })) return
+  if (!force && findInCurrent({ media, episode })) return
   rss.set({ media, episode })
 }
 

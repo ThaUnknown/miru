@@ -3,6 +3,7 @@ import { writable, get } from 'svelte/store'
 import { resolveFileMedia } from '@/modules/anime.js'
 import { videoRx } from '@/modules/util.js'
 import { title } from '../Menubar.svelte'
+import { tick } from 'svelte'
 
 const episodeRx = /Episode (\d+) - (.*)/
 
@@ -29,6 +30,9 @@ function handleCurrent ({ detail }) {
 
 export function findInCurrent (obj) {
   const oldNowPlaying = get(nowPlaying)
+
+  if (oldNowPlaying.media?.id === obj.media.id && oldNowPlaying.episode === obj.episode) return false
+
   const fileList = get(files)
 
   const targetFile = fileList.find(file => file.media?.media?.id === obj.media.id && file.media?.episode === obj.episode)
@@ -94,6 +98,7 @@ async function handleFiles (files) {
 
     if (nowPlaying?.episode && nowPlaying.episode !== 1) {
       const file = videoFiles.find(({ media }) => media.episode === nowPlaying.episode)
+      await tick()
       playFile(file || 0)
     }
   }
