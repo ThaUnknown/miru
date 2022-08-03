@@ -867,7 +867,7 @@ function checkError ({ target }) {
 </script>
 
 <svelte:window bind:innerWidth bind:innerHeight />
-{#if showKeybinds}
+{#if showKeybinds && !miniplayer}
   <div class='position-absolute bg-tp w-full h-full z-50 font-size-12 p-20 d-flex align-items-center justify-content-center' on:click|self={() => (showKeybinds = false)}>
     <button class='close' type='button' on:click={() => (showKeybinds = false)}><span>×</span></button>
     <Keybinds let:prop={item} autosave={true} clickable={true}>
