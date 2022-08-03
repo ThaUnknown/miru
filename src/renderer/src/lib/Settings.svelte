@@ -8,7 +8,6 @@ const defaults = {
   rssQuality: '1080',
   rssFeeds: [['New Releases', 'SubsPlease']],
   rssAutoplay: true,
-  rssTrusted: true,
   torrentSpeed: 10,
   torrentPersist: false,
   torrentDHT: false,
@@ -229,14 +228,6 @@ window.IPC.on('path', data => {
               Played'>
             <input type='checkbox' id='rss-autoplay' bind:checked={settings.rssAutoplay} />
             <label for='rss-autoplay'>Auto-Play Torrents</label>
-          </div>
-          <div
-            class='custom-switch mb-10 pl-10 font-size-16 w-300'
-            data-toggle='tooltip'
-            data-placement='bottom'
-            data-title='Finds Only Trusted Torrents, Gives Less Results But Higher Quality And With More Seeders'>
-            <input type='checkbox' id='rss-trusted' bind:checked={settings.rssTrusted} />
-            <label for='rss-trusted'>Trusted Only</label>
           </div>
         </div>
       </Tab>

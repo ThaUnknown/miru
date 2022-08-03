@@ -135,9 +135,8 @@ async function getRSSEntries ({ media, episode, mode, ignoreQuality }) {
 
   const excl = exclusions.join('|')
   const quality = (!ignoreQuality && (`"${settings.rssQuality}"` || '"1080"')) || ''
-  const trusted = settings.rssTrusted === true ? 2 : 0
   const url = new URL(
-    `https://nyaa.si/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`
+    `https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`
   )
 
   let nodes = [...(await getRSSContent(url)).querySelectorAll('item')]
@@ -149,7 +148,7 @@ async function getRSSEntries ({ media, episode, mode, ignoreQuality }) {
     const titles = createTitle(absolute.media).join(')|(')
 
     const url = new URL(
-      `https://nyaa.si/?page=rss&c=1_2&f=${trusted}&s=seeders&o=desc&q=(${titles})${epstring(absoluteep)}${quality}-(${excl})`
+      `https://nyaa.si/?page=rss&c=1_2&f=2&s=seeders&o=desc&q=(${titles})${epstring(absoluteep)}${quality}-(${excl})`
     )
     nodes = [...nodes, ...(await getRSSContent(url)).querySelectorAll('item')]
   }
