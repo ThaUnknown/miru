@@ -116,7 +116,7 @@ export function alEntry (filemedia) {
       // check episode range
       if (videoEpisode && mediaEpisode && mediaEpisode >= videoEpisode) {
         // check user's own watch progress
-        const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name)
+        const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name) || []
         if (!media.mediaListEntry || media.mediaListEntry?.progress <= videoEpisode || singleEpisode) {
           const variables = {
             method: 'Entry',

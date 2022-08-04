@@ -47,7 +47,7 @@ function setStatus (status, other = {}) {
 async function update () {
   media = (await alRequest({ method: 'SearchIDSingle', id: media.id })).data.Media
 }
-async function score (score) {
+async function score (media, score) {
   const variables = {
     method: 'Entry',
     id: media.id,
@@ -117,7 +117,7 @@ async function play () {
         <div class='input-group-prepend'>
           <span class='input-group-text bg-tp pl-15 d-flex material-icons font-size-18'>hotel_class</span>
         </div>
-        <select class='form-control' required value={(media.mediaListEntry?.score || '').toString()} on:change={({ target }) => { score(media, target.value) }}>
+        <select class='form-control' required value={(media.mediaListEntry?.score || '').toString()} on:change={({ target }) => { score(media, Number(target.value)) }}>
           <option value selected disabled hidden>Score</option>
           <option>1</option>
           <option>2</option>
