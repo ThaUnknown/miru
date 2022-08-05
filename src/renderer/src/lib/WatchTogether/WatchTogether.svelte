@@ -16,7 +16,7 @@ const encode = TextEncoder.prototype.encode.bind(new TextEncoder())
 
 const peers = writable({})
 
-const state = writable(false)
+export const state = writable(false)
 
 let p2pcf = null
 
@@ -80,7 +80,7 @@ function joinLobby (code = generateRandomHexCode(16)) {
     }
   })
   p2pcf.start()
-  state.set(true)
+  state.set(code)
   console.log(p2pcf)
 }
 

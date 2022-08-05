@@ -4,6 +4,7 @@ import { resolveFileMedia } from '@/modules/anime.js'
 import { videoRx } from '@/modules/util.js'
 import { title } from '../Menubar.svelte'
 import { tick } from 'svelte'
+import { state } from '../WatchTogether/WatchTogether.svelte'
 
 const episodeRx = /Episode (\d+) - (.*)/
 
@@ -129,38 +130,51 @@ function setMediaSession (nowPlaying) {
   navigator.mediaSession.metadata = metadata
 }
 
-function setDiscordRPC (nowPlaying) {
-  window.IPC.emit('discord', {
-    activity: {
-      details: [nowPlaying.title, nowPlaying.episodeTitle].filter(i => i).join(' - '),
-      state: 'Watching Episode ' + ((!nowPlaying.media?.episodes && nowPlaying.episode) || ''),
-      timestamps: {
-        start: Date.now()
-      },
-      party: {
-        size: (nowPlaying.episode && nowPlaying.media?.episodes && [nowPlaying.episode, nowPlaying.media.episodes]) || undefined
-      },
-      assets: {
-        large_text: nowPlaying.title,
-        large_image: nowPlaying.thumbnail,
-        small_image: 'logo',
-        small_text: 'https://github.com/ThaUnknown/miru'
-      },
-      instance: true,
-      type: 3,
-      buttons: [
-        {
-          label: 'Download app',
-          url: 'https://github.com/ThaUnknown/miru/releases/latest'
-        },
-        {
-          label: 'Watch on Miru',
-          url: `miru://anime/${nowPlaying.media?.id}`
-        }
-      ]
+function setDiscordRPC (np = get(nowPlaying)) {
+  const w2g = get(state)
+  const activity = {
+    details: [np.title, np.episodeTitle].filter(i => i).join(' - '),
+    state: 'Watching Episode ' + ((!np.media?.episodes && np.episode) || ''),
+    timestamps: {
+      start: Date.now()
+    },
+    party: {
+      size: (np.episode && np.media?.episodes && [np.episode, np.media.episodes]) || undefined
+    },
+    assets: {
+      large_text: np.title,
+      large_image: np.thumbnail,
+      small_image: 'logo',
+      small_text: 'https://github.com/ThaUnknown/miru'
+    },
+    instance: true,
+    type: 3
+  }
+  // cannot have buttons and secrets at once
+  if (w2g) {
+    activity.secrets = {
+      join: w2g,
+      match: w2g + 'm'
     }
-  })
+    activity.party.id = w2g + 'p'
+  } else {
+    activity.buttons = [
+      {
+        label: 'Download app',
+        url: 'https://github.com/ThaUnknown/miru/releases/latest'
+      },
+      {
+        label: 'Watch on Miru',
+        url: `miru://anime/${np.media?.id}`
+      }
+    ]
+  }
+  window.IPC.emit('discord', { activity })
 }
+state.subscribe(() => {
+  setDiscordRPC()
+  return noop
+})
 </script>
 
 <script>

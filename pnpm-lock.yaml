@@ -7,7 +7,7 @@ specifiers:
   browser-event-target-emitter: ^1.0.0
   builtin-modules: ^3.2.0
   concurrently: ^7.0.0
-  discord-rpc: ^4.0.1
+  discord-rpc: 4.0.1
   electron: ^20.0.0
   electron-builder: ^22.14.13
   electron-log: ^4.4.6

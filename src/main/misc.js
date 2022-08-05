@@ -43,10 +43,23 @@ function setDiscordRPC (event, data) {
     discord.request('SET_ACTIVITY', status)
   }
 }
+
 ipcMain.on('discord', setDiscordRPC)
-discord.on('ready', () => {
+discord.on('ready', async () => {
   setDiscordRPC(null, status)
+  discord.subscribe('ACTIVITY_JOIN_REQUEST')
+  discord.subscribe('ACTIVITY_JOIN')
+  discord.subscribe('ACTIVITY_SPECTATE')
 })
+discord.on('ACTIVITY_JOIN_REQUEST', console.log)
+discord.on('ACTIVITY_SPECTATE', console.log)
+discord.on('ACTIVITY_JOIN', (args) => {
+  console.log('ACTIVITY_JOIN')
+  console.log(args)
+  console.log('------')
+  BrowserWindow.getAllWindows()[0]?.send('w2glink', args.secret)
+})
+
 function loginRPC () {
   discord.login({ clientId: '954855428355915797' }).catch(() => {
     setTimeout(loginRPC, 5000).unref()
