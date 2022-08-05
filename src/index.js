@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol, shell, ipcMain } = require('electron')
+const { app, BrowserWindow, protocol, shell, ipcMain, dialog } = require('electron')
 const path = require('path')
 require('./main/misc.js')
 
@@ -137,10 +137,15 @@ function createWindow () {
     mainWindow = null
   })
 
+  let crashcount = 0
   mainWindow.webContents.on('render-process-gone', (e, { reason }) => {
     if (reason === 'crashed') {
-      app.relaunch()
-      app.quit()
+      if (++crashcount > 10) {
+        dialog.showMessageBox({ message: 'Crashed too many times.', title: 'Miru', detail: 'App crashed too many times. For a fix visit https://github.com/ThaUnknown/miru/blob/master/docs/faq.md#miru-crashed-too-many-times', icon: '/renderer/public/logo.ico' })
+      } else {
+        app.relaunch()
+        app.quit()
+      }
     }
   })
 
