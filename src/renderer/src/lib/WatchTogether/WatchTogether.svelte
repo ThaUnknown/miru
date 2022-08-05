@@ -21,6 +21,7 @@ export const state = writable(false)
 let p2pcf = null
 
 function joinLobby (code = generateRandomHexCode(16)) {
+  if (p2pcf) cleanup()
   p2pcf = new P2PCF(generateRandomHexCode(16), code)
   p2pcf.on('peerconnect', async peer => {
     console.log(peer.id)

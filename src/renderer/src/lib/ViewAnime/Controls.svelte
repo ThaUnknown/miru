@@ -8,15 +8,16 @@ import { playAnime } from '../RSSView.svelte'
 export let media = null
 
 const toggleStatusMap = {
-  CURRENT: true,
-  COMPLETED: true,
-  PAUSED: true,
-  REPEATING: true
+  CURRENT: 'DROPPED',
+  COMPLETED: 'REPEATING',
+  PAUSED: 'CURRENT',
+  REPEATING: 'CURRENT',
+  DROPPED: 'PLANNING'
 }
 async function toggleStatus () {
   if (media.mediaListEntry?.status !== 'PLANNING') {
     // add
-    await setStatus((media.mediaListEntry?.status in toggleStatusMap) ? 'DROPPED' : 'CURRENT')
+    await setStatus(toggleStatusMap[media.mediaListEntry?.status] || 'PLANNING')
   } else {
     // delete
     const variables = {
