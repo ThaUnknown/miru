@@ -128,7 +128,7 @@ async function getRSSEntries ({ media, episode, mode, ignoreQuality }) {
   let ep = ''
   if (media.episodes !== 1 && mode !== 'batch') {
     if (isBatch) {
-      ep = `"01-${pl(media.episodes)}"|"01~${pl(media.episodes)}"|"Batch"|"Complete"|"${pl(episode)}+"|"${pl(episode)}v"|"S01"`
+      ep = `"01-${pl(media.episodes)}"|"01~${pl(media.episodes)}"|"Batch"|"Complete"|"${pl(episode)}+"|"${pl(episode)}v"`
     } else {
       ep = `(${episodes.map(epstring).join('|')})`
     }
