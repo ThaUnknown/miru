@@ -15,7 +15,7 @@ specifiers:
   jassub: ^1.1.8
   matroska-subtitles: github:ThaUnknown/matroska-subtitles#patch
   mime: ^3.0.0
-  p2pcf: 1.3.5
+  p2pcf: 1.3.6
   pump: ^3.0.0
   quartermoon: ^1.2.1
   range-parser: ^1.2.1
@@ -36,7 +36,7 @@ dependencies:
   jassub: 1.1.8
   matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/70bee097ad540e07d9e31b8f91f1dd865f7f2b45
   mime: 3.0.0
-  p2pcf: 1.3.5
+  p2pcf: 1.3.6
   pump: 3.0.0
   quartermoon: 1.2.1
   range-parser: 1.2.1
@@ -2416,8 +2416,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /p2pcf/1.3.5:
-    resolution: {integrity: sha512-+5Y7RxOyVMCNsFuQWBza0kb9jat3mK1DMIaaTSRcSWEylEw2rYgSO6MEELGj/clhq0LII+3yCMXTVEhO1O49Qw==}
+  /p2pcf/1.3.6:
+    resolution: {integrity: sha512-EhVfjJ7Uxd7RuMeyj01fmdyzNeFOwtwn+uV+chrzHKOoqScjwnyUWIK80HzPSEFrQNjscLQ5K46ciUREmKzJbQ==}
     dependencies:
       array-buffer-to-hex: 1.0.0
       base64-arraybuffer: 1.0.2
