@@ -87,18 +87,21 @@ const limit = limiter.wrap(handleRequest)
 
 async function handleRequest (opts) {
   const res = await fetch('https://graphql.anilist.co', opts)
+  if (!res.ok && res.status === 429) return await limit(opts)
   let json = null
   try {
     json = await res.json()
   } catch (error) {
     if (res.ok) printError(error)
-    if (error.status === 429) return await limit(opts)
   }
-  if (!res.ok && json) {
-    for (const error of json?.errors || []) {
-      printError(error)
+  if (!res.ok) {
+    if (json) {
+      for (const error of json?.errors || []) {
+        printError(error)
+      }
+    } else {
+      printError(res)
     }
-    if (res.status === 429) return await limit(opts)
   }
   return json
 }
