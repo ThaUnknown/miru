@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "main": "src/index.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
@@ -113,7 +113,7 @@
     "jassub": "^1.1.8",
     "matroska-subtitles": "github:ThaUnknown/matroska-subtitles#patch",
     "mime": "^3.0.0",
-    "p2pcf": "1.3.6",
+    "p2pcf": "github.com/ThaUnknown/p2pcf#no-remove",
     "pump": "^3.0.0",
     "quartermoon": "^1.2.1",
     "range-parser": "^1.2.1",
