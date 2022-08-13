@@ -15,7 +15,7 @@ specifiers:
   jassub: ^1.1.8
   matroska-subtitles: github:ThaUnknown/matroska-subtitles#patch
   mime: ^3.0.0
-  p2pcf: 1.3.6
+  p2pcf: github:ThaUnknown/p2pcf#no-remove
   pump: ^3.0.0
   quartermoon: ^1.2.1
   range-parser: ^1.2.1
@@ -36,7 +36,7 @@ dependencies:
   jassub: 1.1.8
   matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/70bee097ad540e07d9e31b8f91f1dd865f7f2b45
   mime: 3.0.0
-  p2pcf: 1.3.6
+  p2pcf: github.com/ThaUnknown/p2pcf/3aa32102cea803dc9c4595d5ad0b68a5beba184c
   pump: 3.0.0
   quartermoon: 1.2.1
   range-parser: 1.2.1
@@ -2367,6 +2367,7 @@ packages:
 
   /node-addon-api/1.7.2:
     resolution: {integrity: sha512-ibPK3iA+vaY1eEjESkQkM0BbCqFOaZMiXRTtdB0u7b4djtY6JnsjvPdUHVMg6xQt3B8fpTTWHI9A+ADjM9frzg==}
+    requiresBuild: true
     optional: true
 
   /node-fetch/2.6.7:
@@ -2415,19 +2416,6 @@ packages:
     resolution: {integrity: sha512-s73XxOZ4zpt1edZYZzvhqFa6uvQc1vwUa0K0BdtIZgQMAJj9IbebH+JkgKZc9h+B05PKHLOTl4ajG1BmNrVZlw==}
     engines: {node: '>=6'}
     dev: true
-
-  /p2pcf/1.3.6:
-    resolution: {integrity: sha512-EhVfjJ7Uxd7RuMeyj01fmdyzNeFOwtwn+uV+chrzHKOoqScjwnyUWIK80HzPSEFrQNjscLQ5K46ciUREmKzJbQ==}
-    dependencies:
-      array-buffer-to-hex: 1.0.0
-      base64-arraybuffer: 1.0.2
-      convert-hex: 0.1.0
-      events: 3.3.0
-      get-browser-rtc: 1.1.0
-      tiny-simple-peer: 10.1.1
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
 
   /package-json-versionify/1.0.4:
     resolution: {integrity: sha512-mtKKtCeSZMtWcc5hHJS6OlEGP7J9g7WN6vWCCZi2hCXFag/Zmjokh6WFFTQb9TuMnBcZpRjhhMQyOyglPCAahw==}
@@ -3548,6 +3536,21 @@ packages:
       ebml-stream: 1.0.3
       pako: 2.0.4
       readable-stream: 3.6.0
+    dev: false
+
+  github.com/ThaUnknown/p2pcf/3aa32102cea803dc9c4595d5ad0b68a5beba184c:
+    resolution: {tarball: https://codeload.github.com/ThaUnknown/p2pcf/tar.gz/3aa32102cea803dc9c4595d5ad0b68a5beba184c}
+    name: p2pcf
+    version: 1.3.6
+    dependencies:
+      array-buffer-to-hex: 1.0.0
+      base64-arraybuffer: 1.0.2
+      convert-hex: 0.1.0
+      events: 3.3.0
+      get-browser-rtc: 1.1.0
+      tiny-simple-peer: 10.1.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   github.com/devsnek/node-register-scheme/e7cc9a63a1f512565da44cb57316d9fb10750e17:
