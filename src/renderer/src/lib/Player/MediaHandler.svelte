@@ -38,7 +38,7 @@ export function findInCurrent (obj) {
 
   const targetFile = fileList.find(file => file.media?.media?.id === obj.media.id && file.media?.episode === obj.episode)
   if (!targetFile) return false
-  if (oldNowPlaying.media.id !== obj.media.id) {
+  if (oldNowPlaying.media?.id !== obj.media.id) {
     // mediachange, filelist change
     media.set({ media: obj.media, episode: obj.episode })
     handleFiles(fileList)
@@ -97,8 +97,9 @@ async function handleFiles (files) {
   } else {
     processed.set([...videoFiles, ...otherFiles])
 
-    if (nowPlaying?.episode && nowPlaying.episode !== 1) {
-      const file = videoFiles.find(({ media }) => media.episode === nowPlaying.episode)
+    if (nowPlaying?.episode) {
+      let file = videoFiles.find(({ media }) => media.episode === nowPlaying.episode)
+      if (!file) file = videoFiles.find(({ media }) => media.episode === 1)
       await tick()
       playFile(file || 0)
     }
