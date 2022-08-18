@@ -87,7 +87,15 @@ async function handleFiles (files) {
     return file
   })
 
-  const nowPlaying = get(media)
+  let nowPlaying = get(media)
+
+  if (!nowPlaying) {
+    const max = highest(videoFiles, (file) => file?.media?.media?.id).media
+    if (max?.media) {
+      nowPlaying = { media: max.media, episode: (max.media.mediaListEntry?.progress + 1 || 1) }
+      media.set(nowPlaying)
+    }
+  }
 
   const filtered = nowPlaying?.media && videoFiles.filter(file => file.media?.media?.id && file.media?.media?.id === nowPlaying.media.id)
 
@@ -97,18 +105,11 @@ async function handleFiles (files) {
 
   processed.set([...result, ...otherFiles])
   await tick()
-  if (nowPlaying?.episode && filtered.length) {
-    let file = videoFiles.find(({ media }) => media.episode === nowPlaying.episode)
-    if (!file) file = videoFiles.find(({ media }) => media.episode === 1)
-    playFile(file || 0)
-  } else {
-    const max = highest(videoFiles, (file) => file?.media?.media?.id)
-    const res = max.media?.media && result.find(({ media }) => media.episode === (max.media.media.mediaListEntry?.progress + 1 || 1) && media.media?.id === max.media.media?.id)
-    playFile(res || videoFiles.find(({ media }) => media.episode === 1) || 0)
-  }
+  const file = nowPlaying?.episode && (result.find(({ media }) => media.episode === nowPlaying.episode) || result.find(({ media }) => media.episode === 1) || 0)
+  playFile(file || 0)
 }
 
-const highest = (arr = [], mapfn = () => {}) => arr.reduce((acc, el) => {
+const highest = (arr = [], mapfn = a => a) => arr.reduce((acc, el) => {
   const mapped = mapfn(el)
   acc.sums[mapped] = (acc.sums[mapped] || 0) + 1
   acc.max = acc.sums[mapfn(acc.max)] > acc.sums[mapped] ? acc.max : el
