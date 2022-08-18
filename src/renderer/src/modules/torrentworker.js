@@ -110,7 +110,7 @@ class TorrentClient extends WebTorrent {
         this.parsed = false
         if (data) {
           this.current = this?.get(data.data.infoHash)?.files.find(file => file.path === data.data.path)
-          if (this.current.name.endsWith('.mkv')) {
+          if (this.current?.name.endsWith('.mkv')) {
             if (this.current.done) this.parseSubtitles()
             this.current.on('done', this.parseSubtitles.bind(this))
             this.parseFonts(this.current)

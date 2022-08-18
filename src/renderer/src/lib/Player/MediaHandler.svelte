@@ -70,7 +70,8 @@ function handleMedia ({ media, episode, parseObject }) {
 }
 
 async function handleFiles (files) {
-  let videoFiles = []
+  if (!files?.length) return processed.set(files)
+  const videoFiles = []
   const otherFiles = []
   for (const file of files) {
     if (videoRx.test(file.name)) {
@@ -88,23 +89,31 @@ async function handleFiles (files) {
 
   const nowPlaying = get(media)
 
-  if (nowPlaying?.media) videoFiles = videoFiles.filter(file => file.media?.media?.id === nowPlaying.media.id)
+  const filtered = nowPlaying?.media && videoFiles.filter(file => file.media?.media?.id && file.media?.media?.id === nowPlaying.media.id)
 
-  videoFiles.sort((a, b) => a.media.episode - b.media.episode)
+  const result = (filtered?.length && filtered) || videoFiles
 
-  if (!videoFiles.length) {
-    processed.set(files)
+  result.sort((a, b) => a.media.episode - b.media.episode)
+
+  processed.set([...result, ...otherFiles])
+  await tick()
+  if (nowPlaying?.episode && filtered.length) {
+    let file = videoFiles.find(({ media }) => media.episode === nowPlaying.episode)
+    if (!file) file = videoFiles.find(({ media }) => media.episode === 1)
+    playFile(file || 0)
   } else {
-    processed.set([...videoFiles, ...otherFiles])
-
-    if (nowPlaying?.episode) {
-      let file = videoFiles.find(({ media }) => media.episode === nowPlaying.episode)
-      if (!file) file = videoFiles.find(({ media }) => media.episode === 1)
-      await tick()
-      playFile(file || 0)
-    }
+    const max = highest(videoFiles, (file) => file?.media?.media?.id)
+    const res = max.media?.media && result.find(({ media }) => media.episode === (max.media.media.mediaListEntry?.progress + 1 || 1) && media.media?.id === max.media.media?.id)
+    playFile(res || videoFiles.find(({ media }) => media.episode === 1) || 0)
   }
 }
+
+const highest = (arr = [], mapfn = () => {}) => arr.reduce((acc, el) => {
+  const mapped = mapfn(el)
+  acc.sums[mapped] = (acc.sums[mapped] || 0) + 1
+  acc.max = acc.sums[mapfn(acc.max)] > acc.sums[mapped] ? acc.max : el
+  return acc
+}, { sums: {} }).max
 
 files.subscribe((files = []) => {
   handleFiles(files)

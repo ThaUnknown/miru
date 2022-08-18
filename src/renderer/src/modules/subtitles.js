@@ -50,7 +50,7 @@ export default class Subtitles {
     const { subtitle, trackNumber } = detail
     if (this.selected) {
       const string = JSON.stringify(subtitle)
-      if (!this._tracksString[trackNumber]?.has(string)) {
+      if (this._tracksString[trackNumber] && !this._tracksString[trackNumber].has(string)) {
         this._tracksString[trackNumber].add(string)
         const assSub = this.constructSub(subtitle, this.headers[trackNumber].type !== 'ass', this.tracks[trackNumber].length)
         this.tracks[trackNumber].push(assSub)

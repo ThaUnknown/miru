@@ -24,7 +24,7 @@ w2gEmitter.on('setindex', ({ detail }) => {
 })
 
 export function playFile (file) {
-  if (typeof value === 'number') {
+  if (!isNaN(file)) {
     handleCurrent(videos?.[file])
   } else {
     handleCurrent(file)
@@ -153,7 +153,6 @@ function updateFiles (files) {
   if (files?.length) {
     videos = files.filter(file => videoRx.test(file.name))
     if (videos?.length) {
-      handleCurrent(videos[0])
       if (subs) {
         subs.files = files || []
         subs.findSubtitleFiles(current)
@@ -775,7 +774,7 @@ function toggleDropdown ({ target }) {
 
 let completed = false
 function checkCompletion () {
-  if (!completed && duration && video?.readyState && duration - 180 < currentTime) {
+  if (!completed && duration && currentTime && video?.readyState && duration - 180 < currentTime) {
     if (media?.media?.episodes || media?.media?.nextAiringEpisode?.episode) {
       if (media.media.episodes || media.media.nextAiringEpisode?.episode > media.episode) {
         completed = true
