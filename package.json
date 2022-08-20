@@ -94,7 +94,7 @@
           "arch": "x64",
           "target": "deb"
         }
-      ],
+      ]
     },
     "nsis": {
       "allowToChangeInstallationDirectory": true,
