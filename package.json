@@ -76,7 +76,7 @@
     },
     "linux": {
       "artifactName": "${os}-${name}-${version}.${ext}",
-      "category": "Video;Anime",
+      "category": "AudioVideo;Video",
       "description": "Bittorrent streaming software for cats",
       "desktop": {
         "Name": "Miru",
@@ -95,9 +95,6 @@
           "target": "deb"
         }
       ],
-      "mimeTypes": [
-        "x-scheme-handler/miru"
-      ]
     },
     "nsis": {
       "allowToChangeInstallationDirectory": true,
