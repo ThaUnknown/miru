@@ -930,7 +930,8 @@ function checkError ({ target }) {
       Viewport: {stats.viewport}<br />
       Resolution: {stats.resolution}<br />
       Buffer health: {stats.buffer}<br />
-      Playback speed: x{stats.speed?.toFixed(1)}
+      Playback speed: x{stats.speed?.toFixed(1)}<br />
+      Name: {current.name || ''}
     </div>
   {/if}
   <div class='top z-40 d-flex justify-content-between'>
