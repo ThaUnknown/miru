@@ -117,10 +117,10 @@ export function alEntry (filemedia) {
       const videoEpisode = Number(filemedia.episode) || singleEpisode
       const mediaEpisode = media.nextAiringEpisode?.episode || media.episodes || singleEpisode
       // check episode range
-      if (videoEpisode && mediaEpisode && mediaEpisode >= videoEpisode) {
+      if (videoEpisode && mediaEpisode && (mediaEpisode >= videoEpisode)) {
         // check user's own watch progress
         const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name) || []
-        if (!media.mediaListEntry || media.mediaListEntry?.progress <= videoEpisode || singleEpisode) {
+        if (!media.mediaListEntry || (media.mediaListEntry?.progress <= videoEpisode) || singleEpisode) {
           const variables = {
             method: 'Entry',
             repeat: media.mediaListEntry?.repeat || 0,
@@ -131,7 +131,7 @@ export function alEntry (filemedia) {
           }
           if (videoEpisode === mediaEpisode) {
             variables.status = 'COMPLETED'
-            if (media.mediaListEntry.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
+            if (media.mediaListEntry?.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
           }
           if (!lists.includes('Watched using Miru')) {
             variables.lists.push('Watched using Miru')
