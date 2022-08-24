@@ -1,6 +1,6 @@
 import { add } from './torrent.js'
 import { DOMPARSER, PromiseBatch } from './util.js'
-import { alRequest } from './anilist.js'
+import { alRequest, alSearch } from './anilist.js'
 import anitomyscript from 'anitomyscript'
 import 'anitomyscript/build/anitomyscript.wasm?url'
 import { addToast } from '@/lib/Toasts.svelte'
@@ -91,7 +91,7 @@ const postfix = {
 }
 
 async function resolveTitle (name) {
-  const method = { name, method: 'SearchName', perPage: 1, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
+  const method = { name, method: 'SearchName', perPage: 10, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
 
   // inefficient but readable
 
@@ -103,17 +103,17 @@ async function resolveTitle (name) {
     if (match) {
       if (Number(match[1]) === 1) { // if this is S1, remove the " S1" or " S01"
         method.name = method.name.replace(/ S(\d+)/, '')
-        media = (await alRequest(method)).data.Page.media[0]
+        media = (await alSearch(method)).data.Page.media[0]
       } else {
         method.name = method.name.replace(/ S(\d+)/, ` ${Number(match[1])}${postfix[Number(match[1])] || 'th'} Season`)
-        media = (await alRequest(method)).data.Page.media[0]
+        media = (await alSearch(method)).data.Page.media[0]
         if (!media) {
           method.name = oldname.replace(/ S(\d+)/, ` Season ${Number(match[1])}`)
-          media = (await alRequest(method)).data.Page.media[0]
+          media = (await alSearch(method)).data.Page.media[0]
         }
       }
     } else {
-      media = (await alRequest(method)).data.Page.media[0]
+      media = (await alSearch(method)).data.Page.media[0]
     }
 
     // remove (TV)
@@ -121,7 +121,7 @@ async function resolveTitle (name) {
       const match = method.name.match(/\(TV\)/)
       if (match) {
         method.name = method.name.replace('(TV)', '')
-        media = (await alRequest(method)).data.Page.media[0]
+        media = (await alSearch(method)).data.Page.media[0]
       }
     }
     // remove - :
@@ -129,7 +129,7 @@ async function resolveTitle (name) {
       const match = method.name.match(/[-:]/g)
       if (match) {
         method.name = method.name.replace(/[-:]/g, '')
-        media = (await alRequest(method)).data.Page.media[0]
+        media = (await alSearch(method)).data.Page.media[0]
       }
     }
     // remove 2020
@@ -137,7 +137,7 @@ async function resolveTitle (name) {
       const match = method.name.match(/ (19[5-9]\d|20\d{2})/)
       if (match) {
         method.name = method.name.replace(/ (19[5-9]\d|20\d{2})/, '')
-        media = (await alRequest(method)).data.Page.media[0]
+        media = (await alSearch(method)).data.Page.media[0]
       }
     }
   } catch (e) { }

@@ -1,5 +1,6 @@
 import { alToken } from '@/lib/Settings.svelte'
 import { addToast } from '@/lib/Toasts.svelte'
+import lavenshtein from 'js-levenshtein'
 
 import Bottleneck from 'bottleneck'
 
@@ -141,6 +142,23 @@ export function alEntry (filemedia) {
       }
     }
   }
+}
+
+function getDistanceFromTitle (media, name) {
+  if (media) {
+    const distances = [...Object.values(media.title), ...media.synonyms].filter(v => v).map(title => lavenshtein(title, name))
+    const min = distances.reduce((prev, curr) => prev < curr ? prev : curr)
+    media.lavenshtein = min
+    return media
+  }
+}
+
+export async function alSearch (method) {
+  const res = await alRequest(method)
+  const media = res.data.Page.media.map(media => getDistanceFromTitle(media, method.name))
+  if (!media.length) return res
+  const lowest = media.reduce((prev, curr) => prev.lavenshtein < curr.lavenshtein ? prev : curr)
+  return { data: { Page: { media: [lowest] } } }
 }
 
 export async function alRequest (opts) {

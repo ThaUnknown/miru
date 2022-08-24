@@ -13,6 +13,7 @@ specifiers:
   electron-notarize: ^1.1.1
   electron-updater: ^4.6.5
   jassub: ^1.1.8
+  js-levenshtein: ^1.1.6
   matroska-subtitles: github:ThaUnknown/matroska-subtitles#patch
   mime: ^3.0.0
   p2pcf: github:ThaUnknown/p2pcf#no-remove
@@ -34,9 +35,10 @@ dependencies:
   electron-log: 4.4.8
   electron-updater: 4.6.5
   jassub: 1.1.8
+  js-levenshtein: 1.1.6
   matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/70bee097ad540e07d9e31b8f91f1dd865f7f2b45
   mime: 3.0.0
-  p2pcf: github.com/ThaUnknown/p2pcf/3aa32102cea803dc9c4595d5ad0b68a5beba184c
+  p2pcf: github.com/ThaUnknown/p2pcf/faefe2854c817315530636a58d07726de7050561
   pump: 3.0.0
   quartermoon: 1.2.1
   range-parser: 1.2.1
@@ -353,10 +355,10 @@ packages:
     resolution: {integrity: sha512-m0+M53+HYMzqKxwNQZT143K7WwXEGUy9LY31l8dJphXx2P/FQod615mVbxHyqbDCG4J5bHdWm21qZ0e2DVY6CQ==}
     engines: {node: '>=14.0.0'}
     dependencies:
+      7zip-bin: 5.1.1
       '@develar/schema-utils': 2.6.5
       '@electron/universal': 1.2.1
       '@malept/flatpak-bundler': 0.4.0
-      7zip-bin: 5.1.1
       async-exit-hook: 2.0.1
       bluebird-lst: 1.0.9
       builder-util: 23.3.3
@@ -701,9 +703,9 @@ packages:
   /builder-util/23.3.3:
     resolution: {integrity: sha512-MJZlUiq2PY5hjYv9+XNaoYdsITqvLgRDoHSFg/4nzpInbNxNjLQOolL04Zsyp+hgfcbFvMC4h0KkR1CMPHLWbA==}
     dependencies:
+      7zip-bin: 5.1.1
       '@types/debug': 4.1.7
       '@types/fs-extra': 9.0.13
-      7zip-bin: 5.1.1
       app-builder-bin: 4.0.0
       bluebird-lst: 1.0.9
       builder-util-runtime: 9.0.3
@@ -2028,6 +2030,11 @@ packages:
     resolution: {integrity: sha512-5oRGHqApD9HOWB6dPfoPp/2oCYlNHGbEZJaSjmnXnzw2syVsq/b995t+/Nc+xX2ZFXiVoAeJ9ELqEpBjKg9jqA==}
     dependencies:
       rvfc-polyfill: 1.0.4
+    dev: false
+
+  /js-levenshtein/1.1.6:
+    resolution: {integrity: sha512-X2BB11YZtrRqY4EnQcLX5Rh373zbK4alC1FW7D7MBhL2gtcC17cTnr6DmfHZeS0s2rTHjUTMMHfG7gO8SSdw+g==}
+    engines: {node: '>=0.10.0'}
     dev: false
 
   /js-yaml/4.1.0:
@@ -3538,8 +3545,8 @@ packages:
       readable-stream: 3.6.0
     dev: false
 
-  github.com/ThaUnknown/p2pcf/3aa32102cea803dc9c4595d5ad0b68a5beba184c:
-    resolution: {tarball: https://codeload.github.com/ThaUnknown/p2pcf/tar.gz/3aa32102cea803dc9c4595d5ad0b68a5beba184c}
+  github.com/ThaUnknown/p2pcf/faefe2854c817315530636a58d07726de7050561:
+    resolution: {tarball: https://codeload.github.com/ThaUnknown/p2pcf/tar.gz/faefe2854c817315530636a58d07726de7050561}
     name: p2pcf
     version: 1.3.6
     dependencies:

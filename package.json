@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "3.1.4",
+  "version": "3.1.5",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "src/index.js",
@@ -109,6 +109,7 @@
     "electron-log": "^4.4.6",
     "electron-updater": "^4.6.5",
     "jassub": "^1.1.8",
+    "js-levenshtein": "^1.1.6",
     "matroska-subtitles": "github:ThaUnknown/matroska-subtitles#patch",
     "mime": "^3.0.0",
     "p2pcf": "github:ThaUnknown/p2pcf#no-remove",
