@@ -146,7 +146,7 @@ export function alEntry (filemedia) {
 
 function getDistanceFromTitle (media, name) {
   if (media) {
-    const distances = [...Object.values(media.title), ...media.synonyms].filter(v => v).map(title => lavenshtein(title, name))
+    const distances = [...Object.values(media.title), ...media.synonyms].filter(v => v).map(title => lavenshtein(title.toLowerCase(), name.toLowerCase()))
     const min = distances.reduce((prev, curr) => prev < curr ? prev : curr)
     media.lavenshtein = min
     return media
