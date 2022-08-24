@@ -301,6 +301,8 @@
       currentTime = currentTime += time
     }
     targetTime = currentTime
+    console.log(targetTime, currentTime)
+    video.currentTime = targetTime
   }
   function forward () {
     seek(2)
