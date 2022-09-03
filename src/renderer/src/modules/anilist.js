@@ -462,7 +462,7 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
       }`
       break
     } case 'CustomList':{
-      variables.lists = ['Watched using Miru', ...opts.lists]
+      variables.lists = [...opts.lists, 'Watched using Miru']
       query = /* js */`
       mutation($lists: [String]) {
         UpdateUser(animeListOptions: { customLists: $lists }){
