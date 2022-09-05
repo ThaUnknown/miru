@@ -530,7 +530,7 @@
       video.cancelVideoFrameCallback(loop)
       canvas.remove()
     }
-
+    container.append(canvas)
     return { stream: canvas.captureStream(), destroy }
   }
 
@@ -1133,8 +1133,8 @@
   }
 
   .pip :global(canvas:not(.w-full)) {
-    left: 99.9% !important;
-    /*hack to hide the canvas but still keep it updating*/
+    width: 1px !important;
+    height: 1px !important;
   }
 
   .material-icons {
@@ -1159,7 +1159,7 @@
   }
 
   .pip video {
-    visibility: hidden;
+    opacity: 0.1%;
   }
 
   .middle div[data-name='bufferingDisplay'] {
