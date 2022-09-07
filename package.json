@@ -15,7 +15,7 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.1",
     "concurrently": "^7.0.0",
-    "electron": "^20.0.0",
+    "electron": "20.1.1",
     "electron-builder": "^23.3.3",
     "electron-notarize": "^1.1.1",
     "svelte": "^3.47.0",
@@ -108,7 +108,7 @@
     "discord-rpc": "4.0.1",
     "electron-log": "^4.4.6",
     "electron-updater": "^4.6.5",
-    "jassub": "^1.1.8",
+    "jassub": "1.1.11",
     "js-levenshtein": "^1.1.6",
     "matroska-subtitles": "github:ThaUnknown/matroska-subtitles#patch",
     "mime": "^3.0.0",
@@ -118,6 +118,6 @@
     "range-parser": "^1.2.1",
     "svelte-keybinds": "^1.0.4",
     "svelte-miniplayer": "^1.0.2",
-    "webtorrent": "^1.8.14"
+    "webtorrent": "^1.8.26"
   }
 }

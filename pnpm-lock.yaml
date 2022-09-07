@@ -7,12 +7,12 @@ specifiers:
   browser-event-target-emitter: ^1.0.0
   concurrently: ^7.0.0
   discord-rpc: 4.0.1
-  electron: ^20.0.0
+  electron: 20.1.1
   electron-builder: ^23.3.3
   electron-log: ^4.4.6
   electron-notarize: ^1.1.1
   electron-updater: ^4.6.5
-  jassub: ^1.1.8
+  jassub: 1.1.11
   js-levenshtein: ^1.1.6
   matroska-subtitles: github:ThaUnknown/matroska-subtitles#patch
   mime: ^3.0.0
@@ -25,7 +25,7 @@ specifiers:
   svelte-miniplayer: ^1.0.2
   vite: ^3.0.0
   vite-plugin-commonjs: ^0.5.2
-  webtorrent: ^1.8.14
+  webtorrent: ^1.8.26
 
 dependencies:
   anitomyscript: 2.0.4
@@ -34,7 +34,7 @@ dependencies:
   discord-rpc: 4.0.1
   electron-log: 4.4.8
   electron-updater: 4.6.5
-  jassub: 1.1.8
+  jassub: 1.1.11
   js-levenshtein: 1.1.6
   matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/70bee097ad540e07d9e31b8f91f1dd865f7f2b45
   mime: 3.0.0
@@ -49,7 +49,7 @@ dependencies:
 devDependencies:
   '@sveltejs/vite-plugin-svelte': 1.0.1_svelte@3.49.0+vite@3.0.4
   concurrently: 7.3.0
-  electron: 20.0.1
+  electron: 20.1.1
   electron-builder: 23.3.3
   electron-notarize: 1.2.1
   svelte: 3.49.0
@@ -283,7 +283,7 @@ packages:
     resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}
     requiresBuild: true
     dependencies:
-      '@types/node': 16.11.47
+      '@types/node': 18.6.4
     dev: true
     optional: true
 
@@ -1217,8 +1217,8 @@ packages:
       - supports-color
     dev: false
 
-  /electron/20.0.1:
-    resolution: {integrity: sha512-5c7zr8oy1JsCV86BaoIPVLo4yevDfvPEsMQcGlgfJ5PS7ouAVvR1aHt0tjF65bL1vYdoQ1olvpextg2T8FyICA==}
+  /electron/20.1.1:
+    resolution: {integrity: sha512-cFTfP4R2O5onaXiu+S20xK7eLpyX/H7PYk7lj9mlHS0ui1+w1jDDWD3RhvjmPgeksPfMAZiRLK8lAQvzSBAKdg==}
     engines: {node: '>= 10.17.0'}
     hasBin: true
     requiresBuild: true
@@ -2026,8 +2026,8 @@ packages:
       minimatch: 3.1.2
     dev: true
 
-  /jassub/1.1.8:
-    resolution: {integrity: sha512-5oRGHqApD9HOWB6dPfoPp/2oCYlNHGbEZJaSjmnXnzw2syVsq/b995t+/Nc+xX2ZFXiVoAeJ9ELqEpBjKg9jqA==}
+  /jassub/1.1.11:
+    resolution: {integrity: sha512-THR9l/fUfRrwXot7Xj3hT5cp7i/0ioSG/MykHAtXwT9MyDQ6i1F9lofG/A8iWWS9a3wrE1u1ryFvFCpGtj5Sew==}
     dependencies:
       rvfc-polyfill: 1.0.4
     dev: false
