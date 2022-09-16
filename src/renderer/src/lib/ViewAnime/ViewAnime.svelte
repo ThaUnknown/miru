@@ -1,26 +1,26 @@
 <script>
-import { playAnime } from '../RSSView.svelte'
-import { alRequest } from '@/modules/anilist.js'
-import { getMediaMaxEp } from '@/modules/anime.js'
-import { getContext } from 'svelte'
-import Details from './Details.svelte'
-import Following from './Following.svelte'
-import Controls from './Controls.svelte'
-import ToggleList from './ToggleList.svelte'
+  import { playAnime } from '../RSSView.svelte'
+  import { alRequest } from '@/modules/anilist.js'
+  import { getMediaMaxEp } from '@/modules/anime.js'
+  import { getContext } from 'svelte'
+  import Details from './Details.svelte'
+  import Following from './Following.svelte'
+  import Controls from './Controls.svelte'
+  import ToggleList from './ToggleList.svelte'
 
-const view = getContext('view')
-const trailer = getContext('trailer')
-function close () {
-  $view = null
-}
-$: media = $view
-let modal
-$: media && modal?.focus()
-$: !$trailer && modal?.focus()
-$: maxPlayEp = getMediaMaxEp($view || {}, true)
-function checkClose ({ keyCode }) {
-  if (keyCode === 27) close()
-}
+  const view = getContext('view')
+  const trailer = getContext('trailer')
+  function close () {
+    $view = null
+  }
+  $: media = $view
+  let modal
+  $: media && modal?.focus()
+  $: !$trailer && modal?.focus()
+  $: maxPlayEp = getMediaMaxEp($view || {}, true)
+  function checkClose ({ keyCode }) {
+    if (keyCode === 27) close()
+  }
 </script>
 
 <div class='modal modal-full' class:show={media} on:keydown={checkClose} tabindex='-1' bind:this={modal}>

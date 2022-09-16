@@ -121,12 +121,15 @@ export function alEntry (filemedia) {
       if (videoEpisode && mediaEpisode && (mediaEpisode >= videoEpisode)) {
         // check user's own watch progress
         const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name) || []
+
+        const status = media.mediaListEntry?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
+
         if (!media.mediaListEntry || (media.mediaListEntry?.progress <= videoEpisode) || singleEpisode) {
           const variables = {
             method: 'Entry',
             repeat: media.mediaListEntry?.repeat || 0,
             id: media.id,
-            status: 'CURRENT',
+            status,
             episode: videoEpisode,
             lists
           }
