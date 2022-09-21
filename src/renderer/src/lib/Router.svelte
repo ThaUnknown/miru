@@ -1,12 +1,12 @@
 <script>
-import { getContext } from 'svelte'
-import Home from './Home/Home.svelte'
-import MediaHandler from './Player/MediaHandler.svelte'
-import Settings from './Settings.svelte'
-import WatchTogether from './WatchTogether/WatchTogether.svelte'
-import Miniplayer from 'svelte-miniplayer'
-export let page = 'home'
-const current = getContext('gallery')
+  import { getContext } from 'svelte'
+  import Home from './Home/Home.svelte'
+  import MediaHandler from './Player/MediaHandler.svelte'
+  import Settings from './Settings.svelte'
+  import WatchTogether from './WatchTogether/WatchTogether.svelte'
+  import Miniplayer from 'svelte-miniplayer'
+  export let page = 'home'
+  const current = getContext('gallery')
 </script>
 
 <div class='overflow-hidden content-wrapper'>
