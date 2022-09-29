@@ -21,7 +21,7 @@ specifiers:
   quartermoon: ^1.2.1
   range-parser: ^1.2.1
   svelte: ^3.47.0
-  svelte-keybinds: ^1.0.4
+  svelte-keybinds: 1.0.5
   svelte-miniplayer: 1.0.3
   vite: ^3.0.0
   vite-plugin-commonjs: ^0.5.2
@@ -42,7 +42,7 @@ dependencies:
   pump: 3.0.0
   quartermoon: 1.2.1
   range-parser: 1.2.1
-  svelte-keybinds: 1.0.4
+  svelte-keybinds: 1.0.5
   svelte-miniplayer: 1.0.3
   webtorrent: 1.8.26
 
@@ -3030,8 +3030,8 @@ packages:
       svelte: 3.49.0
     dev: true
 
-  /svelte-keybinds/1.0.4:
-    resolution: {integrity: sha512-yjpfsPUnUGcOvtVbGF+ZJ2JDRjLGQ1mKXKGb0P94ew+MOafrfMpJ9YHmkLoWMHqoZ+ggFN9vzWEgZcb3xyNOYg==}
+  /svelte-keybinds/1.0.5:
+    resolution: {integrity: sha512-uLgpqP+anTE++sjjVvtQVHzzGa2kJCzOOomLcYGKRIDESkLaQ6tIRZ7u0ktqYzUP8VadZe46ShrJLfz/4kBF2w==}
     dev: false
 
   /svelte-miniplayer/1.0.3:
