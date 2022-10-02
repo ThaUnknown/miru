@@ -1,111 +1,115 @@
 <script context='module'>
-import { addToast } from './Toasts.svelte'
-export let alToken = localStorage.getItem('ALtoken') || null
-const defaults = {
-  playerAutoplay: true,
-  playerPause: true,
-  playerAutocomplete: true,
-  rssQuality: '1080',
-  rssFeeds: [['New Releases', 'SubsPlease']],
-  rssAutoplay: true,
-  torrentSpeed: 10,
-  torrentPersist: false,
-  torrentDHT: false,
-  torrentPeX: false
-}
-localStorage.removeItem('relations') // TODO: remove
-export const set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
-if (!set.rssFeeds) { // TODO: remove ;-;
-  if (set.rssFeed) {
-    set.rssFeeds = [['New Releases', set.rssFeed]]
-  } else {
-    set.rssFeeds = [['New Releases', 'SubsPlease']]
+  import { addToast } from './Toasts.svelte'
+  export let alToken = localStorage.getItem('ALtoken') || null
+  const defaults = {
+    playerAutoplay: true,
+    playerPause: true,
+    playerAutocomplete: true,
+    rssQuality: '1080',
+    rssFeeds: [['New Releases', 'SubsPlease']],
+    rssAutoplay: true,
+    torrentSpeed: 10,
+    torrentPersist: false,
+    torrentDHT: false,
+    torrentPeX: false
   }
-}
-window.addEventListener('paste', ({ clipboardData }) => {
-  if (clipboardData.items?.[0]) {
-    if (clipboardData.items[0].type === 'text/plain' && clipboardData.items[0].kind === 'string') {
-      clipboardData.items[0].getAsString(text => {
-        let token = text.split('access_token=')?.[1]?.split('&token_type')?.[0]
-        if (token) {
-          if (token.endsWith('/')) token = token.slice(0, -1)
-          handleToken(token)
-        }
-      })
+  localStorage.removeItem('relations') // TODO: remove
+  export const set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
+  if (!set.rssFeeds) { // TODO: remove ;-;
+    if (set.rssFeed) {
+      set.rssFeeds = [['New Releases', set.rssFeed]]
+    } else {
+      set.rssFeeds = [['New Releases', 'SubsPlease']]
     }
   }
-})
-window.IPC.on('altoken', handleToken)
-function handleToken (data) {
-  localStorage.setItem('ALtoken', data)
-  alToken = data
-  location.reload()
-}
-export const platformMap = {
-  aix: 'Aix',
-  darwin: 'MacOS',
-  freebsd: 'Linux',
-  linux: 'Linux',
-  openbsd: 'Linux',
-  sunos: 'SunOS',
-  win32: 'Windows'
-}
-let version = '1.0.0'
-window.IPC.on('version', data => (version = data))
-window.IPC.emit('version')
-
-window.IPC.on('update', () => {
-  addToast({
-    title: 'Auto Updater',
-    text: 'A new version of Miru is available. Downloading!'
+  window.addEventListener('paste', ({ clipboardData }) => {
+    if (clipboardData.items?.[0]) {
+      if (clipboardData.items[0].type === 'text/plain' && clipboardData.items[0].kind === 'string') {
+        clipboardData.items[0].getAsString(text => {
+          let token = text.split('access_token=')?.[1]?.split('&token_type')?.[0]
+          if (token) {
+            if (token.endsWith('/')) token = token.slice(0, -1)
+            handleToken(token)
+          }
+        })
+      }
+    }
   })
-})
-function checkUpdate () {
-  window.IPC.emit('update')
-}
-setInterval(checkUpdate, 1200000)
+  window.IPC.on('altoken', handleToken)
+  function handleToken (data) {
+    localStorage.setItem('ALtoken', data)
+    alToken = data
+    location.reload()
+  }
+  export const platformMap = {
+    aix: 'Aix',
+    darwin: 'MacOS',
+    freebsd: 'Linux',
+    linux: 'Linux',
+    openbsd: 'Linux',
+    sunos: 'SunOS',
+    win32: 'Windows'
+  }
+  let version = '1.0.0'
+  window.IPC.on('version', data => (version = data))
+  window.IPC.emit('version')
+
+  let wasUpdated = false
+  window.IPC.on('update', () => {
+    if (!wasUpdated) {
+      wasUpdated = true
+      addToast({
+        title: 'Auto Updater',
+        text: 'A new version of Miru is available. Downloading!'
+      })
+    }
+  })
+  function checkUpdate () {
+    window.IPC.emit('update')
+  }
+  setInterval(checkUpdate, 1200000)
 </script>
 
 <script>
-import { Tabs, TabLabel, Tab } from './Tabination.js'
-import { onDestroy } from 'svelte'
+  import { Tabs, TabLabel, Tab } from './Tabination.js'
+  import { onDestroy } from 'svelte'
 
-onDestroy(() => {
-  window.IPC.off('path')
-})
+  onDestroy(() => {
+    window.IPC.off('path')
+  })
 
-const groups = {
-  player: {
-    name: 'Player',
-    icon: 'play_arrow',
-    desc: 'Player configuration, playback behavior, and other.'
-  },
-  rss: {
-    name: 'RSS',
-    icon: 'rss_feed',
-    desc: 'RSS configuration, URLs, quality, and options.'
-  },
-  torrent: {
-    name: 'Torrent',
-    icon: 'hub',
-    desc: 'Torrent client settings, and preferences.'
+  const groups = {
+    player: {
+      name: 'Player',
+      icon: 'play_arrow',
+      desc: 'Player configuration, playback behavior, and other.'
+    },
+    rss: {
+      name: 'RSS',
+      icon: 'rss_feed',
+      desc: 'RSS configuration, URLs, quality, and options.'
+    },
+    torrent: {
+      name: 'Torrent',
+      icon: 'hub',
+      desc: 'Torrent client settings, and preferences.'
+    }
   }
-}
-let settings = set
-$: saveSettings(settings)
-function saveSettings () {
-  localStorage.setItem('settings', JSON.stringify(settings))
-}
-function restoreSettings () {
-  localStorage.removeItem('settings')
-  settings = { ...defaults }
-}
-function handleFolder () {
-  window.IPC.emit('dialog')
-}
-window.IPC.on('path', data => {
-  settings.torrentPath = data
-})
+  let settings = set
+  $: saveSettings(settings)
+  function saveSettings () {
+    localStorage.setItem('settings', JSON.stringify(settings))
+  }
+  function restoreSettings () {
+    localStorage.removeItem('settings')
+    settings = { ...defaults }
+  }
+  function handleFolder () {
+    window.IPC.emit('dialog')
+  }
+  window.IPC.on('path', data => {
+    settings.torrentPath = data
+  })
 </script>
 
 <Tabs>
