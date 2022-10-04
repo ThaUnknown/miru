@@ -1,0 +1,14 @@
+name: Publish to WinGet
+on:
+  release:
+    types: [released]
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - name: WinGet Releaser
+        uses: vedantmgoyal2009/winget-releaser@v1
+        with:
+          identifier: ThaUnknown.Miru
+          installers-regex: '\.exe$'
+          token: ${{ secrets.WINGET_TOKEN }}
