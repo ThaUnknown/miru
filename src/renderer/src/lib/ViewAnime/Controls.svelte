@@ -12,7 +12,8 @@
     COMPLETED: 'REPEATING',
     PAUSED: 'CURRENT',
     REPEATING: 'CURRENT',
-    DROPPED: 'PLANNING'
+    DROPPED: 'PLANNING',
+    PLANNING: 'remove'
   }
   async function toggleStatus () {
     if (media.mediaListEntry?.status !== 'PLANNING') {

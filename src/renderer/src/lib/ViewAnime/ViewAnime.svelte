@@ -48,10 +48,12 @@
                           Rating: {media.averageScore + '%'}
                         </span>
                       {/if}
-                      <span class='material-icons mx-10 font-size-24'> monitor </span>
-                      <span class='mr-20 text-capitalize'>
-                        Format: {media.format === 'TV' ? media.format : media.format?.replace(/_/g, ' ').toLowerCase()}
-                      </span>
+                      {#if media.format}
+                        <span class='material-icons mx-10 font-size-24'> monitor </span>
+                        <span class='mr-20 text-capitalize'>
+                          Format: {media.format === 'TV' ? media.format : media.format?.replace(/_/g, ' ').toLowerCase()}
+                        </span>
+                      {/if}
                       {#if media.episodes !== 1 && getMediaMaxEp(media)}
                         <span class='material-icons mx-10 font-size-24'> theaters </span>
                         <span class='mr-20'>

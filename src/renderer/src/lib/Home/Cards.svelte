@@ -1,12 +1,12 @@
 <script>
-import { countdown } from '@/modules/util.js'
-import { getContext } from 'svelte'
-export let cards = new Promise(() => {})
-const view = getContext('view')
-function viewMedia (media) {
-  $view = media
-}
-export let length = 5
+  import { countdown } from '@/modules/util.js'
+  import { getContext } from 'svelte'
+  export let cards = new Promise(() => {})
+  const view = getContext('view')
+  function viewMedia (media) {
+    $view = media
+  }
+  export let length = 5
 </script>
 
 {#await cards}
@@ -70,9 +70,11 @@ export let length = 5
                 {#if card.media.status}
                   <span>{card.media.status?.toLowerCase().replace(/_/g, ' ')}</span>
                 {/if}
-                <span>
-                  {[card.media.season?.toLowerCase(), card.media.seasonYear].filter(s => s).join(' ')}
-                </span>
+                {#if card.media.season || card.media.seasonYear}
+                  <span>
+                    {[card.media.season?.toLowerCase(), card.media.seasonYear].filter(s => s).join(' ')}
+                  </span>
+                {/if}
               </p>
             </div>
             <div class='overflow-y-auto px-15 pb-5 bg-very-dark card-desc pre-wrap'>
