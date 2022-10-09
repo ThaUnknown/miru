@@ -66,6 +66,7 @@
   let volume = localStorage.getItem('volume') || 1
   let playbackRate = 1
   $: localStorage.setItem('volume', volume || 0)
+  $: safeduration = (isFinite(duration) ? duration : currentTime) || 0
 
   function checkAudio () {
     if ('audioTracks' in HTMLVideoElement.prototype && !video.audioTracks.length) {
@@ -179,19 +180,19 @@
   }
 
   let currentTime = 0
-  $: progress = currentTime / duration
+  $: progress = currentTime / safeduration
   $: targetTime = (!paused && currentTime) || targetTime
   function handleMouseDown ({ target }) {
     wasPaused = paused
     paused = true
-    targetTime = target.value * duration
+    targetTime = target.value * safeduration
   }
   function handleMouseUp () {
     paused = wasPaused
     currentTime = targetTime
   }
   function handleProgress ({ target }) {
-    targetTime = target.value * duration
+    targetTime = target.value * safeduration
   }
 
   function autoPlay () {
@@ -250,8 +251,8 @@
   function seek (time) {
     if (time === 85 && currentTime < 10) {
       currentTime = currentTime = 90
-    } else if (time === 85 && duration - currentTime < 90) {
-      currentTime = currentTime = duration
+    } else if (time === 85 && safeduration - currentTime < 90) {
+      currentTime = currentTime = safeduration
     } else {
       currentTime = currentTime += time
     }
@@ -565,9 +566,9 @@
     }, 150)
   }
   $: navigator.mediaSession?.setPositionState({
-    duration: Math.max(0, duration || 0),
+    duration: Math.max(0, safeduration || 0),
     playbackRate: 1,
-    position: Math.max(0, Math.min(duration || 0, currentTime || 0))
+    position: Math.max(0, Math.min(safeduration || 0, currentTime || 0))
   })
 
   if ('mediaSession' in navigator) {
@@ -633,7 +634,7 @@
   let hoverOffset = 0
   function handleHover ({ offsetX, target }) {
     hoverOffset = offsetX / target.clientWidth
-    hoverTime = duration * hoverOffset
+    hoverTime = safeduration * hoverOffset
     hover.style.setProperty('left', hoverOffset * 100 + '%')
     thumbnail = thumbnailData.thumbnails[Math.floor(hoverTime / thumbnailData.interval)] || ' '
   }
@@ -651,7 +652,7 @@
   function initThumbnails () {
     const height = 200 / (videoWidth / videoHeight)
     if (!isNaN(height)) {
-      thumbnailData.interval = duration / 300 < 5 ? 5 : duration / 300
+      thumbnailData.interval = safeduration / 300 < 5 ? 5 : safeduration / 300
       thumbnailData.canvas.height = height
     }
   }
@@ -721,8 +722,8 @@
   let completed = false
   function checkCompletion () {
     if (!completed) {
-      const fromend = Math.max(180, duration / 10)
-      if (duration && currentTime && video?.readyState && duration - fromend < currentTime) {
+      const fromend = Math.max(180, safeduration / 10)
+      if (safeduration && currentTime && video?.readyState && safeduration - fromend < currentTime) {
         if (media?.media?.episodes || media?.media?.nextAiringEpisode?.episode) {
           if (media.media.episodes || media.media.nextAiringEpisode?.episode > media.episode) {
             completed = true
@@ -942,7 +943,7 @@
         <span class='material-icons ctrl' title='Mute [M]' data-name='toggleMute' on:click={toggleMute}> {muted ? 'volume_off' : 'volume_up'} </span>
         <input class='ctrl' type='range' min='0' max='1' step='any' data-name='setVolume' bind:value={volume} style='--value: {volume * 100}%' />
       </div>
-      <div class='ts mr-auto'>{toTS(targetTime, duration > 3600 ? 2 : 3)} / {toTS(duration - targetTime, duration > 3600 ? 2 : 3)}</div>
+      <div class='ts mr-auto'>{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
         <div class='dropdown dropup with-arrow' on:click={toggleDropdown}>
           <span class='material-icons ctrl' title='Audio Tracks'>
