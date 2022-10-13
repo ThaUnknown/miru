@@ -25,11 +25,11 @@
 </p>
 
 ## **About**
-A pure JS BitTorrent streaming environment, with a built-in list manager. Imagine qBit + Taiga + MPV, all in a single package, but streamed real-time. Completly ad free with no tracking/data collection.
+A pure JS BitTorrent streaming environment, with a built-in list manager. Imagine qBit + Taiga + MPV, all in a single package, but streamed real-time. Completely ad-free with no tracking/data collection.
 
 This app is meant to feel look, work and perform like a streaming website/app, while providing all the advantages of torrenting, like file downloads, higher download speeds, better video quality and quicker releases.
 
-Unlike qBit's sequential, seeking into undownloaded data will prioritise downloading that data, instead of flat out closing MPV.
+Unlike qBit's sequential, seeking into undownloaded data will prioritize downloading that data, instead of flat out closing MPV.
 ## **Features**
 ### **Anime:**
 - full AniList integration
@@ -53,10 +53,10 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritise downloa
   - subtitle display in PiP
 - keybinds for all functions:
   - **,** - seek 1 frame backwards
-  - **.** - seek 1 frame forwards
-  - **S** - seek forwards 90 seconds [skip opening]
+  - **.** - seek 1 frame forward
+  - **S** - seek forward 90 seconds [skip opening]
   - **R** - seek backwards 90 seconds
-  - **→** - seek forwards 2 seconds
+  - **→** - seek forward 2 seconds
   - **←** - seek backwards 2 seconds
   - **↑** - increase volume
   - **↓** - decrease volume
