@@ -104,11 +104,12 @@ class TorrentClient extends WebTorrent {
     switch (data.type) {
       case 'current': {
         this.current?.removeListener('done', this.parseSubtitles.bind(this))
+        this.cancelParse()
         this.parserInstance?.destroy()
         this.parserInstance = null
         this.current = null
         this.parsed = false
-        if (data) {
+        if (data.data) {
           this.current = this?.get(data.data.infoHash)?.files.find(file => file.path === data.data.path)
           if (this.current?.name.endsWith('.mkv')) {
             if (this.current.done) this.parseSubtitles()
@@ -149,9 +150,9 @@ class TorrentClient extends WebTorrent {
       const finish = () => {
         console.log('Sub parsing finished')
         this.parsed = true
+        this.parser?.destroy()
+        this.parser = undefined
         fileStream?.destroy()
-        stream?.destroy()
-        stream = undefined
       }
       parser.once('tracks', tracks => {
         if (!tracks.length) finish()
@@ -159,8 +160,13 @@ class TorrentClient extends WebTorrent {
       parser.once('finish', finish)
       console.log('Sub parsing started')
       const fileStream = this.current.createReadStream()
-      let stream = fileStream.pipe(parser)
+      this.parser = fileStream.pipe(parser)
     }
+  }
+
+  cancelParse () {
+    this.parser?.destroy()
+    this.parser = undefined
   }
 
   parseFonts (file) {
@@ -205,6 +211,8 @@ class TorrentClient extends WebTorrent {
   predestroy () {
     this.destroy()
     this.server.close()
+    this.parser?.destroy()
+    this.parser = undefined
   }
 }
 
