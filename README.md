@@ -29,7 +29,7 @@ A pure JS BitTorrent streaming environment, with a built-in list manager. Imagin
 
 This app is meant to feel look, work and perform like a streaming website/app, while providing all the advantages of torrenting, like file downloads, higher download speeds, better video quality and quicker releases.
 
-Unlike qBit's sequential, seeking into undownloaded data will prioritize downloading that data, instead of flat out closing MPV.
+Unlike qBit's sequential, seeking into undownloaded data will prioritise downloading that data, instead of flat out closing MPV.
 ## **Features**
 ### **Anime:**
 - full AniList integration
@@ -74,7 +74,7 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritize downloa
 - miniplayer
 - media session display
 - media keys support
-- Discord rich pressence
+- Discord rich presence
 - preview thumbnails
 - pause on lost focus
 - autoplay next episode
