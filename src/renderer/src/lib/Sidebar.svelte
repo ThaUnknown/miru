@@ -1,89 +1,89 @@
 <script>
-import { getContext } from 'svelte'
-import { alID } from '@/modules/anilist.js'
-import { media } from './Player/MediaHandler.svelte'
-import { platformMap } from './Settings.svelte'
-import { addToast } from './Toasts.svelte'
-const sidebar = getContext('sidebar')
-const view = getContext('view')
-const gallery = getContext('gallery')
-export let page
-const links = [
-  {
-    click: () => {
-      $sidebar = !$sidebar
+  import { getContext } from 'svelte'
+  import { alID } from '@/modules/anilist.js'
+  import { media } from './Player/MediaHandler.svelte'
+  import { platformMap } from './Settings.svelte'
+  import { addToast } from './Toasts.svelte'
+  const sidebar = getContext('sidebar')
+  const view = getContext('view')
+  const gallery = getContext('gallery')
+  export let page
+  const links = [
+    {
+      click: () => {
+        $sidebar = !$sidebar
+      },
+      image: 'logo_cut.png',
+      icon: 'menu',
+      text: 'Open Menu'
     },
-    image: 'logo_cut.png',
-    icon: 'menu',
-    text: 'Open Menu'
-  },
-  {
-    click: () => {
-      page = 'home'
-      $gallery = null
+    {
+      click: () => {
+        page = 'home'
+        $gallery = null
+      },
+      icon: 'home',
+      text: 'Home Page'
     },
-    icon: 'home',
-    text: 'Home Page'
-  },
-  {
-    click: () => {
-      page = 'home'
-      $gallery = 'schedule'
+    {
+      click: () => {
+        page = 'home'
+        $gallery = 'schedule'
+      },
+      icon: 'schedule',
+      text: 'Airing Schedule'
     },
-    icon: 'schedule',
-    text: 'Airing Schedule'
-  },
-  {
-    click: () => {
-      if ($media) $view = $media.media
+    {
+      click: () => {
+        if ($media) $view = $media.media
+      },
+      icon: 'queue_music',
+      text: 'Now Playing'
     },
-    icon: 'queue_music',
-    text: 'Now Playing'
-  },
-  {
-    click: () => {
-      page = 'watchtogether'
+    {
+      click: () => {
+        page = 'watchtogether'
+      },
+      icon: 'groups',
+      text: 'Watch Together'
     },
-    icon: 'groups',
-    text: 'Watch Together'
-  },
-  {
-    click: () => {
-      page = 'settings'
+    {
+      click: () => {
+        page = 'settings'
+      },
+      icon: 'tune',
+      text: 'Settings'
     },
-    icon: 'tune',
-    text: 'Settings'
-  },
-  {
-    click: () => {
-      if (alID) {
-        localStorage.removeItem('ALtoken')
-        location.hash = ''
-        location.reload()
-      } else {
-        window.IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
-        if (platformMap[window.version.platform] === 'Linux') {
-          addToast({
-            text: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
-            title: 'Support Notification',
-            type: 'secondary',
-            duration: '300000'
-          })
+    {
+      click: () => {
+        if (alID) {
+          localStorage.removeItem('ALtoken')
+          location.hash = ''
+          location.reload()
+        } else {
+          window.IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
+          if (platformMap[window.version.platform] === 'Linux') {
+            addToast({
+              text: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
+              title: 'Support Notification',
+              type: 'secondary',
+              duration: '300000'
+            })
+          }
         }
-      }
-    },
-    icon: 'login',
-    text: 'Login With AniList'
-  }
-]
-if (alID) {
-  alID.then(result => {
-    if (result?.data?.Viewer) {
-      links[links.length - 1].image = result.data.Viewer.avatar.medium
-      links[links.length - 1].text = result.data.Viewer.name + '\nLogout'
+      },
+      icon: 'login',
+      text: 'Login With AniList'
     }
-  })
-}
+  ]
+  if (alID) {
+    alID.then(result => {
+      if (result?.data?.Viewer) {
+        links[links.length - 1].image = result.data.Viewer.avatar.medium
+        links[links.length - 1].text = result.data.Viewer.name + '\nLogout'
+      }
+    })
+  }
 </script>
 
 <div class='sidebar shadow-lg'>
@@ -124,11 +124,6 @@ if (alID) {
     --sidebar-width: 22rem;
   }
 
-  .sidebar [data-toggle='tooltip']::before,
-  .page-wrapper:not(.with-sidebar[data-sidebar-hidden]) .sidebar [data-toggle='tooltip']::after {
-    display: none;
-  }
-
   .text {
     opacity: 1;
     transition: opacity 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -160,9 +155,6 @@ if (alID) {
     font-size: 1.4rem;
     padding: 0.75rem 1.5rem;
     height: 5.5rem;
-  }
-  .sidebar-link::after {
-    white-space: pre !important;
   }
 
   .material-icons {
@@ -209,9 +201,18 @@ if (alID) {
   :global(.nav-hidden) > .sidebar {
     left: calc(-1 * var(--sidebar-width)) !important;
   }
+  .sidebar-link::before {
+    white-space: pre !important;
+  }
 
-  [data-toggle='tooltip']:not([data-target-breakpoint])::after,
-  [data-toggle='tooltip']:not([data-target-breakpoint])::after {
+  .page-wrapper:not(.with-sidebar[data-sidebar-hidden]) .sidebar [data-toggle='tooltip']::before {
+    display: none;
+  }
+
+  [data-toggle='tooltip']:not([data-target-breakpoint])::before,
+  [data-toggle='tooltip']:not([data-target-breakpoint])::before {
+    background: #fff;
+    color: #000;
     transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     top: 0;
     opacity: 0;
@@ -219,8 +220,8 @@ if (alID) {
     box-shadow: var(--dm-shadow) !important;
   }
 
-  [data-toggle='tooltip']:not([data-target-breakpoint]):hover::after,
-  [data-toggle='tooltip']:not([data-target-breakpoint]):focus::after {
+  [data-toggle='tooltip']:not([data-target-breakpoint]):hover::before,
+  [data-toggle='tooltip']:not([data-target-breakpoint]):focus::before {
     opacity: 1;
     top: 50%;
   }
