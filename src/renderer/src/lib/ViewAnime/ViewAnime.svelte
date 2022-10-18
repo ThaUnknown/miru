@@ -66,7 +66,7 @@
                         </span>
                       {/if}
                     </div>
-                    <div class='pb-15 pt-5 overflow-x-auto text-nowrap font-weight-bold'>
+                    <div class='pb-15 pt-5 px-5 overflow-x-auto text-nowrap font-weight-bold'>
                       {#each media.genres as genre}
                         <div class='badge badge-pill shadow'>
                           {genre}
@@ -88,7 +88,7 @@
             <div class='font-size-16 pr-15 pre-wrap'>
               {media.description?.replace(/<[^>]*>/g, '') || ''}
             </div>
-            <ToggleList list={media.relations?.edges?.filter(({ node }) => node.type === 'ANIME')} let:item>
+            <ToggleList list={media.relations?.edges?.filter(({ node }) => node.type === 'ANIME')} let:item title='Relations'>
               <div class='w-150 mx-15 mb-10 rel pointer' on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media }}>
                 <img loading='lazy' src={item.node.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img' />
                 <div class='pt-5'>{item.relationType.replace(/_/g, ' ').toLowerCase()}</div>
@@ -118,7 +118,7 @@
                 </tbody>
               </table>
             {/if}
-            <ToggleList list={media.recommendations.edges.filter(edge => edge.node.mediaRecommendation)} let:item>
+            <ToggleList list={media.recommendations.edges.filter(edge => edge.node.mediaRecommendation)} let:item title='Recommendations'>
               <div class='w-150 mx-15 mb-10 rel pointer' on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.mediaRecommendation.id })).data.Media }}>
                 <img loading='lazy' src={item.node.mediaRecommendation.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img' />
                 <h5 class='font-weight-bold text-white'>{item.node.mediaRecommendation.title.userPreferred}</h5>
