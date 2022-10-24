@@ -296,10 +296,14 @@
   <div class='h-full py-10'>
     <Search bind:media bind:search bind:current {loadCurrent} />
     <div class='container'>
-      We're ${30 - $progress} short of our monthly goal! That's only {Math.ceil((30 - $progress) / 5)} people donating $5.00!
+      {#if progress < 30}
+        We're ${30 - $progress} short of our monthly goal! That's only {Math.ceil((30 - $progress) / 5)} people donating $5.00!
+      {:else}
+        We've reached the donation goal for this month! \o/
+      {/if}
       <div class='progress-group py-5'>
         <div class='progress'>
-          <div class='progress-bar progress-bar-animated' role='progressbar' style='width: {$progress}%;'></div>
+          <div class='progress-bar progress-bar-animated' role='progressbar' style='width: {$progress / 30 * 100}%;'></div>
         </div>
         <span class='progress-group-label'>${$progress} / $30.00</span>
       </div>

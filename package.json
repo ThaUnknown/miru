@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "3.1.20",
+  "version": "3.1.21",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "src/index.js",
@@ -103,7 +103,7 @@
     }
   },
   "dependencies": {
-    "anitomyscript": "^2.0.4",
+    "anitomyscript": "github:ThaUnknown/anitomyscript",
     "bottleneck": "^2.19.5",
     "browser-event-target-emitter": "^1.0.0",
     "discord-rpc": "4.0.1",

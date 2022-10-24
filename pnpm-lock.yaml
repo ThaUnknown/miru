@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@sveltejs/vite-plugin-svelte': ^1.0.1
-  anitomyscript: ^2.0.4
+  anitomyscript: github:ThaUnknown/anitomyscript
   bottleneck: ^2.19.5
   browser-event-target-emitter: ^1.0.0
   concurrently: ^7.0.0
@@ -28,7 +28,7 @@ specifiers:
   webtorrent: ^1.8.26
 
 dependencies:
-  anitomyscript: 2.0.4
+  anitomyscript: github.com/ThaUnknown/anitomyscript/42290c4b3f256893be08a4e89051f448ff5e9d00
   bottleneck: 2.19.5
   browser-event-target-emitter: 1.0.0
   discord-rpc: 4.0.1
@@ -324,10 +324,6 @@ packages:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
     dev: true
-
-  /anitomyscript/2.0.4:
-    resolution: {integrity: sha512-7LJ+td+POitox9fchXpNP0IydmsuODP+q8pgVeFhiYESNFPKWA+QH5IIIk+pZA9JYao7xTP7b1mXooL3I1XOFQ==}
-    dev: false
 
   /ansi-align/3.0.1:
     resolution: {integrity: sha512-IOfwwBF5iczOjp/WeY4YxyjqAFMQoZufdQWDd19SEExbVLNXqvpzSJ/M7Za4/sCPmQ0+GRquoA7bGcINcxew6w==}
@@ -3532,6 +3528,12 @@ packages:
       buffer-crc32: 0.2.13
       fd-slicer: 1.1.0
     dev: true
+
+  github.com/ThaUnknown/anitomyscript/42290c4b3f256893be08a4e89051f448ff5e9d00:
+    resolution: {tarball: https://codeload.github.com/ThaUnknown/anitomyscript/tar.gz/42290c4b3f256893be08a4e89051f448ff5e9d00}
+    name: anitomyscript
+    version: 2.0.5
+    dev: false
 
   github.com/ThaUnknown/matroska-subtitles/70bee097ad540e07d9e31b8f91f1dd865f7f2b45:
     resolution: {tarball: https://codeload.github.com/ThaUnknown/matroska-subtitles/tar.gz/70bee097ad540e07d9e31b8f91f1dd865f7f2b45}
