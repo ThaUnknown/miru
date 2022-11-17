@@ -1,6 +1,7 @@
 import { alToken } from '@/lib/Settings.svelte'
 import { addToast } from '@/lib/Toasts.svelte'
 import lavenshtein from 'js-levenshtein'
+import { sleep } from './util.js'
 
 import Bottleneck from 'bottleneck'
 
@@ -63,32 +64,34 @@ const codes = {
   511: 'Network Authentication Required'
 }
 
-export const alID = !!alToken && alRequest({ method: 'Viewer', token: alToken })
-if (alID) {
-  alID.then(result => {
-    const lists = result?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
-    if (!lists.includes('Watched using Miru')) {
-      alRequest({ method: 'CustomList', lists })
-    }
-  })
-}
+const limiter = new Bottleneck({
+  reservoir: 90,
+  reservoirRefreshAmount: 90,
+  reservoirRefreshInterval: 60 * 1000,
+  maxConcurrent: 15,
+  minTime: 400
+})
 
-function printError (error) {
-  console.warn(error)
-  addToast({
-    text: /* html */`Failed making request to anilist!<br>Try again in a minute.<br>${error.status} - ${error.message || codes[error.status]}`,
-    title: 'Search Failed',
-    type: 'danger',
-    duration: 3000
-  })
-}
+let rl = null
 
-const limiter = new Bottleneck({ maxConcurrent: 100, minTime: 600 })
-const limit = limiter.wrap(handleRequest)
+limiter.on('failed', async (error, jobInfo) => {
+  printError(error)
 
-async function handleRequest (opts) {
+  if (!error.statusText) {
+    if (!rl) rl = sleep(61 * 1000).then(() => { rl = null })
+    return 61 * 1000
+  }
+  const time = ((error.headers.get('retry-after') || 60) + 1) * 1000
+  if (!rl) rl = sleep(time).then(() => { rl = null })
+  return time
+})
+
+const handleRequest = limiter.wrap(async opts => {
+  await rl
   const res = await fetch('https://graphql.anilist.co', opts)
-  if (!res.ok && res.status === 429) return await limit(opts)
+  if (!res.ok && res.status === 429) {
+    throw res
+  }
   let json = null
   try {
     json = await res.json()
@@ -105,6 +108,26 @@ async function handleRequest (opts) {
     }
   }
   return json
+})
+
+export const alID = !!alToken && alRequest({ method: 'Viewer', token: alToken })
+if (alID) {
+  alID.then(result => {
+    const lists = result?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
+    if (!lists.includes('Watched using Miru')) {
+      alRequest({ method: 'CustomList', lists })
+    }
+  })
+}
+
+function printError (error) {
+  console.warn(error)
+  addToast({
+    text: /* html */`Failed making request to anilist!<br>Try again in a minute.<br>${error.status || 429} - ${error.message || codes[error.status || 429]}`,
+    title: 'Search Failed',
+    type: 'danger',
+    duration: 3000
+  })
 }
 
 export function alEntry (filemedia) {

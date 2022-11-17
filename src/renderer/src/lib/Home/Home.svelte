@@ -284,7 +284,7 @@
         releases: true,
         load: async (page = 1, perPage = 20, initial = false, force = true) => {
           if (initial) search.sort = 'START_DATE_DESC'
-          return customFilter(await releasesCards(page, perPage, force, val))
+          return customFilter(await releasesCards(page, Math.min(perPage, 13), force, val))
         }
       },
       ...sections

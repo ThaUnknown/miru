@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "3.1.21",
+  "version": "3.2.0",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "src/index.js",
@@ -19,7 +19,7 @@
     "electron-builder": "^23.3.3",
     "electron-notarize": "^1.1.1",
     "svelte": "^3.47.0",
-    "vite": "^3.0.0",
+    "vite": "3.2.4",
     "vite-plugin-commonjs": "^0.5.2"
   },
   "standard": {
