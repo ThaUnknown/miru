@@ -1,12 +1,12 @@
 {
   "name": "Miru",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "src/index.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
   "scripts": {
-    "start": "SET NODE_ENV=development & concurrently \"pnpm run web:watch\" \"pnpm run electron:start\"",
+    "start": "SET NODE_ENV=development & concurrently --kill-others \"pnpm run web:watch\" \"pnpm run electron:start\"",
     "web:watch": "vite",
     "electron:start": "electron src",
     "build": "vite build && electron-builder",

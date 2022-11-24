@@ -296,7 +296,7 @@
   <div class='h-full py-10'>
     <Search bind:media bind:search bind:current {loadCurrent} />
     <div class='container'>
-      {#if progress < 30}
+      {#if $progress < 30}
         We're ${30 - $progress} short of our monthly goal! That's only {Math.ceil((30 - $progress) / 5)} people donating $5.00!
       {:else}
         We've reached the donation goal for this month! \o/
