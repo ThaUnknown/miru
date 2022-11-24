@@ -8,6 +8,13 @@ if (process.defaultApp) {
   }
 } else {
   app.setAsDefaultProtocolClient('miru')
+  if (process.argv.length >= 2) {
+    ipcMain.on('version', () => {
+      for (const line of process.argv) {
+        handleProtocol(line)
+      }
+    })
+  }
 }
 
 if (!app.requestSingleInstanceLock()) {
