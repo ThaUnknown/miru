@@ -7,7 +7,7 @@ specifiers:
   browser-event-target-emitter: ^1.0.0
   concurrently: ^7.0.0
   discord-rpc: 4.0.1
-  electron: 21.3.1
+  electron: 20.1.1
   electron-builder: ^23.3.3
   electron-log: ^4.4.6
   electron-notarize: ^1.1.1
@@ -49,7 +49,7 @@ dependencies:
 devDependencies:
   '@sveltejs/vite-plugin-svelte': 1.0.1_svelte@3.49.0+vite@3.2.4
   concurrently: 7.3.0
-  electron: 21.3.1
+  electron: 20.1.1
   electron-builder: 23.3.3
   electron-notarize: 1.2.1
   svelte: 3.49.0
@@ -1222,8 +1222,8 @@ packages:
       - supports-color
     dev: false
 
-  /electron/21.3.1:
-    resolution: {integrity: sha512-Ik/I9oFHA1h32JRtRm6GMgYdUctFpF/tPnHyATg4r3LXBTUT6habGh3GxSdmmTa5JgtA7uJUEm8EjjZItk7T3g==}
+  /electron/20.1.1:
+    resolution: {integrity: sha512-cFTfP4R2O5onaXiu+S20xK7eLpyX/H7PYk7lj9mlHS0ui1+w1jDDWD3RhvjmPgeksPfMAZiRLK8lAQvzSBAKdg==}
     engines: {node: '>= 10.17.0'}
     hasBin: true
     requiresBuild: true
