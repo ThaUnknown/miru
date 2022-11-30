@@ -138,7 +138,6 @@ export default class Subtitles {
         availableFonts: {
           'roboto medium': './Roboto.ttf'
         },
-        useLocalFonts: true,
         workerUrl
       })
       this.selectCaptions(this.current)

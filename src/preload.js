@@ -8,6 +8,9 @@ contextBridge.exposeInMainWorld('IPC', {
   on: (event, callback) => {
     ipcRenderer.on(event, (event, ...args) => callback(...args))
   },
+  once: (event, callback) => {
+    ipcRenderer.once(event, (event, ...args) => callback(...args))
+  },
   off: (event) => {
     ipcRenderer.removeAllListeners(event)
   }
@@ -15,4 +18,15 @@ contextBridge.exposeInMainWorld('IPC', {
 contextBridge.exposeInMainWorld('version', {
   arch: process.arch,
   platform: process.platform
+})
+
+ipcRenderer.once('port', ({ ports }) => {
+  contextBridge.exposeInMainWorld('port', {
+    onmessage: (cb) => {
+      ports[0].onmessage = ({ type, data }) => cb({ type, data })
+    },
+    postMessage: (...args) => {
+      ports[0].postMessage(...args)
+    }
+  })
 })

@@ -4,6 +4,7 @@ const pump = require('pump')
 const rangeParser = require('range-parser')
 const mime = require('mime')
 const { SubtitleParser, SubtitleStream } = require('matroska-subtitles')
+const { ipcRenderer } = require('electron')
 
 class TorrentClient extends WebTorrent {
   constructor (settings) {
@@ -96,8 +97,6 @@ class TorrentClient extends WebTorrent {
     this.server.on('error', console.warn)
 
     this.server.listen(0)
-
-    onmessage = this.handleMessage.bind(this)
   }
 
   handleMessage ({ data }) {
@@ -116,7 +115,7 @@ class TorrentClient extends WebTorrent {
             this.current.on('done', this.parseSubtitles.bind(this))
             this.parseFonts(this.current)
           }
-          // findSubtitleFiles(current) TODO:
+          // TODO: findSubtitleFiles(current)
         }
         break
       }
@@ -140,7 +139,7 @@ class TorrentClient extends WebTorrent {
   }
 
   dispatch (type, data) {
-    postMessage({ type, data })
+    message({ type, data })
   }
 
   parseSubtitles () {
@@ -217,8 +216,14 @@ class TorrentClient extends WebTorrent {
 }
 
 let client = null
+let message = null
 
-onmessage = ({ data }) => {
-  if (!client && data.type === 'settings') client = new TorrentClient(data.data)
-  if (data.type === 'destroy') client?.predestroy()
-}
+ipcRenderer.on('port', (e) => {
+  e.ports[0].onmessage = ({ data }) => {
+    if (!client && data.type === 'settings') window.client = client = new TorrentClient(data.data)
+    if (data.type === 'destroy') client?.predestroy()
+
+    client.handleMessage({ data })
+  }
+  message = e.ports[0].postMessage.bind(e.ports[0])
+})

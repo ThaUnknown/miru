@@ -1,6 +1,6 @@
 <script context='module'>
-import { writable } from 'svelte/store'
-export const title = writable('Miru')
+  import { writable } from 'svelte/store'
+  export const title = writable('Miru')
 </script>
 
 <div class='w-full navbar border-0 bg-dark position-relative p-0'>
@@ -21,7 +21,7 @@ export const title = writable('Miru')
           <path d='M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z' />
         </svg>
       </div>
-      <div class='d-flex align-items-center close' on:click={window.close}>
+      <div class='d-flex align-items-center close' on:click={() => window.IPC.emit('close')}>
         <svg viewBox='0 0 24 24'>
           <path d='M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z' />
         </svg>

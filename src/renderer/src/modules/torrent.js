@@ -1,25 +1,32 @@
-// import WebTorrent from 'webtorrent'
 import { set } from '@/lib/Settings.svelte'
 import { files } from '@/lib/Player/MediaHandler.svelte'
 import { page } from '@/App.svelte'
 import 'browser-event-target-emitter'
 
-class TorrentWorker extends Worker {
-  constructor (opts) {
-    super(opts)
-    this.onmessage = this.handleMessage.bind(this)
+class TorrentWorker extends EventTarget {
+  constructor () {
+    super()
+    this.ready = new Promise((resolve) => {
+      window.IPC.once('port', () => {
+        this.port = window.port
+        this.port.onmessage((...args) => this.handleMessage(...args))
+        resolve()
+      })
+      window.IPC.emit('portRequest')
+    })
   }
 
   handleMessage ({ data }) {
     this.emit(data.type, data.data)
   }
 
-  send (type, data) {
-    this.postMessage({ type, data })
+  async send (type, data) {
+    await this.ready
+    this.port.postMessage({ type, data })
   }
 }
 
-export const client = new TorrentWorker(new URL('./torrentworker.js', import.meta.url))
+export const client = new TorrentWorker()
 
 client.send('settings', { ...set })
 

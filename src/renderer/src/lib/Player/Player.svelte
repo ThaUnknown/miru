@@ -180,7 +180,11 @@
   }
 
   let currentTime = 0
-  $: progress = currentTime / safeduration
+  let progress = 0
+  // needs to be slow in order to not spam repaints
+  function updateProgress () {
+    progress = video.currentTime / safeduration
+  }
   $: targetTime = (!paused && currentTime) || targetTime
   function handleMouseDown ({ target }) {
     wasPaused = paused
@@ -858,6 +862,7 @@
     on:seeked={updatew2g}
     on:timeupdate={() => createThumbnail()}
     on:timeupdate={checkCompletion}
+    on:timeupdate={updateProgress}
     on:waiting={showBuffering}
     on:loadeddata={hideBuffering}
     on:canplay={hideBuffering}
@@ -894,16 +899,14 @@
     </div>
     <span class='material-icons ctrl' title='Keybinds [`]' on:click={() => (showKeybinds = true)}> help_outline </span>
   </div>
-  <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
-    <div class='position-absolute w-full h-full' on:dblclick={toggleFullscreen} on:click|self={() => (page = 'player')}>
-      <div class='play-overlay w-full h-full' on:click={playPause} />
-    </div>
+  <div class='middle d-flex align-items-center justify-content-center flex-grow-1'>
+    <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
     <span class='material-icons ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} data-name='playLast' on:click={playLast}> skip_previous </span>
     <span class='material-icons ctrl' data-name='rewind' on:click={rewind}> fast_rewind </span>
     <span class='material-icons ctrl' data-name='playPause' on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
     <span class='material-icons ctrl' data-name='forward' on:click={forward}> fast_forward </span>
     <span class='material-icons ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} data-name='playNext' on:click={playNext}> skip_next </span>
-    <div data-name='bufferingDisplay' class='position-absolute' />
+    <div class='position-absolute bufferingDisplay' />
   </div>
   <div class='bottom d-flex z-40 flex-column px-20'>
     <div class='w-full d-flex align-items-center h-20 mb--5'>
@@ -1036,6 +1039,7 @@
   }
   .miniplayer {
     height: auto !important;
+    cursor: pointer !important;
   }
   .miniplayer .top,
   .miniplayer .bottom {
@@ -1105,7 +1109,7 @@
     opacity: 0.1%;
   }
 
-  .middle div[data-name='bufferingDisplay'] {
+  .middle .bufferingDisplay {
     border: 4px solid #ffffff00;
     border-top: 4px solid #fff;
     border-radius: 50%;
@@ -1113,6 +1117,7 @@
     height: 40px;
     animation: spin 1s linear infinite;
     opacity: 0;
+    visibility: hidden;
     transition: 0.5s opacity ease;
     filter: drop-shadow(0 0 8px #000);
   }
@@ -1120,8 +1125,12 @@
     cursor: not-allowed !important;
   }
 
-  .buffering .middle div[data-name='bufferingDisplay'] {
+  .buffering .middle .bufferingDisplay {
     opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .pip .bufferingDisplay {
+    display: none;
   }
 
   @keyframes spin {
@@ -1162,9 +1171,6 @@
     display: flex;
     font-size: 2.8rem;
     margin: 0.6rem;
-  }
-  .miniplayer .middle .play-overlay {
-    display: none !important;
   }
   .miniplayer .middle .ctrl[data-name='playPause'] {
     font-size: 5.625rem;

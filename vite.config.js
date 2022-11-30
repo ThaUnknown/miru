@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import commonjs from 'vite-plugin-commonjs'
 
+const root = path.resolve(process.cwd(), 'src/renderer')
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   return {
@@ -13,12 +14,16 @@ export default defineConfig(({ mode }) => {
       }
     },
     plugins: [mode !== 'development' && commonjs(), svelte()],
-    root: path.resolve(process.cwd(), 'src/renderer'),
+    root,
     base: './',
     build: {
       rollupOptions: {
         output: {
           assetFileNames: '[name].[ext]'
+        },
+        input: {
+          index: root + '/index.html',
+          torrent: root + '/webtorrent.html'
         }
       }
     }
