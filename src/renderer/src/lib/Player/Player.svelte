@@ -6,7 +6,7 @@
   import { alEntry } from '@/modules/anilist.js'
   // import Peer from '@/modules/Peer.js'
   import Subtitles from '@/modules/subtitles.js'
-  import { toTS, videoRx, fastPrettyBytes } from '@/modules/util.js'
+  import { toTS, videoRx, fastPrettyBytes, throttle } from '@/modules/util.js'
   import { addToast } from '../Toasts.svelte'
 
   import { w2gEmitter } from '../WatchTogether/WatchTogether.svelte'
@@ -180,11 +180,10 @@
   }
 
   let currentTime = 0
-  let progress = 0
-  // needs to be slow in order to not spam repaints
-  function updateProgress () {
-    progress = video.currentTime / safeduration
-  }
+  $: progress = currentTime / safeduration
+  let throttledProgress = 0
+  const progCb = throttle(() => { throttledProgress = progress }, 200)
+  $: progCb(progress)
   $: targetTime = (!paused && currentTime) || targetTime
   function handleMouseDown ({ target }) {
     wasPaused = paused
@@ -862,7 +861,6 @@
     on:seeked={updatew2g}
     on:timeupdate={() => createThumbnail()}
     on:timeupdate={checkCompletion}
-    on:timeupdate={updateProgress}
     on:waiting={showBuffering}
     on:loadeddata={hideBuffering}
     on:canplay={hideBuffering}
@@ -913,21 +911,20 @@
       <div class='w-full h-full position-relative d-flex align-items-center'>
         <canvas class='position-absolute buffer w-full' height='1px' bind:this={bufferCanvas} />
         <input
-          class='ctrl w-full h-full prog'
+          class='ctrl w-full h-full prog custom-range'
           type='range'
           min='0'
           max='1'
           step='any'
           data-name='setProgress'
-          bind:value={progress}
+          bind:value={throttledProgress}
           on:mousedown={handleMouseDown}
           on:mouseup={handleMouseUp}
           on:mousemove={handleHover}
           on:input={handleProgress}
           on:touchstart={handleMouseDown}
           on:touchend={handleMouseUp}
-          on:keydown|preventDefault
-          style='--value: {progress * 100}%' />
+          on:keydown|preventDefault />
         <div class='hover position-absolute d-flex flex-column align-items-center' bind:this={hover}>
           <img alt='thumbnail' class='w-full mb-5 shadow-lg' src={thumbnail} />
           <div class='ts'>{toTS(hoverTime)}</div>
@@ -944,7 +941,7 @@
       {/if}
       <div class='d-flex w-auto volume'>
         <span class='material-icons ctrl' title='Mute [M]' data-name='toggleMute' on:click={toggleMute}> {muted ? 'volume_off' : 'volume_up'} </span>
-        <input class='ctrl' type='range' min='0' max='1' step='any' data-name='setVolume' bind:value={volume} style='--value: {volume * 100}%' />
+        <input class='ctrl h-full custom-range' type='range' min='0' max='1' step='any' data-name='setVolume' bind:value={volume} />
       </div>
       <div class='ts mr-auto'>{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
@@ -1015,6 +1012,86 @@
 </div>
 
 <style>
+  .custom-range {
+    color: #ff3c00;
+    --thumb-height: 0px;
+    --track-height: 3px;
+    --track-color: rgba(255, 255, 255, 0.2);
+    --brightness-hover: 120%;
+    --brightness-down: 80%;
+    --clip-edges: 2px;
+    --target-height: max(var(--track-height), var(--thumb-height));
+    position: relative;
+    background: #fff0;
+    overflow: hidden;
+    transition: all ease 100ms;
+    -webkit-appearance: none;
+  }
+  .custom-range:hover {
+    --thumb-height: 12px;
+  }
+  .prog {
+    --track-color: #1110 !important
+  }
+
+  .custom-range:active {
+    cursor: grabbing;
+  }
+  .custom-range::-webkit-slider-runnable-track {
+    height: var(--target-height);
+    position: relative;
+        background: linear-gradient(var(--track-color) 0 0) scroll no-repeat center /
+      100% calc(var(--track-height));
+  }
+
+  .custom-range::-webkit-slider-thumb {
+    position: relative;
+    height: var(--thumb-height);
+    width: var(--thumb-width, var(--thumb-height));
+    -webkit-appearance: none;
+  }
+
+  .custom-range::-webkit-slider-thumb {
+    --thumb-radius: calc((var(--target-height) * 0.5) - 1px);
+    --clip-top: calc((var(--target-height) - var(--track-height)) * 0.5);
+    --clip-bottom: calc(var(--target-height) - var(--clip-top));
+    --clip-further: calc(100% + 1px);
+    --box-fill: calc(-100vmax - var(--thumb-width, var(--thumb-height))) 0 0
+      100vmax currentColor;
+
+    background: linear-gradient(currentColor 0 0) scroll no-repeat left center /
+      50% calc(var(--track-height) + 1px);
+    background-color: currentColor;
+    box-shadow: var(--box-fill);
+    border-radius: var(--thumb-width, var(--thumb-height));
+
+    filter: brightness(100%);
+    clip-path: polygon(
+      100% -1px,
+      var(--clip-edges) -1px,
+      0 var(--clip-top),
+      -100vmax var(--clip-top),
+      -100vmax var(--clip-bottom),
+      0 var(--clip-bottom),
+      var(--clip-edges) 100%,
+      var(--clip-further) var(--clip-further)
+    );
+  }
+
+  .custom-range:hover::-webkit-slider-thumb {
+    filter: brightness(var(--brightness-hover));
+    cursor: grab;
+  }
+
+  .custom-range:active::-webkit-slider-thumb {
+    filter: brightness(var(--brightness-down));
+    cursor: grabbing;
+  }
+
+  .custom-range:focus {
+    outline: none;
+  }
+
   .bind {
     font-size: 1.8rem;
     font-weight: bold;
@@ -1202,79 +1279,17 @@
     cursor: pointer;
   }
 
-  input[type='range'] {
-    -webkit-appearance: none;
-    background: transparent;
-    margin: 0;
-    cursor: pointer;
-    height: 8px;
-  }
-
-  input[type='range']:focus {
-    outline: none;
-  }
-
-  input[type='range']::-webkit-slider-runnable-track {
-    height: 3px;
-  }
-
-  input[type='range']::-moz-range-track {
-    height: 3px;
-    border: none;
-  }
-
-  input[type='range']::-webkit-slider-thumb {
-    height: 0;
-    width: 0;
-    border-radius: 50%;
-    background: #ff3c00;
-    -webkit-appearance: none;
-    appearance: none;
-    transition: all 0.1s ease;
-  }
-  input[type='range']::-moz-range-thumb {
-    height: 0;
-    width: 0;
-    border-radius: 50%;
-    background: #ff3c00;
-    -webkit-appearance: none;
-    appearance: none;
-    transition: all 0.1s ease;
-    border: none;
-  }
-
-  input[type='range']:hover::-webkit-slider-thumb {
-    height: 12px;
-    width: 12px;
-    margin-top: -4px;
-  }
-
-  input[type='range']:hover::-moz-range-thumb {
-    height: 12px;
-    width: 12px;
-    margin-top: -4px;
-  }
-
-  input[type='range']::-moz-range-track {
-    background: linear-gradient(90deg, #ff3c00 var(--value), rgba(255, 255, 255, 0.2) var(--value));
-  }
-  input[type='range']::-webkit-slider-runnable-track {
-    background: linear-gradient(90deg, #ff3c00 var(--value), rgba(255, 255, 255, 0.2) var(--value));
-  }
-  input[type='range'].prog::-webkit-slider-runnable-track {
-    background: linear-gradient(90deg, #ff3c00 var(--value), #00000000 var(--value)) !important;
-  }
   canvas.buffer {
     height: 3px;
     z-index: -1;
   }
-  .bottom .volume:hover input[type='range'] {
+  .bottom .volume:hover .custom-range {
     width: 5vw;
     display: inline-block;
     margin-right: 1.125rem;
   }
 
-  .bottom .volume input[type='range'] {
+  .bottom .volume .custom-range {
     width: 0;
     transition: width 0.1s ease;
     height: 100%;

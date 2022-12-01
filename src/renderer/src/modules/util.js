@@ -71,3 +71,16 @@ export function generateRandomHexCode (len) {
 
   return hexCode
 }
+
+export function throttle (cb, limit) {
+  let wait = false
+  return () => {
+    if (!wait) {
+      cb()
+      wait = true
+      setTimeout(() => {
+        wait = false
+      }, limit)
+    }
+  }
+}
