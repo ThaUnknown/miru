@@ -97,6 +97,15 @@ ipcMain.on('devtools', () => {
 
 function createWindow () {
   // Create the browser window.
+  webtorrentWindow = new BrowserWindow({
+    show: false,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true,
+      backgroundThrottling: false
+    }
+  })
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 900,
@@ -110,15 +119,6 @@ function createWindow () {
     },
     icon: path.join(__dirname, '/renderer/public/logo.ico'),
     show: false
-  })
-  webtorrentWindow = new BrowserWindow({
-    show: false,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true,
-      backgroundThrottling: false
-    }
   })
   mainWindow.setMenuBarVisibility(false)
 
@@ -141,8 +141,6 @@ function createWindow () {
     callback(headers)
   })
 
-  // This block of code is intended for development purpose only.
-  // Delete this entire block of code when you are ready to package the application.
   if (process.env.NODE_ENV !== 'development ') {
     // Load production build
     webtorrentWindow.loadFile(path.join(__dirname, '/renderer/dist/webtorrent.html'))
@@ -162,6 +160,7 @@ function createWindow () {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null
+    app.quit()
   })
 
   let crashcount = 0
@@ -195,13 +194,6 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
-
-// Quit when all windows are closed.
-app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') app.quit()
-})
 
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the

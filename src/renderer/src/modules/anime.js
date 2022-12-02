@@ -147,14 +147,6 @@ async function resolveTitle (name) {
 
 function getParseObjTitle (obj) {
   let title = obj.anime_title
-
-  const match = title.match(/ S(\d{1,2})E(\d{1,2})v\d/)
-  if (match) {
-    obj.episode_number = match[2]
-    obj.anime_season = match[1]
-    obj.anime_title = title.replace(/ S(\d{1,2})E(\d{1,2})v\d/, '')
-    title = obj.anime_title
-  }
   if (obj.anime_year) title += ` ${obj.anime_year}`
   if (obj.anime_season > 1) title += ' S' + obj.anime_season
   return title
