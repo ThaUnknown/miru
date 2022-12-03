@@ -141,14 +141,16 @@ function createWindow () {
     callback(headers)
   })
 
+  let torrentLoad = null
+
   if (process.env.NODE_ENV !== 'development ') {
     // Load production build
-    webtorrentWindow.loadFile(path.join(__dirname, '/renderer/dist/webtorrent.html'))
+    torrentLoad = webtorrentWindow.loadFile(path.join(__dirname, '/renderer/dist/webtorrent.html'))
     mainWindow.loadFile(path.join(__dirname, '/renderer/dist/index.html'))
   } else {
     // Load vite dev server page
     console.log('Development mode')
-    webtorrentWindow.loadURL('http://localhost:5173/webtorrent.html')
+    torrentLoad = webtorrentWindow.loadURL('http://localhost:5173/webtorrent.html')
     webtorrentWindow.webContents.openDevTools()
     mainWindow.loadURL('http://localhost:5173/')
     mainWindow.webContents.openDevTools()
@@ -183,8 +185,9 @@ function createWindow () {
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
   })
-  ipcMain.on('portRequest', ({ sender }) => {
+  ipcMain.on('portRequest', async ({ sender }) => {
     const { port1, port2 } = new MessageChannelMain()
+    await torrentLoad
     webtorrentWindow.webContents.postMessage('port', null, [port1])
     sender.postMessage('port', null, [port2])
   })

@@ -220,10 +220,11 @@ let message = null
 
 ipcRenderer.on('port', (e) => {
   e.ports[0].onmessage = ({ data }) => {
-    if (!client && data.type === 'settings') window.client = client = new TorrentClient(data.data)
-    if (data.type === 'destroy') client?.predestroy()
+    const cloned = structuredClone(data)
+    if (!client && cloned.type === 'settings') window.client = client = new TorrentClient(cloned.data)
+    if (cloned.type === 'destroy') client?.predestroy()
 
-    client.handleMessage({ data })
+    client.handleMessage({ data: cloned })
   }
   message = e.ports[0].postMessage.bind(e.ports[0])
 })
