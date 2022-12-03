@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "3.3.3",
+  "version": "3.3.4",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "src/index.js",
@@ -119,6 +119,6 @@
     "range-parser": "^1.2.1",
     "svelte-keybinds": "1.0.5",
     "svelte-miniplayer": "1.0.3",
-    "webtorrent": "^1.9.5"
+    "webtorrent": "^1.9.6"
   }
 }
