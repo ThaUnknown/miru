@@ -79,6 +79,7 @@ export function throttle (cb, limit) {
       cb()
       wait = true
       setTimeout(() => {
+        cb()
         wait = false
       }, limit)
     }
