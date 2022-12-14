@@ -133,7 +133,7 @@
       title: 'Continue Watching',
       load: (page = 1, perPage = 50, initial = false) => {
         if (initial) search.sort = 'UPDATED_TIME_DESC'
-        return alRequest({ method: 'UserLists', status_in: 'CURRENT', page }).then(res => {
+        return alRequest({ method: 'UserLists', status_in: ['CURRENT', 'REPEATING'], page }).then(res => {
           hasNext = res?.data?.Page.pageInfo.hasNextPage
           return customFilter(
             res?.data?.Page.mediaList
@@ -303,7 +303,7 @@
       {/if}
       <div class='progress-group py-5'>
         <div class='progress'>
-          <div class='progress-bar progress-bar-animated' role='progressbar' style='width: {$progress / 30 * 100}%;'></div>
+          <div class='progress-bar progress-bar-animated' role='progressbar' style='width: {$progress / 30 * 100}%;' />
         </div>
         <span class='progress-group-label'>${$progress} / $30.00</span>
       </div>

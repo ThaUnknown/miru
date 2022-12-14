@@ -192,13 +192,10 @@ export async function alSearch (method) {
 export async function alRequest (opts) {
   let query
   const variables = {
-    type: 'ANIME',
     sort: opts.sort || 'TRENDING_DESC',
     page: opts.page || 1,
     perPage: opts.perPage || 30,
-    status_in: opts.status_in || '[CURRENT,PLANNING]',
-    chunk: opts.chunk || 1,
-    perchunk: opts.perChunk || 30
+    status_in: opts.status_in || '[CURRENT,PLANNING]'
   }
   const options = {
     method: 'POST',
@@ -313,12 +310,12 @@ recommendations {
     case 'SearchName': {
       variables.search = opts.name
       query = /* js */` 
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: [MediaStatus]) {
+query ($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: [MediaStatus]) {
   Page (page: $page, perPage: $perPage) {
     pageInfo {
       hasNextPage
     },
-    media(type: $type, search: $search, sort: $sort, status_in: $status, isAdult: false) {
+    media(type: ANIME, search: $search, sort: $sort, status_in: $status, isAdult: false) {
       ${queryObjects}
     }
   }
@@ -327,8 +324,8 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search:
     } case 'SearchIDSingle': {
       variables.id = opts.id
       query = /* js */` 
-query ($id: Int, $type: MediaType) { 
-  Media (id: $id, type: $type) {
+query ($id: Int) { 
+  Media (id: $id, type: ANIME) {
     ${queryObjects}
   }
 }`
@@ -336,12 +333,12 @@ query ($id: Int, $type: MediaType) {
     } case 'SearchIDS': {
       variables.id = opts.id
       query = /* js */` 
-query ($id: [Int], $type: MediaType, $page: Int, $perPage: Int) { 
+query ($id: [Int], $page: Int, $perPage: Int) { 
   Page (page: $page, perPage: $perPage) {
     pageInfo {
       hasNextPage
     },
-    media (id_in: $id, type: $type) {
+    media (id_in: $id, type: ANIME) {
       ${queryObjects}
     }
   }
@@ -368,12 +365,12 @@ query {
     } case 'UserLists': {
       variables.id = (await alID)?.data?.Viewer?.id
       query = /* js */` 
-query ($page: Int, $perPage: Int, $id: Int, $type: MediaType, $status_in: [MediaListStatus]){
+query ($page: Int, $perPage: Int, $id: Int, $status_in: [MediaListStatus]){
   Page (page: $page, perPage: $perPage) {
     pageInfo {
       hasNextPage
     },
-    mediaList (userId: $id, type: $type, status_in: $status_in, sort: UPDATED_TIME_DESC) {
+    mediaList (userId: $id, type: ANIME, status_in: $status_in, sort: UPDATED_TIME_DESC) {
       media {
         ${queryObjects}
       }
@@ -421,12 +418,12 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
       variables.format = opts.format
       variables.sort = opts.sort || 'SEARCH_MATCH'
       query = /* js */` 
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
+query ($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
   Page (page: $page, perPage: $perPage) {
     pageInfo {
       hasNextPage
     },
-    media(type: $type, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format) {
+    media(type: ANIME, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format) {
       ${queryObjects}
     }
   }
