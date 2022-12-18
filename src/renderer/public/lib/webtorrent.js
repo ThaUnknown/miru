@@ -18,6 +18,7 @@ class TorrentClient extends WebTorrent {
     this.current = null
     this.parsed = false
     this.parserInstance = null
+    this.boundParse = this.parseSubtitles.bind(this)
 
     setInterval(() => {
       this.dispatch('stats', {
@@ -102,7 +103,7 @@ class TorrentClient extends WebTorrent {
   handleMessage ({ data }) {
     switch (data.type) {
       case 'current': {
-        this.current?.removeListener('done', this.parseSubtitles.bind(this))
+        this.current?.removeListener('done', this.boundParse)
         this.cancelParse()
         this.parserInstance?.destroy()
         this.parserInstance = null
@@ -112,7 +113,7 @@ class TorrentClient extends WebTorrent {
           this.current = this?.get(data.data.infoHash)?.files.find(file => file.path === data.data.path)
           if (this.current?.name.endsWith('.mkv')) {
             if (this.current.done) this.parseSubtitles()
-            this.current.on('done', this.parseSubtitles.bind(this))
+            this.current.once('done', this.boundParse)
             this.parseFonts(this.current)
           }
           // TODO: findSubtitleFiles(current)
