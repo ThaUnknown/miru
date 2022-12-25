@@ -12,7 +12,7 @@
 
   const settings = set
 
-  const exclusions = ['DTS', '[ASW]']
+  const exclusions = ['DTS']
 
   function binarySearch (arr, el) {
     let left = 0
