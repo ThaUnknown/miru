@@ -14,7 +14,7 @@ specifiers:
   electron-updater: ^4.6.5
   jassub: 1.2.1
   js-levenshtein: ^1.1.6
-  matroska-subtitles: github:ThaUnknown/matroska-subtitles#patch
+  matroska-subtitles: github:ThaUnknown/matroska-subtitles
   mime: ^3.0.0
   p2pcf: github:ThaUnknown/p2pcf#no-remove
   pump: ^3.0.0
@@ -36,7 +36,7 @@ dependencies:
   electron-updater: 4.6.5
   jassub: 1.2.1
   js-levenshtein: 1.1.6
-  matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/70bee097ad540e07d9e31b8f91f1dd865f7f2b45
+  matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/a1126bfcc3d230b6781851b7bfa24cb36cb89320
   mime: 3.0.0
   p2pcf: github.com/ThaUnknown/p2pcf/faefe2854c817315530636a58d07726de7050561
   pump: 3.0.0
@@ -3563,8 +3563,8 @@ packages:
     version: 2.0.5
     dev: false
 
-  github.com/ThaUnknown/matroska-subtitles/70bee097ad540e07d9e31b8f91f1dd865f7f2b45:
-    resolution: {tarball: https://codeload.github.com/ThaUnknown/matroska-subtitles/tar.gz/70bee097ad540e07d9e31b8f91f1dd865f7f2b45}
+  github.com/ThaUnknown/matroska-subtitles/a1126bfcc3d230b6781851b7bfa24cb36cb89320:
+    resolution: {tarball: https://codeload.github.com/ThaUnknown/matroska-subtitles/tar.gz/a1126bfcc3d230b6781851b7bfa24cb36cb89320}
     name: matroska-subtitles
     version: 3.3.2
     prepare: true
