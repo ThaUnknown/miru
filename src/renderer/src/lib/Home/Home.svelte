@@ -18,7 +18,7 @@
   import Gallery from './Gallery.svelte'
   import { add } from '@/modules/torrent.js'
   import { alToken, set } from '../Settings.svelte'
-  import { alRequest } from '@/modules/anilist.js'
+  import { alRequest, alID } from '@/modules/anilist.js'
   import { resolveFileMedia } from '@/modules/anime.js'
   import { getRSSContent, getReleasesRSSurl } from '@/lib/RSSView.svelte'
 
@@ -159,20 +159,22 @@
     },
     trending: {
       title: 'Trending Now',
-      load: (page = 1, perPage = 50, initial = false) => {
+      load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) search.sort = 'TRENDING_DESC'
+        await alID
         return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     seasonal: {
       title: 'Popular This Season',
-      load: (page = 1, perPage = 50, initial = false) => {
+      load: async (page = 1, perPage = 50, initial = false) => {
         const date = new Date()
         if (initial) {
           search.season = getSeason(date)
           search.year = date.getFullYear()
           search.sort = 'POPULARITY_DESC'
         }
+        await alID
         return alRequest({ method: 'Search', page, perPage, year: date.getFullYear(), season: getSeason(date), sort: 'POPULARITY_DESC', ...sanitiseObject(search) }).then(res =>
           processMedia(res)
         )
@@ -180,58 +182,64 @@
     },
     popular: {
       title: 'All Time Popular',
-      load: (page = 1, perPage = 50, initial = false) => {
+      load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) search.sort = 'POPULARITY_DESC'
+        await alID
         return alRequest({ method: 'Search', page, perPage, sort: 'POPULARITY_DESC', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     romance: {
       title: 'Romance',
-      load: (page = 1, perPage = 50, initial = false) => {
+      load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) {
           search.sort = 'TRENDING_DESC'
           search.genre = 'Romance'
         }
+        await alID
         return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', genre: 'Romance', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     action: {
       title: 'Action',
-      load: (page = 1, perPage = 50, initial = false) => {
+      load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) {
           search.sort = 'TRENDING_DESC'
           search.genre = 'Action'
         }
+        await alID
         return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', genre: 'Action', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     adventure: {
       title: 'Adventure',
-      load: (page = 1, perPage = 50, initial = false) => {
+      load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) {
           search.sort = 'TRENDING_DESC'
           search.genre = 'Adventure'
         }
+        await alID
         return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', genre: 'Adventure', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     fantasy: {
       title: 'Fantasy',
-      load: (page = 1, perPage = 50, initial = false) => {
+      load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) {
           search.sort = 'TRENDING_DESC'
           search.genre = 'Fantasy'
         }
+        await alID
         return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', genre: 'Fantasy', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },
     comedy: {
       title: 'Comedy',
-      load: (page = 1, perPage = 50, initial = false) => {
+      load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) {
           search.sort = 'TRENDING_DESC'
           search.genre = 'Comedy'
         }
+        await alID
         return alRequest({ method: 'Search', page, perPage, sort: 'TRENDING_DESC', genre: 'Comedy', ...sanitiseObject(search) }).then(res => processMedia(res))
       }
     },

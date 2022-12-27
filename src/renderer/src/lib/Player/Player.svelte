@@ -1,10 +1,10 @@
 <script>
+  /* eslint svelte/valid-compile: ["error", { ignoreWarnings: true }] */
   import { set } from '../Settings.svelte'
   import { playAnime } from '../RSSView.svelte'
   import { client } from '@/modules/torrent.js'
   import { onMount, createEventDispatcher, tick } from 'svelte'
   import { alEntry } from '@/modules/anilist.js'
-  // import Peer from '@/modules/Peer.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, videoRx, fastPrettyBytes, throttle } from '@/modules/util.js'
   import { addToast } from '../Toasts.svelte'
@@ -127,6 +127,7 @@
       })
       currentTime = 0
       targetTime = 0
+      chapters = []
       completed = false
       current = file
       emit('current', current)
@@ -251,14 +252,26 @@
   function toggleFullscreen () {
     document.fullscreenElement ? document.exitFullscreen() : container.requestFullscreen()
   }
-  function seek (time) {
-    if (time === 85 && currentTime < 10) {
-      currentTime = currentTime = 90
-    } else if (time === 85 && safeduration - currentTime < 90) {
-      currentTime = currentTime = safeduration
+  function skip () {
+    const current = findChapter(currentTime)
+    if (current) {
+      if (!isChapterSkippable(current)) return
+      const endtime = current.end / 1000
+      if ((safeduration - endtime | 0) === 0) return playNext()
+      currentTime = endtime
+      currentSkippable = null
+    } else if (currentTime < 10) {
+      currentTime = 90
+    } else if (safeduration - currentTime < 90) {
+      currentTime = safeduration
     } else {
-      currentTime = currentTime += time
+      currentTime = currentTime + 85
     }
+    targetTime = currentTime
+    video.currentTime = targetTime
+  }
+  function seek (time) {
+    currentTime = currentTime + time
     targetTime = currentTime
     video.currentTime = targetTime
   }
@@ -368,10 +381,6 @@
       id: 'screenshot_monitor',
       type: 'icon'
     },
-    KeyR: {
-      fn: () => seek(-90),
-      id: '-90'
-    },
     KeyI: {
       fn: () => toggleStats(),
       id: 'list',
@@ -413,7 +422,7 @@
       type: 'icon'
     },
     KeyS: {
-      fn: () => seek(85),
+      fn: () => skip(),
       id: '+90'
     },
     KeyD: {
@@ -617,11 +626,43 @@
   }
   function getBufferHealth (time) {
     for (let index = video.buffered.length; index--;) {
-      if (time < video.buffered.end(index) && time > video.buffered.start(index)) {
+      if (time < video.buffered.end(index) && time >= video.buffered.start(index)) {
         return parseInt(video.buffered.end(index) - time)
       }
     }
     return 0
+  }
+  let chapters = []
+  client.on('chapters', ({ detail }) => {
+    chapters = detail
+  })
+  let hoverChapter = null
+
+  let currentSkippable = null
+  function checkSkippableChapters () {
+    const current = findChapter(currentTime)
+    if (current) {
+      currentSkippable = isChapterSkippable(current)
+    }
+  }
+  const skippableChaptersRx = [
+    ['Opening', /^op$|opening$|^ncop/mi],
+    ['Ending', /^ed$|ending$|^nced/mi],
+    ['Recap', /recap/mi]
+  ]
+  function isChapterSkippable (chapter) {
+    for (const [name, regex] of skippableChaptersRx) {
+      if (regex.test(chapter.text)) {
+        return name
+      }
+    }
+    return null
+  }
+  function findChapter (time) {
+    if (!chapters.length) return null
+    for (const chapter of chapters) {
+      if (time < (chapter.end / 1000) && time >= (chapter.start / 1000)) return chapter
+    }
   }
   const thumbCanvas = document.createElement('canvas')
   thumbCanvas.width = 200
@@ -638,6 +679,7 @@
   function handleHover ({ offsetX, target }) {
     hoverOffset = offsetX / target.clientWidth
     hoverTime = safeduration * hoverOffset
+    hoverChapter = findChapter(hoverTime)
     hover.style.setProperty('left', hoverOffset * 100 + '%')
     thumbnail = thumbnailData.thumbnails[Math.floor(hoverTime / thumbnailData.interval)] || ' '
   }
@@ -861,6 +903,7 @@
     on:seeked={updatew2g}
     on:timeupdate={() => createThumbnail()}
     on:timeupdate={checkCompletion}
+    on:timeupdate={checkSkippableChapters}
     on:waiting={showBuffering}
     on:loadeddata={hideBuffering}
     on:canplay={hideBuffering}
@@ -897,7 +940,7 @@
     </div>
     <span class='material-icons ctrl' title='Keybinds [`]' on:click={() => (showKeybinds = true)}> help_outline </span>
   </div>
-  <div class='middle d-flex align-items-center justify-content-center flex-grow-1'>
+  <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
     <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
     <span class='material-icons ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} data-name='playLast' on:click={playLast}> skip_previous </span>
     <span class='material-icons ctrl' data-name='rewind' on:click={rewind}> fast_rewind </span>
@@ -905,6 +948,11 @@
     <span class='material-icons ctrl' data-name='forward' on:click={forward}> fast_forward </span>
     <span class='material-icons ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} data-name='playNext' on:click={playNext}> skip_next </span>
     <div class='position-absolute bufferingDisplay' />
+    {#if currentSkippable}
+      <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold' on:click={skip}>
+        Skip {currentSkippable}
+      </button>
+    {/if}
   </div>
   <div class='bottom d-flex z-40 flex-column px-20'>
     <div class='w-full d-flex align-items-center h-20 mb--5'>
@@ -925,8 +973,17 @@
           on:touchstart={handleMouseDown}
           on:touchend={handleMouseUp}
           on:keydown|preventDefault />
+        <datalist class='d-flex position-absolute w-full'>
+          {#each chapters.slice(1) as chapter}
+            {@const value = chapter.start / 1000 / safeduration}
+            <option {value} style:left={value * 100 + '%'} class='position-absolute' />
+          {/each}
+        </datalist>
         <div class='hover position-absolute d-flex flex-column align-items-center' bind:this={hover}>
           <img alt='thumbnail' class='w-full mb-5 shadow-lg' src={thumbnail} />
+          {#if hoverChapter}
+            <div class='ts'>{hoverChapter.text}</div>
+          {/if}
           <div class='ts'>{toTS(hoverTime)}</div>
         </div>
       </div>
@@ -1025,7 +1082,16 @@
     background: #fff0;
     overflow: hidden;
     transition: all ease 100ms;
-    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  datalist option {
+    background: #ff3c00;
+    top: 5px;
+    min-height: unset;
+    height: 6px;
+    width: 2px;
+    padding: 0
   }
   .custom-range:hover {
     --thumb-height: 12px;
@@ -1049,9 +1115,6 @@
     height: var(--thumb-height);
     width: var(--thumb-width, var(--thumb-height));
     -webkit-appearance: none;
-  }
-
-  .custom-range::-webkit-slider-thumb {
     --thumb-radius: calc((var(--target-height) * 0.5) - 1px);
     --clip-top: calc((var(--target-height) - var(--track-height)) * 0.5);
     --clip-bottom: calc(var(--target-height) - var(--clip-top));
@@ -1119,7 +1182,7 @@
     cursor: pointer !important;
   }
   .miniplayer .top,
-  .miniplayer .bottom {
+  .miniplayer .bottom, .miniplayer .skip {
     display: none !important;
   }
   .miniplayer video {
@@ -1173,7 +1236,7 @@
 
   .immersed .middle .ctrl,
   .immersed .top,
-  .immersed .bottom {
+  .immersed .bottom, .immersed .skip {
     opacity: 0;
   }
 
@@ -1264,6 +1327,13 @@
   .bottom .ts:hover,
   .bottom .hover .ts {
     filter: drop-shadow(0 0 8px #000);
+  }
+  .skip {
+    transition: 0.5s opacity ease;
+    background: #ececec;
+  }
+  .skip:hover {
+    background-color: var(--lm-button-bg-color-hover);
   }
 
   .bottom {

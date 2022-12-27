@@ -30,22 +30,7 @@ class TorrentClient extends WebTorrent {
     setInterval(() => {
       if (this.torrents[0]?.pieces) this.dispatch('pieces', [...this.torrents[0]?.pieces.map(piece => piece === null ? 77 : 33)])
     }, 2000)
-    this.on('torrent', torrent => {
-      const files = torrent.files.map(file => {
-        return {
-          infoHash: torrent.infoHash,
-          name: file.name,
-          type: file._getMimeType(),
-          size: file.size,
-          path: file.path,
-          url: encodeURI(`http://localhost:${this.server.address().port}/webtorrent/${torrent.infoHash}/${file.path}`)
-        }
-      })
-      this.dispatch('files', files)
-      this.dispatch('pieces', torrent.pieces.length)
-      this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
-      this.dispatch('torrent', Array.from(torrent.torrentFile))
-    })
+    this.on('torrent', this.handleTorrent.bind(this))
 
     this.server = http.createServer((request, response) => {
       if (!request.url) return null
@@ -100,6 +85,23 @@ class TorrentClient extends WebTorrent {
     this.server.listen(0)
   }
 
+  handleTorrent (torrent) {
+    const files = torrent.files.map(file => {
+      return {
+        infoHash: torrent.infoHash,
+        name: file.name,
+        type: file._getMimeType(),
+        size: file.size,
+        path: file.path,
+        url: encodeURI(`http://localhost:${this.server.address().port}/webtorrent/${torrent.infoHash}/${file.path}`)
+      }
+    })
+    this.dispatch('files', files)
+    this.dispatch('pieces', torrent.pieces.length)
+    this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
+    this.dispatch('torrent', Array.from(torrent.torrentFile))
+  }
+
   handleMessage ({ data }) {
     switch (data.type) {
       case 'current': {
@@ -121,9 +123,11 @@ class TorrentClient extends WebTorrent {
         break
       }
       case 'torrent': {
+        const id = typeof data.data !== 'string' ? Buffer.from(data.data) : data.data
+        const existing = this.get(id)
+        if (existing) return this.handleTorrent(existing)
         if (this.torrents.length) this.remove(this.torrents[0].infoHash)
 
-        const id = typeof data.data !== 'string' ? Buffer.from(data.data) : data.data
         this.add(id, {
           private: this.settings.torrentPeX,
           path: this.settings.torrentPath,
@@ -200,6 +204,9 @@ class TorrentClient extends WebTorrent {
       this.dispatch('subtitle', { subtitle, trackNumber })
     })
     if (!skipFile) {
+      parser.once('chapters', chapters => {
+        this.dispatch('chapters', chapters)
+      })
       parser.on('file', file => {
         if (file.mimetype === 'application/x-truetype-font' || file.mimetype === 'application/font-woff' || file.mimetype === 'application/vnd.ms-opentype' || file.mimetype === 'font/sfnt' || file.mimetype.startsWith('font/') || file.filename.toLowerCase().endsWith('.ttf')) {
           this.dispatch('file', { mimetype: file.mimetype, data: Array.from(file.data) })

@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "3.3.9",
+  "version": "3.4.0",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "src/index.js",
@@ -13,14 +13,14 @@
     "publish": "vite build && electron-builder -p always"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^1.0.1",
-    "concurrently": "^7.0.0",
-    "electron": "20.1.1",
-    "electron-builder": "^23.3.3",
-    "electron-notarize": "^1.1.1",
-    "svelte": "^3.47.0",
-    "vite": "3.2.4",
-    "vite-plugin-commonjs": "^0.5.2"
+    "@sveltejs/vite-plugin-svelte": "^1.4.0",
+    "concurrently": "^7.6.0",
+    "electron": "22.0.0",
+    "electron-builder": "^23.6.0",
+    "electron-notarize": "^1.2.2",
+    "svelte": "^3.55.0",
+    "vite": "4.0.3",
+    "vite-plugin-commonjs": "^0.5.3"
   },
   "standard": {
     "ignore": [
@@ -107,15 +107,15 @@
     "bottleneck": "^2.19.5",
     "browser-event-target-emitter": "^1.0.0",
     "discord-rpc": "4.0.1",
-    "electron-log": "^4.4.6",
+    "electron-log": "^4.4.8",
     "electron-updater": "^4.6.5",
     "jassub": "1.2.1",
     "js-levenshtein": "^1.1.6",
-    "matroska-subtitles": "github:ThaUnknown/matroska-subtitles",
+    "matroska-subtitles": "github:ThaUnknown/matroska-subtitles#redist",
     "mime": "^3.0.0",
     "p2pcf": "github:ThaUnknown/p2pcf#no-remove",
     "pump": "^3.0.0",
-    "quartermoon": "^1.2.1",
+    "quartermoon": "^1.2.3",
     "range-parser": "^1.2.1",
     "svelte-keybinds": "1.0.5",
     "svelte-miniplayer": "1.0.3",
