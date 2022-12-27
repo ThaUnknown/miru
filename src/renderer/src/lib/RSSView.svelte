@@ -94,7 +94,7 @@
   const rssmap = {
     SubsPlease: 'https://nyaa.si/?page=rss&c=0_0&f=0&u=subsplease&q=',
     'Erai-raws [Multi-Sub]': 'https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q=',
-    NanDesuKa: 'https://nyaa.si/?page=rss&c=0_0&f=0&u=NanDesuKa&q='
+    'NC-Raws': 'https://nyaa.si/?page=rss&c=0_0&f=0&u=BraveSail&q='
   }
   const epstring = ep => `"E${zeropad(ep)}+"|"E${zeropad(ep)}v"|"+${zeropad(ep)}+"|"+${zeropad(ep)}v"`
   export function getReleasesRSSurl (val) {

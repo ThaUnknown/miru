@@ -1086,7 +1086,7 @@
   }
 
   datalist option {
-    background: #ff3c00;
+    background: rgba(255, 255, 255, 0.2);
     top: 5px;
     min-height: unset;
     height: 6px;

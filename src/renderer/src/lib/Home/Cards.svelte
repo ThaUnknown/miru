@@ -38,7 +38,7 @@
         </div>
       </div>
     {:else}
-      <div class='card m-0 p-0' on:click={card.onclick || (() => viewMedia(card.media))} style:--color={card.media.coverImage.color || '#1890ff'}>
+      <div class='card m-0 p-0' on:click={card.onclick || (() => viewMedia(card.media))} style:--color={card.media.coverImage.color || '#1890ff'} title={card.parseObject?.file_name}>
         <div class='row h-full'>
           <div class='col-4'>
             <img loading='lazy' src={card.media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full h-full' />
