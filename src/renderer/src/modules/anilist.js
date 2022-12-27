@@ -6,24 +6,6 @@ import { sleep } from './util.js'
 import Bottleneck from 'bottleneck'
 
 const codes = {
-  100: 'Continue',
-  101: 'Switching Protocols',
-  102: 'Processing',
-  200: 'OK',
-  201: 'Created',
-  202: 'Accepted',
-  203: 'Non-Authoritative Information',
-  204: 'No Content',
-  205: 'Reset Content',
-  206: 'Partial Content',
-  207: 'Multi-Status',
-  300: 'Multiple Choices',
-  301: 'Moved Permanently',
-  302: 'Moved Temporarily',
-  303: 'See Other',
-  304: 'Not Modified',
-  305: 'Use Proxy',
-  307: 'Temporary Redirect',
   400: 'Bad Request',
   401: 'Unauthorized',
   402: 'Payment Required',
@@ -221,7 +203,7 @@ episodes,
 duration,
 averageScore,
 genres,
-coverImage {
+coverImage{
   extraLarge,
   medium,
   color
@@ -230,19 +212,19 @@ countryOfOrigin,
 isAdult,
 bannerImage,
 synonyms,
-nextAiringEpisode {
+nextAiringEpisode{
   timeUntilAiring,
   episode
 },
-trailer {
+trailer{
   id,
   site
 },
-streamingEpisodes {
+streamingEpisodes{
   title,
   thumbnail
 },
-mediaListEntry {
+mediaListEntry{
   id,
   progress,
   repeat,
@@ -251,37 +233,33 @@ mediaListEntry {
   score(format: POINT_10)
 },
 source,
-studios(isMain: true) {
+studios(isMain: true){
   nodes {
     name
   }
 },
-airingSchedule(page: 1, perPage: 1, notYetAired: true) {
+airingSchedule(page: 1, perPage: 1, notYetAired: true){
   nodes {
     episode
   }
 },
 relations {
   edges {
-    relationType(version:2)
+    relationType(version:2),
     node {
       id,
-      title {
-        userPreferred
-      },
-      coverImage {
-        medium
-      },
+      title{userPreferred},
+      coverImage{medium},
       type,
       status,
       format,
       episodes,
-      startDate {
+      startDate{
         year,
         month,
         day
       },
-      endDate {
+      endDate{
         year,
         month,
         day
@@ -289,15 +267,15 @@ relations {
     }
   }
 },
-recommendations {
-  edges {
-    node {
-      mediaRecommendation {
+recommendations{
+  edges{
+    node{
+      mediaRecommendation{
         id,
-        title {
+        title{
           userPreferred
         },
-        coverImage {
+        coverImage{
           medium
         }
       }
@@ -310,12 +288,12 @@ recommendations {
     case 'SearchName': {
       variables.search = opts.name
       query = /* js */` 
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: [MediaStatus]) {
-  Page (page: $page, perPage: $perPage) {
-    pageInfo {
+query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: [MediaStatus]){
+  Page(page: $page, perPage: $perPage){
+    pageInfo{
       hasNextPage
     },
-    media(type: ANIME, search: $search, sort: $sort, status_in: $status, isAdult: false) {
+    media(type: ANIME, search: $search, sort: $sort, status_in: $status, isAdult: false){
       ${queryObjects}
     }
   }
@@ -324,8 +302,8 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: 
     } case 'SearchIDSingle': {
       variables.id = opts.id
       query = /* js */` 
-query ($id: Int) { 
-  Media (id: $id, type: ANIME) {
+query($id: Int){ 
+  Media(id: $id, type: ANIME){
     ${queryObjects}
   }
 }`
@@ -333,12 +311,12 @@ query ($id: Int) {
     } case 'SearchIDS': {
       variables.id = opts.id
       query = /* js */` 
-query ($id: [Int], $page: Int, $perPage: Int) { 
-  Page (page: $page, perPage: $perPage) {
-    pageInfo {
+query($id: [Int], $page: Int, $perPage: Int){ 
+  Page(page: $page, perPage: $perPage){
+    pageInfo{
       hasNextPage
     },
-    media (id_in: $id, type: ANIME) {
+    media(id_in: $id, type: ANIME){
       ${queryObjects}
     }
   }
@@ -347,15 +325,15 @@ query ($id: [Int], $page: Int, $perPage: Int) {
     } case 'Viewer': {
       variables.id = alToken
       query = /* js */` 
-query {
-  Viewer {
-    avatar {
+query{
+  Viewer{
+    avatar{
       medium
     },
     name,
     id,
-    mediaListOptions {
-      animeList {
+    mediaListOptions{
+      animeList{
         customLists
       }
     }
@@ -365,13 +343,13 @@ query {
     } case 'UserLists': {
       variables.id = (await alID)?.data?.Viewer?.id
       query = /* js */` 
-query ($page: Int, $perPage: Int, $id: Int, $status_in: [MediaListStatus]){
-  Page (page: $page, perPage: $perPage) {
-    pageInfo {
+query($page: Int, $perPage: Int, $id: Int, $status_in: [MediaListStatus]){
+  Page(page: $page, perPage: $perPage){
+    pageInfo{
       hasNextPage
     },
-    mediaList (userId: $id, type: ANIME, status_in: $status_in, sort: UPDATED_TIME_DESC) {
-      media {
+    mediaList(userId: $id, type: ANIME, status_in: $status_in, sort: UPDATED_TIME_DESC){
+      media{
         ${queryObjects}
       }
     }
@@ -382,8 +360,8 @@ query ($page: Int, $perPage: Int, $id: Int, $status_in: [MediaListStatus]){
       variables.id = (await alID)?.data?.Viewer?.id
       variables.mediaId = opts.id
       query = /* js */` 
-query ($id: Int, $mediaId: Int){
-  MediaList(userId: $id, mediaId: $mediaId) {
+query($id: Int, $mediaId: Int){
+  MediaList(userId: $id, mediaId: $mediaId){
     status,
     progress,
     repeat
@@ -394,12 +372,12 @@ query ($id: Int, $mediaId: Int){
       variables.from = opts.from
       variables.to = (variables.from + 7 * 24 * 60 * 60)
       query = /* js */` 
-query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
-  Page (page: $page, perPage: $perPage) {
-    pageInfo {
+query($page: Int, $perPage: Int, $from: Int, $to: Int){
+  Page(page: $page, perPage: $perPage){
+    pageInfo{
       hasNextPage
     },
-    airingSchedules(airingAt_greater: $from, airingAt_lesser: $to) {
+    airingSchedules(airingAt_greater: $from, airingAt_lesser: $to){
       episode,
       timeUntilAiring,
       airingAt,
@@ -418,12 +396,12 @@ query ($page: Int, $perPage: Int, $from: Int, $to: Int) {
       variables.format = opts.format
       variables.sort = opts.sort || 'SEARCH_MATCH'
       query = /* js */` 
-query ($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
-  Page (page: $page, perPage: $perPage) {
-    pageInfo {
+query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat){
+  Page(page: $page, perPage: $perPage){
+    pageInfo{
       hasNextPage
     },
-    media(type: ANIME, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format) {
+    media(type: ANIME, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format){
       ${queryObjects}
     }
   }
@@ -437,63 +415,63 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: 
       variables.score = opts.score
       variables.lists = opts.lists
       query = /* js */`
-      mutation ($lists: [String], $id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int, $score: Int) {
-        SaveMediaListEntry (mediaId: $id, status: $status, progress: $episode, repeat: $repeat, scoreRaw: $score, customLists: $lists) {
-          id,
-          status,
-          progress,
-          repeat
-        }
-      }`
+mutation($lists: [String], $id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int, $score: Int){
+  SaveMediaListEntry(mediaId: $id, status: $status, progress: $episode, repeat: $repeat, scoreRaw: $score, customLists: $lists){
+    id,
+    status,
+    progress,
+    repeat
+  }
+}`
       break
     } case 'Delete': {
       variables.id = opts.id
       query = /* js */`
-      mutation ($id: Int) {
-        DeleteMediaListEntry (id: $id){
-          deleted
-        }
-      }`
+mutation($id: Int){
+  DeleteMediaListEntry(id: $id){
+    deleted
+  }
+}`
       break
     } case 'Following': {
       variables.id = opts.id
       query = /* js */`
-      query($id: Int) {
-        Page {
-          pageInfo {
-            total,
-            perPage,
-            currentPage,
-            lastPage,
-            hasNextPage
-          },
-          mediaList(mediaId: $id, isFollowing: true, sort: UPDATED_TIME_DESC) {
-            id,
-            status,
-            score,
-            progress,
-            user {
-              id,
-              name,
-              avatar {
-                medium
-              },
-              mediaListOptions {
-                scoreFormat
-              }
-            }
-          }
+query($id: Int){
+  Page{
+    pageInfo{
+      total,
+      perPage,
+      currentPage,
+      lastPage,
+      hasNextPage
+    },
+    mediaList(mediaId: $id, isFollowing: true, sort: UPDATED_TIME_DESC){
+      id,
+      status,
+      score,
+      progress,
+      user{
+        id,
+        name,
+        avatar{
+          medium
+        },
+        mediaListOptions{
+          scoreFormat
         }
-      }`
+      }
+    }
+  }
+}`
       break
     } case 'CustomList':{
       variables.lists = [...opts.lists, 'Watched using Miru']
       query = /* js */`
-      mutation($lists: [String]) {
-        UpdateUser(animeListOptions: { customLists: $lists }){
-          id
-        }
-      }`
+mutation($lists: [String]){
+  UpdateUser(animeListOptions: { customLists: $lists }){
+    id
+  }
+}`
       break
     }
   }
