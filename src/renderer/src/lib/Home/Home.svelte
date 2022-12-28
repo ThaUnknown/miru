@@ -2,7 +2,7 @@
   import { readable, writable } from 'simple-store-svelte'
   import { add } from '@/modules/torrent.js'
   import { alToken, set } from '../Settings.svelte'
-  import { alRequest, alID } from '@/modules/anilist.js'
+  import { alRequest } from '@/modules/anilist.js'
   import { sleep } from '@/modules/util.js'
   import { resolveFileMedia } from '@/modules/anime.js'
   import { getRSSContent, getReleasesRSSurl } from '@/lib/RSSView.svelte'
