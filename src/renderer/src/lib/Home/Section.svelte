@@ -1,19 +1,7 @@
 <script>
-import { onDestroy } from 'svelte'
-
-import Cards from './Cards.svelte'
-export let opts
-let cards = opts.load(1, 6)
-let interval = null
-if (opts.releases) {
-  interval = setInterval(async () => {
-    const media = await opts.load(1, 6, false, false)
-    if (media) cards = media
-  }, 30000)
-}
-onDestroy(() => {
-  if (interval) clearInterval(interval)
-})
+  import Cards from './Cards.svelte'
+  export let opts
+  const cards = opts.preview()
 </script>
 
 <span class='d-flex px-20 align-items-end pointer text-decoration-none text-muted' on:click={opts.onclick}>

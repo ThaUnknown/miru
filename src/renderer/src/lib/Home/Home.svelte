@@ -1,5 +1,11 @@
 <script context='module'>
   import { readable } from 'svelte/store'
+  import { add } from '@/modules/torrent.js'
+  import { alToken, set } from '../Settings.svelte'
+  import { alRequest, alID } from '@/modules/anilist.js'
+  import { sleep } from '@/modules/util.js'
+  import { resolveFileMedia } from '@/modules/anime.js'
+  import { getRSSContent, getReleasesRSSurl } from '@/lib/RSSView.svelte'
   const noop = () => {}
   async function getVal (set) {
     const res = await fetch('https://gh.miru.workers.dev/')
@@ -10,27 +16,39 @@
     getVal(set)
     return noop
   })
-</script>
+  const getSeason = d => seasons[Math.floor((d.getMonth() / 12) * 4) % 4]
 
-<script>
-  import Search from './Search.svelte'
-  import Section from './Section.svelte'
-  import Gallery from './Gallery.svelte'
-  import { add } from '@/modules/torrent.js'
-  import { alToken, set } from '../Settings.svelte'
-  import { alRequest, alID } from '@/modules/anilist.js'
-  import { resolveFileMedia } from '@/modules/anime.js'
-  import { getRSSContent, getReleasesRSSurl } from '@/lib/RSSView.svelte'
-
-  let media = []
-  let search = {}
-  export let current = null
-  let page = 1
-
-  let canScroll = true
   let hasNext = true
-  let container = null
+  function processMedia (res) {
+    hasNext = res?.data?.Page.pageInfo.hasNextPage
+    return res?.data?.Page.media.map(media => {
+      return { media }
+    })
+  }
 
+  let search = {}
+  let lastRSSDate = 0
+  async function releasesCards (page, limit, force, val) {
+    const doc = await getRSSContent(getReleasesRSSurl(val))
+    if (doc) {
+      const pubDate = doc.querySelector('pubDate').textContent
+      if (force || lastRSSDate !== pubDate) {
+        lastRSSDate = pubDate
+        const index = (page - 1) * limit
+        const items = [...doc.querySelectorAll('item')].slice(index, index + limit)
+        hasNext = items.length === limit
+        const media = await resolveFileMedia(items.map(item => item.querySelector('title').textContent))
+        media.forEach((mediaInformation, index) => {
+          mediaInformation.onclick = () => {
+            add(items[index].querySelector('link').textContent)
+          }
+        })
+        media.hasNext = hasNext
+        return media
+      }
+    }
+  }
+  const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL']
   function sanitiseObject (object) {
     const safe = {}
     for (const [key, value] of Object.entries(object)) {
@@ -57,80 +75,14 @@
       return condition
     })
   }
-  async function infiniteScroll () {
-    if (current && canScroll && hasNext && this.scrollTop + this.clientHeight > this.scrollHeight - 800) {
-      canScroll = false
-      const res = sections[current].load(++page)
-      media.push(res)
-      media = media
-      await res
-      canScroll = hasNext
-    }
-  }
-
-  async function loadCurrent (initial = true) {
-    page = 1
-    canScroll = false
-    const res = sections[current].load(1, 50, initial)
-    media = [res]
-    await res
-    canScroll = hasNext
-  }
-
-  $: load(current)
-  async function load (current) {
-    if (sections[current]) {
-      loadCurrent()
-    } else {
-      if (container) container.scrollTop = 0
-      media = []
-      canScroll = true
-      lastDate = null
-      search = {
-        format: '',
-        genre: '',
-        season: '',
-        sort: '',
-        status: ''
-      }
-    }
-  }
 
   let lastDate = null
-
-  function processMedia (res) {
-    hasNext = res?.data?.Page.pageInfo.hasNextPage
-    return res?.data?.Page.media.map(media => {
-      return { media }
-    })
-  }
-
-  let lastRSSDate = 0
-  async function releasesCards (page, limit, force, val) {
-    const doc = await getRSSContent(getReleasesRSSurl(val))
-    if (doc) {
-      const pubDate = doc.querySelector('pubDate').textContent
-      if (force || lastRSSDate !== pubDate) {
-        lastRSSDate = pubDate
-        const index = (page - 1) * limit
-        const items = [...doc.querySelectorAll('item')].slice(index, index + limit)
-        hasNext = items.length === limit
-        const media = await resolveFileMedia(items.map(item => item.querySelector('title').textContent))
-        media.forEach((mediaInformation, index) => {
-          mediaInformation.onclick = () => {
-            add(items[index].querySelector('link').textContent)
-          }
-        })
-        media.hasNext = hasNext
-        return media
-      }
-    }
-  }
-  const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL']
-  const getSeason = d => seasons[Math.floor((d.getMonth() / 12) * 4) % 4]
   let sections = {
     continue: {
       title: 'Continue Watching',
+      preview: () => {
+        return sections.continue.load(1, 6)
+      },
       load: (page = 1, perPage = 50, initial = false) => {
         if (initial) search.sort = 'UPDATED_TIME_DESC'
         return alRequest({ method: 'UserLists', status_in: ['CURRENT', 'REPEATING'], page }).then(res => {
@@ -148,6 +100,9 @@
     },
     planning: {
       title: 'Your List',
+      preview: () => {
+        return sections.planning.load(1, 6)
+      },
       load: (page = 1, perPage = 50, initial = false) => {
         if (initial) search.sort = 'UPDATED_TIME_DESC'
         return alRequest({ method: 'UserLists', page, perPage, status_in: 'PLANNING' }).then(res => {
@@ -159,6 +114,13 @@
     },
     trending: {
       title: 'Trending Now',
+      preview: () => {
+        const self = sections.trending
+        if (!self.previewData) {
+          self.previewData = self.load(1, 6)
+        }
+        return self.previewData
+      },
       load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) search.sort = 'TRENDING_DESC'
         await alID
@@ -167,6 +129,13 @@
     },
     seasonal: {
       title: 'Popular This Season',
+      preview: () => {
+        const self = sections.seasonal
+        if (!self.previewData) {
+          self.previewData = self.load(1, 6)
+        }
+        return self.previewData
+      },
       load: async (page = 1, perPage = 50, initial = false) => {
         const date = new Date()
         if (initial) {
@@ -182,6 +151,13 @@
     },
     popular: {
       title: 'All Time Popular',
+      preview: () => {
+        const self = sections.popular
+        if (!self.previewData) {
+          self.previewData = self.load(1, 6)
+        }
+        return self.previewData
+      },
       load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) search.sort = 'POPULARITY_DESC'
         await alID
@@ -190,6 +166,13 @@
     },
     romance: {
       title: 'Romance',
+      preview: () => {
+        const self = sections.romance
+        if (!self.previewData) {
+          self.previewData = self.load(1, 6)
+        }
+        return self.previewData
+      },
       load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) {
           search.sort = 'TRENDING_DESC'
@@ -201,6 +184,13 @@
     },
     action: {
       title: 'Action',
+      preview: () => {
+        const self = sections.action
+        if (!self.previewData) {
+          self.previewData = self.load(1, 6)
+        }
+        return self.previewData
+      },
       load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) {
           search.sort = 'TRENDING_DESC'
@@ -212,6 +202,13 @@
     },
     adventure: {
       title: 'Adventure',
+      preview: () => {
+        const self = sections.adventure
+        if (!self.previewData) {
+          self.previewData = self.load(1, 6)
+        }
+        return self.previewData
+      },
       load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) {
           search.sort = 'TRENDING_DESC'
@@ -223,6 +220,13 @@
     },
     fantasy: {
       title: 'Fantasy',
+      preview: () => {
+        const self = sections.fantasy
+        if (!self.previewData) {
+          self.previewData = self.load(1, 6)
+        }
+        return self.previewData
+      },
       load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) {
           search.sort = 'TRENDING_DESC'
@@ -234,6 +238,13 @@
     },
     comedy: {
       title: 'Comedy',
+      preview: () => {
+        const self = sections.comedy
+        if (!self.previewData) {
+          self.previewData = self.load(1, 6)
+        }
+        return self.previewData
+      },
       load: async (page = 1, perPage = 50, initial = false) => {
         if (initial) {
           search.sort = 'TRENDING_DESC'
@@ -284,18 +295,86 @@
       }
     }
   }
-  for (let i = 0; i < set.rssFeeds.length; ++i) {
+  for (let i = set.rssFeeds.length - 1; i >= 0; --i) {
     const [title, val] = set.rssFeeds[i]
-    sections = {
-      ['releases-' + i]: {
-        title,
-        releases: true,
-        load: async (page = 1, perPage = 20, initial = false, force = true) => {
-          if (initial) search.sort = 'START_DATE_DESC'
-          return customFilter(await releasesCards(page, Math.min(perPage, 13), force, val))
-        }
+    const section = {
+      title,
+      load: async (page = 1, perPage = 20, initial = false, force = true) => {
+        if (initial) search.sort = 'START_DATE_DESC'
+        return customFilter(await releasesCards(page, Math.min(perPage, 13), force, val))
       },
+      preview: async () => {
+        const self = sections['releases-' + i]
+        if (!self.previewData) {
+          await sleep(i * 3000) // stagger lists by 3 seconds
+          self.previewData = self.load(1, 6, false, false)
+          setInterval(async () => {
+            const newData = await self.load(1, 6, false, false)
+            if (newData) self.previewData = newData
+          }, 15000)
+        }
+        return self.previewData
+      }
+    }
+    sections = {
+      ['releases-' + i]: section,
       ...sections
+    }
+  }
+</script>
+
+<script>
+  import Search from './Search.svelte'
+  import Section from './Section.svelte'
+  import Gallery from './Gallery.svelte'
+
+  let media = []
+  export let current = null
+  let page = 1
+
+  let canScroll = true
+  let container = null
+
+  function infiniteScroll () {
+    if (current && canScroll && hasNext && this.scrollTop + this.clientHeight > this.scrollHeight - 800) {
+      infiniteScrollLoad()
+    }
+  }
+  async function infiniteScrollLoad () {
+    canScroll = false
+    const res = sections[current].load(++page)
+    media.push(res)
+    media = media
+    await res
+    canScroll = hasNext
+  }
+
+  async function loadCurrent (initial = true) {
+    page = 1
+    canScroll = false
+    const res = sections[current].load(1, 50, initial)
+    media = [res]
+    await res
+    canScroll = hasNext
+    if ((await res).length < 12 && hasNext) infiniteScrollLoad()
+  }
+
+  $: load(current)
+  async function load (current) {
+    if (sections[current]) {
+      loadCurrent()
+    } else {
+      if (container) container.scrollTop = 0
+      media = []
+      canScroll = true
+      lastDate = null
+      search = {
+        format: '',
+        genre: '',
+        season: '',
+        sort: '',
+        status: ''
+      }
     }
   }
 </script>
