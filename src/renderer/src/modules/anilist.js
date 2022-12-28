@@ -283,7 +283,7 @@ recommendations{
   }
 }`
   if (opts.status) variables.status = opts.status
-  if (localStorage.getItem('ALtoken')) options.headers.Authorization = alToken
+  if (alToken) options.headers.Authorization = alToken
   switch (opts.method) {
     case 'SearchName': {
       variables.search = opts.name
@@ -310,13 +310,21 @@ query($id: Int){
       break
     } case 'SearchIDS': {
       variables.id = opts.id
+      variables.onList = opts.onList
+      variables.status = opts.status
+      variables.genre = opts.genre
+      variables.search = opts.search
+      variables.year = opts.year
+      variables.season = opts.season
+      variables.format = opts.format
+      variables.sort = opts.sort
       query = /* js */` 
-query($id: [Int], $page: Int, $perPage: Int){ 
+query($id: [Int], $page: Int, $perPage: Int, $status: [MediaStatus], $onList: Boolean, $sort: [MediaSort], $search: String, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat){ 
   Page(page: $page, perPage: $perPage){
     pageInfo{
       hasNextPage
     },
-    media(id_in: $id, type: ANIME){
+    media(id_in: $id, type: ANIME, status_in: $status, onList: $onList, search: $search, sort: $sort, season: $season, seasonYear: $year, genre: $genre, format: $format){
       ${queryObjects}
     }
   }
@@ -351,6 +359,28 @@ query($page: Int, $perPage: Int, $id: Int, $status_in: [MediaListStatus]){
     mediaList(userId: $id, type: ANIME, status_in: $status_in, sort: UPDATED_TIME_DESC){
       media{
         ${queryObjects}
+      }
+    }
+  }
+}`
+      break
+    } case 'NewSeasons': {
+      variables.id = (await alID)?.data?.Viewer?.id
+      query = /* js */` 
+query($id: Int){
+  MediaListCollection(userId: $id, status_in: [REPEATING, COMPLETED], type: ANIME, forceSingleCompletedList: true){
+    lists{
+      entries{
+        media{
+          relations{
+            edges{
+              relationType(version:2)
+              node{
+                id
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -480,5 +510,5 @@ mutation($lists: [String]){
     variables
   })
 
-  return await handleRequest(options)
+  return handleRequest(options)
 }

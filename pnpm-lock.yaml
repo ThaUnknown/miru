@@ -20,6 +20,7 @@ specifiers:
   pump: ^3.0.0
   quartermoon: ^1.2.3
   range-parser: ^1.2.1
+  simple-store-svelte: ^1.0.0
   svelte: ^3.55.0
   svelte-keybinds: 1.0.5
   svelte-miniplayer: 1.0.3
@@ -42,6 +43,7 @@ dependencies:
   pump: 3.0.0
   quartermoon: 1.2.3
   range-parser: 1.2.1
+  simple-store-svelte: 1.0.0
   svelte-keybinds: 1.0.5
   svelte-miniplayer: 1.0.3
   webtorrent: 1.9.6
@@ -2610,6 +2612,10 @@ packages:
     dependencies:
       queue-microtask: 1.2.3
       rusha: 0.8.14
+    dev: false
+
+  /simple-store-svelte/1.0.0:
+    resolution: {integrity: sha512-XrZb1acyQxIpwDsLIubK8+5uo8BE9zogvwZbaEAfVAAcoTdXLLDybD3gOsVVZR+o7ZkZCzpcgRjWGwJsM4iiiQ==}
     dev: false
 
   /simple-update-notifier/1.1.0:
