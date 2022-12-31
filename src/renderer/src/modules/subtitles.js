@@ -139,7 +139,8 @@ export default class Subtitles {
         availableFonts: {
           'roboto medium': './Roboto.ttf'
         },
-        workerUrl
+        workerUrl,
+        useLocalFonts: set.missingFont
       }
       if (set.font) {
         options.availableFonts[set.font.name.toLowerCase()] = new Uint8Array(set.font.data)

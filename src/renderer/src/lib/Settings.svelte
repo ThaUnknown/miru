@@ -11,7 +11,8 @@
     torrentSpeed: 10,
     torrentPersist: false,
     torrentDHT: false,
-    torrentPeX: false
+    torrentPeX: false,
+    missingFont: true
   }
   localStorage.removeItem('relations') // TODO: remove
   export const set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
@@ -187,6 +188,14 @@
               Default Subtitle Font
             </div>
             <FontSelect class='form-control bg-dark shadow-lg w-300' on:change={changeFont} value={settings.font?.value} />
+          </div>
+          <div
+            class='custom-switch mb-10 pl-10 font-size-16 w-300'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title="Automatically Finds Fonts That Are Missing From A Video's Subtitles">
+            <input type='checkbox' id='player-autoplay' bind:checked={settings.missingFont} />
+            <label for='player-autoplay'>Find Missing Fonts</label>
           </div>
           <div class='col p-10 d-flex flex-column justify-content-end'>
             <div class='font-size-24 font-weight-semi-bold d-flex'>
