@@ -1,54 +1,54 @@
 <script>
-import { getContext } from 'svelte'
-import { traceAnime } from '@/modules/anime.js'
+  import { getContext } from 'svelte'
+  import { traceAnime } from '@/modules/anime.js'
 
-export let search
-export let current
-export let media = null
-export let loadCurrent
-let searchTimeout = null
-let searchTextInput
+  export let search
+  export let current
+  export let media = null
+  export let loadCurrent
+  let searchTimeout = null
+  let searchTextInput
 
-const view = getContext('view')
+  const view = getContext('view')
 
-$: !$view && searchTextInput?.focus()
-function searchClear () {
-  search = {
-    format: '',
-    genre: '',
-    season: '',
-    sort: '',
-    status: ''
-  }
-  current = null
-  searchTextInput?.focus()
-}
-function input () {
-  if (!searchTimeout) {
-    if (Object.values(search).filter(v => v).length) media = [new Promise(() => {})]
-  } else {
-    clearTimeout(searchTimeout)
-  }
-  searchTimeout = setTimeout(() => {
-    if (current === null) {
-      if (Object.values(search).filter(v => v).length) current = 'search'
-    } else {
-      if (Object.values(search).filter(v => v).length) {
-        loadCurrent(false)
-      } else {
-        current = null
-      }
+  $: !$view && searchTextInput?.focus()
+  function searchClear () {
+    search = {
+      format: '',
+      genre: '',
+      season: '',
+      sort: '',
+      status: ''
     }
-    searchTimeout = null
-  }, 500)
-}
-function handleFile ({ target }) {
-  const { files } = target
-  if (files?.[0]) {
-    traceAnime(files[0], 'file')
-    target.value = null
+    current = null
+    searchTextInput?.focus()
   }
-}
+  function input () {
+    if (!searchTimeout) {
+      if (Object.values(search).filter(v => v).length) media = [new Promise(() => {})]
+    } else {
+      clearTimeout(searchTimeout)
+    }
+    searchTimeout = setTimeout(() => {
+      if (current === null) {
+        if (Object.values(search).filter(v => v).length) current = 'search'
+      } else {
+        if (Object.values(search).filter(v => v).length) {
+          loadCurrent(false)
+        } else {
+          current = null
+        }
+      }
+      searchTimeout = null
+    }, 500)
+  }
+  function handleFile ({ target }) {
+    const { files } = target
+    if (files?.[0]) {
+      traceAnime(files[0], 'file')
+      target.value = null
+    }
+  }
 </script>
 
 <div class='container-fluid row p-20' on:input={input}>
@@ -61,7 +61,6 @@ function handleFile ({ target }) {
       <div class='input-group-prepend'>
         <span class='input-group-text d-flex material-icons bg-dark pr-0 font-size-18'>search</span>
       </div>
-      <!-- svelte-ignore missing-declaration -->
       <!-- svelte-ignore a11y-autofocus -->
       <input
         on:input={({ target }) => {
@@ -170,7 +169,7 @@ function handleFile ({ target }) {
       <option value='UPDATED_TIME_DESC' disabled hidden>Updated Date</option>
     </select>
   </div>
-  <input type='file' class='d-none' id='search-image' accept='image/*' on:input={handleFile}>
+  <input type='file' class='d-none' id='search-image' accept='image/*' on:input={handleFile} />
   <div class='col-auto p-10 d-flex'>
     <button class='btn bg-dark material-icons font-size-18 px-5 align-self-end shadow-lg border-0' type='button'>
       <label for='search-image' class='pointer'>

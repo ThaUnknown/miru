@@ -92,15 +92,14 @@ const handleRequest = limiter.wrap(async opts => {
   return json
 })
 
-export const alID = !!alToken && alRequest({ method: 'Viewer', token: alToken })
-if (alID) {
-  alID.then(result => {
-    const lists = result?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
-    if (!lists.includes('Watched using Miru')) {
-      alRequest({ method: 'CustomList', lists })
-    }
-  })
-}
+export let alID = !!alToken
+alID = alRequest({ method: 'Viewer', token: alToken }).then(result => {
+  const lists = result?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
+  if (!lists.includes('Watched using Miru')) {
+    alRequest({ method: 'CustomList', lists })
+  }
+  return result
+})
 
 function printError (error) {
   console.warn(error)
@@ -186,6 +185,7 @@ export async function alRequest (opts) {
       Accept: 'application/json'
     }
   }
+  const userId = (await alID)?.data?.Viewer.id
   const queryObjects = /* js */`
 id,
 title {
@@ -349,7 +349,7 @@ query{
 }`
       break
     } case 'UserLists': {
-      variables.id = (await alID)?.data?.Viewer?.id
+      variables.id = userId
       query = /* js */` 
 query($page: Int, $perPage: Int, $id: Int, $status_in: [MediaListStatus]){
   Page(page: $page, perPage: $perPage){
@@ -365,7 +365,7 @@ query($page: Int, $perPage: Int, $id: Int, $status_in: [MediaListStatus]){
 }`
       break
     } case 'NewSeasons': {
-      variables.id = (await alID)?.data?.Viewer?.id
+      variables.id = userId
       query = /* js */` 
 query($id: Int){
   MediaListCollection(userId: $id, status_in: [REPEATING, COMPLETED], type: ANIME, forceSingleCompletedList: true){
@@ -387,7 +387,7 @@ query($id: Int){
 }`
       break
     } case 'SearchIDStatus': {
-      variables.id = (await alID)?.data?.Viewer?.id
+      variables.id = userId
       variables.mediaId = opts.id
       query = /* js */` 
 query($id: Int, $mediaId: Int){

@@ -2,12 +2,13 @@ import JASSUB from 'jassub'
 import workerUrl from 'jassub/dist/jassub-worker.js?url'
 import 'jassub/dist/jassub-worker.wasm?url'
 import { toTS, videoRx, subRx } from './util.js'
+import { set } from '@/lib/Settings.svelte'
 
 import { client } from '@/modules/torrent.js'
 
 const defaultHeader = `[V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default, Roboto Medium,26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
+Style: Default, ${set.font?.name || 'Roboto Medium'},26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
 [Events]
 
 `
@@ -130,16 +131,20 @@ export default class Subtitles {
 
   initSubtitleRenderer () {
     if (!this.renderer) {
-      this.renderer = new JASSUB({
+      const options = {
         video: this.video,
         subContent: this.headers[this.current].header.slice(0, -1),
         fonts: this.fonts,
-        fallbackFont: 'roboto medium',
+        fallbackFont: set.font?.name || 'roboto medium',
         availableFonts: {
           'roboto medium': './Roboto.ttf'
         },
         workerUrl
-      })
+      }
+      if (set.font) {
+        options.availableFonts[set.font.name.toLowerCase()] = new Uint8Array(set.font.data)
+      }
+      this.renderer = new JASSUB(options)
       this.selectCaptions(this.current)
     }
   }
