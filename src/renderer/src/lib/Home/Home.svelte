@@ -100,6 +100,7 @@
     newSeasons: {
       title: 'Sequels You Missed',
       data: (async () => {
+        if (!alToken) return
         const { data } = await alRequest({ method: 'NewSeasons' })
         const res = data.MediaListCollection.lists[0]
         return res?.entries?.flatMap(({ media }) => {

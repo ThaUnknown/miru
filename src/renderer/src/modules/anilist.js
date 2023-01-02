@@ -92,14 +92,16 @@ const handleRequest = limiter.wrap(async opts => {
   return json
 })
 
-export let alID = !!alToken
-alID = alRequest({ method: 'Viewer', token: alToken }).then(result => {
-  const lists = result?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
-  if (!lists.includes('Watched using Miru')) {
-    alRequest({ method: 'CustomList', lists })
-  }
-  return result
-})
+export let alID = null
+if (alToken) {
+  alID = alRequest({ method: 'Viewer', token: alToken }).then(result => {
+    const lists = result?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
+    if (!lists.includes('Watched using Miru')) {
+      alRequest({ method: 'CustomList', lists })
+    }
+    return result
+  })
+}
 
 function printError (error) {
   console.warn(error)
