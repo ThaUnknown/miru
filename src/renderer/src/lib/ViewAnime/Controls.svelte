@@ -104,14 +104,14 @@
 <div class='col-md-4 d-flex justify-content-end flex-column'>
   <div class='d-flex flex-column flex-wrap'>
     <button
-      class='btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5 shadow-lg'
+      class='btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5'
       type='button'
       on:click={() => play(media)}>
       <span class='material-icons mr-10 font-size-24 w-30'> play_arrow </span>
       <span>{getPlayText(media)}</span>
     </button>
     {#if alToken}
-      <button class='btn d-flex align-items-center mb-5 font-weight-bold font-size-16 btn-primary shadow-lg' on:click={toggleStatus}>
+      <button class='btn d-flex align-items-center mb-5 font-weight-bold font-size-16 btn-primary' on:click={toggleStatus}>
         <span class='material-icons mr-10 font-size-18 w-30'> {(media.mediaListEntry?.status in toggleStatusMap) ? 'remove' : 'add'} </span>
         {getStatusText(media)}
       </button>
@@ -135,17 +135,17 @@
       </div>
     {/if}
     {#if media.trailer}
-      <button class='btn d-flex align-items-center mb-5 font-weight-bold font-size-16 shadow-lg' on:click={() => viewTrailer(media)}>
+      <button class='btn d-flex align-items-center mb-5 font-weight-bold font-size-16' on:click={() => viewTrailer(media)}>
         <span class='material-icons mr-15 font-size-18 w-30'> live_tv </span>
         Trailer
       </button>
     {/if}
     <div class='d-flex mb-5 w-full'>
-      <button class='btn flex-fill font-weight-bold font-size-16 shadow-lg d-flex align-items-center' on:click={() => { openInBrowser(`https://anilist.co/anime/${media.id}`) }}>
+      <button class='btn flex-fill font-weight-bold font-size-16 d-flex align-items-center' on:click={() => { openInBrowser(`https://anilist.co/anime/${media.id}`) }}>
         <span class='material-icons mr-15 font-size-18 w-30'> open_in_new </span>
         Open
       </button>
-      <button class='btn flex-fill font-weight-bold font-size-16 ml-5 shadow-lg d-flex align-items-center' on:click={() => { copyToClipboard(`<miru://anime/${media.id}>`) }}>
+      <button class='btn flex-fill font-weight-bold font-size-16 ml-5 d-flex align-items-center' on:click={() => { copyToClipboard(`<miru://anime/${media.id}>`) }}>
         <span class='material-icons mr-15 font-size-18 w-30'> share </span>
         Share
       </button>

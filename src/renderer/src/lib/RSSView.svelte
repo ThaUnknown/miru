@@ -1,5 +1,5 @@
 <script context='module'>
-  import { DOMPARSER } from '@/modules/util.js'
+  import { DOMPARSER, wrapEnter } from '@/modules/util.js'
   import { set } from './Settings.svelte'
   import { addToast } from './Toasts.svelte'
   import { alRequest } from '@/modules/anilist.js'
@@ -299,13 +299,15 @@
     add(entry.link)
     table = null
   }
+  let modal
+  $: table && modal?.focus()
 </script>
 
-<div class='modal' class:show={table} id='viewAnime' on:keydown={checkClose} tabindex='-1'>
+<div class='modal' class:show={table} id='viewAnime' on:keydown={checkClose} tabindex='-1' bind:this={modal}>
   {#if table}
-    <div class='modal-dialog p-20' role='document' on:click|self={close}>
+    <div class='modal-dialog p-20' role='document' on:click|self={close} on:keydown|self={wrapEnter(close)}>
       <div class='modal-content w-auto'>
-        <button class='close pointer' type='button' on:click={close}> &times; </button>
+        <button class='close pointer z-30 top-20 right-0' type='button' on:click={close}> &times; </button>
         <table class='table table-hover'>
           <thead>
             <tr>
@@ -320,7 +322,7 @@
           </thead>
           <tbody class='results pointer'>
             {#each table as row, index}
-              <tr class:text-secondary={row.best} on:click={() => play(row)}>
+              <tr class:text-secondary={row.best} on:click={() => play(row)} on:keydown={wrapEnter(() => play(row))} tabindex='0' role='button'>
                 <th>{index + 1}</th>
                 <td>{row.title}</td>
                 <td>{row.size}</td>

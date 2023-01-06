@@ -4,6 +4,7 @@
   import { media } from './Player/MediaHandler.svelte'
   import { platformMap } from './Settings.svelte'
   import { addToast } from './Toasts.svelte'
+  import { wrapEnter } from '@/modules/util.js'
   const sidebar = getContext('sidebar')
   const view = getContext('view')
   const gallery = getContext('gallery')
@@ -95,7 +96,10 @@
         data-toggle='tooltip'
         data-placement='right'
         data-title={text}
+        tabindex='0'
+        role='button'
         on:click={click}
+        on:keydown={wrapEnter(click)}
         class:mt-auto={i === links.length - 2}>
         <span class='text-nowrap d-flex align-items-center' class:justify-content-between={i === 0}>
           {#if image}

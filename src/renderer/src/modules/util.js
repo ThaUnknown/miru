@@ -85,3 +85,9 @@ export function throttle (cb, limit) {
     }
   }
 }
+
+export function wrapEnter (fn) {
+  return ({ key }) => {
+    if (key === 'Enter') fn()
+  }
+}

@@ -1,5 +1,5 @@
 <script>
-  import { countdown } from '@/modules/util.js'
+  import { countdown, wrapEnter } from '@/modules/util.js'
   import { getContext } from 'svelte'
   export let cards = new Promise(() => {})
   const view = getContext('view')
@@ -7,6 +7,7 @@
     $view = media
   }
   export let length = 5
+  export let tabable = false
 </script>
 
 {#await cards}
@@ -27,7 +28,7 @@
     {#if typeof card === 'string'}
       <div class='day-row font-size-24 font-weight-bold h-50 d-flex align-items-end'>{card}</div>
     {:else if !card.media}
-      <div class='card m-0 p-0' on:click={card.onclick}>
+      <div class='card m-0 p-0' on:click={card.onclick} on:keydown={wrapEnter(card.onclick)} tabindex={tabable ? 0 : null} role='button'>
         <div class='row h-full'>
           <div class='col-4 skeloader' />
           <div class='col-8 bg-very-dark px-15 py-10'>
@@ -38,7 +39,12 @@
         </div>
       </div>
     {:else}
-      <div class='card m-0 p-0' on:click={card.onclick || (() => viewMedia(card.media))} style:--color={card.media.coverImage.color || '#1890ff'} title={card.parseObject?.file_name}>
+      <div class='card m-0 p-0'
+        on:click={card.onclick || (() => viewMedia(card.media))}
+        on:keydown={wrapEnter(card.onclick || (() => viewMedia(card.media)))}
+        tabindex={tabable ? 0 : null} role='button'
+        style:--color={card.media.coverImage.color || '#1890ff'}
+        title={card.parseObject?.file_name}>
         <div class='row h-full'>
           <div class='col-4'>
             <img loading='lazy' src={card.media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full h-full' />

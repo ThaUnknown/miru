@@ -2,6 +2,7 @@
   import { playAnime } from '../RSSView.svelte'
   import { alRequest } from '@/modules/anilist.js'
   import { getMediaMaxEp } from '@/modules/anime.js'
+  import { wrapEnter } from '@/modules/util.js'
   import { getContext } from 'svelte'
   import Details from './Details.svelte'
   import Following from './Following.svelte'
@@ -26,7 +27,7 @@
 <div class='modal modal-full' class:show={media} on:keydown={checkClose} tabindex='-1' bind:this={modal}>
   {#if media}
     <div class='h-full modal-content bg-very-dark p-0 overflow-y-auto'>
-      <button class='close pointer z-30 bg-dark shadow-lg top-20 right-0' type='button' on:click={close}> &times; </button>
+      <button class='close pointer z-30 bg-dark top-20 right-0' type='button' on:click={close}> &times; </button>
       <div class='h-md-half w-full position-relative z-20'>
         <div class='h-full w-full position-absolute bg-dark-light banner' style:--bannerurl={`url('${media.bannerImage || ''}')`} />
         <div class='d-flex h-full top w-full'>
@@ -89,7 +90,11 @@
               {media.description?.replace(/<[^>]*>/g, '') || ''}
             </div>
             <ToggleList list={media.relations?.edges?.filter(({ node }) => node.type === 'ANIME')} let:item title='Relations'>
-              <div class='w-150 mx-15 mb-10 rel pointer' on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media }}>
+              <div class='w-150 mx-15 mb-10 rel pointer'
+                on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media }}
+                on:keydown={wrapEnter(async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media })}
+                tabindex='0' role='button'
+              >
                 <img loading='lazy' src={item.node.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img' />
                 <div class='pt-5'>{item.relationType.replace(/_/g, ' ').toLowerCase()}</div>
                 <h5 class='font-weight-bold text-white'>{item.node.title.userPreferred}</h5>
@@ -110,7 +115,13 @@
                       on:click={() => {
                         playAnime(media, ep)
                         close()
-                      }}>
+                      }}
+                      on:keydown={wrapEnter(() => {
+                        playAnime(media, ep)
+                        close()
+                      })}
+                      tabindex='0' role='button'
+                    >
                       <td class='w-full font-weight-semi-bold'>Episode {ep}</td>
                       <td class='material-icons text-right h-full d-table-cell'>play_arrow</td>
                     </tr>
@@ -119,15 +130,19 @@
               </table>
             {/if}
             <ToggleList list={media.recommendations.edges.filter(edge => edge.node.mediaRecommendation)} let:item title='Recommendations'>
-              <div class='w-150 mx-15 mb-10 rel pointer' on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.mediaRecommendation.id })).data.Media }}>
+              <div class='w-150 mx-15 mb-10 rel pointer'
+                on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.mediaRecommendation.id })).data.Media }}
+                on:keydown={wrapEnter(async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.mediaRecommendation.id })).data.Media })}
+                tabindex='0' role='button'
+              >
                 <img loading='lazy' src={item.node.mediaRecommendation.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img' />
                 <h5 class='font-weight-bold text-white'>{item.node.mediaRecommendation.title.userPreferred}</h5>
               </div>
             </ToggleList>
           </div>
           <div class='col-md-3 px-sm-0 px-20'>
-            <Details {media}/>
-            <Following {media}/>
+            <Details {media} />
+            <Following {media} />
           </div>
         </div>
       </div>

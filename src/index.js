@@ -4,6 +4,19 @@ const { Client } = require('discord-rpc')
 const log = require('electron-log')
 const { autoUpdater } = require('electron-updater')
 
+const flags = [
+  ['enable-gpu-rasterization'],
+  ['enable-zero-copy'],
+  ['ignore-gpu-blocklist'],
+  ['enable-hardware-overlays', 'single-fullscreen,single-on-top,underlay'],
+  ['enable-features', 'EnableDrDc,CanvasOopRasterization,BackForwardCache:TimeToLiveInBackForwardCacheInSeconds/300/should_ignore_blocklists/true/enable_same_site/true,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilationEnableDrDc,CanvasOopRasterization,BackForwardCache:TimeToLiveInBackForwardCacheInSeconds/300/should_ignore_blocklists/true/enable_same_site/true,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
+  ['force_high_performance_gpu'],
+  ['disable-features', 'Vulkan']
+]
+for (const [flag, value] of flags) {
+  app.commandLine.appendSwitch(flag, value)
+}
+
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient('miru', process.execPath, [path.resolve(process.argv[1])])
@@ -255,12 +268,7 @@ discord.on('ready', async () => {
   discord.subscribe('ACTIVITY_JOIN')
   discord.subscribe('ACTIVITY_SPECTATE')
 })
-discord.on('ACTIVITY_JOIN_REQUEST', console.log)
-discord.on('ACTIVITY_SPECTATE', console.log)
 discord.on('ACTIVITY_JOIN', (args) => {
-  console.log('ACTIVITY_JOIN')
-  console.log(args)
-  console.log('------')
   BrowserWindow.getAllWindows()[0]?.send('w2glink', args.secret)
 })
 
