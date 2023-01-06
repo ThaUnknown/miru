@@ -68,15 +68,15 @@ export default class Subtitles {
           if (track.type !== 'ass') track.header = defaultHeader
           if (!this.current) {
             this.current = track.number
+            const styleMatches = track.header.match(stylesRx)
+            for (let i = 0; i < styleMatches.length; ++i) {
+              const style = styleMatches[i].replace('Style:', '').trim()
+              this._stylesMap[style] = i + 1
+            }
           }
           this.tracks[track.number] = []
           this._tracksString[track.number] = new Set()
           this.headers[track.number] = track
-          const styleMatches = track.header.match(stylesRx)
-          for (let i = 0; i < styleMatches.length; ++i) {
-            const style = styleMatches[i].replace('Style:', '').trim()
-            this._stylesMap[style] = i + 1
-          }
 
           this.onHeader()
         }
@@ -256,8 +256,17 @@ export default class Subtitles {
       this.current = Number(trackNumber)
       this.onHeader()
       if (this.renderer && this.headers) {
+        const track = this.headers[this.current]
         this.renderer.setTrack(this.current !== -1 ? this.headers[this.current].header.slice(0, -1) : defaultHeader)
         if (this.tracks[this.current]) {
+          this._stylesMap = {
+            Default: 0
+          }
+          const styleMatches = track.header.match(stylesRx)
+          for (let i = 0; i < styleMatches.length; ++i) {
+            const style = styleMatches[i].replace('Style:', '').trim()
+            this._stylesMap[style] = i + 1
+          }
           for (const subtitle of this.tracks[this.current]) this.renderer.createEvent(subtitle)
         }
       }
