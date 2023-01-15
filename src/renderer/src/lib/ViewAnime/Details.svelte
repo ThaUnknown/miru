@@ -56,7 +56,7 @@
           {detail.icon}
         </div>
         <div class='d-flex flex-column justify-content-center text-nowrap'>
-          <div class='font-weight-bold'>
+          <div class='font-weight-bold select-all'>
             {#if detail.custom === 'property'}
               {getCustomProperty(detail, media)}
             {:else if property.constructor === Array}

@@ -75,6 +75,9 @@
   :global(img) {
     -webkit-user-drag: none;
   }
+  :global(.select-all) {
+    user-select: all;
+  }
   /* sidebar patches */
   .page-wrapper.with-sidebar[data-sidebar-hidden] {
     --sidebar-width: var(--sidebar-minimised);

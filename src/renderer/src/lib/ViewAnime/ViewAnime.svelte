@@ -39,7 +39,7 @@
               <div class='col-md-9 col-8 row align-content-end pl-20'>
                 <div class='col-md-8 col-12 d-flex justify-content-end flex-column'>
                   <div class='px-md-20 d-flex flex-column font-size-12'>
-                    <span class='title font-weight-bold pb-sm-15 text-white'>
+                    <span class='title font-weight-bold pb-sm-15 text-white select-all'>
                       {media.title.userPreferred}
                     </span>
                     <div class='d-flex flex-row font-size-18 pb-sm-15'>
@@ -86,7 +86,7 @@
         <div class='row p-20 px-xl-0 flex-column-reverse flex-md-row'>
           <div class='col-md-9 px-20'>
             <h1 class='title font-weight-bold text-white'>Synopsis</h1>
-            <div class='font-size-16 pr-15 pre-wrap'>
+            <div class='font-size-16 pr-15 pre-wrap select-all'>
               {media.description?.replace(/<[^>]*>/g, '') || ''}
             </div>
             <ToggleList list={media.relations?.edges?.filter(({ node }) => node.type === 'ANIME')} let:item title='Relations'>

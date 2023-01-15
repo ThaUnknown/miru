@@ -231,7 +231,7 @@
       )
     ]
     const titles = []
-    for (const t of grouped) {
+    const appendTitle = t => {
       // replace & with encoded
       const title = t.replace(/&/g, '%26').replace(/\?/g, '%3F').replace(/#/g, '%23')
       titles.push(title)
@@ -245,6 +245,10 @@
       } else if (match1) {
         titles.push(title.replace(/(\d)(?:nd|rd|th) Season/i, `S${match1[1]}`))
       }
+    }
+    for (const t of grouped) {
+      appendTitle(t)
+      if (t.includes('-')) appendTitle(t.replaceAll('-', ''))
     }
     return titles
   }

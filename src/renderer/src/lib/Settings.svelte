@@ -12,10 +12,11 @@
     torrentPersist: false,
     torrentDHT: false,
     torrentPeX: false,
-    missingFont: true
+    missingFont: true,
+    maxConns: 20
   }
   localStorage.removeItem('relations') // TODO: remove
-  export const set = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
+  export const set = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
   if (!set.rssFeeds) { // TODO: remove ;-;
     if (set.rssFeed) {
       set.rssFeeds = [['New Releases', set.rssFeed]]
@@ -307,6 +308,16 @@
             <div class='input-group-append'>
               <span class='input-group-text'>MB/s</span>
             </div>
+          </div>
+          <div
+            class='input-group w-300 form-control-lg mb-10'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title='Max Amount Of Connections Per Torrent'>
+            <div class='input-group-prepend'>
+              <span class='input-group-text w-200 justify-content-center'>Max Connections</span>
+            </div>
+            <input type='number' bind:value={settings.maxConns} min='1' max='512' class='form-control text-right form-control-lg' />
           </div>
           <div
             class='custom-switch mb-10 pl-10 font-size-16 w-300'
