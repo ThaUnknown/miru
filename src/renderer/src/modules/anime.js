@@ -3,6 +3,7 @@ import { DOMPARSER, PromiseBatch } from './util.js'
 import { alRequest, alSearch } from './anilist.js'
 import anitomyscript from 'anitomyscript'
 import 'anitomyscript/dist/anitomyscript.wasm?url'
+import { media } from '@/lib/Player/MediaHandler.svelte'
 import { addToast } from '@/lib/Toasts.svelte'
 import { view } from '@/App.svelte'
 
@@ -19,6 +20,7 @@ window.addEventListener('paste', async e => { // WAIT image lookup on paste, or 
       if (torrentRx.exec(text)) {
         e.preventDefault()
         add(text)
+        media.set(null)
       } else if (imageRx.exec(text)) {
         e.preventDefault()
         traceAnime(text)
