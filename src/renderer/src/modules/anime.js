@@ -10,34 +10,29 @@ import { view } from '@/App.svelte'
 const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 
-window.addEventListener('paste', async e => { // WAIT image lookup on paste, or add torrent on paste
-  const item = e.clipboardData.items[0]
-  if (item?.type.indexOf('image') === 0) {
-    e.preventDefault()
-    traceAnime(item.getAsFile(), 'file')
-  } else if (item?.type === 'text/plain') {
-    item.getAsString(text => {
-      if (torrentRx.exec(text)) {
-        e.preventDefault()
-        add(text)
-        media.set(null)
+window.addEventListener('paste', ({ clipboardData }) => { // WAIT image lookup on paste, or add torrent on paste
+  const item = clipboardData.items[0]
+  if (!item) return
+  const { type } = item
+  if (type.startsWith('image')) return traceAnime(item.getAsFile())
+  if (!type.startsWith('text')) return
+  item.getAsString(text => {
+    if (torrentRx.exec(text)) {
+      add(text)
+      media.set(null)
+    } else {
+      let src = null
+      if (type === 'text/html') {
+        src = DOMPARSER(text, 'text/html').querySelectorAll('img')[0]?.src
       } else if (imageRx.exec(text)) {
-        e.preventDefault()
-        traceAnime(text)
+        src = text
       }
-    })
-  } else if (item && item.type === 'text/html') {
-    item.getAsString(text => {
-      const img = DOMPARSER(text, 'text/html').querySelectorAll('img')[0]
-      if (img) {
-        e.preventDefault()
-        traceAnime(img.src)
-      }
-    })
-  }
+      if (src) traceAnime(src)
+    }
+  })
 })
-export function traceAnime (image, type) { // WAIT lookup logic
-  if (type === 'file') {
+export async function traceAnime (image) { // WAIT lookup logic
+  if (image instanceof Blob) {
     const reader = new FileReader()
     reader.onload = e => {
       addToast({
@@ -54,27 +49,26 @@ export function traceAnime (image, type) { // WAIT lookup logic
   }
   let options
   let url = `https://api.trace.moe/search?cutBorders&url=${image}`
-  if (type === 'file') {
-    const formData = new FormData()
-    formData.append('image', image)
+  if (image instanceof Blob) {
     options = {
       method: 'POST',
-      body: formData
+      body: image,
+      headers: { 'Content-type': image.type }
     }
     url = 'https://api.trace.moe/search'
   }
-  fetch(url, options).then(res => res.json()).then(async ({ result }) => {
-    if (result && result[0].similarity >= 0.85) {
-      const res = await alRequest({ method: 'SearchIDSingle', id: result[0].anilist })
-      view.set(res.data.Media)
-    } else {
-      addToast({
-        text: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
-        title: 'Search Failed',
-        type: 'danger'
-      })
-    }
-  })
+  const res = await fetch(url, options)
+  const { result } = await res.json()
+  if (result && result[0].similarity >= 0.85) {
+    const res = await alRequest({ method: 'SearchIDSingle', id: result[0].anilist })
+    view.set(res.data.Media)
+  } else {
+    addToast({
+      text: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
+      title: 'Search Failed',
+      type: 'danger'
+    })
+  }
 }
 
 export function getMediaMaxEp (media, playable) {
