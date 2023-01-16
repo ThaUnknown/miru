@@ -190,6 +190,7 @@ export async function alRequest (opts) {
   const userId = (await alID)?.data?.Viewer.id
   const queryObjects = /* js */`
 id,
+idMal,
 title {
   romaji,
   english,

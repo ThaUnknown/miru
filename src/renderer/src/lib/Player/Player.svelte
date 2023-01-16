@@ -8,6 +8,7 @@
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, videoRx, fastPrettyBytes, throttle } from '@/modules/util.js'
   import { addToast } from '../Toasts.svelte'
+  import { getChaptersAniSkip } from '@/modules/anime.js'
 
   import { w2gEmitter } from '../WatchTogether/WatchTogether.svelte'
   import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
@@ -636,6 +637,11 @@
   client.on('chapters', ({ detail }) => {
     chapters = detail
   })
+  async function findChapters () {
+    if (!chapters.length) {
+      chapters = await getChaptersAniSkip(current, safeduration)
+    }
+  }
   let hoverChapter = null
 
   let currentSkippable = null
@@ -911,6 +917,7 @@
     on:loadedmetadata={hideBuffering}
     on:ended={tryPlayNext}
     on:loadedmetadata={initThumbnails}
+    on:loadedmetadata={findChapters}
     on:loadedmetadata={autoPlay}
     on:loadedmetadata={checkAudio}
     on:leavepictureinpicture={() => (pip = false)} />

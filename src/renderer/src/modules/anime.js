@@ -71,6 +71,58 @@ export async function traceAnime (image) { // WAIT lookup logic
   }
 }
 
+const parts = ['A', 'B', 'C', 'D', 'E']
+
+export async function getChaptersAniSkip (file, duration) {
+  const res = await fetch(`https://api.aniskip.com/v2/skip-times/${file.media.media.idMal}/${file.media.episode}/?episodeLength=${duration}&types=op&types=ed&types=recap`)
+  const { found, results } = await res.json()
+  if (!found) return []
+  const chapters = results.map(result => {
+    return {
+      start: result.interval.startTime * 1000,
+      end: result.interval.endTime * 1000,
+      text: result.skipType.toUpperCase()
+    }
+  })
+  const ed = chapters.find(({ text }) => text === 'ED')
+  const recap = chapters.find(({ text }) => text === 'RECAP')
+  if (recap) recap.text = 'Recap'
+
+  chapters.sort((a, b) => a - b)
+
+  if ((chapters[0].start | 0) !== 0) {
+    chapters.unshift({ start: 0, end: chapters[0].start, text: 'Intro' })
+  }
+  let part = 0
+  if (ed) {
+    if ((ed.end | 0) + 5000 - duration * 1000 < 0) {
+      chapters.push({ start: ed.end, end: duration * 1000, text: 'Preview' })
+    }
+  } else if ((chapters[chapters.length - 1].end | 0) + 5000 - duration * 1000 < 0) {
+    chapters.push({
+      start: chapters[chapters.length - 1].end,
+      end: duration * 1000,
+      text: 'Part ' + parts[part++]
+    })
+  }
+
+  for (let i = 0, len = chapters.length - 2; i <= len; ++i) {
+    const current = chapters[i]
+    const next = chapters[i + 1]
+    if ((current.end | 0) !== (next.start | 0)) {
+      chapters.push({
+        start: current.end,
+        end: next.start,
+        text: 'Part ' + parts[part++]
+      })
+    }
+  }
+
+  chapters.sort((a, b) => a - b)
+
+  return chapters
+}
+
 export function getMediaMaxEp (media, playable) {
   if (playable) {
     return media.nextAiringEpisode?.episode - 1 || media.airingSchedule?.nodes?.[0]?.episode - 1 || media.episodes
