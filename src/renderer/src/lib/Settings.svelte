@@ -195,8 +195,8 @@
             data-toggle='tooltip'
             data-placement='bottom'
             data-title="Automatically Finds Fonts That Are Missing From A Video's Subtitles">
-            <input type='checkbox' id='player-autoplay' bind:checked={settings.missingFont} />
-            <label for='player-autoplay'>Find Missing Fonts</label>
+            <input type='checkbox' id='player-missingFont' bind:checked={settings.missingFont} />
+            <label for='player-missingFont'>Find Missing Fonts</label>
           </div>
           <div class='col p-10 d-flex flex-column justify-content-end'>
             <div class='font-size-24 font-weight-semi-bold d-flex'>
