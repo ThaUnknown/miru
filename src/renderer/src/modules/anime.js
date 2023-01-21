@@ -73,14 +73,12 @@ export async function traceAnime (image) { // WAIT lookup logic
 
 const parts = ['A', 'B', 'C', 'D', 'E']
 
-export async function getChaptersAniSkip (file, duration) {
-  const res = await fetch(`https://api.aniskip.com/v2/skip-times/${file.media.media.idMal}/${file.media.episode}/?episodeLength=${duration}&types=op&types=ed&types=recap`)
-  const { found, results } = await res.json()
-  if (!found) return []
+function constructChapters (results, duration) {
   const chapters = results.map(result => {
+    const diff = duration - result.episodeLength
     return {
-      start: result.interval.startTime * 1000,
-      end: result.interval.endTime * 1000,
+      start: (result.interval.startTime + diff) * 1000,
+      end: (result.interval.endTime + diff) * 1000,
       text: result.skipType.toUpperCase()
     }
   })
@@ -89,11 +87,11 @@ export async function getChaptersAniSkip (file, duration) {
   if (recap) recap.text = 'Recap'
 
   chapters.sort((a, b) => a - b)
+  let part = 0
 
   if ((chapters[0].start | 0) !== 0) {
-    chapters.unshift({ start: 0, end: chapters[0].start, text: 'Intro' })
+    chapters.unshift({ start: 0, end: chapters[0].start, text: chapters[0].text === 'OP' ? 'Intro' : 'Part ' + parts[part++] })
   }
-  let part = 0
   if (ed) {
     if ((ed.end | 0) + 5000 - duration * 1000 < 0) {
       chapters.push({ start: ed.end, end: duration * 1000, text: 'Preview' })
@@ -121,6 +119,22 @@ export async function getChaptersAniSkip (file, duration) {
   chapters.sort((a, b) => a - b)
 
   return chapters
+}
+
+export async function getChaptersAniSkip (file, duration) {
+  const resAccurate = await fetch(`https://api.aniskip.com/v2/skip-times/${file.media.media.idMal}/${file.media.episode}/?episodeLength=${duration}&types=op&types=ed&types=recap`)
+  const jsonAccurate = await resAccurate.json()
+
+  const resRough = await fetch(`https://api.aniskip.com/v2/skip-times/${file.media.media.idMal}/${file.media.episode}/?episodeLength=0&types=op&types=ed&types=recap`)
+  const jsonRough = await resRough.json()
+
+  const map = {}
+  for (const result of [...jsonAccurate.results, ...jsonRough.results]) {
+    map[result.skipType] ||= result
+  }
+
+  const results = Object.values(map)
+  return constructChapters(results, duration)
 }
 
 export function getMediaMaxEp (media, playable) {

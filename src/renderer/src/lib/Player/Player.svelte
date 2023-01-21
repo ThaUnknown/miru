@@ -256,11 +256,14 @@
   function skip () {
     const current = findChapter(currentTime)
     if (current) {
-      if (!isChapterSkippable(current)) return
-      const endtime = current.end / 1000
-      if ((safeduration - endtime | 0) === 0) return playNext()
-      currentTime = endtime
-      currentSkippable = null
+      if (!isChapterSkippable(current) && ((current.end - current.start) / 1000) > 100) {
+        currentTime = currentTime + 85
+      } else {
+        const endtime = current.end / 1000
+        if ((safeduration - endtime | 0) === 0) return playNext()
+        currentTime = endtime
+        currentSkippable = null
+      }
     } else if (currentTime < 10) {
       currentTime = 90
     } else if (safeduration - currentTime < 90) {
