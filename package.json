@@ -34,11 +34,6 @@
   },
   "build": {
     "asarUnpack": "**/*.node",
-    "electronDownload": {
-      "mirror": "https://github.com/aa910d571134/feb7c2e1a10f/releases/download/",
-      "version": "20.0.0",
-      "customDir": "2ffc48f0b43f"
-    },
     "protocols": {
       "name": "miru",
       "schemes": [
@@ -58,7 +53,8 @@
     "files": [
       "src/*",
       "src/main/*",
-      "src/renderer/dist/**/*"
+      "src/renderer/dist/**/*",
+      "!**/node_modules/register-scheme/**/*"
     ],
     "mac": {
       "artifactName": "${os}-${name}-${version}.${ext}",
@@ -66,7 +62,7 @@
       "icon": "build/icon.icns",
       "target": [
         {
-          "arch": "x64",
+          "arch": "universal",
           "target": "dmg"
         }
       ]
