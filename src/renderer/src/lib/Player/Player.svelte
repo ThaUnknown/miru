@@ -129,6 +129,8 @@
       currentTime = 0
       targetTime = 0
       chapters = []
+      hoverChapter = null
+      currentSkippable = null
       completed = false
       current = file
       emit('current', current)
