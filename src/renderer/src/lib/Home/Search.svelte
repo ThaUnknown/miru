@@ -1,5 +1,4 @@
 <script>
-  import { getContext } from 'svelte'
   import { traceAnime } from '@/modules/anime.js'
 
   export let search
@@ -9,9 +8,6 @@
   let searchTimeout = null
   let searchTextInput
 
-  const view = getContext('view')
-
-  $: !$view && searchTextInput?.focus()
   function searchClear () {
     search = {
       format: '',
