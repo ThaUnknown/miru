@@ -46,7 +46,9 @@
         media.hasNext = hasNext
         return media
       }
+      return false
     }
+    return releasesCards(page, limit, force, val)
   }
   const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL']
   function sanitiseObject (object) {

@@ -94,6 +94,10 @@
     box-shadow: var(--dm-button-primary-box-shadow-focus) !important;
   }
 
+  :global(.modal:focus-visible){
+    box-shadow: none !important;
+  }
+
   :global(.root) {
     animation: 0.3s ease 0s 1 root-load-in;
   }
