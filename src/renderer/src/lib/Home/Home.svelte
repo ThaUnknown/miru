@@ -46,9 +46,7 @@
         media.hasNext = hasNext
         return media
       }
-      return false
     }
-    return releasesCards(page, limit, force, val)
   }
   const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL']
   function sanitiseObject (object) {
@@ -288,11 +286,11 @@
         const self = sections['releases-' + i]
         if (!self.previewData) {
           await sleep(i * 3000) // stagger lists by 3 seconds
-          self.previewData = self.load(1, 6, false, false)
           setInterval(async () => {
             const newData = await self.load(1, 6, false, false)
             if (newData) self.previewData = newData
           }, 15000)
+          self.previewData = await self.load(1, 6, false, false)
         }
         return self.previewData
       }
