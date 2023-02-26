@@ -62,6 +62,7 @@
     ],
     "mac": {
       "artifactName": "${os}-${name}-${version}.${ext}",
+      "singleArchFiles": "node_modules/utp-native/**",
       "category": "public.app-category.video",
       "icon": "build/icon.icns",
       "target": [
