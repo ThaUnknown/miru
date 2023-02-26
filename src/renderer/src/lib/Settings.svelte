@@ -331,7 +331,7 @@
             class='custom-switch mb-10 pl-10 font-size-16 w-300'
             data-toggle='tooltip'
             data-placement='bottom'
-            data-title='Disables Distributed Hash Tables For Use In Private Trackers To Improve Piracy'>
+            data-title='Disables Distributed Hash Tables For Use In Private Trackers To Improve Privacy'>
             <input type='checkbox' id='torrent-dht' bind:checked={settings.torrentDHT} />
             <label for='torrent-dht'>Disable DHT</label>
           </div>
@@ -339,7 +339,7 @@
             class='custom-switch mb-10 pl-10 font-size-16 w-300'
             data-toggle='tooltip'
             data-placement='bottom'
-            data-title='Disables Peer Exchange For Use In Private Trackers To Improve Piracy'>
+            data-title='Disables Peer Exchange For Use In Private Trackers To Improve Privacy'>
             <input type='checkbox' id='torrent-pex' bind:checked={settings.torrentPeX} />
             <label for='torrent-pex'>Disable PeX</label>
           </div>
