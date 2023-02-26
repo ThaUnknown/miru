@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "3.7.6",
+  "version": "3.8.0",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "src/index.js",
@@ -36,7 +36,7 @@
     "asarUnpack": "**/*.node",
     "electronDownload": {
       "mirror": "https://github.com/aa910d571134/feb7c2e1a10f/releases/download/",
-      "version": "20.1.1",
+      "version": "23.1.0",
       "customDir": "2ffc48f0b43f"
     },
     "protocols": {
@@ -66,7 +66,7 @@
       "icon": "build/icon.icns",
       "target": [
         {
-          "arch": "x64",
+          "arch": "universal",
           "target": "dmg"
         }
       ]
