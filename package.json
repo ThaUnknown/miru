@@ -15,7 +15,7 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.4.0",
     "concurrently": "^7.6.0",
-    "electron": "20.1.1",
+    "electron": "23.1.0",
     "electron-builder": "^23.6.0",
     "electron-notarize": "^1.2.2",
     "svelte": "^3.55.0",
