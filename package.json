@@ -58,7 +58,8 @@
     "files": [
       "src/*",
       "src/main/*",
-      "src/renderer/dist/**/*"
+      "src/renderer/dist/**/*",
+      "!node_modules/**/*.{mk,a,o,h}"
     ],
     "mac": {
       "artifactName": "${os}-${name}-${version}.${ext}",
