@@ -71,8 +71,6 @@ export async function traceAnime (image) { // WAIT lookup logic
   }
 }
 
-const parts = ['A', 'B', 'C', 'D', 'E']
-
 function constructChapters (results, duration) {
   const chapters = results.map(result => {
     const diff = duration - result.episodeLength
@@ -87,10 +85,8 @@ function constructChapters (results, duration) {
   if (recap) recap.text = 'Recap'
 
   chapters.sort((a, b) => a - b)
-  let part = 0
-
   if ((chapters[0].start | 0) !== 0) {
-    chapters.unshift({ start: 0, end: chapters[0].start, text: chapters[0].text === 'OP' ? 'Intro' : 'Part ' + parts[part++] })
+    chapters.unshift({ start: 0, end: chapters[0].start, text: chapters[0].text === 'OP' ? 'Intro' : 'Episode' })
   }
   if (ed) {
     if ((ed.end | 0) + 5000 - duration * 1000 < 0) {
@@ -100,7 +96,7 @@ function constructChapters (results, duration) {
     chapters.push({
       start: chapters[chapters.length - 1].end,
       end: duration * 1000,
-      text: 'Part ' + parts[part++]
+      text: 'Episode'
     })
   }
 
@@ -111,7 +107,7 @@ function constructChapters (results, duration) {
       chapters.push({
         start: current.end,
         end: next.start,
-        text: 'Part ' + parts[part++]
+        text: 'Episode'
       })
     }
   }
@@ -134,6 +130,7 @@ export async function getChaptersAniSkip (file, duration) {
   }
 
   const results = Object.values(map)
+  if (!results.length) return []
   return constructChapters(results, duration)
 }
 

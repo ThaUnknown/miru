@@ -29,7 +29,7 @@ class TorrentClient extends WebTorrent {
       })
     }, 200)
     setInterval(() => {
-      if (this.torrents[0]?.pieces) this.dispatch('pieces', [...this.torrents[0]?.pieces.map(piece => piece === null ? 77 : 33)])
+      if (this.torrents[0]?.pieces) this.dispatch('progress', this.current?.progress)
     }, 2000)
     this.on('torrent', this.handleTorrent.bind(this))
 
@@ -98,7 +98,6 @@ class TorrentClient extends WebTorrent {
       }
     })
     this.dispatch('files', files)
-    this.dispatch('pieces', torrent.pieces.length)
     this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
     this.dispatch('torrent', Array.from(torrent.torrentFile))
   }
