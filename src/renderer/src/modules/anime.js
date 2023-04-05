@@ -112,7 +112,7 @@ function constructChapters (results, duration) {
     }
   }
 
-  chapters.sort((a, b) => a - b)
+  chapters.sort((a, b) => a.start - b.start)
 
   return chapters
 }
