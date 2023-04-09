@@ -66,14 +66,6 @@ export default class Subtitles {
         if (!this.tracks[track.number]) {
           // overwrite webvtt or other header with custom one
           if (track.type !== 'ass') track.header = defaultHeader
-          if (!this.current) {
-            this.current = track.number
-            const styleMatches = track.header.match(stylesRx)
-            for (let i = 0; i < styleMatches.length; ++i) {
-              const style = styleMatches[i].replace('Style:', '').trim()
-              this._stylesMap[style] = i + 1
-            }
-          }
           this.tracks[track.number] = []
           this._tracksString[track.number] = new Set()
           this.headers[track.number] = track
@@ -82,6 +74,23 @@ export default class Subtitles {
         }
       }
       this.initSubtitleRenderer()
+      const tracks = this.headers?.filter(t => t)
+      if (tracks?.length && set.subtitleLanguage) {
+        if (tracks.length === 1) {
+          this.selectCaptions(tracks[0].number)
+        } else {
+          const wantedTrack = tracks.find(({ language }) => {
+            if (language == null) language = 'eng'
+            return language === set.subtitleLanguage
+          })
+          if (wantedTrack) return this.selectCaptions(wantedTrack.number)
+
+          const englishTrack = tracks.find(({ language }) => language === null || language === 'eng')
+          if (englishTrack) return this.selectCaptions(englishTrack.number)
+
+          this.selectCaptions(tracks[0].number)
+        }
+      }
     }
   }
 
@@ -133,7 +142,7 @@ export default class Subtitles {
     if (!this.renderer) {
       const options = {
         video: this.video,
-        subContent: this.headers[this.current].header.slice(0, -1),
+        subContent: defaultHeader,
         fonts: this.fonts,
         fallbackFont: set.font?.name || 'roboto medium',
         availableFonts: {
@@ -146,7 +155,6 @@ export default class Subtitles {
         options.availableFonts[set.font.name.toLowerCase()] = new Uint8Array(set.font.data)
       }
       this.renderer = new JASSUB(options)
-      this.selectCaptions(this.current)
     }
   }
 

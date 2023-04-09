@@ -13,7 +13,9 @@
     torrentDHT: false,
     torrentPeX: false,
     missingFont: true,
-    maxConns: 20
+    maxConns: 20,
+    subtitleLanguage: 'eng',
+    audioLanguage: 'jpn'
   }
   localStorage.removeItem('relations') // TODO: remove
   export const set = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
@@ -233,6 +235,67 @@
             data-title='Automatically Marks Episodes As Complete On AniList When You Finish Watching Them, Requires AniList Login'>
             <input type='checkbox' id='player-autocomplete' bind:checked={settings.playerAutocomplete} />
             <label for='player-autocomplete'>Autocomplete Episodes</label>
+          </div>
+          <div class='col p-10 d-flex flex-column justify-content-end'>
+            <div class='font-size-24 font-weight-semi-bold d-flex'>
+              <div class='material-icons mr-10 font-size-30'>translate</div>
+              Language Settings
+            </div>
+          </div>
+          <div class='input-group mb-10 w-400 form-control-lg' data-toggle='tooltip' data-placement='top' data-title='What Subtitle Language To Automatically Select, If Not Found Defaults To English'>
+            <div class='input-group-prepend'>
+              <span class='input-group-text w-250 justify-content-center'>Preferred Subtitle Language</span>
+            </div>
+            <select class='form-control form-control-lg' bind:value={settings.subtitleLanguage}>
+              <option value=''>None</option>
+              <option value='eng' selected>English</option>
+              <option value='jpn'>Japanese</option>
+              <option value='chi'>Chinese</option>
+              <option value='por'>Portuguese</option>
+              <option value='spa'>Spanish</option>
+              <option value='ger'>German</option>
+              <option value='pol'>Polish</option>
+              <option value='cze'>Czech</option>
+              <option value='dan'>Danish</option>
+              <option value='gre'>Greek</option>
+              <option value='fin'>Finnish</option>
+              <option value='fre'>French</option>
+              <option value='hun'>Hungarian</option>
+              <option value='ita'>Italian</option>
+              <option value='kor'>Korean</option>
+              <option value='dut'>Dutch</option>
+              <option value='nor'>Norwegian</option>
+              <option value='rum'>Romanian</option>
+              <option value='slo'>Slovak</option>
+              <option value='swe'>Swedish</option>
+            </select>
+          </div>
+          <div class='input-group mb-10 w-400 form-control-lg' data-toggle='tooltip' data-placement='top' data-title='What Audio Language To Automatically Select, If Not Found Defaults To Japanese'>
+            <div class='input-group-prepend'>
+              <span class='input-group-text w-250 justify-content-center'>Preferred Audio Language</span>
+            </div>
+            <select class='form-control form-control-lg' bind:value={settings.audioLanguage}>
+              <option value='eng'>English</option>
+              <option value='jpn' selected>Japanese</option>
+              <option value='chi'>Chinese</option>
+              <option value='por'>Portuguese</option>
+              <option value='spa'>Spanish</option>
+              <option value='ger'>German</option>
+              <option value='pol'>Polish</option>
+              <option value='cze'>Czech</option>
+              <option value='dan'>Danish</option>
+              <option value='gre'>Greek</option>
+              <option value='fin'>Finnish</option>
+              <option value='fre'>French</option>
+              <option value='hun'>Hungarian</option>
+              <option value='ita'>Italian</option>
+              <option value='kor'>Korean</option>
+              <option value='dut'>Dutch</option>
+              <option value='nor'>Norwegian</option>
+              <option value='rum'>Romanian</option>
+              <option value='slo'>Slovak</option>
+              <option value='swe'>Swedish</option>
+            </select>
           </div>
         </div>
       </Tab>

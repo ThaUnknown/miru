@@ -69,12 +69,20 @@
   $: safeduration = (isFinite(duration) ? duration : currentTime) || 0
 
   function checkAudio () {
-    if ('audioTracks' in HTMLVideoElement.prototype && !video.audioTracks.length) {
-      addToast({
-        text: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in RSS settings.",
-        title: 'Audio Codec Unsupported',
-        type: 'danger'
-      })
+    if ('audioTracks' in HTMLVideoElement.prototype) {
+      if (!video.audioTracks.length) {
+        addToast({
+          text: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in RSS settings.",
+          title: 'Audio Codec Unsupported',
+          type: 'danger'
+        })
+      } else if (video.audioTracks.length > 1) {
+        const preferredTrack = [...video.audioTracks].find(({ language }) => language === set.audioLanguage)
+        if (preferredTrack) return selectAudio(preferredTrack.id)
+
+        const japaneseTrack = [...video.audioTracks].find(({ language }) => language === 'jpn')
+        if (japaneseTrack) return selectAudio(japaneseTrack.id)
+      }
     }
   }
 
