@@ -1,5 +1,4 @@
 <script>
-  // /* eslint svelte/valid-compile: ["error", { ignoreWarnings: true }] */
   import { set } from '../Settings.svelte'
   import { playAnime } from '../RSSView.svelte'
   import { client } from '@/modules/torrent.js'
@@ -921,15 +920,15 @@
       <span class='material-icons'> arrow_upward </span>
       <span class='stats'>{fastPrettyBytes(torrent.up)}/s</span>
     </div>
-    <span class='material-icons ctrl' title='Keybinds [`]' on:click={() => (showKeybinds = true)} on:keydown={wrapEnter(() => (showKeybinds = true))}> help_outline </span>
+    <span class='material-icons ctrl' title='Keybinds [`]' on:pointerdown={() => (showKeybinds = true)}> help_outline </span>
   </div>
   <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
-    <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
-    <span class='material-icons ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} data-name='playLast' on:click={playLast}> skip_previous </span>
-    <span class='material-icons ctrl' data-name='rewind' on:click={rewind}> fast_rewind </span>
-    <span class='material-icons ctrl' data-name='playPause' on:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
-    <span class='material-icons ctrl' data-name='forward' on:click={forward}> fast_forward </span>
-    <span class='material-icons ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} data-name='playNext' on:click={playNext}> skip_next </span>
+    <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:pointerdown|self={() => { if (page === 'player') playPause(); page = 'player' }} />
+    <span class='material-icons ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} data-name='playLast' on:pointerdown={playLast}> skip_previous </span>
+    <span class='material-icons ctrl' data-name='rewind' on:pointerdown={rewind}> fast_rewind </span>
+    <span class='material-icons ctrl' data-name='playPause' on:pointerdown={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
+    <span class='material-icons ctrl' data-name='forward' on:pointerdown={forward}> fast_forward </span>
+    <span class='material-icons ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} data-name='playNext' on:pointerdown={playNext}> skip_next </span>
     <div class='position-absolute bufferingDisplay' />
     {#if currentSkippable}
       <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold' on:click={skip}>
@@ -1006,7 +1005,7 @@
           <div class='dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize'>
             {#each video.audioTracks as track}
               <input name='audio-radio-set' type='radio' id='audio-{track.id}-radio' value={track.id} checked={track.enabled} />
-              <label for='audio-{track.id}-radio' on:click|stopPropagation={() => selectAudio(track.id)} class='text-truncate pb-5'>
+              <label for='audio-{track.id}-radio' on:pointerdown|stopPropagation={() => selectAudio(track.id)} class='text-truncate pb-5'>
                 {(track.language || (!Object.values(video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) + (track.label ? ' - ' + track.label : '')}
               </label>
             {/each}
@@ -1021,7 +1020,7 @@
           <div class='dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize'>
             {#each video.videoTracks as track}
               <input name='video-radio-set' type='radio' id='video-{track.id}-radio' value={track.id} checked={track.selected} />
-              <label for='video-{track.id}-radio' on:click|stopPropagation={() => selectVideo(track.id)} class='text-truncate pb-5'>
+              <label for='video-{track.id}-radio' on:click|stopPropagation={() => selectVideo(track.id)} class='text-truncate pb-5' on:keydown={wrapEnter(() => selectVideo(track.id))}>
                 {(track.language || (!Object.values(video.videoTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) + (track.label ? ' - ' + track.label : '')}
               </label>
             {/each}
@@ -1035,11 +1034,11 @@
           </span>
           <div class='dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize w-200'>
             <input name='subtitle-radio-set' type='radio' id='subtitle-off-radio' value='off' checked={subHeaders && subs?.current === -1} />
-            <label for='subtitle-off-radio' on:click|stopPropagation={() => subs.selectCaptions(-1)} class='text-truncate pb-5'> OFF </label>
+            <label for='subtitle-off-radio' on:click|stopPropagation={() => subs.selectCaptions(-1)} class='text-truncate pb-5' on:keydown={wrapEnter(() => subs.selectCaptions(-1))}> OFF </label>
             {#each subHeaders as track}
               {#if track}
                 <input name='subtitle-radio-set' type='radio' id='subtitle-{track.number}-radio' value={track.numer} checked={track.number === subs.current} />
-                <label for='subtitle-{track.nubmer}-radio' on:click={() => subs.selectCaptions(track.number)} class='text-truncate pb-5'>
+                <label for='subtitle-{track.nubmer}-radio' on:click={() => subs.selectCaptions(track.number)} on:keydown={wrapEnter(() => subs.selectCaptions(track.number))} class='text-truncate pb-5'>
                   {(track.language || (!Object.values(subs.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : track.type)) + (track.name ? ' - ' + track.name : '')}
                 </label>
               {/if}
