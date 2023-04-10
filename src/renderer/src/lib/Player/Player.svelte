@@ -855,7 +855,7 @@
   class:miniplayer
   class:pip
   class:immersed
-  class:buffering
+  class:buffering={src && buffering}
   bind:this={container}
   on:mousemove={resetImmerse}
   on:touchmove={resetImmerse}
