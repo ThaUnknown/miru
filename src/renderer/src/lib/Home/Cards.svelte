@@ -8,6 +8,15 @@
   }
   export let length = 5
   export let tabable = false
+
+  const statusColorMap = {
+    CURRENT: 'rgb(61,180,242)',
+    PLANNING: 'rgb(247,154,99)',
+    COMPLETED: 'rgb(123,213,85)',
+    PAUSED: 'rgb(250,122,122)',
+    REPEAT: '#3baeea',
+    DROPPED: 'rgb(232,93,117)'
+  }
 </script>
 
 {#await cards}
@@ -52,6 +61,9 @@
           <div class='col-8 h-full card-grid'>
             <div class='px-15 py-10 bg-very-dark'>
               <h5 class='m-0 text-capitalize font-weight-bold'>
+                {#if card.media.mediaListEntry?.status}
+                  <div style:--statusColor={statusColorMap[card.media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={card.media.mediaListEntry.status} />
+                {/if}
                 {#if card.failed}
                   <span class='badge badge-secondary'>Uncertain</span>
                 {/if}
@@ -86,11 +98,13 @@
             <div class='overflow-y-auto px-15 pb-5 bg-very-dark card-desc pre-wrap'>
               {card.media.description?.replace(/<[^>]*>/g, '') || ''}
             </div>
-            <div class='px-15 pb-10 pt-5 genres'>
-              {#each card.media.genres as genre}
-                <span class='badge badge-pill badge-color text-dark mt-5 mr-5 font-weight-bold'>{genre}</span>
-              {/each}
-            </div>
+            {#if card.media.genres.length}
+              <div class='px-15 pb-10 pt-5 genres'>
+                {#each card.media.genres.slice(0, 3) as genre}
+                  <span class='badge badge-pill badge-color text-dark mt-5 mr-5 font-weight-bold'>{genre}</span>
+                {/each}
+              </div>
+            {/if}
           </div>
         </div>
       </div>
@@ -184,5 +198,11 @@
   }
   .day-row {
     grid-column: 1 / -1;
+  }
+  .list-status-circle {
+    background: var(--statusColor);
+    height: 1.1rem;
+    width: 1.1rem;
+    border-radius: 50%;
   }
 </style>

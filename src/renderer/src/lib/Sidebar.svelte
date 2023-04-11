@@ -215,6 +215,8 @@
 
   [data-toggle='tooltip']:not([data-target-breakpoint])::before,
   [data-toggle='tooltip']:not([data-target-breakpoint])::before {
+    visibility: visible !important;
+    pointer-events: none;
     background: #fff;
     color: #000;
     transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -224,8 +226,7 @@
     box-shadow: var(--dm-shadow) !important;
   }
 
-  [data-toggle='tooltip']:not([data-target-breakpoint]):hover::before,
-  [data-toggle='tooltip']:not([data-target-breakpoint]):focus::before {
+  [data-toggle='tooltip']:not([data-target-breakpoint]):hover::before {
     opacity: 1;
     top: 50%;
   }

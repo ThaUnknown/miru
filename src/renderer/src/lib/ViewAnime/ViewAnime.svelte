@@ -36,8 +36,8 @@
               <div class='col-md-3 col-4 d-flex h-full justify-content-end flex-column pb-15 align-items-center'>
                 <img class='contain-img rounded mw-full mh-full shadow' alt='cover' src={media.coverImage?.extraLarge || media.coverImage?.medium} />
               </div>
-              <div class='col-md-9 col-8 row align-content-end pl-20'>
-                <div class='col-md-8 col-12 d-flex justify-content-end flex-column'>
+              <div class='col-md-9 col-8 row align-content-end'>
+                <div class='col-md-8 col-12 d-flex justify-content-end flex-column pl-20'>
                   <div class='px-md-20 d-flex flex-column font-size-12'>
                     <span class='title font-weight-bold pb-sm-15 text-white select-all'>
                       {media.title.userPreferred}
@@ -84,59 +84,54 @@
       </div>
       <div class='container-xl bg-very-dark z-10'>
         <div class='row p-20 px-xl-0 flex-column-reverse flex-md-row'>
-          <div class='col-md-9 px-20'>
+          <div class='col-md-9 pr-50'>
             <h1 class='title font-weight-bold text-white'>Synopsis</h1>
-            <div class='font-size-16 pr-15 pre-wrap select-all'>
+            <div class='font-size-16 pre-wrap select-all card m-0'>
               {media.description?.replace(/<[^>]*>/g, '') || ''}
             </div>
             <ToggleList list={media.relations?.edges?.filter(({ node }) => node.type === 'ANIME')} let:item title='Relations'>
-              <div class='w-150 mx-15 mb-10 rel pointer'
+              <div class='w-150 mx-15 my-10 rel pointer'
                 on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media }}
                 on:keydown={wrapEnter(async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media })}
-                tabindex='0' role='button'
-              >
-                <img loading='lazy' src={item.node.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img' />
+                tabindex='0' role='button'>
+                <img loading='lazy' src={item.node.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img rounded' />
                 <div class='pt-5'>{item.relationType.replace(/_/g, ' ').toLowerCase()}</div>
-                <h5 class='font-weight-bold text-white'>{item.node.title.userPreferred}</h5>
+                <h5 class='font-weight-bold text-white mb-5'>{item.node.title.userPreferred}</h5>
               </div>
             </ToggleList>
             {#if maxPlayEp}
-              <table class='table table-hover w-500 table-auto'>
-                <thead>
-                  <tr>
-                    <th class='px-0'><h2 class='title font-weight-bold text-white pt-20 mb-5'>Episodes</h2></th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {#each Array(maxPlayEp) as _, i}
-                    {@const ep = maxPlayEp - i}
-                    <tr class="font-size-20 py-10 pointer {ep <= media.mediaListEntry?.progress ? 'text-muted' : 'text-white'}"
-                      on:click={() => {
-                        playAnime(media, ep)
-                        close()
-                      }}
-                      on:keydown={wrapEnter(() => {
-                        playAnime(media, ep)
-                        close()
-                      })}
-                      tabindex='0' role='button'
-                    >
-                      <td class='w-full font-weight-semi-bold'>Episode {ep}</td>
-                      <td class='material-icons text-right h-full d-table-cell'>play_arrow</td>
-                    </tr>
-                  {/each}
-                </tbody>
-              </table>
+              <h1 class='title font-weight-bold text-white pt-20'>Episodes</h1>
+              <div class='card m-0 d-inline-block'>
+                <table class='table table-hover w-500 table-auto '>
+                  <tbody>
+                    {#each Array(maxPlayEp) as _, i}
+                      {@const ep = maxPlayEp - i}
+                      <tr class="font-size-20 py-10 pointer {ep <= media.mediaListEntry?.progress ? 'text-muted' : 'text-white'}"
+                        on:click={() => {
+                          playAnime(media, ep)
+                          close()
+                        }}
+                        on:keydown={wrapEnter(() => {
+                          playAnime(media, ep)
+                          close()
+                        })}
+                        tabindex='0' role='button'
+                      >
+                        <td class='w-full font-weight-semi-bold'>Episode {ep}</td>
+                        <td class='material-icons text-right h-full d-table-cell'>play_arrow</td>
+                      </tr>
+                    {/each}
+                  </tbody>
+                </table>
+              </div>
             {/if}
             <ToggleList list={media.recommendations.edges.filter(edge => edge.node.mediaRecommendation)} let:item title='Recommendations'>
-              <div class='w-150 mx-15 mb-10 rel pointer'
+              <div class='w-150 mx-15 my-10 rel pointer'
                 on:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.mediaRecommendation.id })).data.Media }}
                 on:keydown={wrapEnter(async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.mediaRecommendation.id })).data.Media })}
-                tabindex='0' role='button'
-              >
-                <img loading='lazy' src={item.node.mediaRecommendation.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img' />
-                <h5 class='font-weight-bold text-white'>{item.node.mediaRecommendation.title.userPreferred}</h5>
+                tabindex='0' role='button'>
+                <img loading='lazy' src={item.node.mediaRecommendation.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img rounded' />
+                <h5 class='font-weight-bold text-white mb-5'>{item.node.mediaRecommendation.title.userPreferred}</h5>
               </div>
             </ToggleList>
           </div>
@@ -169,6 +164,9 @@
   }
   .title {
     font-size: 4rem;
+  }
+  .pr-50 {
+    padding-right: 5rem;
   }
   .close {
     top: 1rem !important;
