@@ -291,5 +291,8 @@ ipcMain.on('update', () => {
 
 autoUpdater.checkForUpdatesAndNotify()
 autoUpdater.on('update-available', () => {
-  BrowserWindow.getAllWindows()[0]?.send('update', true)
+  BrowserWindow.getAllWindows()[0]?.send('update-available', true)
+})
+autoUpdater.on('update-downloaded', () => {
+  BrowserWindow.getAllWindows()[0]?.send('update-downloaded', true)
 })

@@ -59,7 +59,7 @@
   window.IPC.emit('version')
 
   let wasUpdated = false
-  window.IPC.on('update', () => {
+  window.IPC.on('update-available', () => {
     if (!wasUpdated) {
       wasUpdated = true
       addToast({
@@ -67,6 +67,13 @@
         text: 'A new version of Miru is available. Downloading!'
       })
     }
+  })
+  window.IPC.on('update-downloaded', () => {
+    addToast({
+      title: 'Auto Updater',
+      text: 'A new version of Miru has downloaded. You can restart to update!',
+      type: 'success'
+    })
   })
   function checkUpdate () {
     window.IPC.emit('update')
