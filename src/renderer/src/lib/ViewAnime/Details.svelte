@@ -20,9 +20,6 @@
   ]
   function getCustomProperty (detail, media) {
     if (detail.property === 'episodes') {
-      if (media.mediaListEntry?.progress) {
-        return `Watched ${media.mediaListEntry.progress} of ${getMediaMaxEp(media)}`
-      }
       return `${getMediaMaxEp(media)} Episodes`
     } else if (detail.property === 'averageScore') {
       return media.averageScore + '%'

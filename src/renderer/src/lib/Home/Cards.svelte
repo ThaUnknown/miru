@@ -75,21 +75,29 @@
                 </span>
               {/if}
               <p class='text-muted m-0 text-capitalize details'>
-                {#if card.media.format === 'TV'}
-                  <span>TV Show</span>
-                {:else if card.media.format}
-                  <span>{card.media.format?.toLowerCase().replace(/_/g, ' ')}</span>
-                {/if}
-                {#if card.media.episodes}
-                  <span>{card.media.episodes + ' Episodes'}</span>
+                <span class='text-nowrap'>
+                  {#if card.media.format === 'TV'}
+                    TV Show
+                  {:else if card.media.format}
+                    {card.media.format?.toLowerCase().replace(/_/g, ' ')}
+                  {/if}
+                </span>
+                {#if card.media.episodes && card.media.episodes !== 1}
+                  <span class='text-nowrap'>
+                    {#if card.media.mediaListEntry?.status === 'CURRENT' && card.media.mediaListEntry?.progress }
+                      {card.media.mediaListEntry.progress} / {card.media.episodes} Episodes
+                    {:else}
+                      {card.media.episodes} Episodes
+                    {/if}
+                  </span>
                 {:else if card.media.duration}
-                  <span>{card.media.duration + ' Minutes'}</span>
+                  <span class='text-nowrap'>{card.media.duration + ' Minutes'}</span>
                 {/if}
                 {#if card.media.status}
-                  <span>{card.media.status?.toLowerCase().replace(/_/g, ' ')}</span>
+                  <span class='text-nowrap'>{card.media.status?.toLowerCase().replace(/_/g, ' ')}</span>
                 {/if}
                 {#if card.media.season || card.media.seasonYear}
-                  <span>
+                  <span class='text-nowrap'>
                     {[card.media.season?.toLowerCase(), card.media.seasonYear].filter(s => s).join(' ')}
                   </span>
                 {/if}
@@ -135,6 +143,7 @@
 
   .details span + span::before {
     content: ' • ';
+    white-space: normal;
   }
   .card {
     animation: 0.3s ease 0s 1 load-in;

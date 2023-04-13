@@ -136,6 +136,17 @@
             </ToggleList>
           </div>
           <div class='col-md-3 px-sm-0 px-20'>
+            {#if media.mediaListEntry?.progress}
+              <h1 class='title font-weight-bold text-white'>Progress</h1>
+              <div class='card m-0 pt-20 pb-15 d-flex flex-md-column flex-row text-capitalize align-items-start'>
+                <div class='progress w-full'>
+                  <div class='progress-bar' role='progressbar' style='width: {media.mediaListEntry?.progress / getMediaMaxEp(media) * 100}%;' />
+                </div>
+                <div class='font-weight-bold pt-10'>
+                  {media.mediaListEntry?.progress} / {getMediaMaxEp(media)} Available Episodes
+                </div>
+              </div>
+            {/if}
             <Details {media} />
             <Following {media} />
           </div>
