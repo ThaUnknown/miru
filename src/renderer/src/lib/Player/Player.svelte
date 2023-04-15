@@ -923,10 +923,10 @@
     <span class='material-icons ctrl' title='Keybinds [`]' on:pointerdown={() => (showKeybinds = true)}> help_outline </span>
   </div>
   <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
-    <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:pointerdown|self={() => { if (page === 'player') playPause(); page = 'player' }} />
+    <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} on:keydown={wrapEnter(() => { if (page === 'player') playPause(); page = 'player' })} />
     <span class='material-icons ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} data-name='playLast' on:pointerdown={playLast}> skip_previous </span>
     <span class='material-icons ctrl' data-name='rewind' on:pointerdown={rewind}> fast_rewind </span>
-    <span class='material-icons ctrl' data-name='playPause' on:click={playPause} on:keydown={wrapEnter(playPause)}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
+    <span class='material-icons ctrl' data-name='playPause' on:pointerdown={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
     <span class='material-icons ctrl' data-name='forward' on:pointerdown={forward}> fast_forward </span>
     <span class='material-icons ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} data-name='playNext' on:pointerdown={playNext}> skip_next </span>
     <div class='position-absolute bufferingDisplay' />
