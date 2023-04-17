@@ -6,9 +6,17 @@ import { set } from '@/lib/Settings.svelte'
 
 import { client } from '@/modules/torrent.js'
 
-const defaultHeader = `[V4+ Styles]
+const defaultHeader = `[Script Info]
+Title: English (US)
+ScriptType: v4.00+
+WrapStyle: 0
+PlayResX: 1280
+PlayResY: 720
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default, ${set.font?.name || 'Roboto Medium'},26,&H00FFFFFF,&H000000FF,&H00020713,&H00000000,0,0,0,0,100,100,0,0,1,1.3,0,2,20,20,23,1
+Style: Default, ${set.font?.name.toLowerCase() || 'Roboto Medium'},52,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,20,20,46,1
 [Events]
 
 `
@@ -43,7 +51,7 @@ export default class Subtitles {
     if (this.selected) {
       const uint8 = new Uint8Array(detail.data)
       this.fonts.push(uint8)
-      this.renderer.addFont(uint8)
+      this.renderer?.addFont(uint8)
     }
   }
 
@@ -55,7 +63,7 @@ export default class Subtitles {
         this._tracksString[trackNumber].add(string)
         const assSub = this.constructSub(subtitle, this.headers[trackNumber].type !== 'ass', this.tracks[trackNumber].length)
         this.tracks[trackNumber].push(assSub)
-        if (this.current === trackNumber) this.renderer.createEvent(assSub)
+        if (this.current === trackNumber) this.renderer?.createEvent(assSub)
       }
     }
   }
@@ -73,7 +81,6 @@ export default class Subtitles {
           this.onHeader()
         }
       }
-      this.initSubtitleRenderer()
       const tracks = this.headers?.filter(t => t)
       if (tracks?.length && set.subtitleLanguage) {
         if (tracks.length === 1) {
@@ -153,8 +160,10 @@ export default class Subtitles {
       }
       if (set.font) {
         options.availableFonts[set.font.name.toLowerCase()] = new Uint8Array(set.font.data)
+        this.fonts.push(new Uint8Array(set.font.data))
       }
       this.renderer = new JASSUB(options)
+      this.selectCaptions(this.current)
     }
   }
 
@@ -260,12 +269,12 @@ export default class Subtitles {
   }
 
   selectCaptions (trackNumber) {
-    if (trackNumber !== undefined) {
+    if (trackNumber != null) {
       this.current = Number(trackNumber)
       this.onHeader()
-      if (this.renderer && this.headers) {
+      if (this.headers) {
         const track = this.headers[this.current]
-        this.renderer.setTrack(this.current !== -1 ? this.headers[this.current].header.slice(0, -1) : defaultHeader)
+        this.renderer?.setTrack(this.current !== -1 ? this.headers[this.current].header.slice(0, -1) : defaultHeader)
         if (this.tracks[this.current]) {
           this._stylesMap = {
             Default: 0
@@ -275,7 +284,7 @@ export default class Subtitles {
             const style = styleMatches[i].replace('Style:', '').trim()
             this._stylesMap[style] = i + 1
           }
-          for (const subtitle of this.tracks[this.current]) this.renderer.createEvent(subtitle)
+          if (this.renderer) for (const subtitle of this.tracks[this.current]) this.renderer.createEvent(subtitle)
         }
       }
     }

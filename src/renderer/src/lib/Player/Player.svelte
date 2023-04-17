@@ -139,7 +139,8 @@
       completed = false
       current = file
       emit('current', current)
-      initSubs()
+      if (subs) subs.destroy()
+      subs = new Subtitles(video, files, current, handleHeaders)
       src = file.url
       client.send('current', file)
       await tick()
@@ -169,10 +170,6 @@
     }
   }
 
-  function initSubs () {
-    if (subs) subs.destroy()
-    subs = new Subtitles(video, files, current, handleHeaders)
-  }
   function cycleSubtitles () {
     if (current && subs?.headers) {
       const tracks = subs.headers.filter(header => header)
@@ -747,7 +744,7 @@
   // }
 
   // const isWindows = navigator.appVersion.includes('Windows')
-  let innerWidth, innerHeight
+  // let innerWidth, innerHeight
   const menubarOffset = 0
   // $: calcMenubarOffset(innerWidth, innerHeight, videoWidth, videoHeight)
   // function calcMenubarOffset (innerWidth, innerHeight, videoWidth, videoHeight) {
@@ -840,7 +837,7 @@
   }
 </script>
 
-<svelte:window bind:innerWidth bind:innerHeight />
+<!-- <svelte:window bind:innerWidth bind:innerHeight /> -->
 {#if showKeybinds && !miniplayer}
   <div class='position-absolute bg-tp w-full h-full z-50 font-size-12 p-20 d-flex align-items-center justify-content-center' on:click|self={() => (showKeybinds = false)} on:keydown={wrapEnter(() => (showKeybinds = false))}>
     <button class='close' type='button' on:click={() => (showKeybinds = false)} on:keydown={wrapEnter(() => (showKeybinds = false))}><span>×</span></button>
@@ -895,6 +892,7 @@
     on:loadedmetadata={findChapters}
     on:loadedmetadata={autoPlay}
     on:loadedmetadata={checkAudio}
+    on:loadedmetadata={() => subs?.initSubtitleRenderer()}
     on:leavepictureinpicture={() => (pip = false)} />
   {#if stats}
     <div class='position-absolute top-0 bg-tp p-10 m-15 text-monospace rounded z-50'>
@@ -938,37 +936,6 @@
   </div>
   <div class='bottom d-flex z-40 flex-column px-20'>
     <div class='w-full d-flex align-items-center h-20 mb-5 seekbar'>
-      <!-- <div class='w-full h-full position-relative d-flex align-items-center'>
-        <canvas class='position-absolute buffer w-full' height='1px' bind:this={bufferCanvas} />
-        <input
-          class='ctrl w-full h-full prog custom-range'
-          type='range'
-          min='0'
-          max='1'
-          step='any'
-          data-name='setProgress'
-          bind:value={throttledProgress}
-          on:mousedown={handleMouseDown}
-          on:mouseup={handleMouseUp}
-          on:mousemove={handleHover}
-          on:input={handleProgress}
-          on:touchstart={handleMouseDown}
-          on:touchend={handleMouseUp}
-          on:keydown|preventDefault />
-        <datalist class='d-flex position-absolute w-full'>
-          {#each chapters.slice(1) as chapter}
-            {@const value = chapter.start / 1000 / safeduration}
-            <option {value} style:left={value * 100 + '%'} class='position-absolute' />
-          {/each}
-        </datalist>
-        <div class='hover position-absolute d-flex flex-column align-items-center' bind:this={hover}>
-          <img alt='thumbnail' class='w-full mb-5 shadow-lg' src={thumbnail} />
-          {#if hoverChapter}
-            <div class='ts'>{hoverChapter.text}</div>
-          {/if}
-          <div class='ts'>{toTS(hoverTime)}</div>
-        </div>
-      </div> -->
       <Seekbar
         accentColor={'#e5204c'}
         class='font-size-20'
@@ -1348,7 +1315,6 @@
   .bottom .ts {
     color: #ececec;
     font-size: 2rem !important;
-    text-shadow: 0 0 4px rgb(0 0 0 / 75%);
     white-space: nowrap;
     align-self: center;
     line-height: var(--base-line-height);
