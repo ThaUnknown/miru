@@ -79,6 +79,12 @@
     window.IPC.emit('update')
   }
   setInterval(checkUpdate, 1200000)
+
+  const changeLog = (async () => {
+    const res = await fetch('https://api.github.com/repos/ThaUnknown/miru/releases')
+    const json = await res.json()
+    return json.map(({ body, tag_name: version }) => ({ body, version }))
+  })()
 </script>
 
 <script>
@@ -105,6 +111,11 @@
       name: 'Torrent',
       icon: 'hub',
       desc: 'Torrent client settings, and preferences.'
+    },
+    changelog: {
+      name: 'Changelog',
+      icon: 'list',
+      desc: 'Version change log.'
     }
   }
   let settings = set
@@ -189,9 +200,9 @@
       <p class='text-muted px-20 pb-10 m-0'>If you don't know what shit does, use default settings.</p>
       <p class='text-muted px-20 m-0 mb-20'>v{version} {platformMap[window.version.platform]} {window.version.arch}</p>
     </div>
-    <div class='h-full p-20 m-20'>
+    <div class='h-full w-full overflow-y-auto'>
       <Tab>
-        <div class='root'>
+        <div class='root p-20 m-20'>
           <div class='col p-10 d-flex flex-column justify-content-end'>
             <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
               <div class='material-icons mr-10 font-size-30'>font_download</div>
@@ -307,7 +318,7 @@
         </div>
       </Tab>
       <Tab>
-        <div class='root'>
+        <div class='root p-20 m-20'>
           {#each settings.rssFeeds as _, i}
             <div
               class='input-group mb-10 w-700 form-control-lg'
@@ -355,7 +366,7 @@
         </div>
       </Tab>
       <Tab>
-        <div class='root'>
+        <div class='root p-20 m-20'>
           <div
             class='input-group input-group-lg form-control-lg mb-10 w-500'
             data-toggle='tooltip'
@@ -415,6 +426,17 @@
           </div>
         </div>
       </Tab>
+      <Tab>
+        <div class='root m-20 px-20 pre-wrap'>
+          {#await changeLog}
+            <h1 class='font-weight-bold'>Loading changelog...</h1>
+          {:then changes}
+            {#each changes as { body, version }}
+              <h1 class='font-weight-bold mt-20'>{version}</h1>{body}
+            {/each}
+          {/await}
+        </div>
+      </Tab>
     </div>
   </div>
 </Tabs>
@@ -422,5 +444,8 @@
 <style>
   select.form-control:invalid {
     color: var(--dm-input-placeholder-text-color);
+  }
+  .pre-wrap {
+    white-space: pre-wrap
   }
 </style>
