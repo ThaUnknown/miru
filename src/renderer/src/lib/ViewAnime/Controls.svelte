@@ -145,7 +145,7 @@
         <span class='material-icons mr-15 font-size-18 w-30'> open_in_new </span>
         Open
       </button>
-      <button class='btn flex-fill font-weight-bold font-size-16 ml-5 d-flex align-items-center' on:click={() => { copyToClipboard(`<miru://anime/${media.id}>`) }}>
+      <button class='btn flex-fill font-weight-bold font-size-16 ml-5 d-flex align-items-center' on:click={() => { copyToClipboard(`https://miru.watch/anime/${media.id}`) }}>
         <span class='material-icons mr-15 font-size-18 w-30'> share </span>
         Share
       </button>
