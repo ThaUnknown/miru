@@ -87,6 +87,7 @@ export default class Subtitles {
           this.onHeader()
         }
       }
+      this.initSubtitleRenderer()
       const tracks = this.headers?.filter(t => t)
       if (tracks?.length && set.subtitleLanguage) {
         if (tracks.length === 1) {
@@ -169,7 +170,6 @@ export default class Subtitles {
         this.fonts.push(new Uint8Array(set.font.data))
       }
       this.renderer = new JASSUB(options)
-      this.selectCaptions(this.current)
     }
   }
 

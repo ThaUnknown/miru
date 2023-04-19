@@ -137,12 +137,12 @@
       chapters = []
       currentSkippable = null
       completed = false
+      if (subs) subs.destroy()
       current = file
       emit('current', current)
-      if (subs) subs.destroy()
-      subs = new Subtitles(video, files, current, handleHeaders)
       src = file.url
       client.send('current', file)
+      subs = new Subtitles(video, files, current, handleHeaders)
       await tick()
       video?.play()
     }
@@ -892,7 +892,6 @@
     on:loadedmetadata={findChapters}
     on:loadedmetadata={autoPlay}
     on:loadedmetadata={checkAudio}
-    on:loadedmetadata={() => subs?.initSubtitleRenderer()}
     on:leavepictureinpicture={() => (pip = false)} />
   {#if stats}
     <div class='position-absolute top-0 bg-tp p-10 m-15 text-monospace rounded z-50'>
