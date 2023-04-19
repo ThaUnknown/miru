@@ -677,6 +677,30 @@
       if (time < (chapter.end / 1000) && time >= (chapter.start / 1000)) return chapter
     }
   }
+
+  // remaps chapters to what perfect-seekbar uses and adds potentially missing chapters
+  function sanitiseChapters (chapters, safeduration) {
+    const sanitised = []
+    let sum = 0
+    for (const { start, end, text } of chapters) {
+      if (!sanitised.length && start !== 0) {
+        const size = start / 10 / safeduration
+        sum += size
+        sanitised.push({ size })
+      }
+      const size = (end / 10 / safeduration) - (start / 10 / safeduration)
+      sum += size
+      sanitised.push({
+        size,
+        text
+      })
+    }
+    if (sum !== 100) {
+      sanitised.push({ size: 100 - sum })
+    }
+    return sanitised
+  }
+
   const thumbCanvas = document.createElement('canvas')
   thumbCanvas.width = 200
   const thumbnailData = {
@@ -943,10 +967,7 @@
         bind:progress={progress}
         on:seeking={handleMouseDown}
         on:seeked={handleMouseUp}
-        chapters={chapters.map(({ start, end, text }) => ({
-          size: (end / 10 / safeduration) - (start / 10 / safeduration),
-          text
-        }))}
+        chapters={sanitiseChapters(chapters, safeduration)}
         {getThumbnail}
       />
     </div>
