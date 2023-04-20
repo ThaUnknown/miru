@@ -680,6 +680,7 @@
 
   // remaps chapters to what perfect-seekbar uses and adds potentially missing chapters
   function sanitiseChapters (chapters, safeduration) {
+    if (!chapters?.length) return []
     const sanitised = []
     let sum = 0
     for (const { start, end, text } of chapters) {
