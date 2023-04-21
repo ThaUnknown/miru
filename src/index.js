@@ -122,7 +122,8 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 900,
-    frame: false,
+    frame: process.platform === 'darwin', // Only keep the native frame on Mac
+    titleBarStyle: 'hidden',
     backgroundColor: '#191c20',
     autoHideMenuBar: true,
     webPreferences: {
