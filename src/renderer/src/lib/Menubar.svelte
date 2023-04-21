@@ -3,11 +3,11 @@
   export const title = writable('Miru')
 </script>
 
-<div class='w-full navbar border-0 bg-dark position-relative p-0'>
+<div class='w-full navbar draggable border-0 bg-dark position-relative p-0'>
   <div class='menu-shadow shadow-lg position-absolute w-full h-full z-0' />
   <div class='w-full h-full bg-dark z-10 d-flex'>
     {#if window.version.platform !== 'darwin'}
-      <div class='d-flex w-full draggable h-full align-items-center'>
+      <div class='d-flex w-full h-full align-items-center'>
         <img src='./logo.ico' alt='ico' />
         {$title}
       </div>
