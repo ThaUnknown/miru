@@ -1,5 +1,5 @@
 <script>
-  import { countdown, wrapEnter } from '@/modules/util.js'
+  import { countdown, since, wrapEnter } from '@/modules/util.js'
   import { getContext } from 'svelte'
   export let cards = new Promise(() => {})
   const view = getContext('view')
@@ -72,6 +72,11 @@
               {#if card.schedule && card.media.nextAiringEpisode}
                 <span class='text-muted font-weight-bold'>
                   {'EP ' + card.media.nextAiringEpisode.episode + ' in ' + countdown(card.media.nextAiringEpisode.timeUntilAiring)}
+                </span>
+              {/if}
+              {#if card.date}
+                <span class='text-muted font-weight-bold'>
+                  {since(card.date)}
                 </span>
               {/if}
               <p class='text-muted m-0 text-capitalize details'>

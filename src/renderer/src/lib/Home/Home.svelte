@@ -39,6 +39,7 @@
         hasNext = items.length === limit
         const media = await resolveFileMedia(items.map(item => item.querySelector('title').textContent))
         media.forEach((mediaInformation, index) => {
+          mediaInformation.date = new Date(items[index].querySelector('pubDate').textContent)
           mediaInformation.onclick = () => {
             add(items[index].querySelector('link').textContent)
           }
@@ -290,7 +291,7 @@
             const newData = await self.load(1, 6, false, false)
             if (newData) self.previewData = newData
           }, 15000)
-          self.previewData = await self.load(1, 6, false, false)
+          self.previewData = await self.load(1, 6, false, true)
         }
         return self.previewData
       }

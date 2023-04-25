@@ -1,5 +1,5 @@
 <script context='module'>
-  import { DOMPARSER, wrapEnter } from '@/modules/util.js'
+  import { DOMPARSER, wrapEnter, since } from '@/modules/util.js'
   import { set } from './Settings.svelte'
   import { addToast } from './Toasts.svelte'
   import { alRequest } from '@/modules/anilist.js'
@@ -321,6 +321,7 @@
               <th scope='col'>Seed</th>
               <th scope='col'>Leech</th>
               <th scope='col'>Downloads</th>
+              <th scope='col'>Released</th>
               <th scope='col'>Play</th>
             </tr>
           </thead>
@@ -333,6 +334,7 @@
                 <td>{row.seeders}</td>
                 <td>{row.leechers}</td>
                 <td>{row.downloads}</td>
+                <td>{since(row.date)}</td>
                 <td class='material-icons font-size-20'>play_arrow</td>
               </tr>
             {/each}

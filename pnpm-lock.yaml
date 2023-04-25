@@ -12,7 +12,7 @@ specifiers:
   electron-log: ^4.4.8
   electron-notarize: ^1.2.2
   electron-updater: ^4.6.5
-  jassub: 1.5.12
+  jassub: 1.5.13
   js-levenshtein: ^1.1.6
   matroska-subtitles: github:ThaUnknown/matroska-subtitles#redist
   mime: ^3.0.0
@@ -36,7 +36,7 @@ dependencies:
   discord-rpc: 4.0.1
   electron-log: 4.4.8
   electron-updater: 4.6.5
-  jassub: 1.5.12
+  jassub: 1.5.13
   js-levenshtein: 1.1.6
   matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/6241556509536ff09ba2ea3f050ceb7a3f12190a
   mime: 3.0.0
@@ -1873,8 +1873,8 @@ packages:
       minimatch: 3.1.2
     dev: true
 
-  /jassub/1.5.12:
-    resolution: {integrity: sha512-CJiuNCXMMGqfmVVlaDyxqaKfOy3RIHW4HBwVWvbq8pl/d1/y1fgTarfR31whUUupHZCe7Tfq8XB7WDgdu6IHaA==}
+  /jassub/1.5.13:
+    resolution: {integrity: sha512-mQM88BcYgppvpPG6VE+DPQm7r6QS65EBedbm13RE4lRIhdrnQ+ihWhBOZXYZe3SlGhg+ROIDRK8uY4dm9ER2XQ==}
     dependencies:
       rvfc-polyfill: 1.0.4
     dev: false

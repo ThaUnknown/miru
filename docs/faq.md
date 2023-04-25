@@ -23,6 +23,9 @@ One of four reasons:
 - your ISP blocks Nyaa, see [this tutorial](https://thewiki.moe/en/tutorials/unblock) for a fix
 - the app couldn't find a matching torrent for the anime
 
+## **I selected an episode to play, but Miru plays something else!**
+Finding desired episodes can sometimes be difficult, if Miru auto-selects an episode incorrectly you can either disable auto-play torrents in settings to select torrents yourself during episode choosing, or manually find and paste in a .torrent file URL or a magnet URL into Miru to play a desired episode manually.
+
 ## **Will you make an android version?**
 No. This app cannot be ported to android in any way.
 
