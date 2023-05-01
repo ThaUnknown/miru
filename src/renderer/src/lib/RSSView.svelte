@@ -72,24 +72,18 @@
     return (typeof v === 'string' ? v : v.toString()).padStart(l, '0')
   }
 
-  export function getRSSContent (url) {
-    return url && fetch(url)
-      .then(res => {
-        if (res.ok) {
-          return res.text().then(xmlTxt => {
-            return DOMPARSER(xmlTxt, 'text/xml')
-          })
-        }
-        throw new Error(res.statusText)
+  export async function getRSSContent (url) {
+    if (!url) return null
+    const res = await fetch(url)
+    if (!res.ok) {
+      addToast({
+        text: 'Failed fetching RSS!<br>' + res.statusText,
+        title: 'Search Failed',
+        type: 'danger'
       })
-      .catch(error => {
-        addToast({
-          text: 'Failed fetching RSS!<br>' + error,
-          title: 'Search Failed',
-          type: 'danger'
-        })
-        console.error(error)
-      })
+      console.error('Failed to fetch rss', res.statusText)
+    }
+    return DOMPARSER(await res.text(), 'text/xml')
   }
   const rssmap = {
     SubsPlease: 'https://nyaa.si/?page=rss&c=0_0&f=0&u=subsplease&q=',

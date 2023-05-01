@@ -683,7 +683,8 @@
     if (!chapters?.length) return []
     const sanitised = []
     let sum = 0
-    for (const { start, end, text } of chapters) {
+    for (let { start, end, text } of chapters) {
+      if (start < 0) start = 0
       if (!sanitised.length && start !== 0) {
         const size = start / 10 / safeduration
         sum += size
