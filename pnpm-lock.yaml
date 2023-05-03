@@ -12,7 +12,7 @@ specifiers:
   electron-log: ^4.4.8
   electron-notarize: ^1.2.2
   electron-updater: ^4.6.5
-  jassub: 1.5.13
+  jassub: 1.6.0
   js-levenshtein: ^1.1.6
   matroska-subtitles: github:ThaUnknown/matroska-subtitles#redist
   mime: ^3.0.0
@@ -30,13 +30,13 @@ specifiers:
   webtorrent: ^1.9.6
 
 dependencies:
-  anitomyscript: github.com/ThaUnknown/anitomyscript/42290c4b3f256893be08a4e89051f448ff5e9d00
+  anitomyscript: github.com/ThaUnknown/anitomyscript/cf70c6c2a44040ca42bce22c7d890884e93fea66
   bottleneck: 2.19.5
   browser-event-target-emitter: 1.0.0
   discord-rpc: 4.0.1
   electron-log: 4.4.8
   electron-updater: 4.6.5
-  jassub: 1.5.13
+  jassub: 1.6.0
   js-levenshtein: 1.1.6
   matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/6241556509536ff09ba2ea3f050ceb7a3f12190a
   mime: 3.0.0
@@ -1873,8 +1873,8 @@ packages:
       minimatch: 3.1.2
     dev: true
 
-  /jassub/1.5.13:
-    resolution: {integrity: sha512-mQM88BcYgppvpPG6VE+DPQm7r6QS65EBedbm13RE4lRIhdrnQ+ihWhBOZXYZe3SlGhg+ROIDRK8uY4dm9ER2XQ==}
+  /jassub/1.6.0:
+    resolution: {integrity: sha512-QTAGCIdgNX3W3GuTWcjf0NgBWOwUqFI5somNNgsmWsgPHOzCEUPR5ABocG+mRWgfad9r1GWzxsYTgk1ZUPfDBA==}
     dependencies:
       rvfc-polyfill: 1.0.4
     dev: false
@@ -3248,10 +3248,10 @@ packages:
       fd-slicer: 1.1.0
     dev: true
 
-  github.com/ThaUnknown/anitomyscript/42290c4b3f256893be08a4e89051f448ff5e9d00:
-    resolution: {tarball: https://codeload.github.com/ThaUnknown/anitomyscript/tar.gz/42290c4b3f256893be08a4e89051f448ff5e9d00}
+  github.com/ThaUnknown/anitomyscript/cf70c6c2a44040ca42bce22c7d890884e93fea66:
+    resolution: {tarball: https://codeload.github.com/ThaUnknown/anitomyscript/tar.gz/cf70c6c2a44040ca42bce22c7d890884e93fea66}
     name: anitomyscript
-    version: 2.0.5
+    version: 2.0.6
     dev: false
 
   github.com/ThaUnknown/matroska-subtitles/6241556509536ff09ba2ea3f050ceb7a3f12190a:
