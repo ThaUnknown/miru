@@ -107,7 +107,11 @@
       result = videoFiles.filter(file => file.media.parseObject.anime_title === max)
     }
 
-    result.sort((a, b) => a.media.episode - b.media.episode)
+    result = result.filter(file => {
+      if (file.media.parseObject.anime_type?.toLowerCase() === 'nced') return false
+      if (file.media.parseObject.anime_type?.toLowerCase() === 'ncop') return false
+      return true
+    }).sort((a, b) => a.media.episode - b.media.episode)
 
     processed.set([...result, ...otherFiles])
     await tick()

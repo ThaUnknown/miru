@@ -150,7 +150,7 @@
 
   export let media
 
-  $: checkAvail(media)
+  $: checkAvail(current)
   let hasNext = false
   let hasLast = false
   function checkAvail () {
@@ -646,7 +646,7 @@
     if (detail.length) chapters = detail
   })
   async function findChapters () {
-    if (!chapters.length) {
+    if (!chapters.length && current.media.media) {
       chapters = await getChaptersAniSkip(current, safeduration)
     }
   }
@@ -684,7 +684,9 @@
     const sanitised = []
     let sum = 0
     for (let { start, end, text } of chapters) {
+      if (start > safeduration * 1000) continue
       if (start < 0) start = 0
+      if (end > safeduration * 1000) end = safeduration * 1000
       if (!sanitised.length && start !== 0) {
         const size = start / 10 / safeduration
         sum += size

@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [mode !== 'development' && commonjs(), svelte()],
     root,
+    server: {
+      hmr: false
+    },
     base: './',
     build: {
       rollupOptions: {

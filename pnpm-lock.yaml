@@ -38,7 +38,7 @@ dependencies:
   electron-updater: 4.6.5
   jassub: 1.6.1
   js-levenshtein: 1.1.6
-  matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/6241556509536ff09ba2ea3f050ceb7a3f12190a
+  matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/446d0628ff0bcf13eb95184777615f3a0e6d8ae8
   mime: 3.0.0
   p2pcf: github.com/ThaUnknown/p2pcf/faefe2854c817315530636a58d07726de7050561
   perfect-seekbar: 1.1.0
@@ -3254,10 +3254,10 @@ packages:
     version: 2.0.6
     dev: false
 
-  github.com/ThaUnknown/matroska-subtitles/6241556509536ff09ba2ea3f050ceb7a3f12190a:
-    resolution: {tarball: https://codeload.github.com/ThaUnknown/matroska-subtitles/tar.gz/6241556509536ff09ba2ea3f050ceb7a3f12190a}
+  github.com/ThaUnknown/matroska-subtitles/446d0628ff0bcf13eb95184777615f3a0e6d8ae8:
+    resolution: {tarball: https://codeload.github.com/ThaUnknown/matroska-subtitles/tar.gz/446d0628ff0bcf13eb95184777615f3a0e6d8ae8}
     name: matroska-subtitles
-    version: 3.3.2
+    version: 3.3.3
     dependencies:
       ebml-stream: 1.0.3
       pako: 2.1.0
