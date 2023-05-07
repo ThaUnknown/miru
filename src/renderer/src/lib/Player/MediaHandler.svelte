@@ -102,7 +102,6 @@
       const max = highestOccurence(videoFiles, file => file.media.media?.id).media
       if (max?.media) {
         nowPlaying = { media: max.media, episode: (max.media.mediaListEntry?.progress + 1 || 1) }
-        media.set(nowPlaying)
       }
     }
 
@@ -126,6 +125,8 @@
     processed.set([...result, ...otherFiles])
     await tick()
     const file = nowPlaying?.episode && (result.find(({ media }) => media.episode === nowPlaying.episode) || result.find(({ media }) => media.episode === 1) || 0)
+    nowPlaying.episode = file.media.parseObject.episode_number
+    media.set(nowPlaying)
     playFile(file || 0)
   }
 
