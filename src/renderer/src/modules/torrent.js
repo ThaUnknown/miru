@@ -22,6 +22,7 @@ class TorrentWorker extends EventTarget {
 
   async send (type, data) {
     await this.ready
+    console.info('Torrent: sending message', { type, data })
     this.port.postMessage({ type, data })
   }
 }
@@ -36,6 +37,7 @@ client.on('files', ({ detail }) => {
 
 export async function add (torrentID, hide) {
   if (torrentID) {
+    console.info('Torrent: adding torrent', { torrentID })
     files.set([])
     if (!hide) page.set('player')
     if (typeof torrentID === 'string' && !torrentID.startsWith('magnet:')) {

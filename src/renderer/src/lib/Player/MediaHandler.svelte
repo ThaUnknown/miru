@@ -70,8 +70,9 @@
   }
 
   async function handleFiles (files) {
+    console.info('MediaHandler: got files', files)
     if (!files?.length) return processed.set(files)
-    const videoFiles = []
+    let videoFiles = []
     const otherFiles = []
     for (const file of files) {
       if (videoRx.test(file.name)) {
@@ -87,6 +88,14 @@
       return file
     })
 
+    videoFiles = videoFiles.filter(file => {
+      if (file.media.parseObject.anime_type?.toLowerCase() === 'nced') return false
+      if (file.media.parseObject.anime_type?.toLowerCase() === 'ncop') return false
+      return true
+    })
+
+    console.info('MediaHandler: resolved video files', { videoFiles })
+
     let nowPlaying = get(media)
 
     if (!nowPlaying) {
@@ -99,19 +108,20 @@
 
     const filtered = nowPlaying?.media && videoFiles.filter(file => file.media?.media?.id && file.media?.media?.id === nowPlaying.media.id)
 
+    console.info('MediaHandler: filtered files based on media', filtered)
+
     let result
     if (filtered?.length) {
       result = filtered
     } else {
       const max = highestOccurence(videoFiles, file => file.media.parseObject.anime_title).media.parseObject.anime_title
+      console.info('MediaHandler: filtering based on highest occurence', max)
       result = videoFiles.filter(file => file.media.parseObject.anime_title === max)
     }
 
-    result = result.filter(file => {
-      if (file.media.parseObject.anime_type?.toLowerCase() === 'nced') return false
-      if (file.media.parseObject.anime_type?.toLowerCase() === 'ncop') return false
-      return true
-    }).sort((a, b) => a.media.episode - b.media.episode)
+    result.sort((a, b) => a.media.episode - b.media.episode)
+
+    console.info('MediaHandler: final resolve result', { result })
 
     processed.set([...result, ...otherFiles])
     await tick()

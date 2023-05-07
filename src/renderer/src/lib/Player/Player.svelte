@@ -230,7 +230,7 @@
   function playNext () {
     if (hasNext) {
       const index = videos.indexOf(current)
-      if (index + 2 < videos.length) {
+      if (index + 1 < videos.length) {
         const target = (index + 1) % videos.length
         handleCurrent(videos[target])
         w2gEmitter.emit('index', { index: target })
@@ -242,7 +242,7 @@
   function playLast () {
     if (hasLast) {
       const index = videos.indexOf(current)
-      if (index > 1) {
+      if (index > 0) {
         handleCurrent(videos[index - 1])
         w2gEmitter.emit('index', { index: index - 1 })
       } else if (media?.episode > 1) {
@@ -682,25 +682,21 @@
   function sanitiseChapters (chapters, safeduration) {
     if (!chapters?.length) return []
     const sanitised = []
-    let sum = 0
+    const first = chapters[0]
+    if (first.start !== 0) {
+      sanitised.push({ size: Math.max(first.start, 0) / 10 / safeduration })
+    }
     for (let { start, end, text } of chapters) {
       if (start > safeduration * 1000) continue
-      if (start < 0) start = 0
       if (end > safeduration * 1000) end = safeduration * 1000
-      if (!sanitised.length && start !== 0) {
-        const size = start / 10 / safeduration
-        sum += size
-        sanitised.push({ size })
-      }
-      const size = (end / 10 / safeduration) - (start / 10 / safeduration)
-      sum += size
       sanitised.push({
-        size,
+        size: (end / 10 / safeduration) - (start / 10 / safeduration),
         text
       })
     }
-    if (sum !== 100) {
-      sanitised.push({ size: 100 - sum })
+    const last = sanitised[sanitised.length - 1]
+    if (last.end !== safeduration) {
+      sanitised.push(100 - (last.end / 10 / safeduration))
     }
     return sanitised
   }

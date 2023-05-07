@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "3.10.3",
+  "version": "3.10.4",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "src/index.js",
@@ -66,10 +66,12 @@
       "singleArchFiles": "node_modules/+(register-scheme|utp-native)/**",
       "category": "public.app-category.video",
       "icon": "build/icon.icns",
-      "target": [{
-        "arch": "universal",
-        "target": "dmg"
-      }]
+      "target": [
+        {
+          "arch": "universal",
+          "target": "dmg"
+        }
+      ]
     },
     "win": {
       "artifactName": "${os}-${name}-${version}.${ext}",
@@ -109,7 +111,7 @@
     "discord-rpc": "4.0.1",
     "electron-log": "^4.4.8",
     "electron-updater": "^4.6.5",
-    "jassub": "1.6.1",
+    "jassub": "1.6.2",
     "js-levenshtein": "^1.1.6",
     "matroska-subtitles": "github:ThaUnknown/matroska-subtitles#redist",
     "mime": "^3.0.0",

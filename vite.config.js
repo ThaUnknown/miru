@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => {
     },
     base: './',
     build: {
+      sourcemap: true,
       rollupOptions: {
         output: {
           assetFileNames: '[name].[ext]'
