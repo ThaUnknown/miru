@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id type="desktop">io.github.thaunknown.miru</id>
+    <launchable type="desktop-id">io.github.thaunknown.miru.desktop</launchable>
+    <name>Miru</name>
+    <summary>Miru - Bittorrent streaming software for cats</summary>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0</project_license>
+    <content_rating type="oars-1.1"/>
+    <developer_name>ThaUnknown</developer_name>
+    <categories>
+        <category>AudioVideo</category>
+        <category>Video</category>
+    </categories>
+    <url type="homepage">https://github.com/ThaUnknown/miru</url>
+    <url type="faq">https://github.com/ThaUnknown/miru/blob/master/docs/faq.md</url>
+    <url type="bugtracker">https://github.com/ThaUnknown/miru/issues</url>
+    <url type="help">https://discord.com/invite/Z87Nh7c4Ac</url>
+    <url type="donation">https://github.com/sponsors/ThaUnknown</url>
+    <description>
+        <p>
+            Bittorrent streaming software for cats. Stream anime torrents, real-time with no waiting for downloads.
+        </p>
+    </description>
+        <screenshots>
+        <screenshot type="default">
+            <image>https://raw.githubusercontent.com/kutzlect/io.github.thaunknown.miru/master/miru-screenshot-220830.jpg</image>
+        </screenshot>
+    </screenshots>
+    <releases>
+        <release version="3.10.4" date="2023-05-07"/>
+        <release version="3.9.10" date="2023-04-20"/>
+        <release version="3.1.6" date="2022-08-24"/>
+    </releases>
+</component>

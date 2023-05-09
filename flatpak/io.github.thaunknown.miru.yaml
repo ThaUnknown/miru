@@ -1,0 +1,53 @@
+app-id: io.github.thaunknown.miru
+base: org.electronjs.Electron2.BaseApp
+base-version: '22.08'
+runtime: org.freedesktop.Platform
+runtime-version: '22.08'
+sdk: org.freedesktop.Sdk
+command: miru-run
+separate-locales: false
+finish-args:
+  - --device=dri
+  - --share=ipc
+  - --share=network
+  - --socket=x11
+  - --own-name=org.mpris.MediaPlayer2.chromium.instance3
+  - --socket=pulseaudio
+  - --filesystem=xdg-videos:rw
+  - --filesystem=xdg-run/discord-ipc-0:ro
+modules:
+  - name: miru
+    buildsystem: simple
+    build-commands:
+      - chmod +x miru.AppImage
+      - ./miru.AppImage --appimage-extract
+      - rm miru.AppImage
+
+      - cp squashfs-root/miru.desktop io.github.thaunknown.miru.desktop
+      - desktop-file-edit --set-icon io.github.thaunknown.miru --set-key Exec --set-value
+        'miru-run %u' io.github.thaunknown.miru.desktop
+
+      - install -D miru-run -t /app/bin
+      - install -Dm644 io.github.thaunknown.miru.metainfo.xml -t /app/share/metainfo
+      - install -Dm644 io.github.thaunknown.miru.desktop -t /app/share/applications
+      - install -Dm644 io.github.thaunknown.miru.png -t /app/share/icons/hicolor/512x512/apps
+
+      - mv squashfs-root /app/bin/miru
+    sources:
+      - type: script
+        dest-filename: miru-run
+        commands:
+          - zypak-wrapper /app/bin/miru/miru "$@"
+      - type: file
+        path: io.github.thaunknown.miru.metainfo.xml
+      - type: file
+        path: io.github.thaunknown.miru.png
+      - type: file
+        dest-filename: miru.AppImage
+        url: https://github.com/ThaUnknown/miru/releases/download/v3.10.4/linux-Miru-3.10.4.AppImage
+        sha512: 66a02f03b8c28c5ecd6a21ca321f795fc3dd889a5cb5a7482963a939f3c91ef11f934482207183f59c7ce0d033ed00a82db02fa6d255c5667953325aa4aba477
+        x-checker-data:
+          type: json
+          url: https://api.github.com/repos/thaunknown/miru/releases/latest
+          version-query: .tag_name | sub("^v"; "")
+          url-query: .assets[] | select(.name=="linux-Miru-*\\.AppImage") | .browser_download_url
