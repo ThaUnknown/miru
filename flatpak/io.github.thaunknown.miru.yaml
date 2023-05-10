@@ -24,13 +24,13 @@ modules:
       - rm miru.AppImage
 
       - cp squashfs-root/miru.desktop io.github.thaunknown.miru.desktop
-      - desktop-file-edit --set-icon io.github.thaunknown.miru --set-key Exec --set-value
-        'miru-run %u' io.github.thaunknown.miru.desktop
+      - cp squashfs-root/miru.png io.github.thaunknown.miru.png
+      - desktop-file-edit --set-icon io.github.thaunknown.miru --set-key Exec --set-value 'miru-run %u' io.github.thaunknown.miru.desktop
 
       - install -D miru-run -t /app/bin
       - install -Dm644 io.github.thaunknown.miru.metainfo.xml -t /app/share/metainfo
       - install -Dm644 io.github.thaunknown.miru.desktop -t /app/share/applications
-      - install -Dm644 io.github.thaunknown.miru.png -t /app/share/icons/hicolor/512x512/apps
+      - install -Dm644 io.github.thaunknown.miru.png /app/share/icons/hicolor/256x256/apps/io.github.thaunknown.miru.png
 
       - mv squashfs-root /app/bin/miru
     sources:
@@ -41,13 +41,13 @@ modules:
       - type: file
         path: io.github.thaunknown.miru.metainfo.xml
       - type: file
-        path: io.github.thaunknown.miru.png
-      - type: file
         dest-filename: miru.AppImage
         url: https://github.com/ThaUnknown/miru/releases/download/v3.10.4/linux-Miru-3.10.4.AppImage
         sha512: 66a02f03b8c28c5ecd6a21ca321f795fc3dd889a5cb5a7482963a939f3c91ef11f934482207183f59c7ce0d033ed00a82db02fa6d255c5667953325aa4aba477
+        only-arches: [x86_64]
         x-checker-data:
           type: json
           url: https://api.github.com/repos/thaunknown/miru/releases/latest
           version-query: .tag_name | sub("^v"; "")
-          url-query: .assets[] | select(.name=="linux-Miru-*\\.AppImage") | .browser_download_url
+          url-query: '"https://github.com/thaunknown/miru/releases/download/v" + $version +
+            "/linux-Miru-" + $version + ".AppImage"'
