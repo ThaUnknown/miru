@@ -90,6 +90,10 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritise downloa
 
 ## **Linux Installation**
 
+### Flatpak
+
+<a href="https://flathub.org/apps/io.github.thaunknown.miru"><img width="128" alt="Download on Flathub" src="https://dl.flathub.org/assets/badges/flathub-badge-en.png"/></a>
+
 ### Arch
 
 If you use paru:
