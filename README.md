@@ -90,6 +90,14 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritise downloa
 
 ## **Linux Installation**
 
+
+### Flatpak
+If your installation of GNOME Software Center has Flathub enabled as a respository, you can install it [from there](https://flathub.org/apps/io.github.thaunknown.miru). Otherwise, a CLI installation can be performed with:
+```bash
+flatpak install flathub io.github.thaunknown.miru
+```
+Note that you will need to have Flatpak installed too. 
+
 ### Arch
 
 If you use paru:
