@@ -84,7 +84,7 @@
       "desktop": {
         "Name": "Miru",
         "Comment": "Bittorrent streaming software for cats",
-        "Keywords": "miru;anime",
+        "Keywords": "anime",
         "Type": "Application",
         "MimeType": "x-scheme-handler/miru;"
       },
