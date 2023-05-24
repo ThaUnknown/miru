@@ -1,168 +1,168 @@
 <script context='module'>
-import { writable } from 'svelte/store'
-import { alID } from '@/modules/anilist.js'
-import { add, client } from '@/modules/torrent.js'
-import { generateRandomHexCode } from '@/modules/util.js'
-import { addToast } from '@/lib/Toasts.svelte'
-import { page } from '@/App.svelte'
-import 'browser-event-target-emitter'
+  import { writable } from 'svelte/store'
+  import { alID } from '@/modules/anilist.js'
+  import { add, client } from '@/modules/torrent.js'
+  import { generateRandomHexCode } from '@/modules/util.js'
+  import { addToast } from '@/lib/Toasts.svelte'
+  import { page } from '@/App.svelte'
+  import 'browser-event-target-emitter'
 
-import P2PCF from 'p2pcf'
+  import P2PCF from 'p2pcf'
 
-export const w2gEmitter = new EventTarget()
+  export const w2gEmitter = new EventTarget()
 
-const decode = TextDecoder.prototype.decode.bind(new TextDecoder('utf-8'))
-const encode = TextEncoder.prototype.encode.bind(new TextEncoder())
+  const decode = TextDecoder.prototype.decode.bind(new TextDecoder('utf-8'))
+  const encode = TextEncoder.prototype.encode.bind(new TextEncoder())
 
-const peers = writable({})
+  const peers = writable({})
 
-export const state = writable(false)
+  export const state = writable(false)
 
-let p2pcf = null
+  let p2pcf = null
 
-function joinLobby (code = generateRandomHexCode(16)) {
-  if (p2pcf) cleanup()
-  p2pcf = new P2PCF(generateRandomHexCode(16), code)
-  p2pcf.on('peerconnect', async peer => {
-    console.log(peer.id)
-    console.log('connect')
-    const user = (await alID)?.data?.Viewer || {}
-    peer.send(
-      JSON.stringify({
-        type: 'init',
-        id: user.id || generateRandomHexCode(16),
-        user
-      })
-    )
-  })
-  p2pcf.on('peerclose', peer => {
-    peers.update(object => {
+  function joinLobby (code = generateRandomHexCode(16)) {
+    if (p2pcf) cleanup()
+    p2pcf = new P2PCF(generateRandomHexCode(16), code)
+    p2pcf.on('peerconnect', async peer => {
       console.log(peer.id)
-      console.log('close', object[peer.id])
-      delete object[peer.id]
-      return object
-    })
-  })
-  p2pcf.on('msg', (peer, data) => {
-    data = typeof data === 'string' ? JSON.parse(data) : JSON.parse(decode(data))
-    console.log(data)
-    switch (data.type) {
-      case 'init':
-        console.log('init', data.user)
-        peers.update(object => {
-          object[peer.id] = {
-            peer,
-            user: data.user
-          }
-          return object
+      console.log('connect')
+      const user = (await alID)?.data?.Viewer || {}
+      peer.send(
+        JSON.stringify({
+          type: 'init',
+          id: user.id || generateRandomHexCode(16),
+          user
         })
-        break
-      case 'player': {
-        if (setPlayerState(data)) w2gEmitter.emit('playerupdate', data)
-        break
-      }
-      case 'torrent': {
-        if (data.hash !== playerState.hash) {
-          playerState.hash = data.hash
-          add(data.magnet)
+      )
+    })
+    p2pcf.on('peerclose', peer => {
+      peers.update(object => {
+        console.log(peer.id)
+        console.log('close', object[peer.id])
+        delete object[peer.id]
+        return object
+      })
+    })
+    p2pcf.on('msg', (peer, data) => {
+      data = typeof data === 'string' ? JSON.parse(data) : JSON.parse(decode(data))
+      console.log(data)
+      switch (data.type) {
+        case 'init':
+          console.log('init', data.user)
+          peers.update(object => {
+            object[peer.id] = {
+              peer,
+              user: data.user
+            }
+            return object
+          })
+          break
+        case 'player': {
+          if (setPlayerState(data)) w2gEmitter.emit('playerupdate', data)
+          break
         }
-        break
-      }
-      case 'index': {
-        if (playerState.index !== data.index) {
-          playerState.index = data.index
-          w2gEmitter.emit('setindex', data.index)
+        case 'torrent': {
+          if (data.hash !== playerState.hash) {
+            playerState.hash = data.hash
+            add(data.magnet)
+          }
+          break
         }
-        break
+        case 'index': {
+          if (playerState.index !== data.index) {
+            playerState.index = data.index
+            w2gEmitter.emit('setindex', data.index)
+          }
+          break
+        }
+        default: {
+          console.error('Invalid message type', data)
+        }
       }
-      default: {
-        console.error('Invalid message type', data)
-      }
+    })
+    p2pcf.start()
+    state.set(code)
+    console.log(p2pcf)
+  }
+
+  function setPlayerState (detail) {
+    let emit = false
+    for (const key of ['paused', 'time']) {
+      emit = emit || detail[key] !== playerState[key]
+      playerState[key] = detail[key]
+    }
+    return emit
+  }
+
+  w2gEmitter.on('player', ({ detail }) => {
+    if (setPlayerState(detail)) emit('player', detail)
+  })
+
+  w2gEmitter.on('index', ({ detail }) => {
+    if (playerState.index !== detail.index) {
+      emit('index', detail)
+      playerState.index = detail.index
     }
   })
-  p2pcf.start()
-  state.set(code)
-  console.log(p2pcf)
-}
 
-function setPlayerState (detail) {
-  let emit = false
-  for (const key of ['paused', 'time']) {
-    emit = emit || detail[key] !== playerState[key]
-    playerState[key] = detail[key]
+  client.on('magnet', ({ detail }) => {
+    if (detail.hash !== playerState.hash) {
+      playerState.hash = detail.hash
+      playerState.index = 0
+      emit('torrent', detail)
+    }
+  })
+
+  function emit (type, data) {
+    p2pcf?.broadcast(encode(JSON.stringify({ type, ...data })))
   }
-  return emit
-}
 
-w2gEmitter.on('player', ({ detail }) => {
-  if (setPlayerState(detail)) emit('player', detail)
-})
-
-w2gEmitter.on('index', ({ detail }) => {
-  if (playerState.index !== detail.index) {
-    emit('index', detail)
-    playerState.index = detail.index
+  const playerState = {
+    paused: null,
+    time: null,
+    hash: null,
+    index: 0
   }
-})
 
-client.on('magnet', ({ detail }) => {
-  if (detail.hash !== playerState.hash) {
-    playerState.hash = detail.hash
-    playerState.index = 0
-    emit('torrent', detail)
-  }
-})
-
-function emit (type, data) {
-  p2pcf?.broadcast(encode(JSON.stringify({ type, ...data })))
-}
-
-const playerState = {
-  paused: null,
-  time: null,
-  hash: null,
-  index: 0
-}
-
-function checkInvite (invite) {
-  if (invite) {
-    const match = invite.match(inviteRx)
-    if (match) {
-      page.set('watchtogether')
-      joinLobby(match[1])
+  function checkInvite (invite) {
+    if (invite) {
+      const match = invite.match(inviteRx)
+      if (match) {
+        page.set('watchtogether')
+        joinLobby(match[1])
+      }
     }
   }
-}
 
-const inviteRx = /([A-z0-9]{16})/i
-window.IPC.on('w2glink', checkInvite)
+  const inviteRx = /([A-z0-9]{16})/i
+  window.IPC.on('w2glink', checkInvite)
 
-function cleanup () {
-  state.set(false)
-  peers.set({})
-  p2pcf.destroy()
-  p2pcf = null
-}
-
-function invite () {
-  if (p2pcf) {
-    navigator.clipboard.writeText(`<miru://w2g/${p2pcf.roomId}>`)
-    addToast({
-      title: 'Copied to clipboard',
-      text: 'Copied invite URL to clipboard',
-      type: 'primary',
-      duration: '5000'
-    })
+  function cleanup () {
+    state.set(false)
+    peers.set({})
+    p2pcf.destroy()
+    p2pcf = null
   }
-}
+
+  function invite () {
+    if (p2pcf) {
+      navigator.clipboard.writeText(`https://miru.watch/w2g/${p2pcf.roomId}`)
+      addToast({
+        title: 'Copied to clipboard',
+        text: 'Copied invite URL to clipboard',
+        type: 'primary',
+        duration: '5000'
+      })
+    }
+  }
 </script>
 
 <script>
-import Lobby from './Lobby.svelte'
+  import Lobby from './Lobby.svelte'
 
-let joinText
+  let joinText
 
-$: checkInvite(joinText)
+  $: checkInvite(joinText)
 </script>
 
 <div class='d-flex h-full align-items-center flex-column content'>

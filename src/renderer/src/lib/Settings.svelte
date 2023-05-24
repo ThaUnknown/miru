@@ -15,10 +15,13 @@
     missingFont: true,
     maxConns: 20,
     subtitleLanguage: 'eng',
-    audioLanguage: 'jpn'
+    audioLanguage: 'jpn',
+    enableDoH: false,
+    doHURL: 'https://cloudflare-dns.com/dns-query'
   }
   localStorage.removeItem('relations') // TODO: remove
   export const set = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
+  if (set.enableDoH) window.IPC.emit('doh', set.doHURL)
   if (!set.rssFeeds) { // TODO: remove ;-;
     if (set.rssFeed) {
       set.rssFeeds = [['New Releases', set.rssFeed]]
@@ -362,6 +365,24 @@
               Played'>
             <input type='checkbox' id='rss-autoplay' bind:checked={settings.rssAutoplay} />
             <label for='rss-autoplay'>Auto-Play Torrents</label>
+          </div>
+          <div
+            class='custom-switch mb-10 pl-10 font-size-16 w-300'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title='Enables DNS Over HTTPS, useful if your ISP blocks certain domains'>
+            <input type='checkbox' id='rss-dohtoggle' bind:checked={settings.enableDoH} />
+            <label for='rss-dohtoggle'>Enable DoH</label>
+          </div>
+          <div
+            class='input-group input-group-lg form-control-lg mb-10 w-500'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title='Path To Folder Which To Use To Store Torrent Files'>
+            <div class='input-group-prepend'>
+              <span class='input-group-text w-150 justify-content-center'>DoH URL</span>
+            </div>
+            <input type='text' class='form-control' bind:value={settings.doHURL} placeholder={defaults.doHURL} />
           </div>
         </div>
       </Tab>

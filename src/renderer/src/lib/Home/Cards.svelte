@@ -14,7 +14,7 @@
     PLANNING: 'rgb(247,154,99)',
     COMPLETED: 'rgb(123,213,85)',
     PAUSED: 'rgb(250,122,122)',
-    REPEAT: '#3baeea',
+    REPEATING: '#3baeea',
     DROPPED: 'rgb(232,93,117)'
   }
 </script>

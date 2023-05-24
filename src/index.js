@@ -108,6 +108,13 @@ ipcMain.on('devtools', () => {
   webtorrentWindow.webContents.openDevTools()
 })
 
+ipcMain.on('doh', (event, dns) => {
+  app.configureHostResolver({
+    secureDnsMode: 'secure',
+    secureDnsServers: [dns]
+  })
+})
+
 function createWindow () {
   // Create the browser window.
   webtorrentWindow = new BrowserWindow({
