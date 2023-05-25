@@ -137,8 +137,10 @@ class TorrentClient extends WebTorrent {
           destroyStoreOnDestroy: !this.settings.torrentPersist,
           announce: [
             'wss://tracker.openwebtorrent.com',
+            'wss://tracker.webtorrent.dev',
+            'wss://tracker.files.fm:7073/announce',
             'wss://spacetradersapi-chatbox.herokuapp.com:443/announce',
-            'wss://peertube.cpy.re:443/tracker/socket'
+            'wss://peertube.cpy.re/tracker/socket'
           ]
         })
         break

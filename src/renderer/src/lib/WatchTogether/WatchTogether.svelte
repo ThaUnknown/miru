@@ -1,5 +1,5 @@
 <script context='module'>
-  import { writable } from 'svelte/store'
+  import { writable, get } from 'svelte/store'
   import { alID } from '@/modules/anilist.js'
   import { add, client } from '@/modules/torrent.js'
   import { generateRandomHexCode } from '@/modules/util.js'
@@ -7,27 +7,30 @@
   import { page } from '@/App.svelte'
   import 'browser-event-target-emitter'
 
-  import P2PCF from 'p2pcf'
+  import P2PT from 'https://esm.sh/p2pt?bundle'
 
   export const w2gEmitter = new EventTarget()
-
-  const decode = TextDecoder.prototype.decode.bind(new TextDecoder('utf-8'))
-  const encode = TextEncoder.prototype.encode.bind(new TextEncoder())
 
   const peers = writable({})
 
   export const state = writable(false)
 
-  let p2pcf = null
+  let p2pt = null
 
   function joinLobby (code = generateRandomHexCode(16)) {
-    if (p2pcf) cleanup()
-    p2pcf = new P2PCF(generateRandomHexCode(16), code)
-    p2pcf.on('peerconnect', async peer => {
+    if (p2pt) cleanup()
+    p2pt = new P2PT([
+      'wss://tracker.openwebtorrent.com',
+      'wss://tracker.webtorrent.dev',
+      'wss://tracker.files.fm:7073/announce',
+      'wss://spacetradersapi-chatbox.herokuapp.com:443/announce',
+      'wss://peertube.cpy.re/tracker/socket'
+    ], code)
+    p2pt.on('peerconnect', async peer => {
       console.log(peer.id)
       console.log('connect')
       const user = (await alID)?.data?.Viewer || {}
-      peer.send(
+      p2pt.send(peer,
         JSON.stringify({
           type: 'init',
           id: user.id || generateRandomHexCode(16),
@@ -35,7 +38,7 @@
         })
       )
     })
-    p2pcf.on('peerclose', peer => {
+    p2pt.on('peerclose', peer => {
       peers.update(object => {
         console.log(peer.id)
         console.log('close', object[peer.id])
@@ -43,9 +46,9 @@
         return object
       })
     })
-    p2pcf.on('msg', (peer, data) => {
-      data = typeof data === 'string' ? JSON.parse(data) : JSON.parse(decode(data))
+    p2pt.on('msg', (peer, data) => {
       console.log(data)
+      data = typeof data === 'string' ? JSON.parse(data) : data
       switch (data.type) {
         case 'init':
           console.log('init', data.user)
@@ -80,9 +83,9 @@
         }
       }
     })
-    p2pcf.start()
+    p2pt.start()
     state.set(code)
-    console.log(p2pcf)
+    console.log(p2pt)
   }
 
   function setPlayerState (detail) {
@@ -114,7 +117,11 @@
   })
 
   function emit (type, data) {
-    p2pcf?.broadcast(encode(JSON.stringify({ type, ...data })))
+    if (p2pt) {
+      for (const { peer } of Object.values(get(peers))) {
+        p2pt.send(peer, { type, ...data })
+      }
+    }
   }
 
   const playerState = {
@@ -140,13 +147,13 @@
   function cleanup () {
     state.set(false)
     peers.set({})
-    p2pcf.destroy()
-    p2pcf = null
+    p2pt.destroy()
+    p2pt = null
   }
 
   function invite () {
-    if (p2pcf) {
-      navigator.clipboard.writeText(`https://miru.watch/w2g/${p2pcf.roomId}`)
+    if (p2pt) {
+      navigator.clipboard.writeText(`https://miru.watch/w2g/${p2pt.identifierString}`)
       addToast({
         title: 'Copied to clipboard',
         text: 'Copied invite URL to clipboard',

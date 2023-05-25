@@ -17,6 +17,7 @@ specifiers:
   matroska-subtitles: github:ThaUnknown/matroska-subtitles#redist
   mime: ^3.0.0
   p2pcf: github:ThaUnknown/p2pcf#no-remove
+  p2pt: ^1.5.1
   perfect-seekbar: ^1.1.0
   pump: ^3.0.0
   quartermoon: ^1.2.3
@@ -41,6 +42,7 @@ dependencies:
   matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/446d0628ff0bcf13eb95184777615f3a0e6d8ae8
   mime: 3.0.0
   p2pcf: github.com/ThaUnknown/p2pcf/faefe2854c817315530636a58d07726de7050561
+  p2pt: 1.5.1
   perfect-seekbar: 1.1.0
   pump: 3.0.0
   quartermoon: 1.2.3
@@ -1235,6 +1237,14 @@ packages:
     dev: true
     optional: true
 
+  /domexception/1.0.1:
+    resolution: {integrity: sha512-raigMkn7CJNNo6Ihro1fzG7wr3fHuYVytzquZKX5n0yizGsTcYgzdIUwj1X9pK0VvjeihV+XiclP+DjwbsSKug==}
+    requiresBuild: true
+    dependencies:
+      webidl-conversions: 4.0.2
+    dev: false
+    optional: true
+
   /dotenv-expand/5.1.0:
     resolution: {integrity: sha512-YXQl1DSa4/PQyRfgrv6aoNjhasp/p4qs9FjJ4q4cQk+8m4r6k4ZSiEyytKG8f8W9gi8WsQtIObNmKd+tMzNTmA==}
     dev: true
@@ -2246,6 +2256,18 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /p2pt/1.5.1:
+    resolution: {integrity: sha512-q1pkIKBRvGcQfv5Q3W0/c9pbBUnjcauWylc/qUZwIqcrQIxu3rfuDQXsqjwEJaBwdPNPWMY06jc5qxwVgJX6MA==}
+    dependencies:
+      bittorrent-tracker: 9.19.0
+      randombytes: 2.1.0
+      simple-sha1: 3.1.0
+    optionalDependencies:
+      wrtc: 0.4.7
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /package-json-versionify/1.0.4:
     resolution: {integrity: sha512-mtKKtCeSZMtWcc5hHJS6OlEGP7J9g7WN6vWCCZi2hCXFag/Zmjokh6WFFTQb9TuMnBcZpRjhhMQyOyglPCAahw==}
     dependencies:
@@ -3099,6 +3121,11 @@ packages:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
     dev: false
 
+  /webidl-conversions/4.0.2:
+    resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
+    dev: false
+    optional: true
+
   /webtorrent/1.9.6:
     resolution: {integrity: sha512-fJtVlqeg7s4G3MHppdONfHfspvdfJPTEgSUnc4W+i0tCtl1hyWHSdodC2T4VtNNE00Rdy60dLji3Ai0Y/FXvow==}
     engines: {node: '>=14'}
@@ -3179,6 +3206,17 @@ packages:
 
   /wrappy/1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+
+  /wrtc/0.4.7:
+    resolution: {integrity: sha512-P6Hn7VT4lfSH49HxLHcHhDq+aFf/jd9dPY7lDHeFhZ22N3858EKuwm2jmnlPzpsRGEPaoF6XwkcxY5SYnt4f/g==}
+    engines: {node: ^8.11.2 || >=10.0.0}
+    requiresBuild: true
+    optionalDependencies:
+      domexception: 1.0.1
+    dev: false
+    optional: true
+    bundledDependencies:
+      - node-pre-gyp
 
   /ws/7.5.9:
     resolution: {integrity: sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==}
