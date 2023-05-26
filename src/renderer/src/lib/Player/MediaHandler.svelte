@@ -50,7 +50,7 @@
 
   function handleMedia ({ media, episode, parseObject }) {
     if (media) {
-      const ep = Number(episode || parseObject.episode_number) || null
+      const ep = Number(episode || parseObject?.episode_number) || null
       const streamingEpisode = media?.streamingEpisodes.find(episode => {
         const match = episodeRx.exec(episode.title)
         return match && Number(match[1]) === ep
