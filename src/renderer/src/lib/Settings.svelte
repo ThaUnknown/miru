@@ -17,7 +17,9 @@
     subtitleLanguage: 'eng',
     audioLanguage: 'jpn',
     enableDoH: false,
-    doHURL: 'https://cloudflare-dns.com/dns-query'
+    doHURL: 'https://cloudflare-dns.com/dns-query',
+    disableSubtitleBlur: false,
+    catURL: decodeURIComponent(atob('aHR0cHMlM0ElMkYlMkZueWFhLnNp'))
   }
   localStorage.removeItem('relations') // TODO: remove
   export const set = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
@@ -243,6 +245,14 @@
             <input type='checkbox' id='player-pause' bind:checked={settings.playerPause} />
             <label for='player-pause'>Pause When Tabbing Out</label>
           </div>
+          <div
+            class='custom-switch mb-10 pl-10 font-size-16 w-300'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title='Disables Blur When Rendering Subtitles Reducing Lag, Will Cause Text And Subtitle Edges To Appear Sharper'>
+            <input type='checkbox' id='player-sub-blur' bind:checked={settings.disableSubtitleBlur} />
+            <label for='player-sub-blur'>Fast Subtitle Rendering</label>
+          </div>
           <div class='col p-10 d-flex flex-column justify-content-end'>
             <div class='font-size-24 font-weight-semi-bold d-flex'>
               <div class='material-icons mr-10 font-size-30'>list</div>
@@ -332,11 +342,11 @@
                 <span class='input-group-text w-100 justify-content-center'>Feed</span>
               </div>
               <input type='text' class='form-control form-control-lg w-150 flex-reset' placeholder='New Releases' autocomplete='off' bind:value={settings.rssFeeds[i][0]} />
-              <input id='rss-feed-{i}' type='text' list='rss-feed-list-{i}' class='w-400 form-control form-control-lg' placeholder='https://nyaa.si/?page=rss&c=0_0&f=0&q=' autocomplete='off' bind:value={settings.rssFeeds[i][1]} />
+              <input id='rss-feed-{i}' type='text' list='rss-feed-list-{i}' class='w-400 form-control form-control-lg' placeholder={set.catURL + '/?page=rss&c=0_0&f=0&q='} autocomplete='off' bind:value={settings.rssFeeds[i][1]} />
               <datalist id='rss-feed-list-{i}'>
-                <option value='SubsPlease'>https://nyaa.si/?page=rss&c=0_0&f=0&u=subsplease&q=</option>
-                <option value='NC-Raws'>https://nyaa.si/?page=rss&c=0_0&f=0&u=BraveSail&q=</option>
-                <option value='Erai-raws [Multi-Sub]'>https://nyaa.si/?page=rss&c=0_0&f=0&u=Erai-raws&q=</option>
+                <option value='SubsPlease'>{set.catURL + '/?page=rss&c=0_0&f=0&u=subsplease&q='}</option>
+                <option value='NC-Raws'>{set.catURL + '/?page=rss&c=0_0&f=0&u=BraveSail&q='}</option>
+                <option value='Erai-raws [Multi-Sub]'>{set.catURL + '/?page=rss&c=0_0&f=0&u=Erai-raws&q='}</option>
               </datalist>
               <div class='input-group-append'>
                 <button type='button' on:click={() => { settings.rssFeeds.splice(i, 1); settings.rssFeeds = settings.rssFeeds }} class='btn btn-danger btn-lg input-group-append'>Remove</button>
@@ -370,7 +380,7 @@
             class='custom-switch mb-10 pl-10 font-size-16 w-300'
             data-toggle='tooltip'
             data-placement='bottom'
-            data-title='Enables DNS Over HTTPS, useful if your ISP blocks certain domains'>
+            data-title='Enables DNS Over HTTPS, Useful If Your ISP Blocks Certain Domains'>
             <input type='checkbox' id='rss-dohtoggle' bind:checked={settings.enableDoH} />
             <label for='rss-dohtoggle'>Enable DoH</label>
           </div>
@@ -378,11 +388,21 @@
             class='input-group input-group-lg form-control-lg mb-10 w-500'
             data-toggle='tooltip'
             data-placement='bottom'
-            data-title='Path To Folder Which To Use To Store Torrent Files'>
+            data-title='What URL To Use For DoH'>
             <div class='input-group-prepend'>
               <span class='input-group-text w-150 justify-content-center'>DoH URL</span>
             </div>
             <input type='text' class='form-control' bind:value={settings.doHURL} placeholder={defaults.doHURL} />
+          </div>
+          <div
+            class='input-group input-group-lg form-control-lg mb-10 w-500'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title='URL For The Cat, Change If You Want To Use Your Own Proxy'>
+            <div class='input-group-prepend'>
+              <span class='input-group-text w-150 justify-content-center'>Cat URL</span>
+            </div>
+            <input type='text' class='form-control' bind:value={settings.catURL} placeholder={defaults.catURL} />
           </div>
         </div>
       </Tab>

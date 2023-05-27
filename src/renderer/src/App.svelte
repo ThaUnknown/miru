@@ -21,7 +21,7 @@
   import Menubar from './lib/Menubar.svelte'
   import Toasts from './lib/Toasts.svelte'
   import 'quartermoon/css/quartermoon-variables.css'
-  import NyaaBlock from './lib/NyaaBlock.svelte'
+  import CatBlock from './lib/CatBlock.svelte'
   import { wrapEnter } from '@/modules/util.js'
 
   setContext('view', view)
@@ -44,7 +44,7 @@
     on:click={() => ($sidebar = !$sidebar)} on:keydown={wrapEnter(() => ($sidebar = !$sidebar))}
     tabindex='0'
     role='button' />
-  <NyaaBlock />
+  <CatBlock />
   <Menubar />
   <Sidebar bind:page={$page} />
   <Router bind:page={$page} />

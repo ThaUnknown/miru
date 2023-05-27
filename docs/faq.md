@@ -33,7 +33,7 @@ No. This app cannot be ported to android in any way.
 Yes. For the home menu you can specify a different RSS feed to check when the app looks for new releases. Additionally you can just paste a torrent file/magnet link anywhere when using the app, and it will auto-detect what anime is playing.
 
 ## **Can I change what tracker torrents are found from?**
-Not really. No other tracker has the kind of API/search functionality that Nyaa does, which the app uses to the fullest extent to make sure it finds the torrents it's looking for without false-positives.
+Not really. No other tracker has the kind of API/search functionality which is required, which Miru uses to the fullest extent to make sure it finds the torrents it's looking for without false-positives.
 
 ## **How is this different from sequential qBit?**
 Unlike qBit's sequential, this will prioritise downloading torrent pieces directly needed for playback, which with the user seeking isn't always just sequential.

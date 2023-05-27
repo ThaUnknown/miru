@@ -1,11 +1,12 @@
 <script>
+  import { set } from '@/lib/Settings.svelte'
   let block = false
 
   async function testConnection () {
     try {
       for (let i = 0; i < 2; ++i) {
-        // fetch nyaa twice, sometimes it will go tru once if ISP is shitty
-        await fetch('https://nyaa.si')
+        // fetch cat twice, sometimes it will go tru once if ISP is shitty
+        await fetch(set.catURL)
       }
       block = false
     } catch (e) {
