@@ -124,7 +124,7 @@
 
     processed.set([...result, ...otherFiles])
     await tick()
-    const file = nowPlaying?.episode && (result.find(({ media }) => media.episode === nowPlaying.episode) || result.find(({ media }) => media.episode === 1) || result[0])
+    const file = (nowPlaying?.episode && (result.find(({ media }) => media.episode === nowPlaying.episode) || result.find(({ media }) => media.episode === 1))) || result[0]
     nowPlaying.episode = file.media.parseObject.episode_number
     media.set(nowPlaying)
     playFile(file || 0)
