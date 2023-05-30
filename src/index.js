@@ -131,6 +131,10 @@ function createWindow () {
     height: 900,
     frame: process.platform === 'darwin', // Only keep the native frame on Mac
     titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#191c20',
+      height: 28
+    },
     backgroundColor: '#191c20',
     autoHideMenuBar: true,
     webPreferences: {
@@ -240,21 +244,6 @@ ipcMain.on('dialog', async (event, data) => {
     }
     event.sender.send('path', path)
   }
-})
-
-ipcMain.on('minimize', (event) => {
-  BrowserWindow.fromWebContents(event.sender).minimize()
-})
-ipcMain.on('maximize', (event) => {
-  const window = BrowserWindow.fromWebContents(event.sender)
-  if (window.isMaximized()) {
-    window.unmaximize()
-  } else {
-    window.maximize()
-  }
-})
-ipcMain.on('close', () => {
-  app.quit()
 })
 
 let status = null
