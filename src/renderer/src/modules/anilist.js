@@ -168,7 +168,7 @@ export async function alSearch (method) {
   const res = await alRequest(method)
   const media = res.data.Page.media.map(media => getDistanceFromTitle(media, method.name))
   if (!media.length) return res
-  const lowest = media.reduce((prev, curr) => prev.lavenshtein < curr.lavenshtein ? prev : curr)
+  const lowest = media.reduce((prev, curr) => prev.lavenshtein <= curr.lavenshtein ? prev : curr)
   return { data: { Page: { media: [lowest] } } }
 }
 
