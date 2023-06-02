@@ -296,7 +296,7 @@ query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: [
     pageInfo{
       hasNextPage
     },
-    media(type: ANIME, search: $search, sort: $sort, status_in: $status, isAdult: false){
+    media(type: ANIME, search: $search, sort: $sort, status_in: $status, isAdult: false, format_not: MUSIC){
       ${queryObjects}
     }
   }
@@ -434,7 +434,7 @@ query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: M
     pageInfo{
       hasNextPage
     },
-    media(type: ANIME, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format){
+    media(type: ANIME, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format, format_not: MUSIC){
       ${queryObjects}
     }
   }
