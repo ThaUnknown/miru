@@ -481,7 +481,7 @@
             class='custom-switch mb-10 pl-10 font-size-16 w-300'
             data-toggle='tooltip'
             data-placement='bottom'
-            data-title='Enables showing currently played anime and episode in Discord Rich Presence.'>
+            data-title='Shows currently played anime and episode in Discord Rich Presence.'>
             <input type='checkbox' id="rpc-details" bind:checked={settings.showDetailsInRPC}/>
             <label for='rpc-details'>Show details in Discord Rich Presence</label>
           </div>
