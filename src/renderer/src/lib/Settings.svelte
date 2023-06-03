@@ -19,7 +19,8 @@
     enableDoH: false,
     doHURL: 'https://cloudflare-dns.com/dns-query',
     disableSubtitleBlur: false,
-    catURL: decodeURIComponent(atob('aHR0cHMlM0ElMkYlMkZueWFhLnNp'))
+    catURL: decodeURIComponent(atob('aHR0cHMlM0ElMkYlMkZueWFhLnNp')),
+    showDetailsInRPC: true
   }
   localStorage.removeItem('relations') // TODO: remove
   export const set = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
@@ -90,6 +91,7 @@
     const json = await res.json()
     return json.map(({ body, tag_name: version }) => ({ body, version }))
   })()
+  window.IPC.emit('discord_status', set.showDetailsInRPC)
 </script>
 
 <script>
@@ -117,6 +119,11 @@
       icon: 'hub',
       desc: 'Torrent client settings, and preferences.'
     },
+    discord: {
+      name: 'Discord',
+      icon: 'discord',
+      desc: 'Discord Rich Presence settings.'
+    },
     changelog: {
       name: 'Changelog',
       icon: 'list',
@@ -125,6 +132,7 @@
   }
   let settings = set
   $: saveSettings(settings)
+  $: window.IPC.emit('discord_status', settings.showDetailsInRPC)
   function saveSettings () {
     localStorage.setItem('settings', JSON.stringify(settings))
   }
@@ -464,6 +472,18 @@
             data-title='Disables Peer Exchange For Use In Private Trackers To Improve Privacy'>
             <input type='checkbox' id='torrent-pex' bind:checked={settings.torrentPeX} />
             <label for='torrent-pex'>Disable PeX</label>
+          </div>
+        </div>
+      </Tab>
+      <Tab>
+        <div class='root p-20 m-20'>
+          <div
+            class='custom-switch mb-10 pl-10 font-size-16 w-300'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title='Enables showing currently played anime and episode in Discord Rich Presence.'>
+            <input type='checkbox' id="rpc-details" bind:checked={settings.showDetailsInRPC}/>
+            <label for='rpc-details'>Show details in Discord Rich Presence</label>
           </div>
         </div>
       </Tab>
