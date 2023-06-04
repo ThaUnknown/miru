@@ -1,7 +1,4 @@
 import JASSUB from 'jassub'
-import workerUrl from 'jassub/dist/jassub-worker.js?url'
-import modernWasmUrl from 'jassub/dist/jassub-worker-modern.wasm?url'
-import wasmUrl from 'jassub/dist/jassub-worker.wasm?url'
 import { toTS, videoRx, subRx } from './util.js'
 import { set } from '@/lib/Settings.svelte'
 
@@ -163,9 +160,10 @@ export default class Subtitles {
         availableFonts: {
           'roboto medium': './Roboto.ttf'
         },
-        workerUrl,
-        wasmUrl,
-        modernWasmUrl,
+        workerUrl: new URL('jassub/dist/jassub-worker.js', import.meta.url).toString(),
+        wasmUrl: new URL('jassub/dist/jassub-worker.wasm', import.meta.url).toString(),
+        legacyWasmUrl: new URL('jassub/dist/jassub-worker.wasm.js', import.meta.url).toString(),
+        modernWasmUrl: new URL('jassub/dist/jassub-worker-modern.wasm', import.meta.url).toString(),
         useLocalFonts: set.missingFont,
         dropAllBlur: set.disableSubtitleBlur
       }

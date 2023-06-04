@@ -1,7 +1,6 @@
 import { add } from './torrent.js'
 import { DOMPARSER, PromiseBatch } from './util.js'
 import { alRequest, alSearch } from './anilist.js'
-import 'anitomyscript/dist/anitomyscript.wasm?url'
 import anitomyscript from 'anitomyscript'
 import { media } from '@/lib/Player/MediaHandler.svelte'
 import { addToast } from '@/lib/Toasts.svelte'

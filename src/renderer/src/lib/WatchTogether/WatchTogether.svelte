@@ -7,7 +7,8 @@
   import { page } from '@/App.svelte'
   import 'browser-event-target-emitter'
 
-  import P2PT from 'https://esm.sh/p2pt?bundle'
+  // import P2PT from 'https://esm.sh/p2pt?bundle'
+  const P2PT = {}
 
   export const w2gEmitter = new EventTarget()
 

@@ -1,5 +1,5 @@
 /* eslint n/no-callback-literal: 0 */
-const { contextBridge, ipcRenderer } = require('electron')
+import { contextBridge, ipcRenderer } from 'electron'
 
 contextBridge.exposeInMainWorld('IPC', {
   emit: (event, data) => {

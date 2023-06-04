@@ -116,6 +116,7 @@ ipcMain.on('doh', (event, dns) => {
 })
 
 function createWindow () {
+  const development = process.env.NODE_ENV?.trim() === 'development'
   // Create the browser window.
   webtorrentWindow = new BrowserWindow({
     show: false,
@@ -140,19 +141,19 @@ function createWindow () {
     webPreferences: {
       enableBlinkFeatures: 'FontAccess, AudioVideoTracks',
       backgroundThrottling: false,
-      preload: path.join(__dirname, '/preload.js')
+      preload: development ? path.join(__dirname, '/preload.js') : path.join(__dirname, '/preload.js')
     },
-    icon: path.join(__dirname, '/renderer/public/logo.ico'),
+    icon: path.join(__dirname, '/logo.ico'),
     show: false
   })
   mainWindow.setMenuBarVisibility(false)
 
   protocol.registerHttpProtocol('miru', (req, cb) => {
     const token = req.url.slice(7)
-    if (process.env.NODE_ENV !== 'development ') {
-      mainWindow.loadURL(path.join(__dirname, '/renderer/dist/index.html' + token))
+    if (development) {
+      mainWindow.loadURL(path.join(__dirname, '/index.html' + token))
     } else {
-      mainWindow.loadURL('http://localhost:5173/' + token)
+      mainWindow.loadURL('http://localhost:5000/' + token)
     }
   })
 
@@ -168,16 +169,16 @@ function createWindow () {
 
   let torrentLoad = null
 
-  if (process.env.NODE_ENV !== 'development ') {
+  if (process.env.NODE_ENV?.trim() !== 'development') {
     // Load production build
-    torrentLoad = webtorrentWindow.loadFile(path.join(__dirname, '/renderer/dist/webtorrent.html'))
-    mainWindow.loadFile(path.join(__dirname, '/renderer/dist/index.html'))
+    torrentLoad = webtorrentWindow.loadFile(path.join(__dirname, '/background.html'))
+    mainWindow.loadFile(path.join(__dirname, '/index.html'))
   } else {
     // Load vite dev server page
     console.log('Development mode')
-    torrentLoad = webtorrentWindow.loadURL('http://localhost:5173/webtorrent.html')
+    torrentLoad = webtorrentWindow.loadURL('http://localhost:5000/background.html')
     webtorrentWindow.webContents.openDevTools()
-    mainWindow.loadURL('http://localhost:5173/')
+    mainWindow.loadURL('http://localhost:5000/index.html')
     mainWindow.webContents.openDevTools()
   }
 
@@ -250,31 +251,7 @@ let status = null
 const discord = new Client({
   transport: 'ipc'
 })
-
-function setDiscordRPC (data) {
-  if (!data) {
-    data = {
-      activity: {
-        timestamps: {
-          start: Date.now()
-        },
-        details: 'Stream anime torrents, real-time.',
-        state: 'Watching anime',
-        assets: {
-          small_image: 'logo',
-          small_text: 'https://github.com/ThaUnknown/miru'
-        },
-        buttons: [
-          {
-            label: 'Download app',
-            url: 'https://github.com/ThaUnknown/miru/releases/latest'
-          }
-        ],
-        instance: true,
-        type: 3
-      }
-    }
-  }
+function setDiscordRPC (event, data) {
   status = data
   if (discord?.user && status) {
     status.pid = process.pid
@@ -282,39 +259,9 @@ function setDiscordRPC (data) {
   }
 }
 
-let allowDiscordDetails = false
-let requestedDiscordDetails = false
-let rpcStarted = false
-let cachedPresence = null
-
-ipcMain.on('discord_status', (event, data) => {
-  requestedDiscordDetails = data;
-  if (!rpcStarted) {
-    handleRPC()
-    setInterval(handleRPC, 5000) //According to Discord documentation, clients can only update their presence 5 times per 20 seconds. We will add an extra second to be safe.
-    rpcStarted = true
-  }
-})
-
-function handleRPC() {
-  if (allowDiscordDetails === requestedDiscordDetails) return
-
-  allowDiscordDetails = requestedDiscordDetails
-  if (!allowDiscordDetails) {
-    setDiscordRPC(null)
-  } else if (cachedPresence) {
-    setDiscordRPC(cachedPresence)
-  }
-}
-
-ipcMain.on('discord', (event, data) => {
-  cachedPresence = data
-  if (allowDiscordDetails) {
-    setDiscordRPC(data)
-  }
-})
+ipcMain.on('discord', setDiscordRPC)
 discord.on('ready', async () => {
-  setDiscordRPC(status)
+  setDiscordRPC(null, status)
   discord.subscribe('ACTIVITY_JOIN_REQUEST')
   discord.subscribe('ACTIVITY_JOIN')
   discord.subscribe('ACTIVITY_SPECTATE')

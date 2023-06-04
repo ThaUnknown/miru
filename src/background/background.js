@@ -1,10 +1,6 @@
-const WebTorrent = require('webtorrent')
-const http = require('http')
-const pump = require('pump')
-const rangeParser = require('range-parser')
-const mime = require('mime')
-const { SubtitleParser, SubtitleStream } = require('matroska-subtitles')
-const { ipcRenderer } = require('electron')
+import WebTorrent from 'webtorrent'
+import { SubtitleParser, SubtitleStream } from './matroska.js'
+import { ipcRenderer } from 'electron'
 
 class TorrentClient extends WebTorrent {
   constructor (settings) {
@@ -33,56 +29,7 @@ class TorrentClient extends WebTorrent {
     }, 2000)
     this.on('torrent', this.handleTorrent.bind(this))
 
-    this.server = http.createServer((request, response) => {
-      if (!request.url) return null
-      let [infoHash, ...filePath] = request.url.slice(request.url.indexOf('/webtorrent/') + 12).split('/')
-      filePath = decodeURI(filePath.join('/'))
-      if (!infoHash || !filePath) return null
-
-      const file = this.get(infoHash)?.files.find(file => file.path === filePath)
-      if (!file) return null
-
-      response.setHeader('Access-Control-Allow-Origin', '*')
-      response.setHeader('Content-Type', mime.getType(file.name) || 'application/octet-stream')
-
-      response.setHeader('Accept-Ranges', 'bytes')
-
-      let range = rangeParser(file.length, request.headers.range || '')
-
-      if (Array.isArray(range)) {
-        response.statusCode = 206
-        range = range[0]
-
-        response.setHeader(
-          'Content-Range',
-          `bytes ${range.start}-${range.end}/${file.length}`
-        )
-        response.setHeader('Content-Length', range.end - range.start + 1)
-      } else {
-        response.statusCode = 200
-        range = null
-        response.setHeader('Content-Length', file.length)
-      }
-
-      if (response.method === 'HEAD') {
-        return response.end()
-      }
-
-      let stream = file.createReadStream(range)
-
-      if (stream && !this.parsed) {
-        if (file.name.endsWith('.mkv')) {
-          this.parserInstance = new SubtitleStream(this.parserInstance)
-          this.handleSubtitleParser(this.parserInstance, true)
-          stream = pump(stream, this.parserInstance)
-        }
-      }
-
-      pump(stream, response)
-    })
-
-    this.server.on('error', console.warn)
-
+    this.server = this.createServer(undefined, 'node')
     this.server.listen(0)
   }
 
@@ -91,10 +38,10 @@ class TorrentClient extends WebTorrent {
       return {
         infoHash: torrent.infoHash,
         name: file.name,
-        type: file._getMimeType(),
+        type: file.type,
         size: file.size,
         path: file.path,
-        url: encodeURI(`http://localhost:${this.server.address().port}/webtorrent/${torrent.infoHash}/${file.path}`)
+        url: 'http://localhost:' + this.server.address().port + file.streamURL
       }
     })
     this.dispatch('files', files)
@@ -102,7 +49,7 @@ class TorrentClient extends WebTorrent {
     this.dispatch('torrent', Array.from(torrent.torrentFile))
   }
 
-  handleMessage ({ data }) {
+  async handleMessage ({ data }) {
     switch (data.type) {
       case 'current': {
         this.current?.removeListener('done', this.boundParse)
@@ -112,11 +59,18 @@ class TorrentClient extends WebTorrent {
         this.current = null
         this.parsed = false
         if (data.data) {
-          this.current = this?.get(data.data.infoHash)?.files.find(file => file.path === data.data.path)
+          this.current = (await this.get(data.data.infoHash))?.files.find(file => file.path === data.data.path)
           if (this.current?.name.endsWith('.mkv')) {
             // if (this.current.done) this.parseSubtitles()
             // this.current.once('done', this.boundParse)
             this.parseFonts(this.current)
+            this.current.on('iterator', ({ iterator, req }, cb) => {
+              if (!this.parsed) {
+                this.stream = new SubtitleStream(this.stream, iterator)
+                this.handleSubtitleParser(this.stream, true)
+                cb(this.stream)
+              }
+            })
           }
           // TODO: findSubtitleFiles(current)
         }
@@ -124,7 +78,7 @@ class TorrentClient extends WebTorrent {
       }
       case 'torrent': {
         const id = typeof data.data !== 'string' ? Buffer.from(data.data) : data.data
-        const existing = this.get(id)
+        const existing = await this.get(id)
         if (existing) {
           if (existing.ready) return this.handleTorrent(existing)
           existing.once('ready', this.handleTorrent.bind(this))
@@ -179,21 +133,17 @@ class TorrentClient extends WebTorrent {
   }
 
   parseFonts (file) {
-    const stream = new SubtitleParser()
+    const stream = new SubtitleParser(file)
     this.handleSubtitleParser(stream)
     stream.once('tracks', tracks => {
       if (!tracks.length) {
         this.parsed = true
         stream.destroy()
-        fileStreamStream.destroy()
       }
     })
     stream.once('subtitle', () => {
-      fileStreamStream.destroy()
       stream.destroy()
     })
-    const fileStreamStream = file.createReadStream()
-    fileStreamStream.pipe(stream)
   }
 
   handleSubtitleParser (parser, skipFile) {
