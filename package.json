@@ -6,9 +6,9 @@
   "main": "build/main.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
   "scripts": {
-    "start": "SET NODE_ENV=development & concurrently --kill-others \"npm run web:watch\" \"npm run electron:start\"",
+    "start": "cross-env NODE_ENV=development concurrently --kill-others \"npm run web:watch\" \"npm run electron:start\"",
     "web:watch": "webpack serve",
-    "web:build": "SET NODE_ENV=production & webpack build",
+    "web:build": "cross-env NODE_ENV=production webpack build",
     "electron:start": "electron ./build/main.js",
     "build": "npm run web:build && electron-builder",
     "publish": "npm run web:build && electron-builder -p always"
@@ -16,6 +16,7 @@
   "devDependencies": {
     "concurrently": "^7.6.0",
     "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.8.1",
     "electron": "23.1.0",
     "electron-builder": "^23.6.0",
@@ -65,7 +66,8 @@
     "appId": "com.github.thaunknown.miru",
     "productName": "Miru",
     "files": [
-      "build/**/*"
+      "build/**/*",
+      "!node_modules/**/*.{mk,a,o,h}"
     ],
     "mac": {
       "artifactName": "${os}-${name}-${version}.${ext}",
