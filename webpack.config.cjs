@@ -40,7 +40,7 @@ module.exports = [
   },
   {
     devtool: isDev ? 'eval' : 'source-map',
-    entry: join(__dirname, 'src', 'renderer', 'src', 'main.js'),
+    entry: join(__dirname, 'src', 'renderer', 'main.js'),
     output: {
       path: join(__dirname, 'build'),
       filename: 'renderer.js'
@@ -80,7 +80,7 @@ module.exports = [
     resolve: {
       aliasFields: [],
       alias: {
-        '@': resolve('src/renderer/src'),
+        '@': resolve('src/renderer'),
         module: false,
         url: false
       },
