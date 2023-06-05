@@ -8,6 +8,7 @@ const isDev = mode === 'development'
 
 module.exports = [
   {
+    devtool: isDev ? 'eval' : 'source-map',
     entry: join(__dirname, 'src', 'background', 'background.js'),
     output: {
       path: join(__dirname, 'build'),
@@ -38,6 +39,7 @@ module.exports = [
     }
   },
   {
+    devtool: isDev ? 'eval' : 'source-map',
     entry: join(__dirname, 'src', 'renderer', 'src', 'main.js'),
     output: {
       path: join(__dirname, 'build'),
@@ -120,6 +122,7 @@ module.exports = [
     target: 'web'
   },
   {
+    devtool: isDev ? 'eval' : 'source-map',
     entry: join(__dirname, 'src', 'preload', 'preload.js'),
     output: {
       path: join(__dirname, 'build'),
@@ -132,6 +135,7 @@ module.exports = [
     target: 'electron20.0-preload'
   },
   {
+    devtool: isDev ? 'eval' : 'source-map',
     entry: join(__dirname, 'src', 'main', 'main.js'),
     output: {
       path: join(__dirname, 'build'),
