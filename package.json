@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
@@ -14,6 +14,22 @@
     "publish": "npm run web:build && electron-builder -p always"
   },
   "devDependencies": {
+    "anitomyscript": "github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00",
+    "bottleneck": "^2.19.5",
+    "browser-event-target-emitter": "^1.0.0",
+    "discord-rpc": "4.0.1",
+    "ebml-iterator": "^1.0.2",
+    "electron-log": "^4.4.8",
+    "electron-updater": "^4.6.5",
+    "jassub": "1.7.1",
+    "js-levenshtein": "^1.1.6",
+    "pako": "^2.1.0",
+    "perfect-seekbar": "^1.1.0",
+    "quartermoon": "^1.2.3",
+    "simple-store-svelte": "^1.0.0",
+    "svelte-keybinds": "1.0.5",
+    "svelte-miniplayer": "1.0.3",
+    "webtorrent": "^2.0.30",
     "concurrently": "^7.6.0",
     "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",
@@ -113,21 +129,6 @@
     }
   },
   "dependencies": {
-    "anitomyscript": "github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00",
-    "bottleneck": "^2.19.5",
-    "browser-event-target-emitter": "^1.0.0",
-    "discord-rpc": "4.0.1",
-    "ebml-iterator": "^1.0.2",
-    "electron-log": "^4.4.8",
-    "electron-updater": "^4.6.5",
-    "jassub": "1.7.1",
-    "js-levenshtein": "^1.1.6",
-    "pako": "^2.1.0",
-    "perfect-seekbar": "^1.1.0",
-    "quartermoon": "^1.2.3",
-    "simple-store-svelte": "^1.0.0",
-    "svelte-keybinds": "1.0.5",
-    "svelte-miniplayer": "1.0.3",
-    "webtorrent": "^2.0.30"
+    "utp-native": "^2.5.3"
   }
 }
