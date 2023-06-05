@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
@@ -128,6 +128,6 @@
     "simple-store-svelte": "^1.0.0",
     "svelte-keybinds": "1.0.5",
     "svelte-miniplayer": "1.0.3",
-    "webtorrent": "^2.0.29"
+    "webtorrent": "^2.0.30"
   }
 }

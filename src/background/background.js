@@ -77,14 +77,13 @@ class TorrentClient extends WebTorrent {
         break
       }
       case 'torrent': {
-        const id = typeof data.data !== 'string' ? Buffer.from(data.data) : data.data
+        const id = typeof data.data !== 'string' ? new Uint8Array(data.data) : data.data
         const existing = await this.get(id)
         if (existing) {
           if (existing.ready) return this.handleTorrent(existing)
           existing.once('ready', this.handleTorrent.bind(this))
         }
-        if (this.torrents.length) this.remove(this.torrents[0].infoHash)
-
+        if (this.torrents.length) await this.remove(this.torrents[0])
         this.add(id, {
           private: this.settings.torrentPeX,
           path: this.settings.torrentPath,
