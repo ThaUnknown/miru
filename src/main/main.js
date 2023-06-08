@@ -169,7 +169,7 @@ function createWindow () {
 
   let torrentLoad = null
 
-  if (process.env.NODE_ENV?.trim() !== 'development') {
+  if (!development) {
     // Load production build
     torrentLoad = webtorrentWindow.loadFile(path.join(__dirname, '/background.html'))
     mainWindow.loadFile(path.join(__dirname, '/index.html'))

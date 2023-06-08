@@ -64,7 +64,7 @@ class TorrentClient extends WebTorrent {
             // if (this.current.done) this.parseSubtitles()
             // this.current.once('done', this.boundParse)
             this.parseFonts(this.current)
-            this.current.on('iterator', ({ iterator, req }, cb) => {
+            this.current.on('iterator', ({ iterator }, cb) => {
               if (!this.parsed) {
                 this.stream = new SubtitleStream(this.stream, iterator)
                 this.handleSubtitleParser(this.stream, true)
