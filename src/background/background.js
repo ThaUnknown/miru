@@ -14,7 +14,6 @@ class TorrentClient extends WebTorrent {
 
     this.current = null
     this.parsed = false
-    this.parserInstance = null
     this.boundParse = this.parseSubtitles.bind(this)
 
     setInterval(() => {
@@ -54,9 +53,8 @@ class TorrentClient extends WebTorrent {
       case 'current': {
         this.current?.removeListener('done', this.boundParse)
         this.cancelParse()
-        this.parserInstance?.destroy()
-        this.parserInstance = null
         this.current = null
+        this.metadata = null
         this.parsed = false
         if (data.data) {
           this.current = (await this.get(data.data.infoHash))?.files.find(file => file.path === data.data.path)
@@ -66,9 +64,9 @@ class TorrentClient extends WebTorrent {
             this.parseFonts(this.current)
             this.current.on('iterator', ({ iterator }, cb) => {
               if (!this.parsed) {
-                this.stream = new SubtitleStream(this.stream, iterator)
-                this.handleSubtitleParser(this.stream, true)
-                cb(this.stream)
+                const stream = new SubtitleStream(this.metadata, iterator)
+                this.handleSubtitleParser(stream, true)
+                cb(stream)
               }
             })
           }
@@ -143,6 +141,7 @@ class TorrentClient extends WebTorrent {
     stream.once('subtitle', () => {
       stream.destroy()
     })
+    this.metadata = stream
   }
 
   handleSubtitleParser (parser, skipFile) {
