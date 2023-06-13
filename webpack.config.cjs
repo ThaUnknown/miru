@@ -22,7 +22,8 @@ module.exports = [
       aliasFields: [],
       mainFields: ['module', 'main', 'node'],
       alias: {
-        'node-fetch': false
+        'node-fetch': false,
+        ws: false
       }
     },
     plugins: [new HtmlWebpackPlugin({ filename: 'background.html' })],
