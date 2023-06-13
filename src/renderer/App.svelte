@@ -35,9 +35,6 @@
 </script>
 
 <Toasts />
-<ViewAnime />
-<ViewTrailer />
-<RSSView />
 <div class='page-wrapper with-navbar with-sidebar with-transitions' data-sidebar-type='overlayed-sm-and-down' data-sidebar-hidden={$sidebar || null}>
   <div class='sticky-alerts' />
   <div class='sidebar-overlay'
@@ -46,8 +43,13 @@
     role='button' />
   <CatBlock />
   <Menubar />
-  <Sidebar bind:page={$page} />
-  <Router bind:page={$page} />
+  <div class='overflow-hidden content-wrapper'>
+    <ViewAnime />
+    <ViewTrailer />
+    <RSSView />
+    <Sidebar bind:page={$page} />
+    <Router bind:page={$page} />
+  </div>
 </div>
 
 <style>
@@ -100,6 +102,14 @@
 
   :global(.root) {
     animation: 0.3s ease 0s 1 root-load-in;
+  }
+  .content-wrapper {
+    will-change: width;
+    top: 0 !important;
+  }
+  :global(.nav-hidden) > .content-wrapper {
+    left: 0 !important;
+    width: 100% !important;
   }
   @keyframes root-load-in {
     from {

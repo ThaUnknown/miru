@@ -862,14 +862,6 @@
 </script>
 
 <!-- <svelte:window bind:innerWidth bind:innerHeight /> -->
-{#if showKeybinds && !miniplayer}
-  <div class='position-absolute bg-tp w-full h-full z-50 font-size-12 p-20 d-flex align-items-center justify-content-center' on:click|self={() => (showKeybinds = false)} on:keydown={wrapEnter(() => (showKeybinds = false))}>
-    <button class='close' type='button' on:click={() => (showKeybinds = false)} on:keydown={wrapEnter(() => (showKeybinds = false))}><span>×</span></button>
-    <Keybinds let:prop={item} autosave={true} clickable={true}>
-      <div class:material-icons={item?.type} class='bind'>{item?.id || ''}</div>
-    </Keybinds>
-  </div>
-{/if}
 <div
   class='player w-full h-full d-flex flex-column overflow-hidden'
   class:pointer={miniplayer}
@@ -882,6 +874,14 @@
   on:touchmove={resetImmerse}
   on:keypress={resetImmerse}
   on:mouseleave={immersePlayer}>
+  {#if showKeybinds && !miniplayer}
+    <div class='position-absolute bg-tp w-full h-full z-50 font-size-12 p-20 d-flex align-items-center justify-content-center' on:click|self={() => (showKeybinds = false)} on:keydown={wrapEnter(() => (showKeybinds = false))}>
+      <button class='btn btn-square rounded-circle bg-dark font-size-16 top-0 right-0 m-10 position-absolute' type='button' on:click={() => (showKeybinds = false)} on:keydown={wrapEnter(() => (showKeybinds = false))}>&times;</button>
+      <Keybinds let:prop={item} autosave={true} clickable={true}>
+        <div class:material-icons={item?.type} class='bind'>{item?.id || ''}</div>
+      </Keybinds>
+    </div>
+  {/if}
   <!-- eslint-disable-next-line svelte/valid-compile -->
   <video
     crossorigin='anonymous'
@@ -931,8 +931,7 @@
       Name: {current.name || ''}
     </div>
   {/if}
-  <div class='top z-40 d-flex justify-content-between'>
-    <div />
+  <div class='top z-40 d-flex justify-content-center'>
     <div class='d-flex'>
       <span class='material-icons' data-name='peers'> people </span>
       <span class='stats'>{torrent.peers || 0}</span>
@@ -941,7 +940,6 @@
       <span class='material-icons'> arrow_upward </span>
       <span class='stats'>{fastPrettyBytes(torrent.up)}/s</span>
     </div>
-    <span class='material-icons ctrl' title='Keybinds [`]' on:pointerdown={() => (showKeybinds = true)}> help_outline </span>
   </div>
   <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
     <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} on:keydown={wrapEnter(() => { if (page === 'player') playPause(); page = 'player' })} />
@@ -984,6 +982,7 @@
         <input class='ctrl h-full custom-range' type='range' min='0' max='1' step='any' data-name='setVolume' bind:value={volume} />
       </div>
       <div class='ts mr-auto'>{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
+      <span class='material-icons ctrl' title='Keybinds [`]' on:pointerdown={() => (showKeybinds = true)}> keyboard </span>
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
         <div class='dropdown dropup with-arrow' on:click={toggleDropdown} on:keydown={wrapEnter(toggleDropdown)}>
           <span class='material-icons ctrl' title='Audio Tracks'>

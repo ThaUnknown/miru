@@ -18,7 +18,7 @@
   {#if $url}
     <div class='modal-dialog' role='document' on:click|self={close} on:keydown|self={wrapEnter(close)}>
       <div class='modal-content w-three-quarter h-full bg-transparent d-flex justify-content-center flex-column'>
-        <button class='close pointer z-30 top-20 right-0' type='button' on:click={close}> &times; </button>
+        <button class='close pointer z-30 top-20 right-0 position-absolute' type='button' on:click={close}> &times; </button>
         <div class='trailer w-full position-relative'>
           <iframe
             id='trailerVideo'

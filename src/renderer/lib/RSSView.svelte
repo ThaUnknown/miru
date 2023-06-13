@@ -305,7 +305,7 @@
   {#if table}
     <div class='modal-dialog p-20' role='document' on:click|self={close} on:keydown|self={wrapEnter(close)}>
       <div class='modal-content w-auto'>
-        <button class='close pointer z-30 top-20 right-0' type='button' on:click={close}> &times; </button>
+        <button class='close pointer z-30 top-20 right-0 position-absolute' type='button' on:click={close}> &times; </button>
         <table class='table table-hover'>
           <thead>
             <tr>

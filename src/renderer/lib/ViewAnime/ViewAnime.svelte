@@ -27,7 +27,7 @@
 <div class='modal modal-full' class:show={media} on:keydown={checkClose} tabindex='-1' bind:this={modal}>
   {#if media}
     <div class='h-full modal-content bg-very-dark p-0 overflow-y-auto'>
-      <button class='close pointer z-30 bg-dark top-20 right-0' type='button' on:click={close}> &times; </button>
+      <button class='close pointer z-30 bg-dark top-20 right-0 position-absolute' type='button' on:click={close}> &times; </button>
       <div class='h-md-half w-full position-relative z-20'>
         <div class='h-full w-full position-absolute bg-dark-light banner' style:--bannerurl={`url('${media.bannerImage || ''}')`} />
         <div class='d-flex h-full top w-full'>

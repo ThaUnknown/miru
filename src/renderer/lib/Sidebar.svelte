@@ -7,6 +7,7 @@
   import { wrapEnter } from '@/modules/util.js'
   const sidebar = getContext('sidebar')
   const view = getContext('view')
+  const trailer = getContext('trailer')
   const gallery = getContext('gallery')
   export let page
   const links = [
@@ -22,6 +23,8 @@
       click: () => {
         page = 'home'
         $gallery = null
+        $view = null
+        $trailer = null
       },
       icon: 'home',
       text: 'Home Page'
@@ -201,6 +204,7 @@
     overflow: visible;
     visibility: visible !important;
     top: var(--navbar-height);
+    height: calc(100% - var(--navbar-height))
   }
   :global(.nav-hidden) > .sidebar {
     left: calc(-1 * var(--sidebar-width)) !important;
