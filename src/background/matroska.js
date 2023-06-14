@@ -1,6 +1,5 @@
 import { EbmlIteratorDecoder, EbmlTagId } from 'ebml-iterator'
 import { EventEmitter } from 'events'
-import join from 'join-async-iterator'
 import { inflate } from 'pako'
 
 const SSA_TYPES = new Set(['ssa', 'ass'])
@@ -53,10 +52,7 @@ export class SubtitleParserBase extends EventEmitter {
       [EbmlTagId.BlockGroup]: this.handleBlockGroup.bind(this),
       [EbmlTagId.Chapters]: this.handleChapters.bind(this)
     }
-  }
-
-  async * [Symbol.asyncIterator] (stream) {
-    const decoder = new EbmlIteratorDecoder({
+    this.decoder = new EbmlIteratorDecoder({
       bufferTagIds: [
         EbmlTagId.TimecodeScale,
         EbmlTagId.Tracks,
@@ -64,20 +60,17 @@ export class SubtitleParserBase extends EventEmitter {
         EbmlTagId.AttachedFile,
         EbmlTagId.Chapters,
         EbmlTagId.Duration
-      ],
-      stream
+      ]
     })
+  }
 
-    for await (const chunk of stream) {
-      if (this.destroyed) return null
-      const tags = decoder.parseTags(chunk)
-      for (const tag of tags) {
-        this._tagMap[tag.id]?.(tag)
-        if (tag.id === EbmlTagId.Tracks) {
-          if (!tag.Children.some(({ id }) => id === EbmlTagId.TrackEntry)) return this.destroy()
-        }
+  decoderWrite (chunk) {
+    const tags = this.decoder.parseTags(chunk)
+    for (const tag of tags) {
+      this._tagMap[tag.id]?.(tag)
+      if (tag.id === EbmlTagId.Tracks) {
+        if (!tag.Children.some(({ id }) => id === EbmlTagId.TrackEntry)) return this.destroy()
       }
-      yield chunk
     }
   }
 
@@ -200,12 +193,16 @@ export class SubtitleParser extends SubtitleParserBase {
     super()
 
     ;(async () => {
+      const iterator = stream[Symbol.asyncIterator]()
       try {
-      // eslint-disable-next-line no-unused-vars
-        for await (const _ of super[Symbol.asyncIterator](stream)) {
-          if (this.destroyed) break
+        // eslint-disable-next-line no-unused-vars
+        for await (const chunk of iterator) {
+          if (this.destroyed) return iterator.return()
+          this.decoderWrite(chunk)
         }
-      } catch (e) {}
+      } catch (e) {
+        iterator.return()
+      }
       this.emit('finish')
     })()
   }
@@ -227,35 +224,40 @@ export class SubtitleStream extends SubtitleParserBase {
     }
   }
 
-  async * [Symbol.asyncIterator] (stream = this._stream) {
-    while (true) {
-      if (this.destroyed) return
-      if (this.unstable) {
-        const iterator = stream[Symbol.asyncIterator]()
-        const { value: chunk } = await iterator.next()
-        if (!chunk) return
-        // the ebml decoder expects to see a tag, so we won't use it until we find a cluster
-        for (let i = 0; i < chunk.length - 12; i++) {
-        // cluster id 0x1F43B675
-        // https://matroska.org/technical/elements.html#LevelCluster
-          if (chunk[i] === 0x1f && chunk[i + 1] === 0x43 && chunk[i + 2] === 0xb6 && chunk[i + 3] === 0x75) {
-          // length of cluster size tag
-            const len = 8 - Math.floor(Math.log2(chunk[i + 4]))
-            // first tag in cluster is a valid EbmlTag
-            if (EbmlTagId[chunk[i + 4 + len]]) {
-            // okay this is probably a cluster
-              this.unstable = false
-              yield chunk.slice(0, i)
-              yield * super[Symbol.asyncIterator](join([[chunk.slice(i)], iterator]))
-              return
+  destroy () {
+    this.destroyed = true
+    this.emit('finish')
+    this._stream.return()
+  }
+
+  async * [Symbol.asyncIterator] () {
+    try {
+      for await (const chunk of this._stream) {
+        if (this.destroyed) return this._stream.return()
+        if (this.unstable) {
+          // the ebml decoder expects to see a tag, so we won't use it until we find a cluster
+          for (let i = 0; i < chunk.length - 12; i++) {
+            // cluster id 0x1F43B675
+            // https://matroska.org/technical/elements.html#LevelCluster
+            if (chunk[i] === 0x1f && chunk[i + 1] === 0x43 && chunk[i + 2] === 0xb6 && chunk[i + 3] === 0x75) {
+              // length of cluster size tag
+              const len = 8 - Math.floor(Math.log2(chunk[i + 4]))
+              // first tag in cluster is a valid EbmlTag
+              if (EbmlTagId[chunk[i + 4 + len]]) {
+                // okay this is probably a cluster
+                this.unstable = false
+                this.decoderWrite(chunk.slice(i))
+              }
             }
           }
+        } else {
+          this.decoderWrite(chunk)
         }
         yield chunk
-      } else {
-        yield * super[Symbol.asyncIterator](stream)
-        return
       }
+    } finally {
+      this._stream.return()
     }
+    this._stream.return()
   }
 }

@@ -51,13 +51,19 @@ class TorrentClient extends WebTorrent {
   async handleMessage ({ data }) {
     switch (data.type) {
       case 'current': {
-        this.current?.removeListener('done', this.boundParse)
-        this.cancelParse()
-        this.current = null
-        this.metadata = null
-        this.parsed = false
         if (data.data) {
-          this.current = (await this.get(data.data.infoHash))?.files.find(file => file.path === data.data.path)
+          const found = (await this.get(data.data.infoHash))?.files.find(file => file.path === data.data.path)
+          if (this.current) {
+            this.current?.removeListener('done', this.boundParse)
+            this.current?.removeAllListeners('iterator')
+            // this is a patch, idfk why these leak
+            for (const iterator of this.current._iterators) {
+              iterator.destroy()
+            }
+          }
+          this.cancelParse()
+          this.parsed = false
+          this.current = found
           if (this.current?.name.endsWith('.mkv')) {
             // if (this.current.done) this.parseSubtitles()
             // this.current.once('done', this.boundParse)
@@ -125,22 +131,23 @@ class TorrentClient extends WebTorrent {
 
   cancelParse () {
     this.parser?.destroy()
+    this.metadata?.destroy()
+    this.metadata = undefined
     this.parser = undefined
   }
 
   parseFonts (file) {
-    const stream = new SubtitleParser(file)
-    this.handleSubtitleParser(stream)
-    stream.once('tracks', tracks => {
+    this.metadata = new SubtitleParser(file)
+    this.handleSubtitleParser(this.metadata)
+    this.metadata.once('tracks', tracks => {
       if (!tracks.length) {
         this.parsed = true
-        stream.destroy()
+        this.metadata.destroy()
       }
     })
-    stream.once('subtitle', () => {
-      stream.destroy()
+    this.metadata.once('subtitle', () => {
+      this.metadata.destroy()
     })
-    this.metadata = stream
   }
 
   handleSubtitleParser (parser, skipFile) {
