@@ -18,7 +18,6 @@ specifiers:
   html-webpack-plugin: ^5.5.1
   jassub: 1.7.1
   js-levenshtein: ^1.1.6
-  matroska-subtitles: github:ThaUnknown/matroska-subtitles#redist
   mini-css-extract-plugin: ^2.7.6
   pako: ^2.1.0
   perfect-seekbar: ^1.1.0
@@ -35,7 +34,6 @@ specifiers:
   webtorrent: ^2.1.0
 
 dependencies:
-  matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/446d0628ff0bcf13eb95184777615f3a0e6d8ae8
   utp-native: 2.5.3
 
 devDependencies:
@@ -1827,11 +1825,6 @@ packages:
     resolution: {integrity: sha512-MUppqZ23PSke2t+/rBAwNdI+kE3+L3S9Sn3JF2hPG1bqPj8UsUY3b24anKCG9U3Fd1Nkyj84/xov9dTz00BOpw==}
     dev: true
 
-  /ebml-stream/1.0.3:
-    resolution: {integrity: sha512-A+jCBY5NNAH/CQlcjLWN9txgv3uNiz+UAmMqDHPxFxoMNnuerV0RLhkE0YI9aNhdS3JVfcEQ9jFWq39fAR2W5g==}
-    engines: {node: '>= 10.10.0'}
-    dev: false
-
   /ee-first/1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
     dev: true
@@ -3483,6 +3476,7 @@ packages:
 
   /pako/2.1.0:
     resolution: {integrity: sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==}
+    dev: true
 
   /param-case/3.0.4:
     resolution: {integrity: sha512-RXlj7zCYokReqWpOPH9oYivUzLYZ5vAPIfEmCTNViosC78F8F0H9y7T7gG2M39ymgutxF5gcFEsyZQSph9Bp3A==}
@@ -4996,15 +4990,6 @@ packages:
     name: anitomyscript
     version: 2.0.5
     dev: true
-
-  github.com/ThaUnknown/matroska-subtitles/446d0628ff0bcf13eb95184777615f3a0e6d8ae8:
-    resolution: {tarball: https://codeload.github.com/ThaUnknown/matroska-subtitles/tar.gz/446d0628ff0bcf13eb95184777615f3a0e6d8ae8}
-    name: matroska-subtitles
-    version: 3.3.3
-    dependencies:
-      ebml-stream: 1.0.3
-      pako: 2.1.0
-    dev: false
 
   github.com/devsnek/node-register-scheme/e7cc9a63a1f512565da44cb57316d9fb10750e17:
     resolution: {tarball: https://codeload.github.com/devsnek/node-register-scheme/tar.gz/e7cc9a63a1f512565da44cb57316d9fb10750e17}
