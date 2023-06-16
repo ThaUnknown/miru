@@ -1,6 +1,7 @@
 import WebTorrent from 'webtorrent'
-import { SubtitleParser, SubtitleStream } from './matroska.js'
+import { SubtitleParser, SubtitleStream } from 'matroska-subtitles'
 import { ipcRenderer } from 'electron'
+import { pipeline } from 'streamx'
 
 class TorrentClient extends WebTorrent {
   constructor (settings) {
@@ -54,12 +55,8 @@ class TorrentClient extends WebTorrent {
         if (data.data) {
           const found = (await this.get(data.data.infoHash))?.files.find(file => file.path === data.data.path)
           if (this.current) {
-            this.current?.removeListener('done', this.boundParse)
-            this.current?.removeAllListeners('iterator')
-            // this is a patch, idfk why these leak
-            for (const iterator of this.current._iterators) {
-              iterator.destroy()
-            }
+            this.current.removeListener('done', this.boundParse)
+            this.current.removeAllListeners('stream')
           }
           this.cancelParse()
           this.parsed = false
@@ -68,11 +65,11 @@ class TorrentClient extends WebTorrent {
             // if (this.current.done) this.parseSubtitles()
             // this.current.once('done', this.boundParse)
             this.parseFonts(this.current)
-            this.current.on('iterator', ({ iterator }, cb) => {
+            this.current.on('stream', (_, cb) => {
               if (!this.parsed) {
-                const stream = new SubtitleStream(this.metadata, iterator)
-                this.handleSubtitleParser(stream, true)
-                cb(stream)
+                const parser = new SubtitleStream(this.metadata)
+                this.handleSubtitleParser(parser, true)
+                cb(parser)
               }
             })
           }
@@ -137,7 +134,7 @@ class TorrentClient extends WebTorrent {
   }
 
   parseFonts (file) {
-    this.metadata = new SubtitleParser(file)
+    this.metadata = pipeline(file.createReadStream(), new SubtitleParser())
     this.handleSubtitleParser(this.metadata)
     this.metadata.once('tracks', tracks => {
       if (!tracks.length) {
