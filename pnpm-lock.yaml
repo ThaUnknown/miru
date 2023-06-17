@@ -19,6 +19,7 @@ specifiers:
   js-levenshtein: ^1.1.6
   matroska-subtitles: github:ThaUnknown/matroska-subtitles#446d0628ff0bcf13eb95184777615f3a0e6d8ae8
   mini-css-extract-plugin: ^2.7.6
+  p2pt: github:ThaUnknown/p2pt#modernise
   perfect-seekbar: ^1.1.0
   pump: ^3.0.0
   quartermoon: ^1.2.3
@@ -56,6 +57,7 @@ devDependencies:
   js-levenshtein: 1.1.6
   matroska-subtitles: github.com/ThaUnknown/matroska-subtitles/446d0628ff0bcf13eb95184777615f3a0e6d8ae8
   mini-css-extract-plugin: 2.7.6_webpack@5.86.0
+  p2pt: github.com/ThaUnknown/p2pt/992f13f97cd6af2878a6ff079d869c01daa73bed
   perfect-seekbar: 1.1.0
   quartermoon: 1.2.3
   simple-store-svelte: 1.0.0
@@ -976,8 +978,8 @@ packages:
       - supports-color
     dev: true
 
-  /bittorrent-tracker/10.0.8:
-    resolution: {integrity: sha512-xU7v426SXEUl908dLuIQTkjluXMMPq6zbjgwk9kvF+NqwfpCjlpGgmhXn2VuLtaiiBX36HNQ5151GY8yiULb4g==}
+  /bittorrent-tracker/10.0.10:
+    resolution: {integrity: sha512-a/JOmgAfFvyFj4ycVVzyda+MwflDIpzytdr/7DMPgIau1m7B94+JFy2skIsPEOyWH6iCSJtvLNDnC7EaTRvGNw==}
     engines: {node: '>=12.20.0'}
     hasBin: true
     dependencies:
@@ -1789,6 +1791,14 @@ packages:
   /domelementtype/2.3.0:
     resolution: {integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==}
     dev: true
+
+  /domexception/1.0.1:
+    resolution: {integrity: sha512-raigMkn7CJNNo6Ihro1fzG7wr3fHuYVytzquZKX5n0yizGsTcYgzdIUwj1X9pK0VvjeihV+XiclP+DjwbsSKug==}
+    requiresBuild: true
+    dependencies:
+      webidl-conversions: 4.0.2
+    dev: true
+    optional: true
 
   /domhandler/4.3.1:
     resolution: {integrity: sha512-GrwoxYN+uWlzO8uhUXRl0P+kHE4GtVPfYzVLcUxPL7KNdHKj66vvlhiweIHqYYXWlw+T8iLMp42Lm67ghw4WMQ==}
@@ -4454,7 +4464,7 @@ packages:
     dependencies:
       bittorrent-dht: 11.0.4
       bittorrent-lsd: 2.0.0
-      bittorrent-tracker: 10.0.8
+      bittorrent-tracker: 10.0.10
       debug: 4.3.4
       run-parallel: 1.2.0
     transitivePeerDependencies:
@@ -4648,6 +4658,11 @@ packages:
   /webidl-conversions/3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
     dev: true
+
+  /webidl-conversions/4.0.2:
+    resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
+    dev: true
+    optional: true
 
   /webpack-cli/5.1.4_kmwsd4zzaeyf5djegxh4cyyo3a:
     resolution: {integrity: sha512-pIDJHIEI9LR0yxHXQ+Qh95k2EvXpWzZ5l+d+jIo+RdSm9MiHfzazIxwwni/p7+x4eJZuvG1AJwgC4TNQ7NRgsg==}
@@ -4897,6 +4912,17 @@ packages:
   /wrappy/1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
+  /wrtc/0.4.7:
+    resolution: {integrity: sha512-P6Hn7VT4lfSH49HxLHcHhDq+aFf/jd9dPY7lDHeFhZ22N3858EKuwm2jmnlPzpsRGEPaoF6XwkcxY5SYnt4f/g==}
+    engines: {node: ^8.11.2 || >=10.0.0}
+    requiresBuild: true
+    optionalDependencies:
+      domexception: 1.0.1
+    dev: true
+    optional: true
+    bundledDependencies:
+      - node-pre-gyp
+
   /ws/7.5.9:
     resolution: {integrity: sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==}
     engines: {node: '>=8.3.0'}
@@ -5004,6 +5030,19 @@ packages:
     dependencies:
       ebml-stream: 1.0.3
       pako: 2.1.0
+    dev: true
+
+  github.com/ThaUnknown/p2pt/992f13f97cd6af2878a6ff079d869c01daa73bed:
+    resolution: {tarball: https://codeload.github.com/ThaUnknown/p2pt/tar.gz/992f13f97cd6af2878a6ff079d869c01daa73bed}
+    name: p2pt
+    version: 1.5.1
+    dependencies:
+      bittorrent-tracker: 10.0.10
+      uint8-util: 2.1.9
+    optionalDependencies:
+      wrtc: 0.4.7
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   github.com/devsnek/node-register-scheme/e7cc9a63a1f512565da44cb57316d9fb10750e17:

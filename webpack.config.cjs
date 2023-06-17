@@ -79,11 +79,12 @@ module.exports = [
       ]
     },
     resolve: {
-      aliasFields: [],
+      aliasFields: ['browser'],
       alias: {
         '@': resolve('src/renderer'),
         module: false,
-        url: false
+        url: false,
+        'bittorrent-tracker/lib/client/websocket-tracker.js': resolve('node_modules/bittorrent-tracker/lib/client/websocket-tracker.js')
       },
       extensions: ['.mjs', '.js', '.svelte']
     },
