@@ -1,5 +1,4 @@
 <script>
-  import { getContext } from 'svelte'
   import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
   import { alRequest } from '@/modules/anilist.js'
   export let media
@@ -41,13 +40,9 @@
     })
     media.isFavourite = !media.isFavourite
   }
-  const view = getContext('view')
-  function viewMedia () {
-    $view = media
-  }
 </script>
 
-<div class='position-absolute w-350 h-400 absolute-container top-0 bottom-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer' on:pointerdown={viewMedia}>
+<div class='position-absolute w-350 h-400 absolute-container top-0 bottom-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer'>
   <div class='banner position-relative overflow-hidden bg-black'>
     <img src={media.bannerImage || ''} alt='banner' class='img-cover w-full h-full' />
     {#if media.trailer?.id}

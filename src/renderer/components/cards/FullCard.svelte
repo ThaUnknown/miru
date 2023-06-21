@@ -11,13 +11,12 @@
   }
 </script>
 
-<div class='d-flex px-20 py-10 position-relative' on:pointerenter={() => { preview = true }} on:pointerleave={() => { preview = false }}>
+<div class='d-flex px-20 py-10 position-relative' on:pointerenter={() => { preview = true }} on:pointerleave={() => { preview = false }} on:pointerdown={viewMedia}>
   {#if preview}
     <PreviewCard {media} />
   {/if}
   <div class='card m-0 p-0 overflow-hidden pointer'
-    style:--color={media.coverImage.color || '#1890ff'}
-    on:pointerdown={viewMedia}>
+    style:--color={media.coverImage.color || '#1890ff'}>
     <div class='row h-full'>
       <div class='col-4'>
         <img loading='lazy' src={media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full h-full' />
