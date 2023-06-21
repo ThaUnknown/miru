@@ -6,7 +6,7 @@ export default function scroll (t, { speed = 120, smooth = 15 } = {}) {
 
     pos = Math.max(0, Math.min(pos - Math.max(-1, Math.min(1, (e.delta || e.wheelDelta) ?? -e.detail)) * speed, (t.scrollHeight - t.clientHeight) + (smooth * 2)))
     if (!moving) update()
-  }, false)
+  }, { capture: true, passive: false })
 
   function update () {
     const delta = pos - t.scrollTop === smooth * 2 ? 0 : ((pos - t.scrollTop) / smooth)

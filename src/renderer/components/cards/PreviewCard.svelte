@@ -47,7 +47,7 @@
   }
 </script>
 
-<div class='position-absolute w-350 h-400 absolute-container bg-dark-light z-30 rounded overflow-hidden pointer' on:pointerdown={viewMedia}>
+<div class='position-absolute w-350 h-400 absolute-container top-0 bottom-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer' on:pointerdown={viewMedia}>
   <div class='banner position-relative overflow-hidden bg-black'>
     <img src={media.bannerImage || ''} alt='banner' class='img-cover w-full h-full' />
     {#if media.trailer?.id}
@@ -150,9 +150,6 @@
     animation: 0.3s ease 0s 1 load-in;
     left: -100%;
     right: -100%;
-    top: 0;
-    bottom: 0;
-    margin: auto;
   }
   @keyframes delayedShow {
     to {

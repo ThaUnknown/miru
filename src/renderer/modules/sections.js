@@ -8,7 +8,7 @@ export default class Sections {
   }
 
   add (data) {
-    for (const { title, variables = {}, type, load = this.createFallbackLoad(variables, type), preview = load(1, 10) } of data) {
+    for (const { title, variables = {}, type, load = this.createFallbackLoad(variables, type), preview } of data) {
       this.sections.push({ load, title, preview })
     }
   }

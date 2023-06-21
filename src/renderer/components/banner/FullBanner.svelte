@@ -3,7 +3,7 @@
   import { alRequest } from '@/modules/anilist.js'
   export let media
 
-  async function toggleStatus (media) {
+  async function toggleStatus () {
     if (!media.mediaListEntry) {
       // add
       const res = await setStatus('PLANNING', {}, media)
@@ -17,7 +17,7 @@
       media.mediaListEntry = undefined
     }
   }
-  function toggleFavourite (media) {
+  function toggleFavourite () {
     alRequest({
       method: 'Favourite',
       id: media.id
@@ -116,5 +116,8 @@
     to {
       opacity: 1;
     }
+  }
+  button:hover {
+    background: #292d33 !important;
   }
 </style>

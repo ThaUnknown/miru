@@ -1,14 +1,5 @@
 <script context='module'>
-  const observer = new IntersectionObserver(([entry]) => {
-    if (entry.isIntersecting) {
-      console.log('ENTER')
-      return
-    }
-    console.log('LEAVE')
-  }, {
-    root: null,
-    threshold: 0
-  })
+  const fakecards = Array.from({ length: 10 }, () => ({ data: new Promise(() => {}) }))
 </script>
 
 <script>
@@ -16,17 +7,28 @@
 
   import { wrapEnter } from '@/modules/util.js'
   export let opts
+
+  async function deferredLoad (element) {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        if (!opts.preview) opts.preview = opts.load(1, 10)
+        observer.unobserve(element)
+      }
+    }, { hreshold: 0 })
+    observer.observe(element)
+  }
 </script>
 
 <span class='d-flex px-20 align-items-end pointer text-decoration-none text-muted'
   on:click={opts.onclick} on:keydown={wrapEnter(opts.onclick)}
   tabindex='0'
+  use:deferredLoad
   role='button'>
   <div class='font-size-24 font-weight-semi-bold'>{opts.title}</div>
   <div class='pr-10 ml-auto font-size-12'>View More</div>
 </span>
 <div class='pb-10 w-full position-relative d-flex flex-row justify-content-start gallery'>
-  {#each opts.preview as card}
+  {#each opts.preview || fakecards as card}
     <Card {card} />
   {/each}
 </div>

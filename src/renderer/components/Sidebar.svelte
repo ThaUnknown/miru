@@ -122,7 +122,7 @@
     }
   }
   .animate .donate .material-symbols-outlined {
-    animation: glow 3s ease-in-out infinite alternate;
+    animation: glow 1s ease-in-out infinite alternate;
   }
   .donate:hover .material-symbols-outlined {
     background: #fff;

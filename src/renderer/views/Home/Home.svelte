@@ -14,12 +14,11 @@
   const manager = new Sections()
 
   for (const [title, url] of set.rssFeeds.reverse()) {
-    console.log(title, url)
     manager.add([
       {
         title,
         load: (page = 1, perPage = 50) => RSSManager.getMediaForRSS(page, perPage, url),
-        preview: RSSManager.getMediaForRSS(1, 5, url)
+        preview: RSSManager.getMediaForRSS(1, 6, url)
       }
     ])
   }
@@ -108,7 +107,7 @@
   <Banner data={bannerData} />
   <div class='d-flex flex-column h-full w-full'>
     {#each manager.sections as section, i (i)}
-      <Section opts={section} />
+      <Section bind:opts={section} />
     {/each}
   </div>
 </div>
