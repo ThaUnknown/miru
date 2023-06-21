@@ -1,5 +1,5 @@
-import { set } from '@/lib/Settings.svelte'
-import { files } from '@/lib/Player/MediaHandler.svelte'
+import { set } from '../views/Settings.svelte'
+import { files } from '../views/Player/MediaHandler.svelte'
 import { page } from '@/App.svelte'
 import 'browser-event-target-emitter'
 

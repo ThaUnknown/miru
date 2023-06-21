@@ -133,10 +133,11 @@ function createWindow () {
     frame: process.platform === 'darwin', // Only keep the native frame on Mac
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      color: '#191c20',
+      color: '#17191c',
+      symbolColor: '#eee',
       height: 28
     },
-    backgroundColor: '#191c20',
+    backgroundColor: '#17191c',
     autoHideMenuBar: true,
     webPreferences: {
       enableBlinkFeatures: 'FontAccess, AudioVideoTracks',

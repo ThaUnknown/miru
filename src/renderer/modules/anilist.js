@@ -1,5 +1,5 @@
-import { alToken } from '@/lib/Settings.svelte'
-import { addToast } from '@/lib/Toasts.svelte'
+import { alToken } from '../views/Settings.svelte'
+import { addToast } from '../components/Toasts.svelte'
 import lavenshtein from 'js-levenshtein'
 import { sleep } from './util.js'
 
@@ -172,23 +172,7 @@ export async function alSearch (method) {
   return { data: { Page: { media: [lowest] } } }
 }
 
-export async function alRequest (opts) {
-  let query
-  const variables = {
-    sort: opts.sort || 'TRENDING_DESC',
-    page: opts.page || 1,
-    perPage: opts.perPage || 30,
-    status_in: opts.status_in || '[CURRENT,PLANNING]'
-  }
-  const options = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json'
-    }
-  }
-  const userId = (await alID)?.data?.Viewer.id
-  const queryObjects = /* js */`
+const queryObjects = /* js */`
 id,
 idMal,
 title {
@@ -206,6 +190,7 @@ episodes,
 duration,
 averageScore,
 genres,
+isFavourite,
 coverImage{
   extraLarge,
   medium,
@@ -285,7 +270,24 @@ recommendations{
     }
   }
 }`
-  if (opts.status) variables.status = opts.status
+
+export async function alRequest (opts) {
+  let query
+  const variables = {
+    ...opts,
+    sort: opts.sort || 'TRENDING_DESC',
+    page: opts.page || 1,
+    perPage: opts.perPage || 30,
+    status_in: opts.status_in || '[CURRENT,PLANNING]'
+  }
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    }
+  }
+  const userId = (await alID)?.data?.Viewer.id
   if (alToken) options.headers.Authorization = alToken
   switch (opts.method) {
     case 'SearchName': {
@@ -303,7 +305,6 @@ query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: [
 }`
       break
     } case 'SearchIDSingle': {
-      variables.id = opts.id
       query = /* js */` 
 query($id: Int){ 
   Media(id: $id, type: ANIME){
@@ -312,15 +313,6 @@ query($id: Int){
 }`
       break
     } case 'SearchIDS': {
-      variables.id = opts.id
-      variables.onList = opts.onList
-      variables.status = opts.status
-      variables.genre = opts.genre
-      variables.search = opts.search
-      variables.year = opts.year
-      variables.season = opts.season
-      variables.format = opts.format
-      variables.sort = opts.sort
       query = /* js */` 
 query($id: [Int], $page: Int, $perPage: Int, $status: [MediaStatus], $onList: Boolean, $sort: [MediaSort], $search: String, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat){ 
   Page(page: $page, perPage: $perPage){
@@ -354,31 +346,24 @@ query{
     } case 'UserLists': {
       variables.id = userId
       query = /* js */` 
-query($page: Int, $perPage: Int, $id: Int, $status_in: [MediaListStatus]){
-  Page(page: $page, perPage: $perPage){
-    pageInfo{
-      hasNextPage
-    },
-    mediaList(userId: $id, type: ANIME, status_in: $status_in, sort: UPDATED_TIME_DESC){
-      media{
-        ${queryObjects}
-      }
-    }
-  }
-}`
-      break
-    } case 'NewSeasons': {
-      variables.id = userId
-      query = /* js */` 
 query($id: Int){
-  MediaListCollection(userId: $id, status_in: [REPEATING, COMPLETED], type: ANIME, forceSingleCompletedList: true){
-    lists{
-      entries{
-        media{
-          relations{
-            edges{
+  MediaListCollection(userId: $id, type: ANIME, forceSingleCompletedList: true) {
+    lists {
+      status,
+      entries {
+        media {
+          id,
+          status,
+          mediaListEntry {
+            progress
+          },
+          nextAiringEpisode {
+            episode
+          },
+          relations {
+            edges {
               relationType(version:2)
-              node{
+              node {
                 id
               }
             }
@@ -402,7 +387,6 @@ query($id: Int, $mediaId: Int){
 }`
       break
     } case 'AiringSchedule': {
-      variables.from = opts.from
       variables.to = (variables.from + 7 * 24 * 60 * 60)
       query = /* js */` 
 query($page: Int, $perPage: Int, $from: Int, $to: Int){
@@ -422,31 +406,20 @@ query($page: Int, $perPage: Int, $from: Int, $to: Int){
 }`
       break
     } case 'Search': {
-      variables.genre = opts.genre
-      variables.search = opts.search
-      variables.year = opts.year
-      variables.season = opts.season
-      variables.format = opts.format
       variables.sort = opts.sort || 'SEARCH_MATCH'
       query = /* js */` 
-query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat){
+query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $onList: Boolean, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat){
   Page(page: $page, perPage: $perPage){
     pageInfo{
       hasNextPage
     },
-    media(type: ANIME, search: $search, sort: $sort, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format, format_not: MUSIC){
+    media(type: ANIME, search: $search, sort: $sort, onList: $onList, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format, format_not: MUSIC){
       ${queryObjects}
     }
   }
 }`
       break
     } case 'Entry': {
-      variables.repeat = opts.repeat
-      variables.id = opts.id
-      variables.status = opts.status
-      variables.episode = opts.episode
-      variables.score = opts.score
-      variables.lists = opts.lists
       query = /* js */`
 mutation($lists: [String], $id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int, $score: Int){
   SaveMediaListEntry(mediaId: $id, status: $status, progress: $episode, repeat: $repeat, scoreRaw: $score, customLists: $lists){
@@ -458,7 +431,6 @@ mutation($lists: [String], $id: Int, $status: MediaListStatus, $episode: Int, $r
 }`
       break
     } case 'Delete': {
-      variables.id = opts.id
       query = /* js */`
 mutation($id: Int){
   DeleteMediaListEntry(id: $id){
@@ -466,8 +438,13 @@ mutation($id: Int){
   }
 }`
       break
+    } case 'Favourite': {
+      query = /* js */`
+mutation($id: Int){
+  ToggleFavourite(animeId: $id){ anime { nodes { id } } } 
+}`
+      break
     } case 'Following': {
-      variables.id = opts.id
       query = /* js */`
 query($id: Int){
   Page{

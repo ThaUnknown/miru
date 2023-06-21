@@ -2,9 +2,11 @@ import { add } from './torrent.js'
 import { DOMPARSER, PromiseBatch } from './util.js'
 import { alRequest, alSearch } from './anilist.js'
 import anitomyscript from 'anitomyscript'
-import { media } from '@/lib/Player/MediaHandler.svelte'
-import { addToast } from '@/lib/Toasts.svelte'
+import { media } from '../views/Player/MediaHandler.svelte'
+import { addToast } from '../components/Toasts.svelte'
 import { view } from '@/App.svelte'
+
+import { playAnime } from '../views/RSSView.svelte'
 
 const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
@@ -332,3 +334,60 @@ export async function resolveSeason (opts) {
 }
 
 const relations = {}
+
+export const formatMap = {
+  TV: 'TV Series',
+  TV_SHORT: 'TV Short',
+  MOVIE: 'Movie',
+  SPECIAL: 'Special',
+  OVA: 'OVA',
+  ONA: 'ONA',
+  MUSIC: 'Music',
+  undefined: 'N/A',
+  null: 'N/A'
+}
+
+export const statusColorMap = {
+  CURRENT: 'rgb(61,180,242)',
+  PLANNING: 'rgb(247,154,99)',
+  COMPLETED: 'rgb(123,213,85)',
+  PAUSED: 'rgb(250,122,122)',
+  REPEATING: '#3baeea',
+  DROPPED: 'rgb(232,93,117)'
+}
+
+export async function playMedia (media) {
+  let ep = 1
+  if (media.mediaListEntry) {
+    const { status, progress } = media.mediaListEntry
+    if (progress) {
+      if (status === 'COMPLETED') {
+        await setStatus('REPEATING', { episode: 0 }, media)
+      } else {
+        ep = Math.min(getMediaMaxEp(media, true), progress + 1)
+      }
+    }
+  }
+  playAnime(media, ep, true)
+  media = null
+}
+
+export function setStatus (status, other = {}, media) {
+  const variables = {
+    method: 'Entry',
+    id: media.id,
+    status,
+    ...other
+  }
+  return alRequest(variables)
+}
+
+const episodeMetadataMap = {}
+
+export async function getEpisodeMetadataForMedia (media) {
+  if (episodeMetadataMap[media.id]) return episodeMetadataMap[media.id]
+  const res = await fetch('https://api.enime.moe/mapping/anilist/' + media.id)
+  const { episodes } = await res.json()
+  episodeMetadataMap[media.id] = episodes
+  return episodes
+}

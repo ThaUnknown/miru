@@ -26,6 +26,7 @@ specifiers:
   simple-store-svelte: ^1.0.0
   svelte: ^3.59.1
   svelte-keybinds: 1.0.5
+  svelte-lite-youtube-embed: ^1.1.0
   svelte-loader: ^3.1.8
   svelte-miniplayer: 1.0.3
   utp-native: ^2.5.3
@@ -36,6 +37,7 @@ specifiers:
 
 dependencies:
   pump: 3.0.0
+  svelte-lite-youtube-embed: 1.1.0
   utp-native: 2.5.3
 
 devDependencies:
@@ -4338,6 +4340,10 @@ packages:
   /svelte-keybinds/1.0.5:
     resolution: {integrity: sha512-uLgpqP+anTE++sjjVvtQVHzzGa2kJCzOOomLcYGKRIDESkLaQ6tIRZ7u0ktqYzUP8VadZe46ShrJLfz/4kBF2w==}
     dev: true
+
+  /svelte-lite-youtube-embed/1.1.0:
+    resolution: {integrity: sha512-I/0/in8MCDJT9Ah/8Ch7qVwzPb1wqhHUi4idbQjR2engg1TibnGwWvjXrxFDlXkEr2gc2JVQdGvEfCdXEZrNfQ==}
+    dev: false
 
   /svelte-loader/3.1.8_svelte@3.59.1:
     resolution: {integrity: sha512-NFYeYPVfqpEAy1Tn1TvkImpBMLk6Bvmbw0s0GB4VfUmO1KQ4uHIZ+jWCOpH12dFltul2DWqVhaRE6switZqm2g==}

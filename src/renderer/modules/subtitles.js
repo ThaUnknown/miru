@@ -1,6 +1,6 @@
 import JASSUB from 'jassub'
 import { toTS, videoRx, subRx } from './util.js'
-import { set } from '@/lib/Settings.svelte'
+import { set } from '../views/Settings.svelte'
 
 import { client } from '@/modules/torrent.js'
 
