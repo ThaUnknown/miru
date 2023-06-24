@@ -112,3 +112,22 @@ export function wrapEnter (fn) {
     if (key === 'Enter') fn()
   }
 }
+
+export function binarySearch (arr, el) {
+  let left = 0
+  let right = arr.length - 1
+
+  while (left <= right) {
+    // Using bitwise or instead of Math.floor as it is slightly faster
+    const mid = ((right + left) / 2) | 0
+    if (arr[mid] === el) {
+      return true
+    } else if (el < arr[mid]) {
+      right = mid - 1
+    } else {
+      left = mid + 1
+    }
+  }
+
+  return false
+}

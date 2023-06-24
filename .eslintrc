@@ -1,0 +1,45 @@
+{
+  "globals": {
+    "launchQueue": "readonly",
+    "FileSystemHandle": "readonly",
+    "FileSystemFileHandle": "readonly",
+    "FileSystemDirectoryHandle": "readonly",
+    "FileSystemWritableFileStream": "readonly",
+    "ClipboardItem": "readonly",
+    "queryLocalFonts": "readonly"
+  },
+  "env": {
+    "es2022": true,
+    "browser": true,
+    "worker": true,
+    "node": true,
+    "serviceworker": true
+  },
+  "extends": ["plugin:svelte/recommended", "standard"],
+  "plugins": ["svelte"],
+  "parser": "@typescript-eslint/parser",
+  "ignorePatterns": ["*.min.*", "*.build.*"],
+  "overrides": [
+    {
+      "files": ["*.svelte"],
+      "parser": "svelte-eslint-parser",
+      "rules": {
+        "svelte/indent": ["error", { "indent": 2, "indentScript": true }],
+        "no-self-assign": 0,
+        "a11y-media-has-caption": 0,
+        "no-use-before-define": 0,
+        "svelte/html-self-closing": ["error", "always"],
+        "svelte/html-closing-bracket-spacing": ["error", { "startTag": "never", "endTag": "never", "selfClosingTag": "always" }],
+        "svelte/html-quotes": [
+          "error",
+          {
+            "prefer": "single",
+            "dynamic": { "quoted": false, "avoidInvalidUnquotedInHTML": false }
+          }
+        ],
+        "svelte/shorthand-attribute": ["warn", { "prefer": "always" }],
+        "svelte/spaced-html-comment": ["error", "always"]
+      }
+    }
+  ]
+}

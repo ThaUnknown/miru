@@ -1,5 +1,5 @@
 import { add } from './torrent.js'
-import { DOMPARSER, PromiseBatch } from './util.js'
+import { DOMPARSER, PromiseBatch, binarySearch } from './util.js'
 import { alRequest, alSearch } from './anilist.js'
 import anitomyscript from 'anitomyscript'
 import { media } from '../views/Player/MediaHandler.svelte'
@@ -390,4 +390,24 @@ export async function getEpisodeMetadataForMedia (media) {
   const { episodes } = await res.json()
   episodeMetadataMap[media.id] = episodes
   return episodes
+}
+
+let seadex = []
+requestIdleCallback(async () => {
+  const res = await fetch('https://sneedex.moe/api/public/nyaa')
+  const json = await res.json()
+  seadex = json.flatMap(({ nyaaIDs }) => nyaaIDs).sort((a, b) => a - b) // sort for binary search
+})
+
+export function mapBestRelease (entries) {
+  return entries.map(entry => {
+    if (entry.id) {
+      if (entry.id === '?') return entry
+      if (binarySearch(seadex, entry.id)) entry.best = true
+      return entry
+    }
+    const match = entry.link.match(/\d+/i)
+    if (match && binarySearch(seadex, Number(match[0]))) entry.best = true
+    return entry
+  })
 }

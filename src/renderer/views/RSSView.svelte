@@ -3,7 +3,7 @@
   import { set } from './Settings.svelte'
   import { addToast } from '../components/Toasts.svelte'
   import { findInCurrent } from './Player/MediaHandler.svelte'
-  import { getRSSEntries } from '@/modules/rss.js'
+  import getRSSEntries from '@/modules/providers/tosho.js'
 
   import { writable } from 'svelte/store'
 
@@ -96,9 +96,9 @@
                 <th>{index + 1}</th>
                 <td>{row.title}</td>
                 <td>{row.size}</td>
-                <td>{row.seeders}</td>
-                <td>{row.leechers}</td>
-                <td>{row.downloads}</td>
+                <td>{row.seeders ?? '?'}</td>
+                <td>{row.leechers ?? '?'}</td>
+                <td>{row.downloads ?? '?'}</td>
                 <td>{since(row.date)}</td>
                 <td class='material-symbols-outlined font-size-20'>play_arrow</td>
               </tr>
