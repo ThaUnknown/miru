@@ -99,7 +99,7 @@ class RSSMediaManager {
     await this.lastResult
     const res = (await resolveFileMedia(title))[0]
     if (res.media?.id) {
-      res.episodeData = (await getEpisodeMetadataForMedia(res.media)).find(({ number }) => number === res.episode)
+      res.episodeData = (await getEpisodeMetadataForMedia(res.media))?.find(({ number }) => number === res.episode)
     }
     res.onclick = () => add(link)
     return res

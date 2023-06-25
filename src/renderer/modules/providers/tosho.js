@@ -1,23 +1,27 @@
 import { mapBestRelease } from '../anime.js'
 import { fastPrettyBytes } from '../util.js'
+import { exclusions } from '../rss.js'
 
 const toshoURL = decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnL2pzb24/'))
 
-// TODO: exclude unsupported codecd, query resolution
+// TODO query resolution
 
 export default async function ({ media, episode }) {
-  const mappings = await fetch('https://api.ani.zip/mappings?anilist_id=' + media.id)
+  const mappings = await fetch('https://api.ani.zip/mappings?anilist_id=' + media.id + '&qx=' + exclusions.map(e => '!' + e).join(' '))
   const { episodes, mappings: map } = await mappings.json()
+  const entries = []
 
-  const { anidbEid } = episodes[Number(episode)]
+  if (episodes[Number(episode)]) {
+    const { anidbEid } = episodes[Number(episode)]
 
-  const torrents = await fetch(toshoURL + 'eid=' + anidbEid)
+    const torrents = await fetch(toshoURL + 'eid=' + anidbEid)
 
-  const entries = (await torrents.json())
+    entries.push(...await torrents.json())
+  }
 
   // look for batches
-  if (media.status === 'FINISHED' && media.episodes && media.episodes !== 1) {
-    const torrents = await fetch(toshoURL + 'aid=' + map.anidb_id + '&order=size-d')
+  if (map.anidb_id && (media.status === 'FINISHED' || media.episodes === 1)) {
+    const torrents = await fetch(toshoURL + 'aid=' + map.anidb_id + '&order=size-d' + '&qx=' + exclusions.map(e => '!' + e).join(' '))
 
     const batches = (await torrents.json()).filter(entry => {
       return entry.num_files >= media.episodes

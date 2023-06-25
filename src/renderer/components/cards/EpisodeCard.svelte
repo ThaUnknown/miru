@@ -31,14 +31,16 @@
           {data.media?.title.userPreferred || data.parseObject.anime_title}
         </div>
       </div>
-      <div class='col-5 d-flex flex-column align-items-end text-right'>
-        <div class='text-white'>
-          Episode {data.episode}
+      {#if data.episode}
+        <div class='col-5 d-flex flex-column align-items-end text-right'>
+          <div class='text-white'>
+            Episode {data.episode}
+          </div>
+          <div class='text-muted font-size-12 title overflow-hidden'>
+            {data.episodeData?.title || ''}
+          </div>
         </div>
-        <div class='text-muted font-size-12 title overflow-hidden'>
-          {data.episodeData?.title || ''}
-        </div>
-      </div>
+      {/if}
     </div>
   </div>
 </div>
