@@ -1,16 +1,18 @@
+<script context='module'>
+  const badgeKeys = ['search', 'genre', 'season', 'year', 'format', 'status', 'sort']
+
+  export function searchCleanup (search) {
+    return Object.entries(search).map(([key, value]) => {
+      return badgeKeys.includes(key) && value
+    }).filter(a => a)
+  }
+</script>
+
 <script>
   import { traceAnime } from '@/modules/anime.js'
 
-  export let search
-  export let current
-  export let media = null
-  export let loadCurrent
-  let searchTimeout = null
+  export let search = {}
   let searchTextInput
-
-  function searchCleanup (search) {
-    return Object.values(search).filter(a => a)
-  }
 
   $: sanitisedSearch = searchCleanup(search)
 
@@ -24,28 +26,9 @@
       status: '',
       sort: ''
     }
-    current = null
     searchTextInput?.focus()
   }
-  function input () {
-    if (!searchTimeout) {
-      if (Object.values(search).filter(v => v).length) media = [new Promise(() => {})]
-    } else {
-      clearTimeout(searchTimeout)
-    }
-    searchTimeout = setTimeout(() => {
-      if (current === null) {
-        if (Object.values(search).filter(v => v).length) current = 'search'
-      } else {
-        if (Object.values(search).filter(v => v).length) {
-          loadCurrent(false)
-        } else {
-          current = null
-        }
-      }
-      searchTimeout = null
-    }, 500)
-  }
+
   function handleFile ({ target }) {
     const { files } = target
     if (files?.[0]) {
@@ -55,7 +38,7 @@
   }
 </script>
 
-<div class='container-fluid py-20 px-10 pb-0 position-sticky top-0 search-container z-40 bg-dark' on:input={input}>
+<div class='container-fluid py-20 px-10 pb-0 position-sticky top-0 search-container z-40 bg-dark'>
   <div class='row'>
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
@@ -71,7 +54,6 @@
           on:input={({ target }) => {
             queueMicrotask(() => {
               search.search = target.value
-              input()
             })
           }}
           bind:this={searchTextInput}
@@ -81,6 +63,7 @@
           autocomplete='off'
           bind:value={search.search}
           data-option='search'
+          disabled={search.disableSearch}
           placeholder='Any' />
       </div>
     </div>
@@ -90,7 +73,7 @@
         Genre
       </div>
       <div class='input-group'>
-        <select class='form-control bg-dark-light' required bind:value={search.genre}>
+        <select class='form-control bg-dark-light' required bind:value={search.genre} disabled={search.disableSearch}>
           <option value selected disabled hidden>Any</option>
           <option value='Action'>Action</option>
           <option value='Adventure'>Adventure</option>
@@ -119,7 +102,7 @@
         Season
       </div>
       <div class='input-group'>
-        <select class='form-control bg-dark-light border-right-dark' required bind:value={search.season}>
+        <select class='form-control bg-dark-light border-right-dark' required bind:value={search.season} disabled={search.disableSearch}>
           <option value selected disabled hidden>Any</option>
           <option value='WINTER'>Winter</option>
           <option value='SPRING'>Spring</option>
@@ -132,7 +115,7 @@
             <option>{year}</option>
           {/each}
         </datalist>
-        <input type='number' placeholder='Any' min='1940' max='2100' list='search-year' class='bg-dark-light form-control' bind:value={search.year} />
+        <input type='number' placeholder='Any' min='1940' max='2100' list='search-year' class='bg-dark-light form-control' disabled={search.disableSearch} bind:value={search.year} />
       </div>
     </div>
     <div class='col p-10 d-flex flex-column justify-content-end'>
@@ -141,7 +124,7 @@
         Format
       </div>
       <div class='input-group'>
-        <select class='form-control bg-dark-light' required bind:value={search.format}>
+        <select class='form-control bg-dark-light' required bind:value={search.format} disabled={search.disableSearch}>
           <option value selected disabled hidden>Any</option>
           <option value='TV'>TV Show</option>
           <option value='MOVIE'>Movie</option>
@@ -157,7 +140,7 @@
         Status
       </div>
       <div class='input-group'>
-        <select class='form-control bg-dark-light' required bind:value={search.status}>
+        <select class='form-control bg-dark-light' required bind:value={search.status} disabled={search.disableSearch}>
           <option value selected disabled hidden>Any</option>
           <option value='RELEASING'>Airing</option>
           <option value='FINISHED'>Finished</option>
@@ -172,7 +155,7 @@
         Sort
       </div>
       <div class='input-group'>
-        <select class='form-control bg-dark-light' required bind:value={search.sort}>
+        <select class='form-control bg-dark-light' required bind:value={search.sort} disabled={search.disableSearch}>
           <option value selected disabled hidden>Name</option>
           <option value='START_DATE_DESC'>Release Date</option>
           <option value='SCORE_DESC'>Score</option>
@@ -194,7 +177,7 @@
     </div>
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
-        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button' on:click={searchClear} class:text-primary={!!current}>
+        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button' on:click={searchClear} class:text-primary={!!sanitisedSearch?.length}>
           delete
         </button>
       </div>
@@ -204,7 +187,7 @@
     {#if sanitisedSearch?.length}
       <span class='material-symbols-outlined font-size-24 mr-20 filled text-dark-light'>sell</span>
       {#each sanitisedSearch as badge}
-        <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white'>{('' + badge).replace(/_/g, ' ').toLowerCase()}</span>
+        <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>{('' + badge).replace(/_/g, ' ').toLowerCase()}</span>
       {/each}
     {/if}
     <span class='material-symbols-outlined font-size-24 mr-10 filled ml-auto text-dark-light'>grid_on</span>

@@ -4,9 +4,7 @@
   export let page
   const view = getContext('view')
   const trailer = getContext('trailer')
-  const gallery = getContext('gallery')
   function close () {
-    $gallery = null
     $view = null
     $trailer = null
     page = 'home'

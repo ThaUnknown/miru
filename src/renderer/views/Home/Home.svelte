@@ -100,7 +100,6 @@
   import Section from './Section.svelte'
   import Banner from '@/components/banner/Banner.svelte'
   import smoothScroll from '@/modules/scroll.js'
-  export let current
 </script>
 
 <div class='h-full w-full overflow-y-scroll root overflow-x-hidden' use:smoothScroll>

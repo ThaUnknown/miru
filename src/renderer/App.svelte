@@ -25,8 +25,6 @@
 
   setContext('view', view)
 
-  setContext('gallery', writable(null))
-
   setContext('trailer', writable(null))
 </script>
 

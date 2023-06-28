@@ -6,7 +6,6 @@
   import { addToast } from './Toasts.svelte'
   import { wrapEnter } from '@/modules/util.js'
   const view = getContext('view')
-  const gallery = getContext('gallery')
   export let page
   const links = [
     {
@@ -34,15 +33,20 @@
     {
       click: () => {
         page = 'home'
-        $gallery = null
       },
       icon: 'home',
       text: 'Home'
     },
     {
       click: () => {
+        page = 'search'
+      },
+      icon: 'search',
+      text: 'Search'
+    },
+    {
+      click: () => {
         page = 'home'
-        $gallery = 'schedule'
       },
       icon: 'schedule',
       text: 'Schedule'
