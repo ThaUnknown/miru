@@ -37,7 +37,7 @@
             }).map(({ media }) => media.id)
             return alRequest({ method: 'SearchIDS', page, perPage, id: ids })
           })
-          return manager.wrapResponse(res, perPage)
+          return Sections.wrapResponse(res, perPage)
         }
       },
       {
@@ -52,7 +52,7 @@
             }).map(({ node }) => node.id)
             return alRequest({ method: 'SearchIDS', page, perPage, id: ids, status: ['FINISHED', 'RELEASING'], onList: false })
           })
-          return manager.wrapResponse(res, perPage)
+          return Sections.wrapResponse(res, perPage)
         }
       },
       {
@@ -62,7 +62,7 @@
             const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PLANNING').entries.map(({ media }) => media.id)
             return alRequest({ method: 'SearchIDS', page, perPage, id: ids })
           })
-          return manager.wrapResponse(res, perPage)
+          return Sections.wrapResponse(res, perPage)
         }
       }
     ])
