@@ -75,7 +75,7 @@ class RSSMediaManager {
 
   async _getMediaForRSS (page, perPage, url) {
     const content = await getRSSContent(getReleasesRSSurl(url))
-    const pubDate = content.querySelector('pubDate').textContent
+    const pubDate = content.querySelector('pubDate').textContent * page * perPage
     if (this.resultMap[url]?.date === pubDate) return this.resultMap[url].result
 
     const index = (page - 1) * perPage
@@ -90,9 +90,8 @@ class RSSMediaManager {
   }
 
   resolveAnimeFromRSSItem ({ title, link }) {
-    const result = this.queueResolve(title, link)
-    this.lastResult = result
-    return result
+    this.lastResult = this.queueResolve(title, link)
+    return this.lastResult
   }
 
   async queueResolve (title, link) {

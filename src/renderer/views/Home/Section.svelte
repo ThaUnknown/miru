@@ -6,8 +6,8 @@
   import Card from '@/components/cards/Card.svelte'
   import { search } from '../Search.svelte'
   import { page } from '@/App.svelte'
-
   import { wrapEnter } from '@/modules/util.js'
+
   export let opts
 
   async function deferredLoad (element) {

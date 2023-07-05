@@ -17,8 +17,9 @@
     manager.add([
       {
         title,
-        load: (page = 1, perPage = 50) => RSSManager.getMediaForRSS(page, perPage, url),
-        preview: RSSManager.getMediaForRSS(1, 6, url)
+        load: (page = 1, perPage = 8) => RSSManager.getMediaForRSS(page, perPage, url),
+        preview: RSSManager.getMediaForRSS(1, 6, url),
+        variables: { disableSearch: true }
       }
     ])
   }

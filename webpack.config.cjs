@@ -8,7 +8,7 @@ const isDev = mode === 'development'
 
 module.exports = [
   {
-    devtool: isDev ? 'eval' : 'source-map',
+    devtool: 'source-map',
     entry: join(__dirname, 'src', 'background', 'background.js'),
     output: {
       path: join(__dirname, 'build'),
@@ -40,7 +40,7 @@ module.exports = [
     }
   },
   {
-    devtool: isDev ? 'eval' : 'source-map',
+    devtool: 'source-map',
     entry: join(__dirname, 'src', 'renderer', 'main.js'),
     output: {
       path: join(__dirname, 'build'),
@@ -66,7 +66,12 @@ module.exports = [
           test: /\.css$/,
           use: [
             MiniCssExtractPlugin.loader,
-            'css-loader'
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true
+              }
+            }
           ]
         },
         {
@@ -124,7 +129,7 @@ module.exports = [
     target: 'web'
   },
   {
-    devtool: isDev ? 'eval' : 'source-map',
+    devtool: 'source-map',
     entry: join(__dirname, 'src', 'preload', 'preload.js'),
     output: {
       path: join(__dirname, 'build'),
@@ -137,7 +142,7 @@ module.exports = [
     target: 'electron20.0-preload'
   },
   {
-    devtool: isDev ? 'eval' : 'source-map',
+    devtool: 'source-map',
     entry: join(__dirname, 'src', 'main', 'main.js'),
     output: {
       path: join(__dirname, 'build'),

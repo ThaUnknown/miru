@@ -11,7 +11,7 @@
 <script>
   import { traceAnime } from '@/modules/anime.js'
 
-  export let search = {}
+  export let search
   let searchTextInput
 
   $: sanitisedSearch = searchCleanup(search)
@@ -26,7 +26,8 @@
       status: '',
       sort: ''
     }
-    searchTextInput?.focus()
+    searchTextInput.focus()
+    searchTextInput.dispatchEvent(new Event('input', { bubbles: true }))
   }
 
   function handleFile ({ target }) {
@@ -38,7 +39,7 @@
   }
 </script>
 
-<div class='container-fluid py-20 px-10 pb-0 position-sticky top-0 search-container z-40 bg-dark'>
+<form class='container-fluid py-20 px-10 pb-0 position-sticky top-0 search-container z-40 bg-dark' on:input>
   <div class='row'>
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
@@ -51,11 +52,6 @@
         </div>
         <!-- svelte-ignore a11y-autofocus -->
         <input
-          on:input={({ target }) => {
-            queueMicrotask(() => {
-              search.search = target.value
-            })
-          }}
           bind:this={searchTextInput}
           autofocus
           type='search'
@@ -169,7 +165,7 @@
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
         <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button'>
-          <label for='search-image' class='pointer'>
+          <label for='search-image' class='pointer mb-0'>
             image
           </label>
         </button>
@@ -193,7 +189,7 @@
     <span class='material-symbols-outlined font-size-24 mr-10 filled ml-auto text-dark-light'>grid_on</span>
     <span class='material-symbols-outlined font-size-24 filled text-dark-light'>grid_view</span>
   </div>
-</div>
+</form>
 
 <style>
   .text-dark-light {

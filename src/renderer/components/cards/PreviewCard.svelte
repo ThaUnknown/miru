@@ -40,6 +40,7 @@
     })
     media.isFavourite = !media.isFavourite
   }
+  // TODO: add a volume toggle icon for trailer
   function volume (video) {
     video.volume = 0.05
   }
@@ -47,7 +48,7 @@
 
 <div class='position-absolute w-350 h-400 absolute-container top-0 bottom-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer'>
   <div class='banner position-relative overflow-hidden bg-black'>
-    <img src={media.bannerImage || ''} alt='banner' class='img-cover w-full h-full' />
+    <img src={media.bannerImage || ' '} alt='banner' class='img-cover w-full h-full' />
     {#if media.trailer?.id}
       <!-- for now we use some invidious instance, would be nice to somehow get these links outselves, this redirects straight to some google endpoint -->
       <!-- eslint-disable-next-line svelte/valid-compile -->
@@ -57,7 +58,7 @@
         playsinline
         preload='none'
         loop
-        use:volume
+        muted
         on:loadeddata={() => { hide = false }}
         autoplay />
       <!-- <iframe

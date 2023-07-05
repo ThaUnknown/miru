@@ -93,19 +93,31 @@ export function generateRandomHexCode (len) {
   return hexCode
 }
 
-export function throttle (cb, limit) {
+export function throttle (fn, time) {
   let wait = false
   return () => {
     if (!wait) {
-      cb()
+      fn()
       wait = true
       setTimeout(() => {
-        cb()
+        fn()
         wait = false
-      }, limit)
+      }, time)
     }
   }
 }
+
+export function debounce (fn, time) {
+  let timeout
+  return (...args) => {
+    const later = () => {
+      timeout = null
+      fn(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, time)
+  }
+};
 
 export function wrapEnter (fn) {
   return ({ key }) => {

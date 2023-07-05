@@ -79,7 +79,7 @@ img {
   user-select: all;
 }
 
-img[src=''] {
+img[src=''], img[src=' '] {
   display: none;
 }
 
@@ -150,4 +150,8 @@ img[src=''] {
   width: 15rem;
   background: linear-gradient(to right, transparent 0%, #17191c 50%, transparent 100%);
   animation: load 1s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.align-content-start {
+  align-content: start;
 }

@@ -4,24 +4,36 @@
 
   export const search = writable({})
 
-  let items = []
+  const items = writable([])
 </script>
 
 <script>
   import Search, { searchCleanup } from '../components/Search.svelte'
   import Card from '../components/cards/Card.svelte'
   import smoothScroll from '@/modules/scroll.js'
+  import { debounce } from '@/modules/util.js'
 
-  const fallbackLoad = Sections.createFallbackLoad()
+  let searchRef = $search
 
-  const load = $search.load || fallbackLoad
-  items = load(1, 50, searchCleanup($search))
+  function loadSearchData (search) {
+    const load = search.load || Sections.createFallbackLoad()
+    $items = load(1, undefined, searchCleanup(search))
+  }
+  loadSearchData(searchRef)
+  const update = debounce(loadSearchData, 150)
+
 </script>
 
-<Search bind:search={$search} />
-
-<div class='h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden px-20 justify-content-center' use:smoothScroll>
-  {#each items as card}
+<div class='h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden px-50 justify-content-center align-content-start' use:smoothScroll>
+  <Search bind:search={searchRef} on:input={() => update(searchRef)} />
+  {#each $items as card}
     <Card {card} />
   {/each}
 </div>
+
+<style>
+  .px-50 {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+</style>
