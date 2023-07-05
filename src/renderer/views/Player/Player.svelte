@@ -120,7 +120,6 @@
       src = ''
       currentTime = 0
       targetTime = 0
-      tick().then(() => video?.play())
     }
   }
 
@@ -149,9 +148,7 @@
       src = file.url
       client.send('current', file)
       subs = new Subtitles(video, files, current, handleHeaders)
-      loadInterval = setInterval(() => {
-        if (!video.readyState) video.load()
-      }, 200)
+      video.load()
     }
   }
 

@@ -152,9 +152,9 @@ function createWindow () {
   protocol.registerHttpProtocol('miru', (req, cb) => {
     const token = req.url.slice(7)
     if (development) {
-      mainWindow.loadURL(path.join(__dirname, '/index.html' + token))
+      mainWindow.loadURL(path.join(__dirname, '/app.html' + token))
     } else {
-      mainWindow.loadURL('http://localhost:5000/' + token)
+      mainWindow.loadURL('http://localhost:5000/app.html' + token)
     }
   })
 
@@ -173,13 +173,13 @@ function createWindow () {
   if (!development) {
     // Load production build
     torrentLoad = webtorrentWindow.loadFile(path.join(__dirname, '/background.html'))
-    mainWindow.loadFile(path.join(__dirname, '/index.html'))
+    mainWindow.loadFile(path.join(__dirname, '/app.html'))
   } else {
     // Load vite dev server page
     console.log('Development mode')
     torrentLoad = webtorrentWindow.loadURL('http://localhost:5000/background.html')
     webtorrentWindow.webContents.openDevTools()
-    mainWindow.loadURL('http://localhost:5000/index.html')
+    mainWindow.loadURL('http://localhost:5000/app.html')
     mainWindow.webContents.openDevTools()
   }
 

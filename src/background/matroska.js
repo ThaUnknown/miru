@@ -1,3 +1,5 @@
+// currently unused
+
 import { EbmlIteratorDecoder, EbmlTagId } from 'ebml-iterator'
 import { EventEmitter } from 'events'
 import { inflate } from 'pako'

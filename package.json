@@ -14,7 +14,9 @@
     "publish": "npm run web:build && electron-builder -p always"
   },
   "devDependencies": {
-    "@typescript-eslint/parser": "^5.60.0",
+    "@fontsource-variable/material-symbols-outlined": "^5.0.4",
+    "@fontsource-variable/nunito": "^5.0.5",
+    "@typescript-eslint/parser": "^5.61.0",
     "anitomyscript": "github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00",
     "bottleneck": "^2.19.5",
     "browser-event-target-emitter": "^1.0.0",
