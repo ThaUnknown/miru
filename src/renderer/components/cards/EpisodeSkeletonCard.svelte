@@ -1,4 +1,4 @@
-<div class='d-flex pt-20 px-20 position-relative'>
+<div class='d-flex pt-20 px-20 position-relative wrapper'>
   <div class='item d-flex flex-column h-full'>
     <div class='image h-200 w-full rounded skeloader bg-dark-light' />
     <div class='row pt-15'>
@@ -17,5 +17,8 @@
   .item {
     animation: 0.3s ease 0s 1 load-in;
     width: 36rem
+  }
+  .wrapper {
+    height: 29.2rem;
   }
 </style>

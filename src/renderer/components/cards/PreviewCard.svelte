@@ -40,20 +40,34 @@
     })
     media.isFavourite = !media.isFavourite
   }
+  function volume (video) {
+    video.volume = 0.05
+  }
 </script>
 
 <div class='position-absolute w-350 h-400 absolute-container top-0 bottom-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer'>
   <div class='banner position-relative overflow-hidden bg-black'>
     <img src={media.bannerImage || ''} alt='banner' class='img-cover w-full h-full' />
     {#if media.trailer?.id}
-      <iframe
+      <!-- for now we use some invidious instance, would be nice to somehow get these links outselves, this redirects straight to some google endpoint -->
+      <!-- eslint-disable-next-line svelte/valid-compile -->
+      <video src={`https://yewtu.be/latest_version?id=${media.trailer.id}&itag=18`}
+        class='w-full position-absolute left-0'
+        class:d-none={hide}
+        playsinline
+        preload='none'
+        loop
+        use:volume
+        on:loadeddata={() => { hide = false }}
+        autoplay />
+      <!-- <iframe
         class='w-full border-0 position-absolute left-0'
         class:d-none={hide}
         title={media.title.userPreferred}
         allow='autoplay'
         on:load={() => { hide = false }}
         src={`https://www.youtube-nocookie.com/embed/${media.trailer?.id}?autoplay=1&controls=0&mute=1&disablekb=1&loop=1&vq=medium&playlist=${media.trailer?.id}`}
-      />
+      /> -->
     {/if}
   </div>
   <div class='w-full px-20'>
@@ -146,17 +160,17 @@
     left: -100%;
     right: -100%;
   }
-  @keyframes delayedShow {
+  /* @keyframes delayedShow {
     to {
       visibility: visible;
     }
-  }
+  } */
 
-  iframe {
+  /* iframe {
     height: 200%;
     top: 50%;
     transform: translate(0, -50%);
     visibility: hidden;
     animation: 0s linear 0.5s forwards delayedShow ;
-  }
+  } */
 </style>

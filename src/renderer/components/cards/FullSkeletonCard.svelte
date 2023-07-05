@@ -1,5 +1,4 @@
 <div class='d-flex px-20 py-10 position-relative'>
-
   <div class='card m-0 p-0 overflow-hidden'>
     <div class='row h-full'>
       <div class='col-4 skeloader bg-dark-light' />

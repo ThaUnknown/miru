@@ -53,6 +53,9 @@
     "webpack-dev-server": "^4.15.0",
     "webtorrent": "^2.1.11"
   },
+  "dependencies": {
+    "utp-native": "^2.5.3"
+  },
   "standard": {
     "ignore": [
       "bundle.js",
@@ -135,8 +138,5 @@
       "allowToChangeInstallationDirectory": true,
       "oneClick": false
     }
-  },
-  "dependencies": {
-    "utp-native": "^2.5.3"
   }
 }
