@@ -33,7 +33,7 @@
             Episode {data.episode}
           </div>
           <div class='text-muted font-size-12 title overflow-hidden'>
-            {data.episodeData?.title || ''}
+            {data.episodeData?.title.en || ''}
           </div>
         </div>
       {/if}

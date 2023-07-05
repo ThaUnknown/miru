@@ -1,7 +1,7 @@
 <script context='module'>
   import Sections from '@/modules/sections.js'
   import { alToken, set } from '../Settings.svelte'
-  import { alRequest } from '@/modules/anilist.js'
+  import { alRequest, userLists } from '@/modules/anilist.js'
   import { RSSManager } from '@/modules/rss.js'
 
   const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL']
@@ -24,13 +24,11 @@
     ])
   }
   if (alToken) {
-    const userLists = alRequest({ method: 'UserLists' })
-
     manager.add([
       {
         title: 'Continue Watching',
         load: (page = 1, perPage = 50) => {
-          const res = userLists.then(res => {
+          const res = userLists.value.then(res => {
             const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'CURRENT').entries
             const ids = mediaList.filter(({ media }) => {
               if (media.status === 'FINISHED') return true
@@ -44,7 +42,7 @@
       {
         title: 'Sequels You Missed',
         load: (page = 1, perPage = 50) => {
-          const res = userLists.then(res => {
+          const res = userLists.value.then(res => {
             const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED').entries
             const ids = mediaList.flatMap(({ media }) => {
               return media.relations.edges.filter(edge => {
@@ -59,7 +57,7 @@
       {
         title: 'Your List',
         load: (page = 1, perPage = 50) => {
-          const res = userLists.then(res => {
+          const res = userLists.value.then(res => {
             const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PLANNING').entries.map(({ media }) => media.id)
             return alRequest({ method: 'SearchIDS', page, perPage, id: ids })
           })

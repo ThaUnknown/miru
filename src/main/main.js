@@ -161,7 +161,7 @@ function createWindow () {
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, fn) => {
     const { responseHeaders, method } = details
 
-    if (method === 'OPTIONS') fn({ responseHeaders })
+    if (method === 'OPTIONS') return fn({ responseHeaders })
 
     if (!responseHeaders['access-control-allow-origin']) UpsertKeyValue(responseHeaders, 'Access-Control-Allow-Origin', ['*'])
     if (!responseHeaders['access-control-allow-credentials']) UpsertKeyValue(responseHeaders, 'Access-Control-Allow-Origin', ['*'])

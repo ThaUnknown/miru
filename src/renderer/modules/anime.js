@@ -212,6 +212,7 @@ function getParseObjTitle (obj) {
   return title
 }
 
+// TODO: anidb aka true episodes need to be mapped to anilist episodes a bit better
 export async function resolveFileMedia (fileName) {
   let parseObjs = await anitomyscript(fileName)
 
@@ -386,7 +387,7 @@ const episodeMetadataMap = {}
 
 export async function getEpisodeMetadataForMedia (media) {
   if (episodeMetadataMap[media.id]) return episodeMetadataMap[media.id]
-  const res = await fetch('https://api.enime.moe/mapping/anilist/' + media.id)
+  const res = await fetch('https://api.ani.zip/mappings?anilist_id=' + media.id)
   const { episodes } = await res.json()
   episodeMetadataMap[media.id] = episodes
   return episodes

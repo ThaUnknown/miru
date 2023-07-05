@@ -2,9 +2,9 @@
   const badgeKeys = ['search', 'genre', 'season', 'year', 'format', 'status', 'sort']
 
   export function searchCleanup (search) {
-    return Object.entries(search).map(([key, value]) => {
-      return badgeKeys.includes(key) && value
-    }).filter(a => a)
+    return Object.fromEntries(Object.entries(search).map((entry) => {
+      return badgeKeys.includes(entry[0]) && entry
+    }).filter(a => a?.[1]))
   }
 </script>
 
@@ -13,12 +13,13 @@
 
   export let search
   let searchTextInput
+  let form
 
-  $: sanitisedSearch = searchCleanup(search)
+  $: sanitisedSearch = Object.values(searchCleanup(search))
 
   function searchClear () {
     search = {
-      search: null,
+      search: '',
       genre: '',
       season: '',
       year: null,
@@ -27,7 +28,7 @@
       sort: ''
     }
     searchTextInput.focus()
-    searchTextInput.dispatchEvent(new Event('input', { bubbles: true }))
+    form.dispatchEvent(new Event('input', { bubbles: true }))
   }
 
   function handleFile ({ target }) {
@@ -39,7 +40,7 @@
   }
 </script>
 
-<form class='container-fluid py-20 px-10 pb-0 position-sticky top-0 search-container z-40 bg-dark' on:input>
+<form class='container-fluid py-20 px-10 pb-0 position-sticky top-0 search-container z-40 bg-dark' on:input bind:this={form}>
   <div class='row'>
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>

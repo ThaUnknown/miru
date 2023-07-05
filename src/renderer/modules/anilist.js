@@ -1,9 +1,10 @@
+import lavenshtein from 'js-levenshtein'
+import { writable } from 'simple-store-svelte'
+import Bottleneck from 'bottleneck'
+
 import { alToken } from '../views/Settings.svelte'
 import { addToast } from '../components/Toasts.svelte'
-import lavenshtein from 'js-levenshtein'
 import { sleep } from './util.js'
-
-import Bottleneck from 'bottleneck'
 
 const codes = {
   400: 'Bad Request',
@@ -113,7 +114,7 @@ function printError (error) {
   })
 }
 
-export function alEntry (filemedia) {
+export async function alEntry (filemedia) {
   // check if values exist
   if (filemedia.media && alToken) {
     const { media } = filemedia
@@ -146,7 +147,8 @@ export function alEntry (filemedia) {
           if (!lists.includes('Watched using Miru')) {
             variables.lists.push('Watched using Miru')
           }
-          alRequest(variables)
+          await alRequest(variables)
+          userLists.value = alRequest({ method: 'UserLists' })
         }
       }
     }
@@ -430,6 +432,14 @@ mutation($lists: [String], $id: Int, $status: MediaListStatus, $episode: Int, $r
   }
 }`
       break
+    } case 'EpisodeDate': {
+      query = /* js */`
+query($id: Int, $ep: Int) {
+  AiringSchedule(mediaId: $id, episode: $ep) {
+    airingAt
+  }
+}`
+      break
     } case 'Delete': {
       query = /* js */`
 mutation($id: Int){
@@ -492,3 +502,5 @@ mutation($lists: [String]){
 
   return handleRequest(options)
 }
+
+export const userLists = writable(alToken && alRequest({ method: 'UserLists' }))
