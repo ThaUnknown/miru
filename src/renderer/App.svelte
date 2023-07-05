@@ -49,7 +49,7 @@
   }
 
   .page-wrapper > .content-wrapper {
-    left: var(--sidebar-minimised);
-    width: calc(100% - var(--sidebar-minimised));
+    left: var(--sidebar-minimised) !important;
+    width: calc(100% - var(--sidebar-minimised)) !important;
   }
 </style>

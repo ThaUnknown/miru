@@ -14,7 +14,7 @@ export default class Sections {
 
   static createFallbackLoad (variables, type) {
     return (page = 1, perPage = 50, search = variables) => {
-      const options = { method: 'Search', page, perPage, ...Sections.sanitiseObject(search) }
+      const options = { method: 'Search', page, perPage, ...search }
       const res = alRequest(options)
       return Sections.wrapResponse(res, perPage, type)
     }
@@ -30,13 +30,5 @@ export default class Sections {
   static async fromPending (arr, i) {
     const { data } = await arr
     return data.Page.media[i]
-  }
-
-  static sanitiseObject (object = {}) {
-    const safe = {}
-    for (const [key, value] of Object.entries(object)) {
-      if (value) safe[key] = value
-    }
-    return safe
   }
 }

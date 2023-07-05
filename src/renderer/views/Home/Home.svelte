@@ -17,7 +17,7 @@
     manager.add([
       {
         title,
-        load: (page = 1, perPage = 8) => RSSManager.getMediaForRSS(page, perPage, url),
+        load: (page = 1, perPage = 12) => RSSManager.getMediaForRSS(page, perPage, url),
         preview: RSSManager.getMediaForRSS(1, 6, url),
         variables: { disableSearch: true }
       }
@@ -27,21 +27,21 @@
     manager.add([
       {
         title: 'Continue Watching',
-        load: (page = 1, perPage = 50) => {
+        load: (page = 1, perPage = 50, variables = {}) => {
           const res = userLists.value.then(res => {
             const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'CURRENT').entries
             const ids = mediaList.filter(({ media }) => {
               if (media.status === 'FINISHED') return true
               return media.mediaListEntry?.progress < media.nextAiringEpisode?.episode - 1
             }).map(({ media }) => media.id)
-            return alRequest({ method: 'SearchIDS', page, perPage, id: ids })
+            return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...variables })
           })
           return Sections.wrapResponse(res, perPage)
         }
       },
       {
         title: 'Sequels You Missed',
-        load: (page = 1, perPage = 50) => {
+        load: (page = 1, perPage = 50, variables = {}) => {
           const res = userLists.value.then(res => {
             const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED').entries
             const ids = mediaList.flatMap(({ media }) => {
@@ -49,17 +49,17 @@
                 return edge.relationType === 'SEQUEL'
               })
             }).map(({ node }) => node.id)
-            return alRequest({ method: 'SearchIDS', page, perPage, id: ids, status: ['FINISHED', 'RELEASING'], onList: false })
+            return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...variables, status: ['FINISHED', 'RELEASING'], onList: false })
           })
           return Sections.wrapResponse(res, perPage)
         }
       },
       {
         title: 'Your List',
-        load: (page = 1, perPage = 50) => {
+        load: (page = 1, perPage = 50, variables = {}) => {
           const res = userLists.value.then(res => {
             const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PLANNING').entries.map(({ media }) => media.id)
-            return alRequest({ method: 'SearchIDS', page, perPage, id: ids })
+            return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...variables })
           })
           return Sections.wrapResponse(res, perPage)
         }

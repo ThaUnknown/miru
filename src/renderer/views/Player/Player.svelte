@@ -716,7 +716,7 @@
   }
 
   function getThumbnail (percent) {
-    return thumbnailData.thumbnails[Math.floor(percent / 100 * safeduration / thumbnailData.interval)] || ''
+    return thumbnailData.thumbnails[Math.floor(percent / 100 * safeduration / thumbnailData.interval)] || ' '
   }
   function createThumbnail (vid = video) {
     if (vid?.readyState >= 2) {

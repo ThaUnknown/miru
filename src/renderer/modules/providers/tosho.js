@@ -25,7 +25,7 @@ window.tosho = tosho
 async function getAniDBFromAL (media) {
   const mappingsResponse = await fetch('https://api.ani.zip/mappings?anilist_id=' + media.id)
   const json = await mappingsResponse.json()
-  if (json.anidb_id) return json
+  if (json.mappings.anidb_id) return json
 
   const parentID = getParentForSpecial(media)
 
@@ -47,8 +47,9 @@ function getRelation (list, type) {
 }
 
 // TODO: https://anilist.co/anime/13055/
-async function getAniDBEpisodeFromAL ({ media, episode }, { episodes }) {
+async function getAniDBEpisodeFromAL ({ media, episode }, { episodes, episodeCount }) {
   if (!episode || !Object.values(episodes).length) return
+  if (media.episodes && media.episodes === episodeCount && episodes[Number(episode)]) return episodes[Number(episode)]
   const res = await alRequest({ method: 'EpisodeDate', id: media.id, ep: episode })
   const alDate = new Date((res.data.AiringSchedule?.airingAt || 0) * 1000)
 

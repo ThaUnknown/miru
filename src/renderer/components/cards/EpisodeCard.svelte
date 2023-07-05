@@ -5,7 +5,7 @@
 
   let preview = false
 
-  const episodeThumbnail = data.episodeData?.image || data.media?.bannerImage || data.media?.coverImage?.extraLarge || ''
+  const episodeThumbnail = data.episodeData?.image || data.media?.bannerImage || data.media?.coverImage?.extraLarge || ' '
 </script>
 
 <div class='d-flex pt-20 px-20 position-relative' on:pointerenter={() => { preview = true }} on:pointerleave={() => { preview = false }} on:pointerdown={data.onclick}>
@@ -13,7 +13,7 @@
     <EpisodePreviewCard {data} />
   {/if}
   <div class='item d-flex flex-column h-full pointer'>
-    <div class='image h-200 w-full position-relative rounded overflow-hidden d-flex justify-content-between align-items-end text-white' class:bg-black={!episodeThumbnail}>
+    <div class='image h-200 w-full position-relative rounded overflow-hidden d-flex justify-content-between align-items-end text-white' class:bg-black={episodeThumbnail === ' '}>
       <img loading='lazy' src={episodeThumbnail} alt='cover' class='cover-img w-full h-full position-absolute' style:--color={data.media?.coverImage?.color || '#1890ff'} />
       <div class='pl-10 pb-10 material-symbols-outlined filled z-10'>play_arrow</div>
       <div class='pr-15 pb-10 font-size-16 font-weight-medium z-10'>
