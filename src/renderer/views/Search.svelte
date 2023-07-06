@@ -14,7 +14,7 @@
   import smoothScroll from '@/modules/scroll.js'
   import { debounce } from '@/modules/util.js'
 
-  let page = 1
+  let page = 0
   items.value = []
   hasNextPage.value = true
 
@@ -22,12 +22,12 @@
 
   function loadSearchData () {
     const load = $search.load || Sections.createFallbackLoad()
-    const nextData = load(page, undefined, searchCleanup($search))
+    const nextData = load(++page, undefined, searchCleanup($search))
     $items = [...$items, ...nextData]
     return nextData[nextData.length - 1].data
   }
   const update = debounce(() => {
-    page = 1
+    page = 0
     items.value = []
     key = {}
     loadSearchData()
@@ -37,14 +37,15 @@
 
   async function loadTillFull (element) {
     while (hasNextPage.value && element.scrollHeight <= element.clientHeight) {
+      canScroll = false
       await loadSearchData()
     }
+    canScroll = true
   }
 
   async function infiniteScroll () {
     if (canScroll && $hasNextPage && this.scrollTop + this.clientHeight > this.scrollHeight - 800) {
       canScroll = false
-      page++
       await loadSearchData()
       canScroll = true
     }
