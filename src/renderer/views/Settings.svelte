@@ -20,7 +20,8 @@
     doHURL: 'https://cloudflare-dns.com/dns-query',
     disableSubtitleBlur: false,
     catURL: decodeURIComponent(atob('aHR0cHMlM0ElMkYlMkZueWFhLnNp')),
-    showDetailsInRPC: true
+    showDetailsInRPC: true,
+    cards: 'small'
   }
   localStorage.removeItem('relations') // TODO: remove
   export const set = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }

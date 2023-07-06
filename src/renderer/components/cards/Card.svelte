@@ -5,11 +5,14 @@
   import FullCard from './FullCard.svelte'
   import EpisodeCard from './EpisodeCard.svelte'
   import FullSkeletonCard from './FullSkeletonCard.svelte'
+  import { set } from '../../views/Settings.svelte'
 
   export let card
+
+  const type = card.type || set.cards
 </script>
 
-{#if card.type === 'episode'}
+{#if type === 'episode'}
 
   {#await card.data}
     <EpisodeSkeletonCard />
@@ -19,7 +22,7 @@
     {/if}
   {/await}
 
-{:else if card.type === 'full'}
+{:else if type === 'full'}
 
   {#await card.data}
     <FullSkeletonCard />
@@ -29,7 +32,7 @@
     {/if}
   {/await}
 
-{:else} <!-- card.type === 'small'  -->
+{:else} <!-- type === 'small'  -->
 
   {#await card.data}
     <SkeletonCard />

@@ -211,8 +211,8 @@ function mapTosho2dDeDupedEntry (entries) {
       const dupe = deduped[entry.info_hash]
       dupe.title ??= entry.title || entry.torrent_name
       dupe.id ||= entry.nyaa_id
-      dupe.seeders ||= entry.seeders >= 100000 ? entry.leechers * 3 : entry.seeders
-      dupe.leechers ||= entry.leechers ?? 0
+      dupe.seeders ||= entry.seeders >= 100000 ? 0 : entry.seeders
+      dupe.leechers ||= entry.leechers >= 100000 ? 0 : entry.leechers
       dupe.downloads ||= entry.torrent_downloaded_count
       dupe.size ||= entry.total_size && fastPrettyBytes(entry.total_size)
       dupe.date ||= entry.timestamp && new Date(entry.timestamp * 1000)
@@ -221,8 +221,8 @@ function mapTosho2dDeDupedEntry (entries) {
         title: entry.title || entry.torrent_name,
         link: entry.magnet_uri,
         id: entry.nyaa_id,
-        seeders: entry.seeders >= 100000 ? entry.leechers * 3 : entry.seeders, // this is a REALLY bad assumption to make, but its a decent guess
-        leechers: entry.leechers,
+        seeders: entry.seeders >= 100000 ? 0 : entry.seeders,
+        leechers: entry.leechers >= 100000 ? 0 : entry.leechers,
         downloads: entry.torrent_downloaded_count,
         size: entry.total_size && fastPrettyBytes(entry.total_size),
         date: entry.timestamp && new Date(entry.timestamp * 1000)

@@ -1,4 +1,7 @@
 import { alRequest } from '@/modules/anilist.js'
+import { writable } from 'simple-store-svelte'
+
+export const hasNextPage = writable(true)
 
 export default class Sections {
   constructor (data = []) {
@@ -22,7 +25,7 @@ export default class Sections {
 
   static wrapResponse (res, length, type) {
     res.then(res => {
-      this.hasNext = res?.data?.Page.pageInfo.hasNextPage
+      hasNextPage.value = res?.data?.Page.pageInfo.hasNextPage
     })
     return Array.from({ length }, (_, i) => ({ type, data: Sections.fromPending(res, i) }))
   }

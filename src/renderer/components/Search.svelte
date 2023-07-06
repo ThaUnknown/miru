@@ -10,6 +10,7 @@
 
 <script>
   import { traceAnime } from '@/modules/anime.js'
+  import { set } from '../views/Settings.svelte'
 
   export let search
   let searchTextInput
@@ -37,6 +38,10 @@
       traceAnime(files[0], 'file')
       target.value = null
     }
+  }
+  function changeCardMode (type) {
+    set.cards = type
+    form.dispatchEvent(new Event('input', { bubbles: true }))
   }
 </script>
 
@@ -187,8 +192,8 @@
         <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>{('' + badge).replace(/_/g, ' ').toLowerCase()}</span>
       {/each}
     {/if}
-    <span class='material-symbols-outlined font-size-24 mr-10 filled ml-auto text-dark-light'>grid_on</span>
-    <span class='material-symbols-outlined font-size-24 filled text-dark-light'>grid_view</span>
+    <span class='material-symbols-outlined font-size-24 mr-10 filled ml-auto text-dark-light pointer' class:text-muted={set.cards === 'small'} on:click={() => changeCardMode('small')}>grid_on</span>
+    <span class='material-symbols-outlined font-size-24 filled text-dark-light pointer' class:text-muted={set.cards === 'full'} on:click={() => changeCardMode('full')}>grid_view</span>
   </div>
 </form>
 
@@ -197,11 +202,11 @@
     color: var(--gray-color-light);
   }
   .input-group,
-  .container-fluid button {
+  .container-fluid button, .pointer {
     transition: scale 0.2s ease;
   }
 
-  .input-group:hover {
+  .input-group:hover, .pointer:hover {
     scale: 1.08;
   }
 

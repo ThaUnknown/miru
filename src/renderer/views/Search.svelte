@@ -10,37 +10,52 @@
 <script>
   import Search, { searchCleanup } from '../components/Search.svelte'
   import Card from '../components/cards/Card.svelte'
+  import { hasNextPage } from '@/modules/sections.js'
   import smoothScroll from '@/modules/scroll.js'
   import { debounce } from '@/modules/util.js'
 
   let page = 1
 
-  function loadSearchData (search) {
-    const load = search.load || Sections.createFallbackLoad()
-    $items = load(page, undefined, searchCleanup(search))
+  items.value = []
+  hasNextPage.value = true
+
+  function loadSearchData () {
+    const load = $search.load || Sections.createFallbackLoad()
+    const nextData = load(page, undefined, searchCleanup($search))
+    $items = [...$items, ...nextData]
+    return nextData[nextData.length - 1].data
   }
-  loadSearchData($search)
-  const update = debounce(loadSearchData, 150)
+  const update = debounce(() => {
+    page = 1
+    items.value = []
+    loadSearchData()
+  }, 150)
 
   let canScroll = true
-  const hasNextPage = true
+
+  async function loadTillFull (element) {
+    while (hasNextPage.value && element.scrollHeight <= element.clientHeight) {
+      await loadSearchData()
+    }
+  }
 
   async function infiniteScroll () {
-    if (canScroll && hasNextPage && this.scrollTop + this.clientHeight > this.scrollHeight - 800) {
+    if (canScroll && $hasNextPage && this.scrollTop + this.clientHeight > this.scrollHeight - 800) {
       canScroll = false
-      const load = search.load || Sections.createFallbackLoad()
-      const nextData = load(++page, undefined, searchCleanup(search))
-      $items = [...$items, ...nextData]
-      nextData[nextData.length - 1].data.then(() => { canScroll = true })
+      page++
+      await loadSearchData()
+      canScroll = true
     }
   }
 </script>
 
-<div class='h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden px-50 justify-content-center align-content-start' use:smoothScroll on:scroll={infiniteScroll}>
+<div class='h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden px-50 justify-content-center align-content-start' use:smoothScroll use:loadTillFull on:scroll={infiniteScroll}>
   <Search bind:search={$search} on:input={() => update($search)} />
-  {#each $items as card}
-    <Card {card} />
-  {/each}
+  {#key $items}
+    {#each $items as card}
+      <Card {card} />
+    {/each}
+  {/key}
 </div>
 
 <style>

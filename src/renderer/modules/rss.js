@@ -3,6 +3,7 @@ import { set } from '@/views/Settings.svelte'
 import { addToast } from '@/components/Toasts.svelte'
 import { add } from '@/modules/torrent.js'
 import { resolveFileMedia, getEpisodeMetadataForMedia } from './anime.js'
+import { hasNextPage } from '@/modules/sections.js'
 
 export const exclusions = ['DTS']
 const isDev = location.hostname === 'localhost'
@@ -81,6 +82,7 @@ class RSSMediaManager {
     const index = (page - 1) * perPage
     const targetPage = [...content.querySelectorAll('item')].slice(index, index + perPage)
     const items = parseRSSNodes(targetPage)
+    hasNextPage.value = items.length === perPage
     const result = items.map(item => this.resolveAnimeFromRSSItem(item))
     this.resultMap[url] = {
       date: pubDate,
