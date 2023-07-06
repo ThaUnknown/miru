@@ -31,7 +31,7 @@
 <Toasts />
 <div class='page-wrapper with-sidebar with-transitions bg-dark' data-sidebar-type='overlayed-all'>
   <div class='sticky-alerts' />
-  <CatBlock />
+  <!-- <CatBlock /> -->
   <Menubar bind:page={$page} />
   <ViewAnime />
   <ViewTrailer />

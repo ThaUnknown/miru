@@ -24,7 +24,7 @@
     ])
   }
   if (alToken) {
-    manager.add([
+    const sections = [
       {
         title: 'Continue Watching',
         load: (page = 1, perPage = 50, variables = {}) => {
@@ -34,7 +34,7 @@
               if (media.status === 'FINISHED') return true
               return media.mediaListEntry?.progress < media.nextAiringEpisode?.episode - 1
             }).map(({ media }) => media.id)
-            return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...variables })
+            return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...Sections.sanitiseObject(variables) })
           })
           return Sections.wrapResponse(res, perPage)
         }
@@ -49,7 +49,7 @@
                 return edge.relationType === 'SEQUEL'
               })
             }).map(({ node }) => node.id)
-            return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...variables, status: ['FINISHED', 'RELEASING'], onList: false })
+            return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...Sections.sanitiseObject(variables), status: ['FINISHED', 'RELEASING'], onList: false })
           })
           return Sections.wrapResponse(res, perPage)
         }
@@ -59,12 +59,19 @@
         load: (page = 1, perPage = 50, variables = {}) => {
           const res = userLists.value.then(res => {
             const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PLANNING').entries.map(({ media }) => media.id)
-            return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...variables })
+            return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...Sections.sanitiseObject(variables) })
           })
           return Sections.wrapResponse(res, perPage)
         }
       }
-    ])
+    ]
+    userLists.subscribe(() => {
+      const titles = sections.map(({ title }) => title)
+      for (const section of manager.sections) {
+        if (titles.includes(section.title)) delete section.preview
+      }
+    })
+    manager.add(sections)
   }
   manager.add([
     {

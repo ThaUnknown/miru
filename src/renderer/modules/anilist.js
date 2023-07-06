@@ -166,14 +166,6 @@ function getDistanceFromTitle (media, name) {
   }
 }
 
-function sanitiseObject (object = {}) {
-  const safe = {}
-  for (const [key, value] of Object.entries(object)) {
-    if (value) safe[key] = value
-  }
-  return safe
-}
-
 export async function alSearch (method) {
   const res = await alRequest(method)
   const media = res.data.Page.media.map(media => getDistanceFromTitle(media, method.name))
@@ -214,6 +206,11 @@ nextAiringEpisode{
   timeUntilAiring,
   episode
 },
+startDate{
+  year,
+  month,
+  day
+},
 trailer{
   id,
   site
@@ -252,6 +249,9 @@ relations {
       status,
       format,
       episodes,
+      synonyms,
+      season,
+      seasonYear,
       startDate{
         year,
         month,
@@ -284,7 +284,7 @@ recommendations{
 export async function alRequest (opts) {
   let query
   const variables = {
-    ...sanitiseObject(opts),
+    ...opts,
     sort: opts.sort || 'TRENDING_DESC',
     page: opts.page || 1,
     perPage: opts.perPage || 30,

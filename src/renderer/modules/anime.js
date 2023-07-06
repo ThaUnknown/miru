@@ -176,19 +176,19 @@ async function resolveTitle (name) {
       media = (await alSearch(method)).data.Page.media[0]
     }
 
-    // remove (TV)
-    if (!media) {
-      const match = method.name.match(/\(TV\)/)
-      if (match) {
-        method.name = method.name.replace('(TV)', '')
-        media = (await alSearch(method)).data.Page.media[0]
-      }
-    }
     // remove - :
     if (!media) {
       const match = method.name.match(/[-:]/g)
       if (match) {
         method.name = method.name.replace(/[-:]/g, '')
+        media = (await alSearch(method)).data.Page.media[0]
+      }
+    }
+    // remove (TV)
+    if (!media) {
+      const match = method.name.match(/\(TV\)/)
+      if (match) {
+        method.name = method.name.replace('(TV)', '')
         media = (await alSearch(method)).data.Page.media[0]
       }
     }
