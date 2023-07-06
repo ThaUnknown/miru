@@ -34,6 +34,7 @@
       click: () => {
         page = 'home'
       },
+      page: 'home',
       icon: 'home',
       text: 'Home'
     },
@@ -41,16 +42,17 @@
       click: () => {
         page = 'search'
       },
+      page: 'search',
       icon: 'search',
       text: 'Search'
     },
-    {
-      click: () => {
-        page = 'home'
-      },
-      icon: 'schedule',
-      text: 'Schedule'
-    },
+    // {
+    //   click: () => {
+    //     page = 'home'
+    //   },
+    //   icon: 'schedule',
+    //   text: 'Schedule'
+    // },
     {
       click: () => {
         if ($media) $view = $media.media
@@ -62,6 +64,7 @@
       click: () => {
         page = 'watchtogether'
       },
+      page: 'watchtogether',
       icon: 'groups',
       text: 'Watch Together'
     },
@@ -77,6 +80,7 @@
       click: () => {
         page = 'settings'
       },
+      page: 'settings',
       icon: 'settings',
       text: 'Settings'
     }
@@ -93,7 +97,7 @@
 
 <div class='sidebar z-30'>
   <div class='sidebar-menu h-full d-flex flex-column justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
-    {#each links as { click, icon, text, image, css }, i (i)}
+    {#each links as { click, icon, text, image, css, page: _page }, i (i)}
       <div
         class='sidebar-link sidebar-link-with-icon pointer overflow-hidden {css}'
         tabindex='0'
@@ -102,12 +106,12 @@
         on:keydown={wrapEnter(click)}>
         <span class='text-nowrap d-flex align-items-center w-full h-full'>
           {#if image}
-            <span class='material-symbols-outlined rounded'>
+            <span class='material-symbols-outlined rounded' class:filled={page === _page}>
               <img src={image} class='h-30' alt='logo' />
             </span>
             <span class='text ml-20'>{text}</span>
           {:else}
-            <span class='material-symbols-outlined rounded'>{icon}</span>
+            <span class='material-symbols-outlined rounded' class:filled={page === _page}>{icon}</span>
             <span class='text ml-20'>{text}</span>
           {/if}
         </span>
