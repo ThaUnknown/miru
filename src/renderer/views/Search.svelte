@@ -15,9 +15,10 @@
   import { debounce } from '@/modules/util.js'
 
   let page = 1
-
   items.value = []
   hasNextPage.value = true
+
+  let key = {}
 
   function loadSearchData () {
     const load = $search.load || Sections.createFallbackLoad()
@@ -28,6 +29,7 @@
   const update = debounce(() => {
     page = 1
     items.value = []
+    key = {}
     loadSearchData()
   }, 150)
 
@@ -51,7 +53,7 @@
 
 <div class='h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden px-50 justify-content-center align-content-start' use:smoothScroll use:loadTillFull on:scroll={infiniteScroll}>
   <Search bind:search={$search} on:input={() => update($search)} />
-  {#key $items}
+  {#key key}
     {#each $items as card}
       <Card {card} />
     {/each}
