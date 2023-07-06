@@ -122,7 +122,7 @@
     },
     discord: {
       name: 'Discord',
-      icon: 'discord',
+      icon: 'settings',
       desc: 'Discord Rich Presence settings.'
     },
     changelog: {
