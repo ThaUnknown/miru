@@ -76,7 +76,7 @@
     userLists.subscribe(() => {
       const titles = sections.map(({ title }) => title)
       for (const section of manager.sections) {
-        if (titles.includes(section.title)) delete section.preview
+        if (titles.includes(section.title)) section.preview.value = undefined
       }
     })
     manager.add(sections)
