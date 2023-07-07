@@ -1,6 +1,7 @@
 <script>
   import { statusColorMap } from '@/modules/anime.js'
   import EpisodePreviewCard from './EpisodePreviewCard.svelte'
+  import { since } from '@/modules/util'
   export let data
 
   let preview = false
@@ -23,21 +24,24 @@
       </div>
     </div>
     <div class='row pt-15'>
-      <div class='col-7'>
+      <div class='col pr-10'>
         <div class='text-white font-weight-very-bold font-size-16 title overflow-hidden'>
           {#if data.media?.mediaListEntry?.status}
             <div style:--statusColor={statusColorMap[data.media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={data.media.mediaListEntry.status} />
           {/if}
           {data.media?.title.userPreferred || data.parseObject.anime_title}
         </div>
+        <div class='text-muted font-size-12 title overflow-hidden'>
+          {data.episodeData?.title.en || ''}
+        </div>
       </div>
       {#if data.episode}
-        <div class='col-5 d-flex flex-column align-items-end text-right'>
-          <div class='text-white'>
+        <div class='col-auto d-flex flex-column align-items-end text-right'>
+          <div class='text-white font-weight-bold'>
             Episode {data.episode}
           </div>
           <div class='text-muted font-size-12 title overflow-hidden'>
-            {data.episodeData?.title.en || ''}
+            {since(data.date)}
           </div>
         </div>
       {/if}
@@ -51,7 +55,7 @@
   }
   .title {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
   }
   .image:after {

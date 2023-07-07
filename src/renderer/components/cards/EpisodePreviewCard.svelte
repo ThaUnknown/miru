@@ -1,5 +1,6 @@
 <script>
   import { statusColorMap, formatMap } from '@/modules/anime.js'
+  import { since } from '@/modules/util'
   export let data
 
   const media = data.media
@@ -19,30 +20,33 @@
   </div>
   <div class='w-full d-flex flex-column flex-grow-1 px-20 pb-15'>
     <div class='row pt-15'>
-      <div class='col-7'>
-        <div class='text-white font-weight-very-bold font-size-16 title overflow-hidden'>
+      <div class='col pr-10'>
+        <div class='text-white font-weight-very-bold font-size-16 title overflow-hidden' title={data.media?.title.userPreferred || data.parseObject.anime_title}>
           {#if media?.mediaListEntry?.status}
             <div style:--statusColor={statusColorMap[media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={media.mediaListEntry.status} />
           {/if}
           {data.media?.title.userPreferred || data.parseObject.anime_title}
         </div>
+        <div class='text-muted font-size-12 title overflow-hidden' title={data.episodeData?.title.en}>
+          {data.episodeData?.title.en || ''}
+        </div>
       </div>
       {#if data.episode}
-        <div class='col-5 d-flex flex-column align-items-end text-right'>
-          <div class='text-white'>
+        <div class='col-auto d-flex flex-column align-items-end text-right'>
+          <div class='text-white font-weight-bold'>
             Episode {data.episode}
           </div>
           <div class='text-muted font-size-12 title overflow-hidden'>
-            {data.episodeData?.title.en || ''}
+            {since(data.date)}
           </div>
         </div>
       {/if}
     </div>
-    <div class='w-full text-muted description overflow-hidden pt-10'>
+    <div class='w-full text-muted description overflow-hidden pt-15'>
       {data.episodeData?.description || media?.description?.replace(/<[^>]*>/g, '') || ''}
     </div>
     {#if media}
-      <div class='d-flex flex-row pt-10 font-weight-medium justify-content-between w-full text-muted'>
+      <div class='d-flex flex-row pt-15 font-weight-medium justify-content-between w-full text-muted'>
         <div class='d-flex align-items-center' style='margin-left: -3px'>
           <span class='material-symbols-outlined font-size-24 pr-5'>calendar_month</span>
           {media.seasonYear || 'N/A'}
@@ -85,7 +89,7 @@
   }
   .title {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
   }
   .image:after {

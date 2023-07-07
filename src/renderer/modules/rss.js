@@ -97,17 +97,18 @@ class RSSMediaManager {
     return result
   }
 
-  resolveAnimeFromRSSItem ({ title, link }) {
-    this.lastResult = this.queueResolve(title, link)
+  resolveAnimeFromRSSItem (item) {
+    this.lastResult = this.queueResolve(item)
     return this.lastResult
   }
 
-  async queueResolve (title, link) {
+  async queueResolve ({ title, link, date }) {
     await this.lastResult
     const res = (await resolveFileMedia(title))[0]
     if (res.media?.id) {
       res.episodeData = (await getEpisodeMetadataForMedia(res.media))?.[res.episode]
     }
+    res.date = date
     res.onclick = () => add(link)
     return res
   }

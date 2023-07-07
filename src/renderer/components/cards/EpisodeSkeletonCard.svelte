@@ -19,6 +19,6 @@
     width: 36rem
   }
   .wrapper {
-    height: 29.2rem;
+    height: 27.7rem;
   }
 </style>

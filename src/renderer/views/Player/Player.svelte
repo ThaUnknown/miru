@@ -874,6 +874,7 @@
   class:immersed
   class:buffering={src && buffering}
   bind:this={container}
+  role='none'
   on:mousemove={resetImmerse}
   on:touchmove={resetImmerse}
   on:keypress={resetImmerse}
