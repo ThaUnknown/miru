@@ -74,18 +74,24 @@ class RSSMediaManager {
     return array[i]
   }
 
-  async _getMediaForRSS (page, perPage, url) {
+  async getContentChanged (page, perPage, url) {
     const content = await getRSSContent(getReleasesRSSurl(url))
-    const pubDate = content.querySelector('pubDate').textContent * page * perPage
-    if (this.resultMap[url]?.date === pubDate) return this.resultMap[url].result
+    const pubDate = new Date(content.querySelector('pubDate').textContent) * page * perPage
+    if (this.resultMap[url]?.date === pubDate) return false
+    return { content, pubDate }
+  }
+
+  async _getMediaForRSS (page, perPage, url) {
+    const changed = await this.getContentChanged(page, perPage, url)
+    if (!changed) return this.resultMap[url].result
 
     const index = (page - 1) * perPage
-    const targetPage = [...content.querySelectorAll('item')].slice(index, index + perPage)
+    const targetPage = [...changed.content.querySelectorAll('item')].slice(index, index + perPage)
     const items = parseRSSNodes(targetPage)
     hasNextPage.value = items.length === perPage
     const result = items.map(item => this.resolveAnimeFromRSSItem(item))
     this.resultMap[url] = {
-      date: pubDate,
+      date: changed.pubDate,
       result
     }
     return result

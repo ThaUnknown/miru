@@ -10,7 +10,7 @@ export default class Sections {
   }
 
   add (data) {
-    for (const { title, variables = {}, type, load = Sections.createFallbackLoad(variables, type), preview } of data) {
+    for (const { title, variables = {}, type, load = Sections.createFallbackLoad(variables, type), preview = writable() } of data) {
       this.sections.push({ load, title, preview, variables })
     }
   }

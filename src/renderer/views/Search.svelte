@@ -36,8 +36,8 @@
   let canScroll = true
 
   async function loadTillFull (element) {
+    canScroll = false
     while (hasNextPage.value && element.scrollHeight <= element.clientHeight) {
-      canScroll = false
       await loadSearchData()
     }
     canScroll = true
