@@ -14,7 +14,7 @@
 
   const manager = new Sections()
 
-  for (const [title, url] of set.rssFeeds.reverse()) {
+  for (const [title, url] of set.rssFeedsNew.reverse()) {
     const load = (page = 1, perPage = 6) => RSSManager.getMediaForRSS(page, perPage, url)
     manager.add([
       {

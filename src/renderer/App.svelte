@@ -20,7 +20,7 @@
   import RSSView from './views/RSSView.svelte'
   import Menubar from './components/Menubar.svelte'
   import Toasts from './components/Toasts.svelte'
-  import CatBlock from './views/CatBlock.svelte' // TODO: deprecate
+  import IspBlock from './views/IspBlock.svelte'
 
   setContext('view', view)
 
@@ -31,7 +31,7 @@
 <Toasts />
 <div class='page-wrapper with-sidebar with-transitions bg-dark' data-sidebar-type='overlayed-all'>
   <div class='sticky-alerts' />
-  <CatBlock />
+  <IspBlock />
   <Menubar bind:page={$page} />
   <ViewAnime />
   <ViewTrailer />

@@ -24,7 +24,7 @@ export function parseRSSNodes (nodes) {
 
     return {
       title: item.querySelector('title')?.textContent || '?',
-      link: item.querySelector('link')?.textContent || '?',
+      link: item.querySelector('enclosure')?.attributes.url.value || '?',
       seeders: item.querySelector('seeders')?.textContent ?? '?',
       leechers: item.querySelector('leechers')?.textContent ?? '?',
       downloads: item.querySelector('downloads')?.textContent ?? '?',
@@ -35,9 +35,9 @@ export function parseRSSNodes (nodes) {
 }
 
 const rssmap = {
-  SubsPlease: `${set.catURL}/?page=rss&c=0_0&f=0&u=subsplease&q=`,
-  'Erai-raws [Multi-Sub]': `${set.catURL}/?page=rss&c=0_0&f=0&u=Erai-raws&q=`,
-  'NC-Raws': `${set.catURL}/?page=rss&c=0_0&f=0&u=BraveSail&q=`
+  SubsPlease: set.toshoURL + 'rss2?qx=1&q="[SubsPlease] "',
+  'NC-Raws': set.toshoURL + 'rss2?qx=1&q="[NC-Raws] "',
+  'Erai-raws [Multi-Sub]': set.toshoURL + 'rss2?qx=1&q="[Erai-raws] "'
 }
 export function getReleasesRSSurl (val) {
   const rss = rssmap[val] || val

@@ -180,7 +180,7 @@ function isMovie (media) {
 
 function buildQuery (quality) {
   let query = `&qx=1&q=!("${exclusions.join('"|"')}")`
-  if (quality) query += ` "'${quality}"`
+  if (quality) query += ` "${quality}"`
 
   return query
 }

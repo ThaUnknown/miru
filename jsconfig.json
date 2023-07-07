@@ -4,5 +4,6 @@
     "paths": {
       "@/*": ["src/renderer/*"],
     }
-  }
+  },
+  "exclude": ["node_modules", "**/node_modules", "dist", "build"]
 }
