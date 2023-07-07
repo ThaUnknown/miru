@@ -100,6 +100,10 @@ img[src=''], img[src=' '] {
   animation: 0.3s ease 0s 1 root-load-in;
 }
 
+.content-visibility-auto {
+  content-visibility: auto;
+}
+
 .nav-hidden > .content-wrapper {
   left: 0 !important;
   width: 100% !important;

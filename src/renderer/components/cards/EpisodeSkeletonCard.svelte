@@ -1,4 +1,4 @@
-<div class='d-flex pt-20 px-20 position-relative wrapper'>
+<div class='d-flex pt-20 px-20 position-relative wrapper content-visibility-auto'>
   <div class='item d-flex flex-column h-full'>
     <div class='image h-200 w-full rounded skeloader bg-dark-light' />
     <div class='row pt-15'>
@@ -20,5 +20,6 @@
   }
   .wrapper {
     height: 27.7rem;
+    contain-intrinsic-height: 27.7rem;
   }
 </style>

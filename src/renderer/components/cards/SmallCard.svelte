@@ -15,7 +15,7 @@
   {#if preview}
     <PreviewCard {media} />
   {/if}
-  <div class='item d-flex flex-column h-full pointer'>
+  <div class='item d-flex flex-column h-full pointer content-visibility-auto'>
     <img loading='lazy' src={media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full rounded' style:--color={media.coverImage.color || '#1890ff'} />
     <div class='text-white font-weight-very-bold font-size-16 pt-15 title overflow-hidden'>
       {#if media.mediaListEntry?.status}
@@ -50,7 +50,8 @@
   }
   .item {
     animation: 0.3s ease 0s 1 load-in;
-    width: 19rem
+    width: 19rem;
+    contain-intrinsic-height: 36.7rem;
   }
   .cover-img {
     object-fit: cover;

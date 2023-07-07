@@ -1,6 +1,7 @@
 export default function scroll (t, { speed = 120, smooth = 15 } = {}) {
   let moving = false
-  let pos = t.scrollTop
+  let pos = 0
+  let scrollTop = 0
   t.addEventListener('wheel', e => {
     e.preventDefault()
 
@@ -8,10 +9,23 @@ export default function scroll (t, { speed = 120, smooth = 15 } = {}) {
     if (!moving) update()
   }, { capture: true, passive: false })
 
-  function update () {
-    const delta = pos - t.scrollTop === smooth * 2 ? 0 : ((pos - t.scrollTop) / smooth)
+  let scrollBar = false
 
-    t.scrollTop += delta
+  t.addEventListener('pointerdown', e => {
+    if (e.offsetX > t.clientWidth) scrollBar = true
+  })
+
+  t.addEventListener('pointerup', () => { scrollBar = false })
+
+  t.addEventListener('scroll', () => {
+    if (scrollBar) pos = scrollTop = t.scrollTop
+  }, { capture: false, passive: true })
+
+  function update () {
+    const delta = pos - scrollTop === smooth * 2 ? 0 : ((pos - scrollTop) / smooth)
+    scrollTop += delta
+
+    t.scrollTo(0, scrollTop)
     moving = Math.abs(delta) > 0.5 && requestAnimationFrame(update)
   }
 }

@@ -15,7 +15,7 @@
   {#if preview}
     <PreviewCard {media} />
   {/if}
-  <div class='card m-0 p-0 overflow-hidden pointer'
+  <div class='card m-0 p-0 overflow-hidden pointer content-visibility-auto'
     style:--color={media.coverImage.color || '#1890ff'}>
     <div class='row h-full'>
       <div class='col-4'>
@@ -86,6 +86,7 @@
   width: 50rem !important;
   height: 27rem !important;
   box-shadow: rgba(0, 4, 12, 0.3) 0px 7px 15px, rgba(0, 4, 12, 0.05) 0px 4px 4px;
+  contain-intrinsic-height: 27rem;
 }
 .card-grid {
   display: grid;
