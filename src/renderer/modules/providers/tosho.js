@@ -52,20 +52,35 @@ function getRelation (list, type) {
 }
 
 // TODO: https://anilist.co/anime/13055/
-async function getAniDBEpisodeFromAL ({ media, episode }, { episodes, episodeCount }) {
+async function getAniDBEpisodeFromAL ({ media, episode }, { episodes, episodeCount, specialCount }) {
   console.log('getting AniDB EpID for Mal EP', { episode, episodes })
   if (!episode || !Object.values(episodes).length) return
-  if (media.episodes && media.episodes === episodeCount && episodes[Number(episode)]) return episodes[Number(episode)]
+  // if media has no specials or their episode counts don't match
+  if (!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)])) return episodes[Number(episode)]
   console.log('EP count doesn\'t match, checking by air date')
   const res = await alRequest({ method: 'EpisodeDate', id: media.id, ep: episode })
   const alDate = new Date((res.data.AiringSchedule?.airingAt || 0) * 1000)
 
   if (!+alDate) return episodes[Number(episode)] || episodes[1] // what the fuck, are you braindead anilist?, the source episode number to play is from an array created from AL ep count, so how come it's missing?
 
-  // find closest episode by air date
+  // find closest episodes by air date, multiple episodes can have the same air date distance
   // ineffcient but reliable
-  return Object.values(episodes).reduce((prev, curr) => {
-    return Math.abs(new Date(curr.airdate) - alDate) < Math.abs(new Date(prev.airdate) - alDate) ? curr : prev
+  const closestEpisodes = Object.values(episodes).reduce((prev, curr) => {
+    if (!prev[0]) return [curr]
+    const prevDate = Math.abs(new Date(prev[0]?.airdate) - alDate)
+    const currDate = Math.abs(new Date(curr.airdate) - alDate)
+    if (prevDate === currDate) {
+      prev.push(curr)
+      return prev
+    }
+    if (currDate < prevDate) return [curr]
+    return prev
+  }, [])
+
+  console.log({ closestEpisodes })
+
+  return closestEpisodes.reduce((prev, curr) => {
+    return Math.abs(curr.episodeNumber - episode) < Math.abs(prev.episodeNumber - episode) ? curr : prev
   })
 }
 

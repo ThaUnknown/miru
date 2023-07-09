@@ -1,4 +1,4 @@
-export default function scroll (t, { speed = 120, smooth = 15 } = {}) {
+export default function scroll (t, { speed = 120, smooth = 10 } = {}) {
   let moving = false
   let pos = 0
   let scrollTop = 0
@@ -9,17 +9,8 @@ export default function scroll (t, { speed = 120, smooth = 15 } = {}) {
     if (!moving) update()
   }, { capture: true, passive: false })
 
-  let scrollBar = false
-
-  t.addEventListener('pointerdown', e => {
-    if (e.offsetX > t.clientWidth) scrollBar = true
-  })
-
-  t.addEventListener('pointerup', () => { scrollBar = false })
-
-  t.addEventListener('scroll', () => {
-    if (scrollBar) pos = scrollTop = t.scrollTop
-  }, { capture: false, passive: true })
+  // TODO: this needs to be the scrollend event once we update electron
+  t.addEventListener('pointerup', () => { pos = scrollTop = t.scrollTop })
 
   function update () {
     const delta = pos - scrollTop === smooth * 2 ? 0 : ((pos - scrollTop) / smooth)
