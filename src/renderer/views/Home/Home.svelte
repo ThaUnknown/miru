@@ -37,7 +37,9 @@
         title: 'Continue Watching',
         load: (page = 1, perPage = 50, variables = {}) => {
           const res = userLists.value.then(res => {
-            const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'CURRENT').entries
+            const mediaList = res.data.MediaListCollection.lists.reduce((filtered, { status, entries }) => {
+              return (status === 'CURRENT' || status === 'REPEATING') ? filtered.concat(entries) : filtered
+            }, [])
             const ids = mediaList.filter(({ media }) => {
               if (media.status === 'FINISHED') return true
               return media.mediaListEntry?.progress < media.nextAiringEpisode?.episode - 1
@@ -86,27 +88,13 @@
       title: 'Popular This Season',
       variables: { sort: 'POPULARITY_DESC', season: getSeason(date), year: date.getFullYear() }
     },
-    {
-      title: 'Trending Now', variables: { sort: 'TRENDING_DESC' }
-    },
-    {
-      title: 'All Time Popular', variables: { sort: 'POPULARITY_DESC' }
-    },
-    {
-      title: 'Romance', variables: { sort: 'TRENDING_DESC', genre: 'Romance' }
-    },
-    {
-      title: 'Action', variables: { sort: 'TRENDING_DESC', genre: 'Action' }
-    },
-    {
-      title: 'Adventure', variables: { sort: 'TRENDING_DESC', genre: 'Adventure' }
-    },
-    {
-      title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: 'Fantasy' }
-    },
-    {
-      title: 'Comedy', variables: { sort: 'TRENDING_DESC', genre: 'Comedy' }
-    }
+    { title: 'Trending Now', variables: { sort: 'TRENDING_DESC' } },
+    { title: 'All Time Popular', variables: { sort: 'POPULARITY_DESC' } },
+    { title: 'Romance', variables: { sort: 'TRENDING_DESC', genre: 'Romance' } },
+    { title: 'Action', variables: { sort: 'TRENDING_DESC', genre: 'Action' } },
+    { title: 'Adventure', variables: { sort: 'TRENDING_DESC', genre: 'Adventure' } },
+    { title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: 'Fantasy' } },
+    { title: 'Comedy', variables: { sort: 'TRENDING_DESC', genre: 'Comedy' } }
   ])
 </script>
 

@@ -6,7 +6,7 @@
     try {
       for (let i = 0; i < 2; ++i) {
         // fetch twice, sometimes it will go tru once if ISP is shitty
-        await fetch(set.toshoURL)
+        await fetch(set.toshoURL + 'json?show=torrent&id=1')
       }
       block = false
     } catch (e) {

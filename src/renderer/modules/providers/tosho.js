@@ -4,8 +4,6 @@ import { exclusions } from '../rss.js'
 import { set } from '@/views/Settings.svelte'
 import { alRequest } from '../anilist.js'
 
-const toshoURL = decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnL2pzb24/'))
-
 export default async function tosho ({ media, episode }) {
   const json = await getAniDBFromAL(media)
 
@@ -202,7 +200,7 @@ function buildQuery (quality) {
 
 async function fetchBatches ({ episodeCount, id, quality }) {
   const queryString = buildQuery(quality)
-  const torrents = await fetch(toshoURL + 'order=size-d&aid=' + id + queryString)
+  const torrents = await fetch(set.toshoURL + 'json?order=size-d&aid=' + id + queryString)
 
   // safe if AL includes EP 0 or doesn't
   const batches = (await torrents.json()).filter(entry => entry.num_files >= episodeCount)
@@ -212,7 +210,7 @@ async function fetchBatches ({ episodeCount, id, quality }) {
 
 async function fetchSingleEpisode ({ id, quality }) {
   const queryString = buildQuery(quality)
-  const torrents = await fetch(toshoURL + 'eid=' + id + queryString)
+  const torrents = await fetch(set.toshoURL + 'json?eid=' + id + queryString)
 
   const episodes = await torrents.json()
   console.log({ episodes })

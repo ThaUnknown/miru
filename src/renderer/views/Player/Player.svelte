@@ -2,7 +2,7 @@
   import { set } from '../../views/Settings.svelte'
   import { playAnime } from '../RSSView.svelte'
   import { client } from '@/modules/torrent.js'
-  import { createEventDispatcher, tick } from 'svelte'
+  import { createEventDispatcher } from 'svelte'
   import { alEntry } from '@/modules/anilist.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, videoRx, fastPrettyBytes, wrapEnter } from '@/modules/util.js'
@@ -937,8 +937,9 @@
       Name: {current.name || ''}
     </div>
   {/if}
-  <div class='top z-40 d-flex justify-content-center'>
-    <div class='d-flex'>
+  <div class='top row'>
+    <div class='stats col-4 pl-20 font-weight-medium'>{[media.title, media.episode, media.episodeNumber].filter(i => i).join(' - ')}</div>
+    <div class='d-flex col-4 justify-content-center'>
       <span class='material-symbols-outlined' data-name='peers'> people </span>
       <span class='stats'>{torrent.peers || 0}</span>
       <span class='material-symbols-outlined'> arrow_downward </span>
@@ -946,6 +947,7 @@
       <span class='material-symbols-outlined'> arrow_upward </span>
       <span class='stats'>{fastPrettyBytes(torrent.up)}/s</span>
     </div>
+    <div class='col-4' />
   </div>
   <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
     <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} on:keydown={wrapEnter(() => { if (page === 'player') playPause(); page = 'player' })} />
