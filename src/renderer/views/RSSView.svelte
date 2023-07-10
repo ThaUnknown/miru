@@ -1,9 +1,10 @@
 <script context='module'>
-  import { wrapEnter, since } from '@/modules/util.js'
+  import { since } from '@/modules/util.js'
   import { set } from './Settings.svelte'
   import { addToast } from '../components/Toasts.svelte'
   import { findInCurrent } from './Player/MediaHandler.svelte'
   import getRSSEntries from '@/modules/providers/tosho.js'
+  import { click } from '@/modules/click.js'
 
   import { writable } from 'svelte/store'
 
@@ -72,11 +73,11 @@
   $: table && modal?.focus()
 </script>
 
-<div class='modal z-40' class:show={table} id='viewAnime' on:keydown={checkClose} tabindex='-1' bind:this={modal}>
+<div class='modal z-40' class:show={table} id='viewAnime'>
   {#if table}
-    <div class='modal-dialog p-20' role='document' on:click|self={close} on:keydown|self={wrapEnter(close)}>
+    <div class='modal-dialog p-20' on:pointerup|self={close} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
       <div class='modal-content w-auto'>
-        <button class='close pointer z-30 right-0 position-absolute' type='button' on:click={close}> &times; </button>
+        <button class='close pointer z-30 right-0 position-absolute' type='button' use:click={close}> &times; </button>
         <table class='table table-hover'>
           <thead>
             <tr>
@@ -92,7 +93,7 @@
           </thead>
           <tbody class='results pointer'>
             {#each table as row, index}
-              <tr class:text-primary={row.best} on:click={() => play(row)} on:keydown={wrapEnter(() => play(row))} tabindex='0' role='button'>
+              <tr class:text-primary={row.best} use:click={() => play(row)}>
                 <th>{index + 1}</th>
                 <td>{row.title}</td>
                 <td>{row.size}</td>

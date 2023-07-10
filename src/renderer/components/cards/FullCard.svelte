@@ -2,6 +2,7 @@
   import { getContext } from 'svelte'
   import PreviewCard from './PreviewCard.svelte'
   import { formatMap, statusColorMap } from '@/modules/anime.js'
+  import { hoverClick } from '@/modules/click.js'
   export let media
   let preview = false
 
@@ -11,7 +12,7 @@
   }
 </script>
 
-<div class='d-flex px-20 py-10 position-relative' on:pointerenter={() => { preview = true }} on:pointerleave={() => { preview = false }} on:pointerdown={viewMedia}>
+<div class='d-flex px-20 py-10 position-relative' on:pointerenter={() => { preview = true }} on:custom-pointerleave={() => { preview = false }} use:hoverClick={viewMedia}>
   {#if preview}
     <PreviewCard {media} />
   {/if}

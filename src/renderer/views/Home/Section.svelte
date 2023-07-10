@@ -6,7 +6,7 @@
   import Card from '@/components/cards/Card.svelte'
   import { search } from '../Search.svelte'
   import { page } from '@/App.svelte'
-  import { wrapEnter } from '@/modules/util.js'
+  import { click } from '@/modules/click.js'
 
   export let opts
 
@@ -20,7 +20,7 @@
     observer.observe(element)
   }
 
-  function click () {
+  function _click () {
     $search = {
       ...opts.variables,
       load: opts.load
@@ -31,10 +31,8 @@
 </script>
 
 <span class='d-flex px-20 align-items-end pointer text-decoration-none text-muted'
-  on:click={click} on:keydown={wrapEnter(click)}
-  tabindex='0'
-  use:deferredLoad
-  role='button'>
+  use:click={_click}
+  use:deferredLoad>
   <div class='font-size-24 font-weight-semi-bold'>{opts.title}</div>
   <div class='pr-10 ml-auto font-size-12'>View More</div>
 </span>
@@ -56,5 +54,8 @@
     width: 8rem;
     background: linear-gradient(270deg, #17191cff 0%, #17191c00 100%);
     pointer-events: none;
+  }
+  .gallery {
+    overflow-x: clip
   }
 </style>

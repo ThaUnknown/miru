@@ -1,6 +1,7 @@
 <script>
   import { statusColorMap } from '@/modules/anime.js'
   import EpisodePreviewCard from './EpisodePreviewCard.svelte'
+  import { hoverClick } from '@/modules/click.js'
   import { since } from '@/modules/util'
   export let data
 
@@ -9,7 +10,7 @@
   const episodeThumbnail = data.episodeData?.image || data.media?.bannerImage || data.media?.coverImage?.extraLarge || ' '
 </script>
 
-<div class='d-flex pt-20 px-20 position-relative' on:pointerenter={() => { preview = true }} on:pointerleave={() => { preview = false }} on:pointerdown={data.onclick}>
+<div class='d-flex pt-20 px-20 position-relative' on:pointerenter={() => { preview = true }} on:custom-pointerleave={() => { preview = false }} use:hoverClick={data.onclick}>
   {#if preview}
     <EpisodePreviewCard {data} />
   {/if}

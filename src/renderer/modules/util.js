@@ -119,12 +119,6 @@ export function debounce (fn, time) {
   }
 };
 
-export function wrapEnter (fn) {
-  return ({ key }) => {
-    if (key === 'Enter') fn()
-  }
-}
-
 export function binarySearch (arr, el) {
   let left = 0
   let right = arr.length - 1

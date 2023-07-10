@@ -1,6 +1,7 @@
 <script>
   import { alToken } from '../../views/Settings.svelte'
   import { alRequest } from '@/modules/anilist.js'
+  import { click } from '@/modules/click.js'
   export let media = null
   let following = null
   async function updateFollowing (media) {
@@ -28,7 +29,7 @@
         <img src={friend.user.avatar.medium} alt='avatar' class='w-30 h-30 img-fluid rounded cover-img' />
         <span class='my-0 pl-10 mr-auto text-truncate'>{friend.user.name}</span>
         <span class='my-0 px-10 text-capitalize'>{statusMap[friend.status]}</span>
-        <span class='material-symbols-outlined pointer text-primary font-size-18' on:click={() => window.IPC.emit('open', 'https://anilist.co/user/' + friend.user.name)}> open_in_new </span>
+        <span class='material-symbols-outlined pointer text-primary font-size-18' use:click={() => window.IPC.emit('open', 'https://anilist.co/user/' + friend.user.name)}> open_in_new </span>
       </div>
     {/each}
   </div>

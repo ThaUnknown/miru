@@ -1,4 +1,5 @@
 <script>
+  import { click } from '@/modules/click.js'
   export let peers
   export let invite
   export let cleanup
@@ -7,8 +8,8 @@
 <div class='d-flex flex-column py-20 root container card'>
   <div class='d-flex align-items-center w-full'>
     <h1 class='font-weight-bold mr-auto'>Lobby</h1>
-    <button class='btn btn-success btn-lg ml-20' type='button' on:click={invite}>Invite To Lobby</button>
-    <button class='btn btn-danger ml-20 btn-lg' type='button' on:click={cleanup}>Leave lobby</button>
+    <button class='btn btn-success btn-lg ml-20' type='button' use:click={invite}>Invite To Lobby</button>
+    <button class='btn btn-danger ml-20 btn-lg' type='button' use:click={cleanup}>Leave lobby</button>
   </div>
   {#each Object.values(peers) as peer}
     <div class='d-flex align-items-center pb-10'>
@@ -19,10 +20,10 @@
       {/if}
       <h4 class='my-0 pl-20 mr-auto'>{peer.user?.name || 'Anonymous'}</h4>
       {#if peer.user?.name}
-        <span class='material-symbols-outlined pointer text-primary' on:pointerdown={() => window.IPC.emit('open', 'https://anilist.co/user/' + peer.user?.name)}> open_in_new </span>
+        <span class='material-symbols-outlined pointer text-primary' use:click={() => window.IPC.emit('open', 'https://anilist.co/user/' + peer.user?.name)}> open_in_new </span>
       {/if}
       <!-- {#if state === 'host'}
-        <span class='material-symbols-outlined ml-15 pointer text-danger' on:click={() => peer.peer.pc.close()}> logout </span>
+        <span class='material-symbols-outlined ml-15 pointer text-danger' use:click={() => peer.peer.pc.close()}> logout </span>
       {/if} -->
     </div>
   {/each}

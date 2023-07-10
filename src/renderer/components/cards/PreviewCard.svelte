@@ -1,6 +1,7 @@
 <script>
   import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
   import { alRequest } from '@/modules/anilist.js'
+  import { click } from '@/modules/click.js'
   export let media
 
   let hide = true
@@ -40,6 +41,10 @@
     })
     media.isFavourite = !media.isFavourite
   }
+  function play () {
+    if (media.status === 'NOT_YET_RELEASED') return
+    playMedia(media)
+  }
   // TODO: add a volume toggle icon for trailer
   function volume (video) {
     video.volume = 0.05
@@ -78,14 +83,14 @@
     </div>
     <div class='d-flex flex-row pt-5'>
       <button class='btn btn-secondary flex-grow-1 text-dark font-weight-bold shadow-none border-0'
-        on:pointerdown|stopPropagation={() => media.status !== 'NOT_YET_RELEASED' && playMedia(media)}
+        use:click={play}
         disabled={media.status === 'NOT_YET_RELEASED'}>
         {playButtonText}
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} on:pointerdown|stopPropagation={toggleFavourite}>
+      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
         favorite
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.mediaListEntry} on:pointerdown|stopPropagation={toggleStatus}>
+      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.mediaListEntry} use:click={toggleStatus}>
         bookmark
       </button>
     </div>

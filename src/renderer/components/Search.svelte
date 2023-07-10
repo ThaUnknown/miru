@@ -11,6 +11,7 @@
 <script>
   import { traceAnime } from '@/modules/anime.js'
   import { set } from '../views/Settings.svelte'
+  import { click } from '@/modules/click.js'
 
   export let search
   let searchTextInput
@@ -179,7 +180,7 @@
     </div>
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
-        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button' on:click={searchClear} class:text-primary={!!sanitisedSearch?.length}>
+        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button' use:click={searchClear} class:text-primary={!!sanitisedSearch?.length}>
           delete
         </button>
       </div>
@@ -192,8 +193,8 @@
         <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>{('' + badge).replace(/_/g, ' ').toLowerCase()}</span>
       {/each}
     {/if}
-    <span class='material-symbols-outlined font-size-24 mr-10 filled ml-auto text-dark-light pointer' class:text-muted={set.cards === 'small'} on:click={() => changeCardMode('small')}>grid_on</span>
-    <span class='material-symbols-outlined font-size-24 filled text-dark-light pointer' class:text-muted={set.cards === 'full'} on:click={() => changeCardMode('full')}>grid_view</span>
+    <span class='material-symbols-outlined font-size-24 mr-10 filled ml-auto text-dark-light pointer' class:text-muted={set.cards === 'small'} use:click={() => changeCardMode('small')}>grid_on</span>
+    <span class='material-symbols-outlined font-size-24 filled text-dark-light pointer' class:text-muted={set.cards === 'full'} use:click={() => changeCardMode('full')}>grid_view</span>
   </div>
 </form>
 

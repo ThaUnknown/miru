@@ -1,5 +1,6 @@
 <script context='module'>
   import { writable } from 'svelte/store'
+  import { click } from '@/modules/click.js'
   const toasts = writable({})
   let index = 0
   export function addToast (opts) {
@@ -25,8 +26,8 @@
 
 <div class='sticky-alerts d-flex flex-column-reverse'>
   {#each Object.entries($toasts) as [index, toast] (index)}
-    <div class='alert alert-{toast.type} filled' class:pointer={toast.click} on:click={toast.click}>
-      <button class='close' type='button' on:click={() => close(index)}><span aria-hidden='true'>×</span></button>
+    <div class='alert alert-{toast.type} filled' class:pointer={toast.click} use:click={toast.click}>
+      <button class='close' type='button' use:click={() => close(index)}><span aria-hidden='true'>×</span></button>
       <h4 class='alert-heading'>{toast.title}</h4>
       {@html toast.text}
     </div>

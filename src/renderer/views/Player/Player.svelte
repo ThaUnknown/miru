@@ -5,10 +5,11 @@
   import { createEventDispatcher } from 'svelte'
   import { alEntry } from '@/modules/anilist.js'
   import Subtitles from '@/modules/subtitles.js'
-  import { toTS, videoRx, fastPrettyBytes, wrapEnter } from '@/modules/util.js'
+  import { toTS, videoRx, fastPrettyBytes } from '@/modules/util.js'
   import { addToast } from '../../components/Toasts.svelte'
   import { getChaptersAniSkip } from '@/modules/anime.js'
   import Seekbar from 'perfect-seekbar'
+  import { click } from '@/modules/click.js'
 
   import { w2gEmitter } from '../WatchTogether/WatchTogether.svelte'
   import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
@@ -880,8 +881,8 @@
   on:keypress={resetImmerse}
   on:mouseleave={immersePlayer}>
   {#if showKeybinds && !miniplayer}
-    <div class='position-absolute bg-tp w-full h-full z-50 font-size-12 p-20 d-flex align-items-center justify-content-center' on:click|self={() => (showKeybinds = false)} on:keydown={wrapEnter(() => (showKeybinds = false))}>
-      <button class='btn btn-square rounded-circle bg-dark font-size-16 top-0 right-0 m-10 position-absolute' type='button' on:click={() => (showKeybinds = false)} on:keydown={wrapEnter(() => (showKeybinds = false))}>&times;</button>
+    <div class='position-absolute bg-tp w-full h-full z-50 font-size-12 p-20 d-flex align-items-center justify-content-center'>
+      <button class='btn btn-square rounded-circle bg-dark font-size-16 top-0 right-0 m-10 position-absolute' type='button' use:click={() => (showKeybinds = false)}>&times;</button>
       <Keybinds let:prop={item} autosave={true} clickable={true}>
         <div class:material-symbols-outlined={item?.type} class='bind'>{item?.id || ''}</div>
       </Keybinds>
@@ -925,7 +926,7 @@
     on:leavepictureinpicture={() => (pip = false)} />
   {#if stats}
     <div class='position-absolute top-0 bg-tp p-10 m-15 text-monospace rounded z-50'>
-      <button class='close' type='button' on:click={toggleStats}><span>×</span></button>
+      <button class='close' type='button' use:click={toggleStats}><span>×</span></button>
       FPS: {stats.fps}<br />
       Presented frames: {stats.presented}<br />
       Dropped frames: {stats.dropped}<br />
@@ -950,15 +951,15 @@
     <div class='col-4' />
   </div>
   <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
-    <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} on:keydown={wrapEnter(() => { if (page === 'player') playPause(); page = 'player' })} />
-    <span class='material-symbols-outlined ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} data-name='playLast' on:pointerdown={playLast}> skip_previous </span>
-    <span class='material-symbols-outlined ctrl' data-name='rewind' on:pointerdown={rewind}> fast_rewind </span>
-    <span class='material-symbols-outlined ctrl' data-name='playPause' on:pointerdown={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
-    <span class='material-symbols-outlined ctrl' data-name='forward' on:pointerdown={forward}> fast_forward </span>
-    <span class='material-symbols-outlined ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} data-name='playNext' on:pointerdown={playNext}> skip_next </span>
+    <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
+    <span class='material-symbols-outlined ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} data-name='playLast' use:click={playLast}> skip_previous </span>
+    <span class='material-symbols-outlined ctrl' data-name='rewind' use:click={rewind}> fast_rewind </span>
+    <span class='material-symbols-outlined ctrl' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
+    <span class='material-symbols-outlined ctrl' data-name='forward' use:click={forward}> fast_forward </span>
+    <span class='material-symbols-outlined ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} data-name='playNext' use:click={playNext}> skip_next </span>
     <div class='position-absolute bufferingDisplay' />
     {#if currentSkippable}
-      <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold' on:click={skip}>
+      <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold' use:click={skip}>
         Skip {currentSkippable}
       </button>
     {/if}
@@ -978,28 +979,28 @@
       />
     </div>
     <div class='d-flex'>
-      <span class='material-symbols-outlined ctrl' title='Play/Pause [Space]' data-name='playPause' on:click={playPause} on:keydown={wrapEnter(playPause)}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
+      <span class='material-symbols-outlined ctrl' title='Play/Pause [Space]' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
       {#if hasLast}
-        <span class='material-symbols-outlined ctrl' title='Last [B]' data-name='playLast' on:click={playLast} on:keydown={wrapEnter(playLast)}> skip_previous </span>
+        <span class='material-symbols-outlined ctrl' title='Last [B]' data-name='playLast' use:click={playLast}> skip_previous </span>
       {/if}
       {#if hasNext}
-        <span class='material-symbols-outlined ctrl' title='Next [N]' data-name='playNext' on:click={playNext} on:keydown={wrapEnter(playNext)}> skip_next </span>
+        <span class='material-symbols-outlined ctrl' title='Next [N]' data-name='playNext' use:click={playNext}> skip_next </span>
       {/if}
       <div class='d-flex w-auto volume'>
-        <span class='material-symbols-outlined ctrl' title='Mute [M]' data-name='toggleMute' on:click={toggleMute} on:keydown={wrapEnter(toggleMute)}> {muted ? 'volume_off' : 'volume_up'} </span>
+        <span class='material-symbols-outlined ctrl' title='Mute [M]' data-name='toggleMute' use:click={toggleMute}> {muted ? 'volume_off' : 'volume_up'} </span>
         <input class='ctrl h-full custom-range' type='range' min='0' max='1' step='any' data-name='setVolume' bind:value={volume} />
       </div>
       <div class='ts mr-auto'>{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
-      <span class='material-symbols-outlined ctrl' title='Keybinds [`]' on:pointerdown={() => (showKeybinds = true)}> keyboard </span>
+      <span class='material-symbols-outlined ctrl' title='Keybinds [`]' use:click={() => (showKeybinds = true)}> keyboard </span>
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
-        <div class='dropdown dropup with-arrow' on:click={toggleDropdown} on:keydown={wrapEnter(toggleDropdown)}>
+        <div class='dropdown dropup with-arrow' use:click={toggleDropdown}>
           <span class='material-symbols-outlined ctrl' title='Audio Tracks'>
             queue_music
           </span>
           <div class='dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize'>
             {#each video.audioTracks as track}
               <input name='audio-radio-set' type='radio' id='audio-{track.id}-radio' value={track.id} checked={track.enabled} />
-              <label for='audio-{track.id}-radio' on:pointerdown|stopPropagation={() => selectAudio(track.id)} class='text-truncate pb-5'>
+              <label for='audio-{track.id}-radio' use:click={() => selectAudio(track.id)} class='text-truncate pb-5'>
                 {(track.language || (!Object.values(video.audioTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) + (track.label ? ' - ' + track.label : '')}
               </label>
             {/each}
@@ -1014,7 +1015,7 @@
           <div class='dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize'>
             {#each video.videoTracks as track}
               <input name='video-radio-set' type='radio' id='video-{track.id}-radio' value={track.id} checked={track.selected} />
-              <label for='video-{track.id}-radio' on:click|stopPropagation={() => selectVideo(track.id)} class='text-truncate pb-5' on:keydown={wrapEnter(() => selectVideo(track.id))}>
+              <label for='video-{track.id}-radio' use:click={() => selectVideo(track.id)} class='text-truncate pb-5'>
                 {(track.language || (!Object.values(video.videoTracks).some(track => track.language === 'eng' || track.language === 'en') ? 'eng' : track.label)) + (track.label ? ' - ' + track.label : '')}
               </label>
             {/each}
@@ -1022,17 +1023,17 @@
         </div>
       {/if}
       {#if subHeaders?.length}
-        <div class='subtitles dropdown dropup with-arrow' on:click={toggleDropdown} on:keydown={wrapEnter(toggleDropdown)}>
+        <div class='subtitles dropdown dropup with-arrow' use:click={toggleDropdown}>
           <span class='material-symbols-outlined ctrl' title='Subtitles [C]'>
             subtitles
           </span>
           <div class='dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize w-200'>
             <input name='subtitle-radio-set' type='radio' id='subtitle-off-radio' value='off' checked={subHeaders && subs?.current === -1} />
-            <label for='subtitle-off-radio' on:click|stopPropagation={() => subs.selectCaptions(-1)} class='text-truncate pb-5' on:keydown={wrapEnter(() => subs.selectCaptions(-1))}> OFF </label>
+            <label for='subtitle-off-radio' use:click={() => subs.selectCaptions(-1)} class='text-truncate pb-5'> OFF </label>
             {#each subHeaders as track}
               {#if track}
                 <input name='subtitle-radio-set' type='radio' id='subtitle-{track.number}-radio' value={track.numer} checked={track.number === subs.current} />
-                <label for='subtitle-{track.nubmer}-radio' on:click={() => subs.selectCaptions(track.number)} on:keydown={wrapEnter(() => subs.selectCaptions(track.number))} class='text-truncate pb-5'>
+                <label for='subtitle-{track.nubmer}-radio' use:click={() => subs.selectCaptions(track.number)} class='text-truncate pb-5'>
                   {(track.language || (!Object.values(subs.headers).some(header => header.language === 'eng' || header.language === 'en') ? 'eng' : track.type)) + (track.name ? ' - ' + track.name : '')}
                 </label>
               {/if}
@@ -1042,16 +1043,16 @@
         </div>
       {/if}
       {#if 'PresentationRequest' in window && canCast && current}
-        <span class='material-symbols-outlined ctrl' title='Cast Video [D]' data-name='toggleCast' on:click={toggleCast} on:keydown={wrapEnter(toggleCast)}>
+        <span class='material-symbols-outlined ctrl' title='Cast Video [D]' data-name='toggleCast' use:click={toggleCast}>
           {presentationConnection ? 'cast_connected' : 'cast'}
         </span>
       {/if}
       {#if 'pictureInPictureEnabled' in document}
-        <span class='material-symbols-outlined ctrl' title='Popout Window [P]' data-name='togglePopout' on:click={togglePopout} on:keydown={wrapEnter(togglePopout)}>
+        <span class='material-symbols-outlined ctrl' title='Popout Window [P]' data-name='togglePopout' use:click={togglePopout}>
           {pip ? 'featured_video' : 'picture_in_picture'}
         </span>
       {/if}
-      <span class='material-symbols-outlined ctrl' title='Fullscreen [F]' data-name='toggleFullscreen' on:click={toggleFullscreen} on:keydown={wrapEnter(toggleFullscreen)}>
+      <span class='material-symbols-outlined ctrl' title='Fullscreen [F]' data-name='toggleFullscreen' use:click={toggleFullscreen}>
         {isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
       </span>
     </div>

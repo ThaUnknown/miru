@@ -5,6 +5,7 @@
   import { getContext } from 'svelte'
   import { getMediaMaxEp } from '@/modules/anime.js'
   import { playAnime } from '../RSSView.svelte'
+  import { click } from '@/modules/click.js'
   export let media = null
 
   const toggleStatusMap = {
@@ -106,12 +107,12 @@
     <button
       class='btn btn-primary d-flex align-items-center font-weight-bold font-size-24 h-50 mb-5'
       type='button'
-      on:click={() => play(media)}>
+      use:click={() => play(media)}>
       <span class='material-symbols-outlined mr-10 font-size-24 w-30'> play_arrow </span>
       <span>{getPlayText(media)}</span>
     </button>
     {#if alToken}
-      <button class='btn d-flex align-items-center mb-5 font-weight-bold font-size-16 btn-primary' on:click={toggleStatus}>
+      <button class='btn d-flex align-items-center mb-5 font-weight-bold font-size-16 btn-primary' use:click={toggleStatus}>
         <span class='material-symbols-outlined mr-10 font-size-18 w-30'> {(media.mediaListEntry?.status in toggleStatusMap) ? 'remove' : 'add'} </span>
         {getStatusText(media)}
       </button>
@@ -135,17 +136,17 @@
       </div>
     {/if}
     {#if media.trailer}
-      <button class='btn d-flex align-items-center mb-5 font-weight-bold font-size-16' on:click={() => viewTrailer(media)}>
+      <button class='btn d-flex align-items-center mb-5 font-weight-bold font-size-16' use:click={() => viewTrailer(media)}>
         <span class='material-symbols-outlined mr-15 font-size-18 w-30'> live_tv </span>
         Trailer
       </button>
     {/if}
     <div class='d-flex mb-5 w-full'>
-      <button class='btn flex-fill font-weight-bold font-size-16 d-flex align-items-center' on:click={() => { openInBrowser(`https://anilist.co/anime/${media.id}`) }}>
+      <button class='btn flex-fill font-weight-bold font-size-16 d-flex align-items-center' use:click={() => { openInBrowser(`https://anilist.co/anime/${media.id}`) }}>
         <span class='material-symbols-outlined mr-15 font-size-18 w-30'> open_in_new </span>
         Open
       </button>
-      <button class='btn flex-fill font-weight-bold font-size-16 ml-5 d-flex align-items-center' on:click={() => { copyToClipboard(`https://miru.watch/anime/${media.id}`) }}>
+      <button class='btn flex-fill font-weight-bold font-size-16 ml-5 d-flex align-items-center' use:click={() => { copyToClipboard(`https://miru.watch/anime/${media.id}`) }}>
         <span class='material-symbols-outlined mr-15 font-size-18 w-30'> share </span>
         Share
       </button>

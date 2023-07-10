@@ -1,5 +1,6 @@
 <script>
   import { getContext } from 'svelte'
+  import { click } from '@/modules/click.js'
 
   export let page
   const view = getContext('view')
@@ -14,7 +15,7 @@
 <div class='w-full z-50 navbar bg-transparent border-0 p-0 d-flex'>
   <div class='d-flex h-full draggable align-items-center text-center'>
     {#if window.version.platform !== 'darwin'}
-      <img src='./logo.ico' class='position-absolute w-50 h-50 m-10 pointer' alt='ico' on:pointerdown={close} />
+      <img src='./logo.ico' class='position-absolute w-50 h-50 m-10 pointer' alt='ico' use:click={close} />
     {/if}
   </div>
   <div class='h-full bg-dark flex-grow-1' />

@@ -4,7 +4,7 @@
   import { media } from '../views/Player/MediaHandler.svelte'
   import { platformMap } from '../views/Settings.svelte'
   import { addToast } from './Toasts.svelte'
-  import { wrapEnter } from '@/modules/util.js'
+  import { click } from '@/modules/click.js'
   const view = getContext('view')
   export let page
   const links = [
@@ -97,13 +97,10 @@
 
 <div class='sidebar z-30'>
   <div class='sidebar-menu h-full d-flex flex-column justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
-    {#each links as { click, icon, text, image, css, page: _page }, i (i)}
+    {#each links as { click: _click, icon, text, image, css, page: _page }, i (i)}
       <div
         class='sidebar-link sidebar-link-with-icon pointer overflow-hidden {css}'
-        tabindex='0'
-        role='button'
-        on:click={click}
-        on:keydown={wrapEnter(click)}>
+        use:click={_click}>
         <span class='text-nowrap d-flex align-items-center w-full h-full'>
           {#if image}
             <span class='material-symbols-outlined rounded' class:filled={page === _page}>

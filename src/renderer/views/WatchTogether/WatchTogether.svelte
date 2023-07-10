@@ -6,6 +6,7 @@
   import { addToast } from '../../components/Toasts.svelte'
   import { page } from '@/App.svelte'
   import P2PT from 'p2pt'
+  import { click } from '@/modules/click.js'
   import 'browser-event-target-emitter'
 
   export const w2gEmitter = new EventTarget()
@@ -176,7 +177,7 @@
     <div class='d-flex flex-row flex-wrap justify-content-center align-items-center h-full mb-20 pb-20 root'>
       <div class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'>
         <span class='font-size-80 material-symbols-outlined d-flex align-items-center h-full'>add</span>
-        <button class='btn btn-primary btn-lg mt-10 btn-block' type='button' on:click={() => joinLobby()}>Create Lobby</button>
+        <button class='btn btn-primary btn-lg mt-10 btn-block' type='button' use:click={joinLobby}>Create Lobby</button>
       </div>
       <div class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'>
         <span class='font-size-80 material-symbols-outlined d-flex align-items-center h-full'>group_add</span>

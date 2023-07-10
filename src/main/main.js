@@ -1,8 +1,8 @@
-const { app, BrowserWindow, protocol, shell, ipcMain, dialog, MessageChannelMain } = require('electron')
-const path = require('path')
-const { Client } = require('discord-rpc')
-const log = require('electron-log')
-const { autoUpdater } = require('electron-updater')
+import { app, BrowserWindow, protocol, shell, ipcMain, dialog, MessageChannelMain } from 'electron'
+import path from 'path'
+import { Client } from 'discord-rpc'
+import log from 'electron-log'
+import { autoUpdater } from 'electron-updater'
 
 const flags = [
   ['enable-gpu-rasterization'],
@@ -144,7 +144,7 @@ function createWindow () {
     }
   })
 
-  mainWindow.webContents.session.webRequest.onHeadersReceived({ urls: ['https://sneedex.moe/api/public/nyaa'] }, ({ responseHeaders, url }, fn) => {
+  mainWindow.webContents.session.webRequest.onHeadersReceived({ urls: ['https://sneedex.moe/api/public/nyaa', 'http://animetosho.org/storage/torrent/*'] }, ({ responseHeaders }, fn) => {
     responseHeaders['Access-Control-Allow-Origin'] = '*'
 
     fn({ responseHeaders })
