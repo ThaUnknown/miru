@@ -938,10 +938,10 @@
       Name: {current.name || ''}
     </div>
   {/if}
-  <div class='top row'>
-    <div class='stats col-4 pl-20 font-weight-medium'>{[media.title, media.episode, media.episodeNumber].filter(i => i).join(' - ')}</div>
+  <div class='top z-40 row'>
+    <div class='stats col-4 pl-20 font-weight-medium overflow-hidden text-truncate'>{[media.title, media.episode, media.episodeNumber].filter(i => i).join(' - ')}</div>
     <div class='d-flex col-4 justify-content-center'>
-      <span class='material-symbols-outlined' data-name='peers'> people </span>
+      <span class='material-symbols-outlined'> people </span>
       <span class='stats'>{torrent.peers || 0}</span>
       <span class='material-symbols-outlined'> arrow_downward </span>
       <span class='stats'>{fastPrettyBytes(torrent.down)}/s</span>
@@ -952,11 +952,11 @@
   </div>
   <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
     <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
-    <span class='material-symbols-outlined ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} data-name='playLast' use:click={playLast}> skip_previous </span>
-    <span class='material-symbols-outlined ctrl' data-name='rewind' use:click={rewind}> fast_rewind </span>
+    <span class='material-symbols-outlined ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} use:click={playLast}> skip_previous </span>
+    <span class='material-symbols-outlined ctrl' use:click={rewind}> fast_rewind </span>
     <span class='material-symbols-outlined ctrl' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
-    <span class='material-symbols-outlined ctrl' data-name='forward' use:click={forward}> fast_forward </span>
-    <span class='material-symbols-outlined ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} data-name='playNext' use:click={playNext}> skip_next </span>
+    <span class='material-symbols-outlined ctrl' use:click={forward}> fast_forward </span>
+    <span class='material-symbols-outlined ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} use:click={playNext}> skip_next </span>
     <div class='position-absolute bufferingDisplay' />
     {#if currentSkippable}
       <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold' use:click={skip}>

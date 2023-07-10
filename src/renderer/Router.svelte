@@ -5,6 +5,7 @@
   import WatchTogether from './views/WatchTogether/WatchTogether.svelte'
   import Miniplayer from 'svelte-miniplayer'
   import Search from './views/Search.svelte'
+  import AiringSchedule from './views/AiringSchedule.svelte'
 
   export let page = 'home'
 </script>
@@ -18,6 +19,8 @@
   <Home />
 {:else if page === 'search'}
   <Search />
+{:else if page === 'schedule'}
+  <AiringSchedule />
 {:else if page === 'watchtogether'}
   <WatchTogether />
 {/if}

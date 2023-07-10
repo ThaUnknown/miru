@@ -48,8 +48,9 @@
     },
     // {
     //   click: () => {
-    //     page = 'home'
+    //     page = 'schedule'
     //   },
+    //   page: 'schedule',
     //   icon: 'schedule',
     //   text: 'Schedule'
     // },
@@ -96,6 +97,7 @@
 </script>
 
 <div class='sidebar z-30'>
+  <div class='sidebar-overlay pointer-events-none h-full position-absolute' />
   <div class='sidebar-menu h-full d-flex flex-column justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
     {#each links as { click: _click, icon, text, image, css, page: _page }, i (i)}
       <div
@@ -197,11 +199,21 @@
 
   .sidebar {
     transition: width .8s cubic-bezier(0.25, 0.8, 0.25, 1), left .8s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-    will-change: width;
-    background: linear-gradient(90deg, #17191D 15.62%, rgba(23, 25, 29, 0.92) 36.46%, rgba(23, 25, 29, 0.619632) 70.83%, rgba(23, 25, 29, 0) 100%);
-    backdrop-filter: blur(2px);
+    background: none !important;
+    overflow-y: unset;
+    overflow-x: visible
   }
   .sidebar:hover {
+    width: 22rem
+  }
+  .sidebar-overlay {
+    width: var(--sidebar-width);
+    transition: width .8s cubic-bezier(0.25, 0.8, 0.25, 1), left .8s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    background: linear-gradient(90deg, #17191D 15.62%, rgba(23, 25, 29, 0.92) 36.46%, rgba(23, 25, 29, 0.619632) 70.83%, rgba(23, 25, 29, 0) 100%);
+    backdrop-filter: blur(2px);
+    z-index: -1;
+  }
+  .sidebar:hover .sidebar-overlay {
     width: 63rem
   }
 </style>
