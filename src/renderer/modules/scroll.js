@@ -1,4 +1,7 @@
+import { set } from '@/views/Settings.svelte'
+
 export default function scroll (t, { speed = 120, smooth = 10 } = {}) {
+  if (!set.smoothScroll) return
   let moving = false
   let pos = 0
   let scrollTop = 0

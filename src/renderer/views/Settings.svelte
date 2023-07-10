@@ -21,9 +21,10 @@
     disableSubtitleBlur: false,
     toshoURL: decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnLw==')),
     showDetailsInRPC: true,
+    smoothScroll: true,
     cards: 'small'
   }
-  localStorage.removeItem('relations') // TODO: remove
+
   export const set = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
   if (set.enableDoH) window.IPC.emit('doh', set.doHURL)
   window.addEventListener('paste', ({ clipboardData }) => {
@@ -117,6 +118,11 @@
       name: 'Discord',
       icon: 'settings',
       desc: 'Discord Rich Presence settings.'
+    },
+    interface: {
+      name: 'Interface',
+      icon: 'settings',
+      desc: 'Interface settings.'
     },
     changelog: {
       name: 'Changelog',
@@ -478,6 +484,18 @@
             data-title='Shows currently played anime and episode in Discord Rich Presence.'>
             <input type='checkbox' id='rpc-details' bind:checked={settings.showDetailsInRPC} />
             <label for='rpc-details'>Show details in Discord Rich Presence</label>
+          </div>
+        </div>
+      </Tab>
+      <Tab>
+        <div class='root p-20 m-20'>
+          <div
+            class='custom-switch mb-10 pl-10 font-size-16 w-300'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title='Enables smooth scrolling for long vertical containers. Impacts performance.'>
+            <input type='checkbox' id='smooth-scroll' bind:checked={settings.smoothScroll} />
+            <label for='smooth-scroll'>Enable smooth scrolling</label>
           </div>
         </div>
       </Tab>

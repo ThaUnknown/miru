@@ -51,8 +51,9 @@
     <img src={media.bannerImage || ' '} alt='banner' class='img-cover w-full h-full' />
     {#if media.trailer?.id}
       <!-- for now we use some invidious instance, would be nice to somehow get these links outselves, this redirects straight to some google endpoint -->
+      <!-- `https://yewtu.be/latest_version?id=${media.trailer.id}&itag=18` -->
       <!-- eslint-disable-next-line svelte/valid-compile -->
-      <video src={`https://yewtu.be/latest_version?id=${media.trailer.id}&itag=18`}
+      <video src={`https://proxy2.vnxservers.com/youtube/${media.trailer.id}`}
         class='w-full position-absolute left-0'
         class:d-none={hide}
         playsinline
