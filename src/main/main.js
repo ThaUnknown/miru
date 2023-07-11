@@ -95,7 +95,7 @@ ipcMain.on('doh', (event, dns) => {
   })
 })
 
-app.setJumpList([
+app.setJumpList?.([
   {
     name: 'Frequent',
     items: [
