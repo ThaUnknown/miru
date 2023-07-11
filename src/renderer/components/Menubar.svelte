@@ -18,7 +18,15 @@
       <img src='./logo.ico' class='position-absolute w-50 h-50 m-10 pointer' alt='ico' use:click={close} />
     {/if}
   </div>
-  <div class='h-full bg-dark flex-grow-1' />
+  <div class='h-full bg-dark flex-grow-1'>
+    {#if window.version.platform === 'linux'}
+      <div class='d-flex align-items-center close h-full' use:click={() => window.IPC.emit('close')}>
+        <svg viewBox='0 0 24 24'>
+          <path d='M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z' />
+        </svg>
+      </div>
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -31,5 +39,19 @@
   img {
     top: 0;
     -webkit-app-region: no-drag
+  }
+  .close {
+    width: 40px;
+  }
+  .close:hover {
+    background-color: #e81123 !important;
+  }
+  svg {
+    width: 18px;
+    height: 18px;
+    width: 100%;
+  }
+  path {
+    fill: currentColor;
   }
 </style>

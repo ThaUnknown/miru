@@ -124,6 +124,10 @@ app.setJumpList([
   }
 ])
 
+ipcMain.on('close', () => {
+  app.quit()
+})
+
 function createWindow () {
   const development = process.env.NODE_ENV?.trim() === 'development'
   // Create the browser window.
