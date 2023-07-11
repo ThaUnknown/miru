@@ -56,17 +56,15 @@ app.on('open-url', (event, url) => {
 // schema: miru://key/value
 const protocolMap = {
   auth: sendToken,
-  anime: openAnime,
-  w2g: joinLobby
+  anime: id => mainWindow.webContents.send('open-anime', id),
+  w2g: link => mainWindow.webContents.send('w2glink', link),
+  schedule: () => mainWindow.webContents.send('schedule'),
+  donate: () => shell.openExternal('https://github.com/sponsors/ThaUnknown/')
 }
-const protocolRx = /miru:\/\/([a-z0-9]+)\/(.+)/i
+const protocolRx = /miru:\/\/([a-z0-9]+)\/(.*)/i
 function handleProtocol (text) {
   const match = text.match(protocolRx)
   if (match) protocolMap[match[1]]?.(match[2])
-}
-
-function joinLobby (link) {
-  mainWindow.webContents.send('w2glink', link)
 }
 
 function sendToken (line) {
@@ -75,10 +73,6 @@ function sendToken (line) {
     if (token.endsWith('/')) token = token.slice(0, -1)
     mainWindow.webContents.send('altoken', token)
   }
-}
-
-function openAnime (id) {
-  if (!isNaN(id)) mainWindow.webContents.send('open-anime', id)
 }
 
 ipcMain.on('open', (event, url) => {
@@ -100,6 +94,35 @@ ipcMain.on('doh', (event, dns) => {
     secureDnsServers: [dns]
   })
 })
+
+app.setJumpList([
+  {
+    name: 'Frequent',
+    items: [
+      {
+        type: 'task',
+        program: process.execPath,
+        args: 'miru://schedule/',
+        title: 'Airing Schedule',
+        description: 'Open The Airing Schedule'
+      },
+      {
+        type: 'task',
+        program: process.execPath,
+        args: 'miru://w2g/',
+        title: 'Watch Together',
+        description: 'Create a New Watch Together Lobby'
+      },
+      {
+        type: 'task',
+        program: process.execPath,
+        args: 'miru://donate/',
+        title: 'Donate',
+        description: 'Support This App'
+      }
+    ]
+  }
+])
 
 function createWindow () {
   const development = process.env.NODE_ENV?.trim() === 'development'
@@ -128,12 +151,24 @@ function createWindow () {
     webPreferences: {
       enableBlinkFeatures: 'FontAccess, AudioVideoTracks',
       backgroundThrottling: false,
-      preload: development ? path.join(__dirname, '/preload.js') : path.join(__dirname, '/preload.js')
+      preload: path.join(__dirname, '/preload.js')
     },
     icon: path.join(__dirname, '/logo.ico'),
     show: false
   })
   mainWindow.setMenuBarVisibility(false)
+
+  // console.log(mainWindow.setThumbarButtons([
+  //   {
+  //     tooltip: 'button1',
+  //     icon: nativeImage.createFromPath('path'),
+  //     click () { console.log('button1 clicked') }
+  //   }, {
+  //     tooltip: 'button2',
+  //     icon: nativeImage.createFromPath('path'),
+  //     click () { console.log('button2 clicked.') }
+  //   }
+  // ]))
 
   protocol.registerHttpProtocol('miru', (req, cb) => {
     const token = req.url.slice(7)

@@ -131,13 +131,8 @@
   }
 
   function checkInvite (invite) {
-    if (invite) {
-      const match = invite.match(inviteRx)
-      if (match) {
-        page.set('watchtogether')
-        joinLobby(match[1])
-      }
-    }
+    page.set('watchtogether')
+    joinLobby(invite?.match(inviteRx)[1])
   }
 
   const inviteRx = /([A-z0-9]{16})/i

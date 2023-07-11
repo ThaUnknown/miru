@@ -235,7 +235,8 @@ studios(isMain: true){
 },
 airingSchedule(page: 1, perPage: 1, notYetAired: true){
   nodes {
-    episode
+    episode,
+    airingAt
   }
 },
 relations {
@@ -297,7 +298,6 @@ export async function alRequest (opts) {
       Accept: 'application/json'
     }
   }
-  const userId = (await alID)?.data?.Viewer.id
   if (alToken) options.headers.Authorization = alToken
   switch (opts.method) {
     case 'SearchName': {
@@ -354,6 +354,7 @@ query{
 }`
       break
     } case 'UserLists': {
+      const userId = (await alID)?.data?.Viewer.id
       variables.id = userId
       query = /* js */` 
 query($id: Int){
@@ -385,6 +386,7 @@ query($id: Int){
 }`
       break
     } case 'SearchIDStatus': {
+      const userId = (await alID)?.data?.Viewer.id
       variables.id = userId
       variables.mediaId = opts.id
       query = /* js */` 

@@ -53,7 +53,7 @@
 </script>
 
 <div class='h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden px-50 justify-content-center align-content-start' use:smoothScroll use:loadTillFull on:scroll={infiniteScroll}>
-  <Search bind:search={$search} on:input={() => update($search)} />
+  <Search bind:search={$search} on:input={update} />
   {#key key}
     {#each $items as card}
       <Card {card} />

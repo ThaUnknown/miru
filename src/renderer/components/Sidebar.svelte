@@ -46,14 +46,14 @@
       icon: 'search',
       text: 'Search'
     },
-    // {
-    //   click: () => {
-    //     page = 'schedule'
-    //   },
-    //   page: 'schedule',
-    //   icon: 'schedule',
-    //   text: 'Schedule'
-    // },
+    {
+      click: () => {
+        page = 'schedule'
+      },
+      page: 'schedule',
+      icon: 'schedule',
+      text: 'Schedule'
+    },
     {
       click: () => {
         if ($media) $view = $media.media
@@ -106,7 +106,7 @@
         <span class='text-nowrap d-flex align-items-center w-full h-full'>
           {#if image}
             <span class='material-symbols-outlined rounded' class:filled={page === _page}>
-              <img src={image} class='h-30' alt='logo' />
+              <img src={image} class='h-30 rounded' alt='logo' />
             </span>
             <span class='text ml-20'>{text}</span>
           {:else}

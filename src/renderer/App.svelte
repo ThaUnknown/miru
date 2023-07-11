@@ -10,6 +10,9 @@
     view.set((await alRequest({ method: 'SearchIDSingle', id: anime })).data.Media)
   }
   window.IPC.on('open-anime', handleAnime)
+  window.IPC.on('schedule', () => {
+    page.set('schedule')
+  })
 </script>
 
 <script>

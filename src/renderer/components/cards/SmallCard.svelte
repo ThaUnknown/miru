@@ -3,6 +3,10 @@
   import PreviewCard from './PreviewCard.svelte'
   import { formatMap, statusColorMap } from '@/modules/anime.js'
   import { hoverClick } from '@/modules/click.js'
+  import { countdown } from '@/modules/util.js'
+
+  import { page } from '@/App.svelte'
+
   export let media
   let preview = false
 
@@ -17,6 +21,18 @@
     <PreviewCard {media} />
   {/if}
   <div class='item d-flex flex-column h-full pointer content-visibility-auto'>
+    {#if $page === 'schedule'}
+      <div class='w-full text-center pb-10'>
+        {#if media.airingSchedule?.nodes?.[0]?.airingAt}
+          Episode {media.airingSchedule.nodes[0].episode } in
+          <span class='font-weight-bold text-light'>
+            {countdown(media.airingSchedule.nodes[0].airingAt - Date.now() / 1000)}
+          </span>
+        {:else}
+          &nbsp;
+        {/if}
+      </div>
+    {/if}
     <img loading='lazy' src={media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full rounded' style:--color={media.coverImage.color || '#1890ff'} />
     <div class='text-white font-weight-very-bold font-size-16 pt-15 title overflow-hidden'>
       {#if media.mediaListEntry?.status}

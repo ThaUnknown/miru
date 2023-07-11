@@ -1,10 +1,10 @@
 <script>
   import { getContext } from 'svelte'
-  import PreviewCard from './PreviewCard.svelte'
   import { formatMap, statusColorMap } from '@/modules/anime.js'
-  import { hoverClick } from '@/modules/click.js'
+  import { click } from '@/modules/click.js'
+  import { countdown } from '@/modules/util.js'
+  import { page } from '@/App.svelte'
   export let media
-  let preview = false
 
   const view = getContext('view')
   function viewMedia () {
@@ -12,10 +12,7 @@
   }
 </script>
 
-<div class='d-flex px-20 py-10 position-relative' on:pointerenter={() => { preview = true }} on:custom-pointerleave={() => { preview = false }} use:hoverClick={viewMedia}>
-  {#if preview}
-    <PreviewCard {media} />
-  {/if}
+<div class='d-flex px-20 py-10 position-relative' use:click={viewMedia}>
   <div class='card m-0 p-0 overflow-hidden pointer content-visibility-auto'
     style:--color={media.coverImage.color || '#1890ff'}>
     <div class='row h-full'>
@@ -24,12 +21,24 @@
       </div>
       <div class='col-8 h-full card-grid'>
         <div class='px-15 py-10 bg-very-dark'>
-          <h5 class='m-0 text-capitalize font-weight-bold'>
+          <h5 class='m-0 text-white text-capitalize font-weight-bold'>
             {#if media.mediaListEntry?.status}
               <div style:--statusColor={statusColorMap[media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={media.mediaListEntry.status} />
             {/if}
             {media.title.userPreferred}
           </h5>
+          {#if $page === 'schedule'}
+            <div class='py-5'>
+              {#if media.airingSchedule?.nodes?.[0]?.airingAt}
+                Episode {media.airingSchedule.nodes[0].episode } in
+                <span class='font-weight-bold text-light'>
+                  {countdown(media.airingSchedule.nodes[0].airingAt - Date.now() / 1000)}
+                </span>
+              {:else}
+                &nbsp;
+              {/if}
+            </div>
+          {/if}
           <p class='text-muted m-0 text-capitalize details'>
             <span class='text-nowrap'>
               {#if media.format === 'TV'}
@@ -88,6 +97,10 @@
   height: 27rem !important;
   box-shadow: rgba(0, 4, 12, 0.3) 0px 7px 15px, rgba(0, 4, 12, 0.05) 0px 4px 4px;
   contain-intrinsic-height: 27rem;
+  transition: transform 0.2s ease;
+}
+.card:hover{
+  transform: scale(1.05);
 }
 .card-grid {
   display: grid;

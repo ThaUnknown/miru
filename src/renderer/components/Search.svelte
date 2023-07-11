@@ -12,6 +12,7 @@
   import { traceAnime } from '@/modules/anime.js'
   import { set } from '../views/Settings.svelte'
   import { click } from '@/modules/click.js'
+  import { page } from '@/App.svelte'
 
   export let search
   let searchTextInput
@@ -31,6 +32,7 @@
     }
     searchTextInput.focus()
     form.dispatchEvent(new Event('input', { bubbles: true }))
+    $page = 'search'
   }
 
   function handleFile ({ target }) {
