@@ -116,6 +116,7 @@
     }
 
     result.sort((a, b) => a.media.episode - b.media.episode)
+    result.sort((a, b) => (b.media.parseObject.anime_season ?? 1) - (a.media.parseObject.anime_season ?? 1))
 
     console.info('MediaHandler: final resolve result', { result })
 

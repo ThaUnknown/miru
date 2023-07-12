@@ -209,6 +209,12 @@ function getParseObjTitle (obj) {
   let title = obj.anime_title
   if (obj.anime_year) title += ` ${obj.anime_year}`
   if (obj.anime_season > 1) title += ' S' + obj.anime_season
+  const match = title.match(/S(\d{2})E(\d{2})/)
+  if (match) {
+    obj.anime_season = Number(match[1])
+    obj.episode_number = Number(match[2])
+    title = title.replace(/S(\d{2})E(\d{2})/, '')
+  }
   return title
 }
 
