@@ -68,6 +68,8 @@
     }
   }
 
+  const TYPE_EXCLUSIONS = ['ED', 'ENDING', 'NCED', 'NCOP', 'OP', 'OPENING', 'PREVIEW', 'PV']
+
   async function handleFiles (files) {
     console.info('MediaHandler: got files', files)
     if (!files?.length) return processed.set(files)
@@ -87,11 +89,7 @@
       return file
     })
 
-    videoFiles = videoFiles.filter(file => {
-      if (file.media.parseObject.anime_type?.toLowerCase() === 'nced') return false
-      if (file.media.parseObject.anime_type?.toLowerCase() === 'ncop') return false
-      return true
-    })
+    videoFiles = videoFiles.filter(file => !TYPE_EXCLUSIONS.includes(file.media.parseObject.anime_type))
 
     console.info('MediaHandler: resolved video files', { videoFiles })
 
