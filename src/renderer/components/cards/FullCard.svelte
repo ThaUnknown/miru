@@ -111,7 +111,6 @@
   border-color: var(--color) !important;
 }
 .cover-img {
-  object-fit: cover;
   background-color: var(--color) !important;
 }
 .list-status-circle {

@@ -1,145 +1,177 @@
 <script>
+  import { getContext, setStatus } from 'svelte'
+  import { getMediaMaxEp, formatMap, playMedia } from '@/modules/anime.js'
   import { playAnime } from '../RSSView.svelte'
+  import { addToast } from '../../components/Toasts.svelte'
   import { alRequest } from '@/modules/anilist.js'
-  import { getMediaMaxEp } from '@/modules/anime.js'
-  import { getContext } from 'svelte'
-  import Details from './Details.svelte'
-  import Following from './Following.svelte'
-  import Controls from './Controls.svelte'
-  import ToggleList from './ToggleList.svelte'
   import { click } from '@/modules/click.js'
+  import Details from './Details.svelte'
+  import EpisodeList from './EpisodeList.svelte'
+  import ToggleList from './ToggleList.svelte'
+  import Following from './Following.svelte'
+  import smoothScroll from '@/modules/scroll.js'
 
   const view = getContext('view')
-  const trailer = getContext('trailer')
   function close () {
     $view = null
   }
   $: media = $view
   let modal
   $: media && modal?.focus()
-  $: !$trailer && modal?.focus()
-  $: maxPlayEp = getMediaMaxEp($view || {}, true)
   function checkClose ({ keyCode }) {
     if (keyCode === 27) close()
+  }
+  function play (episode) {
+    if (episode) return playAnime(media, episode)
+    if (media.status === 'NOT_YET_RELEASED') return
+    playMedia(media)
+  }
+  function getPlayButtonText (media) {
+    if (media?.mediaListEntry) {
+      const { status, progress } = media.mediaListEntry
+      if (progress) {
+        if (status === 'COMPLETED') {
+          return 'Rewatch Now'
+        } else {
+          return 'Continue Now'
+        }
+      }
+    }
+    return 'Watch Now'
+  }
+  $: playButtonText = getPlayButtonText(media)
+  async function toggleStatus () {
+    if (!media.mediaListEntry) {
+      // add
+      const res = await setStatus('PLANNING', {}, media)
+      media.mediaListEntry = res.data.SaveMediaListEntry
+    } else {
+      // delete
+      alRequest({
+        method: 'Delete',
+        id: media.mediaListEntry.id
+      })
+      media.mediaListEntry = undefined
+    }
+  }
+  function toggleFavourite () {
+    alRequest({
+      method: 'Favourite',
+      id: media.id
+    })
+    media.isFavourite = !media.isFavourite
+  }
+  function copyToClipboard (text) {
+    navigator.clipboard.writeText(text)
+    addToast({
+      title: 'Copied to clipboard',
+      text: 'Copied share URL to clipboard',
+      type: 'primary',
+      duration: '5000'
+    })
+  }
+  function openInBrowser (url) {
+    window.IPC.emit('open', url)
   }
 </script>
 
 <div class='modal modal-full z-40' class:show={media} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
   {#if media}
-    <div class='h-full modal-content bg-very-dark p-0 overflow-y-auto'>
-      <button class='close pointer z-30 bg-dark top-20 right-0 position-absolute' type='button' use:click={close}> &times; </button>
-      <div class='h-md-half w-full position-relative z-20'>
-        <div class='h-full w-full position-absolute bg-dark-light banner' style:--bannerurl={`url('${media.bannerImage || ''}')`} />
-        <div class='d-flex h-full top w-full'>
-          <div class='container-xl w-full'>
-            <div class='row d-flex justify-content-end flex-row h-full px-20 pt-20 px-xl-0'>
-              <div class='col-md-3 col-4 d-flex h-full justify-content-end flex-column pb-15 align-items-center'>
-                <img class='contain-img rounded mw-full mh-full shadow' alt='cover' src={media.coverImage?.extraLarge || media.coverImage?.medium} />
-              </div>
-              <div class='col-md-9 col-8 row align-content-end'>
-                <div class='col-md-8 col-12 d-flex justify-content-end flex-column pl-20'>
-                  <div class='px-md-20 d-flex flex-column font-size-12'>
-                    <span class='title font-weight-bold pb-sm-15 text-white select-all'>
-                      {media.title.userPreferred}
-                    </span>
-                    <div class='d-flex flex-row font-size-18 pb-sm-15'>
-                      {#if media.averageScore}
-                        <span class='material-symbols-outlined mr-10 font-size-24'> trending_up </span>
-                        <span class='mr-20'>
-                          Rating: {media.averageScore + '%'}
-                        </span>
-                      {/if}
-                      {#if media.format}
-                        <span class='material-symbols-outlined mx-10 font-size-24'> monitor </span>
-                        <span class='mr-20 text-capitalize'>
-                          Format: {media.format === 'TV' ? media.format : media.format?.replace(/_/g, ' ').toLowerCase()}
-                        </span>
-                      {/if}
-                      {#if media.episodes !== 1 && getMediaMaxEp(media)}
-                        <span class='material-symbols-outlined mx-10 font-size-24'> theaters </span>
-                        <span class='mr-20'>
-                          Episodes: {getMediaMaxEp(media)}
-                        </span>
-                      {:else if media.duration}
-                        <span class='material-symbols-outlined mx-10 font-size-24'> timer </span>
-                        <span class='mr-20'>
-                          Length: {media.duration + ' min'}
-                        </span>
-                      {/if}
-                    </div>
-                    <div class='pb-15 pt-5 px-5 overflow-x-auto text-nowrap font-weight-bold'>
-                      {#each media.genres as genre}
-                        <div class='badge badge-pill shadow'>
-                          {genre}
-                        </div>
-                      {/each}
-                    </div>
-                  </div>
-                </div>
-                <Controls bind:media={$view} />
+    <div class='h-full modal-content bg-very-dark p-0 overflow-y-auto position-relative' use:smoothScroll>
+      <button class='close pointer z-30 bg-dark top-20 right-0 position-fixed' type='button' use:click={close}> &times; </button>
+      <img class='w-full cover-img banner position-absolute' alt='banner' src={media.bannerImage || ' '} />
+      <div class='row'>
+        <div class='col-7'>
+          <div class='d-flex flex-row align-items-end pb-20 mb-15'>
+            <div class='cover d-flex flex-row align-items-end'>
+              <img class='rounded cover-img w-full overflow-hidden' alt='cover-art' src={media.coverImage?.extraLarge || media.coverImage?.medium} />
+            </div>
+            <div class='pl-20 ml-20'>
+              <h1 class='font-weight-very-bold text-white select-all'>{media.title.userPreferred}</h1>
+              <p class='d-flex flex-row font-size-18'>
+                {#if media.averageScore}
+                  <span class='material-symbols-outlined mx-10 font-size-24'> trending_up </span>
+                  <span class='mr-20'>
+                    Rating: {media.averageScore + '%'}
+                  </span>
+                {/if}
+                {#if media.format}
+                  <span class='material-symbols-outlined mx-10 font-size-24'> monitor </span>
+                  <span class='mr-20 text-capitalize'>
+                    Format: {formatMap[media.format]}
+                  </span>
+                {/if}
+                {#if media.episodes !== 1 && getMediaMaxEp(media)}
+                  <span class='material-symbols-outlined mx-10 font-size-24'> theaters </span>
+                  <span class='mr-20'>
+                    Episodes: {getMediaMaxEp(media)}
+                  </span>
+                {:else if media.duration}
+                  <span class='material-symbols-outlined mx-10 font-size-24'> timer </span>
+                  <span class='mr-20'>
+                    Length: {media.duration + ' min'}
+                  </span>
+                {/if}
+              </p>
+              <div class='d-flex flex-row pt-5'>
+                <button class='btn btn-lg btn-secondary w-250 text-dark font-weight-bold shadow-none border-0 d-flex align-items-center justify-content-center'
+                  use:click={() => play()}
+                  disabled={media.status === 'NOT_YET_RELEASED'}>
+                  <span class='material-symbols-outlined font-size-24 filled pr-10'>
+                    play_arrow
+                  </span>
+                  {playButtonText}
+                </button>
+                <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
+                  favorite
+                </button>
+                <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.mediaListEntry} use:click={toggleStatus}>
+                  bookmark
+                </button>
+                <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => copyToClipboard(`https://miru.watch/anime/${media.id}`)}>
+                  share
+                </button>
+                <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => openInBrowser(`https://anilist.co/anime/${media.id}`)}>
+                  open_in_new
+                </button>
               </div>
             </div>
           </div>
+          <Details {media} />
+          <div class='d-flex flex-row mt-20 pt-10'>
+            {#each media.genres as genre}
+              <div class='bg-dark px-20 py-10 mr-10 rounded font-size-16'>
+                {genre}
+              </div>
+            {/each}
+          </div>
+          <div class='w-full d-flex flex-row align-items-center pt-20 mt-10'>
+            <hr class='w-full' />
+            <div class='font-size-18 font-weight-semi-bold px-20 text-white'>Synopsis</div>
+            <hr class='w-full' />
+          </div>
+          <div class='font-size-16 pre-wrap pt-20 select-all'>
+            {media.description?.replace(/<[^>]*>/g, '') || ''}
+          </div>
+          <ToggleList list={media.relations?.edges?.filter(({ node }) => node.type === 'ANIME')} let:item title='Relations'>
+            <div class='w-150 mx-15 my-10 rel pointer'
+              use:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media }}>
+              <img loading='lazy' src={item.node.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img rounded' />
+              <div class='pt-5'>{item.relationType.replace(/_/g, ' ').toLowerCase()}</div>
+              <h5 class='font-weight-bold text-white mb-5'>{item.node.title.userPreferred}</h5>
+            </div>
+          </ToggleList>
+          <Following {media} />
+          <ToggleList list={media.recommendations.edges.filter(edge => edge.node.mediaRecommendation)} let:item title='Recommendations'>
+            <div class='w-150 mx-15 my-10 rel pointer'
+              use:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.mediaRecommendation.id })).data.Media }}>
+              <img loading='lazy' src={item.node.mediaRecommendation.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img rounded' />
+              <h5 class='font-weight-bold text-white mb-5'>{item.node.mediaRecommendation.title.userPreferred}</h5>
+            </div>
+          </ToggleList>
         </div>
-      </div>
-      <div class='container-xl bg-very-dark z-10'>
-        <div class='row p-20 px-xl-0 flex-column-reverse flex-md-row'>
-          <div class='col-md-9 pr-50'>
-            <h1 class='title font-weight-bold text-white'>Synopsis</h1>
-            <div class='font-size-16 pre-wrap select-all card m-0'>
-              {media.description?.replace(/<[^>]*>/g, '') || ''}
-            </div>
-            <ToggleList list={media.relations?.edges?.filter(({ node }) => node.type === 'ANIME')} let:item title='Relations'>
-              <div class='w-150 mx-15 my-10 rel pointer'
-                use:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media }}>
-                <img loading='lazy' src={item.node.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img rounded' />
-                <div class='pt-5'>{item.relationType.replace(/_/g, ' ').toLowerCase()}</div>
-                <h5 class='font-weight-bold text-white mb-5'>{item.node.title.userPreferred}</h5>
-              </div>
-            </ToggleList>
-            {#if maxPlayEp}
-              <h1 class='title font-weight-bold text-white pt-20'>Episodes</h1>
-              <div class='card m-0 d-inline-block'>
-                <table class='table table-hover w-500 table-auto '>
-                  <tbody>
-                    {#each Array(maxPlayEp) as _, i}
-                      {@const ep = maxPlayEp - i}
-                      <tr class="font-size-20 py-10 pointer {ep <= media.mediaListEntry?.progress ? 'text-muted' : 'text-white'}"
-                        use:click={() => {
-                          playAnime(media, ep)
-                          close()
-                        }}>
-                        <td class='w-full font-weight-semi-bold'>Episode {ep}</td>
-                        <td class='material-symbols-outlined text-right h-full d-table-cell'>play_arrow</td>
-                      </tr>
-                    {/each}
-                  </tbody>
-                </table>
-              </div>
-            {/if}
-            <ToggleList list={media.recommendations.edges.filter(edge => edge.node.mediaRecommendation)} let:item title='Recommendations'>
-              <div class='w-150 mx-15 my-10 rel pointer'
-                use:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.mediaRecommendation.id })).data.Media }}>
-                <img loading='lazy' src={item.node.mediaRecommendation.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img rounded' />
-                <h5 class='font-weight-bold text-white mb-5'>{item.node.mediaRecommendation.title.userPreferred}</h5>
-              </div>
-            </ToggleList>
-          </div>
-          <div class='col-md-3 px-sm-0 px-20'>
-            {#if media.mediaListEntry?.progress}
-              <h1 class='title font-weight-bold text-white'>Progress</h1>
-              <div class='card m-0 pt-20 pb-15 d-flex flex-md-column flex-row text-capitalize align-items-start'>
-                <div class='progress w-full'>
-                  <div class='progress-bar' role='progressbar' style='width: {media.mediaListEntry?.progress / getMediaMaxEp(media) * 100}%;' />
-                </div>
-                <div class='font-weight-bold pt-10'>
-                  {media.mediaListEntry?.progress} / {getMediaMaxEp(media)} Available Episodes
-                </div>
-              </div>
-            {/if}
-            <Details {media} />
-            <Following {media} />
-          </div>
+        <div class='col-5 d-flex flex-column pl-20'>
+          <EpisodeList id={media.id} userProgress={media.mediaListEntry?.progress} episodeCount={media.episodes} duration={media.duration} {play} />
         </div>
       </div>
     </div>
@@ -147,53 +179,26 @@
 </div>
 
 <style>
-  .pre-wrap {
-    white-space: pre-wrap
+  .close {
+    top: 5rem !important;
+    left: unset !important;
+    right: 3rem !important;
   }
   .banner {
-    background: no-repeat center center;
-    background-size: cover;
-    background-image: linear-gradient(0deg, rgba(17, 20, 23, 1) 0%, rgba(17, 20, 23, 0.8) 25%, rgba(17, 20, 23, 0.4) 50%, rgba(37, 40, 44, 0) 100%), var(--bannerurl) !important;
+    opacity: 0.5;
+    z-index: 0;
+    aspect-ratio: 5/1;
+  }
+  .row {
+    padding: 0 10rem;
+    padding-top: 12rem
+  }
+  .cover {
+    aspect-ratio: 7/10;
+    max-width: 35%;
   }
 
-  .d-table-cell {
-    display: table-cell !important;
-  }
-
-  .top {
-    backdrop-filter: blur(10px);
-  }
-  .title {
-    font-size: 4rem;
-  }
-  .pr-50 {
-    padding-right: 5rem;
-  }
-  .close {
-    top: 4rem !important;
-    left: unset !important;
-    right: 2.5rem !important;
-  }
-  .badge {
-    background-color: var(--dm-button-bg-color) !important;
-    padding: 0.6rem 2rem;
-    font-size: 1.4rem;
-    border: none;
-    margin-right: 0.6rem;
-  }
-  .rel-img{
-    height: 27rem;
-    width: 17rem
-  }
-
-  .cover-img {
-    object-fit: cover;
-  }
-
-  .rel {
-    transition: transform 0.2s ease;
-  }
-  .rel:hover {
-    transform: scale(1.05);
+  button.bg-dark:hover {
+    background: #292d33 !important;
   }
 </style>

@@ -82,9 +82,12 @@
       {media.title.userPreferred}
     </div>
     <div class='d-flex flex-row pt-5'>
-      <button class='btn btn-secondary flex-grow-1 text-dark font-weight-bold shadow-none border-0'
+      <button class='btn btn-secondary flex-grow-1 text-dark font-weight-bold shadow-none border-0 d-flex align-items-center justify-content-center'
         use:click={play}
         disabled={media.status === 'NOT_YET_RELEASED'}>
+        <span class='material-symbols-outlined font-size-20 filled pr-10'>
+          play_arrow
+        </span>
         {playButtonText}
       </button>
       <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>

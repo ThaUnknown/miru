@@ -11,9 +11,11 @@ export default async function tosho ({ media, episode }) {
 
   const aniDBEpisode = await getAniDBEpisodeFromAL({ media, episode }, json)
 
-  let entries = await getToshoEntries(media, aniDBEpisode, json, set.rssQuality)
+  const movie = isMovie(media) // don't query movies with qualities, to allow 4k
 
-  if (!entries.length) entries = await getToshoEntries(media, aniDBEpisode, json)
+  let entries = await getToshoEntries(media, aniDBEpisode, json, !movie && set.rssQuality)
+
+  if (!entries.length && !movie) entries = await getToshoEntries(media, aniDBEpisode, json)
 
   return mapBestRelease(mapTosho2dDeDupedEntry(entries))
 }
@@ -193,7 +195,11 @@ function isMovie (media) {
 
 function buildQuery (quality) {
   let query = `&qx=1&q=!("${exclusions.join('"|"')}")`
-  if (quality) query += ` "${quality}"`
+  if (quality) {
+    query += ` "${quality}"`
+  } else {
+    query += 'e*' // HACK: tosho NEEDS a search string, so we lazy search a single common vowel
+  }
 
   return query
 }

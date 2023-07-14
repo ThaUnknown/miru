@@ -24,7 +24,7 @@ export function parseRSSNodes (nodes) {
 
     return {
       title: item.querySelector('title')?.textContent || '?',
-      link: item.querySelector('enclosure')?.attributes.url.value || '?',
+      link: item.querySelector('enclosure')?.attributes.url.value || item.querySelector('link')?.textContent || '?',
       seeders: item.querySelector('seeders')?.textContent ?? '?',
       leechers: item.querySelector('leechers')?.textContent ?? '?',
       downloads: item.querySelector('downloads')?.textContent ?? '?',
@@ -46,16 +46,25 @@ export function getReleasesRSSurl (val) {
 
 export async function getRSSContent (url) {
   if (!url) return null
-  const res = await fetch(url)
-  if (!res.ok) {
+  try {
+    const res = await fetch(url)
+    if (!res.ok) {
+      addToast({
+        text: 'Failed fetching RSS!<br>' + res.statusText,
+        title: 'Search Failed',
+        type: 'danger'
+      })
+      console.error('Failed to fetch rss', res.statusText)
+    }
+    return DOMPARSER(await res.text(), 'text/xml')
+  } catch (e) {
     addToast({
-      text: 'Failed fetching RSS!<br>' + res.statusText,
+      text: 'Failed fetching RSS!<br>' + e.message,
       title: 'Search Failed',
       type: 'danger'
     })
-    console.error('Failed to fetch rss', res.statusText)
+    console.error('Failed to fetch rss', e)
   }
-  return DOMPARSER(await res.text(), 'text/xml')
 }
 
 class RSSMediaManager {
@@ -76,6 +85,9 @@ class RSSMediaManager {
 
   async getContentChanged (page, perPage, url) {
     const content = await getRSSContent(getReleasesRSSurl(url))
+
+    if (!content) return false
+
     const pubDate = new Date(content.querySelector('pubDate').textContent) * page * perPage
     if (this.resultMap[url]?.date === pubDate) return false
     return { content, pubDate }
@@ -106,7 +118,11 @@ class RSSMediaManager {
     await this.lastResult
     const res = (await resolveFileMedia(title))[0]
     if (res.media?.id) {
-      res.episodeData = (await getEpisodeMetadataForMedia(res.media))?.[res.episode]
+      try {
+        res.episodeData = (await getEpisodeMetadataForMedia(res.media))?.[res.episode]
+      } catch (e) {
+        console.warn('failed fetching episode metadata', e)
+      }
     }
     res.date = date
     res.onclick = () => add(link)

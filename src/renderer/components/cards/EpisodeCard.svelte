@@ -72,7 +72,6 @@
     contain-intrinsic-height: 25.7rem;
   }
   .cover-img {
-    object-fit: cover;
     background-color: var(--color) !important;
   }
   .list-status-circle {

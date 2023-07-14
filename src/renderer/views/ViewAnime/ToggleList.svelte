@@ -8,13 +8,17 @@
   export let title = 'Relations'
 </script>
 {#if list?.length}
-  <span class='d-flex align-items-end pointer text-decoration-none pt-20' use:click={toggleList}>
-    <h1 class='font-weight-bold text-white'>{title}</h1>
-    {#if list.length > 4}
-      <h6 class='ml-auto font-size-12 more text-muted'>{showMore ? 'Show Less' : 'Show More'}</h6>
-    {/if}
+  <span class='d-flex align-items-end pointer' use:click={toggleList}>
+    <div class='w-full d-flex flex-row align-items-center pt-20 mt-10'>
+      <hr class='w-full' />
+      <div class='font-size-18 font-weight-semi-bold px-20 text-white'>{title}</div>
+      <hr class='w-full' />
+      {#if list.length > 4}
+        <div class='ml-auto pl-20 font-size-12 more text-muted text-nowrap'>{showMore ? 'Show Less' : 'Show More'}</div>
+      {/if}
+    </div>
   </span>
-  <div class='d-flex text-capitalize flex-wrap card m-0'>
+  <div class='d-flex text-capitalize flex-wrap pt-10'>
     {#each list.slice(0, showMore ? 100 : 4) as item}
       <slot {item} />
     {/each}

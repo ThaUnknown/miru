@@ -159,3 +159,10 @@ img[src=''], img[src=' '] {
 .align-content-start {
   align-content: start;
 }
+
+.cover-img {
+  object-fit: cover;
+}
+.pre-wrap {
+  white-space: pre-wrap
+}

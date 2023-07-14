@@ -183,7 +183,7 @@ function createWindow () {
     }
   })
 
-  mainWindow.webContents.session.webRequest.onHeadersReceived({ urls: ['https://sneedex.moe/api/public/nyaa', 'http://animetosho.org/storage/torrent/*'] }, ({ responseHeaders }, fn) => {
+  mainWindow.webContents.session.webRequest.onHeadersReceived({ urls: ['https://sneedex.moe/api/public/nyaa', 'http://animetosho.org/storage/torrent/*', atob('aHR0cHM6Ly9ueWFhLnNpLyo=')] }, ({ responseHeaders }, fn) => {
     responseHeaders['Access-Control-Allow-Origin'] = '*'
 
     fn({ responseHeaders })
