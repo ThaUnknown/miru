@@ -3,6 +3,8 @@ import { fastPrettyBytes } from '../util.js'
 import { exclusions } from '../rss.js'
 import { set } from '@/views/Settings.svelte'
 import { alRequest } from '../anilist.js'
+import { client } from '@/modules/torrent.js'
+
 import anitomyscript from 'anitomyscript'
 
 export default async function tosho ({ media, episode }) {
@@ -23,6 +25,25 @@ export default async function tosho ({ media, episode }) {
   const parseObjects = await anitomyscript(mapped.map(({ title }) => title))
 
   for (const i in parseObjects) mapped[i].parseObject = parseObjects[i]
+
+  const id = crypto.randomUUID()
+
+  const updated = await new Promise(resolve => {
+    function check ({ detail }) {
+      if (detail.id !== id) return
+      client.removeListener('scrape', check)
+      resolve(detail.result)
+      console.log(detail)
+    }
+    client.on('scrape', check)
+    client.send('scrape', { id, infoHashes: mapped.map(({ hash }) => hash) })
+  })
+  for (const { hash, complete, downloaded, incomplete } of updated) {
+    const found = mapped.find(mapped => mapped.hash === hash)
+    found.downloads = downloaded
+    found.leechers = incomplete
+    found.seeders = complete
+  }
 
   return mapped
 }
@@ -256,6 +277,7 @@ function mapTosho2dDeDupedEntry (entries) {
         seeders: entry.seeders >= 100000 ? 0 : entry.seeders,
         leechers: entry.leechers >= 100000 ? 0 : entry.leechers,
         downloads: entry.torrent_downloaded_count,
+        hash: entry.info_hash,
         size: entry.total_size && fastPrettyBytes(entry.total_size),
         verified: !!entry.anidb_fid,
         batch: entry.batch,

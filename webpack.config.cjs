@@ -23,7 +23,9 @@ module.exports = [
       mainFields: ['module', 'main', 'node'],
       alias: {
         'node-fetch': false,
-        ws: false
+        ws: false,
+        wrtc: false,
+        'bittorrent-tracker/lib/client/http-tracker.js': resolve('node_modules/bittorrent-tracker/lib/client/http-tracker.js')
       }
     },
     plugins: [new HtmlWebpackPlugin({ filename: 'background.html' })],
