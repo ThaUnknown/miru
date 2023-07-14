@@ -22,6 +22,7 @@
     if (keyCode === 27) close()
   }
   function play (episode) {
+    close()
     if (episode) return playAnime(media, episode)
     if (media.status === 'NOT_YET_RELEASED') return
     playMedia(media)
