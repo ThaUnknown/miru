@@ -3,6 +3,7 @@ import { fastPrettyBytes } from '../util.js'
 import { exclusions } from '../rss.js'
 import { set } from '@/views/Settings.svelte'
 import { alRequest } from '../anilist.js'
+import anitomyscript from 'anitomyscript'
 
 export default async function tosho ({ media, episode }) {
   const json = await getAniDBFromAL(media)
@@ -17,7 +18,13 @@ export default async function tosho ({ media, episode }) {
 
   if (!entries.length && !movie) entries = await getToshoEntries(media, aniDBEpisode, json)
 
-  return mapBestRelease(mapTosho2dDeDupedEntry(entries))
+  const mapped = mapBestRelease(mapTosho2dDeDupedEntry(entries))
+
+  const parseObjects = await anitomyscript(mapped.map(({ title }) => title))
+
+  for (const i in parseObjects) mapped[i].parseObject = parseObjects[i]
+
+  return mapped
 }
 
 window.tosho = tosho
@@ -100,7 +107,7 @@ async function getToshoEntries (media, episode, { mappings }, quality) {
   // look for batches and movies
   const movie = isMovie(media)
   if (mappings.anidb_id && media.status === 'FINISHED' && (movie || media.episodes !== 1)) {
-    promises.push(fetchBatches({ episodeCount: media.episodes, id: mappings.anidb_id, quality }))
+    promises.push(fetchBatches({ episodeCount: media.episodes, id: mappings.anidb_id, quality, movie }))
     console.log('fetching batch', quality, movie)
     if (!movie) {
       const courRelation = getSplitCourRelation(media)
@@ -204,12 +211,17 @@ function buildQuery (quality) {
   return query
 }
 
-async function fetchBatches ({ episodeCount, id, quality }) {
+async function fetchBatches ({ episodeCount, id, quality, movie }) {
   const queryString = buildQuery(quality)
   const torrents = await fetch(set.toshoURL + 'json?order=size-d&aid=' + id + queryString)
 
   // safe if AL includes EP 0 or doesn't
   const batches = (await torrents.json()).filter(entry => entry.num_files >= episodeCount)
+  if (!movie) {
+    for (const batch of batches) {
+      batch.batch = true
+    }
+  }
   console.log({ batches })
   return batches
 }
@@ -234,6 +246,7 @@ function mapTosho2dDeDupedEntry (entries) {
       dupe.leechers ||= entry.leechers >= 100000 ? 0 : entry.leechers
       dupe.downloads ||= entry.torrent_downloaded_count
       dupe.size ||= entry.total_size && fastPrettyBytes(entry.total_size)
+      dupe.verified ||= !!entry.anidb_fid
       dupe.date ||= entry.timestamp && new Date(entry.timestamp * 1000)
     } else {
       deduped[entry.info_hash] = {
@@ -244,6 +257,8 @@ function mapTosho2dDeDupedEntry (entries) {
         leechers: entry.leechers >= 100000 ? 0 : entry.leechers,
         downloads: entry.torrent_downloaded_count,
         size: entry.total_size && fastPrettyBytes(entry.total_size),
+        verified: !!entry.anidb_fid,
+        batch: entry.batch,
         date: entry.timestamp && new Date(entry.timestamp * 1000)
       }
     }

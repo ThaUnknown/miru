@@ -21,8 +21,11 @@
   --gray-color-light: hsl(var(--gray-color-light-hsl));
   --gray-color-light-hsl: var(--gray-color-base-hue), 10%, 28%;
   --gray-color-base-hue: 216;
-  --secondary-color: #fff;
-  --secondary-color-light: #ddd;
+}
+
+.btn-secondary {
+  --dm-button-secondary-bg-color: #fff !important;
+  --dm-button-secondary-bg-color-hover: #ddd !important;
 }
 
 .material-symbols-outlined {
