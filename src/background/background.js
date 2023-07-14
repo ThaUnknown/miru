@@ -62,7 +62,10 @@ class TorrentClient extends WebTorrent {
       malformed[bin2hex(arr2text(hex2arr(hash)))] = hash
     }
     this.trackers.cat._request(this.trackers.cat.scrapeUrl, { info_hash: hashes }, (err, data) => {
-      if (err) console.error(err)
+      if (err) {
+        console.error(err)
+        return this.dispatch('scrape', { id, result: [] })
+      }
       const { files } = data
       const result = []
       for (const [key, data] of Object.entries(files || {})) {
