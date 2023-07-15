@@ -18,6 +18,49 @@
     if (!force && findInCurrent({ media, episode })) return
     rss.set({ media, episode })
   }
+
+  const termMapping = {}
+  termMapping['5.1'] = { text: '5.1', color: '#f67255' }
+  termMapping['5.1CH'] = termMapping[5.1]
+  termMapping['TRUEHD5.1'] = { text: 'TrueHD 5.1', color: '#f67255' }
+  termMapping.AAC = { text: 'AAC', color: '#f67255' }
+  termMapping.AACX2 = termMapping.AAC
+  termMapping.AACX3 = termMapping.AAC
+  termMapping.AACX4 = termMapping.AAC
+  termMapping.AC3 = { text: 'AC3', color: '#f67255' }
+  termMapping.EAC3 = { text: 'EAC3', color: '#f67255' }
+  termMapping['E-AC-3'] = termMapping.EAC3
+  termMapping.FLAC = { text: 'FLAC', color: '#f67255' }
+  termMapping.FLACX2 = termMapping.FLAC
+  termMapping.FLACX3 = termMapping.FLAC
+  termMapping.FLACX4 = termMapping.FLAC
+  termMapping.VORBIS = { text: 'Vorbis', color: '#f67255' }
+  termMapping.DUALAUDIO = { text: 'Dual Audio', color: '#f67255' }
+  termMapping['DUAL AUDIO'] = termMapping.DUALAUDIO
+  termMapping['10BIT'] = { text: '10 Bit', color: '#0c8ce9' }
+  termMapping['10BITS'] = termMapping['10BIT']
+  termMapping['10-BIT'] = termMapping['10BIT']
+  termMapping['10-BITS'] = termMapping['10BIT']
+  termMapping.HI10 = termMapping['10BIT']
+  termMapping.HI10P = termMapping['10BIT']
+  termMapping.HI444 = { text: 'HI444', color: '#0c8ce9' }
+  termMapping.HI444P = termMapping.HI444
+  termMapping.HI444PP = termMapping.HI444
+  termMapping.HEVC = { text: 'HEVC', color: '#0c8ce9' }
+  termMapping.H265 = termMapping.HEVC
+  termMapping['H.265'] = termMapping.HEVC
+  termMapping.X265 = termMapping.HEVC
+  termMapping.AV1 = { text: 'AV1', color: '#0c8ce9' }
+
+  function sanitiseTerms ({ video_term: video, audio_term: audio, video_resolution: resolution }) {
+    if (!Array.isArray(video)) video = [video]
+    if (!Array.isArray(audio)) audio = [audio]
+
+    const terms = [...new Set([...video, ...audio].map(term => termMapping[term?.toUpperCase()]).filter(t => t))]
+    if (resolution) terms.unshift({ text: resolution, color: '#c6ec58' })
+
+    return terms
+  }
 </script>
 
 <script>
@@ -71,55 +114,6 @@
   }
   let modal
   $: table && modal?.focus()
-  const termMapping = {
-    5.1: '5.1',
-    '5.1CH': '5.1',
-    'TRUEHD5.1': 'TrueHD 5.1',
-    AAC: 'AAC',
-    AACX2: 'AAC',
-    AACX3: 'AAC',
-    AACX4: 'AAC',
-    AC3: 'AC3',
-    EAC3: 'EAC3',
-    'E-AC-3': 'EAC3',
-    FLAC: 'FLAC',
-    FLACX2: 'FLAC',
-    FLACX3: 'FLAC',
-    FLACX4: 'FLAC',
-    VORBIS: 'Vorbis',
-    DUALAUDIO: 'Dual Audio',
-    'Dual Audio': 'Dual Audio',
-    '10BIT': '10 Bit',
-    '10BITS': '10 Bit',
-    '10-BIT': '10 Bit',
-    '10-BITS': '10 Bit',
-    HI10: '10 Bit',
-    HI10P: '10 Bit',
-    HI444: 'HI444',
-    HI444P: 'HI444',
-    HI444PP: 'HI444',
-    H265: 'HEVC',
-    'H.265': 'HEVC',
-    X265: 'HEVC',
-    HEVC: 'HEVC',
-    AV1: 'AV1'
-  }
-  function sanitiseTerms ({ video_term: video, audio_term: audio, video_resolution: resolution }) {
-    if (!Array.isArray(video)) video = [video]
-    if (!Array.isArray(audio)) audio = [audio]
-
-    const terms = []
-
-    if (resolution) terms.push({ text: resolution, color: '#c6ec58' })
-    for (const text of audio) {
-      if (termMapping[text]) terms.push({ text: termMapping[text], color: '#f67255' })
-    }
-    for (const text of video) {
-      if (termMapping[text]) terms.push({ text: termMapping[text], color: '#0c8ce9' })
-    }
-
-    return terms
-  }
 </script>
 
 <div class='modal z-40' class:show={table} id='viewAnime'>
