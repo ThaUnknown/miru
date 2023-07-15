@@ -3,7 +3,7 @@
   import { alID } from '@/modules/anilist.js'
   import { add, client } from '@/modules/torrent.js'
   import { generateRandomHexCode } from '@/modules/util.js'
-  import { addToast } from '../../components/Toasts.svelte'
+  import { toast } from 'svelte-sonner'
   import { page } from '@/App.svelte'
   import P2PT from 'p2pt'
   import { click } from '@/modules/click.js'
@@ -148,11 +148,9 @@
   function invite () {
     if (p2pt) {
       navigator.clipboard.writeText(`https://miru.watch/w2g/${p2pt.identifierString}`)
-      addToast({
-        title: 'Copied to clipboard',
-        text: 'Copied invite URL to clipboard',
-        type: 'primary',
-        duration: '5000'
+      toast('Copied to clipboard', {
+        description: 'Copied invite URL to clipboard',
+        duration: 5000
       })
     }
   }

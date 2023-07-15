@@ -6,7 +6,7 @@
   import { alEntry } from '@/modules/anilist.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, videoRx, fastPrettyBytes } from '@/modules/util.js'
-  import { addToast } from '../../components/Toasts.svelte'
+  import { toast } from 'svelte-sonner'
   import { getChaptersAniSkip } from '@/modules/anime.js'
   import Seekbar from 'perfect-seekbar'
   import { click } from '@/modules/click.js'
@@ -71,10 +71,8 @@
   function checkAudio () {
     if ('audioTracks' in HTMLVideoElement.prototype) {
       if (!video.audioTracks.length) {
-        addToast({
-          text: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in RSS settings.",
-          title: 'Audio Codec Unsupported',
-          type: 'danger'
+        toast.error('Audio Codec Unsupported', {
+          description: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in RSS settings."
         })
       } else if (video.audioTracks.length > 1) {
         const preferredTrack = [...video.audioTracks].find(({ language }) => language === set.audioLanguage)
@@ -335,10 +333,8 @@
         })
       ])
       canvas.remove()
-      addToast({
-        text: 'Saved screenshot to clipboard.',
-        title: 'Screenshot',
-        type: 'success'
+      toast.success('Screenshot', {
+        description: 'Saved screenshot to clipboard.'
       })
     }
   }
@@ -830,31 +826,25 @@
         break
       case target.error.MEDIA_ERR_NETWORK:
         console.warn('A network error caused the video download to fail part-way.', target.error)
-        addToast({
-          text: 'A network error caused the video download to fail part-way. Click here to reload the video.',
-          title: 'Video Network Error',
-          type: 'danger',
+        toast.error('Video Network Error', {
+          description: 'A network error caused the video download to fail part-way. Click here to reload the video.',
           duration: 1000000,
-          click: () => target.load()
+          onClick: () => target.load()
         })
         break
       case target.error.MEDIA_ERR_DECODE:
         console.warn('The video playback was aborted due to a corruption problem or because the video used features your browser did not support.', target.error)
-        addToast({
-          text: 'The video playback was aborted due to a corruption problem. Click here to reload the video.',
-          title: 'Video Decode Error',
-          type: 'danger',
+        toast.error('Video Decode Error', {
+          description: 'The video playback was aborted due to a corruption problem. Click here to reload the video.',
           duration: 1000000,
-          click: () => target.load()
+          onClick: () => target.load()
         })
         break
       case target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
         if (target.error.message !== 'MEDIA_ELEMENT_ERROR: Empty src attribute') {
           console.warn('The video could not be loaded, either because the server or network failed or because the format is not supported.', target.error)
-          addToast({
-            text: 'The video could not be loaded, either because the server or network failed or because the format is not supported. Try a different release by disabling Autoplay Torrents in RSS settings.',
-            title: 'Video Codec Unsupported',
-            type: 'danger',
+          toast.error('Video Codec Unsupported', {
+            description: 'The video could not be loaded, either because the server or network failed or because the format is not supported. Try a different release by disabling Autoplay Torrents in RSS settings.',
             duration: 300000
           })
         }
@@ -881,8 +871,7 @@
   on:keypress={resetImmerse}
   on:mouseleave={immersePlayer}>
   {#if showKeybinds && !miniplayer}
-    <div class='position-absolute bg-tp w-full h-full z-50 font-size-12 p-20 d-flex align-items-center justify-content-center'>
-      <button class='btn btn-square rounded-circle bg-dark font-size-16 top-0 right-0 m-10 position-absolute' type='button' use:click={() => (showKeybinds = false)}>&times;</button>
+    <div class='position-absolute bg-tp w-full h-full z-50 font-size-12 p-20 d-flex align-items-center justify-content-center pointer' on:pointerup|self={() => (showKeybinds = false)} tabindex='-1' role='button'>
       <Keybinds let:prop={item} autosave={true} clickable={true}>
         <div class:material-symbols-outlined={item?.type} class='bind'>{item?.id || ''}</div>
       </Keybinds>

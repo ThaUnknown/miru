@@ -3,7 +3,7 @@ import { writable } from 'simple-store-svelte'
 import Bottleneck from 'bottleneck'
 
 import { alToken } from '../views/Settings.svelte'
-import { addToast } from '../components/Toasts.svelte'
+import { toast } from 'svelte-sonner'
 import { sleep } from './util.js'
 
 const codes = {
@@ -106,10 +106,8 @@ if (alToken) {
 
 function printError (error) {
   console.warn(error)
-  addToast({
-    text: /* html */`Failed making request to anilist!<br>Try again in a minute.<br>${error.status || 429} - ${error.message || codes[error.status || 429]}`,
-    title: 'Search Failed',
-    type: 'danger',
+  toast.error('Search Failed', {
+    description: `Failed making request to anilist!\nTry again in a minute.\n${error.status || 429} - ${error.message || codes[error.status || 429]}`,
     duration: 3000
   })
 }

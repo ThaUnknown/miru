@@ -2,7 +2,7 @@
   import { getContext, setStatus } from 'svelte'
   import { getMediaMaxEp, formatMap, playMedia } from '@/modules/anime.js'
   import { playAnime } from '../RSSView.svelte'
-  import { addToast } from '../../components/Toasts.svelte'
+  import { toast } from 'svelte-sonner'
   import { alRequest } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
   import Details from './Details.svelte'
@@ -64,11 +64,9 @@
   }
   function copyToClipboard (text) {
     navigator.clipboard.writeText(text)
-    addToast({
-      title: 'Copied to clipboard',
-      text: 'Copied share URL to clipboard',
-      type: 'primary',
-      duration: '5000'
+    toast('Copied to clipboard', {
+      description: 'Copied share URL to clipboard',
+      duration: 5000
     })
   }
   function openInBrowser (url) {

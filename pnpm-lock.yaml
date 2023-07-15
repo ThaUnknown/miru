@@ -112,6 +112,9 @@ devDependencies:
   svelte-miniplayer:
     specifier: 1.0.3
     version: 1.0.3
+  svelte-sonner:
+    specifier: ^0.1.1
+    version: 0.1.1(svelte@4.0.4)
   webpack:
     specifier: ^5.85.0
     version: 5.86.0(webpack-cli@5.1.4)
@@ -5483,6 +5486,14 @@ packages:
 
   /svelte-miniplayer@1.0.3:
     resolution: {integrity: sha512-++IvuENs/3x0SbHZ/jWNqfq+hmU/ZT73V/ETwn6TqCbHF7asXsZFxVcgyIL1lMaQMKxe227HrYghYRVNJXeFVw==}
+    dev: true
+
+  /svelte-sonner@0.1.1(svelte@4.0.4):
+    resolution: {integrity: sha512-jQ/coEZvJxImxxsT5FPnHeXitGx5wQRhAkAz6C8DY8yM1qFPvFowG6mDtC0KPPDEKlHCmocbWigk6zrG27OO/Q==}
+    peerDependencies:
+      svelte: ^4.0.0
+    dependencies:
+      svelte: 4.0.4
     dev: true
 
   /svelte@4.0.4:

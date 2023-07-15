@@ -28,6 +28,20 @@
   --dm-button-secondary-bg-color-hover: #ddd !important;
 }
 
+[data-sonner-toaster][data-theme='dark'] {
+  --normal-bg: var(--dark-color) !important;
+  --normal-border: none !important;
+  --normal-text: var(--dm-base-text-color) !important;
+
+  /* --success-bg: var(--success-color) !important; */
+  --success-border: none !important;
+  /* --success-text: var(--lm-base-text-color) !important; */
+
+  /* --error-bg: hsl(358, 76%, 10%); */
+  --error-border: none !important;
+  /* --error-text: hsl(358, 100%, 81%); */
+}
+
 .material-symbols-outlined {
   font-family: "Material Symbols Outlined Variable";
   font-weight: normal;

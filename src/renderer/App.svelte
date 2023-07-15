@@ -22,8 +22,8 @@
   import ViewTrailer from './views/ViewAnime/ViewTrailer.svelte'
   import RSSView from './views/RSSView.svelte'
   import Menubar from './components/Menubar.svelte'
-  import Toasts from './components/Toasts.svelte'
   import IspBlock from './views/IspBlock.svelte'
+  import { Toaster, toast } from 'svelte-sonner'
 
   setContext('view', view)
 
@@ -31,7 +31,7 @@
 </script>
 
 <div id='player' />
-<Toasts />
+<Toaster visibleToasts={3} position='top-right' theme='dark' richColors duration={10000} />
 <div class='page-wrapper with-sidebar with-transitions bg-dark' data-sidebar-type='overlayed-all'>
   <div class='sticky-alerts' />
   <IspBlock />

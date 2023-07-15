@@ -1,7 +1,7 @@
 <script context='module'>
   import { since } from '@/modules/util.js'
   import { set } from './Settings.svelte'
-  import { addToast } from '../components/Toasts.svelte'
+  import { toast } from 'svelte-sonner'
   import { findInCurrent } from './Player/MediaHandler.svelte'
   import getRSSEntries from '@/modules/providers/tosho.js'
   import { click } from '@/modules/click.js'
@@ -73,15 +73,19 @@
 
   async function loadRss ({ media, episode }) {
     if (!media) return
-    const entries = await getRSSEntries({ media, episode })
-    if (!entries?.length) {
-      addToast({
-        text: /* html */`Couldn't find torrent for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`,
-        title: 'Search Failed',
-        type: 'danger'
-      })
-      return
+    const promise = getRSSEntries({ media, episode })
+    toast.promise(promise, {
+      loading: `Looking for torrents for ${media.title.userPreferred} Episode ${parseInt(episode)}...`,
+      success: `Found torrents for ${media.title.userPreferred} Episode ${parseInt(episode)}.`,
+      error: `Couldn't find torrents for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`
+    })
+    let entries
+    try {
+      entries = await promise
+    } catch (e) {
+      return e
     }
+
     entries.sort((a, b) => b.seeders - a.seeders)
     if (settings.rssAutoplay) {
       const best = entries.find(entry => entry.best)
@@ -103,10 +107,8 @@
   function play (entry) {
     $media = $rss
     if (entry.seeders !== '?' && entry.seeders <= 15) {
-      addToast({
-        text: 'This release is poorly seeded and likely will have playback issues such as buffering!',
-        title: 'Availability Warning',
-        type: 'secondary'
+      toast('Availability Warning', {
+        description: 'This release is poorly seeded and likely will have playback issues such as buffering!'
       })
     }
     add(entry.link)

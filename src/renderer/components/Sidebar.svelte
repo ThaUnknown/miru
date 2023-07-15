@@ -3,7 +3,7 @@
   import { alID } from '@/modules/anilist.js'
   import { media } from '../views/Player/MediaHandler.svelte'
   import { platformMap } from '../views/Settings.svelte'
-  import { addToast } from './Toasts.svelte'
+  import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
   const view = getContext('view')
   export let page
@@ -17,11 +17,9 @@
         } else {
           window.IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
           if (platformMap[window.version.platform] === 'Linux') {
-            addToast({
-              text: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
-              title: 'Support Notification',
-              type: 'secondary',
-              duration: '300000'
+            toast('Support Notification', {
+              description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
+              duration: 300000
             })
           }
         }

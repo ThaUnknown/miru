@@ -1,6 +1,6 @@
 import { DOMPARSER } from '@/modules/util.js'
 import { set } from '@/views/Settings.svelte'
-import { addToast } from '@/components/Toasts.svelte'
+import { toast } from 'svelte-sonner'
 import { add } from '@/modules/torrent.js'
 import { resolveFileMedia, getEpisodeMetadataForMedia } from './anime.js'
 import { hasNextPage } from '@/modules/sections.js'
@@ -49,19 +49,15 @@ export async function getRSSContent (url) {
   try {
     const res = await fetch(url)
     if (!res.ok) {
-      addToast({
-        text: 'Failed fetching RSS!<br>' + res.statusText,
-        title: 'Search Failed',
-        type: 'danger'
+      toast.error('Search Failed', {
+        description: 'Failed fetching RSS!\n' + res.statusText
       })
       console.error('Failed to fetch rss', res.statusText)
     }
     return DOMPARSER(await res.text(), 'text/xml')
   } catch (e) {
-    addToast({
-      text: 'Failed fetching RSS!<br>' + e.message,
-      title: 'Search Failed',
-      type: 'danger'
+    toast.error('Search Failed', {
+      description: 'Failed fetching RSS!\n' + e.message
     })
     console.error('Failed to fetch rss', e)
   }

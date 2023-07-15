@@ -1,5 +1,6 @@
 <script context='module'>
-  import { addToast } from '../components/Toasts.svelte'
+
+  import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
   export let alToken = localStorage.getItem('ALtoken') || null
   const defaults = {
@@ -64,17 +65,14 @@
   window.IPC.on('update-available', () => {
     if (!wasUpdated) {
       wasUpdated = true
-      addToast({
-        title: 'Auto Updater',
-        text: 'A new version of Miru is available. Downloading!'
+      toast('Auto Updater', {
+        description: 'A new version of Miru is available. Downloading!'
       })
     }
   })
   window.IPC.on('update-downloaded', () => {
-    addToast({
-      title: 'Auto Updater',
-      text: 'A new version of Miru has downloaded. You can restart to update!',
-      type: 'success'
+    toast.success('Auto Updater', {
+      description: 'A new version of Miru has downloaded. You can restart to update!'
     })
   })
   function checkUpdate () {
@@ -158,10 +156,8 @@
       }
     } catch (error) {
       console.warn(error)
-      addToast({
-        text: /* html */`${error.message}<br>Try using a different font.`,
-        title: 'File Error',
-        type: 'secondary',
+      toast.error('File Error', {
+        description: `${error.message}<br>Try using a different font.`,
         duration: 8000
       })
     }

@@ -45,6 +45,8 @@ export default async function tosho ({ media, episode }) {
     found.seeders = complete
   }
 
+  if (!mapped?.length) throw new Error('no entries found')
+
   return mapped
 }
 

@@ -3,7 +3,7 @@ import { DOMPARSER, PromiseBatch, binarySearch } from './util.js'
 import { alRequest, alSearch } from './anilist.js'
 import anitomyscript from 'anitomyscript'
 import { media } from '../views/Player/MediaHandler.svelte'
-import { addToast } from '../components/Toasts.svelte'
+import { toast } from 'svelte-sonner'
 import { view } from '@/App.svelte'
 
 import { playAnime } from '../views/RSSView.svelte'
@@ -15,7 +15,17 @@ window.addEventListener('paste', ({ clipboardData }) => { // WAIT image lookup o
   const item = clipboardData.items[0]
   if (!item) return
   const { type } = item
-  if (type.startsWith('image')) return traceAnime(item.getAsFile())
+  if (type.startsWith('image')) {
+    const promise = traceAnime(item.getAsFile())
+    toast.promise(promise, {
+      description: 'You can also paste an URL to an image.',
+      loading: 'Looking up anime for image...',
+      success: 'Found anime for image!',
+      error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
+
+    })
+    return
+  }
   if (!type.startsWith('text')) return
   item.getAsString(text => {
     if (torrentRx.exec(text)) {
@@ -28,26 +38,19 @@ window.addEventListener('paste', ({ clipboardData }) => { // WAIT image lookup o
       } else if (imageRx.exec(text)) {
         src = text
       }
-      if (src) traceAnime(src)
+      if (src) {
+        const promise = traceAnime(src)
+        toast.promise(promise, {
+          description: 'You can also paste an URL to an image.',
+          loading: 'Looking up anime for image...',
+          success: 'Found anime for image!',
+          error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
+        })
+      }
     }
   })
 })
 export async function traceAnime (image) { // WAIT lookup logic
-  if (image instanceof Blob) {
-    const reader = new FileReader()
-    reader.onload = e => {
-      addToast({
-        title: 'Looking up anime for image',
-        text: /* html */`You can also paste an URL to an image!<br><img class="w-200 rounded pt-5" src="${e.target.result}">`
-      })
-    }
-    reader.readAsDataURL(image)
-  } else {
-    addToast({
-      title: 'Looking up anime for image',
-      text: /* html */`<img class="w-200 rounded pt-5" src="${image}">`
-    })
-  }
   let options
   let url = `https://api.trace.moe/search?cutBorders&url=${image}`
   if (image instanceof Blob) {
@@ -60,14 +63,12 @@ export async function traceAnime (image) { // WAIT lookup logic
   }
   const res = await fetch(url, options)
   const { result } = await res.json()
-  if (result && result[0].similarity >= 0.85) {
+  if (result?.[0].similarity >= 0.85) {
     const res = await alRequest({ method: 'SearchIDSingle', id: result[0].anilist })
     view.set(res.data.Media)
   } else {
-    addToast({
-      text: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.',
-      title: 'Search Failed',
-      type: 'danger'
+    throw new Error('Search Failed', {
+      message: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
     })
   }
 }
@@ -315,10 +316,8 @@ export async function resolveSeason (opts) {
     const obj = { media, episode: episode - offset, offset, increment, rootMedia, failed: true }
     if (!force) {
       console.warn('Error in parsing!', obj)
-      addToast({
-        text: /* html */`Failed resolving anime episode!<br>${media.title.userPreferred} - ${episode - offset}`,
-        title: 'Parsing Error',
-        type: 'secondary'
+      toast('Parsing Error', {
+        description: `Failed resolving anime episode!\n${media.title.userPreferred} - ${episode - offset}`
       })
     }
     return obj
