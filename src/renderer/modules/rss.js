@@ -5,7 +5,7 @@ import { add } from '@/modules/torrent.js'
 import { resolveFileMedia, getEpisodeMetadataForMedia } from './anime.js'
 import { hasNextPage } from '@/modules/sections.js'
 
-export const exclusions = ['DTS']
+export const exclusions = ['DTS', '[EMBER]']
 const isDev = location.hostname === 'localhost'
 
 const video = document.createElement('video')

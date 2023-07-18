@@ -14,6 +14,8 @@
     torrentPersist: false,
     torrentDHT: false,
     torrentPeX: false,
+    torrentPort: 0,
+    dhtPort: 0,
     missingFont: true,
     maxConns: 20,
     subtitleLanguage: 'eng',
@@ -163,6 +165,17 @@
       })
     }
   }
+  async function importSettings () {
+    localStorage.setItem('settings', await navigator.clipboard.readText())
+    location.reload()
+  }
+  function exportSettings () {
+    navigator.clipboard.writeText(localStorage.getItem('settings'))
+    toast('Copied to clipboard', {
+      description: 'Copied settings to clipboard',
+      duration: 5000
+    })
+  }
 </script>
 
 <Tabs>
@@ -183,19 +196,25 @@
       <button
         use:click={() => window.IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')}
         class='btn btn-primary mx-20 mt-auto'
-        type='button'
-        data-toggle='tooltip'
-        data-placement='top'
-        data-title='Opens The Donate Site'>
+        type='button'>
         Donate
+      </button>
+      <button
+        use:click={importSettings}
+        class='btn btn-primary mx-20 mt-10'
+        type='button'>
+        Import Settings From Clipboard
+      </button>
+      <button
+        use:click={exportSettings}
+        class='btn btn-primary mx-20 mt-10'
+        type='button'>
+        Export Settings To Clipboard
       </button>
       <button
         use:click={checkUpdate}
         class='btn btn-primary mx-20 mt-10'
-        type='button'
-        data-toggle='tooltip'
-        data-placement='top'
-        data-title='Checks For Available Updates And Notifies The User'>
+        type='button'>
         Check For Updates
       </button>
       <button
@@ -448,6 +467,26 @@
               <span class='input-group-text w-200 justify-content-center'>Max Connections</span>
             </div>
             <input type='number' bind:value={settings.maxConns} min='1' max='512' class='form-control text-right form-control-lg' />
+          </div>
+          <div
+            class='input-group w-300 form-control-lg mb-10'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title='Port Used For DHT Connections. 0 Is Automatic'>
+            <div class='input-group-prepend'>
+              <span class='input-group-text w-150 justify-content-center'>DHT Port</span>
+            </div>
+            <input type='number' bind:value={settings.dhtPort} min='0' max='65536' class='form-control text-right form-control-lg' />
+          </div>
+          <div
+            class='input-group w-300 form-control-lg mb-10'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title='Port Used For Torrent Connections. 0 Is Automatic'>
+            <div class='input-group-prepend'>
+              <span class='input-group-text w-150 justify-content-center'>Torrent Port</span>
+            </div>
+            <input type='number' bind:value={settings.torrentPort} min='0' max='65536' class='form-control text-right form-control-lg' />
           </div>
           <div
             class='custom-switch mb-10 pl-10 font-size-16 w-300'

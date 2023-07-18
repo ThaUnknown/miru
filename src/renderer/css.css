@@ -21,6 +21,7 @@
   --gray-color-light: hsl(var(--gray-color-light-hsl));
   --gray-color-light-hsl: var(--gray-color-base-hue), 10%, 28%;
   --gray-color-base-hue: 216;
+  color-scheme: dark;
 }
 
 .btn-secondary {
