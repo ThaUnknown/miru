@@ -26,6 +26,7 @@
 .btn-secondary {
   --dm-button-secondary-bg-color: #fff !important;
   --dm-button-secondary-bg-color-hover: #ddd !important;
+  --dm-button-secondary-bg-color-focus: var(--dm-button-secondary-bg-color) !important;
 }
 
 [data-sonner-toaster][data-theme='dark'] {

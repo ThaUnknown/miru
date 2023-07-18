@@ -7,7 +7,7 @@ import { client } from '@/modules/torrent.js'
 
 import anitomyscript from 'anitomyscript'
 
-export default async function tosho ({ media, episode }) {
+export default async function ({ media, episode }) {
   const json = await getAniDBFromAL(media)
 
   if (!json) return []
@@ -45,12 +45,10 @@ export default async function tosho ({ media, episode }) {
     found.seeders = complete
   }
 
-  if (!mapped?.length) throw new Error('no entries found')
+  if (!mapped?.length) throw new Error('No entries found.')
 
   return mapped
 }
-
-window.tosho = tosho
 
 async function getAniDBFromAL (media) {
   console.log('getting AniDB ID from AL')

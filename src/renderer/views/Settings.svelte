@@ -305,6 +305,7 @@
               <option value='rum'>Romanian</option>
               <option value='slo'>Slovak</option>
               <option value='swe'>Swedish</option>
+              <option value='ara'>Arabic</option>
             </select>
           </div>
           <div class='input-group mb-10 w-400 form-control-lg' data-toggle='tooltip' data-placement='top' data-title='What Audio Language To Automatically Select, If Not Found Defaults To Japanese'>
@@ -332,6 +333,7 @@
               <option value='rum'>Romanian</option>
               <option value='slo'>Slovak</option>
               <option value='swe'>Swedish</option>
+              <option value='ara'>Arabic</option>
             </select>
           </div>
         </div>

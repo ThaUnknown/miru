@@ -798,7 +798,7 @@
 
   let completed = false
   function checkCompletion () {
-    if (!completed) {
+    if (!completed && set.playerAutocomplete) {
       const fromend = Math.max(180, safeduration / 10)
       if (safeduration && currentTime && video?.readyState && safeduration - fromend < currentTime) {
         if (media?.media?.episodes || media?.media?.nextAiringEpisode?.episode) {

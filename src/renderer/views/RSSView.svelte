@@ -77,7 +77,11 @@
     toast.promise(promise, {
       loading: `Looking for torrents for ${media.title.userPreferred} Episode ${parseInt(episode)}...`,
       success: `Found torrents for ${media.title.userPreferred} Episode ${parseInt(episode)}.`,
-      error: `Couldn't find torrents for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.`
+      error: err => {
+        console.error(err)
+        return `Couldn't find torrents for ${media.title.userPreferred} Episode ${parseInt(episode)}! Try specifying a torrent manually.\n${err.message}`
+      }
+
     })
     let entries
     try {
