@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "4.2.4",
+  "version": "4.2.5",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
@@ -51,7 +51,7 @@
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1",
-    "webtorrent": "^2.1.12"
+    "webtorrent": "^2.1.13"
   },
   "dependencies": {
     "utp-native": "^2.5.3"

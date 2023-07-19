@@ -130,7 +130,10 @@
     index: 0
   }
 
-  window.IPC.on('w2glink', joinLobby)
+  window.IPC.on('w2glink', () => {
+    joinLobby()
+    page.set('watchtogether')
+  })
 
   function cleanup () {
     state.set(false)

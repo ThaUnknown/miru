@@ -39,6 +39,10 @@ class TorrentClient extends WebTorrent {
     this.trackers = {
       cat: new HTTPTracker({}, atob('aHR0cDovL255YWEudHJhY2tlci53Zjo3Nzc3L2Fubm91bmNl'))
     }
+
+    this.on('error', e => {
+      this.dispatch('error', e)
+    })
   }
 
   handleTorrent (torrent) {

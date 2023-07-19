@@ -1,6 +1,7 @@
 import { set } from '../views/Settings.svelte'
 import { files } from '../views/Player/MediaHandler.svelte'
 import { page } from '@/App.svelte'
+import { toast } from 'svelte-sonner'
 import 'browser-event-target-emitter'
 
 class TorrentWorker extends EventTarget {
@@ -33,6 +34,11 @@ client.send('settings', { ...set })
 
 client.on('files', ({ detail }) => {
   files.set(detail)
+})
+
+client.on('error', ({ detail }) => {
+  console.error(detail)
+  toast.error('Torrent Error', { description: detail.message || detail })
 })
 
 export async function add (torrentID, hide) {
