@@ -23,7 +23,7 @@
   import RSSView from './views/RSSView.svelte'
   import Menubar from './components/Menubar.svelte'
   import IspBlock from './views/IspBlock.svelte'
-  import { Toaster, toast } from 'svelte-sonner'
+  import { Toaster } from 'svelte-sonner'
 
   setContext('view', view)
 

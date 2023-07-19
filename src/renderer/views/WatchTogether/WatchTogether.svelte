@@ -130,8 +130,8 @@
     index: 0
   }
 
-  window.IPC.on('w2glink', () => {
-    joinLobby()
+  window.IPC.on('w2glink', link => {
+    joinLobby(link)
     page.set('watchtogether')
   })
 
@@ -163,6 +163,7 @@
     if (!invite) return
     const match = invite?.match(inviteRx)?.[1]
     if (!match) return
+    console.log(match)
     page.set('watchtogether')
     joinLobby(match)
     joinText = ''
