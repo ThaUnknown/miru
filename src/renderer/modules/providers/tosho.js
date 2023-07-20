@@ -54,7 +54,7 @@ async function getAniDBFromAL (media) {
   console.log('getting AniDB ID from AL')
   const mappingsResponse = await fetch('https://api.ani.zip/mappings?anilist_id=' + media.id)
   const json = await mappingsResponse.json()
-  if (json.mappings.anidb_id) return json
+  if (json.mappings?.anidb_id) return json
 
   console.log('failed getting AniDB ID, checking via parent')
 
@@ -135,10 +135,14 @@ async function getToshoEntries (media, episode, { mappings }, quality) {
       if (courRelation) {
         console.log('found split cour!')
         const episodeCount = (media.episodes || 0) + (courRelation.episodes || 0)
-        const mappingsResponse = await fetch('https://api.ani.zip/mappings?anilist_id=' + courRelation.id)
-        const json = await mappingsResponse.json()
-        console.log('found mappings for split cour', !!json.mappings.anidb_id)
-        if (json.mappings.anidb_id) promises.push(fetchBatches({ episodeCount, id: json.mappings.anidb_id, quality }))
+        try {
+          const mappingsResponse = await fetch('https://api.ani.zip/mappings?anilist_id=' + courRelation.id)
+          const json = await mappingsResponse.json()
+          console.log('found mappings for split cour', !!json.mappings.anidb_id)
+          if (json.mappings.anidb_id) promises.push(fetchBatches({ episodeCount, id: json.mappings.anidb_id, quality }))
+        } catch (e) {
+          console.error('failed getting split-cour data', e)
+        }
       }
     }
   }
@@ -182,7 +186,7 @@ function getCourSequel (media) {
     if (!['OVA', 'TV'].some(format => node.format === format)) return false // not movies or ona's
     if (mediaDate > getMediaDate(node)) return false // node needs to be released after media to be a sequel
     return isTitleSplitCour(node)
-  })
+  }).map(({ node }) => node)
 
   if (!animeRelations.length) return false
 
@@ -233,27 +237,37 @@ function buildQuery (quality) {
 }
 
 async function fetchBatches ({ episodeCount, id, quality, movie }) {
-  const queryString = buildQuery(quality)
-  const torrents = await fetch(set.toshoURL + 'json?order=size-d&aid=' + id + queryString)
+  try {
+    const queryString = buildQuery(quality)
+    const torrents = await fetch(set.toshoURL + 'json?order=size-d&aid=' + id + queryString)
 
-  // safe if AL includes EP 0 or doesn't
-  const batches = (await torrents.json()).filter(entry => entry.num_files >= episodeCount)
-  if (!movie) {
-    for (const batch of batches) {
-      batch.batch = true
+    // safe if AL includes EP 0 or doesn't
+    const batches = (await torrents.json()).filter(entry => entry.num_files >= episodeCount)
+    if (!movie) {
+      for (const batch of batches) {
+        batch.batch = true
+      }
     }
+    console.log({ batches })
+    return batches
+  } catch (error) {
+    console.log('failed fetching batch', error)
+    return []
   }
-  console.log({ batches })
-  return batches
 }
 
 async function fetchSingleEpisode ({ id, quality }) {
-  const queryString = buildQuery(quality)
-  const torrents = await fetch(set.toshoURL + 'json?eid=' + id + queryString)
+  try {
+    const queryString = buildQuery(quality)
+    const torrents = await fetch(set.toshoURL + 'json?eid=' + id + queryString)
 
-  const episodes = await torrents.json()
-  console.log({ episodes })
-  return episodes
+    const episodes = await torrents.json()
+    console.log({ episodes })
+    return episodes
+  } catch (error) {
+    console.log('failed fetching single episode', error)
+    return []
+  }
 }
 
 function mapTosho2dDeDupedEntry (entries) {
