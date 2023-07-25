@@ -82,6 +82,8 @@
         otherFiles.push(file)
       }
     }
+    let nowPlaying = get(media)
+
     const resolved = await resolveFileMedia(videoFiles.map(file => file.name))
 
     videoFiles.map(file => {
@@ -91,9 +93,13 @@
 
     videoFiles = videoFiles.filter(file => !TYPE_EXCLUSIONS.includes(file.media.parseObject.anime_type))
 
-    console.info('MediaHandler: resolved video files', { videoFiles })
+    if (nowPlaying?.verified && videoFiles.length === 1) {
+      console.info('Media was verified, skipping verification')
+      videoFiles[0].media.media = nowPlaying.media
+      if (nowPlaying.episode) videoFiles[0].media.episode = nowPlaying.episode
+    }
 
-    let nowPlaying = get(media)
+    console.info('MediaHandler: resolved video files', { videoFiles })
 
     if (!nowPlaying) {
       const max = highestOccurence(videoFiles, file => file.media.media?.id).media

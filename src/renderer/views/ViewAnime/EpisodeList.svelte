@@ -1,6 +1,9 @@
 <script>
   import { since } from '@/modules/util'
   import { click } from '@/modules/click.js'
+  import { getEpisodeNumberByAirDate } from '@/modules/providers/tosho.js'
+  import { alRequest } from '@/modules/anilist'
+  import { media } from '../Player/MediaHandler.svelte'
 
   export let id
 
@@ -14,15 +17,18 @@
 
   const episodeList = Array.from({ length: episodeCount }, (_, i) => ({ episode: i + 1 }))
   async function load () {
+    const episodesPromise = alRequest({ method: 'Episodes', id })
     const res = await fetch('https://api.ani.zip/mappings?anilist_id=' + id)
-    const { episodes } = await res.json()
-    for (const { episode, image, summary, rating, title, length, airdate } of Object.values(episodes)) {
-      const episodeNumber = Number(episode)
-      if (!episodeNumber) continue
+    const { episodes, specialCount, episodeCount } = await res.json()
+    const settled = (await episodesPromise).data.Page?.airingSchedules
+    const alEpisodes = settled?.length ? settled : episodeList
+    for (const { episode, airingAt } of alEpisodes) {
+      const airdate = new Date((airingAt || 0) * 1000)
 
-      // TODO: AL airing times
+      const needsValidation = !(!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)]))
+      const { image, summary, rating, title, length } = needsValidation ? getEpisodeNumberByAirDate(airdate, episodes, episode) : (episodes[Number(episode)] || {})
 
-      episodeList[episodeNumber - 1] = { episode: episodeNumber, image, summary, rating, title, length: length || duration, airdate }
+      episodeList[episode - 1] = { episode, image, summary, rating, title, length: length || duration, airdate }
     }
   }
   load()
@@ -31,11 +37,11 @@
 {#each episodeList as { episode, image, summary, rating, title, length, airdate }}
   {@const completed = userProgress >= episode}
   {@const target = userProgress + 1 === episode}
-  <div class='w-full my-20 content-visibility-auto scale' class:px-20={!target} class:h-150={image || summary} use:click={() => play(episode)}>
-    <div class='rounded w-full h-full overflow-hidden d-flex flex-row pointer' class:bg-dark-light={completed} class:bg-dark={!completed}>
+  <div class='w-full my-20 content-visibility-auto scale' class:opacity-half={completed} class:px-20={!target} class:h-150={image || summary} use:click={() => play(episode)}>
+    <div class='rounded w-full h-full overflow-hidden d-flex flex-row pointer' class:border={target} class:bg-black={completed} class:bg-dark={!completed}>
       {#if image}
         <div class='w-450 h-full'>
-          <img alt='thumbnail' src={image} class='img-cover h-full w-full' class:opacity-half={completed} />
+          <img alt='thumbnail' src={image} class='img-cover h-full w-full' />
         </div>
       {/if}
       <div class='h-full w-full px-20 py-15 d-flex flex-column'>
@@ -69,7 +75,7 @@
 
 <style>
   .opacity-half {
-    opacity: 50%;
+    opacity: 30%;
   }
   .title {
     display: -webkit-box !important;
@@ -81,5 +87,8 @@
   }
   .scale:hover{
     transform: scale(1.05);
+  }
+  .border {
+    --dm-border-color: white
   }
 </style>

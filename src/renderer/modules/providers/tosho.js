@@ -89,6 +89,10 @@ async function getAniDBEpisodeFromAL ({ media, episode }, { episodes, episodeCou
   const res = await alRequest({ method: 'EpisodeDate', id: media.id, ep: episode })
   const alDate = new Date((res.data.AiringSchedule?.airingAt || 0) * 1000)
 
+  return getEpisodeNumberByAirDate(alDate, episodes, episode)
+}
+
+export function getEpisodeNumberByAirDate (alDate, episodes, episode) {
   if (!+alDate) return episodes[Number(episode)] || episodes[1] // what the fuck, are you braindead anilist?, the source episode number to play is from an array created from AL ep count, so how come it's missing?
 
   // find closest episodes by air date, multiple episodes can have the same air date distance

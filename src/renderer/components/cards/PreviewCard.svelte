@@ -45,9 +45,13 @@
     if (media.status === 'NOT_YET_RELEASED') return
     playMedia(media)
   }
-  // TODO: add a volume toggle icon for trailer
+
   function volume (video) {
-    video.volume = 0.05
+    video.volume = 0.1
+  }
+  let muted = true
+  function toggleMute () {
+    muted = !muted
   }
 </script>
 
@@ -55,16 +59,17 @@
   <div class='banner position-relative overflow-hidden bg-black'>
     <img src={media.bannerImage || ' '} alt='banner' class='img-cover w-full h-full' />
     {#if media.trailer?.id}
+      <div class='material-symbols-outlined filled position-absolute z-10 top-0 right-0 p-15 font-size-22' class:d-none={hide} use:click={toggleMute}>{muted ? 'volume_off' : 'volume_up'}</div>
       <!-- for now we use some invidious instance, would be nice to somehow get these links outselves, this redirects straight to some google endpoint -->
-      <!-- `https://yewtu.be/latest_version?id=${media.trailer.id}&itag=18` -->
       <!-- eslint-disable-next-line svelte/valid-compile -->
-      <video src={`https://proxy2.vnxservers.com/youtube/${media.trailer.id}`}
+      <video src={`https://yewtu.be/latest_version?id=${media.trailer.id}&itag=18`}
         class='w-full position-absolute left-0'
         class:d-none={hide}
         playsinline
         preload='none'
         loop
-        muted
+        use:volume
+        bind:muted
         on:loadeddata={() => { hide = false }}
         autoplay />
       <!-- <iframe
@@ -150,7 +155,7 @@
     position: absolute;
     left: 0 ; bottom: 0;
     width: 100%; height: 100% ;
-    background: linear-gradient(180deg, #0000 0%, #25292faa 76%, #25292f 97%, #25292f 100%);
+    background: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292fe3 95%, #25292f 100%);
   }
   @keyframes load-in {
     from {

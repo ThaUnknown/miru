@@ -415,6 +415,17 @@ query($page: Int, $perPage: Int, $from: Int, $to: Int){
   }
 }`
       break
+    } case 'Episodes': {
+      query = /* js */` 
+query($id: Int){
+  Page(page: 1, perPage: 1000){
+    airingSchedules(mediaId: $id){
+      airingAt,
+      episode
+    }
+  }
+}`
+      break
     } case 'Search': {
       variables.sort = opts.sort || 'SEARCH_MATCH'
       query = /* js */` 

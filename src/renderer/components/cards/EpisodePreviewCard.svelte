@@ -97,7 +97,7 @@
     position: absolute;
     left: 0 ; bottom: 0;
     width: 100%; height: 100%;
-    background: linear-gradient(180deg, #0000 0%, #0000 76%, #25292fdd 97%, #25292f);
+    background: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292f 95%, #25292f 100%);
   }
   .list-status-circle {
     background: var(--statusColor);

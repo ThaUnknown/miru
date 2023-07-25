@@ -93,7 +93,7 @@
     entries.sort((a, b) => b.seeders - a.seeders)
     if (settings.rssAutoplay) {
       const best = entries.find(entry => entry.best)
-      if (best?.seeders > 20) { // only play best if it actually has a lot of seeders, 20 might be too little for those overkill blurays
+      if (best?.seeders >= 15) { // only play best if it actually has a lot of seeders, 20 might be too little for those overkill blurays
         play(best)
       } else {
         play(entries[0])
@@ -110,7 +110,8 @@
   }
   function play (entry) {
     $media = $rss
-    if (entry.seeders !== '?' && entry.seeders <= 15) {
+    $media.verified = entry.verified
+    if (entry.seeders !== '?' && entry.seeders < 15) {
       toast('Availability Warning', {
         description: 'This release is poorly seeded and likely will have playback issues such as buffering!'
       })

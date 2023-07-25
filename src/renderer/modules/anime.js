@@ -29,8 +29,8 @@ window.addEventListener('paste', ({ clipboardData }) => { // WAIT image lookup o
   if (!type.startsWith('text')) return
   item.getAsString(text => {
     if (torrentRx.exec(text)) {
-      add(text)
       media.set(null)
+      add(text)
     } else {
       let src = null
       if (type === 'text/html') {
