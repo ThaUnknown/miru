@@ -58,6 +58,9 @@ devDependencies:
   electron-updater:
     specifier: ^6.1.1
     version: 6.1.1
+  env-paths:
+    specifier: ^3.0.0
+    version: 3.0.0
   eslint:
     specifier: ^8.45.0
     version: 8.45.0
@@ -2480,6 +2483,11 @@ packages:
   /env-paths@2.2.1:
     resolution: {integrity: sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==}
     engines: {node: '>=6'}
+    dev: true
+
+  /env-paths@3.0.0:
+    resolution: {integrity: sha512-dtJUTepzMW3Lm/NPxRf3wP4642UWhjL2sQxc+ym2YMj1m/H2zDNQOlezafzkHwn6sMstjHTwG6iQQsctDW/b1A==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     dev: true
 
   /envinfo@7.10.0:

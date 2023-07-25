@@ -4,6 +4,8 @@ import { ipcRenderer } from 'electron'
 import { pipeline } from 'streamx'
 import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
 import { hex2bin, bin2hex, arr2text, hex2arr } from 'uint8-util'
+import envPaths from 'env-paths'
+import { mkdirSync } from 'node:fs'
 
 class TorrentClient extends WebTorrent {
   constructor (settings) {
@@ -219,9 +221,13 @@ class TorrentClient extends WebTorrent {
 let client = null
 let message = null
 
+const cacheDir = envPaths("miru").cache
+mkdirSync(cacheDir, { recursive: true })
+
 ipcRenderer.on('port', (e) => {
   e.ports[0].onmessage = ({ data }) => {
     const cloned = structuredClone(data)
+    if (cloned.type === 'settings' && !cloned.data.torrentPath) cloned.data.torrentPath = cacheDir
     if (!client && cloned.type === 'settings') window.client = client = new TorrentClient(cloned.data)
     if (cloned.type === 'destroy') client?.predestroy()
 
