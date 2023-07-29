@@ -5,15 +5,14 @@
   import { platformMap, set } from '../views/Settings.svelte'
   import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
+  import { logout } from './Logout.svelte'
   const view = getContext('view')
   export let page
   const links = [
     {
       click: () => {
         if (alID) {
-          localStorage.removeItem('ALtoken')
-          location.hash = ''
-          location.reload()
+          $logout = true
         } else {
           window.IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
           if (platformMap[window.version.platform] === 'Linux') {

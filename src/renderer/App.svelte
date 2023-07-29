@@ -23,6 +23,7 @@
   import Menubar from './components/Menubar.svelte'
   import IspBlock from './views/IspBlock.svelte'
   import { Toaster } from 'svelte-sonner'
+  import Logout from './components/Logout.svelte'
 
   setContext('view', view)
 </script>
@@ -32,6 +33,7 @@
   <IspBlock />
   <Menubar bind:page={$page} />
   <ViewAnime />
+  <Logout />
   <Sidebar bind:page={$page} />
   <div class='overflow-hidden content-wrapper h-full z-10'>
     <RSSView />
