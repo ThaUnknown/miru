@@ -87,6 +87,7 @@ async function getAniDBEpisodeFromAL ({ media, episode }, { episodes, episodeCou
   if (!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)])) return episodes[Number(episode)]
   console.log('EP count doesn\'t match, checking by air date')
   const res = await alRequest({ method: 'EpisodeDate', id: media.id, ep: episode })
+  // TODO: if media only has one episode, and airdate doesn't exist use start/release/end dates
   const alDate = new Date((res.data.AiringSchedule?.airingAt || 0) * 1000)
 
   return getEpisodeNumberByAirDate(alDate, episodes, episode)

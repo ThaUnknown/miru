@@ -19,28 +19,22 @@
   import Sidebar from './components/Sidebar.svelte'
   import Router from './Router.svelte'
   import ViewAnime from './views/ViewAnime/ViewAnime.svelte'
-  import ViewTrailer from './views/ViewAnime/ViewTrailer.svelte'
   import RSSView from './views/RSSView.svelte'
   import Menubar from './components/Menubar.svelte'
   import IspBlock from './views/IspBlock.svelte'
   import { Toaster } from 'svelte-sonner'
 
   setContext('view', view)
-
-  setContext('trailer', writable(null))
 </script>
 
-<div id='player' />
 <Toaster visibleToasts={3} position='top-right' theme='dark' richColors duration={10000} />
 <div class='page-wrapper with-sidebar with-transitions bg-dark' data-sidebar-type='overlayed-all'>
-  <div class='sticky-alerts' />
   <IspBlock />
   <Menubar bind:page={$page} />
   <ViewAnime />
-  <ViewTrailer />
-  <RSSView />
   <Sidebar bind:page={$page} />
   <div class='overflow-hidden content-wrapper h-full z-10'>
+    <RSSView />
     <Router bind:page={$page} />
   </div>
 </div>
@@ -52,7 +46,9 @@
   }
 
   .page-wrapper > .content-wrapper {
-    left: var(--sidebar-minimised) !important;
+    margin-left: var(--sidebar-minimised) !important;
+    position: unset !important;
     width: calc(100% - var(--sidebar-minimised)) !important;
+    transition: none !important;
   }
 </style>

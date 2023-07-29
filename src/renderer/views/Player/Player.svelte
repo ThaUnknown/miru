@@ -254,7 +254,7 @@
     }
   }
   function toggleFullscreen () {
-    document.fullscreenElement ? document.exitFullscreen() : container.requestFullscreen()
+    document.fullscreenElement ? document.exitFullscreen() : document.querySelector('.content-wrapper').requestFullscreen()
   }
   function skip () {
     const current = findChapter(currentTime)
