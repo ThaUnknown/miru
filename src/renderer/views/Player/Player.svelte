@@ -338,6 +338,12 @@
       })
     }
   }
+  function updatePiPState (paused) {
+    if (!document.pictureInPictureElement || document.pictureInPictureElement.id) return
+    if (paused) document.pictureInPictureElement.pause()
+    else document.pictureInPictureElement.play()
+  }
+  $: updatePiPState(paused)
   function togglePopout () {
     if (video.readyState) {
       if (!subs?.renderer) {
