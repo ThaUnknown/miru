@@ -28,7 +28,6 @@
   setContext('view', view)
 </script>
 
-<Toaster visibleToasts={3} position='top-right' theme='dark' richColors duration={10000} />
 <div class='page-wrapper with-sidebar with-transitions bg-dark' data-sidebar-type='overlayed-all'>
   <IspBlock />
   <Menubar bind:page={$page} />
@@ -36,6 +35,7 @@
   <Logout />
   <Sidebar bind:page={$page} />
   <div class='overflow-hidden content-wrapper h-full z-10'>
+    <Toaster visibleToasts={3} position='top-right' theme='dark' richColors duration={10000} />
     <RSSView />
     <Router bind:page={$page} />
   </div>

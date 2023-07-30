@@ -50,6 +50,8 @@
       canScroll = true
     }
   }
+  if ($search.clearNext) $search = {}
+  if ($search.disableSearch) $search.clearNext = true
 </script>
 
 <div class='h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden px-50 justify-content-center align-content-start' use:smoothScroll use:loadTillFull on:scroll={infiniteScroll}>
