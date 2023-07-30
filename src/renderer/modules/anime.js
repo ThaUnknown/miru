@@ -219,6 +219,8 @@ function getParseObjTitle (obj) {
   return title
 }
 
+window.xd = resolveFileMedia
+
 // TODO: anidb aka true episodes need to be mapped to anilist episodes a bit better
 export async function resolveFileMedia (fileName) {
   let parseObjs = await anitomyscript(fileName)
@@ -245,11 +247,12 @@ export async function resolveFileMedia (fileName) {
             // this is most likely safe, if it was relative episodes then it would likely use an accurate title for the season
             // if they didnt use an accurate title then its likely an absolute numbering scheme
             // parent check is to break out of those incorrectly resolved OVA's
-            const prequel = findEdge(media, 'PREQUEL')?.node || ((media.format === 'OVA' || media.format === 'ONA') && findEdge(media, 'PARENT')?.node)
+            // if we used anime season to resolve anime name, then there's no need to march into prequel!
+            const prequel = !parseObj.anime_season && (findEdge(media, 'PREQUEL')?.node || ((media.format === 'OVA' || media.format === 'ONA') && findEdge(media, 'PARENT')?.node))
             const root = prequel && (await resolveSeason({ media: (await alRequest({ method: 'SearchIDSingle', id: prequel.id })).data.Media, force: true })).media
 
             // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
-            const result = await resolveSeason({ media: root || media, episode: parseObj.episode_number[1] })
+            const result = await resolveSeason({ media: root || media, episode: parseObj.episode_number[1], increment: !parseObj.anime_season ? null : true })
             media = result.rootMedia
             const diff = parseObj.episode_number[1] - result.episode
             episode = `${parseObj.episode_number[0] - diff} ~ ${result.episode}`
@@ -262,11 +265,11 @@ export async function resolveFileMedia (fileName) {
       } else {
         if (maxep && parseInt(parseObj.episode_number) > maxep) {
           // see big comment above
-          const prequel = findEdge(media, 'PREQUEL')?.node || ((media.format === 'OVA' || media.format === 'ONA') && findEdge(media, 'PARENT')?.node)
+          const prequel = !parseObj.anime_season && (findEdge(media, 'PREQUEL')?.node || ((media.format === 'OVA' || media.format === 'ONA') && findEdge(media, 'PARENT')?.node))
           const root = prequel && (await resolveSeason({ media: (await alRequest({ method: 'SearchIDSingle', id: prequel.id })).data.Media, force: true })).media
 
           // value bigger than episode count
-          const result = await resolveSeason({ media: root || media, episode: parseInt(parseObj.episode_number) })
+          const result = await resolveSeason({ media: root || media, episode: parseInt(parseObj.episode_number), increment: !parseObj.anime_season ? null : true })
           media = result.rootMedia
           episode = result.episode
           failed = result.failed
