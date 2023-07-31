@@ -5,6 +5,7 @@
   export const search = writable({})
 
   const items = writable([])
+  export const key = writable({})
 </script>
 
 <script>
@@ -13,12 +14,11 @@
   import { hasNextPage } from '@/modules/sections.js'
   import smoothScroll from '@/modules/scroll.js'
   import { debounce } from '@/modules/util.js'
+  import { onDestroy, onMount } from 'svelte'
 
   let page = 0
   items.value = []
-  hasNextPage.value = true
-
-  let key = {}
+  let container = null
 
   function loadSearchData () {
     const load = $search.load || Sections.createFallbackLoad()
@@ -27,17 +27,24 @@
     return nextData[nextData.length - 1].data
   }
   const update = debounce(() => {
-    page = 0
-    items.value = []
-    key = {}
-    loadSearchData()
+    $key = {}
   }, 300)
+
+  $: loadTillFull($key)
 
   let canScroll = true
 
-  async function loadTillFull (element) {
+  async function loadTillFull () {
+    if (!container) return
+    const cachedKey = $key
     canScroll = false
-    while (hasNextPage.value && element.scrollHeight <= element.clientHeight) {
+    page = 0
+    items.value = []
+    hasNextPage.value = true
+    await loadSearchData()
+    // eslint-disable-next-line no-unmodified-loop-condition
+    while (hasNextPage.value && container && cachedKey === $key && container.scrollHeight <= container.clientHeight) {
+      canScroll = false
       await loadSearchData()
     }
     canScroll = true
@@ -50,13 +57,15 @@
       canScroll = true
     }
   }
-  if ($search.clearNext) $search = {}
-  if ($search.disableSearch) $search.clearNext = true
+  onDestroy(() => {
+    if ($search.clearNext || $search.disableSearch) $search = {}
+  })
+  onMount(loadTillFull)
 </script>
 
-<div class='h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden px-50 justify-content-center align-content-start' use:smoothScroll use:loadTillFull on:scroll={infiniteScroll}>
+<div class='h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden px-50 justify-content-center align-content-start' use:smoothScroll bind:this={container} on:scroll={infiniteScroll}>
   <Search bind:search={$search} on:input={update} />
-  {#key key}
+  {#key $key}
     {#each $items as card}
       <Card {card} />
     {/each}

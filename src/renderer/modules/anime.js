@@ -4,7 +4,10 @@ import { alRequest, alSearch } from './anilist.js'
 import anitomyscript from 'anitomyscript'
 import { media } from '../views/Player/MediaHandler.svelte'
 import { toast } from 'svelte-sonner'
-import { view } from '@/App.svelte'
+import Sections from './sections.js'
+import { page } from '@/App.svelte'
+
+import { search, key } from '@/views/Search.svelte'
 
 import { playAnime } from '../views/RSSView.svelte'
 
@@ -16,13 +19,11 @@ window.addEventListener('paste', ({ clipboardData }) => { // WAIT image lookup o
   if (!item) return
   const { type } = item
   if (type.startsWith('image')) {
-    const promise = traceAnime(item.getAsFile())
-    toast.promise(promise, {
+    toast.promise(traceAnime(item.getAsFile()), {
       description: 'You can also paste an URL to an image.',
       loading: 'Looking up anime for image...',
       success: 'Found anime for image!',
       error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
-
     })
     return
   }
@@ -39,8 +40,7 @@ window.addEventListener('paste', ({ clipboardData }) => { // WAIT image lookup o
         src = text
       }
       if (src) {
-        const promise = traceAnime(src)
-        toast.promise(promise, {
+        toast.promise(traceAnime(src), {
           description: 'You can also paste an URL to an image.',
           loading: 'Looking up anime for image...',
           success: 'Found anime for image!',
@@ -63,9 +63,34 @@ export async function traceAnime (image) { // WAIT lookup logic
   }
   const res = await fetch(url, options)
   const { result } = await res.json()
-  if (result?.[0].similarity >= 0.85) {
-    const res = await alRequest({ method: 'SearchIDSingle', id: result[0].anilist })
-    view.set(res.data.Media)
+
+  if (result?.length) {
+    const ids = result.map(({ anilist }) => anilist)
+    search.value = {
+      clearNext: true,
+      load: (page = 1, perPage = 50, variables = {}) => {
+        const res = alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...Sections.sanitiseObject(variables) }).then(res => {
+          for (const index in res.data?.Page?.media) {
+            const media = res.data.Page.media[index]
+            const counterpart = result.find(({ anilist }) => anilist === media.id)
+            res.data.Page.media[index] = {
+              media,
+              episode: counterpart.episode,
+              similarity: counterpart.similarity,
+              episodeData: {
+                image: counterpart.image,
+                video: counterpart.video
+              }
+            }
+          }
+          res.data?.Page?.media.sort((a, b) => b.similarity - a.similarity)
+          return res
+        })
+        return Sections.wrapResponse(res, result.length, 'episode')
+      }
+    }
+    key.value = {}
+    page.value = 'search'
   } else {
     throw new Error('Search Failed', {
       message: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'

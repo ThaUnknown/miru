@@ -1,6 +1,6 @@
 <script context='module'>
   import { setContext } from 'svelte'
-  import { writable } from 'svelte/store'
+  import { writable } from 'simple-store-svelte'
   import { alRequest } from '@/modules/anilist.js'
 
   export const page = writable('home')

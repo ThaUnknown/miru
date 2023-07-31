@@ -6,11 +6,23 @@
   const media = data.media
 
   const episodeThumbnail = data.episodeData?.image || media?.bannerImage || media?.coverImage.extraLarge || ' '
+  let hide = true
 </script>
 
 <div class='position-absolute w-400 mh-400 absolute-container top-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer d-flex flex-column'>
   <div class='image h-200 w-full position-relative d-flex justify-content-between align-items-end text-white' class:bg-black={episodeThumbnail === ' '}>
     <img loading='lazy' src={episodeThumbnail} alt='cover' class='img-cover w-full h-full position-absolute' style:--color={media?.coverImage.color || '#1890ff'} />
+    {#if data.episodeData?.video}
+      <video src={data.episodeData.video}
+        class='w-full position-absolute left-0'
+        class:d-none={hide}
+        playsinline
+        preload='none'
+        loop
+        muted
+        on:loadeddata={() => { hide = false }}
+        autoplay />
+    {/if}
     <div class='pl-15 pb-10 material-symbols-outlined filled z-10'>play_arrow</div>
     <div class='pr-20 pb-10 font-size-16 font-weight-medium z-10'>
       {#if media?.duration}
@@ -27,8 +39,8 @@
           {/if}
           {data.media?.title.userPreferred || data.parseObject.anime_title}
         </div>
-        <div class='text-muted font-size-12 title overflow-hidden' title={data.episodeData?.title.en}>
-          {data.episodeData?.title.en || ''}
+        <div class='text-muted font-size-12 title overflow-hidden' title={data.episodeData?.title?.en}>
+          {data.episodeData?.title?.en || ''}
         </div>
       </div>
       {#if data.episode}
@@ -36,9 +48,15 @@
           <div class='text-white font-weight-bold'>
             Episode {data.episode}
           </div>
-          <div class='text-muted font-size-12 title overflow-hidden'>
-            {since(data.date)}
-          </div>
+          {#if data.date}
+            <div class='text-muted font-size-12 title overflow-hidden'>
+              {since(data.date)}
+            </div>
+          {:else if data.similarity}
+            <div class='text-muted font-size-12 title overflow-hidden'>
+              {parseInt(data.similarity * 100)}%
+            </div>
+          {/if}
         </div>
       {/if}
     </div>

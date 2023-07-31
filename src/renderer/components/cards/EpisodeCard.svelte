@@ -3,14 +3,20 @@
   import EpisodePreviewCard from './EpisodePreviewCard.svelte'
   import { hoverClick } from '@/modules/click.js'
   import { since } from '@/modules/util'
+  import { getContext } from 'svelte'
   export let data
 
   let preview = false
 
   const episodeThumbnail = data.episodeData?.image || data.media?.bannerImage || data.media?.coverImage?.extraLarge || ' '
+
+  const view = getContext('view')
+  function viewMedia () {
+    $view = data.media
+  }
 </script>
 
-<div class='d-flex p-20 pb-10 position-relative' on:pointerenter={() => { preview = true }} on:custom-pointerleave={() => { preview = false }} use:hoverClick={data.onclick}>
+<div class='d-flex p-20 pb-10 position-relative' on:pointerenter={() => { preview = true }} on:custom-pointerleave={() => { preview = false }} use:hoverClick={data.onclick || viewMedia}>
   {#if preview}
     <EpisodePreviewCard {data} />
   {/if}
@@ -33,7 +39,7 @@
           {data.media?.title.userPreferred || data.parseObject.anime_title}
         </div>
         <div class='text-muted font-size-12 title overflow-hidden'>
-          {data.episodeData?.title.en || ''}
+          {data.episodeData?.title?.en || ''}
         </div>
       </div>
       {#if data.episode}
@@ -41,9 +47,15 @@
           <div class='text-white font-weight-bold'>
             Episode {data.episode}
           </div>
-          <div class='text-muted font-size-12 title overflow-hidden'>
-            {since(data.date)}
-          </div>
+          {#if data.date}
+            <div class='text-muted font-size-12 title overflow-hidden'>
+              {since(data.date)}
+            </div>
+          {:else if data.similarity}
+            <div class='text-muted font-size-12 title overflow-hidden'>
+              {parseInt(data.similarity * 100)}%
+            </div>
+          {/if}
         </div>
       {/if}
     </div>

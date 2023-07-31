@@ -13,6 +13,7 @@
   import { set } from '../views/Settings.svelte'
   import { click } from '@/modules/click.js'
   import { page } from '@/App.svelte'
+  import { toast } from 'svelte-sonner'
 
   export let search
   let searchTextInput
@@ -38,7 +39,12 @@
   function handleFile ({ target }) {
     const { files } = target
     if (files?.[0]) {
-      traceAnime(files[0], 'file')
+      toast.promise(traceAnime(files[0]), {
+        description: 'You can also paste an URL to an image.',
+        loading: 'Looking up anime for image...',
+        success: 'Found anime for image!',
+        error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
+      })
       target.value = null
     }
   }
@@ -170,7 +176,7 @@
         </select>
       </div>
     </div>
-    <input type='file' class='d-none' id='search-image' accept='image/*' on:input={handleFile} />
+    <input type='file' class='d-none' id='search-image' accept='image/*' on:input|preventDefault|stopPropagation={handleFile} />
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
         <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button'>
@@ -182,7 +188,7 @@
     </div>
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
-        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button' use:click={searchClear} class:text-primary={!!sanitisedSearch?.length}>
+        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button' use:click={searchClear} class:text-primary={!!sanitisedSearch?.length || search.disableSearch || search.clearNext}>
           delete
         </button>
       </div>
