@@ -95,6 +95,7 @@ async function getAniDBEpisodeFromAL ({ media, episode }, { episodes, episodeCou
 
 export function getEpisodeNumberByAirDate (alDate, episodes, episode) {
   if (!+alDate) return episodes[Number(episode)] || episodes[1] // what the fuck, are you braindead anilist?, the source episode number to play is from an array created from AL ep count, so how come it's missing?
+  // 1 is key for episod 1, not index
 
   // find closest episodes by air date, multiple episodes can have the same air date distance
   // ineffcient but reliable

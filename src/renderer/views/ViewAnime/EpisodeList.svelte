@@ -23,12 +23,12 @@
     const settled = (await episodesPromise).data.Page?.airingSchedules
     const alEpisodes = settled?.length ? settled : episodeList
     for (const { episode, airingAt } of alEpisodes) {
-      const airdate = new Date((airingAt || 0) * 1000)
+      const alDate = new Date((airingAt || 0) * 1000)
 
       const needsValidation = !(!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)]))
-      const { image, summary, rating, title, length } = needsValidation ? getEpisodeNumberByAirDate(airdate, episodes, episode) : (episodes[Number(episode)] || {})
+      const { image, summary, rating, title, length, airdate } = needsValidation ? getEpisodeNumberByAirDate(alDate, episodes, episode) : (episodes[Number(episode)] || {})
 
-      episodeList[episode - 1] = { episode, image, summary, rating, title, length: length || duration, airdate }
+      episodeList[episode - 1] = { episode, image, summary, rating, title, length: length || duration, airdate: +alDate || airdate }
     }
   }
   load()
