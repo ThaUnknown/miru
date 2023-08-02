@@ -49,17 +49,11 @@ export async function getRSSContent (url) {
   try {
     const res = await fetch(url)
     if (!res.ok) {
-      toast.error('Search Failed', {
-        description: 'Failed fetching RSS!\n' + res.statusText
-      })
-      console.error('Failed to fetch rss', res.statusText)
+      throw new Error('Failed fetching RSS!\n' + res.statusText)
     }
     return DOMPARSER(await res.text(), 'text/xml')
   } catch (e) {
-    toast.error('Search Failed', {
-      description: 'Failed fetching RSS!\n' + e.message
-    })
-    console.error('Failed to fetch rss', e)
+    throw new Error('Failed fetching RSS!\n' + e.message)
   }
 }
 
@@ -69,8 +63,16 @@ class RSSMediaManager {
     this.lastResult = null
   }
 
-  getMediaForRSS (page, perPage, url) {
+  getMediaForRSS (page, perPage, url, ignoreErrors) {
     const res = this._getMediaForRSS(page, perPage, url)
+    if (!ignoreErrors) {
+      res.catch(e => {
+        toast.error('Search Failed', {
+          description: 'Failed fetching RSS!\n' + e.message
+        })
+        console.error('Failed to fetch rss', e)
+      })
+    }
     return Array.from({ length: perPage }, (_, i) => ({ type: 'episode', data: this.fromPending(res, i) }))
   }
 

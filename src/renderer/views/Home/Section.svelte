@@ -1,5 +1,5 @@
 <script context='module'>
-  const fakecards = Array.from({ length: 10 }, () => ({ data: new Promise(() => {}) }))
+  const fakecards = Array.from({ length: 15 }, () => ({ data: new Promise(() => {}) }))
 </script>
 
 <script>
@@ -13,7 +13,7 @@
   async function deferredLoad (element) {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        if (!opts.preview.value) opts.preview.value = opts.load(1, 10)
+        if (!opts.preview.value) opts.preview.value = opts.load(1, 15)
         observer.unobserve(element)
       }
     }, { threshold: 0 })

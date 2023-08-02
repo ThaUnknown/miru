@@ -15,19 +15,19 @@
   const manager = new Sections()
 
   for (const [title, url] of set.rssFeedsNew.reverse()) {
-    const load = (page = 1, perPage = 6) => RSSManager.getMediaForRSS(page, perPage, url)
+    const load = (page = 1, perPage = 8) => RSSManager.getMediaForRSS(page, perPage, url)
     manager.add([
       {
         title,
         load,
-        preview: writable(RSSManager.getMediaForRSS(1, 6, url)),
+        preview: writable(RSSManager.getMediaForRSS(1, 8, url)),
         variables: { disableSearch: true }
       }
     ])
     const entry = manager.sections.find(section => section.load === load)
     setInterval(async () => {
-      if (await RSSManager.getContentChanged(1, 6, url)) {
-        entry.preview.value = RSSManager.getMediaForRSS(1, 6, url)
+      if (await RSSManager.getContentChanged(1, 8, url, true)) {
+        entry.preview.value = RSSManager.getMediaForRSS(1, 8, url, true)
       }
     }, 30000)
   }

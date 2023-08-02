@@ -71,7 +71,12 @@ limiter.on('failed', async (error, jobInfo) => {
 
 const handleRequest = limiter.wrap(async opts => {
   await rl
-  const res = await fetch('https://graphql.anilist.co', opts)
+  let res = {}
+  try {
+    res = await fetch('https://graphql.anilist.co', opts)
+  } catch (e) {
+    if (!res || res.status !== 404) throw e
+  }
   if (!res.ok && res.status === 429) {
     throw res
   }
