@@ -372,7 +372,11 @@
           canvasVideo.onloadedmetadata = () => {
             canvasVideo.play()
             if (pip) {
-              canvasVideo.requestPictureInPicture().catch(e => {
+              canvasVideo.requestPictureInPicture().then(pipwindow => {
+                pipwindow.onresize = () => {
+                  subs.renderer.resize(pipwindow.width, pipwindow.height)
+                }
+              }).catch(e => {
                 cleanup()
                 console.warn('Failed To Burn In Subtitles ' + e)
               })

@@ -83,12 +83,7 @@
       }
 
     })
-    let entries
-    try {
-      entries = await promise
-    } catch (e) {
-      return e
-    }
+    const entries = await promise
 
     entries.sort((a, b) => b.seeders - a.seeders)
     if (settings.rssAutoplay) {
