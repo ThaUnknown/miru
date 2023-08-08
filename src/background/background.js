@@ -58,7 +58,8 @@ class TorrentClient extends WebTorrent {
     })
     this.dispatch('files', files)
     this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
-    this.dispatch('torrent', Array.from(torrent.torrentFile))
+    // this will cause errors when only the renderer refreshes, and not the background process, but it's not an issue, for now
+    this.dispatch('torrent', torrent.torrentFile, [torrent.torrentFile.buffer])
   }
 
   _scrape ({ id, infoHashes }) {
@@ -100,9 +101,9 @@ class TorrentClient extends WebTorrent {
             this.parseFonts(this.current)
             this.current.on('stream', (_, cb) => {
               if (!this.parsed) {
-                const parser = new SubtitleStream(this.metadata)
-                this.handleSubtitleParser(parser, true)
-                cb(parser)
+                this.stream = new SubtitleStream(this.stream)
+                this.handleSubtitleParser(this.stream, true)
+                cb(this.stream)
               }
             })
           }
@@ -138,8 +139,8 @@ class TorrentClient extends WebTorrent {
     }
   }
 
-  dispatch (type, data) {
-    message({ type, data })
+  dispatch (type, data, transfer) {
+    message({ type, data }, transfer)
   }
 
   parseSubtitles () {
@@ -165,9 +166,11 @@ class TorrentClient extends WebTorrent {
 
   cancelParse () {
     this.parser?.destroy()
+    this.stream?.destroy()
     this.metadata?.destroy()
     this.metadata = undefined
     this.parser = undefined
+    this.stream = undefined
   }
 
   parseFonts (file) {
@@ -202,7 +205,8 @@ class TorrentClient extends WebTorrent {
       })
       parser.on('file', file => {
         if (file.mimetype === 'application/x-truetype-font' || file.mimetype === 'application/font-woff' || file.mimetype === 'application/vnd.ms-opentype' || file.mimetype === 'font/sfnt' || file.mimetype.startsWith('font/') || file.filename.toLowerCase().endsWith('.ttf')) {
-          this.dispatch('file', { mimetype: file.mimetype, data: Array.from(file.data) })
+          const data = Buffer.from(file.data)
+          this.dispatch('file', { mimetype: file.mimetype, data }, [data.buffer])
         }
       })
     }
@@ -211,8 +215,7 @@ class TorrentClient extends WebTorrent {
   predestroy () {
     this.destroy()
     this.server.close()
-    this.parser?.destroy()
-    this.parser = undefined
+    this.cancelParse()
   }
 }
 
@@ -221,11 +224,10 @@ let message = null
 
 ipcRenderer.on('port', (e) => {
   e.ports[0].onmessage = ({ data }) => {
-    const cloned = structuredClone(data)
-    if (!client && cloned.type === 'settings') window.client = client = new TorrentClient(cloned.data)
-    if (cloned.type === 'destroy') client?.predestroy()
+    if (!client && data.type === 'settings') window.client = client = new TorrentClient(data.data)
+    if (data.type === 'destroy') client?.predestroy()
 
-    client.handleMessage({ data: cloned })
+    client.handleMessage({ data })
   }
   message = e.ports[0].postMessage.bind(e.ports[0])
 })

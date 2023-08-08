@@ -122,8 +122,8 @@ devDependencies:
     specifier: ^4.15.1
     version: 4.15.1(webpack-cli@5.1.4)(webpack@5.88.2)
   webtorrent:
-    specifier: ^2.1.16
-    version: 2.1.16
+    specifier: ^2.1.17
+    version: 2.1.17
 
 packages:
 
@@ -2431,7 +2431,7 @@ packages:
     dependencies:
       debug: 3.2.7
       is-core-module: 2.12.1
-      resolve: 1.22.2
+      resolve: 1.22.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -2525,7 +2525,7 @@ packages:
       ignore: 5.2.4
       is-core-module: 2.12.1
       minimatch: 3.1.2
-      resolve: 1.22.2
+      resolve: 1.22.3
       semver: 7.5.4
     dev: true
 
@@ -6074,8 +6074,8 @@ packages:
     engines: {node: '>=0.8.0'}
     dev: true
 
-  /webtorrent@2.1.16:
-    resolution: {integrity: sha512-nty8vJDoWB3YFuW6ttnZjCnEy39z7PwGuKtITSoX2NwEe0GjdtWG2GYLPpoKI7jvpQHUnRReIRa2nfUhGD2ptA==}
+  /webtorrent@2.1.17:
+    resolution: {integrity: sha512-j9zd9hZeAQeWeJPJy20cO1GX6GUc/mrtt136IQzFQy42u8v1NeXBwdqdyrtqrxorZvBC9rBw1/o9AiC+/pI+nA==}
     engines: {node: '>=14'}
     dependencies:
       '@silentbot1/nat-api': 0.4.7

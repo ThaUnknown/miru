@@ -95,6 +95,7 @@
   import { Tabs, TabLabel, Tab } from '../components/Tabination.js'
   import FontSelect from '../components/FontSelect.svelte'
   import { onDestroy } from 'svelte'
+  import { variables } from '@/modules/themes.js'
 
   onDestroy(() => {
     window.IPC.off('path')
@@ -543,6 +544,13 @@
             data-title='Enables Sidebar Hover Animations'>
             <input type='checkbox' id='disable-sidebar' bind:checked={settings.expandingSidebar} />
             <label for='disable-sidebar'>Enable Sidebar Animations</label>
+          </div>
+          <div class='form-group mb-10 pl-10 font-size-16 w-500'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title='CSS Variables Used For Custom Themes'>
+            <label for='css-variables'>CSS Variables</label>
+            <textarea class='form-control' id='css-variables' placeholder='--accent-color: #e5204c;' bind:value={$variables} />
           </div>
         </div>
       </Tab>

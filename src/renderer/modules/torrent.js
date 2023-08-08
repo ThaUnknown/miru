@@ -21,10 +21,10 @@ class TorrentWorker extends EventTarget {
     this.emit(data.type, data.data)
   }
 
-  async send (type, data) {
+  async send (type, data, transfer) {
     await this.ready
     console.info('Torrent: sending message', { type, data })
-    this.port.postMessage({ type, data })
+    this.port.postMessage({ type, data }, transfer)
   }
 }
 
@@ -49,21 +49,25 @@ export async function add (torrentID, hide) {
     if (typeof torrentID === 'string' && !torrentID.startsWith('magnet:')) {
       // IMPORTANT, this is because node's get bypasses proxies, wut????
       const res = await fetch(torrentID)
-      torrentID = Array.from(new Uint8Array(await res.arrayBuffer()))
+      torrentID = new Uint8Array(await res.arrayBuffer())
+      client.send('torrent', torrentID, [torrentID.buffer])
+    } else {
+      client.send('torrent', torrentID)
     }
-    client.send('torrent', torrentID)
   }
 }
 
 client.on('torrent', ({ detail }) => {
-  localStorage.setItem('torrent', JSON.stringify(detail))
+  localStorage.setItem('torrent', JSON.stringify([...detail]))
 })
 
 // load last used torrent
 queueMicrotask(() => {
   setTimeout(() => {
-    if (localStorage.getItem('torrent')) {
-      if (!files.length) client.send('torrent', JSON.parse(localStorage.getItem('torrent')))
+    const torrent = localStorage.getItem('torrent')
+    if (torrent) {
+      const data = new Uint8Array(JSON.parse(torrent))
+      if (!files.length) client.send('torrent', data, [data.buffer])
     }
   }, 1000)
 })

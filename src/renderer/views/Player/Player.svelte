@@ -572,10 +572,9 @@
   function resetImmerse () {
     if (immerseTimeout) {
       clearTimeout(immerseTimeout)
-    } else {
-      immersed = false
     }
-    immerseTimeout = setTimeout(immersePlayer, 8 * 1000)
+    immersed = false
+    immerseTimeout = setTimeout(immersePlayer, (paused ? 8 : 1) * 1000)
   }
 
   function hideBuffering () {
@@ -966,7 +965,7 @@
   <div class='bottom d-flex z-40 flex-column px-20'>
     <div class='w-full d-flex align-items-center h-20 mb-5 seekbar'>
       <Seekbar
-        accentColor={'#e5204c'}
+        accentColor='var(--accent-color)'
         class='font-size-20'
         length={safeduration}
         {buffer}
