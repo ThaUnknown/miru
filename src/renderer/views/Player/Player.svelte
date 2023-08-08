@@ -389,6 +389,7 @@
       }
     }
   }
+  let fitWidth = false
   let showKeybinds = false
   loadWithDefaults({
     KeyX: {
@@ -439,6 +440,11 @@
     KeyS: {
       fn: () => skip(),
       id: '+90'
+    },
+    KeyW: {
+      fn: () => { fitWidth = !fitWidth },
+      id: 'fit_width',
+      type: 'icon'
     },
     KeyD: {
       fn: () => toggleCast(),
@@ -890,6 +896,7 @@
   <video
     crossorigin='anonymous'
     class='position-absolute h-full w-full'
+    class:fitWidth
     style={`margin-top: ${menubarOffset}px`}
     preload='auto'
     {src}
@@ -1058,6 +1065,9 @@
 </div>
 
 <style>
+  .fitWidth {
+    object-fit: cover;
+  }
   .custom-range {
     color: #e5204c;
     --thumb-height: 0px;
