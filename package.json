@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "4.3.4",
+  "version": "4.3.5",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
@@ -47,11 +47,11 @@
     "svelte-keybinds": "1.0.5",
     "svelte-loader": "^3.1.9",
     "svelte-miniplayer": "1.0.3",
-    "svelte-sonner": "^0.1.2",
+    "svelte-sonner": "^0.1.4",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1",
-    "webtorrent": "^2.1.17"
+    "webtorrent": "^2.1.25"
   },
   "dependencies": {
     "utp-native": "^2.5.3"

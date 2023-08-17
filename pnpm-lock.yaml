@@ -84,7 +84,7 @@ devDependencies:
     version: 2.7.6(webpack@5.88.2)
   p2pt:
     specifier: github:ThaUnknown/p2pt#modernise
-    version: github.com/ThaUnknown/p2pt/992f13f97cd6af2878a6ff079d869c01daa73bed
+    version: github.com/ThaUnknown/p2pt/3b191bd83998d0f28b022f4e3b871a7030ff6f6d
   perfect-seekbar:
     specifier: ^1.1.0
     version: 1.1.0
@@ -110,8 +110,8 @@ devDependencies:
     specifier: 1.0.3
     version: 1.0.3
   svelte-sonner:
-    specifier: ^0.1.2
-    version: 0.1.2(svelte@4.1.2)
+    specifier: ^0.1.4
+    version: 0.1.4(svelte@4.1.2)
   webpack:
     specifier: ^5.88.2
     version: 5.88.2(webpack-cli@5.1.4)
@@ -122,8 +122,8 @@ devDependencies:
     specifier: ^4.15.1
     version: 4.15.1(webpack-cli@5.1.4)(webpack@5.88.2)
   webtorrent:
-    specifier: ^2.1.17
-    version: 2.1.17
+    specifier: ^2.1.25
+    version: 2.1.25
 
 packages:
 
@@ -433,7 +433,7 @@ packages:
       err-code: 3.0.1
       get-browser-rtc: 1.1.0
       queue-microtask: 1.2.3
-      streamx: 2.15.0
+      streamx: 2.15.1
       uint8-util: 2.2.2
     transitivePeerDependencies:
       - supports-color
@@ -444,7 +444,7 @@ packages:
     dependencies:
       debug: 4.3.4
       queue-microtask: 1.2.3
-      streamx: 2.15.0
+      streamx: 2.15.1
       uint8-util: 2.2.2
       ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
@@ -1218,8 +1218,8 @@ packages:
     resolution: {integrity: sha512-D/vrAD4dLVX23NalHwb8dSvsUsxeRPO8Y7ToKA015JQYq69MLDOMkC0uGZYA/MPpltLO8rt8eqFC2j8DxjTZ/w==}
     dev: true
 
-  /bencode@3.1.1:
-    resolution: {integrity: sha512-btsxX9201yoWh45TdqYg6+OZ5O1xTYKTYSGvJndICDFtznE/9zXgow8yjMvvhOqKKuzuL7h+iiCMpfkG8+QuBA==}
+  /bencode@4.0.0:
+    resolution: {integrity: sha512-AERXw18df0pF3ziGOCyUjqKZBVNH8HV3lBxnx5w0qtgMIk4a1wb9BkcCQbkp9Zstfrn/dzRwl7MmUHHocX3sRQ==}
     engines: {node: '>=12.20.0'}
     dependencies:
       uint8-util: 2.2.2
@@ -1251,11 +1251,11 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /bittorrent-dht@11.0.4:
-    resolution: {integrity: sha512-pTQKeGAJBBGkNnHpnJcBrgGYoKVhM6Y58UOgNwx7Yto9zrkdjJlyo26XpTLYMCHQBjdDBg0PGuW1nkA8cJkoIQ==}
+  /bittorrent-dht@11.0.5:
+    resolution: {integrity: sha512-R09D6uNaziRqsc+B/j5QzkjceTak+wH9vcNLnkmt8A52EWF9lQwBP0vvCKgSA3AJOYYl+41n3osA2KYYn/z5uQ==}
     engines: {node: '>=12.20.0'}
     dependencies:
-      bencode: 3.1.1
+      bencode: 4.0.0
       debug: 4.3.4
       k-bucket: 5.1.0
       k-rpc: 5.1.0
@@ -1281,15 +1281,15 @@ packages:
     resolution: {integrity: sha512-VyLcUjVMEOdSpHaCG/7odvCdLbAB1y3l9A2V6WIje24uV7FkJPrQrH/RrlFmKxP89pFVDEnE+YlHaFujlFIZsg==}
     dev: true
 
-  /bittorrent-protocol@4.1.9:
-    resolution: {integrity: sha512-+LIl+SaWsw9X1C4xsA51PfK8k7XM0pIpVyXimrtSRdfRqmcS27jGB1KXt93+zFn4t4ljEnF/+/ODDS6hTYepjQ==}
+  /bittorrent-protocol@4.1.11:
+    resolution: {integrity: sha512-8ehCNnnRpxB6wrqDzYdLY6Bx0k1ZcXwHmxfVsU9xljolgfd4jhUq9gKcbnnUj4yR8I5/qHJ5fYVoGIfrmUlAAQ==}
     engines: {node: '>=12.20.0'}
     dependencies:
-      bencode: 3.1.1
+      bencode: 4.0.0
       bitfield: 4.1.0
       debug: 4.3.4
       rc4: 0.1.5
-      streamx: 2.15.0
+      streamx: 2.15.1
       throughput: 1.0.1
       uint8-util: 2.2.2
       unordered-array-remove: 1.0.2
@@ -1297,14 +1297,14 @@ packages:
       - supports-color
     dev: true
 
-  /bittorrent-tracker@10.0.11:
-    resolution: {integrity: sha512-ytTSkkjHrjpdk5Z6++7e/6tvr0X3VFV2fjCXPPTNtzrsAMvuL7OD1EReTvCY0AxyA7E/2dJpjI3z8dzH9FMHHQ==}
+  /bittorrent-tracker@10.0.12:
+    resolution: {integrity: sha512-EYQEwhOYkrRiiwkCFcM9pbzJInsAe7UVmUgevW133duwlZzjwf5ABwDE7pkkmNRS6iwN0b8LbI/94q16dYqiow==}
     engines: {node: '>=12.20.0'}
     hasBin: true
     dependencies:
       '@thaunknown/simple-peer': 9.12.1
       '@thaunknown/simple-websocket': 9.1.1(bufferutil@4.0.7)(utf-8-validate@5.0.10)
-      bencode: 3.1.1
+      bencode: 4.0.0
       bittorrent-peerid: 1.3.6
       chrome-dgram: 3.0.6
       clone: 2.1.2
@@ -1838,12 +1838,12 @@ packages:
     dev: true
     optional: true
 
-  /create-torrent@6.0.13:
-    resolution: {integrity: sha512-z+F8mv5P25h8OVdh6WdZnh76e9KeZ8qXf8OySbVoZcGS27M/Mq9R56TPz4LyNbtsHlGhkCXiUvowzR/Snid/zQ==}
+  /create-torrent@6.0.15:
+    resolution: {integrity: sha512-+FPYgumN6OEFTjxzSF7S7306DXu74fNF5m7CGiu+n2U+yXThnIAy9gelWjhqcndxVN2a7DKlLHqrRlr25HOQ8A==}
     engines: {node: '>=12'}
     hasBin: true
     dependencies:
-      bencode: 3.1.1
+      bencode: 4.0.0
       block-iterator: 1.1.1
       fast-readable-async-iterator: 1.1.1
       is-file: 1.0.0
@@ -4468,12 +4468,12 @@ packages:
       callsites: 3.1.0
     dev: true
 
-  /parse-torrent@11.0.12:
-    resolution: {integrity: sha512-eraUrzTwBciRSkDSQhcjp/EVoc1Z0KVO85bQlI6LCGplByXloaul5SnL0qvRO0wK+YSoNjOfJUxTS9xpgjIkdA==}
+  /parse-torrent@11.0.14:
+    resolution: {integrity: sha512-/9Yp1FAx5Qd7JX4/0LPiJ73bxVoUgymRDlyB2xAkJ1r9tKrtc1L4Dr024TZDwp1qzDa+oITsYn0i/SbR+fWm4w==}
     engines: {node: '>=12.20.0'}
     hasBin: true
     dependencies:
-      bencode: 3.1.1
+      bencode: 4.0.0
       cross-fetch-ponyfill: 1.0.3
       get-stdin: 9.0.0
       magnet-uri: 7.0.5
@@ -5289,7 +5289,7 @@ packages:
     resolution: {integrity: sha512-Ax+TbUOho84bWUc3AKqWtkIvAIVws7d6QI4oJkgH4yQ5Yil+lR3vjd/7qd51dHKGzS5bFxg0++QwyNRN7s6rZA==}
     dependencies:
       limiter: 1.1.5
-      streamx: 2.15.0
+      streamx: 2.15.1
     dev: true
 
   /split@1.0.1:
@@ -5318,8 +5318,8 @@ packages:
     engines: {node: '>= 0.8'}
     dev: true
 
-  /streamx@2.15.0:
-    resolution: {integrity: sha512-HcxY6ncGjjklGs1xsP1aR71INYcsXFJet5CU1CHqihQ2J5nOsbd4OjgjHO42w/4QNv9gZb3BueV+Vxok5pLEXg==}
+  /streamx@2.15.1:
+    resolution: {integrity: sha512-fQMzy2O/Q47rgwErk/eGeLu/roaFWV0jVsogDmrszM9uIw8L5OA+t+V93MgYlufNptfjmYR1tOMWhei/Eh7TQA==}
     dependencies:
       fast-fifo: 1.3.0
       queue-tick: 1.0.1
@@ -5477,8 +5477,8 @@ packages:
     resolution: {integrity: sha512-++IvuENs/3x0SbHZ/jWNqfq+hmU/ZT73V/ETwn6TqCbHF7asXsZFxVcgyIL1lMaQMKxe227HrYghYRVNJXeFVw==}
     dev: true
 
-  /svelte-sonner@0.1.2(svelte@4.1.2):
-    resolution: {integrity: sha512-0x4uGRpb2wn+cdipu2VRBA2HOUxGPqeKuPQ5PukY5gYGdJ0WNNuVWidk/l7/Vzddx0DGRSlAFnecCW/cfTimPg==}
+  /svelte-sonner@0.1.4(svelte@4.1.2):
+    resolution: {integrity: sha512-3aJmd4xiJsUcs0qGj+PvQ0YlHiQJnaqM2sUQ9CCgQ3plyGqzlxOwu+Svf1y8nk7yIPijMRO8jjekVfqGnbUa4Q==}
     peerDependencies:
       svelte: ^4.0.0
     dependencies:
@@ -5607,13 +5607,13 @@ packages:
     engines: {node: '>=0.6'}
     dev: true
 
-  /torrent-discovery@10.0.14:
-    resolution: {integrity: sha512-Q1qJ9cUgz+Vr9ay56KWRaygMmsUL2x+gq4PGn/9qSOkGGmowK8lOYO6Q3gTTUuw3vadMg68GiNt9WNJHS0UFig==}
+  /torrent-discovery@10.0.16:
+    resolution: {integrity: sha512-HUvCgL3JAyk9VKUfFBOD7Fx/MWVNmjiCjaEOEc6P7ijm2BpPWpdjlXydP+/12f/NB3T4ItuyMjcGdPseGGjNTw==}
     engines: {node: '>=12.20.0'}
     dependencies:
-      bittorrent-dht: 11.0.4
+      bittorrent-dht: 11.0.5
       bittorrent-lsd: 2.0.0
-      bittorrent-tracker: 10.0.11
+      bittorrent-tracker: 10.0.12
       debug: 4.3.4
       run-parallel: 1.2.0
     transitivePeerDependencies:
@@ -5800,11 +5800,11 @@ packages:
       punycode: 2.3.0
     dev: true
 
-  /ut_metadata@4.0.2:
-    resolution: {integrity: sha512-eRGDIdvgjySf2LQMOIjn+RDMVm9qTrer3xSCKhdboMFo2ugihV3hBGOzZQFbqF7QRRtrNJsHaPKfG2CUApJA9Q==}
+  /ut_metadata@4.0.3:
+    resolution: {integrity: sha512-2tovup0VDYpT8t8+EhhhKBmbgIyiYyJQZ+Hf+/61+SvjuRS2MEeA5CiSARP4q+9/83Wu09OsGrUre/Zv6OI5NA==}
     engines: {node: '>=12.20.0'}
     dependencies:
-      bencode: 3.1.1
+      bencode: 4.0.0
       bitfield: 4.1.0
       debug: 4.3.4
       uint8-util: 2.2.2
@@ -5812,11 +5812,11 @@ packages:
       - supports-color
     dev: true
 
-  /ut_pex@4.0.3:
-    resolution: {integrity: sha512-u/2pLfKMyBuZ5qMFbyjP8dGw3+zw8NI0r4yR09oJe3LIvSo9lTPmHim47449Wh2Wn0yRO6PAf94OxJV3okRU7w==}
+  /ut_pex@4.0.4:
+    resolution: {integrity: sha512-isVTbp2TKGoMOu+4Zh/i6ijpYr0VG83xjRPgCXaUjKzgXXndjCMWg32/9kZjubD+kxEXcmXMkoS8IttS9FZE8g==}
     engines: {node: '>=12.20.0'}
     dependencies:
-      bencode: 3.1.1
+      bencode: 4.0.0
       compact2string: 1.4.1
       string2compact: 2.0.1
     dev: true
@@ -6074,8 +6074,8 @@ packages:
     engines: {node: '>=0.8.0'}
     dev: true
 
-  /webtorrent@2.1.17:
-    resolution: {integrity: sha512-j9zd9hZeAQeWeJPJy20cO1GX6GUc/mrtt136IQzFQy42u8v1NeXBwdqdyrtqrxorZvBC9rBw1/o9AiC+/pI+nA==}
+  /webtorrent@2.1.25:
+    resolution: {integrity: sha512-mk+drIsQTktgNSygYj7fqT6FIWBjZbb2oWulZHumgVGp5tqTKay28ejNpxPKC4zr7nJZDI2F80PSC/i/fYa7aw==}
     engines: {node: '>=14'}
     dependencies:
       '@silentbot1/nat-api': 0.4.7
@@ -6083,12 +6083,12 @@ packages:
       '@webtorrent/http-node': 1.3.0
       addr-to-ip-port: 2.0.0
       bitfield: 4.1.0
-      bittorrent-dht: 11.0.4
-      bittorrent-protocol: 4.1.9
+      bittorrent-dht: 11.0.5
+      bittorrent-protocol: 4.1.11
       cache-chunk-store: 3.2.2
       chunk-store-iterator: 1.0.3
       cpus: 1.0.3
-      create-torrent: 6.0.13
+      create-torrent: 6.0.15
       cross-fetch-ponyfill: 1.0.3
       debug: 4.3.4
       escape-html: 1.0.3
@@ -6101,7 +6101,7 @@ packages:
       memory-chunk-store: 1.3.5
       mime: 3.0.0
       once: 1.4.0
-      parse-torrent: 11.0.12
+      parse-torrent: 11.0.14
       pump: 3.0.0
       queue-microtask: 1.2.3
       random-iterate: 1.0.1
@@ -6109,14 +6109,14 @@ packages:
       run-parallel: 1.2.0
       run-parallel-limit: 1.1.0
       speed-limiter: 1.0.2
-      streamx: 2.15.0
+      streamx: 2.15.1
       throughput: 1.0.1
-      torrent-discovery: 10.0.14
+      torrent-discovery: 10.0.16
       torrent-piece: 3.0.0
       uint8-util: 2.2.2
       unordered-array-remove: 1.0.2
-      ut_metadata: 4.0.2
-      ut_pex: 4.0.3
+      ut_metadata: 4.0.3
+      ut_pex: 4.0.4
     optionalDependencies:
       utp-native: 2.5.3
     transitivePeerDependencies:
@@ -6294,12 +6294,12 @@ packages:
       pako: 2.1.0
     dev: true
 
-  github.com/ThaUnknown/p2pt/992f13f97cd6af2878a6ff079d869c01daa73bed:
-    resolution: {tarball: https://codeload.github.com/ThaUnknown/p2pt/tar.gz/992f13f97cd6af2878a6ff079d869c01daa73bed}
+  github.com/ThaUnknown/p2pt/3b191bd83998d0f28b022f4e3b871a7030ff6f6d:
+    resolution: {tarball: https://codeload.github.com/ThaUnknown/p2pt/tar.gz/3b191bd83998d0f28b022f4e3b871a7030ff6f6d}
     name: p2pt
     version: 1.5.1
     dependencies:
-      bittorrent-tracker: 10.0.11
+      bittorrent-tracker: 10.0.12
       uint8-util: 2.2.2
     optionalDependencies:
       wrtc: 0.4.7

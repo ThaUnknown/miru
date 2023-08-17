@@ -10,7 +10,7 @@ import anitomyscript from 'anitomyscript'
 export default async function ({ media, episode }) {
   const json = await getAniDBFromAL(media)
 
-  if (!json) return []
+  if (typeof json !== 'object') throw new Error(json || 'No mapping found.')
 
   const aniDBEpisode = await getAniDBEpisodeFromAL({ media, episode }, json)
 

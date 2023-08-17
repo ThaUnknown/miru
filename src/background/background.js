@@ -3,7 +3,7 @@ import { SubtitleParser, SubtitleStream } from 'matroska-subtitles'
 import { ipcRenderer } from 'electron'
 import { pipeline } from 'streamx'
 import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
-import { hex2bin, bin2hex, arr2text, hex2arr } from 'uint8-util'
+import { hex2bin, arr2hex, text2arr } from 'uint8-util'
 
 class TorrentClient extends WebTorrent {
   constructor (settings) {
@@ -63,12 +63,7 @@ class TorrentClient extends WebTorrent {
   }
 
   _scrape ({ id, infoHashes }) {
-    const hashes = infoHashes.map(infoHash => hex2bin(infoHash))
-    const malformed = {}
-    for (const hash of infoHashes) {
-      malformed[bin2hex(arr2text(hex2arr(hash)))] = hash
-    }
-    this.trackers.cat._request(this.trackers.cat.scrapeUrl, { info_hash: hashes }, (err, data) => {
+    this.trackers.cat._request(this.trackers.cat.scrapeUrl, { info_hash: infoHashes.map(infoHash => hex2bin(infoHash)) }, (err, data) => {
       if (err) {
         console.error(err)
         return this.dispatch('scrape', { id, result: [] })
@@ -76,7 +71,7 @@ class TorrentClient extends WebTorrent {
       const { files } = data
       const result = []
       for (const [key, data] of Object.entries(files || {})) {
-        result.push({ hash: malformed[bin2hex(key)], ...data })
+        result.push({ hash: key.length !== 40 ? arr2hex(text2arr(key)) : key, ...data })
       }
       this.dispatch('scrape', { id, result })
       console.log(result, data)
