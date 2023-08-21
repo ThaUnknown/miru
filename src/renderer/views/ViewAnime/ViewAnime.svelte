@@ -74,7 +74,7 @@
   }
 </script>
 
-<div class='modal modal-full z-40' class:show={media} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
+<div class='modal modal-full z-100' class:show={media} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
   {#if media}
     <div class='h-full modal-content bg-very-dark p-0 overflow-y-auto position-relative' use:smoothScroll>
       <button class='close pointer z-30 bg-dark top-20 right-0 position-fixed' type='button' use:click={close}> &times; </button>

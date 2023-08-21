@@ -236,7 +236,7 @@ function buildQuery (quality) {
   if (quality) {
     query += ` "${quality}"`
   } else {
-    query += 'e*' // HACK: tosho NEEDS a search string, so we lazy search a single common vowel
+    query += 'e*|a*|r*|i*|o*' // HACK: tosho NEEDS a search string, so we lazy search a single common vowel
   }
 
   return query
@@ -283,8 +283,8 @@ function mapTosho2dDeDupedEntry (entries) {
       const dupe = deduped[entry.info_hash]
       dupe.title ??= entry.title || entry.torrent_name
       dupe.id ||= entry.nyaa_id
-      dupe.seeders ||= entry.seeders >= 100000 ? 0 : entry.seeders
-      dupe.leechers ||= entry.leechers >= 100000 ? 0 : entry.leechers
+      dupe.seeders ||= entry.seeders >= 30000 ? 0 : entry.seeders
+      dupe.leechers ||= entry.leechers >= 30000 ? 0 : entry.leechers
       dupe.downloads ||= entry.torrent_downloaded_count
       dupe.size ||= entry.total_size && fastPrettyBytes(entry.total_size)
       dupe.verified ||= !!entry.anidb_fid
@@ -294,8 +294,8 @@ function mapTosho2dDeDupedEntry (entries) {
         title: entry.title || entry.torrent_name,
         link: entry.magnet_uri,
         id: entry.nyaa_id,
-        seeders: entry.seeders >= 100000 ? 0 : entry.seeders,
-        leechers: entry.leechers >= 100000 ? 0 : entry.leechers,
+        seeders: entry.seeders >= 30000 ? 0 : entry.seeders,
+        leechers: entry.leechers >= 30000 ? 0 : entry.leechers,
         downloads: entry.torrent_downloaded_count,
         hash: entry.info_hash,
         size: entry.total_size && fastPrettyBytes(entry.total_size),
