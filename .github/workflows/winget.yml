@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: WinGet Releaser
-        uses: vedantmgoyal2009/winget-releaser@v1
+        uses: vedantmgoyal2009/winget-releaser@v2
         with:
           identifier: ThaUnknown.Miru
           installers-regex: '\.exe$'
