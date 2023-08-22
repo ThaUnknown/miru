@@ -141,3 +141,20 @@ ipcRenderer.on('port', (e) => {
   }
   message = e.ports[0].postMessage.bind(e.ports[0])
 })
+
+const excludedErrorMessages = ['WebSocket']
+
+function dispatchError (e) {
+  if (e instanceof ErrorEvent) return dispatchError(e.error)
+  if (e instanceof PromiseRejectionEvent) return dispatchError(e.reason)
+  for (const exclude of excludedErrorMessages) {
+    if (e.message?.startsWith(exclude)) return
+  }
+  client?.dispatch('error', e)
+}
+
+process.on('uncaughtException', dispatchError)
+
+window.addEventListener('error', dispatchError)
+
+window.addEventListener('unhandledrejection', dispatchError)
