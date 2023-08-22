@@ -1198,7 +1198,6 @@
   .player {
     user-select: none;
     font-family: Roboto, Arial, Helvetica, sans-serif;
-    will-change: width;
     background: #000000;
   }
 
@@ -1240,7 +1239,7 @@
     animation: spin 1s linear infinite;
     opacity: 0;
     visibility: hidden;
-    transition: 0.5s opacity ease;
+    transition: 0.5s opacity ease 0.2s;
     filter: drop-shadow(0 0 8px #000);
   }
   .disabled {
@@ -1311,7 +1310,7 @@
     filter: drop-shadow(0 0 8px #000);
   }
   .skip {
-    transition: 0.5s opacity ease;
+    transition: 0.5s opacity ease 0.2s;
     background: #ececec;
   }
   .skip:hover {
@@ -1320,11 +1319,11 @@
 
   .bottom {
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6) 25%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.1) 75%, transparent);
-    transition: 0.5s opacity ease;
+    transition: 0.5s opacity ease 0.2s;
   }
   .top {
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4) 25%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.1) 75%, transparent);
-    transition: 0.5s opacity ease;
+    transition: 0.5s opacity ease 0.2s;
   }
 
   .ctrl {

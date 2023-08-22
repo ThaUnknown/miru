@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "4.3.7",
+  "version": "4.3.8",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
@@ -17,6 +17,7 @@
     "@electron/notarize": "^2.1.0",
     "@fontsource-variable/material-symbols-outlined": "^5.0.6",
     "@fontsource-variable/nunito": "^5.0.7",
+    "@fontsource/roboto": "^5.0.8",
     "@typescript-eslint/parser": "^6.2.1",
     "anitomyscript": "github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00",
     "bottleneck": "^2.19.5",

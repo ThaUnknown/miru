@@ -19,6 +19,9 @@ devDependencies:
   '@fontsource-variable/nunito':
     specifier: ^5.0.7
     version: 5.0.7
+  '@fontsource/roboto':
+    specifier: ^5.0.8
+    version: 5.0.8
   '@typescript-eslint/parser':
     specifier: ^6.2.1
     version: 6.2.1(eslint@8.46.0)(typescript@5.1.6)
@@ -286,6 +289,10 @@ packages:
 
   /@fontsource-variable/nunito@5.0.7:
     resolution: {integrity: sha512-rgcwJa5gzRfZH3ZFz5+EaFPXX8GksBz9rYJXLhtdv4hrZZv/d3aiOq7cZXZdzt+1EbIqWRN/2/zlu/0+UqxPgA==}
+    dev: true
+
+  /@fontsource/roboto@5.0.8:
+    resolution: {integrity: sha512-XxPltXs5R31D6UZeLIV1td3wTXU3jzd3f2DLsXI8tytMGBkIsGcc9sIyiupRtA8y73HAhuSCeweOoBqf6DbWCA==}
     dev: true
 
   /@humanwhocodes/config-array@0.11.10:
