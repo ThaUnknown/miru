@@ -4,10 +4,8 @@
 
   export let page
   const view = getContext('view')
-  const trailer = getContext('trailer')
   function close () {
     $view = null
-    $trailer = null
     page = 'home'
   }
 </script>

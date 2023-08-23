@@ -95,7 +95,7 @@ export default class Parser {
       parser.on('file', file => {
         if (this.destroyed) return
         if (file.mimetype.toLowerCase().includes('font') || file.filename.toLowerCase().endsWith('.ttf')) {
-          const data = Buffer.from(file.data)
+          const data = new Uint8Array(file.data).slice(0)
           this.client.dispatch('file', { mimetype: file.mimetype, data }, [data.buffer])
         }
       })
