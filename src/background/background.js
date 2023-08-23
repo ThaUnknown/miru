@@ -56,7 +56,7 @@ class TorrentClient extends WebTorrent {
     })
     this.dispatch('files', files)
     this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
-    const clonedTorrentFile = torrent.torrentFile.slice(0)
+    const clonedTorrentFile = new Uint8Array(torrent.torrentFile)
     this.dispatch('torrent', clonedTorrentFile, [clonedTorrentFile.buffer])
   }
 
