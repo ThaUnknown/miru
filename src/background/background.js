@@ -56,8 +56,8 @@ class TorrentClient extends WebTorrent {
     })
     this.dispatch('files', files)
     this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
-    // this will cause errors when only the renderer refreshes, and not the background process, but it's not an issue, for now
-    this.dispatch('torrent', torrent.torrentFile, [torrent.torrentFile.buffer])
+    const clonedTorrentFile = torrent.torrentFile.slice(0)
+    this.dispatch('torrent', clonedTorrentFile, [clonedTorrentFile.buffer])
   }
 
   _scrape ({ id, infoHashes }) {

@@ -12,7 +12,7 @@
   }
 </script>
 
-<div class='w-full z-50 navbar bg-transparent border-0 p-0 d-flex'>
+<div class='w-full z-101 navbar bg-transparent border-0 p-0 d-flex'>
   <div class='d-flex h-full draggable align-items-center text-center'>
     {#if window.version.platform !== 'darwin'}
       <img src='./logo.ico' class='position-absolute w-50 h-50 m-10 pointer' alt='ico' use:click={close} />
@@ -30,6 +30,9 @@
 </div>
 
 <style>
+  .z-101 {
+    z-index: 101 !important
+  }
   .draggable {
     -webkit-app-region: drag;
     color: var(--dm-text-muted-color);
