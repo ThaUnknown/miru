@@ -145,11 +145,11 @@ img[src=''], img[src=' '] {
 
 @keyframes load {
   from {
-    left: -15rem;
+    background-position-x: 200%;
   }
 
   to {
-    left: 100%;
+    background-position-x: -100%;
   }
 }
 @keyframes load-in {
@@ -169,13 +169,12 @@ img[src=''], img[src=' '] {
   overflow: hidden;
 }
 
-.skeloader::before {
-  will-change: left;
-  content: '';
-  position: absolute;
+.skeloader .skeleloader-swipe {
   height: 100%;
-  width: 15rem;
+  width: 100%;
   background: linear-gradient(to right, transparent 0%, #17191c 50%, transparent 100%);
+  background-repeat: no-repeat;
+  background-size: 200% 100%;
   animation: load 1s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }
 

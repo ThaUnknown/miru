@@ -181,7 +181,7 @@
 
 <Tabs>
   <div class='d-flex w-full h-full'>
-    <div class='d-flex flex-column h-full w-300 bg-dark'>
+    <div class='d-flex flex-column h-full w-300 bg-dark position-relative'>
       <div class='px-20 py-15 font-size-20 font-weight-semi-bold border-bottom root'>Settings</div>
       {#each Object.values(groups) as group}
         <TabLabel>

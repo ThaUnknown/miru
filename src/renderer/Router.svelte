@@ -10,8 +10,8 @@
   export let page = 'home'
 </script>
 
-<div class='wrapper h-full position-absolute overflow-hidden pointer-events-none'>
-  <Miniplayer active={page !== 'player'} class='bg-dark-light z-10 pointer-events-auto {page === 'player' ? 'h-full' : ''}' minwidth='35rem' maxwidth='60rem' width='300px' padding='2rem'>
+<div class='wrapper h-full position-absolute overflow-hidden'>
+  <Miniplayer active={page !== 'player'} class='bg-dark-light z-10 {page === 'player' ? 'h-full' : ''}' minwidth='35rem' maxwidth='60rem' width='300px' padding='2rem'>
     <MediaHandler miniplayer={page !== 'player'} bind:page />
   </Miniplayer>
 </div>
