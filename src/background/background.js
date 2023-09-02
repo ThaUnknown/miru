@@ -142,7 +142,7 @@ ipcRenderer.on('port', (e) => {
   message = e.ports[0].postMessage.bind(e.ports[0])
 })
 
-const excludedErrorMessages = ['WebSocket']
+const excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
 
 function dispatchError (e) {
   if (e instanceof ErrorEvent) return dispatchError(e.error)
