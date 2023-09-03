@@ -63,11 +63,9 @@ client.on('torrent', ({ detail }) => {
 
 // load last used torrent
 queueMicrotask(() => {
-  setTimeout(() => {
-    const torrent = localStorage.getItem('torrent')
-    if (torrent) {
-      const data = new Uint8Array(JSON.parse(torrent))
-      if (!files.length) client.send('torrent', data, [data.buffer])
-    }
-  }, 1000)
+  const torrent = localStorage.getItem('torrent')
+  if (torrent) {
+    const data = new Uint8Array(JSON.parse(torrent))
+    if (!files.length) client.send('torrent', data, [data.buffer])
+  }
 })
