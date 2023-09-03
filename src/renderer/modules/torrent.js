@@ -1,4 +1,3 @@
-import { set } from '../views/Settings.svelte'
 import { files } from '../views/Player/MediaHandler.svelte'
 import { page } from '@/App.svelte'
 import { toast } from 'svelte-sonner'
@@ -30,7 +29,7 @@ class TorrentWorker extends EventTarget {
 
 export const client = new TorrentWorker()
 
-client.send('settings', { ...set })
+client.send('load')
 
 client.on('files', ({ detail }) => {
   files.set(detail)
@@ -46,26 +45,6 @@ export async function add (torrentID, hide) {
     console.info('Torrent: adding torrent', { torrentID })
     files.set([])
     if (!hide) page.set('player')
-    if (typeof torrentID === 'string' && torrentID.startsWith('http')) {
-      // IMPORTANT, this is because node's get bypasses proxies, wut????
-      const res = await fetch(torrentID)
-      torrentID = new Uint8Array(await res.arrayBuffer())
-      client.send('torrent', torrentID, [torrentID.buffer])
-    } else {
-      client.send('torrent', torrentID)
-    }
+    client.send('torrent', torrentID)
   }
 }
-
-client.on('torrent', ({ detail }) => {
-  localStorage.setItem('torrent', JSON.stringify([...detail]))
-})
-
-// load last used torrent
-queueMicrotask(() => {
-  const torrent = localStorage.getItem('torrent')
-  if (torrent) {
-    const data = new Uint8Array(JSON.parse(torrent))
-    if (!files.length) client.send('torrent', data, [data.buffer])
-  }
-})

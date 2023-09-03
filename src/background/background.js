@@ -3,9 +3,13 @@ import { ipcRenderer } from 'electron'
 import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
 import { hex2bin, arr2hex, text2arr } from 'uint8-util'
 import Parser from './parser.js'
+import { defaults } from '../common/settings.js'
 
 class TorrentClient extends WebTorrent {
-  constructor (settings) {
+  static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
+
+  constructor () {
+    const settings = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
     super({
       dht: !settings.torrentDHT,
       maxConns: settings.maxConns,
@@ -13,6 +17,17 @@ class TorrentClient extends WebTorrent {
       uploadLimit: settings.torrentSpeed * 1572864 || 0, // :trolled:
       torrentPort: settings.torrentPort || 0,
       dhtPort: settings.dhtPort || 0
+    })
+    this.ready = new Promise(resolve => {
+      ipcRenderer.on('port', ({ ports }) => {
+        this.message = ports[0].postMessage.bind(ports[0])
+        resolve()
+        ports[0].onmessage = ({ data }) => {
+          if (data.type === 'load') this.loadLastTorrent()
+          if (data.type === 'destroy') this.predestroy()
+          this.handleMessage({ data })
+        }
+      })
     })
     this.settings = settings
 
@@ -38,9 +53,15 @@ class TorrentClient extends WebTorrent {
       cat: new HTTPTracker({}, atob('aHR0cDovL255YWEudHJhY2tlci53Zjo3Nzc3L2Fubm91bmNl'))
     }
 
-    this.on('error', e => {
-      this.dispatch('error', e)
-    })
+    this.on('error', this.dispatchError.bind(this))
+    process.on('uncaughtException', this.dispatchError.bind(this))
+    window.addEventListener('error', this.dispatchError.bind(this))
+    window.addEventListener('unhandledrejection', this.dispatchError.bind(this))
+  }
+
+  loadLastTorrent () {
+    const torrent = localStorage.getItem('torrent')
+    if (torrent) this.addTorrent(new Uint8Array(JSON.parse(torrent)), localStorage.getItem('lastFinished'))
   }
 
   handleTorrent (torrent) {
@@ -56,14 +77,13 @@ class TorrentClient extends WebTorrent {
     })
     this.dispatch('files', files)
     this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
-    const clonedTorrentFile = new Uint8Array(torrent.torrentFile)
-    this.dispatch('torrent', clonedTorrentFile, [clonedTorrentFile.buffer])
+    localStorage.setItem('torrent', JSON.stringify([...torrent.torrentFile]))
   }
 
   _scrape ({ id, infoHashes }) {
     this.trackers.cat._request(this.trackers.cat.scrapeUrl, { info_hash: infoHashes.map(infoHash => hex2bin(infoHash)) }, (err, data) => {
       if (err) {
-        console.error(err)
+        this.dispatch('error', err)
         return this.dispatch('scrape', { id, result: [] })
       }
       const { files } = data
@@ -72,7 +92,50 @@ class TorrentClient extends WebTorrent {
         result.push({ hash: key.length !== 40 ? arr2hex(text2arr(key)) : key, ...data })
       }
       this.dispatch('scrape', { id, result })
-      console.log(result, data)
+    })
+  }
+
+  dispatchError (e) {
+    if (e instanceof ErrorEvent) return this.dispatchError(e.error)
+    if (e instanceof PromiseRejectionEvent) return this.dispatchError(e.reason)
+    for (const exclude of TorrentClient.excludedErrorMessages) {
+      if (e.message?.startsWith(exclude)) return
+    }
+    this.dispatch('error', e)
+  }
+
+  async addTorrent (data, skipVerify = false) {
+    let id
+    if (typeof data === 'string' && data.startsWith('http')) {
+      // IMPORTANT, this is because node's get bypasses proxies, wut????
+      const res = await fetch(data)
+      id = new Uint8Array(await res.arrayBuffer())
+    } else {
+      id = data
+    }
+    const existing = await this.get(id)
+    if (existing) {
+      if (existing.ready) this.handleTorrent(existing)
+      return
+    }
+    localStorage.setItem('lastFinished', false)
+    if (this.torrents.length) await this.remove(this.torrents[0])
+    const torrent = await this.add(id, {
+      private: this.settings.torrentPeX,
+      path: this.settings.torrentPath,
+      destroyStoreOnDestroy: !this.settings.torrentPersist,
+      skipVerify,
+      announce: [
+        'wss://tracker.openwebtorrent.com',
+        'wss://tracker.webtorrent.dev',
+        'wss://tracker.files.fm:7073/announce',
+        'wss://tracker.btorrent.xyz/',
+        atob('aHR0cDovL255YWEudHJhY2tlci53Zjo3Nzc3L2Fubm91bmNl')
+      ]
+    })
+
+    torrent.once('done', () => {
+      localStorage.setItem('lastFinished', true)
     })
   }
 
@@ -87,7 +150,7 @@ class TorrentClient extends WebTorrent {
           this.parser?.destroy()
           this.current = found
           this.parser = new Parser(this, found)
-          // TODO: parser.findSubtitleFiles(found)
+          // TODO: this.parser.findSubtitleFiles(found)
         }
         break
       }
@@ -96,32 +159,15 @@ class TorrentClient extends WebTorrent {
         break
       }
       case 'torrent': {
-        const id = typeof data.data !== 'string' ? new Uint8Array(data.data) : data.data
-        const existing = await this.get(id)
-        if (existing) {
-          if (existing.ready) return this.handleTorrent(existing)
-          existing.once('ready', this.handleTorrent.bind(this))
-        }
-        if (this.torrents.length) await this.remove(this.torrents[0])
-        this.add(id, {
-          private: this.settings.torrentPeX,
-          path: this.settings.torrentPath,
-          destroyStoreOnDestroy: !this.settings.torrentPersist,
-          announce: [
-            'wss://tracker.openwebtorrent.com',
-            'wss://tracker.webtorrent.dev',
-            'wss://tracker.files.fm:7073/announce',
-            'wss://tracker.btorrent.xyz/',
-            atob('aHR0cDovL255YWEudHJhY2tlci53Zjo3Nzc3L2Fubm91bmNl')
-          ]
-        })
+        this.addTorrent(data.data)
         break
       }
     }
   }
 
-  dispatch (type, data, transfer) {
-    message({ type, data }, transfer)
+  async dispatch (type, data, transfer) {
+    await this.ready
+    this.message?.({ type, data }, transfer)
   }
 
   predestroy () {
@@ -130,32 +176,4 @@ class TorrentClient extends WebTorrent {
   }
 }
 
-let client = null
-let message = null
-
-ipcRenderer.on('port', (e) => {
-  e.ports[0].onmessage = ({ data }) => {
-    if (!client && data.type === 'settings') window.client = client = new TorrentClient(data.data)
-    if (data.type === 'destroy') client?.predestroy()
-
-    client.handleMessage({ data })
-  }
-  message = e.ports[0].postMessage.bind(e.ports[0])
-})
-
-const excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
-
-function dispatchError (e) {
-  if (e instanceof ErrorEvent) return dispatchError(e.error)
-  if (e instanceof PromiseRejectionEvent) return dispatchError(e.reason)
-  for (const exclude of excludedErrorMessages) {
-    if (e.message?.startsWith(exclude)) return
-  }
-  client?.dispatch('error', e)
-}
-
-process.on('uncaughtException', dispatchError)
-
-window.addEventListener('error', dispatchError)
-
-window.addEventListener('unhandledrejection', dispatchError)
+window.client = new TorrentClient()

@@ -1,34 +1,8 @@
 <script context='module'>
-
   import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
+  import { defaults } from '@/../common/settings.js'
   export let alToken = localStorage.getItem('ALtoken') || null
-  const defaults = {
-    playerAutoplay: true,
-    playerPause: true,
-    playerAutocomplete: true,
-    rssQuality: '1080',
-    rssFeedsNew: [['New Releases', 'SubsPlease']],
-    rssAutoplay: true,
-    torrentSpeed: 10,
-    torrentPersist: false,
-    torrentDHT: false,
-    torrentPeX: false,
-    torrentPort: 0,
-    dhtPort: 0,
-    missingFont: true,
-    maxConns: 20,
-    subtitleLanguage: 'eng',
-    audioLanguage: 'jpn',
-    enableDoH: false,
-    doHURL: 'https://cloudflare-dns.com/dns-query',
-    disableSubtitleBlur: false,
-    toshoURL: decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnLw==')),
-    showDetailsInRPC: true,
-    smoothScroll: true,
-    cards: 'small',
-    expandingSidebar: true
-  }
 
   export const set = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
   if (set.enableDoH) window.IPC.emit('doh', set.doHURL)
