@@ -126,7 +126,7 @@ export async function alEntry (filemedia) {
       // some anime/OVA's can have a single episode, or some movies can have multiple episodes
       const singleEpisode = (!media.episodes || (media.format === 'MOVIE' && media.episodes === 1)) && 1
       const videoEpisode = Number(filemedia.episode) || singleEpisode
-      const mediaEpisode = media.nextAiringEpisode?.episode || media.episodes || singleEpisode
+      const mediaEpisode = media.episodes || media.nextAiringEpisode?.episode || singleEpisode
       // check episode range
       if (videoEpisode && mediaEpisode && (mediaEpisode >= videoEpisode)) {
         // check user's own watch progress
