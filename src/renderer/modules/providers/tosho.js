@@ -22,6 +22,8 @@ export default async function ({ media, episode }) {
 
   const mapped = mapBestRelease(mapTosho2dDeDupedEntry(entries))
 
+  if (!mapped?.length) throw new Error('No entries found.')
+
   const parseObjects = await anitomyscript(mapped.map(({ title }) => title))
 
   for (const i in parseObjects) mapped[i].parseObject = parseObjects[i]
@@ -44,8 +46,6 @@ export default async function ({ media, episode }) {
     found.leechers = incomplete
     found.seeders = complete
   }
-
-  if (!mapped?.length) throw new Error('No entries found.')
 
   return mapped
 }
