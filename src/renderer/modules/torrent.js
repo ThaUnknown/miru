@@ -46,7 +46,7 @@ export async function add (torrentID, hide) {
     console.info('Torrent: adding torrent', { torrentID })
     files.set([])
     if (!hide) page.set('player')
-    if (typeof torrentID === 'string' && !torrentID.startsWith('magnet:')) {
+    if (typeof torrentID === 'string' && torrentID.startsWith('http')) {
       // IMPORTANT, this is because node's get bypasses proxies, wut????
       const res = await fetch(torrentID)
       torrentID = new Uint8Array(await res.arrayBuffer())

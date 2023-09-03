@@ -111,7 +111,8 @@ class TorrentClient extends WebTorrent {
             'wss://tracker.openwebtorrent.com',
             'wss://tracker.webtorrent.dev',
             'wss://tracker.files.fm:7073/announce',
-            'wss://tracker.btorrent.xyz/'
+            'wss://tracker.btorrent.xyz/',
+            atob('aHR0cDovL255YWEudHJhY2tlci53Zjo3Nzc3L2Fubm91bmNl')
           ]
         })
         break
