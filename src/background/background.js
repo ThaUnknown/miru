@@ -61,7 +61,7 @@ class TorrentClient extends WebTorrent {
 
   loadLastTorrent () {
     const torrent = localStorage.getItem('torrent')
-    if (torrent) this.addTorrent(new Uint8Array(JSON.parse(torrent)), localStorage.getItem('lastFinished'))
+    if (torrent) this.addTorrent(new Uint8Array(JSON.parse(torrent)), JSON.parse(localStorage.getItem('lastFinished')))
   }
 
   handleTorrent (torrent) {
