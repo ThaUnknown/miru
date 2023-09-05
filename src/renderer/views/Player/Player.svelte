@@ -832,7 +832,6 @@
     torrent.up = detail.uploadSpeed || 0
     torrent.down = detail.downloadSpeed || 0
   }
-
   function checkError ({ target }) {
     // video playback failed - show a message saying why
     switch (target.error?.code) {
@@ -842,17 +841,17 @@
       case target.error.MEDIA_ERR_NETWORK:
         console.warn('A network error caused the video download to fail part-way.', target.error)
         toast.error('Video Network Error', {
-          description: 'A network error caused the video download to fail part-way. Click here to reload the video.',
-          duration: 1000000,
-          onClick: () => target.load()
+          description: 'A network error caused the video download to fail part-way. Dismiss this toast to reload the video.',
+          duration: 10000,
+          onDismiss: () => target.load()
         })
         break
       case target.error.MEDIA_ERR_DECODE:
         console.warn('The video playback was aborted due to a corruption problem or because the video used features your browser did not support.', target.error)
         toast.error('Video Decode Error', {
-          description: 'The video playback was aborted due to a corruption problem. Click here to reload the video.',
-          duration: 1000000,
-          onClick: () => target.load()
+          description: 'The video playback was aborted due to a corruption problem. Dismiss this toast to reload the video.',
+          duration: 10000,
+          onDismiss: () => target.load()
         })
         break
       case target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
@@ -860,7 +859,7 @@
           console.warn('The video could not be loaded, either because the server or network failed or because the format is not supported.', target.error)
           toast.error('Video Codec Unsupported', {
             description: 'The video could not be loaded, either because the server or network failed or because the format is not supported. Try a different release by disabling Autoplay Torrents in RSS settings.',
-            duration: 300000
+            duration: 30000
           })
         }
         break

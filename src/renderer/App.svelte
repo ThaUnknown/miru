@@ -35,7 +35,7 @@
   <Logout />
   <Sidebar bind:page={$page} />
   <div class='overflow-hidden content-wrapper h-full z-10'>
-    <Toaster visibleToasts={6} position='top-right' theme='dark' richColors duration={10000} />
+    <Toaster visibleToasts={6} position='top-right' theme='dark' richColors duration={10000} closeButton />
     <RSSView />
     <Router bind:page={$page} />
   </div>
