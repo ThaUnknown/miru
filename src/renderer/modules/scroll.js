@@ -8,8 +8,9 @@ export default function (t, { speed = 120, smooth = 10 } = {}) {
   let lastTime = null
   t.addEventListener('wheel', e => {
     e.preventDefault()
-
-    pos = Math.max(0, Math.min(pos - Math.max(-1, Math.min(1, (e.delta || e.wheelDelta) ?? -e.detail)) * speed, (t.scrollHeight - t.clientHeight) + (smooth * 2)))
+    // is trackpad
+    const spd = (e.deltaY !== (e.deltaY | 0) || e.wheelDelta % 10 !== 0) ? speed / 10 : speed
+    pos = Math.max(0, Math.min(pos - Math.max(-1, Math.min(1, e.deltaY * -1)) * spd, (t.scrollHeight - t.clientHeight) + (smooth * 2)))
     if (!moving) {
       lastTime = null
       update()
