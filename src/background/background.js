@@ -18,7 +18,7 @@ class TorrentClient extends WebTorrent {
       torrentPort: settings.torrentPort || 0,
       dhtPort: settings.dhtPort || 0
     })
-    this.ready = new Promise(resolve => {
+    this._ready = new Promise(resolve => {
       ipcRenderer.on('port', ({ ports }) => {
         this.message = ports[0].postMessage.bind(ports[0])
         resolve()
@@ -166,7 +166,7 @@ class TorrentClient extends WebTorrent {
   }
 
   async dispatch (type, data, transfer) {
-    await this.ready
+    await this._ready
     this.message?.({ type, data }, transfer)
   }
 
