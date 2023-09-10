@@ -869,7 +869,6 @@
         break
     }
   }
-  $: console.log(media)
 </script>
 
 <!-- <svelte:window bind:innerWidth bind:innerHeight /> -->
@@ -947,9 +946,9 @@
   <div class='top z-40 row'>
     <div class='stats col-4 pl-20'>
       <div class='font-weight-bold overflow-hidden text-truncate'>
-        {media.title}
+        {#if media.title}{media.title}{/if}
       </div>
-      <div class='font-weight-normal'>
+      <div class='font-weight-normal overflow-hidden text-truncate'>
         {#if media.episode}Episode {media.episode}{/if}
         {#if media.episode && media.episodeTitle}{' - '}{/if}
         {#if media.episodeTitle}{media.episodeTitle}{/if}
