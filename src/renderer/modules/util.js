@@ -45,12 +45,6 @@ export const DOMPARSER = DOMParser.prototype.parseFromString.bind(new DOMParser(
 
 export const sleep = t => new Promise(resolve => setTimeout(resolve, t))
 
-export const videoExtensions = ['3g2', '3gp', 'asf', 'avi', 'dv', 'flv', 'gxf', 'm2ts', 'm4a', 'm4b', 'm4p', 'm4r', 'm4v', 'mkv', 'mov', 'mp4', 'mpd', 'mpeg', 'mpg', 'mxf', 'nut', 'ogm', 'ogv', 'swf', 'ts', 'vob', 'webm', 'wmv', 'wtv']
-export const videoRx = new RegExp(`.(${videoExtensions.join('|')})$`, 'i')
-
-export const subtitleExtensions = ['srt', 'vtt', 'ass', 'ssa', 'sub', 'txt']
-export const subRx = new RegExp(`.(${subtitleExtensions.join('|')})$`, 'i')
-
 export function toTS (sec, full) {
   if (isNaN(sec) || sec < 0) {
     switch (full) {

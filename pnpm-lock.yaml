@@ -32,8 +32,8 @@ devDependencies:
     specifier: ^2.19.5
     version: 2.19.5
   browser-event-target-emitter:
-    specifier: ^1.0.0
-    version: 1.0.0
+    specifier: ^1.0.1
+    version: 1.0.1
   concurrently:
     specifier: ^8.2.1
     version: 8.2.1
@@ -1410,8 +1410,8 @@ packages:
       fill-range: 7.0.1
     dev: true
 
-  /browser-event-target-emitter@1.0.0:
-    resolution: {integrity: sha512-hpi9tkaQAyoZS/OEopsZjCMeEBJKFJSU6091VTJ6XHZnwLXhhR/J5g/O0Ug+nQXr8kZRn8bEwza3HaLAKNDoPQ==}
+  /browser-event-target-emitter@1.0.1:
+    resolution: {integrity: sha512-mE3QuQF7knsHehiYyhjwpCI33W4VLltRvNaVfIHEXGfbzp2vkvvbv9fE/XQoLd2NWkD29ikQ92iWjw0Eg3CusA==}
     dev: true
 
   /browserslist@4.21.10:

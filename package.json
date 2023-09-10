@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "4.4.3",
+  "version": "4.4.4",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
@@ -21,7 +21,7 @@
     "@typescript-eslint/parser": "^6.5.0",
     "anitomyscript": "github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00",
     "bottleneck": "^2.19.5",
-    "browser-event-target-emitter": "^1.0.0",
+    "browser-event-target-emitter": "^1.0.1",
     "concurrently": "^8.2.1",
     "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",

@@ -1,7 +1,7 @@
 <script context='module'>
   import { writable, get } from 'svelte/store'
   import { resolveFileMedia } from '@/modules/anime.js'
-  import { videoRx } from '@/modules/util.js'
+  import { videoRx } from '@/../common/util.js'
   import { tick } from 'svelte'
   import { state } from '../WatchTogether/WatchTogether.svelte'
 

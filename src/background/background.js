@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron'
 import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
 import { hex2bin, arr2hex, text2arr } from 'uint8-util'
 import Parser from './parser.js'
-import { defaults } from '../common/settings.js'
+import { defaults, subRx, videoRx } from '../common/util.js'
 
 class TorrentClient extends WebTorrent {
   static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
@@ -80,6 +80,22 @@ class TorrentClient extends WebTorrent {
     localStorage.setItem('torrent', JSON.stringify([...torrent.torrentFile]))
   }
 
+  async findSubtitleFiles (targetFile) {
+    const files = this.torrents[0].files
+    const videoFiles = files.filter(file => videoRx.test(file.name))
+    const videoName = targetFile.name.substring(0, targetFile.name.lastIndexOf('.')) || targetFile.name
+    // array of subtitle files that match video name, or all subtitle files when only 1 vid file
+    const subfiles = files.filter(file => {
+      return subRx.test(file.name) && (videoFiles.length === 1 ? true : file.name.includes(videoName))
+    })
+    for (const file of subfiles) {
+      const data = await file.arrayBuffer()
+      if (targetFile !== this.current) return
+      console.log({ name: file.name, data: new Uint8Array(data) })
+      this.dispatch('subtitleFile', { name: file.name, data: new Uint8Array(data) }, [data])
+    }
+  }
+
   _scrape ({ id, infoHashes }) {
     this.trackers.cat._request(this.trackers.cat.scrapeUrl, { info_hash: infoHashes.map(infoHash => hex2bin(infoHash)) }, (err, data) => {
       if (err) {
@@ -150,7 +166,7 @@ class TorrentClient extends WebTorrent {
           this.parser?.destroy()
           this.current = found
           this.parser = new Parser(this, found)
-          // TODO: this.parser.findSubtitleFiles(found)
+          this.findSubtitleFiles(found)
         }
         break
       }

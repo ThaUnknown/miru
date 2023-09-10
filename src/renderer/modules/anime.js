@@ -1,55 +1,49 @@
-import { add } from './torrent.js'
 import { DOMPARSER, PromiseBatch, binarySearch } from './util.js'
 import { alRequest, alSearch } from './anilist.js'
 import anitomyscript from 'anitomyscript'
-import { media } from '../views/Player/MediaHandler.svelte'
 import { toast } from 'svelte-sonner'
 import Sections from './sections.js'
 import { page } from '@/App.svelte'
+import clipboard from './clipboard.js'
 
 import { search, key } from '@/views/Search.svelte'
 
 import { playAnime } from '../views/RSSView.svelte'
 
-const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 
-window.addEventListener('paste', ({ clipboardData }) => { // WAIT image lookup on paste, or add torrent on paste
-  const item = clipboardData.items[0]
-  if (!item) return
-  const { type } = item
-  if (type.startsWith('image')) {
-    toast.promise(traceAnime(item.getAsFile()), {
-      description: 'You can also paste an URL to an image.',
-      loading: 'Looking up anime for image...',
-      success: 'Found anime for image!',
-      error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
-    })
-    return
-  }
-  if (!type.startsWith('text')) return
-  item.getAsString(text => {
-    if (torrentRx.exec(text)) {
-      media.set(null)
-      add(text)
-    } else {
-      let src = null
-      if (type === 'text/html') {
-        src = DOMPARSER(text, 'text/html').querySelectorAll('img')[0]?.src
-      } else if (imageRx.exec(text)) {
-        src = text
-      }
-      if (src) {
-        toast.promise(traceAnime(src), {
-          description: 'You can also paste an URL to an image.',
-          loading: 'Looking up anime for image...',
-          success: 'Found anime for image!',
-          error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
-        })
-      }
+clipboard.on('files', ({ detail }) => {
+  for (const file of detail) {
+    if (file.type.startsWith('image')) {
+      toast.promise(traceAnime(file), {
+        description: 'You can also paste an URL to an image.',
+        loading: 'Looking up anime for image...',
+        success: 'Found anime for image!',
+        error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
+      })
     }
-  })
+  }
 })
+
+clipboard.on('text', ({ detail }) => {
+  for (const { type, text } of detail) {
+    let src = null
+    if (type === 'text/html') {
+      src = DOMPARSER(text, 'text/html').querySelectorAll('img')[0]?.src
+    } else if (imageRx.exec(text)) {
+      src = text
+    }
+    if (src) {
+      toast.promise(traceAnime(src), {
+        description: 'You can also paste an URL to an image.',
+        loading: 'Looking up anime for image...',
+        success: 'Found anime for image!',
+        error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
+      })
+    }
+  }
+})
+
 export async function traceAnime (image) { // WAIT lookup logic
   let options
   let url = `https://api.trace.moe/search?cutBorders&url=${image}`
