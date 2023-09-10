@@ -28,6 +28,7 @@ class TorrentClient extends WebTorrent {
           this.handleMessage({ data })
         }
       })
+      ipcRenderer.on('destroy', this.predestroy.bind(this))
     })
     this.settings = settings
 
@@ -192,4 +193,5 @@ class TorrentClient extends WebTorrent {
   }
 }
 
+// @ts-ignore
 window.client = new TorrentClient()

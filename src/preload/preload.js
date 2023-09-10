@@ -25,8 +25,8 @@ ipcRenderer.once('port', ({ ports }) => {
     onmessage: (cb) => {
       ports[0].onmessage = ({ type, data }) => cb({ type, data })
     },
-    postMessage: (...args) => {
-      ports[0].postMessage(...args)
+    postMessage: (a, b) => {
+      ports[0].postMessage(a, b)
     }
   })
 })

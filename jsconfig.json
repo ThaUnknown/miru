@@ -3,7 +3,11 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/renderer/*"],
-    }
+    },
+    "checkJs": true,
+    "target": "ESNext",
+    "moduleResolution": "node",
+    "module": "ESNext"
   },
   "exclude": ["node_modules/**", "**/node_modules", "dist", "build"]
 }
