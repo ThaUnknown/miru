@@ -952,7 +952,7 @@
       <div class='font-weight-normal'>
         {#if media.episode}Episode {media.episode}{/if}
         {#if media.episode && media.episodeTitle}{' - '}{/if}
-        {#if media.episodeTitle}media.episodeTitle{/if}
+        {#if media.episodeTitle}{media.episodeTitle}{/if}
       </div>
     </div>
     <div class='d-flex col-4 justify-content-center'>
