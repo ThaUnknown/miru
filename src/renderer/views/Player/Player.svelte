@@ -948,7 +948,7 @@
       <div class='font-weight-bold overflow-hidden text-truncate'>
         {#if media.title}{media.title}{/if}
       </div>
-      <div class='font-weight-normal overflow-hidden text-truncate'>
+      <div class='font-weight-normal overflow-hidden text-truncate font-size-16 text-muted'>
         {#if media.episode}Episode {media.episode}{/if}
         {#if media.episode && media.episodeTitle}{' - '}{/if}
         {#if media.episodeTitle}{media.episodeTitle}{/if}

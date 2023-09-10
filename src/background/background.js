@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron'
 import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
 import { hex2bin, arr2hex, text2arr } from 'uint8-util'
 import Parser from './parser.js'
-import { defaults, subRx, videoRx } from '../common/util.js'
+import { defaults, fontRx, subRx, videoRx } from '../common/util.js'
 
 class TorrentClient extends WebTorrent {
   static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
@@ -81,6 +81,27 @@ class TorrentClient extends WebTorrent {
     localStorage.setItem('torrent', JSON.stringify([...torrent.torrentFile]))
   }
 
+  async findFontFiles (targetFile) {
+    const files = this.torrents[0].files
+    const fontFiles = files.filter(file => fontRx.test(file.name))
+
+    const map = {}
+
+    // deduplicate fonts
+    // some releases have duplicate fonts for diff languages
+    // if they have different chars, we can't find that out anyways
+    // so some chars might fail, on REALLY bad releases
+    for (const file of fontFiles) {
+      map[file.name] = file
+    }
+
+    for (const file of Object.values(map)) {
+      const data = await file.arrayBuffer()
+      if (targetFile !== this.current) return
+      this.dispatch('file', { data: new Uint8Array(data) }, [data])
+    }
+  }
+
   async findSubtitleFiles (targetFile) {
     const files = this.torrents[0].files
     const videoFiles = files.filter(file => videoRx.test(file.name))
@@ -92,7 +113,6 @@ class TorrentClient extends WebTorrent {
     for (const file of subfiles) {
       const data = await file.arrayBuffer()
       if (targetFile !== this.current) return
-      console.log({ name: file.name, data: new Uint8Array(data) })
       this.dispatch('subtitleFile', { name: file.name, data: new Uint8Array(data) }, [data])
     }
   }
@@ -168,6 +188,7 @@ class TorrentClient extends WebTorrent {
           this.current = found
           this.parser = new Parser(this, found)
           this.findSubtitleFiles(found)
+          this.findFontFiles(found)
         }
         break
       }
