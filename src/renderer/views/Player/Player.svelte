@@ -869,6 +869,7 @@
         break
     }
   }
+  $: console.log(media)
 </script>
 
 <!-- <svelte:window bind:innerWidth bind:innerHeight /> -->
@@ -944,7 +945,16 @@
     </div>
   {/if}
   <div class='top z-40 row'>
-    <div class='stats col-4 pl-20 font-weight-medium overflow-hidden text-truncate'>{[media.title, media.episode, media.episodeNumber].filter(i => i).join(' - ')}</div>
+    <div class='stats col-4 pl-20'>
+      <div class='font-weight-bold overflow-hidden text-truncate'>
+        {media.title}
+      </div>
+      <div class='font-weight-normal'>
+        {#if media.episode}Episode {media.episode}{/if}
+        {#if media.episode && media.episodeTitle}{' - '}{/if}
+        {#if media.episodeTitle}media.episodeTitle{/if}
+      </div>
+    </div>
     <div class='d-flex col-4 justify-content-center'>
       <span class='material-symbols-outlined'> people </span>
       <span class='stats'>{torrent.peers || 0}</span>
@@ -1159,8 +1169,8 @@
   }
   .stats {
     font-size: 2.3rem !important;
+    padding-top: 1.5rem;
     white-space: nowrap;
-    align-self: center;
     font-weight: 600;
     font-family: Roboto, Arial, Helvetica, sans-serif;
   }
