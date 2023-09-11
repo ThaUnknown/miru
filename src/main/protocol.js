@@ -30,7 +30,7 @@ export default class {
 
     protocol.registerHttpProtocol('miru', (req, cb) => {
       const token = req.url.slice(7)
-      this.window.loadURL(development ? 'http://localhost:5000/app.html' + token : path.join(__dirname, '/app.html' + token))
+      this.window.loadURL(development ? 'http://localhost:5000/app.html' + token : `file://${path.join(__dirname, '/app.html')}${token}`)
     })
 
     app.on('open-url', (event, url) => {

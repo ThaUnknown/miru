@@ -51,8 +51,8 @@ function createWindow () {
     fn({ responseHeaders })
   })
 
-  const torrentLoad = webtorrentWindow.loadURL(development ? 'http://localhost:5000/background.html' : path.join(__dirname, '/background.html'))
-  mainWindow.loadURL(development ? 'http://localhost:5000/app.html' : path.join(__dirname, '/app.html'))
+  const torrentLoad = webtorrentWindow.loadURL(development ? 'http://localhost:5000/background.html' : `file://${path.join(__dirname, '/background.html')}`)
+  mainWindow.loadURL(development ? 'http://localhost:5000/app.html' : `file://${path.join(__dirname, '/app.html')}`)
 
   if (development) {
     webtorrentWindow.webContents.openDevTools()
