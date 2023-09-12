@@ -1,8 +1,7 @@
 import { alRequest } from '@/modules/anilist.js'
 import { set } from '@/views/Settings.svelte'
-import { findEdge, resolveSeason, getMediaMaxEp } from './anime.js'
+import { findEdge, resolveSeason, getMediaMaxEp, mapBestRelease } from '../anime.js'
 import { exclusions, getRSSContent, parseRSSNodes } from '../rss.js'
-import { mapBestRelease } from '../anime.js'
 
 export default async function getRSSEntries ({ media, episode, mode, ignoreQuality }) {
   // mode cuts down on the amt of queries made 'check' || 'batch'

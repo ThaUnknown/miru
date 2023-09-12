@@ -1,6 +1,6 @@
 let lastTapElement = null
 
-const noop = () => {}
+const noop = _ => {}
 
 document.addEventListener('pointerup', () => {
   lastTapElement?.dispatchEvent(new Event('custom-pointerleave'))

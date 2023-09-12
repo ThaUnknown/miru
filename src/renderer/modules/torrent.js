@@ -12,7 +12,7 @@ class TorrentWorker extends EventTarget {
     this.ready = new Promise(resolve => {
       window.IPC.once('port', () => {
         this.port = window.port
-        this.port.onmessage((...args) => this.handleMessage(...args))
+        this.port.onmessage(this.handleMessage.bind(this))
         resolve()
       })
       window.IPC.emit('portRequest')

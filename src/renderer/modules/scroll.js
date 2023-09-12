@@ -35,6 +35,6 @@ export default function (t, { speed = 120, smooth = 10 } = {}) {
     scrollTop += delta
 
     t.scrollTo(0, scrollTop < 1.3 ? 0 : scrollTop)
-    moving = Math.abs(delta) > 0.1 && requestAnimationFrame(update)
+    moving = Math.abs(delta) > 0.1 && !!requestAnimationFrame(update)
   }
 }

@@ -1,6 +1,6 @@
 import { DOMPARSER, PromiseBatch, binarySearch } from './util.js'
 import { alRequest, alSearch } from './anilist.js'
-import anitomyscript from 'anitomyscript'
+import _anitomyscript from 'anitomyscript'
 import { toast } from 'svelte-sonner'
 import Sections from './sections.js'
 import { page } from '@/App.svelte'
@@ -86,9 +86,7 @@ export async function traceAnime (image) { // WAIT lookup logic
     key.value = {}
     page.value = 'search'
   } else {
-    throw new Error('Search Failed', {
-      message: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
-    })
+    throw new Error('Search Failed \n Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.')
   }
 }
 
@@ -170,8 +168,10 @@ const postfix = {
   3: 'rd'
 }
 
-async function resolveTitle (name) {
+async function resolveTitle (parseObject) {
+  const name = parseObject.anime_title
   const method = { name, method: 'SearchName', perPage: 10, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
+  if (parseObject.anime_year) method.year = parseObject.anime_year
 
   // inefficient but readable
 
@@ -212,50 +212,64 @@ async function resolveTitle (name) {
         media = (await alSearch(method)).data.Page.media[0]
       }
     }
-    // remove 2020
-    if (!media) {
-      const match = method.name.match(/ (19[5-9]\d|20\d{2})/)
-      if (match) {
-        method.name = method.name.replace(/ (19[5-9]\d|20\d{2})/, '')
-        media = (await alSearch(method)).data.Page.media[0]
-      }
-    }
   } catch (e) { }
 
-  if (media) relations[name] = media
+  if (media) relations[getRelationKey(parseObject)] = media
 }
 
-function getParseObjTitle (obj) {
-  let title = obj.anime_title
-  if (obj.anime_year) title += ` ${obj.anime_year}`
-  if (obj.anime_season > 1) title += ' S' + obj.anime_season
-  const match = title.match(/S(\d{2})E(\d{2})/)
-  if (match) {
-    obj.anime_season = Number(match[1])
-    obj.episode_number = Number(match[2])
-    title = title.replace(/S(\d{2})E(\d{2})/, '')
+// utility method for correcting anitomyscript woes for what's needed
+export async function anitomyscript (...args) {
+  // @ts-ignore
+  const res = await _anitomyscript(...args)
+
+  const parseObjs = Array.isArray(res) ? res : [res]
+
+  for (const obj of parseObjs) {
+    const seasonMatch = obj.anime_title.match(/S(\d{2})E(\d{2})/)
+    if (seasonMatch) {
+      obj.anime_season = seasonMatch[1]
+      obj.episode_number = seasonMatch[2]
+      obj.anime_title = obj.anime_title.replace(/S(\d{2})E(\d{2})/, '')
+    }
+    const yearMatch = obj.anime_title.match(/ (19[5-9]\d|20\d{2})/)
+    if (yearMatch && Number(yearMatch[1]) <= (new Date().getUTCFullYear() + 1)) {
+      obj.anime_year = yearMatch[1]
+      obj.anime_title = obj.anime_title.replace(/ (19[5-9]\d|20\d{2})/, '')
+    }
+    if (Number(obj.anime_season) > 1) obj.anime_title += ' S' + obj.anime_season
   }
-  return title
+
+  return parseObjs
 }
 
-window.xd = resolveFileMedia
+function getRelationKey (obj) {
+  let key = obj.anime_title
+  if (obj.anime_year) key += obj.anime_year
+  return key
+}
 
 // TODO: anidb aka true episodes need to be mapped to anilist episodes a bit better
 export async function resolveFileMedia (fileName) {
-  let parseObjs = await anitomyscript(fileName)
+  const parseObjs = await anitomyscript(fileName)
 
-  if (parseObjs.constructor !== Array) parseObjs = [parseObjs]
   // batches promises in 10 at a time, because of CF burst protection, which still sometimes gets triggered :/
-  await PromiseBatch(resolveTitle, [...new Set(parseObjs.map(obj => getParseObjTitle(obj)))].filter(title => !(title in relations)), 10)
+  const uniq = {}
+  for (const obj of parseObjs) {
+    const key = getRelationKey(obj)
+    if (key in relations) continue
+    uniq[key] = obj
+  }
+  await PromiseBatch(resolveTitle, Object.values(uniq), 10)
+
   const fileMedias = []
   for (const parseObj of parseObjs) {
     let failed = false
     let episode
-    let media = relations[getParseObjTitle(parseObj)]
+    let media = relations[getRelationKey(parseObj)]
     // resolve episode, if movie, dont.
     const maxep = media?.nextAiringEpisode?.episode || media?.episodes
     if ((media?.format !== 'MOVIE' || maxep) && parseObj.episode_number) {
-      if (parseObj.episode_number.constructor === Array) {
+      if (Array.isArray(parseObj.episode_number)) {
         // is an episode range
         if (parseInt(parseObj.episode_number[0]) === 1) {
           // if it starts with #1 and overflows then it includes more than 1 season in a batch, cant fix this cleanly, name is parsed per file basis so this shouldnt be an issue

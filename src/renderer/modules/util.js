@@ -41,6 +41,9 @@ export function fastPrettyBytes (num) {
   return Number((num / Math.pow(1000, exponent)).toFixed(2)) + units[exponent]
 }
 
+/**
+ * @type {DOMParser['parseFromString']}
+ */
 export const DOMPARSER = DOMParser.prototype.parseFromString.bind(new DOMParser())
 
 export const sleep = t => new Promise(resolve => setTimeout(resolve, t))
@@ -59,7 +62,13 @@ export function toTS (sec, full) {
     }
   }
   const hours = Math.floor(sec / 3600)
+  /**
+   * @type {any}
+   */
   let minutes = Math.floor(sec / 60) - hours * 60
+  /**
+   * @type {any}
+   */
   let seconds = full === 1 ? (sec % 60).toFixed(2) : Math.floor(sec % 60)
   if (minutes < 10 && (hours > 0 || full)) minutes = '0' + minutes
   if (seconds < 10) seconds = '0' + seconds

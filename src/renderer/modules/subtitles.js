@@ -122,19 +122,6 @@ export default class Subtitles {
     clipboard.on('files', this.handleClipboardFiles)
   }
 
-  findSubtitleFiles (targetFile) {
-    const videoName = targetFile.name.substring(0, targetFile.name.lastIndexOf('.')) || targetFile.name
-    // array of subtitle files that match video name, or all subtitle files when only 1 vid file
-    const subfiles = this.files.filter(file => {
-      return !this.subtitleFiles.some(sub => { // exclude already existing files
-        return sub.lastModified === file.lastModified && sub.name === file.name && sub.size === file.size
-      }) && subRx.test(file.name) && (this.videoFiles.length === 1 ? true : file.name.includes(videoName))
-    })
-    for (const file of subfiles) {
-      this.addSingleSubtitleFile(file)
-    }
-  }
-
   async addSingleSubtitleFile (file) {
     const index = this.headers.length
     this.subtitleFiles[index] = file

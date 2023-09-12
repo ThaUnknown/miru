@@ -113,7 +113,6 @@
       if (videos?.length) {
         if (subs) {
           subs.files = files || []
-          subs.findSubtitleFiles(current)
         }
       }
     } else {

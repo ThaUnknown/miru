@@ -86,7 +86,7 @@ class RSSMediaManager {
 
     if (!content) return false
 
-    const pubDate = new Date(content.querySelector('pubDate').textContent) * page * perPage
+    const pubDate = +(new Date(content.querySelector('pubDate').textContent)) * page * perPage
     if (this.resultMap[url]?.date === pubDate) return false
     return { content, pubDate }
   }

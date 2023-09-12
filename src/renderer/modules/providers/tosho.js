@@ -1,11 +1,9 @@
-import { mapBestRelease } from '../anime.js'
+import { mapBestRelease, anitomyscript } from '../anime.js'
 import { fastPrettyBytes } from '../util.js'
 import { exclusions } from '../rss.js'
 import { set } from '@/views/Settings.svelte'
 import { alRequest } from '../anilist.js'
 import { client } from '@/modules/torrent.js'
-
-import anitomyscript from 'anitomyscript'
 
 export default async function ({ media, episode }) {
   const json = await getAniDBFromAL(media)
@@ -101,8 +99,8 @@ export function getEpisodeNumberByAirDate (alDate, episodes, episode) {
   // ineffcient but reliable
   const closestEpisodes = Object.values(episodes).reduce((prev, curr) => {
     if (!prev[0]) return [curr]
-    const prevDate = Math.abs(new Date(prev[0]?.airdate) - alDate)
-    const currDate = Math.abs(new Date(curr.airdate) - alDate)
+    const prevDate = Math.abs(+new Date(prev[0]?.airdate) - alDate)
+    const currDate = Math.abs(+new Date(curr.airdate) - alDate)
     if (prevDate === currDate) {
       prev.push(curr)
       return prev
@@ -176,10 +174,10 @@ function isTitleSplitCour (media) {
 }
 
 const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL']
-const getDate = ({ seasonYear, season }) => new Date(`${seasonYear}-${seasons.indexOf(season) * 4 || 1}-01`)
+const getDate = ({ seasonYear, season }) => +new Date(`${seasonYear}-${seasons.indexOf(season) * 4 || 1}-01`)
 
 function getMediaDate (media) {
-  if (media.startDate) return new Date(Object.values(media.startDate).join(' '))
+  if (media.startDate) return +new Date(Object.values(media.startDate).join(' '))
   return getDate(media)
 }
 
@@ -242,7 +240,7 @@ function buildQuery (quality) {
   return query
 }
 
-async function fetchBatches ({ episodeCount, id, quality, movie }) {
+async function fetchBatches ({ episodeCount, id, quality, movie = null }) {
   try {
     const queryString = buildQuery(quality)
     const torrents = await fetch(set.toshoURL + 'json?order=size-d&aid=' + id + queryString)
