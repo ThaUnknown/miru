@@ -59,6 +59,11 @@ client.on('error', ({ detail }) => {
   toast.error('Torrent Error', { description: detail.message || detail })
 })
 
+client.on('warn', ({ detail }) => {
+  console.error(detail)
+  toast.warning('Torrent Warning', { description: detail.message || detail })
+})
+
 export async function add (torrentID, hide) {
   if (torrentID) {
     console.info('Torrent: adding torrent', { torrentID })

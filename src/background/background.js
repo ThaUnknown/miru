@@ -4,6 +4,9 @@ import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
 import { hex2bin, arr2hex, text2arr } from 'uint8-util'
 import Parser from './parser.js'
 import { defaults, fontRx, subRx, videoRx } from '../common/util.js'
+import { statfs } from 'fs/promises'
+
+const LARGE_FILESIZE = 32_000_000_000
 
 class TorrentClient extends WebTorrent {
   static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
@@ -65,7 +68,7 @@ class TorrentClient extends WebTorrent {
     if (torrent) this.addTorrent(new Uint8Array(JSON.parse(torrent)), JSON.parse(localStorage.getItem('lastFinished')))
   }
 
-  handleTorrent (torrent) {
+  async handleTorrent (torrent) {
     const files = torrent.files.map(file => {
       return {
         infoHash: torrent.infoHash,
@@ -76,9 +79,21 @@ class TorrentClient extends WebTorrent {
         url: 'http://localhost:' + this.server.address().port + file.streamURL
       }
     })
+    if (torrent.length > LARGE_FILESIZE) {
+      for (const file of torrent.files) {
+        file.deselect()
+      }
+      this.dispatch('warn', 'Detected Large Torrent! To Conserve Drive Space Files Will Be Downloaded Selectively Instead Of Downloading The Entire Torrent.')
+    }
     this.dispatch('files', files)
     this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
     localStorage.setItem('torrent', JSON.stringify([...torrent.torrentFile]))
+
+    const { bsize, bavail } = await statfs(torrent.path)
+
+    if (torrent.length > bsize * bavail) {
+      this.dispatch('error', 'Torrent Too Big! This Torrent Exceeds The Selected Drive\'s Available Space. Change Download Location In Torrent Settings To A Drive With More Space And Restart The App!')
+    }
   }
 
   async findFontFiles (targetFile) {
@@ -180,11 +195,14 @@ class TorrentClient extends WebTorrent {
     switch (data.type) {
       case 'current': {
         if (data.data) {
-          const found = (await this.get(data.data.infoHash))?.files.find(file => file.path === data.data.path)
+          const torrent = await this.get(data.data.infoHash)
+          const found = torrent?.files.find(file => file.path === data.data.path)
+          if (!found) return
           if (this.current) {
             this.current.removeAllListeners('stream')
           }
           this.parser?.destroy()
+          found.select()
           this.current = found
           this.parser = new Parser(this, found)
           this.findSubtitleFiles(found)
