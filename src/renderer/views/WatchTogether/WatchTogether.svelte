@@ -1,5 +1,5 @@
 <script context='module'>
-  import { writable, get } from 'svelte/store'
+  import { writable, get } from 'simple-store-svelte'
   import { alID } from '@/modules/anilist.js'
   import { add, client } from '@/modules/torrent.js'
   import { generateRandomHexCode } from '@/modules/util.js'

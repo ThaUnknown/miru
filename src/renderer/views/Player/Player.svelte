@@ -12,7 +12,7 @@
   import Seekbar from 'perfect-seekbar'
   import { click } from '@/modules/click.js'
 
-  import { w2gEmitter } from '../WatchTogether/WatchTogether.svelte'
+  import { w2gEmitter, state } from '../WatchTogether/WatchTogether.svelte'
   import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
 
   const emit = createEventDispatcher()
@@ -228,7 +228,7 @@
     }
   })
   function tryPlayNext () {
-    if (set.playerAutoplay) playNext()
+    if (set.playerAutoplay && !state.value) playNext()
   }
   function playNext () {
     if (hasNext) {
