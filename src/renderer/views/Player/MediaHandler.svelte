@@ -70,6 +70,41 @@
 
   const TYPE_EXCLUSIONS = ['ED', 'ENDING', 'NCED', 'NCOP', 'OP', 'OPENING', 'PREVIEW', 'PV']
 
+  // find best media in batch to play
+  // currently in progress or unwatched
+  // tv, movie, ona, ova
+  function findPreferredPlaybackMedia (videoFiles) {
+    for (const { media } of videoFiles) {
+      if (media.media?.mediaListEntry.status === 'CURRENT') return { media: media.media, episode: (media.media.mediaListEntry.progress || 0) + 1 }
+    }
+
+    for (const { media } of videoFiles) {
+      if (media.media?.mediaListEntry.status === 'REPEATING') return { media: media.media, episode: (media.media.mediaListEntry.progress || 0) + 1 }
+    }
+
+    let lowestPlanning
+    for (const { media, episode } of videoFiles) {
+      if (media.media?.mediaListEntry.status === 'PLANNING' && (!lowestPlanning || episode > lowestPlanning.episode)) lowestPlanning = { media: media.media, episode }
+    }
+    if (lowestPlanning) return lowestPlanning
+
+    // unwatched
+    for (const format of ['TV', 'MOVIE', 'ONA', 'OVA']) {
+      let lowestUnwatched
+      for (const { media, episode } of videoFiles) {
+        if (media.media?.format === format && !media.media.mediaListEntry && (!lowestUnwatched || episode > lowestUnwatched.episode)) lowestUnwatched = { media: media.media, episode }
+      }
+      if (lowestUnwatched) return lowestUnwatched
+    }
+
+    // highest occurence if all else fails - unlikely
+
+    const max = highestOccurence(videoFiles, file => file.media.media?.id).media
+    if (max?.media) {
+      return { media: max.media, episode: (max.media.mediaListEntry?.progress + 1 || 1) }
+    }
+  }
+
   async function handleFiles (files) {
     console.info('MediaHandler: got files', files)
     if (!files?.length) return processed.set(files)
@@ -102,10 +137,7 @@
     console.info('MediaHandler: resolved video files', { videoFiles })
 
     if (!nowPlaying) {
-      const max = highestOccurence(videoFiles, file => file.media.media?.id).media
-      if (max?.media) {
-        nowPlaying = { media: max.media, episode: (max.media.mediaListEntry?.progress + 1 || 1) }
-      }
+      nowPlaying = findPreferredPlaybackMedia(videoFiles)
     }
 
     const filtered = nowPlaying?.media && videoFiles.filter(file => file.media?.media?.id && file.media?.media?.id === nowPlaying.media.id)
