@@ -69,7 +69,8 @@
 
   $: loadRss($rss)
 
-  let table = null
+  let data = null
+  let filtered = null
 
   async function loadRss ({ media, episode }) {
     if (!media) return
@@ -94,11 +95,11 @@
         play(entries[0])
       }
     } else {
-      table = entries
+      filtered = data = entries
     }
   }
   function close () {
-    table = null
+    data = null
   }
   function checkClose ({ keyCode }) {
     if (keyCode === 27) close()
@@ -112,20 +113,27 @@
       })
     }
     add(entry.link)
-    table = null
+    data = null
   }
   let modal
-  $: table && modal?.focus()
+  $: data && modal?.focus()
+
+  function filter ({ target }) {
+    const searchText = target.value
+
+    filtered = data.filter(({ title }) => title.toLowerCase().includes(searchText.toLowerCase()))
+  }
 </script>
 
-<div class='modal z-40' class:show={table} id='viewAnime'>
-  {#if table}
+<div class='modal z-40' class:show={data} id='viewAnime'>
+  {#if data}
     <div class='modal-dialog' on:pointerup|self={close} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
       <div class='modal-content w-auto h-full mx-20 p-0 rounded overflow-x-hidden overflow-y-scroll'>
         <div class='w-full bg-dark-light d-flex px-15 py-10 position-sticky top-0 z-10'>
           <div class='material-symbols-outlined text-danger symbol-bold' title='Badges Are a Rough Guess of Information And Might Not Be Representative of Actual Data'>
             warning
           </div>
+          <input type='text' class='form-control bg-dark w-300 ml-15' placeholder='Search...' on:input={filter} />
           <button class='btn btn-square bg-dark rounded-circle ml-auto pointer' type='button' use:click={close}> &times; </button>
         </div>
         <table class='table table-hover font-size-14 position-relative'>
@@ -141,7 +149,7 @@
             </tr>
           </thead>
           <tbody class='pointer'>
-            {#each table as row}
+            {#each filtered as row}
               <tr class='border-0' class:text-secondary={row.best} use:click={() => play(row)}>
                 <td class='py-10 pl-20 pr-0'>
                   {#if row.best}
