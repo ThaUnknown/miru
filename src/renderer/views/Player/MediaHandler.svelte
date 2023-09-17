@@ -75,16 +75,16 @@
   // tv, movie, ona, ova
   function findPreferredPlaybackMedia (videoFiles) {
     for (const { media } of videoFiles) {
-      if (media.media?.mediaListEntry.status === 'CURRENT') return { media: media.media, episode: (media.media.mediaListEntry.progress || 0) + 1 }
+      if (media.media?.mediaListEntry?.status === 'CURRENT') return { media: media.media, episode: (media.media.mediaListEntry.progress || 0) + 1 }
     }
 
     for (const { media } of videoFiles) {
-      if (media.media?.mediaListEntry.status === 'REPEATING') return { media: media.media, episode: (media.media.mediaListEntry.progress || 0) + 1 }
+      if (media.media?.mediaListEntry?.status === 'REPEATING') return { media: media.media, episode: (media.media.mediaListEntry.progress || 0) + 1 }
     }
 
     let lowestPlanning
     for (const { media, episode } of videoFiles) {
-      if (media.media?.mediaListEntry.status === 'PLANNING' && (!lowestPlanning || episode > lowestPlanning.episode)) lowestPlanning = { media: media.media, episode }
+      if (media.media?.mediaListEntry?.status === 'PLANNING' && (!lowestPlanning || episode > lowestPlanning.episode)) lowestPlanning = { media: media.media, episode }
     }
     if (lowestPlanning) return lowestPlanning
 
