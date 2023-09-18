@@ -4,7 +4,7 @@
 
 <script>
   import { setContext, onDestroy } from 'svelte'
-  import { writable } from 'svelte/store'
+  import { writable } from 'simple-store-svelte'
 
   const tabs = []
   const panels = []

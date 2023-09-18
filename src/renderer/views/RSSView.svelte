@@ -6,7 +6,7 @@
   import getRSSEntries from '@/modules/providers/tosho.js'
   import { click } from '@/modules/click.js'
 
-  import { writable } from 'svelte/store'
+  import { writable } from 'simple-store-svelte'
 
   const rss = writable({})
 

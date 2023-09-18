@@ -95,8 +95,8 @@ devDependencies:
     specifier: ^1.2.3
     version: 1.2.3
   simple-store-svelte:
-    specifier: ^1.0.0
-    version: 1.0.0
+    specifier: ^1.0.1
+    version: 1.0.1
   svelte:
     specifier: ^4.2.0
     version: 4.2.0
@@ -5179,8 +5179,8 @@ packages:
       simple-concat: 1.0.1
     dev: true
 
-  /simple-store-svelte@1.0.0:
-    resolution: {integrity: sha512-XrZb1acyQxIpwDsLIubK8+5uo8BE9zogvwZbaEAfVAAcoTdXLLDybD3gOsVVZR+o7ZkZCzpcgRjWGwJsM4iiiQ==}
+  /simple-store-svelte@1.0.1:
+    resolution: {integrity: sha512-xKsQoalLfLc1cK3FYx6u/FiAxAUq4NrA3zld0jJbgEpIJed7nigoN0fdKc7db4LJ1wfxxMcbaV2hpSDVa7pxhw==}
     dev: true
 
   /simple-update-notifier@2.0.0:

@@ -1,5 +1,5 @@
 <script context='module'>
-  import { writable, get } from 'simple-store-svelte'
+  import { writable } from 'simple-store-svelte'
   import { alID } from '@/modules/anilist.js'
   import { add, client } from '@/modules/torrent.js'
   import { generateRandomHexCode } from '@/modules/util.js'
@@ -117,7 +117,7 @@
 
   function emit (type, data) {
     if (p2pt) {
-      for (const { peer } of Object.values(get(peers))) {
+      for (const { peer } of Object.values(peers.value)) {
         p2pt.send(peer, { type, ...data })
       }
     }

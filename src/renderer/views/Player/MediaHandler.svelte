@@ -1,5 +1,5 @@
 <script context='module'>
-  import { writable, get } from 'svelte/store'
+  import { writable } from 'simple-store-svelte'
   import { resolveFileMedia } from '@/modules/anime.js'
   import { videoRx } from '@/../common/util.js'
   import { tick } from 'svelte'
@@ -29,11 +29,11 @@
   }
 
   export function findInCurrent (obj) {
-    const oldNowPlaying = get(nowPlaying)
+    const oldNowPlaying = nowPlaying.value
 
     if (oldNowPlaying.media?.id === obj.media.id && oldNowPlaying.episode === obj.episode) return false
 
-    const fileList = get(files)
+    const fileList = files.value
 
     const targetFile = fileList.find(file => file.media?.media?.id === obj.media.id && file.media?.episode === obj.episode)
     if (!targetFile) return false
@@ -117,7 +117,7 @@
         otherFiles.push(file)
       }
     }
-    let nowPlaying = get(media)
+    let nowPlaying = media.value
 
     const resolved = await resolveFileMedia(videoFiles.map(file => file.name))
 
@@ -198,8 +198,8 @@
     navigator.mediaSession.metadata = metadata
   }
 
-  function setDiscordRPC (np = get(nowPlaying)) {
-    const w2g = get(state)
+  function setDiscordRPC (np = nowPlaying.value) {
+    const w2g = state.value
     const details = [np.title, np.episodeTitle].filter(i => i).join(' - ') || undefined
     const activity = {
       details,
