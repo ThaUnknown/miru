@@ -305,13 +305,14 @@ export async function alRequest (opts) {
   switch (opts.method) {
     case 'SearchName': {
       variables.search = opts.name
+      variables.isAdult = variables.isAdult ?? false
       query = /* js */` 
-query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: [MediaStatus], $year: Int){
+query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $status: [MediaStatus], $year: Int, $isAdult: Boolean){
   Page(page: $page, perPage: $perPage){
     pageInfo{
       hasNextPage
     },
-    media(type: ANIME, search: $search, sort: $sort, status_in: $status, isAdult: false, format_not: MUSIC, seasonYear: $year){
+    media(type: ANIME, search: $search, sort: $sort, status_in: $status, isAdult: $isAdult, format_not: MUSIC, seasonYear: $year){
       ${queryObjects}
     }
   }

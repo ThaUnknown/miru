@@ -71,7 +71,7 @@ function createWindow () {
     mainWindow = null
     try {
       webtorrentWindow.webContents.postMessage('destroy', null)
-    } catch(e) {}
+    } catch (e) {}
     app.quit()
   })
 

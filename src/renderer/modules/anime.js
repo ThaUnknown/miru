@@ -212,6 +212,11 @@ async function resolveTitle (parseObject) {
         media = (await alSearch(method)).data.Page.media[0]
       }
     }
+    // check adult
+    if (!media) {
+      method.isAdult = true
+      media = (await alSearch(method)).data.Page.media[0]
+    }
   } catch (e) { }
 
   if (media) relations[getRelationKey(parseObject)] = media

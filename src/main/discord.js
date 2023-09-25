@@ -40,8 +40,8 @@ export default class {
       this.discord.subscribe('ACTIVITY_JOIN')
       this.discord.subscribe('ACTIVITY_SPECTATE')
     })
-    this.discord.on('ACTIVITY_JOIN', (args) => {
-      this.window.webContents.send('w2glink', args.secret)
+    this.discord.on('ACTIVITY_JOIN', ({ secret }) => {
+      this.window.webContents.send('w2glink', secret)
     })
 
     this.loginRPC()

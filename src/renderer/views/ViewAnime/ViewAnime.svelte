@@ -170,7 +170,7 @@
           </ToggleList>
         </div>
         <div class='col-5 d-flex flex-column pl-20'>
-          <EpisodeList id={media.id} userProgress={media.mediaListEntry && media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress} episodeCount={getMediaMaxEp(media)} duration={media.duration} {play} />
+          <EpisodeList {media} userProgress={media.mediaListEntry && media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress} episodeCount={getMediaMaxEp(media)} {play} />
         </div>
       </div>
     </div>

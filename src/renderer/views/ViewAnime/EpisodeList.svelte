@@ -3,32 +3,38 @@
   import { click } from '@/modules/click.js'
   import { getEpisodeNumberByAirDate } from '@/modules/providers/tosho.js'
   import { alRequest } from '@/modules/anilist'
-  import { media } from '../Player/MediaHandler.svelte'
 
-  export let id
+  export let media
+
+  const id = media.id
+
+  const duration = media.duration
 
   export let episodeCount
 
   export let userProgress = 0
 
-  export let duration
-
   export let play
 
-  const episodeList = Array.from({ length: episodeCount }, (_, i) => ({ episode: i + 1 }))
+  const episodeList = Array.from({ length: episodeCount }, (_, i) => ({
+    episode: i + 1, image: null, summary: null, rating: null, title: null, length: null, airdate: null, airingAt: null
+  }))
   async function load () {
-    const episodesPromise = alRequest({ method: 'Episodes', id })
     const res = await fetch('https://api.ani.zip/mappings?anilist_id=' + id)
     const { episodes, specialCount, episodeCount } = await res.json()
-    const settled = (await episodesPromise).data.Page?.airingSchedules
-    const alEpisodes = settled?.length ? settled : episodeList
+    let alEpisodes = episodeList
+
+    if (!(media.episodes && media.episodes === episodeCount && media.status === 'FINISHED')) {
+      const settled = (await alRequest({ method: 'Episodes', id })).data.Page?.airingSchedules
+      if (settled?.length) alEpisodes = settled
+    }
     for (const { episode, airingAt } of alEpisodes) {
       const alDate = new Date((airingAt || 0) * 1000)
 
       const needsValidation = !(!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)]))
       const { image, summary, rating, title, length, airdate } = needsValidation ? getEpisodeNumberByAirDate(alDate, episodes, episode) : (episodes[Number(episode)] || {})
 
-      episodeList[episode - 1] = { episode, image, summary, rating, title, length: length || duration, airdate: +alDate || airdate }
+      episodeList[episode - 1] = { episode, image, summary, rating, title, length: length || duration, airdate: +alDate || airdate, airingAt: +alDate || airdate }
     }
   }
   load()
