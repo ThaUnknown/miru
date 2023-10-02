@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "4.4.12",
+  "version": "4.4.13",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
@@ -35,7 +35,7 @@
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-svelte": "^2.33.0",
     "html-webpack-plugin": "^5.5.3",
-    "jassub": "1.7.1",
+    "jassub": "1.7.8",
     "js-levenshtein": "^1.1.6",
     "matroska-subtitles": "github:ThaUnknown/matroska-subtitles#446d0628ff0bcf13eb95184777615f3a0e6d8ae8",
     "mini-css-extract-plugin": "^2.7.6",

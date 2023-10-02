@@ -74,8 +74,8 @@ devDependencies:
     specifier: ^5.5.3
     version: 5.5.3(webpack@5.88.2)
   jassub:
-    specifier: 1.7.1
-    version: 1.7.1
+    specifier: 1.7.8
+    version: 1.7.8
   js-levenshtein:
     specifier: ^1.1.6
     version: 1.1.6
@@ -3763,8 +3763,8 @@ packages:
       minimatch: 3.1.2
     dev: true
 
-  /jassub@1.7.1:
-    resolution: {integrity: sha512-xvrF/4/4ifJCxyF9wgmNW/fzvKuqrvU3OKl1B4373STaCPhblMHkRCHDN6DnRdeI9jUyriWDPcKT97cg38YbNw==}
+  /jassub@1.7.8:
+    resolution: {integrity: sha512-F4rd+eOsI+9aN0bVqNEtrX7xCyU4y33DiYbwxd7hTaB7HtJBGYaAFzTWkmvW40uFVcYfjIQ9tXqNu5VnjDS5RQ==}
     dependencies:
       rvfc-polyfill: 1.0.6
     dev: true
