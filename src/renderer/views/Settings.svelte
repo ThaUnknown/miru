@@ -297,6 +297,7 @@
               <option value='dut'>Dutch</option>
               <option value='nor'>Norwegian</option>
               <option value='rum'>Romanian</option>
+              <option value='rus'>Russian</option>
               <option value='slo'>Slovak</option>
               <option value='swe'>Swedish</option>
               <option value='ara'>Arabic</option>
@@ -325,6 +326,7 @@
               <option value='dut'>Dutch</option>
               <option value='nor'>Norwegian</option>
               <option value='rum'>Romanian</option>
+              <option value='rus'>Russian</option>
               <option value='slo'>Slovak</option>
               <option value='swe'>Swedish</option>
               <option value='ara'>Arabic</option>
