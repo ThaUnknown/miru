@@ -25,7 +25,7 @@
             src={'https://www.youtube.com/embed/' + $url}
             frameborder='0'
             title='trailer'
-            allowfullscreen='allowfullscreen'
+            allowfullscreen
             class='w-full h-full position-absolute rounded top-0 left-0' />
         </div>
       </div>

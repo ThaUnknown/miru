@@ -1,9 +1,22 @@
 export {}
 
+type Track = {
+  selected: boolean
+  enabled: boolean
+  id: string
+  kind: string
+  label: string
+  language: string
+}
+
 declare global {
   interface Window {
-    IPC: any;
+    IPC: any
     port: MessagePort
+    version: {
+      platform: string
+      arch: string
+    }
   }
   interface EventTarget {
     on: (type: string, callback: (any) => void, options?: boolean | {}) => void
@@ -12,5 +25,9 @@ declare global {
     dispatch: (type: string, data?: any) => void
     removeListener: (type: string, callback: (any) => void) => void
     off: (type: string, callback: (any) => void) => void
+  }
+  interface HTMLMediaElement {
+    videoTracks: Track[]
+    audioTracks: Track[]
   }
 }

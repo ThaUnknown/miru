@@ -30,7 +30,7 @@
     }
     update()
   }
-  function getStatusText () {
+  function getStatusText (media) {
     if (media.mediaListEntry) {
       const { status } = media.mediaListEntry
       if (status === 'PLANNING') return 'Remove From List'
@@ -85,7 +85,7 @@
     }
     return 'Play'
   }
-  async function play () {
+  async function play (media) {
     let ep = 1
     if (media.mediaListEntry) {
       const { status, progress } = media.mediaListEntry

@@ -156,7 +156,7 @@
   $: checkAvail(current)
   let hasNext = false
   let hasLast = false
-  function checkAvail () {
+  function checkAvail (current) {
     if ((media?.media?.nextAiringEpisode?.episode - 1 || media?.media?.episodes) > media?.episode) {
       hasNext = true
     } else if (videos.indexOf(current) !== videos.length - 1) {
@@ -339,9 +339,10 @@
     }
   }
   function updatePiPState (paused) {
-    if (!document.pictureInPictureElement || document.pictureInPictureElement.id) return
-    if (paused) document.pictureInPictureElement.pause()
-    else document.pictureInPictureElement.play()
+    const element = /** @type {HTMLVideoElement | undefined} */ (document.pictureInPictureElement)
+    if (!element || element.id) return
+    if (paused) element.pause()
+    else element.play()
   }
   $: updatePiPState(paused)
   function togglePopout () {
@@ -647,7 +648,7 @@
   function getBufferHealth (time) {
     for (let index = video.buffered.length; index--;) {
       if (time < video.buffered.end(index) && time >= video.buffered.start(index)) {
-        return parseInt(video.buffered.end(index) - time)
+        return (video.buffered.end(index) - time) | 0
       }
     }
     return 0
@@ -681,7 +682,7 @@
   ]
   function isChapterSkippable (chapter) {
     for (const [name, regex] of skippableChaptersRx) {
-      if (regex.test(chapter.text)) {
+      if (/** @type {RegExp} */ (regex).test(chapter.text)) {
         return name
       }
     }
