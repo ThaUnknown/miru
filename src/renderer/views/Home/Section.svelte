@@ -10,7 +10,7 @@
 
   export let opts
 
-  async function deferredLoad (element) {
+  function deferredLoad (element) {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         if (!opts.preview.value) opts.preview.value = opts.load(1, 15)
@@ -18,6 +18,8 @@
       }
     }, { threshold: 0 })
     observer.observe(element)
+
+    return { destroy () { observer.unobserve(element) } }
   }
 
   function _click () {

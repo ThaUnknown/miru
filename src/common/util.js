@@ -22,7 +22,9 @@ export const defaults = {
   showDetailsInRPC: true,
   smoothScroll: true,
   cards: 'small',
-  expandingSidebar: true
+  expandingSidebar: true,
+  torrentPath: undefined,
+  font: undefined
 }
 
 export const subtitleExtensions = ['srt', 'vtt', 'ass', 'ssa', 'sub', 'txt']

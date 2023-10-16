@@ -114,7 +114,12 @@ class RSSMediaManager {
 
   async queueResolve ({ title, link, date }) {
     await this.lastResult
-    const res = (await resolveFileMedia(title))[0]
+    const res = {
+      ...(await resolveFileMedia(title))[0],
+      episodeData: undefined,
+      date: undefined,
+      onclick: undefined
+    }
     if (res.media?.id) {
       try {
         res.episodeData = (await getEpisodeMetadataForMedia(res.media))?.[res.episode]

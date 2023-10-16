@@ -26,7 +26,7 @@
     ])
     const entry = manager.sections.find(section => section.load === load)
     setInterval(async () => {
-      if (await RSSManager.getContentChanged(1, 8, url, true)) {
+      if (await RSSManager.getContentChanged(1, 8, url)) {
         entry.preview.value = RSSManager.getMediaForRSS(1, 8, url, true)
       }
     }, 30000)
