@@ -34,7 +34,7 @@
 
   let canScroll = true
 
-  async function loadTillFull () {
+  async function loadTillFull (_key) {
     if (!container) return
     const cachedKey = $key
     canScroll = false

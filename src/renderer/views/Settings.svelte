@@ -4,7 +4,13 @@
   import { defaults } from '@/../common/util.js'
   export let alToken = localStorage.getItem('ALtoken') || null
 
-  export const set = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
+  let storedSettings = { ...defaults }
+
+  try {
+    storedSettings = JSON.parse(localStorage.getItem('settings'))
+  } catch (e) {}
+
+  export const set = { ...defaults, ...storedSettings }
   if (set.enableDoH) window.IPC.emit('doh', set.doHURL)
   window.addEventListener('paste', ({ clipboardData }) => {
     if (clipboardData.items?.[0]) {
@@ -110,7 +116,7 @@
   let settings = set
   $: saveSettings(settings)
   $: window.IPC.emit('discord_status', settings.showDetailsInRPC)
-  function saveSettings () {
+  function saveSettings (settings) {
     localStorage.setItem('settings', JSON.stringify(settings))
   }
   function restoreSettings () {
