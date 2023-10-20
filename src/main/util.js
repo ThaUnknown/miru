@@ -3,11 +3,14 @@ import { app, ipcMain, shell, dialog } from 'electron'
 export const development = process.env.NODE_ENV?.trim() === 'development'
 
 const flags = [
+  ['disable-gpu-sandbox'],
+  ['disable-direct-composition-video-overlays'],
+  ['double-buffer-compositing'],
   ['enable-gpu-rasterization'],
   ['enable-zero-copy'],
   ['ignore-gpu-blocklist'],
   ['enable-hardware-overlays', 'single-fullscreen,single-on-top,underlay'],
-  ['enable-features', 'PlatformEncryptedDolbyVision,EnableDrDc,CanvasOopRasterization,BackForwardCache:TimeToLiveInBackForwardCacheInSeconds/300/should_ignore_blocklists/true/enable_same_site/true,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilationEnableDrDc,CanvasOopRasterization,BackForwardCache:TimeToLiveInBackForwardCacheInSeconds/300/should_ignore_blocklists/true/enable_same_site/true,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
+  ['enable-features', 'PlatformEncryptedDolbyVision,EnableDrDc,CanvasOopRasterization,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
   ['force_high_performance_gpu'],
   ['disable-features', 'Vulkan'],
   ['disable-color-correct-rendering'],
