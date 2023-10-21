@@ -48,7 +48,7 @@ export default class Parser {
 
     if (this.file.name.endsWith('.mkv') || this.file.name.endsWith('.webm')) {
       this.file.on('iterator', ({ iterator }, cb) => {
-        if (this.destroyed) cb(iterator)
+        if (this.destroyed) return cb(iterator)
         cb(this.metadata.parseStream(iterator))
       })
     }
