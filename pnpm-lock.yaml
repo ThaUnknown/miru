@@ -80,8 +80,8 @@ devDependencies:
     specifier: ^1.1.6
     version: 1.1.6
   matroska-metadata:
-    specifier: ^1.0.1
-    version: 1.0.1
+    specifier: ^1.0.2
+    version: 1.0.2
   mini-css-extract-plugin:
     specifier: ^2.7.6
     version: 2.7.6(webpack@5.88.2)
@@ -4041,8 +4041,8 @@ packages:
     dev: true
     optional: true
 
-  /matroska-metadata@1.0.1:
-    resolution: {integrity: sha512-McJiL+uX1ftPvJtpyifLs8BHAAGGnGfzXwIYoz8wymT3Ks1cC+q4OZstjtWRm8X5zZSBolLoABTVi6QtiDZ4HA==}
+  /matroska-metadata@1.0.2:
+    resolution: {integrity: sha512-vXW4CjDtkvlUrTjaoJ4QzFBYQEx83cXJi//5OqnB51DsbbqiMobp1f9Sj7vSHbFwgGCKfESREvWU71yOaCshjg==}
     dependencies:
       ebml-iterator: 1.0.4
       fast-readable-async-iterator: 1.1.1
