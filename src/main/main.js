@@ -14,7 +14,7 @@ let webtorrentWindow
 function createWindow () {
   // Create the browser window.
   webtorrentWindow = new BrowserWindow({
-    show: false,
+    show: development,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,

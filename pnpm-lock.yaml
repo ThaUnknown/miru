@@ -79,9 +79,9 @@ devDependencies:
   js-levenshtein:
     specifier: ^1.1.6
     version: 1.1.6
-  matroska-subtitles:
-    specifier: github:ThaUnknown/matroska-subtitles#446d0628ff0bcf13eb95184777615f3a0e6d8ae8
-    version: github.com/ThaUnknown/matroska-subtitles/446d0628ff0bcf13eb95184777615f3a0e6d8ae8
+  matroska-metadata:
+    specifier: ^1.0.1
+    version: 1.0.1
   mini-css-extract-plugin:
     specifier: ^2.7.6
     version: 2.7.6(webpack@5.88.2)
@@ -437,7 +437,7 @@ packages:
       get-browser-rtc: 1.1.0
       queue-microtask: 1.2.3
       streamx: 2.15.1
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -448,7 +448,7 @@ packages:
       debug: 4.3.4
       queue-microtask: 1.2.3
       streamx: 2.15.1
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
       ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
@@ -460,7 +460,7 @@ packages:
     resolution: {integrity: sha512-bD6PvWbaf53JC04O7WnGDjqZBDgja/KT2Jd/6I2vJBIy+DLmQfQJZZ/G+16nAkVq1yGTIkO4rfc4RlH0DmEEqA==}
     engines: {node: '>=0.2.6'}
     dependencies:
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
     dev: true
 
   /@tootallnate/once@2.0.0:
@@ -1225,7 +1225,7 @@ packages:
     resolution: {integrity: sha512-AERXw18df0pF3ziGOCyUjqKZBVNH8HV3lBxnx5w0qtgMIk4a1wb9BkcCQbkp9Zstfrn/dzRwl7MmUHHocX3sRQ==}
     engines: {node: '>=12.20.0'}
     dependencies:
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
     dev: true
 
   /bep53-range@2.0.0:
@@ -1294,7 +1294,7 @@ packages:
       rc4: 0.1.5
       streamx: 2.15.1
       throughput: 1.0.1
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
       unordered-array-remove: 1.0.2
     transitivePeerDependencies:
       - supports-color
@@ -1324,7 +1324,7 @@ packages:
       simple-get: 4.0.1
       socks: 2.7.1
       string2compact: 2.0.1
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
       unordered-array-remove: 1.0.2
       ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
     optionalDependencies:
@@ -1857,7 +1857,7 @@ packages:
       piece-length: 2.0.1
       queue-microtask: 1.2.3
       run-parallel: 1.2.0
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
     dev: true
 
   /cross-env@7.0.3:
@@ -2183,9 +2183,10 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /ebml-stream@1.0.3:
-    resolution: {integrity: sha512-A+jCBY5NNAH/CQlcjLWN9txgv3uNiz+UAmMqDHPxFxoMNnuerV0RLhkE0YI9aNhdS3JVfcEQ9jFWq39fAR2W5g==}
-    engines: {node: '>= 10.10.0'}
+  /ebml-iterator@1.0.4:
+    resolution: {integrity: sha512-sTksd9ZKki/uWlbXPpvKg63AEEZpLYw+SrQjaY3L//inmtLSl20gowa9Umr0qpdtzPq6V6IkRjMgXg6JBFbZ0g==}
+    dependencies:
+      uint8-util: 2.2.4
     dev: true
 
   /ee-first@1.1.1:
@@ -4029,7 +4030,7 @@ packages:
     dependencies:
       '@thaunknown/thirty-two': 1.0.3
       bep53-range: 2.0.0
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
     dev: true
 
   /matcher@3.0.0:
@@ -4039,6 +4040,15 @@ packages:
       escape-string-regexp: 4.0.0
     dev: true
     optional: true
+
+  /matroska-metadata@1.0.1:
+    resolution: {integrity: sha512-McJiL+uX1ftPvJtpyifLs8BHAAGGnGfzXwIYoz8wymT3Ks1cC+q4OZstjtWRm8X5zZSBolLoABTVi6QtiDZ4HA==}
+    dependencies:
+      ebml-iterator: 1.0.4
+      fast-readable-async-iterator: 1.1.1
+      pako: 2.1.0
+      uint8-util: 2.2.4
+    dev: true
 
   /mdn-data@2.0.30:
     resolution: {integrity: sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA==}
@@ -4481,7 +4491,7 @@ packages:
       get-stdin: 9.0.0
       magnet-uri: 7.0.5
       queue-microtask: 1.2.3
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
     dev: true
 
   /parseurl@1.3.3:
@@ -5635,7 +5645,7 @@ packages:
     resolution: {integrity: sha512-j0tRX7qq22nIuVFF57Tg/wAvFq79F1eM9pcMxY+b0qCCe7yXJnIrqF+Q5YEJ94tNisDnJzcqDHNrPmD9X/yAIg==}
     engines: {node: '>=12.20.0'}
     dependencies:
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
     dev: true
 
   /tr46@0.0.3:
@@ -5763,6 +5773,12 @@ packages:
       base64-arraybuffer: 1.0.2
     dev: true
 
+  /uint8-util@2.2.4:
+    resolution: {integrity: sha512-uEI5lLozmKQPYEevfEhP9LY3Je5ZmrQhaWXrzTVqrLNQl36xsRh8NiAxYwB9J+2BAt99TRbmCkROQB2ZKhx4UA==}
+    dependencies:
+      base64-arraybuffer: 1.0.2
+    dev: true
+
   /unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
     dependencies:
@@ -5818,7 +5834,7 @@ packages:
       bencode: 4.0.0
       bitfield: 4.1.0
       debug: 4.3.4
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -6296,22 +6312,13 @@ packages:
     version: 2.0.5
     dev: true
 
-  github.com/ThaUnknown/matroska-subtitles/446d0628ff0bcf13eb95184777615f3a0e6d8ae8:
-    resolution: {tarball: https://codeload.github.com/ThaUnknown/matroska-subtitles/tar.gz/446d0628ff0bcf13eb95184777615f3a0e6d8ae8}
-    name: matroska-subtitles
-    version: 3.3.3
-    dependencies:
-      ebml-stream: 1.0.3
-      pako: 2.1.0
-    dev: true
-
   github.com/ThaUnknown/p2pt/3b191bd83998d0f28b022f4e3b871a7030ff6f6d:
     resolution: {tarball: https://codeload.github.com/ThaUnknown/p2pt/tar.gz/3b191bd83998d0f28b022f4e3b871a7030ff6f6d}
     name: p2pt
     version: 1.5.1
     dependencies:
       bittorrent-tracker: 10.0.12
-      uint8-util: 2.2.3
+      uint8-util: 2.2.4
     optionalDependencies:
       wrtc: 0.4.7
     transitivePeerDependencies:
