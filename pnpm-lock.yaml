@@ -80,8 +80,8 @@ devDependencies:
     specifier: ^1.1.6
     version: 1.1.6
   matroska-metadata:
-    specifier: ^1.0.2
-    version: 1.0.2
+    specifier: ^1.0.3
+    version: 1.0.3
   mini-css-extract-plugin:
     specifier: ^2.7.6
     version: 2.7.6(webpack@5.89.0)
@@ -2190,10 +2190,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /ebml-iterator@1.0.4:
-    resolution: {integrity: sha512-sTksd9ZKki/uWlbXPpvKg63AEEZpLYw+SrQjaY3L//inmtLSl20gowa9Umr0qpdtzPq6V6IkRjMgXg6JBFbZ0g==}
-    dependencies:
-      uint8-util: 2.2.4
+  /ebml-iterator@1.0.5:
+    resolution: {integrity: sha512-UsZ8EEk8vAIgYYX9a6Wqwy/cJEd/fKiCVHOXJIpwJBdcQxSHi9llKNxALl5mw2WaqZAhiir0feahWfEY5dj4+Q==}
     dev: true
 
   /ee-first@1.1.1:
@@ -4066,10 +4064,10 @@ packages:
     dev: true
     optional: true
 
-  /matroska-metadata@1.0.2:
-    resolution: {integrity: sha512-vXW4CjDtkvlUrTjaoJ4QzFBYQEx83cXJi//5OqnB51DsbbqiMobp1f9Sj7vSHbFwgGCKfESREvWU71yOaCshjg==}
+  /matroska-metadata@1.0.3:
+    resolution: {integrity: sha512-OiNOvjdY/f/CJxz53QHM1NN2Ahe0DgH0L3ja6IBaloN14ZGEu85uGdREbcPWB/IxtCRQWH1HMhT//PjQRWKvTQ==}
     dependencies:
-      ebml-iterator: 1.0.4
+      ebml-iterator: 1.0.5
       fast-readable-async-iterator: 1.1.1
       pako: 2.1.0
       uint8-util: 2.2.4

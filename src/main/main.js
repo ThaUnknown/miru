@@ -59,6 +59,10 @@ function createWindow () {
     mainWindow.webContents.openDevTools()
   }
 
+  ipcMain.on('devtools', () => {
+    webtorrentWindow.webContents.openDevTools()
+  })
+
   mainWindow.on('closed', () => {
     mainWindow = null
     try {
