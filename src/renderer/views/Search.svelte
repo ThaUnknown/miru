@@ -63,18 +63,13 @@
   onMount(loadTillFull)
 </script>
 
-<div class='h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden px-50 justify-content-center align-content-start' use:smoothScroll bind:this={container} on:scroll={infiniteScroll}>
+<div class='bg-dark h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden justify-content-center align-content-start' use:smoothScroll bind:this={container} on:scroll={infiniteScroll}>
   <Search bind:search={$search} on:input={update} />
-  {#key $key}
-    {#each $items as card}
-      <Card {card} />
-    {/each}
-  {/key}
+  <div class='h-full w-full d-flex flex-wrap flex-row px-50 justify-content-center align-content-start'>
+    {#key $key}
+      {#each $items as card}
+        <Card {card} />
+      {/each}
+    {/key}
+  </div>
 </div>
-
-<style>
-  .px-50 {
-    padding-left: 5rem;
-    padding-right: 5rem;
-  }
-</style>

@@ -175,3 +175,8 @@ img[src=''], img[src=' '] {
 .pre-wrap {
   white-space: pre-wrap
 }
+
+.px-50 {
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
