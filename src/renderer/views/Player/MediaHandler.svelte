@@ -126,7 +126,7 @@
       return file
     })
 
-    videoFiles = videoFiles.filter(file => !TYPE_EXCLUSIONS.includes(file.media.parseObject.anime_type))
+    videoFiles = videoFiles.filter(file => !TYPE_EXCLUSIONS.includes(file.media.parseObject.anime_type?.toUpperCase()))
 
     if (nowPlaying?.verified && videoFiles.length === 1) {
       console.info('Media was verified, skipping verification')

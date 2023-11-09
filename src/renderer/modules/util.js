@@ -28,6 +28,7 @@ export function since (date) {
   for (const key in ranges) {
     if (ranges[key] < Math.abs(secondsElapsed)) {
       const delta = secondsElapsed / ranges[key]
+      // @ts-ignore
       return formatter.format(Math.round(delta), key)
     }
   }
@@ -120,7 +121,7 @@ export function debounce (fn, time) {
     clearTimeout(timeout)
     timeout = setTimeout(later, time)
   }
-};
+}
 
 export function binarySearch (arr, el) {
   let left = 0

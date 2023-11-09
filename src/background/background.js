@@ -27,11 +27,11 @@ class TorrentClient extends WebTorrent {
         resolve()
         ports[0].onmessage = ({ data }) => {
           if (data.type === 'load') this.loadLastTorrent()
-          if (data.type === 'destroy') this.predestroy()
+          if (data.type === 'destroy') this.destroy()
           this.handleMessage({ data })
         }
       })
-      ipcRenderer.on('destroy', this.predestroy.bind(this))
+      ipcRenderer.on('destroy', this.destroy.bind(this))
     })
     this.settings = settings
 
@@ -226,9 +226,10 @@ class TorrentClient extends WebTorrent {
     this.message?.({ type, data }, transfer)
   }
 
-  predestroy () {
-    this.destroy()
+  destroy () {
+    this.parser?.destroy()
     this.server.close()
+    super.destroy()
   }
 }
 
