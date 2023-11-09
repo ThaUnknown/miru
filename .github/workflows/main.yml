@@ -15,6 +15,9 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-latest]
 
     steps:
+      - name: Install Setuptools for Python
+        run: pip3 install setuptools
+
       - name: Check out Git repository
         uses: actions/checkout@v3
 
