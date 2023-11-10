@@ -13,7 +13,7 @@ const flags = [
   ['enable-hardware-overlays', 'single-fullscreen,single-on-top,underlay'],
   ['enable-features', 'PlatformEncryptedDolbyVision,EnableDrDc,CanvasOopRasterization,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
   ['force_high_performance_gpu'],
-  ['disable-features', 'Vulkan,CalculateNativeWinOcclusion'],
+  ['disable-features', 'Vulkan,CalculateNativeWinOcclusion,WidgetLayering'],
   ['disable-color-correct-rendering'],
   ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'],
   ['force-color-profile', 'srgb']
