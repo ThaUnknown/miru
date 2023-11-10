@@ -14,7 +14,6 @@ export default class Parser {
     this.metadata = new Metadata(file)
 
     this.metadata.getTracks().then(tracks => {
-      console.log({ tracks })
       if (this.destroyed) return
       if (!tracks.length) {
         this.parsed = true
@@ -25,13 +24,11 @@ export default class Parser {
     })
 
     this.metadata.getChapters().then(chapters => {
-      console.log({ chapters })
       if (this.destroyed) return
       this.client.dispatch('chapters', chapters)
     })
 
     this.metadata.getAttachments().then(files => {
-      console.log({ files })
       if (this.destroyed) return
       for (const file of files) {
         if (fontRx.test(file.filename) || file.mimetype.toLowerCase().includes('font')) {
