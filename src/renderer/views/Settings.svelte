@@ -43,6 +43,9 @@
   let version = '1.0.0'
   window.IPC.on('version', data => (version = data))
   window.IPC.emit('version')
+  function updateAngle () {
+    window.IPC.emit('angle', set.angle)
+  }
 
   let wasUpdated = false
   window.IPC.on('update-available', () => {
@@ -533,6 +536,22 @@
             data-title='CSS Variables Used For Custom Themes'>
             <label for='css-variables'>CSS Variables</label>
             <textarea class='form-control' id='css-variables' placeholder='--accent-color: #e5204c;' bind:value={$variables} />
+          </div>
+          <div class='input-group mb-10 w-400 form-control-lg' data-toggle='tooltip' data-placement='top' data-title="What ANGLE Backend To Use. DON'T CHANGE WITHOUT REASON! On Some Windows Machines D3D9 Might Help With Flicker.">
+            <div class='input-group-prepend'>
+              <span class='input-group-text w-200 justify-content-center'>ANGLE Backend</span>
+            </div>
+            <select class='form-control form-control-lg' bind:value={settings.angle} on:change={updateAngle}>
+              <option value='default' selected>Default</option>
+              <option value='d3d9'>D3D9</option>
+              <option value='d3d11'>D3D11</option>
+              <option value='warp'>Warp [Software D3D11]</option>
+              <option value='gl'>GL</option>
+              <option value='gles'>GLES</option>
+              <option value='swiftshader'>SwiftShader</option>
+              <option value='vulkan'>Vulkan</option>
+              <option value='metal'>Metal</option>
+            </select>
           </div>
         </div>
       </Tab>

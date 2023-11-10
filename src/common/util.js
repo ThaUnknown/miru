@@ -24,7 +24,8 @@ export const defaults = {
   cards: 'small',
   expandingSidebar: true,
   torrentPath: undefined,
-  font: undefined
+  font: undefined,
+  angle: 'default'
 }
 
 export const subtitleExtensions = ['srt', 'vtt', 'ass', 'ssa', 'sub', 'txt']
