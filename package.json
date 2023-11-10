@@ -52,7 +52,7 @@
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1",
-    "webtorrent": "^2.1.27"
+    "webtorrent": "^2.1.28"
   },
   "dependencies": {
     "utp-native": "^2.5.3"
