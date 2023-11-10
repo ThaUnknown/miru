@@ -3,7 +3,11 @@
   import Search, { search } from './Search.svelte'
   import { alRequest } from '@/modules/anilist.js'
 
-  const vars = { format: 'TV', season: 'SUMMER', year: 2023 }
+  const date = new Date()
+  const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL']
+  const getSeason = d => seasons[Math.floor((d.getMonth() / 12) * 4) % 4]
+
+  const vars = { format: 'TV', season: getSeason(date), year: date.getFullYear() }
 
   async function fetchAllScheduleEntries (_variables) {
     const variables = { ..._variables }
