@@ -5,7 +5,7 @@ export let alToken = localStorage.getItem('ALtoken') || null
 let storedSettings = { ...defaults }
 
 try {
-  storedSettings = JSON.parse(localStorage.getItem('settings'))
+  storedSettings = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
 } catch (e) {}
 
 const scopedDefaults = {
