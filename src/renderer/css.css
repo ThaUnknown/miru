@@ -78,6 +78,9 @@
 .h-10 {
   height: 1rem !important;
 }
+.h-25 {
+  height: 2.5rem !important;
+}
 
 body {
   scroll-behavior: smooth;

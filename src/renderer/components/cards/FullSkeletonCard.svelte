@@ -3,9 +3,9 @@
     <div class='row h-full'>
       <div class='col-4 skeloader bg-dark-light'><div class='skeleloader-swipe' /></div>
       <div class='col-8 bg-very-dark px-15 py-10'>
-        <div class='skeloader bg-dark-light w-300 h-25 rounded bg-dark'><div class='skeleloader-swipe' /></div>
-        <div class='skeloader bg-dark-light w-150 h-10 rounded bg-dark'><div class='skeleloader-swipe' /></div>
-        <div class='skeloader bg-dark-light w-150 h-10 rounded bg-dark'><div class='skeleloader-swipe' /></div>
+        <div class='skeloader bg-dark-light w-300 h-25 rounded bg-dark mt-15'><div class='skeleloader-swipe' /></div>
+        <div class='skeloader bg-dark-light w-150 h-10 rounded bg-dark mt-15'><div class='skeleloader-swipe' /></div>
+        <div class='skeloader bg-dark-light w-150 h-10 rounded bg-dark mt-15'><div class='skeleloader-swipe' /></div>
       </div>
     </div>
   </div>
