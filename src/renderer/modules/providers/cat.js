@@ -1,5 +1,5 @@
 import { alRequest } from '@/modules/anilist.js'
-import { set } from '@/views/Settings.svelte'
+import { settings } from '@/modules/settings.js'
 import { findEdge, resolveSeason, getMediaMaxEp, mapBestRelease } from '../anime.js'
 import { exclusions, getRSSContent, parseRSSNodes } from '../rss.js'
 
@@ -34,8 +34,8 @@ export default async function getRSSEntries ({ media, episode, mode, ignoreQuali
   }
 
   const excl = exclusions.join('|')
-  const quality = (!ignoreQuality && (`"${set.rssQuality}"` || '"1080"')) || ''
-  const url = new URL(`${set.catURL}/?page=rss&c=1_2&f=0&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
+  const quality = (!ignoreQuality && (`"${settings.value.rssQuality}"` || '"1080"')) || ''
+  const url = new URL(`${settings.value.catURL}/?page=rss&c=1_2&f=0&s=seeders&o=desc&q=(${titles})${ep}${quality}-(${excl})`)
 
   let nodes = [...(await getRSSContent(url)).querySelectorAll('item')]
 
@@ -45,7 +45,7 @@ export default async function getRSSEntries ({ media, episode, mode, ignoreQuali
     // we want the dates of the target media as the S1 title might be used for SX releases
     const titles = createTitle(absolute.media).join(')|(')
 
-    const url = new URL(`${set.catURL}/?page=rss&c=1_2&f=0&s=seeders&o=desc&q=(${titles})${epstring(absoluteep)}${quality}-(${excl})`)
+    const url = new URL(`${settings.value.catURL}/?page=rss&c=1_2&f=0&s=seeders&o=desc&q=(${titles})${epstring(absoluteep)}${quality}-(${excl})`)
     nodes = [...nodes, ...(await getRSSContent(url)).querySelectorAll('item')]
   }
 

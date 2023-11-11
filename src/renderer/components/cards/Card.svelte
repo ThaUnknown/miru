@@ -5,11 +5,11 @@
   import FullCard from './FullCard.svelte'
   import EpisodeCard from './EpisodeCard.svelte'
   import FullSkeletonCard from './FullSkeletonCard.svelte'
-  import { set } from '../../views/Settings.svelte'
+  import { settings } from '@/modules/settings.js'
 
   export let card
 
-  const type = card.type || set.cards
+  const type = card.type || $settings.cards
 </script>
 
 {#if type === 'episode'}

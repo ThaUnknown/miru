@@ -1,5 +1,5 @@
 <script>
-  import { set } from '../../views/Settings.svelte'
+  import { settings } from '@/modules/settings.js'
   import { playAnime } from '../RSSView.svelte'
   import { client } from '@/modules/torrent.js'
   import { createEventDispatcher } from 'svelte'
@@ -76,7 +76,7 @@
           description: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in RSS settings."
         })
       } else if (video.audioTracks.length > 1) {
-        const preferredTrack = [...video.audioTracks].find(({ language }) => language === set.audioLanguage)
+        const preferredTrack = [...video.audioTracks].find(({ language }) => language === settings.audioLanguage)
         if (preferredTrack) return selectAudio(preferredTrack.id)
 
         const japaneseTrack = [...video.audioTracks].find(({ language }) => language === 'jpn')
@@ -218,7 +218,7 @@
   }
   let visibilityPaused = true
   document.addEventListener('visibilitychange', () => {
-    if (!video?.ended && set.playerPause && !pip) {
+    if (!video?.ended && $settings.playerPause && !pip) {
       if (document.visibilityState === 'hidden') {
         visibilityPaused = paused
         paused = true
@@ -228,7 +228,7 @@
     }
   })
   function tryPlayNext () {
-    if (set.playerAutoplay && !state.value) playNext()
+    if ($settings.playerAutoplay && !state.value) playNext()
   }
   function playNext () {
     if (hasNext) {
@@ -814,7 +814,7 @@
 
   let completed = false
   function checkCompletion () {
-    if (!completed && set.playerAutocomplete) {
+    if (!completed && $settings.playerAutocomplete) {
       const fromend = Math.max(180, safeduration / 10)
       if (safeduration && currentTime && video?.readyState && safeduration - fromend < currentTime) {
         if (media?.media?.episodes || media?.media?.nextAiringEpisode?.episode) {

@@ -1,7 +1,7 @@
 import { mapBestRelease, anitomyscript } from '../anime.js'
 import { fastPrettyBytes } from '../util.js'
 import { exclusions } from '../rss.js'
-import { set } from '@/views/Settings.svelte'
+import { settings } from '@/modules/settings.js'
 import { alRequest } from '../anilist.js'
 import { client } from '@/modules/torrent.js'
 
@@ -14,7 +14,7 @@ export default async function ({ media, episode }) {
 
   const movie = isMovie(media) // don't query movies with qualities, to allow 4k
 
-  let entries = await getToshoEntries(media, aniDBEpisode, json, !movie && set.rssQuality)
+  let entries = await getToshoEntries(media, aniDBEpisode, json, !movie && settings.value.rssQuality)
 
   if (!entries.length && !movie) entries = await getToshoEntries(media, aniDBEpisode, json)
 
@@ -243,7 +243,7 @@ function buildQuery (quality) {
 async function fetchBatches ({ episodeCount, id, quality, movie = null }) {
   try {
     const queryString = buildQuery(quality)
-    const torrents = await fetch(set.toshoURL + 'json?order=size-d&aid=' + id + queryString)
+    const torrents = await fetch(settings.value.toshoURL + 'json?order=size-d&aid=' + id + queryString)
 
     // safe if AL includes EP 0 or doesn't
     const batches = (await torrents.json()).filter(entry => entry.num_files >= episodeCount)
@@ -263,7 +263,7 @@ async function fetchBatches ({ episodeCount, id, quality, movie = null }) {
 async function fetchSingleEpisode ({ id, quality }) {
   try {
     const queryString = buildQuery(quality)
-    const torrents = await fetch(set.toshoURL + 'json?eid=' + id + queryString)
+    const torrents = await fetch(settings.value.toshoURL + 'json?eid=' + id + queryString)
 
     const episodes = await torrents.json()
     console.log({ episodes })

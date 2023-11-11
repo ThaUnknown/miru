@@ -1,6 +1,6 @@
 <script context='module'>
   import { since } from '@/modules/util.js'
-  import { set } from './Settings.svelte'
+  import { settings } from '@/modules/settings.js'
   import { toast } from 'svelte-sonner'
   import { findInCurrent } from './Player/MediaHandler.svelte'
   import getRSSEntries from '@/modules/providers/tosho.js'
@@ -9,8 +9,6 @@
   import { writable } from 'simple-store-svelte'
 
   const rss = writable({})
-
-  const settings = set
 
   export function playAnime (media, episode = 1, force) {
     episode = Number(episode)
@@ -87,7 +85,7 @@
     const entries = await promise
 
     entries.sort((a, b) => b.seeders - a.seeders)
-    if (settings.rssAutoplay) {
+    if ($settings.rssAutoplay) {
       const best = entries.find(entry => entry.best)
       if (best?.seeders >= 15) { // only play best if it actually has a lot of seeders, 20 might be too little for those overkill blurays
         play(best)

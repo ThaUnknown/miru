@@ -2,7 +2,7 @@ import { DOMPARSER, PromiseBatch, binarySearch } from './util.js'
 import { alRequest, alSearch } from './anilist.js'
 import _anitomyscript from 'anitomyscript'
 import { toast } from 'svelte-sonner'
-import Sections from './sections.js'
+import SectionsManager from './sections.js'
 import { page } from '@/App.svelte'
 import clipboard from './clipboard.js'
 
@@ -63,7 +63,7 @@ export async function traceAnime (image) { // WAIT lookup logic
     search.value = {
       clearNext: true,
       load: (page = 1, perPage = 50, variables = {}) => {
-        const res = alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...Sections.sanitiseObject(variables) }).then(res => {
+        const res = alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) }).then(res => {
           for (const index in res.data?.Page?.media) {
             const media = res.data.Page.media[index]
             const counterpart = result.find(({ anilist }) => anilist === media.id)
@@ -80,7 +80,7 @@ export async function traceAnime (image) { // WAIT lookup logic
           res.data?.Page?.media.sort((a, b) => b.similarity - a.similarity)
           return res
         })
-        return Sections.wrapResponse(res, result.length, 'episode')
+        return SectionsManager.wrapResponse(res, result.length, 'episode')
       }
     }
     key.value = {}

@@ -1,7 +1,7 @@
 import JASSUB from 'jassub'
 import { toTS } from './util.js'
 import { subRx, videoRx } from '@/../common/util.js'
-import { set } from '../views/Settings.svelte'
+import { settings } from '@/modules/settings.js'
 import { client } from '@/modules/torrent.js'
 import clipboard from './clipboard.js'
 
@@ -15,7 +15,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default, ${set.font?.name.toLowerCase() || 'Roboto Medium'},52,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,20,20,46,1
+Style: Default, ${settings.value.font?.name.toLowerCase() || 'Roboto Medium'},52,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,20,20,46,1
 [Events]
 
 `
@@ -82,13 +82,13 @@ export default class Subtitles {
         }
         this.initSubtitleRenderer()
         const tracks = this.headers?.filter(t => t)
-        if (tracks?.length && set.subtitleLanguage) {
+        if (tracks?.length && settings.value.subtitleLanguage) {
           if (tracks.length === 1) {
             this.selectCaptions(tracks[0].number)
           } else {
             const wantedTrack = tracks.find(({ language }) => {
               if (language == null) language = 'eng'
-              return language === set.subtitleLanguage
+              return language === settings.value.subtitleLanguage
             })
             if (wantedTrack) return this.selectCaptions(wantedTrack.number)
 
@@ -159,7 +159,7 @@ export default class Subtitles {
         video: this.video,
         subContent: defaultHeader,
         fonts: this.fonts,
-        fallbackFont: set.font?.name || 'roboto medium',
+        fallbackFont: settings.value.font?.name || 'roboto medium',
         availableFonts: {
           'roboto medium': './Roboto.ttf'
         },
@@ -167,12 +167,12 @@ export default class Subtitles {
         wasmUrl: new URL('jassub/dist/jassub-worker.wasm', import.meta.url).toString(),
         legacyWasmUrl: new URL('jassub/dist/jassub-worker.wasm.js', import.meta.url).toString(),
         modernWasmUrl: new URL('jassub/dist/jassub-worker-modern.wasm', import.meta.url).toString(),
-        useLocalFonts: set.missingFont,
-        dropAllBlur: set.disableSubtitleBlur
+        useLocalFonts: settings.value.missingFont,
+        dropAllBlur: settings.value.disableSubtitleBlur
       }
-      if (set.font) {
-        options.availableFonts[set.font.name.toLowerCase()] = new Uint8Array(set.font.data)
-        this.fonts.push(new Uint8Array(set.font.data))
+      if (settings.value.font) {
+        options.availableFonts[settings.value.font.name.toLowerCase()] = new Uint8Array(settings.value.font.data)
+        this.fonts.push(new Uint8Array(settings.value.font.data))
       }
       this.renderer = new JASSUB(options)
     }

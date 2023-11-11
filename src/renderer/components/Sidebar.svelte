@@ -2,7 +2,8 @@
   import { getContext } from 'svelte'
   import { alID } from '@/modules/anilist.js'
   import { media } from '../views/Player/MediaHandler.svelte'
-  import { platformMap, set } from '../views/Settings.svelte'
+  import { platformMap } from '../views/Settings.svelte'
+  import { settings } from '@/modules/settings.js'
   import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
   import { logout } from './Logout.svelte'
@@ -93,7 +94,7 @@
   }
 </script>
 
-<div class='sidebar z-30' class:animated={set.expandingSidebar}>
+<div class='sidebar z-30' class:animated={$settings.expandingSidebar}>
   <div class='sidebar-overlay pointer-events-none h-full position-absolute' />
   <div class='sidebar-menu h-full d-flex flex-column justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
     {#each links as { click: _click, icon, text, image, css, page: _page }, i (i)}

@@ -1,36 +1,9 @@
 <script context='module'>
   import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
-  import { defaults } from '@/../common/util.js'
-  export let alToken = localStorage.getItem('ALtoken') || null
+  import { resetSettings, settings } from '@/modules/settings.js'
 
-  let storedSettings = { ...defaults }
-
-  try {
-    storedSettings = JSON.parse(localStorage.getItem('settings'))
-  } catch (e) {}
-
-  export const set = { ...defaults, ...storedSettings }
-  if (set.enableDoH) window.IPC.emit('doh', set.doHURL)
-  window.addEventListener('paste', ({ clipboardData }) => {
-    if (clipboardData.items?.[0]) {
-      if (clipboardData.items[0].type === 'text/plain' && clipboardData.items[0].kind === 'string') {
-        clipboardData.items[0].getAsString(text => {
-          let token = text.split('access_token=')?.[1]?.split('&token_type')?.[0]
-          if (token) {
-            if (token.endsWith('/')) token = token.slice(0, -1)
-            handleToken(token)
-          }
-        })
-      }
-    }
-  })
-  window.IPC.on('altoken', handleToken)
-  function handleToken (data) {
-    localStorage.setItem('ALtoken', data)
-    alToken = data
-    location.reload()
-  }
+  if (settings.value.enableDoH) window.IPC.emit('doh', settings.value.doHURL)
   export const platformMap = {
     aix: 'Aix',
     darwin: 'MacOS',
@@ -44,7 +17,7 @@
   window.IPC.on('version', data => (version = data))
   window.IPC.emit('version')
   function updateAngle () {
-    window.IPC.emit('angle', set.angle)
+    window.IPC.emit('angle', settings.value.angle)
   }
 
   let wasUpdated = false
@@ -71,7 +44,7 @@
     const json = await res.json()
     return json.map(({ body, tag_name: version }) => ({ body, version }))
   })()
-  window.IPC.emit('discord_status', set.showDetailsInRPC)
+  window.IPC.emit('discord_status', settings.value.showDetailsInRPC)
 </script>
 
 <script>
@@ -79,6 +52,8 @@
   import FontSelect from '../components/FontSelect.svelte'
   import { onDestroy } from 'svelte'
   import { variables } from '@/modules/themes.js'
+  import { defaults } from '@/../common/util.js'
+  import HomeSections from './Settings/HomeSectionsSettings.svelte'
 
   onDestroy(() => {
     window.IPC.off('path')
@@ -116,27 +91,18 @@
       desc: 'Version change log.'
     }
   }
-  let settings = set
-  $: saveSettings(settings)
-  $: window.IPC.emit('discord_status', settings.showDetailsInRPC)
-  function saveSettings (settings) {
-    localStorage.setItem('settings', JSON.stringify(settings))
-  }
-  function restoreSettings () {
-    localStorage.removeItem('settings')
-    settings = { ...defaults }
-  }
+  $: window.IPC.emit('discord_status', $settings.showDetailsInRPC)
   function handleFolder () {
     window.IPC.emit('dialog')
   }
   window.IPC.on('path', data => {
-    settings.torrentPath = data
+    $settings.torrentPath = data
   })
   async function changeFont ({ detail }) {
     try {
       const blob = await detail.blob()
       const data = await blob.arrayBuffer()
-      settings.font = {
+      $settings.font = {
         name: detail.fullName,
         value: detail.postscriptName,
         data: [...new Uint8Array(data)]
@@ -163,7 +129,7 @@
 </script>
 
 <Tabs>
-  <div class='d-flex w-full h-full'>
+  <div class='d-flex w-full h-full position-relative'>
     <div class='d-flex flex-column h-full w-300 bg-dark position-relative'>
       <div class='px-20 py-15 font-size-20 font-weight-semi-bold border-bottom root'>Settings</div>
       {#each Object.values(groups) as group}
@@ -202,7 +168,7 @@
         Check For Updates
       </button>
       <button
-        use:click={restoreSettings}
+        use:click={resetSettings}
         class='btn btn-danger mx-20 mt-10'
         type='button'
         data-toggle='tooltip'
@@ -222,14 +188,14 @@
               <div class='material-symbols-outlined mr-10 font-size-30'>font_download</div>
               Default Subtitle Font
             </div>
-            <FontSelect class='form-control bg-dark shadow-lg w-300' on:change={changeFont} value={settings.font?.value} />
+            <FontSelect class='form-control bg-dark shadow-lg w-300' on:change={changeFont} value={$settings.font?.value} />
           </div>
           <div
             class='custom-switch mb-10 pl-10 font-size-16 w-300'
             data-toggle='tooltip'
             data-placement='bottom'
             data-title="Automatically Finds Fonts That Are Missing From A Video's Subtitles">
-            <input type='checkbox' id='player-missingFont' bind:checked={settings.missingFont} />
+            <input type='checkbox' id='player-missingFont' bind:checked={$settings.missingFont} />
             <label for='player-missingFont'>Find Missing Fonts</label>
           </div>
           <div class='col p-10 d-flex flex-column justify-content-end'>
@@ -243,7 +209,7 @@
             data-toggle='tooltip'
             data-placement='bottom'
             data-title='Automatically Starts Playing Next Episode When A Video Ends'>
-            <input type='checkbox' id='player-autoplay' bind:checked={settings.playerAutoplay} />
+            <input type='checkbox' id='player-autoplay' bind:checked={$settings.playerAutoplay} />
             <label for='player-autoplay'>Autoplay Next Episode</label>
           </div>
           <div
@@ -251,7 +217,7 @@
             data-toggle='tooltip'
             data-placement='bottom'
             data-title='Pauses/Resumes Video Playback When Tabbing In/Out Of The App'>
-            <input type='checkbox' id='player-pause' bind:checked={settings.playerPause} />
+            <input type='checkbox' id='player-pause' bind:checked={$settings.playerPause} />
             <label for='player-pause'>Pause When Tabbing Out</label>
           </div>
           <div
@@ -259,7 +225,7 @@
             data-toggle='tooltip'
             data-placement='bottom'
             data-title='Disables Blur When Rendering Subtitles Reducing Lag, Will Cause Text And Subtitle Edges To Appear Sharper'>
-            <input type='checkbox' id='player-sub-blur' bind:checked={settings.disableSubtitleBlur} />
+            <input type='checkbox' id='player-sub-blur' bind:checked={$settings.disableSubtitleBlur} />
             <label for='player-sub-blur'>Fast Subtitle Rendering</label>
           </div>
           <div class='col p-10 d-flex flex-column justify-content-end'>
@@ -273,7 +239,7 @@
             data-toggle='tooltip'
             data-placement='bottom'
             data-title='Automatically Marks Episodes As Complete On AniList When You Finish Watching Them, Requires AniList Login'>
-            <input type='checkbox' id='player-autocomplete' bind:checked={settings.playerAutocomplete} />
+            <input type='checkbox' id='player-autocomplete' bind:checked={$settings.playerAutocomplete} />
             <label for='player-autocomplete'>Autocomplete Episodes</label>
           </div>
           <div class='col p-10 d-flex flex-column justify-content-end'>
@@ -286,7 +252,7 @@
             <div class='input-group-prepend'>
               <span class='input-group-text w-250 justify-content-center'>Preferred Subtitle Language</span>
             </div>
-            <select class='form-control form-control-lg' bind:value={settings.subtitleLanguage}>
+            <select class='form-control form-control-lg' bind:value={$settings.subtitleLanguage}>
               <option value=''>None</option>
               <option value='eng' selected>English</option>
               <option value='jpn'>Japanese</option>
@@ -316,7 +282,7 @@
             <div class='input-group-prepend'>
               <span class='input-group-text w-250 justify-content-center'>Preferred Audio Language</span>
             </div>
-            <select class='form-control form-control-lg' bind:value={settings.audioLanguage}>
+            <select class='form-control form-control-lg' bind:value={$settings.audioLanguage}>
               <option value='eng'>English</option>
               <option value='jpn' selected>Japanese</option>
               <option value='chi'>Chinese</option>
@@ -345,7 +311,7 @@
       </Tab>
       <Tab>
         <div class='root p-20 m-20'>
-          {#each settings.rssFeedsNew as _, i}
+          {#each $settings.rssFeedsNew as _, i}
             <div
               class='input-group mb-10 w-700 form-control-lg'
               data-toggle='tooltip'
@@ -354,26 +320,26 @@
               <div class='input-group-prepend'>
                 <span class='input-group-text w-100 justify-content-center'>Feed</span>
               </div>
-              <input type='text' class='form-control form-control-lg w-150 flex-reset' placeholder='New Releases' autocomplete='off' bind:value={settings.rssFeedsNew[i][0]} />
-              <input id='rss-feed-{i}' type='text' list='rss-feed-list-{i}' class='w-400 form-control form-control-lg' placeholder={set.toshoURL + 'rss2?qx=1&q="[SubsPlease] "'} autocomplete='off' bind:value={settings.rssFeedsNew[i][1]} />
+              <input type='text' class='form-control form-control-lg w-150 flex-reset' placeholder='New Releases' autocomplete='off' bind:value={$settings.rssFeedsNew[i][0]} />
+              <input id='rss-feed-{i}' type='text' list='rss-feed-list-{i}' class='w-400 form-control form-control-lg' placeholder={$settings.toshoURL + 'rss2?qx=1&q="[SubsPlease] "'} autocomplete='off' bind:value={$settings.rssFeedsNew[i][1]} />
               <datalist id='rss-feed-list-{i}'>
-                <option value='SubsPlease'>{set.toshoURL + 'rss2?qx=1&q="[SubsPlease] "'}</option>
-                <option value='NC-Raws'>{set.toshoURL + 'rss2?qx=1&q="[NC-Raws] "'}</option>
-                <option value='Erai-raws [Multi-Sub]'>{set.toshoURL + 'rss2?qx=1&q="[Erai-raws] "'}</option>
+                <option value='SubsPlease'>{$settings.toshoURL + 'rss2?qx=1&q="[SubsPlease] "'}</option>
+                <option value='NC-Raws'>{$settings.toshoURL + 'rss2?qx=1&q="[NC-Raws] "'}</option>
+                <option value='Erai-raws [Multi-Sub]'>{$settings.toshoURL + 'rss2?qx=1&q="[Erai-raws] "'}</option>
               </datalist>
               <div class='input-group-append'>
-                <button type='button' use:click={() => { settings.rssFeedsNew.splice(i, 1); settings.rssFeedsNew = settings.rssFeedsNew }} class='btn btn-danger btn-lg input-group-append'>Remove</button>
+                <button type='button' use:click={() => { $settings.rssFeedsNew.splice(i, 1); $settings.rssFeedsNew = $settings.rssFeedsNew }} class='btn btn-danger btn-lg input-group-append'>Remove</button>
               </div>
             </div>
           {/each}
           <div class='input-group input-group-lg form-control-lg mb-10 w-500'>
-            <button type='button' use:click={() => { settings.rssFeedsNew[settings.rssFeedsNew.length] = ['New Releases', null] }} class='btn btn-lg btn-primary mb-10'>Add Feed</button>
+            <button type='button' use:click={() => { $settings.rssFeedsNew[$settings.rssFeedsNew.length] = ['New Releases', null] }} class='btn btn-lg btn-primary mb-10'>Add Feed</button>
           </div>
           <div class='input-group mb-10 w-300 form-control-lg' data-toggle='tooltip' data-placement='top' data-title='What Quality To Find Torrents In'>
             <div class='input-group-prepend'>
               <span class='input-group-text w-100 justify-content-center'>Quality</span>
             </div>
-            <select class='form-control form-control-lg' bind:value={settings.rssQuality}>
+            <select class='form-control form-control-lg' bind:value={$settings.rssQuality}>
               <option value='1080' selected>1080p</option>
               <option value='720'>720p</option>
               <option value='480||540'>SD</option>
@@ -386,7 +352,7 @@
             data-placement='bottom'
             data-title='Skips The Torrent Selection Popup, Might Lead To Unwanted Videos Being
               Played'>
-            <input type='checkbox' id='rss-autoplay' bind:checked={settings.rssAutoplay} />
+            <input type='checkbox' id='rss-autoplay' bind:checked={$settings.rssAutoplay} />
             <label for='rss-autoplay'>Auto-Play Torrents</label>
           </div>
           <div
@@ -394,7 +360,7 @@
             data-toggle='tooltip'
             data-placement='bottom'
             data-title='Enables DNS Over HTTPS, Useful If Your ISP Blocks Certain Domains'>
-            <input type='checkbox' id='rss-dohtoggle' bind:checked={settings.enableDoH} />
+            <input type='checkbox' id='rss-dohtoggle' bind:checked={$settings.enableDoH} />
             <label for='rss-dohtoggle'>Enable DoH</label>
           </div>
           <div
@@ -405,7 +371,7 @@
             <div class='input-group-prepend'>
               <span class='input-group-text w-150 justify-content-center'>DoH URL</span>
             </div>
-            <input type='text' class='form-control' bind:value={settings.doHURL} placeholder={defaults.doHURL} />
+            <input type='text' class='form-control' bind:value={$settings.doHURL} placeholder={defaults.doHURL} />
           </div>
           <div
             class='input-group input-group-lg form-control-lg mb-10 w-500'
@@ -415,7 +381,7 @@
             <div class='input-group-prepend'>
               <span class='input-group-text w-150 justify-content-center'>Tosho URL</span>
             </div>
-            <input type='text' class='form-control' bind:value={settings.toshoURL} placeholder={defaults.toshoURL} />
+            <input type='text' class='form-control' bind:value={$settings.toshoURL} placeholder={defaults.toshoURL} />
           </div>
         </div>
       </Tab>
@@ -429,7 +395,7 @@
             <div class='input-group-prepend'>
               <button type='button' use:click={handleFolder} class='btn btn-primary input-group-append'>Select Folder</button>
             </div>
-            <input type='text' class='form-control' bind:value={settings.torrentPath} placeholder='Folder Path' />
+            <input type='text' class='form-control' bind:value={$settings.torrentPath} placeholder='Folder Path' />
           </div>
           <div
             class='input-group w-300 form-control-lg mb-10'
@@ -439,7 +405,7 @@
             <div class='input-group-prepend'>
               <span class='input-group-text w-150 justify-content-center'>Max Speed</span>
             </div>
-            <input type='number' bind:value={settings.torrentSpeed} min='0' max='50' class='form-control text-right form-control-lg' />
+            <input type='number' bind:value={$settings.torrentSpeed} min='0' max='50' class='form-control text-right form-control-lg' />
             <div class='input-group-append'>
               <span class='input-group-text'>MB/s</span>
             </div>
@@ -452,7 +418,7 @@
             <div class='input-group-prepend'>
               <span class='input-group-text w-200 justify-content-center'>Max Connections</span>
             </div>
-            <input type='number' bind:value={settings.maxConns} min='1' max='512' class='form-control text-right form-control-lg' />
+            <input type='number' bind:value={$settings.maxConns} min='1' max='512' class='form-control text-right form-control-lg' />
           </div>
           <div
             class='input-group w-300 form-control-lg mb-10'
@@ -462,7 +428,7 @@
             <div class='input-group-prepend'>
               <span class='input-group-text w-150 justify-content-center'>DHT Port</span>
             </div>
-            <input type='number' bind:value={settings.dhtPort} min='0' max='65536' class='form-control text-right form-control-lg' />
+            <input type='number' bind:value={$settings.dhtPort} min='0' max='65536' class='form-control text-right form-control-lg' />
           </div>
           <div
             class='input-group w-300 form-control-lg mb-10'
@@ -472,14 +438,14 @@
             <div class='input-group-prepend'>
               <span class='input-group-text w-150 justify-content-center'>Torrent Port</span>
             </div>
-            <input type='number' bind:value={settings.torrentPort} min='0' max='65536' class='form-control text-right form-control-lg' />
+            <input type='number' bind:value={$settings.torrentPort} min='0' max='65536' class='form-control text-right form-control-lg' />
           </div>
           <div
             class='custom-switch mb-10 pl-10 font-size-16 w-300'
             data-toggle='tooltip'
             data-placement='bottom'
             data-title="Doesn't Delete Files Of Old Torrents When A New Torrent Is Played">
-            <input type='checkbox' id='torrent-persist' bind:checked={settings.torrentPersist} />
+            <input type='checkbox' id='torrent-persist' bind:checked={$settings.torrentPersist} />
             <label for='torrent-persist'>Persist Files</label>
           </div>
           <div
@@ -487,7 +453,7 @@
             data-toggle='tooltip'
             data-placement='bottom'
             data-title='Disables Distributed Hash Tables For Use In Private Trackers To Improve Privacy'>
-            <input type='checkbox' id='torrent-dht' bind:checked={settings.torrentDHT} />
+            <input type='checkbox' id='torrent-dht' bind:checked={$settings.torrentDHT} />
             <label for='torrent-dht'>Disable DHT</label>
           </div>
           <div
@@ -495,7 +461,7 @@
             data-toggle='tooltip'
             data-placement='bottom'
             data-title='Disables Peer Exchange For Use In Private Trackers To Improve Privacy'>
-            <input type='checkbox' id='torrent-pex' bind:checked={settings.torrentPeX} />
+            <input type='checkbox' id='torrent-pex' bind:checked={$settings.torrentPeX} />
             <label for='torrent-pex'>Disable PeX</label>
           </div>
         </div>
@@ -507,7 +473,7 @@
             data-toggle='tooltip'
             data-placement='bottom'
             data-title='Shows Currently Played Anime And Episode in Discord Rich Presence.'>
-            <input type='checkbox' id='rpc-details' bind:checked={settings.showDetailsInRPC} />
+            <input type='checkbox' id='rpc-details' bind:checked={$settings.showDetailsInRPC} />
             <label for='rpc-details'>Show Details in Discord Rich Presence</label>
           </div>
         </div>
@@ -519,7 +485,7 @@
             data-toggle='tooltip'
             data-placement='bottom'
             data-title='Enables Smooth Scrolling For Long Vertical Containers. Impacts Performance.'>
-            <input type='checkbox' id='smooth-scroll' bind:checked={settings.smoothScroll} />
+            <input type='checkbox' id='smooth-scroll' bind:checked={$settings.smoothScroll} />
             <label for='smooth-scroll'>Enable Smooth Scrolling</label>
           </div>
           <div
@@ -527,7 +493,7 @@
             data-toggle='tooltip'
             data-placement='bottom'
             data-title='Enables Sidebar Hover Animations'>
-            <input type='checkbox' id='disable-sidebar' bind:checked={settings.expandingSidebar} />
+            <input type='checkbox' id='disable-sidebar' bind:checked={$settings.expandingSidebar} />
             <label for='disable-sidebar'>Enable Sidebar Animations</label>
           </div>
           <div class='form-group mb-10 pl-10 font-size-16 w-500'
@@ -541,7 +507,7 @@
             <div class='input-group-prepend'>
               <span class='input-group-text w-200 justify-content-center'>ANGLE Backend</span>
             </div>
-            <select class='form-control form-control-lg' bind:value={settings.angle} on:change={updateAngle}>
+            <select class='form-control form-control-lg' bind:value={$settings.angle} on:change={updateAngle}>
               <option value='default' selected>Default</option>
               <option value='d3d9'>D3D9</option>
               <option value='d3d11'>D3D11</option>
@@ -553,6 +519,7 @@
               <option value='metal'>Metal</option>
             </select>
           </div>
+          <HomeSections bind:homeSections={$settings.homeSections} />
         </div>
       </Tab>
       <Tab>

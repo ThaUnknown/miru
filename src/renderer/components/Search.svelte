@@ -10,7 +10,7 @@
 
 <script>
   import { traceAnime } from '@/modules/anime.js'
-  import { set } from '../views/Settings.svelte'
+  import { settings } from '@/modules/settings.js'
   import { click } from '@/modules/click.js'
   import { page } from '@/App.svelte'
   import { toast } from 'svelte-sonner'
@@ -49,7 +49,7 @@
     }
   }
   function changeCardMode (type) {
-    set.cards = type
+    $settings.cards = type
     form.dispatchEvent(new Event('input', { bubbles: true }))
   }
 </script>
@@ -201,8 +201,8 @@
         <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>{('' + badge).replace(/_/g, ' ').toLowerCase()}</span>
       {/each}
     {/if}
-    <span class='material-symbols-outlined font-size-24 mr-10 filled ml-auto text-dark-light pointer' class:text-muted={set.cards === 'small'} use:click={() => changeCardMode('small')}>grid_on</span>
-    <span class='material-symbols-outlined font-size-24 filled text-dark-light pointer' class:text-muted={set.cards === 'full'} use:click={() => changeCardMode('full')}>grid_view</span>
+    <span class='material-symbols-outlined font-size-24 mr-10 filled ml-auto text-dark-light pointer' class:text-muted={$settings.cards === 'small'} use:click={() => changeCardMode('small')}>grid_on</span>
+    <span class='material-symbols-outlined font-size-24 filled text-dark-light pointer' class:text-muted={$settings.cards === 'full'} use:click={() => changeCardMode('full')}>grid_view</span>
   </div>
 </form>
 

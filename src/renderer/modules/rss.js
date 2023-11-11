@@ -1,5 +1,5 @@
 import { DOMPARSER } from '@/modules/util.js'
-import { set } from '@/views/Settings.svelte'
+import { settings } from '@/modules/settings.js'
 import { toast } from 'svelte-sonner'
 import { add } from '@/modules/torrent.js'
 import { resolveFileMedia, getEpisodeMetadataForMedia } from './anime.js'
@@ -35,13 +35,13 @@ export function parseRSSNodes (nodes) {
 }
 
 const rssmap = {
-  SubsPlease: set.toshoURL + 'rss2?qx=1&q="[SubsPlease] "',
-  'NC-Raws': set.toshoURL + 'rss2?qx=1&q="[NC-Raws] "',
-  'Erai-raws [Multi-Sub]': set.toshoURL + 'rss2?qx=1&q="[Erai-raws] "'
+  SubsPlease: settings.value.toshoURL + 'rss2?qx=1&q="[SubsPlease] "',
+  'NC-Raws': settings.value.toshoURL + 'rss2?qx=1&q="[NC-Raws] "',
+  'Erai-raws [Multi-Sub]': settings.value.toshoURL + 'rss2?qx=1&q="[Erai-raws] "'
 }
 export function getReleasesRSSurl (val) {
   const rss = rssmap[val] || val
-  return rss && new URL(rssmap[val] ? `${rss}${set.rssQuality ? `"${set.rssQuality}"` : ''}` : rss)
+  return rss && new URL(rssmap[val] ? `${rss}${settings.value.rssQuality ? `"${settings.value.rssQuality}"` : ''}` : rss)
 }
 
 export async function getRSSContent (url) {

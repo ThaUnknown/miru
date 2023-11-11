@@ -1,6 +1,6 @@
 <script context='module'>
   import { writable } from 'simple-store-svelte'
-  import Sections from '@/modules/sections.js'
+  import SectionsManager from '@/modules/sections.js'
 
   export const search = writable({})
 
@@ -21,7 +21,7 @@
   let container = null
 
   function loadSearchData () {
-    const load = $search.load || Sections.createFallbackLoad()
+    const load = $search.load || SectionsManager.createFallbackLoad()
     const nextData = load(++page, undefined, searchCleanup($search))
     $items = [...$items, ...nextData]
     return nextData[nextData.length - 1].data

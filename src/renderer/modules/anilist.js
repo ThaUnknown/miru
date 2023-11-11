@@ -2,7 +2,7 @@ import lavenshtein from 'js-levenshtein'
 import { writable } from 'simple-store-svelte'
 import Bottleneck from 'bottleneck'
 
-import { alToken } from '../views/Settings.svelte'
+import { alToken } from '@/modules/settings.js'
 import { toast } from 'svelte-sonner'
 import { sleep } from './util.js'
 
@@ -157,6 +157,10 @@ export async function alEntry (filemedia) {
     }
   }
 }
+
+const date = new Date()
+export const currentSeason = ['WINTER', 'SPRING', 'SUMMER', 'FALL'][Math.floor((date.getMonth() / 12) * 4) % 4]
+export const currentYear = date.getFullYear()
 
 function getDistanceFromTitle (media, name) {
   if (media) {
@@ -529,3 +533,8 @@ mutation($lists: [String]){
 }
 
 export const userLists = writable(alToken && alRequest({ method: 'UserLists' }))
+
+if (alToken) {
+  // update userLists every 15 mins
+  setInterval(() => { userLists.value = alRequest({ method: 'UserLists' }) }, 1000 * 60 * 15)
+}

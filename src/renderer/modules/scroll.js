@@ -1,7 +1,7 @@
-import { set } from '@/views/Settings.svelte'
+import { settings } from '@/modules/settings.js'
 
 export default function (t, { speed = 120, smooth = 10 } = {}) {
-  if (!set.smoothScroll) return
+  if (!settings.value.smoothScroll) return
   let moving = false
   let pos = 0
   let scrollTop = 0

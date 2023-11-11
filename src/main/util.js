@@ -16,6 +16,7 @@ const flags = [
   ['disable-features', 'Vulkan,CalculateNativeWinOcclusion,WidgetLayering'],
   ['disable-color-correct-rendering'],
   ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'],
+  ['bypasscsp-schemes'],
   ['force-color-profile', 'srgb']
 ]
 for (const [flag, value] of flags) {

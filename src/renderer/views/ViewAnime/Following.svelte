@@ -1,5 +1,5 @@
 <script>
-  import { alToken } from '../../views/Settings.svelte'
+  import { alToken } from '@/modules/settings.js'
   import { alRequest } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
   export let media = null
