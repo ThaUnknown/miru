@@ -52,9 +52,10 @@ export default class SectionsManager {
 }
 
 // list of all possible home screen sections
-export let sections = createSections()
+export let sections = []
 
 settings.subscribe(() => {
+  for (const section of sections) clearInterval(section.interval)
   sections = createSections()
 })
 
@@ -70,7 +71,7 @@ function createSections () {
       }
 
       // update every 30 seconds
-      setInterval(async () => {
+      section.interval = setInterval(async () => {
         if (await RSSManager.getContentChanged(1, 8, url)) {
           section.preview.value = RSSManager.getMediaForRSS(1, 8, url, true)
         }
