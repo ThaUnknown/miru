@@ -24,7 +24,8 @@
     "electron-updater": "^6.1.4"
   },
   "dependencies": {
-    "utp-native": "^2.5.3"
+    "utp-native": "^2.5.3",
+    "webpack-merge": "^5.10.0"
   },
   "standard": {
     "ignore": [

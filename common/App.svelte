@@ -2,6 +2,7 @@
   import { setContext } from 'svelte'
   import { writable } from 'simple-store-svelte'
   import { alRequest } from '@/modules/anilist.js'
+  import IPC from '@/modules/ipc.js'
 
   export const page = writable('home')
   export const view = writable(null)
@@ -9,8 +10,8 @@
     view.set(null)
     view.set((await alRequest({ method: 'SearchIDSingle', id: anime })).data.Media)
   }
-  window.IPC.on('open-anime', handleAnime)
-  window.IPC.on('schedule', () => {
+  IPC.on('open-anime', handleAnime)
+  IPC.on('schedule', () => {
     page.set('schedule')
   })
 </script>

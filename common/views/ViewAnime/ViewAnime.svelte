@@ -10,6 +10,7 @@
   import ToggleList from './ToggleList.svelte'
   import Following from './Following.svelte'
   import smoothScroll from '@/modules/scroll.js'
+  import IPC from '@/modules/ipc.js'
 
   const view = getContext('view')
   function close () {
@@ -70,7 +71,7 @@
     })
   }
   function openInBrowser (url) {
-    window.IPC.emit('open', url)
+    IPC.emit('open', url)
   }
 </script>
 

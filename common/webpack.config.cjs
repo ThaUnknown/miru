@@ -6,9 +6,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
-module.exports = (parentDir, alias = {}) => ({
+module.exports = (parentDir, alias = {}, aliasFields = 'browser') => ({
   devtool: 'source-map',
-  entry: join(__dirname, 'main.js'),
+  entry: [join(__dirname, 'main.js')],
   output: {
     path: join(parentDir, 'build'),
     filename: 'renderer.js'
@@ -51,7 +51,7 @@ module.exports = (parentDir, alias = {}) => ({
     ]
   },
   resolve: {
-    aliasFields: ['browser'],
+    aliasFields: [aliasFields],
     alias: {
       ...alias,
       '@': __dirname,

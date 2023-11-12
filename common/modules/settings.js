@@ -1,5 +1,6 @@
 import { writable } from 'simple-store-svelte'
-import { defaults } from '@/../common/util.js'
+import { defaults } from './util.js'
+import IPC from '@/modules/ipc.js'
 export let alToken = localStorage.getItem('ALtoken') || null
 
 let storedSettings = { ...defaults }
@@ -38,7 +39,7 @@ window.addEventListener('paste', ({ clipboardData }) => {
     }
   }
 })
-window.IPC.on('altoken', handleToken)
+IPC.on('altoken', handleToken)
 function handleToken (data) {
   localStorage.setItem('ALtoken', data)
   alToken = data

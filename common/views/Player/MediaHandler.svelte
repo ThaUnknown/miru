@@ -1,9 +1,10 @@
 <script context='module'>
   import { writable } from 'simple-store-svelte'
   import { resolveFileMedia } from '@/modules/anime.js'
-  import { videoRx } from '@/../common/util.js'
+  import { videoRx } from '@/modules/util.js'
   import { tick } from 'svelte'
   import { state } from '../WatchTogether/WatchTogether.svelte'
+  import IPC from '@/modules/ipc.js'
 
   const episodeRx = /Episode (\d+) - (.*)/
 
@@ -180,6 +181,7 @@
   })
 
   function setMediaSession (nowPlaying) {
+    if (typeof MediaMetadata === 'undefined') return
     const name = [nowPlaying.title, nowPlaying.episode, nowPlaying.episodeTitle, 'Miru'].filter(i => i).join(' - ')
 
     const metadata =
@@ -238,7 +240,7 @@
         }
       ]
     }
-    window.IPC.emit('discord', { activity })
+    IPC.emit('discord', { activity })
   }
   state.subscribe(() => {
     setDiscordRPC()

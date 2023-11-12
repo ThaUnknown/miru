@@ -1,6 +1,7 @@
 <script>
   import { alToken } from '../../views/Settings.svelte'
   import { addToast } from '../../components/Toasts.svelte'
+  import IPC from '@/modules/ipc.js'
   import { alRequest } from '@/modules/anilist.js'
   import { getContext } from 'svelte'
   import { getMediaMaxEp } from '@/modules/anime.js'
@@ -73,7 +74,7 @@
     })
   }
   function openInBrowser (url) {
-    window.IPC.emit('open', url)
+    IPC.emit('open', url)
   }
   function getPlayText (media) {
     if (media.mediaListEntry) {

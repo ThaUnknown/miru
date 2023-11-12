@@ -7,6 +7,7 @@
   import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
   import { logout } from './Logout.svelte'
+  import IPC from '@/modules/ipc.js'
   const view = getContext('view')
   export let page
   const links = [
@@ -15,7 +16,7 @@
         if (alID) {
           $logout = true
         } else {
-          window.IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
+          IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
           if (platformMap[window.version.platform] === 'Linux') {
             toast('Support Notification', {
               description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
@@ -69,7 +70,7 @@
     },
     {
       click: () => {
-        window.IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')
+        IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')
       },
       icon: 'favorite',
       text: 'Support This App',

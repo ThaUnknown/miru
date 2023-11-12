@@ -2,8 +2,9 @@
   import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
   import { resetSettings, settings } from '@/modules/settings.js'
+  import IPC from '@/modules/ipc.js'
 
-  if (settings.value.enableDoH) window.IPC.emit('doh', settings.value.doHURL)
+  if (settings.value.enableDoH) IPC.emit('doh', settings.value.doHURL)
   export const platformMap = {
     aix: 'Aix',
     darwin: 'MacOS',
@@ -14,14 +15,14 @@
     win32: 'Windows'
   }
   let version = '1.0.0'
-  window.IPC.on('version', data => (version = data))
-  window.IPC.emit('version')
+  IPC.on('version', data => (version = data))
+  IPC.emit('version')
   function updateAngle () {
-    window.IPC.emit('angle', settings.value.angle)
+    IPC.emit('angle', settings.value.angle)
   }
 
   let wasUpdated = false
-  window.IPC.on('update-available', () => {
+  IPC.on('update-available', () => {
     if (!wasUpdated) {
       wasUpdated = true
       toast('Auto Updater', {
@@ -29,13 +30,13 @@
       })
     }
   })
-  window.IPC.on('update-downloaded', () => {
+  IPC.on('update-downloaded', () => {
     toast.success('Auto Updater', {
       description: 'A new version of Miru has downloaded. You can restart to update!'
     })
   })
   function checkUpdate () {
-    window.IPC.emit('update')
+    IPC.emit('update')
   }
   setInterval(checkUpdate, 1200000)
 
@@ -44,7 +45,7 @@
     const json = await res.json()
     return json.map(({ body, tag_name: version }) => ({ body, version }))
   })()
-  window.IPC.emit('discord_status', settings.value.showDetailsInRPC)
+  IPC.emit('discord_status', settings.value.showDetailsInRPC)
 </script>
 
 <script>
@@ -52,11 +53,11 @@
   import FontSelect from '../components/FontSelect.svelte'
   import { onDestroy } from 'svelte'
   import { variables } from '@/modules/themes.js'
-  import { defaults } from '@/../common/util.js'
+  import { defaults } from '@/modules/util.js'
   import HomeSections from './Settings/HomeSectionsSettings.svelte'
 
   onDestroy(() => {
-    window.IPC.off('path')
+    IPC.off('path')
   })
 
   const groups = {
@@ -91,11 +92,11 @@
       desc: 'Version change log.'
     }
   }
-  $: window.IPC.emit('discord_status', $settings.showDetailsInRPC)
+  $: IPC.emit('discord_status', $settings.showDetailsInRPC)
   function handleFolder () {
-    window.IPC.emit('dialog')
+    IPC.emit('dialog')
   }
-  window.IPC.on('path', data => {
+  IPC.on('path', data => {
     $settings.torrentPath = data
   })
   async function changeFont ({ detail }) {
@@ -144,7 +145,7 @@
         </TabLabel>
       {/each}
       <button
-        use:click={() => window.IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')}
+        use:click={() => IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')}
         class='btn btn-primary mx-20 mt-auto'
         type='button'>
         Donate

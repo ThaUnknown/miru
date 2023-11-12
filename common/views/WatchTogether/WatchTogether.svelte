@@ -7,6 +7,7 @@
   import { page } from '@/App.svelte'
   import P2PT from 'p2pt'
   import { click } from '@/modules/click.js'
+  import IPC from '@/modules/ipc.js'
   import 'browser-event-target-emitter'
 
   export const w2gEmitter = new EventTarget()
@@ -130,7 +131,7 @@
     index: 0
   }
 
-  window.IPC.on('w2glink', link => {
+  IPC.on('w2glink', link => {
     joinLobby(link)
     page.set('watchtogether')
   })

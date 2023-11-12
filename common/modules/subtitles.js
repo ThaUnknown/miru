@@ -1,6 +1,5 @@
 import JASSUB from 'jassub'
-import { toTS } from './util.js'
-import { subRx, videoRx } from '@/../common/util.js'
+import { toTS, subRx, videoRx } from './util.js'
 import { settings } from '@/modules/settings.js'
 import { client } from '@/modules/torrent.js'
 import clipboard from './clipboard.js'

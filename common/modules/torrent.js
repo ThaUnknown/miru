@@ -2,6 +2,7 @@ import { files, media } from '../views/Player/MediaHandler.svelte'
 import { page } from '@/App.svelte'
 import { toast } from 'svelte-sonner'
 import clipboard from './clipboard.js'
+import IPC from '@/modules/ipc.js'
 import 'browser-event-target-emitter'
 
 const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
@@ -10,12 +11,12 @@ class TorrentWorker extends EventTarget {
   constructor () {
     super()
     this.ready = new Promise(resolve => {
-      window.IPC.once('port', () => {
+      IPC.once('port', () => {
         this.port = window.port
         this.port.onmessage(this.handleMessage.bind(this))
         resolve()
       })
-      window.IPC.emit('portRequest')
+      IPC.emit('portRequest')
     })
     clipboard.on('text', ({ detail }) => {
       for (const { text } of detail) {

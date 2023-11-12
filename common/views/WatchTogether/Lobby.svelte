@@ -1,5 +1,6 @@
 <script>
   import { click } from '@/modules/click.js'
+  import IPC from '@/modules/ipc.js'
   export let peers
   export let invite
   export let cleanup
@@ -20,7 +21,7 @@
       {/if}
       <h4 class='my-0 pl-20 mr-auto'>{peer.user?.name || 'Anonymous'}</h4>
       {#if peer.user?.name}
-        <span class='material-symbols-outlined pointer text-primary' use:click={() => window.IPC.emit('open', 'https://anilist.co/user/' + peer.user?.name)}> open_in_new </span>
+        <span class='material-symbols-outlined pointer text-primary' use:click={() => IPC.emit('open', 'https://anilist.co/user/' + peer.user?.name)}> open_in_new </span>
       {/if}
       <!-- {#if state === 'host'}
         <span class='material-symbols-outlined ml-15 pointer text-danger' use:click={() => peer.peer.pc.close()}> logout </span>
