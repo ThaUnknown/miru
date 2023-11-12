@@ -8,6 +8,8 @@
   export const platformMap = {
     aix: 'Aix',
     darwin: 'MacOS',
+    android: 'Android',
+    ios: 'iOS',
     freebsd: 'Linux',
     linux: 'Linux',
     openbsd: 'Linux',

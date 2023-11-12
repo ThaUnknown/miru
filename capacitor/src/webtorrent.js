@@ -8,8 +8,12 @@ const controller = (async () => {
 
   const worker = reg.active || reg.waiting || reg.installing
   return new Promise(resolve => {
-    function checkState (worker) {
-      return worker.state === 'activated' && resolve(reg)
+    function checkState ({ state }) {
+      if (state === 'activated') {
+        resolve(reg)
+        return true
+      }
+      return false
     }
     if (!checkState(worker)) {
       worker.addEventListener('statechange', ({ target }) => checkState(target))
