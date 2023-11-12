@@ -1,62 +1,10 @@
 {
   "name": "Miru",
-  "version": "4.4.18",
+  "private": true,
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
-  "scripts": {
-    "start": "cross-env NODE_ENV=development concurrently --kill-others \"npm run web:watch\" \"npm run electron:start\"",
-    "web:watch": "webpack serve",
-    "web:build": "cross-env NODE_ENV=production webpack build",
-    "electron:start": "electron ./build/main.js",
-    "build": "npm run web:build && electron-builder",
-    "publish": "npm run web:build && electron-builder -p always"
-  },
-  "devDependencies": {
-    "@electron/notarize": "^2.1.0",
-    "@fontsource-variable/material-symbols-outlined": "^5.0.15",
-    "@fontsource-variable/nunito": "^5.0.15",
-    "@fontsource/roboto": "^5.0.8",
-    "@typescript-eslint/parser": "^6.8.0",
-    "anitomyscript": "github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00",
-    "bottleneck": "^2.19.5",
-    "browser-event-target-emitter": "^1.0.1",
-    "concurrently": "^8.2.2",
-    "copy-webpack-plugin": "^11.0.0",
-    "cross-env": "^7.0.3",
-    "css-loader": "^6.8.1",
-    "discord-rpc": "4.0.1",
-    "electron": "25.1.0",
-    "electron-builder": "^24.6.4",
-    "electron-log": "^4.4.8",
-    "electron-updater": "^6.1.4",
-    "eslint": "^8.52.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-svelte": "^2.34.0",
-    "html-webpack-plugin": "^5.5.3",
-    "jassub": "1.7.9",
-    "js-levenshtein": "^1.1.6",
-    "matroska-metadata": "^1.0.3",
-    "mini-css-extract-plugin": "^2.7.6",
-    "p2pt": "github:ThaUnknown/p2pt#modernise",
-    "perfect-seekbar": "^1.1.0",
-    "quartermoon": "^1.2.3",
-    "simple-store-svelte": "^1.0.1",
-    "svelte": "^4.2.2",
-    "svelte-eslint-parser": "^0.33.1",
-    "svelte-keybinds": "1.0.5",
-    "svelte-loader": "^3.1.9",
-    "svelte-miniplayer": "1.0.3",
-    "svelte-sonner": "^0.3.0",
-    "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1",
-    "webtorrent": "^2.1.28"
-  },
-  "dependencies": {
-    "utp-native": "^2.5.3"
-  },
   "standard": {
     "ignore": [
       "bundle.js",
@@ -67,77 +15,21 @@
       "node"
     ]
   },
-  "build": {
-    "directories": {
-      "buildResources": "buildResources"
-    },
-    "asarUnpack": "**/*.node",
-    "electronDownload": {
-      "mirror": "https://github.com/aa910d571134/feb7c2e1a10f/releases/download/",
-      "version": "25.1.0",
-      "customDir": "2ffc48f0b43f"
-    },
-    "protocols": {
-      "name": "miru",
-      "schemes": [
-        "miru"
-      ]
-    },
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "ThaUnknown",
-        "repo": "miru"
-      }
-    ],
-    "afterSign": "./buildResources/notarize.js",
-    "appId": "com.github.thaunknown.miru",
-    "productName": "Miru",
-    "files": [
-      "build/**/*",
-      "!node_modules/**/*.{mk,a,o,h}"
-    ],
-    "mac": {
-      "artifactName": "${os}-${name}-${version}.${ext}",
-      "singleArchFiles": "node_modules/+(register-scheme|utp-native|fs-native-extensions)/**",
-      "category": "public.app-category.video",
-      "icon": "buildResources/icon.icns",
-      "target": [
-        {
-          "arch": "universal",
-          "target": "dmg"
-        }
-      ]
-    },
-    "win": {
-      "artifactName": "${os}-${name}-${version}.${ext}",
-      "target": "nsis"
-    },
-    "linux": {
-      "artifactName": "${os}-${name}-${version}.${ext}",
-      "category": "AudioVideo;Video",
-      "description": "Bittorrent streaming software for cats",
-      "desktop": {
-        "Name": "Miru",
-        "Comment": "Bittorrent streaming software for cats",
-        "Keywords": "anime",
-        "Type": "Application",
-        "MimeType": "x-scheme-handler/miru;"
-      },
-      "target": [
-        {
-          "arch": "x64",
-          "target": "AppImage"
-        },
-        {
-          "arch": "x64",
-          "target": "deb"
-        }
-      ]
-    },
-    "nsis": {
-      "allowToChangeInstallationDirectory": true,
-      "oneClick": false
-    }
+  "dependencies": {
+    "@typescript-eslint/parser": "^6.10.0",
+    "concurrently": "^8.2.2",
+    "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
+    "css-loader": "^6.8.1",
+    "eslint": "^8.53.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-svelte": "^2.35.0",
+    "html-webpack-plugin": "^5.5.3",
+    "matroska-metadata": "^1.0.3",
+    "mini-css-extract-plugin": "^2.7.6",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1",
+    "webtorrent": "^2.1.29"
   }
 }

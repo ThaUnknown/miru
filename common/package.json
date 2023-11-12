@@ -1,0 +1,23 @@
+{
+  "name": "common",
+  "private": true,
+  "dependencies": {
+    "@fontsource-variable/material-symbols-outlined": "latest",
+    "@fontsource-variable/nunito": "latest",
+    "@fontsource/roboto": "latest",
+    "anitomyscript": "github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00",
+    "bottleneck": "^2.19.5",
+    "browser-event-target-emitter": "^1.0.1",
+    "jassub": "latest",
+    "js-levenshtein": "^1.1.6",
+    "p2pt": "github:ThaUnknown/p2pt#modernise",
+    "perfect-seekbar": "^1.1.0",
+    "quartermoon": "^1.2.3",
+    "simple-store-svelte": "^1.0.1",
+    "svelte": "^4.2.3",
+    "svelte-keybinds": "^1.0.5",
+    "svelte-loader": "^3.1.9",
+    "svelte-miniplayer": "^1.0.3",
+    "svelte-sonner": "^0.3.3"
+  }
+}

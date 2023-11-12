@@ -1,0 +1,98 @@
+const { join, resolve } = require('path')
+
+const mode = process.env.NODE_ENV?.trim() || 'development'
+const isDev = mode === 'development'
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
+module.exports = (parentDir, alias = {}) => ({
+  devtool: 'source-map',
+  entry: join(__dirname, 'main.js'),
+  output: {
+    path: join(parentDir, 'build'),
+    filename: 'renderer.js'
+  },
+  mode,
+  module: {
+    rules: [
+      {
+        test: /\.svelte$/,
+        use: {
+          loader: 'svelte-loader',
+          options: {
+            compilerOptions: {
+              dev: isDev
+            },
+            emitCss: !isDev,
+            hotReload: isDev
+          }
+        }
+      },
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true
+            }
+          }
+        ]
+      },
+      {
+        // required to prevent errors from Svelte on Webpack 5+
+        test: /node_modules\/svelte\/.*\.mjs$/,
+        resolve: {
+          fullySpecified: false
+        }
+      }
+    ]
+  },
+  resolve: {
+    aliasFields: ['browser'],
+    alias: {
+      ...alias,
+      '@': __dirname,
+      module: false,
+      url: false,
+      'bittorrent-tracker/lib/client/websocket-tracker.js': resolve('../node_modules/bittorrent-tracker/lib/client/websocket-tracker.js')
+    },
+    extensions: ['.mjs', '.js', '.svelte']
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].css'
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: join(__dirname, 'public') }
+      ]
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'app.html',
+      inject: false,
+      templateContent: ({ htmlWebpackPlugin }) => /* html */`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<meta name="theme-color" content="#191c20">
+<title>Miru</title>
+
+<!-- <link rel="preconnect" href="https://www.youtube-nocookie.com"> -->
+<link rel="preconnect" href="https://graphql.anilist.co">
+<link rel='icon' href='/logo.ico'>
+${htmlWebpackPlugin.tags.headTags}
+</head>
+
+<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars">
+${htmlWebpackPlugin.tags.bodyTags}
+</body>
+
+</html> `
+    })],
+  target: 'web'
+})

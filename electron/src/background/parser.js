@@ -1,4 +1,4 @@
-import { fontRx } from '../common/util.js'
+import { fontRx } from 'common/util.js'
 import Metadata from 'matroska-metadata'
 
 export default class Parser {

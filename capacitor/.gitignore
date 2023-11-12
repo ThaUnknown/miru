@@ -1,0 +1,10 @@
+/node_modules/
+/public/build/
+/public
+.routify/
+android/
+ios/
+
+package-lock.json
+.env
+.DS_Store

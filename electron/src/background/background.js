@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron'
 import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
 import { hex2bin, arr2hex, text2arr } from 'uint8-util'
 import Parser from './parser.js'
-import { defaults, fontRx, subRx, videoRx } from '../common/util.js'
+import { defaults, fontRx, subRx, videoRx } from 'common/util.js'
 import { statfs } from 'fs/promises'
 
 const LARGE_FILESIZE = 32_000_000_000

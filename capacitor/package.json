@@ -1,0 +1,26 @@
+{
+  "scripts": {
+    "build:app": "vite build",
+    "build:android": "run-s build:app cap-run:android",
+    "build:ios": "run-s build:app cap-run:ios",
+    "cap-run:android": "cap sync android && cap open android",
+    "cap-run:ios": "cap sync ios && cap open ios",
+    "dev:ios": "run-p dev:start cap-run:ios",
+    "dev:android": "run-p dev:start cap-run:android",
+    "dev:preview": "vite preview",
+    "dev:start": "run-p dev:vite",
+    "dev:vite": "vite --host --port 5001"
+  },
+  "devDependencies": {
+    "cordova-res": "^0.15.4"
+  },
+  "dependencies": {
+    "@capacitor/android": "^5.5.1",
+    "@capacitor/cli": "^5.5.1",
+    "@capacitor/core": "^5.5.1",
+    "@capacitor/ios": "^5.5.1",
+    "cordova-plugin-chrome-apps-common": "^1.0.7",
+    "cordova-plugin-chrome-apps-sockets-tcp": "github:KoenLav/cordova-plugin-chrome-apps-sockets-tcp",
+    "cordova-plugin-chrome-apps-sockets-udp": "^1.3.0"
+  }
+}
