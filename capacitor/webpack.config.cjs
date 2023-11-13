@@ -37,7 +37,6 @@ const alias = {
   '@/modules/ipc.js': join(__dirname, 'src', 'ipc.js'),
   net: join(__dirname, 'src', 'chrome-net.js'),
   dgram: join(__dirname, 'src', 'chrome-dgram.js'),
-  'cross-fetch-ponyfill': join(__dirname, 'src', 'cors-fetch.js'),
   http: 'stream-http',
   https: 'stream-http',
   assert: 'assert',

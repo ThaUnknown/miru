@@ -178,7 +178,7 @@ class Socket extends EventEmitter {
    * Internal function to receive new messages and emit `message` events.
    */
   _onReceive (info) {
-    const buf = new Uint8Array(info.data)
+    const buf = Buffer.from(new Uint8Array(info.data))
     const rinfo = {
       address: info.remoteAddress,
       family: 'IPv4',

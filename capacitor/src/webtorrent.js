@@ -23,4 +23,9 @@ const controller = (async () => {
 })()
 globalThis.controller = controller
 
-globalThis.client = new TorrentClient(ipcRendererWebTorrent, () => ({ bsize: Infinity, bavail: Infinity }), 'browser', controller)
+async function storageQuota () {
+  const { quota, usage } = await navigator.storage.estimate()
+  return quota - usage
+}
+
+globalThis.client = new TorrentClient(ipcRendererWebTorrent, storageQuota, 'browser', controller)

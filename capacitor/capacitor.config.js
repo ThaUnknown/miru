@@ -8,7 +8,7 @@ const config = {
       launchShowDuration: 0
     },
     CapacitorHttp: {
-      enabled: true
+      enabled: false
     }
   },
   // remove server section before making production build

@@ -9,7 +9,7 @@ const LARGE_FILESIZE = 32_000_000_000
 export default class TorrentClient extends WebTorrent {
   static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
 
-  constructor (ipc, statfs, serverMode, controller) {
+  constructor (ipc, storageQuota, serverMode, controller) {
     const settings = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
     super({
       dht: !settings.torrentDHT,
@@ -34,7 +34,7 @@ export default class TorrentClient extends WebTorrent {
     this.settings = settings
 
     this.serverMode = serverMode
-    this.statfs = statfs
+    this.storageQuota = storageQuota
 
     this.current = null
     this.parsed = false
@@ -95,9 +95,7 @@ export default class TorrentClient extends WebTorrent {
     this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
     localStorage.setItem('torrent', JSON.stringify([...torrent.torrentFile]))
 
-    const { bsize, bavail } = await this.statfs(torrent.path)
-
-    if (torrent.length > bsize * bavail) {
+    if (torrent.length > await this.storageQuota(torrent.path)) {
       this.dispatch('error', 'Torrent Too Big! This Torrent Exceeds The Selected Drive\'s Available Space. Change Download Location In Torrent Settings To A Drive With More Space And Restart The App!')
     }
   }
