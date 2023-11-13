@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "4.4.18",
+  "version": "4.4.19",
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
