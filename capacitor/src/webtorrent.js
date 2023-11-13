@@ -7,6 +7,7 @@ const controller = (async () => {
   const reg = await navigator.serviceWorker.register('./sw.js', { scope: './' })
 
   const worker = reg.active || reg.waiting || reg.installing
+  if (!worker) throw new Error('No worker registration')
   return new Promise(resolve => {
     function checkState ({ state }) {
       if (state === 'activated') {
@@ -20,6 +21,6 @@ const controller = (async () => {
     }
   })
 })()
-window.controller = controller
+globalThis.controller = controller
 
-window.client = new TorrentClient(ipcRendererWebTorrent, () => ({ bsize: Infinity, bavail: Infinity }), 'browser', controller)
+globalThis.client = new TorrentClient(ipcRendererWebTorrent, () => ({ bsize: Infinity, bavail: Infinity }), 'browser', controller)

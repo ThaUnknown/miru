@@ -5,13 +5,14 @@
     "build:app": "vite build",
     "build:android": "run-s build:app cap-run:android",
     "build:ios": "run-s build:app cap-run:ios",
-    "cap-run:android": "cap run android --target=Pixel_XL_API_33 --external --public-host=10.5.0.2",
-    "cap-run:ios": "cap sync ios && cap open ios",
+    "cap:android-emulator": "cap run android --target=Pixel_XL_API_33 --external --public-host=10.5.0.2 && dev:localhost-bind",
+    "cap:localhost-bind": "adb reverse tcp:5001 tcp:5001",
+    "cap:android": "run-s cap:android-emulator cap:localhost-bind",
+    "cap:ios": "cap sync ios && cap open ios",
     "dev:ios": "run-p dev:start cap-run:ios",
     "dev:preview": "vite preview",
-    "dev:start": "run-p dev:webpack cap-run:android",
-    "dev:webpack": "webpack serve",
-    "dev:localhost-bind": "adb reverse tcp:5001 tcp:5001"
+    "dev:start": "run-p dev:webpack cap:android",
+    "dev:webpack": "webpack serve"
   },
   "devDependencies": {
     "assert": "^2.1.0",
@@ -21,6 +22,7 @@
     "cordova-res": "^0.15.4",
     "crypto-browserify": "^3.12.0",
     "hybrid-chunk-store": "^1.2.2",
+    "npm-run-all": "^4.1.5",
     "path-esm": "^1.0.0",
     "querystring": "^0.2.1",
     "stream-browserify": "^3.0.0",

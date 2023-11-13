@@ -38,7 +38,7 @@ export const ipcRendererWebTorrent = new EventEmitter()
 const [_platform, arch] = navigator.platform.split(' ')
 
 window.version = {
-  platform: globalThis.cordova.platformId,
+  platform: globalThis.cordova?.platformId,
   arch,
-  version: globalThis.cordova.version
+  version: globalThis.cordova?.version
 }
