@@ -14,9 +14,12 @@
   function viewMedia () {
     $view = data.media
   }
+  function setHoverState (state) {
+    preview = state
+  }
 </script>
 
-<div class='d-flex p-20 pb-10 position-relative' on:pointerenter={() => { preview = true }} on:custom-pointerleave={() => { preview = false }} use:hoverClick={data.onclick || viewMedia}>
+<div class='d-flex p-20 pb-10 position-relative' use:hoverClick={[data.onclick || viewMedia, setHoverState]}>
   {#if preview}
     <EpisodePreviewCard {data} />
   {/if}

@@ -14,9 +14,12 @@
   function viewMedia () {
     $view = media
   }
+  function setHoverState (state) {
+    preview = state
+  }
 </script>
 
-<div class='d-flex p-20 position-relative first-check' on:pointerenter={() => { preview = true }} on:custom-pointerleave={() => { preview = false }} use:hoverClick={viewMedia}>
+<div class='d-flex p-20 position-relative first-check' use:hoverClick={[viewMedia, setHoverState]}>
   {#if preview}
     <PreviewCard {media} />
   {/if}
