@@ -225,6 +225,7 @@ class Socket extends EventEmitter {
    */
   send (buffer, offset, length, port, address, callback = noop) {
     let list
+    const cb = callback || noop
 
     if (address || (port && typeof port !== 'function')) {
       buffer = this.sliceBuffer(buffer, offset, length)
@@ -277,10 +278,10 @@ class Socket extends EventEmitter {
     chrome.sockets.udp.send(this.id, ab, address, port, sendInfo => {
       if (sendInfo.resultCode < 0) {
         const err = new Error('Socket ' + this.id + ' send error ' + sendInfo.resultCode)
-        callback(err)
+        cb(err)
         this.emit('error', err)
       } else {
-        callback(null)
+        cb(null)
       }
     })
   }
