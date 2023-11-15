@@ -10,7 +10,7 @@ StatusBar.setOverlaysWebView({ overlay: true })
 NavigationBar.setColor({ color: '#17191c' })
 function hideAndroidNavBar () {
   NavigationBar.hide()
-  // NavigationBar.setTransparency({ isTransparent: true })
+  NavigationBar.setTransparency({ isTransparent: true })
 }
 
 screen.orientation.addEventListener('change', () => {

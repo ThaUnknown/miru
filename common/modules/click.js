@@ -50,7 +50,18 @@ export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
       lastTapElement = hoverUpdate
     }
   })
-  node.addEventListener('keydown', e => { if (e.key === 'Enter') cb(e) })
+  node.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      lastTapElement?.(false)
+      if (lastTapElement === hoverUpdate) {
+        lastTapElement = null
+        cb(e)
+      } else {
+        hoverUpdate(true)
+        lastTapElement = hoverUpdate
+      }
+    }
+  })
   node.addEventListener('pointerup', e => {
     e.stopPropagation()
     if (e.pointerType === 'mouse') setTimeout(() => hoverUpdate(false))

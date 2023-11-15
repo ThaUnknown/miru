@@ -1287,14 +1287,11 @@
     background: #000 !important;
   }
 
-  /* @media (pointer: none), (pointer: coarse) {
+  @media (pointer: none), (pointer: coarse) {
     .middle .ctrl {
       display: flex;
     }
-    .middle .play-overlay {
-      display: none !important;
-    }
-  } */
+  }
   .miniplayer .middle {
     transition: background 0.2s ease;
     position: absolute !important;
