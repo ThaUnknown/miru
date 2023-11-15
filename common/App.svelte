@@ -25,11 +25,12 @@
   import IspBlock from './views/IspBlock.svelte'
   import { Toaster } from 'svelte-sonner'
   import Logout from './components/Logout.svelte'
+  import Navbar from './components/Navbar.svelte'
 
   setContext('view', view)
 </script>
 
-<div class='page-wrapper with-sidebar with-transitions bg-dark' data-sidebar-type='overlayed-all'>
+<div class='page-wrapper with-transitions bg-dark position-relative' data-sidebar-type='overlayed-all'>
   <IspBlock />
   <Menubar bind:page={$page} />
   <ViewAnime />
@@ -40,6 +41,7 @@
     <RSSView />
     <Router bind:page={$page} />
   </div>
+  <Navbar bind:page={$page} />
 </div>
 
 <style>
@@ -50,8 +52,15 @@
 
   .page-wrapper > .content-wrapper {
     margin-left: var(--sidebar-minimised) !important;
-    position: unset !important;
     width: calc(100% - var(--sidebar-minimised)) !important;
     transition: none !important;
+  }
+  .page-wrapper {
+    height: calc(100% - var(--navbar-height)) !important;
+  }
+  @media (min-width: 769px) {
+    .page-wrapper  {
+      padding-left: env(safe-area-inset-left) !important;
+    }
   }
 </style>

@@ -10,8 +10,9 @@
   --card-border-width: 0;
   --sidebar-border-width: 0;
   --input-border-width: 0;
-  --sidebar-minimised: 7rem;
-  --sidebar-width: 7rem;
+  --sidebar-minimised: 0px;
+  --sidebar-width: 0px;
+  --navbar-height: 7rem;
   --dark-color-base-hue: 220deg !important;
   --dark-color-base-saturation: 10% !important;
   --dark-color-hsl: var(--dark-color-base-hue), var(--dark-color-base-saturation), 10% !important;
@@ -22,6 +23,14 @@
   --gray-color-light-hsl: var(--gray-color-base-hue), 10%, 28%;
   --gray-color-base-hue: 216;
   color-scheme: dark;
+}
+
+@media (min-width: 769px) {
+  :root {
+    --sidebar-minimised: 7rem;
+    --sidebar-width: 7rem;
+    --navbar-height: 0px;
+  }
 }
 
 .btn-secondary {

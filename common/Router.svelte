@@ -10,7 +10,7 @@
   export let page = 'home'
 </script>
 
-<div class='wrapper h-full position-absolute overflow-hidden'>
+<div class='w-full h-full position-absolute overflow-hidden'>
   <Miniplayer active={page !== 'player'} class='bg-dark-light z-10 {page === 'player' ? 'h-full' : ''}' minwidth='35rem' maxwidth='60rem' width='300px' padding='2rem'>
     <MediaHandler miniplayer={page !== 'player'} bind:page />
   </Miniplayer>
@@ -26,12 +26,3 @@
 {:else if page === 'watchtogether'}
   <WatchTogether />
 {/if}
-
-<style>
-  .wrapper {
-    width: calc(100% - var(--sidebar-minimised));
-  }
-  :global(:fullscreen) .wrapper {
-    width: 100%;
-  }
-</style>

@@ -82,39 +82,47 @@
       <img class='w-full cover-img banner position-absolute' alt='banner' src={media.bannerImage || ' '} />
       <div class='row'>
         <div class='col-lg-7 col-12 pb-10'>
-          <div class='d-flex flex-md-row flex-column align-items-end pb-20 mb-15'>
+          <div class='d-flex flex-md-row flex-column align-items-md-end pb-20 mb-15'>
             <div class='cover d-flex flex-row align-items-md-end align-items-center mw-full w-full mb-md-0 mb-20'>
               <img class='rounded cover-img w-full overflow-hidden h-full' alt='cover-art' src={media.coverImage?.extraLarge || media.coverImage?.medium} />
             </div>
             <div class='pl-md-20 ml-md-20'>
-              <h1 class='font-weight-very-bold text-white select-all'>{media.title.userPreferred}</h1>
-              <p class='d-flex flex-row font-size-18'>
+              <h1 class='font-weight-very-bold text-white select-all mb-0'>{media.title.userPreferred}</h1>
+              <div class='d-flex flex-row font-size-18 flex-wrap mt-5'>
                 {#if media.averageScore}
-                  <span class='material-symbols-outlined mx-10 font-size-24'> trending_up </span>
-                  <span class='mr-20'>
-                    Rating: {media.averageScore + '%'}
-                  </span>
+                  <div class='d-flex flex-row mt-10'>
+                    <span class='material-symbols-outlined mx-10 font-size-24'> trending_up </span>
+                    <span class='mr-20'>
+                      Rating: {media.averageScore + '%'}
+                    </span>
+                  </div>
                 {/if}
                 {#if media.format}
-                  <span class='material-symbols-outlined mx-10 font-size-24'> monitor </span>
-                  <span class='mr-20 text-capitalize'>
-                    Format: {formatMap[media.format]}
-                  </span>
+                  <div class='d-flex flex-row mt-10'>
+                    <span class='material-symbols-outlined mx-10 font-size-24'> monitor </span>
+                    <span class='mr-20 text-capitalize'>
+                      Format: {formatMap[media.format]}
+                    </span>
+                  </div>
                 {/if}
                 {#if media.episodes !== 1 && getMediaMaxEp(media)}
-                  <span class='material-symbols-outlined mx-10 font-size-24'> theaters </span>
-                  <span class='mr-20'>
-                    Episodes: {getMediaMaxEp(media)}
-                  </span>
+                  <div class='d-flex flex-row mt-10'>
+                    <span class='material-symbols-outlined mx-10 font-size-24'> theaters </span>
+                    <span class='mr-20'>
+                      Episodes: {getMediaMaxEp(media)}
+                    </span>
+                  </div>
                 {:else if media.duration}
-                  <span class='material-symbols-outlined mx-10 font-size-24'> timer </span>
-                  <span class='mr-20'>
-                    Length: {media.duration + ' min'}
-                  </span>
+                  <div class='d-flex flex-row mt-10'>
+                    <span class='material-symbols-outlined mx-10 font-size-24'> timer </span>
+                    <span class='mr-20'>
+                      Length: {media.duration + ' min'}
+                    </span>
+                  </div>
                 {/if}
-              </p>
-              <div class='d-flex flex-row pt-5'>
-                <button class='btn btn-lg btn-secondary w-250 text-dark font-weight-bold shadow-none border-0 d-flex align-items-center justify-content-center'
+              </div>
+              <div class='d-flex flex-row flex-wrap'>
+                <button class='btn btn-lg btn-secondary w-250 text-dark font-weight-bold shadow-none border-0 d-flex align-items-center justify-content-center mr-10 mt-20'
                   use:click={() => play()}
                   disabled={media.status === 'NOT_YET_RELEASED'}>
                   <span class='material-symbols-outlined font-size-24 filled pr-10'>
@@ -122,18 +130,20 @@
                   </span>
                   {playButtonText}
                 </button>
-                <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
-                  favorite
-                </button>
-                <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.mediaListEntry} use:click={toggleStatus}>
-                  bookmark
-                </button>
-                <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => copyToClipboard(`https://miru.watch/anime/${media.id}`)}>
-                  share
-                </button>
-                <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => openInBrowser(`https://anilist.co/anime/${media.id}`)}>
-                  open_in_new
-                </button>
+                <div class='mt-20'>
+                  <button class='btn bg-dark btn-lg btn-square material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
+                    favorite
+                  </button>
+                  <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.mediaListEntry} use:click={toggleStatus}>
+                    bookmark
+                  </button>
+                  <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => copyToClipboard(`https://miru.watch/anime/${media.id}`)}>
+                    share
+                  </button>
+                  <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => openInBrowser(`https://anilist.co/anime/${media.id}`)}>
+                    open_in_new
+                  </button>
+                </div>
               </div>
             </div>
           </div>

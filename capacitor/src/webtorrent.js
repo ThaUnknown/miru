@@ -1,5 +1,23 @@
 import TorrentClient from 'common/modules/webtorrent.js'
 import { ipcRendererWebTorrent } from './ipc.js'
+import { StatusBar, Style } from '@capacitor/status-bar'
+import { NavigationBar } from '@mauricewegner/capacitor-navigation-bar'
+
+StatusBar.hide()
+StatusBar.setStyle({ style: Style.Dark })
+StatusBar.setOverlaysWebView({ overlay: true })
+
+NavigationBar.setColor({ color: '#17191c' })
+function hideAndroidNavBar () {
+  NavigationBar.hide()
+  // NavigationBar.setTransparency({ isTransparent: true })
+}
+
+screen.orientation.addEventListener('change', () => {
+  hideAndroidNavBar()
+})
+
+hideAndroidNavBar()
 
 globalThis.chrome.runtime = { lastError: false, id: 'something' }
 

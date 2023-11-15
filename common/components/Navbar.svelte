@@ -3,7 +3,6 @@
   import { alID } from '@/modules/anilist.js'
   import { media } from '../views/Player/MediaHandler.svelte'
   import { platformMap } from '../views/Settings.svelte'
-  import { settings } from '@/modules/settings.js'
   import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
   import { logout } from './Logout.svelte'
@@ -27,7 +26,7 @@
       },
       icon: 'login',
       text: 'Login With AniList',
-      css: 'mt-auto'
+      css: 'ml-auto'
     },
     {
       click: () => {
@@ -74,7 +73,7 @@
       },
       icon: 'favorite',
       text: 'Support This App',
-      css: 'mt-auto donate'
+      css: 'ml-auto donate'
     },
     {
       click: () => {
@@ -93,32 +92,35 @@
       }
     })
   }
+  function close () {
+    $view = null
+    page = 'home'
+  }
 </script>
 
-<div class='sidebar z-30 d-md-block' class:animated={$settings.expandingSidebar}>
-  <div class='sidebar-overlay pointer-events-none h-full position-absolute' />
-  <div class='sidebar-menu h-full d-flex flex-column justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
+<nav class='navbar navbar-fixed-bottom d-block d-md-none border-0 bg-dark'>
+  <div class='navbar-menu h-full d-flex flex-row justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
+    <img src='./logo.ico' class='w-50 h-50 m-10 pointer' alt='ico' use:click={close} />
     {#each links as { click: _click, icon, text, image, css, page: _page }, i (i)}
       <div
-        class='sidebar-link sidebar-link-with-icon pointer overflow-hidden {css}'
+        class='navbar-link navbar-link-with-icon pointer overflow-hidden {css}'
         use:click={_click}>
-        <span class='text-nowrap d-flex align-items-center w-full h-full'>
-          {#if image}
-            <span class='material-symbols-outlined rounded' class:filled={page === _page}>
-              <img src={image} class='h-30 rounded' alt='logo' />
-            </span>
-            <span class='text ml-20'>{text}</span>
-          {:else}
-            <span class='material-symbols-outlined rounded' class:filled={page === _page}>{icon}</span>
-            <span class='text ml-20'>{text}</span>
-          {/if}
-        </span>
+        {#if image}
+          <span class='material-symbols-outlined rounded' class:filled={page === _page}>
+            <img src={image} class='h-30 rounded' alt='logo' />
+          </span>
+        {:else}
+          <span class='material-symbols-outlined rounded' class:filled={page === _page}>{icon}</span>
+        {/if}
       </div>
     {/each}
   </div>
-</div>
+</nav>
 
 <style>
+  nav {
+    height: var(--navbar-height);
+  }
   @keyframes glow {
     from {
       text-shadow: 0 0 2rem #fa68b6;
@@ -139,9 +141,9 @@
     color: #fa68b6;
     text-shadow: 0 0 1rem #fa68b6;
   }
-  .sidebar-menu {
+  /* .sidebar-menu {
     padding-top: 10rem;
-  }
+  } */
   .text {
     opacity: 1;
     transition: opacity 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -150,7 +152,7 @@
     align-items: center;
   }
 
-  .sidebar-link > span {
+  .navbar-link > span {
     color: #fff;
     border-radius: 0.3rem;
   }
@@ -160,15 +162,14 @@
     transition: background .8s cubic-bezier(0.25, 0.8, 0.25, 1), color .8s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
-  .sidebar-link:hover > span > *:nth-child(1) {
+  .navbar-link:hover > span {
     background: #fff;
     color: var(--dark-color);
   }
 
-  .sidebar-link {
-    width: 100%;
+  .navbar-link {
     font-size: 1.4rem;
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem;
     height: 5.5rem;
   }
 
@@ -182,7 +183,7 @@
     align-items: center;
   }
 
-  .sidebar-link img {
+  .navbar-link img {
     font-size: 2.2rem;
     width: 3rem;
     height: 3rem;
@@ -194,26 +195,5 @@
 
   img {
     margin-right: var(--sidebar-brand-image-margin-right);
-  }
-
-  .sidebar {
-    transition: width .8s cubic-bezier(0.25, 0.8, 0.25, 1), left .8s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-    background: none !important;
-    overflow-y: unset;
-    overflow-x: visible;
-    left: unset;
-  }
-  .sidebar.animated:hover {
-    width: 22rem
-  }
-  .sidebar-overlay {
-    width: var(--sidebar-width);
-    transition: width .8s cubic-bezier(0.25, 0.8, 0.25, 1), left .8s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-    background: linear-gradient(90deg, #17191D 15.62%, rgba(23, 25, 29, 0.92) 36.46%, rgba(23, 25, 29, 0.619632) 70.83%, rgba(23, 25, 29, 0) 100%);
-    backdrop-filter: blur(2px);
-    z-index: -1;
-  }
-  .sidebar.animated:hover .sidebar-overlay {
-    width: 63rem
   }
 </style>

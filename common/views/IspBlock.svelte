@@ -20,7 +20,7 @@
 </script>
 
 {#if block}
-  <div class='w-full h-full left-0 z-50 position-absolute content-wrapper bg-dark d-flex align-items-center justify-content-center flex-column'>
+  <div class='w-full h-full left-0 z-50 px-10 position-absolute content-wrapper bg-dark d-flex align-items-center justify-content-center flex-column'>
     <div>
       <h1 class='font-weight-bold'>Could not connect to Tosho!</h1>
       <div class='font-size-16'>This happens either because Tosho is down, or because your ISP blocks Tosho, the latter being more likely.</div>

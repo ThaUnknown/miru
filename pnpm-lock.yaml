@@ -68,6 +68,12 @@ importers:
       '@capacitor/ios':
         specifier: ^5.5.1
         version: 5.5.1(@capacitor/core@5.5.1)
+      '@capacitor/status-bar':
+        specifier: ^5.0.6
+        version: 5.0.6(@capacitor/core@5.5.1)
+      '@mauricewegner/capacitor-navigation-bar':
+        specifier: ^2.0.3
+        version: 2.0.3(@capacitor/core@5.5.1)
       '@superfrogbe/cordova-plugin-chrome-apps-sockets-udp':
         specifier: github:superfrogbe/cordova-plugin-chrome-apps-sockets-udp
         version: github.com/superfrogbe/cordova-plugin-chrome-apps-sockets-udp/4b740017299c81cfc7d5b49c7d6122a6650b57d4
@@ -288,6 +294,14 @@ packages:
     resolution: {integrity: sha512-h00qt8u32t8eEbIkuG4IjR0r34YZC0sIXglDH8fRDdA84xDkTybmz3WtdpRWDzh6ukE2RIY7rmD7p410WSJ2yA==}
     peerDependencies:
       '@capacitor/core': ^5.5.0
+    dependencies:
+      '@capacitor/core': 5.5.1
+    dev: false
+
+  /@capacitor/status-bar@5.0.6(@capacitor/core@5.5.1):
+    resolution: {integrity: sha512-7od8CxsBnot1XMK3IeOkproFL4hgoKoWAc3pwUvmDOkQsXoxwQm4SR9mLwQavv1XfxtHbFV9Ukd7FwMxOPSViw==}
+    peerDependencies:
+      '@capacitor/core': ^5.0.0
     dependencies:
       '@capacitor/core': 5.5.1
     dev: false
@@ -591,6 +605,14 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@mauricewegner/capacitor-navigation-bar@2.0.3(@capacitor/core@5.5.1):
+    resolution: {integrity: sha512-E8HTcVkZEqm4tLJ7MpkTlqc93mboUSbJL41fFbvEaVwBhpgenEezkK268RxwQDij5hkudZmo4/eRXG3aJQwrzQ==}
+    peerDependencies:
+      '@capacitor/core': ^4.0.1 || ^5.0.0
+    dependencies:
+      '@capacitor/core': 5.5.1
+    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
