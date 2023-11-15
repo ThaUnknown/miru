@@ -34,6 +34,7 @@ export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
   node.role = 'button'
   node.addEventListener('pointerenter', e => {
     lastHoverElement?.(false)
+    lastTapElement?.(false)
     hoverUpdate(true)
     lastHoverElement = hoverUpdate
     pointerType = e.pointerType
@@ -55,7 +56,7 @@ export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
     if (e.pointerType === 'mouse') setTimeout(() => hoverUpdate(false))
   })
   node.addEventListener('pointerleave', e => {
-    setTimeout(() => { lastTapElement = hoverUpdate })
+    lastHoverElement = hoverUpdate
     if (e.pointerType === 'mouse') hoverUpdate(false)
   })
 }
