@@ -100,6 +100,11 @@
   // document.fullscreenElement isn't reactive
   document.addEventListener('fullscreenchange', () => {
     isFullscreen = !!document.fullscreenElement
+    if (document.fullscreenElement) {
+      screen.orientation.lock('landscape')
+    } else {
+      screen.orientation.unlock()
+    }
   })
 
   function handleHeaders () {
