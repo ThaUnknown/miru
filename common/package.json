@@ -17,7 +17,7 @@
     "svelte": "^4.2.3",
     "svelte-keybinds": "^1.0.5",
     "svelte-loader": "^3.1.9",
-    "svelte-miniplayer": "^1.0.3",
+    "svelte-miniplayer": "^1.0.4",
     "svelte-sonner": "^0.3.3",
     "webpack-merge": "^5.10.0"
   }

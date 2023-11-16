@@ -184,8 +184,8 @@ importers:
         specifier: ^3.1.9
         version: 3.1.9(svelte@4.2.3)
       svelte-miniplayer:
-        specifier: ^1.0.3
-        version: 1.0.3
+        specifier: ^1.0.4
+        version: 1.0.4
       svelte-sonner:
         specifier: ^0.3.3
         version: 0.3.3(svelte@4.2.3)
@@ -6288,8 +6288,8 @@ packages:
       svelte-hmr: 0.14.12(svelte@4.2.3)
     dev: false
 
-  /svelte-miniplayer@1.0.3:
-    resolution: {integrity: sha512-++IvuENs/3x0SbHZ/jWNqfq+hmU/ZT73V/ETwn6TqCbHF7asXsZFxVcgyIL1lMaQMKxe227HrYghYRVNJXeFVw==}
+  /svelte-miniplayer@1.0.4:
+    resolution: {integrity: sha512-U1WLsokF4aEtLrCgzjZ8T/TXG6uFjJJykc+DuYaG3YdZkYkt/RDz+CEoHBMXpk85WoUt6D+8tleWEx5CuzW6jQ==}
     dev: false
 
   /svelte-sonner@0.3.3(svelte@4.2.3):
