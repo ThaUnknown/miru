@@ -1375,6 +1375,10 @@
     .bottom .ctrl[data-name='toggleFullscreen'] {
       display: none;
     }
+
+    .top  {
+      padding-top: env(safe-area-inset-top) !important;
+    }
   }
 
 </style>
