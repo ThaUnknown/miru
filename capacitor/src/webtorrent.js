@@ -10,7 +10,7 @@ StatusBar.setOverlaysWebView({ overlay: true })
 NavigationBar.setColor({ color: '#17191c' })
 function hideAndroidNavBar () {
   NavigationBar.hide()
-  NavigationBar.setTransparency({ isTransparent: true })
+  // NavigationBar.setTransparency({ isTransparent: true })
 }
 
 screen.orientation.addEventListener('change', () => {
@@ -22,7 +22,7 @@ hideAndroidNavBar()
 globalThis.chrome.runtime = { lastError: false, id: 'something' }
 
 const controller = (async () => {
-  const reg = await navigator.serviceWorker.register('./sw.js', { scope: './' })
+  const reg = await navigator.serviceWorker.register(new URL('webtorrent/dist/sw.min.js', import.meta.url))
 
   const worker = reg.active || reg.waiting || reg.installing
   if (!worker) throw new Error('No worker registration')

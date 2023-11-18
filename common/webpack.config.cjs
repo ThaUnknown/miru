@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
-module.exports = (parentDir, alias = {}, aliasFields = 'browser') => ({
+module.exports = (parentDir, alias = {}, aliasFields = 'browser', filename = 'app') => ({
   devtool: 'source-map',
   entry: [join(__dirname, 'main.js')],
   output: {
@@ -71,7 +71,7 @@ module.exports = (parentDir, alias = {}, aliasFields = 'browser') => ({
       ]
     }),
     new HtmlWebpackPlugin({
-      filename: 'app.html',
+      filename: filename + '.html',
       inject: false,
       templateContent: ({ htmlWebpackPlugin }) => /* html */`
 <!DOCTYPE html>

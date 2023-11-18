@@ -1,23 +1,36 @@
-const config = {
+let config = {
   appId: 'watch.miru',
   appName: 'Miru',
-  webDir: 'public',
+  webDir: 'build',
   bundledWebRuntime: false,
-  plugins: {
-    SplashScreen: {
-      launchShowDuration: 0
-    },
-    CapacitorHttp: {
-      enabled: false
+  android: {
+    buildOptions: {
+      keystorePath: './watch.miru',
+      keystorePassword: '',
+      keystoreAlias: 'watch.miru'
     }
   },
-  // remove server section before making production build
-  server: {
-    // for android only, below settings will work out of the box
-    // for iOS or both, change the url to http://your-device-ip
-    // To discover your workstation IP, just run ifconfig
-    url: 'http://localhost:5001/app.html',
-    cleartext: true
+  plugins: {
+    SplashScreen: { launchShowDuration: 0 },
+    CapacitorHttp: { enabled: false }
   }
 }
+
+switch (process.env.NODE_ENV) {
+  case 'qa':
+    config = {
+      ...config
+    }
+    break
+  default:
+    config = {
+      ...config
+      // server: {
+      //   url: 'http://localhost:5001/index.html',
+      //   cleartext: true
+      // }
+    }
+    break
+}
+
 module.exports = config

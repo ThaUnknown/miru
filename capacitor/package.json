@@ -2,12 +2,14 @@
   "name": "capacitor",
   "private": true,
   "scripts": {
-    "build:app": "vite build",
-    "build:android": "run-s build:app cap-run:android",
+    "build:app": "build:web && build:android",
+    "build:web": "cross-env NODE_ENV=development webpack build",
+    "build:android": "cap build android",
     "build:ios": "run-s build:app cap-run:ios",
     "cap:android-emulator": "cap run android --target=Pixel_XL_API_33 --external --public-host=10.5.0.2 && dev:localhost-bind",
     "cap:localhost-bind": "adb reverse tcp:5001 tcp:5001",
     "cap:android": "run-s cap:android-emulator cap:localhost-bind",
+    "cap:assets": "capacitor-assets generate --iconBackgroundColor #17191c --iconBackgroundColorDark #17191c --splashBackgroundColor #17191c --splashBackgroundColorDark #17191c --android",
     "cap:ios": "cap sync ios && cap open ios",
     "dev:ios": "run-p dev:start cap-run:ios",
     "dev:preview": "vite preview",
@@ -15,6 +17,7 @@
     "dev:webpack": "webpack serve"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.1",
     "assert": "^2.1.0",
     "buffer": "^6.0.3",
     "chrome-dgram": "^3.0.6",

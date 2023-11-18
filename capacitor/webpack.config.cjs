@@ -3,9 +3,12 @@ const commonConfig = require('common/webpack.config.cjs')
 const { merge } = require('webpack-merge')
 const { join, resolve } = require('path')
 
+const mode = process.env.NODE_ENV?.trim() || 'development'
+
 /** @type {import('webpack').Configuration} */
 const capacitorConfig = {
   entry: [join(__dirname, 'src', 'webtorrent.js')],
+  mode,
   plugins: [
     new webpack.ProvidePlugin({
       process: 'webtorrent/polyfills/process-fast.js',
@@ -53,4 +56,4 @@ const alias = {
   'bittorrent-tracker/lib/client/http-tracker.js': resolve('../node_modules/bittorrent-tracker/lib/client/http-tracker.js')
 }
 
-module.exports = merge(commonConfig(__dirname, alias, 'chromeapp'), capacitorConfig)
+module.exports = merge(commonConfig(__dirname, alias, 'chromeapp', 'index'), capacitorConfig)
