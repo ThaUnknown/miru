@@ -79,7 +79,7 @@ module.exports = (parentDir, alias = {}, aliasFields = 'browser', filename = 'ap
 <head>
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width,initial-scale=1'>
-<meta name="theme-color" content="#17191c">
+<meta name="theme-color" content="#17191C">
 <title>Miru</title>
 
 <!-- <link rel="preconnect" href="https://www.youtube-nocookie.com"> -->

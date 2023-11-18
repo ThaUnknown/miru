@@ -11,7 +11,7 @@ let config = {
     }
   },
   plugins: {
-    SplashScreen: { launchShowDuration: 150 },
+    SplashScreen: { launchShowDuration: 0 },
     CapacitorHttp: { enabled: false }
   }
 }
