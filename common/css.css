@@ -22,6 +22,8 @@
   --gray-color-light: hsl(var(--gray-color-light-hsl));
   --gray-color-light-hsl: var(--gray-color-base-hue), 10%, 28%;
   --gray-color-base-hue: 216;
+  --safe-area-top: 0px;
+  --safe-area-left: 0px;
   color-scheme: dark;
 }
 

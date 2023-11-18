@@ -60,7 +60,7 @@
   }
   @media (min-width: 769px) {
     .page-wrapper  {
-      padding-left: env(safe-area-inset-left) !important;
+      padding-left: env(safe-area-inset-left, var(--safe-area-left)) !important;
     }
   }
 </style>

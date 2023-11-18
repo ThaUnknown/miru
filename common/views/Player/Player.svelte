@@ -1377,7 +1377,7 @@
     }
 
     .top  {
-      padding-top: env(safe-area-inset-top) !important;
+      padding-top: env(safe-area-inset-top, var(--safe-area-top)) !important;
     }
   }
 

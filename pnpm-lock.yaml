@@ -71,12 +71,12 @@ importers:
       '@capacitor/status-bar':
         specifier: ^5.0.6
         version: 5.0.6(@capacitor/core@5.5.1)
-      '@mauricewegner/capacitor-navigation-bar':
-        specifier: ^2.0.3
-        version: 2.0.3(@capacitor/core@5.5.1)
       '@superfrogbe/cordova-plugin-chrome-apps-sockets-udp':
         specifier: github:superfrogbe/cordova-plugin-chrome-apps-sockets-udp
         version: github.com/superfrogbe/cordova-plugin-chrome-apps-sockets-udp/4b740017299c81cfc7d5b49c7d6122a6650b57d4
+      capacitor-plugin-safe-area:
+        specifier: ^2.0.5
+        version: 2.0.5(@capacitor/core@5.5.1)
       common:
         specifier: workspace:*
         version: link:../common
@@ -86,6 +86,15 @@ importers:
       cordova-plugin-chrome-apps-sockets-tcp:
         specifier: github:KoenLav/cordova-plugin-chrome-apps-sockets-tcp
         version: github.com/KoenLav/cordova-plugin-chrome-apps-sockets-tcp/f06fbc33befc34709210f657bf6674aea0ca8f88
+      cordova-plugin-navigationbar:
+        specifier: ^1.0.31
+        version: 1.0.31
+      cordova-plugin-screen-orientation:
+        specifier: ^3.0.4
+        version: 3.0.4
+      es6-promise-plugin:
+        specifier: ^4.2.2
+        version: 4.2.2
       webpack-merge:
         specifier: ^5.10.0
         version: 5.10.0
@@ -668,14 +677,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /@mauricewegner/capacitor-navigation-bar@2.0.3(@capacitor/core@5.5.1):
-    resolution: {integrity: sha512-E8HTcVkZEqm4tLJ7MpkTlqc93mboUSbJL41fFbvEaVwBhpgenEezkK268RxwQDij5hkudZmo4/eRXG3aJQwrzQ==}
-    peerDependencies:
-      '@capacitor/core': ^4.0.1 || ^5.0.0
-    dependencies:
-      '@capacitor/core': 5.5.1
-    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2088,6 +2089,14 @@ packages:
   /caniuse-lite@1.0.30001551:
     resolution: {integrity: sha512-vtBAez47BoGMMzlbYhfXrMV1kvRF2WP/lqiMuDu1Sb4EE4LKEgjopFDSRtZfdVnslNRpOqV/woE+Xgrwj6VQlg==}
 
+  /capacitor-plugin-safe-area@2.0.5(@capacitor/core@5.5.1):
+    resolution: {integrity: sha512-Lg3P+/aW2/+C3gz2/xZFdfjgkOJ/ZSFTmZSxLaSY6lIudOTjwVpjoxhAyKUz1tc13Carjqdlq01yRrr++XOzAg==}
+    peerDependencies:
+      '@capacitor/core': ^5.0.0
+    dependencies:
+      '@capacitor/core': 5.5.1
+    dev: false
+
   /chalk@2.4.2:
     resolution: {integrity: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==}
     engines: {node: '>=4'}
@@ -2565,6 +2574,16 @@ packages:
   /cordova-plugin-chrome-apps-common@1.0.7:
     resolution: {integrity: sha512-/TGRFhHFQnT115U4+Ju48pAmwB3ngeqf2UL8UiTRK/SFprw+ztN7z7RjvT9D02yMNyTTww/h03yTv5A0AgcEWA==}
     engines: {'0': {name: cordova, version: '>=3.0.0'}}
+    dev: false
+
+  /cordova-plugin-navigationbar@1.0.31:
+    resolution: {integrity: sha512-xt9tx5Aprf052OvuG2JohjRkkU/6U6XQ8mXOx93HaHFz6cCZI1+B0pl/uoyU/FkJsP41QIw1upnMdzgav11ifw==}
+    engines: {'0': {name: cordova, version: '>=3.0.0'}}
+    dev: false
+
+  /cordova-plugin-screen-orientation@3.0.4:
+    resolution: {integrity: sha512-AswRuUKJ8J3HycUilTJsIB50aa9TLrwndPNBFG+wfAPhHEqIBF0HaD0q3HbAK7ypgmaj0cvbzk84qP51IcTfrQ==}
+    engines: {cordovaDependencies: {4.0.0: {cordova: '>100'}}}
     dev: false
 
   /cordova-res@0.15.4:
@@ -3321,6 +3340,10 @@ packages:
     resolution: {integrity: sha512-Um/+FxMr9CISWh0bi5Zv0iOD+4cFh5qLeks1qhAopKVAJw3drgKbKySikp7wGhDL0HPeaja0P5ULZrxLkniUVg==}
     dev: true
     optional: true
+
+  /es6-promise-plugin@4.2.2:
+    resolution: {integrity: sha512-uoA4aVplXI9oqUYJFBAVRwAqIN9/n9JgrTAUGX3qPbnSZVE5yY1+6/MsoN5f4xsaPO62WjPHOdtts6okMN6tNA==}
+    dev: false
 
   /escalade@3.1.1:
     resolution: {integrity: sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==}

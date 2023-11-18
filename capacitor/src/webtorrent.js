@@ -1,23 +1,24 @@
+/* globals navigationbar */
 import TorrentClient from 'common/modules/webtorrent.js'
 import { ipcRendererWebTorrent } from './ipc.js'
 import { StatusBar, Style } from '@capacitor/status-bar'
-import { NavigationBar } from '@mauricewegner/capacitor-navigation-bar'
+import { SafeArea } from 'capacitor-plugin-safe-area'
+
+SafeArea.addListener('safeAreaChanged', data => {
+  const { insets } = data
+  for (const [key, value] of Object.entries(insets)) {
+    document.documentElement.style.setProperty(
+      `--safe-area-${key}`,
+      `${value}px`
+    )
+  }
+})
 
 StatusBar.hide()
 StatusBar.setStyle({ style: Style.Dark })
 StatusBar.setOverlaysWebView({ overlay: true })
 
-NavigationBar.setColor({ color: '#17191c' })
-function hideAndroidNavBar () {
-  NavigationBar.hide()
-  // NavigationBar.setTransparency({ isTransparent: true })
-}
-
-screen.orientation.addEventListener('change', () => {
-  hideAndroidNavBar()
-})
-
-hideAndroidNavBar()
+navigationbar.setUp(true)
 
 globalThis.chrome.runtime = { lastError: false, id: 'something' }
 

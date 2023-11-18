@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build:app": "build:web && build:android",
-    "build:web": "cross-env NODE_ENV=development webpack build",
+    "build:web": "cross-env NODE_ENV=production webpack build",
     "build:android": "cap build android",
     "build:ios": "run-s build:app cap-run:ios",
     "cap:android-emulator": "cap run android --target=Pixel_XL_API_33 --external --public-host=10.5.0.2 && dev:localhost-bind",
@@ -40,11 +40,14 @@
     "@capacitor/core": "^5.5.1",
     "@capacitor/ios": "^5.5.1",
     "@capacitor/status-bar": "^5.0.6",
-    "@mauricewegner/capacitor-navigation-bar": "^2.0.3",
     "@superfrogbe/cordova-plugin-chrome-apps-sockets-udp": "github:superfrogbe/cordova-plugin-chrome-apps-sockets-udp",
+    "capacitor-plugin-safe-area": "^2.0.5",
     "common": "workspace:*",
     "cordova-plugin-chrome-apps-common": "^1.0.7",
     "cordova-plugin-chrome-apps-sockets-tcp": "github:KoenLav/cordova-plugin-chrome-apps-sockets-tcp",
+    "cordova-plugin-navigationbar": "^1.0.31",
+    "cordova-plugin-screen-orientation": "^3.0.4",
+    "es6-promise-plugin": "^4.2.2",
     "webpack-merge": "^5.10.0"
   }
 }
