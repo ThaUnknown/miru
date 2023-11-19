@@ -1,4 +1,6 @@
-let config = {
+const mode = process.env.NODE_ENV?.trim() || 'development'
+
+const config = {
   appId: 'watch.miru',
   appName: 'Miru',
   webDir: 'build',
@@ -16,21 +18,10 @@ let config = {
   }
 }
 
-switch (process.env.NODE_ENV) {
-  case 'qa':
-    config = {
-      ...config
-    }
-    break
-  default:
-    config = {
-      ...config
-      // server: {
-      //   url: 'http://localhost:5001/index.html',
-      //   cleartext: true
-      // }
-    }
-    break
+if (mode === 'development') {
+  config.server = {
+    url: 'http://localhost:5001/index.html',
+    cleartext: true
+  }
 }
-
 module.exports = config

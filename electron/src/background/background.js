@@ -8,5 +8,4 @@ async function storageQuota (directory) {
   return bsize * bavail
 }
 
-// @ts-ignore
-window.client = new TorrentClient(ipcRenderer, storageQuota, 'node')
+globalThis.client = new TorrentClient(ipcRenderer, storageQuota, 'node')

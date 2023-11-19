@@ -1,26 +1,29 @@
 import EventEmitter from 'events'
 
-const ipcRendererUI = new EventEmitter()
+export const ipcRendererUI = new EventEmitter()
+
+export const main = new EventEmitter()
 
 export default {
   emit: (event, data) => {
-    // ipcRendererUI.emit(event, data)
-    if (event === 'portRequest') portRequest(data)
+    main.emit(event, data)
   },
   on: (event, callback) => {
-    ipcRendererUI.on(event, (event, ...args) => callback(...args))
+    ipcRendererUI.on(event, (...args) => callback(...args))
   },
   once: (event, callback) => {
-    ipcRendererUI.once(event, (event, ...args) => callback(...args))
+    ipcRendererUI.once(event, (...args) => callback(...args))
   },
   off: event => {
     ipcRendererUI.removeAllListeners(event)
   }
 }
 
+main.on('portRequest', portRequest)
+
 async function portRequest (data) {
   const { port1, port2 } = new MessageChannel()
-  window.port = {
+  globalThis.port = {
     onmessage: cb => {
       port2.onmessage = ({ type, data }) => cb({ type, data })
     },
@@ -28,7 +31,7 @@ async function portRequest (data) {
       port2.postMessage(a, b)
     }
   }
-  await window.controller
+  await globalThis.controller
   ipcRendererUI.emit('port', { ports: [port2] })
   ipcRendererWebTorrent.emit('port', { ports: [port1] })
 }
@@ -37,7 +40,7 @@ export const ipcRendererWebTorrent = new EventEmitter()
 
 const [_platform, arch] = navigator.platform.split(' ')
 
-window.version = {
+globalThis.version = {
   platform: globalThis.cordova?.platformId,
   arch,
   version: globalThis.cordova?.version

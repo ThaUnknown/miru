@@ -3,6 +3,7 @@ import { toTS, subRx, videoRx } from './util.js'
 import { settings } from '@/modules/settings.js'
 import { client } from '@/modules/torrent.js'
 import clipboard from './clipboard.js'
+import { SUPPORTS } from '@/modules/support.js'
 
 const defaultHeader = `[Script Info]
 Title: English (US)
@@ -158,6 +159,7 @@ export default class Subtitles {
         video: this.video,
         subContent: defaultHeader,
         fonts: this.fonts,
+        offscreenRender: SUPPORTS.offscreenRender,
         fallbackFont: settings.value.font?.name || 'roboto medium',
         availableFonts: {
           'roboto medium': './Roboto.ttf'

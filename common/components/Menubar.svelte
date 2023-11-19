@@ -59,4 +59,9 @@
   .navbar {
     left: unset !important
   }
+  @media (pointer: none), (pointer: coarse) {
+    .navbar {
+      display: none;
+    }
+  }
 </style>

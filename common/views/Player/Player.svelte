@@ -932,7 +932,7 @@
     on:loadedmetadata={autoPlay}
     on:loadedmetadata={checkAudio}
     on:loadedmetadata={clearLoadInterval}
-    on:leavepictureinpicture={() => (pip = false)} />
+    on:leavepictureinpicture={() => { pip = false }} />
   {#if stats}
     <div class='position-absolute top-0 bg-tp p-10 m-15 text-monospace rounded z-50'>
       <button class='close' type='button' use:click={toggleStats}><span>×</span></button>
@@ -949,10 +949,10 @@
   {/if}
   <div class='top z-40 row'>
     <div class='stats col-4 pl-20'>
-      <div class='font-weight-bold overflow-hidden text-truncate'>
+      <div class='font-weight-bold overflow-hidden text-truncate d-none d-md-block'>
         {#if media.title}{media.title}{/if}
       </div>
-      <div class='font-weight-normal overflow-hidden text-truncate font-size-16 text-muted'>
+      <div class='font-weight-normal overflow-hidden text-truncate font-size-16 text-muted d-none d-md-block'>
         {#if media.episode}Episode {media.episode}{/if}
         {#if media.episode && media.episodeTitle}{' - '}{/if}
         {#if media.episodeTitle}{media.episodeTitle}{/if}
@@ -1375,9 +1375,10 @@
     .bottom .ctrl[data-name='toggleFullscreen'] {
       display: none;
     }
-
-    .top  {
-      padding-top: env(safe-area-inset-top, var(--safe-area-top)) !important;
+    @media (orientation: portrait) {
+      .top  {
+        padding-top: max(var(--safe-area-top), env(safe-area-inset-top, 0)) !important;
+      }
     }
   }
 

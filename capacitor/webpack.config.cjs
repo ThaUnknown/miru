@@ -7,7 +7,7 @@ const mode = process.env.NODE_ENV?.trim() || 'development'
 
 /** @type {import('webpack').Configuration} */
 const capacitorConfig = {
-  entry: [join(__dirname, 'src', 'webtorrent.js')],
+  entry: [join(__dirname, 'src', 'main.js')],
   mode,
   plugins: [
     new webpack.ProvidePlugin({
@@ -38,6 +38,7 @@ const alias = {
   'bittorrent-dht': false,
   'webtorrent/lib/utp.cjs': false,
   '@/modules/ipc.js': join(__dirname, 'src', 'ipc.js'),
+  '@/modules/support.js': join(__dirname, 'src', 'support.js'),
   net: join(__dirname, 'src', 'chrome-net.js'),
   dgram: join(__dirname, 'src', 'chrome-dgram.js'),
   http: 'stream-http',

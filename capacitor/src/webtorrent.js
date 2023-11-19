@@ -1,24 +1,5 @@
-/* globals navigationbar */
 import TorrentClient from 'common/modules/webtorrent.js'
 import { ipcRendererWebTorrent } from './ipc.js'
-import { StatusBar, Style } from '@capacitor/status-bar'
-import { SafeArea } from 'capacitor-plugin-safe-area'
-
-SafeArea.addListener('safeAreaChanged', data => {
-  const { insets } = data
-  for (const [key, value] of Object.entries(insets)) {
-    document.documentElement.style.setProperty(
-      `--safe-area-${key}`,
-      `${value}px`
-    )
-  }
-})
-
-StatusBar.hide()
-StatusBar.setStyle({ style: Style.Dark })
-StatusBar.setOverlaysWebView({ overlay: true })
-
-navigationbar.setUp(true)
 
 globalThis.chrome.runtime = { lastError: false, id: 'something' }
 
@@ -33,11 +14,8 @@ const controller = (async () => {
         resolve(reg)
         return true
       }
-      return false
     }
-    if (!checkState(worker)) {
-      worker.addEventListener('statechange', ({ target }) => checkState(target))
-    }
+    if (!checkState(worker)) worker.addEventListener('statechange', ({ target }) => checkState(target))
   })
 })()
 globalThis.controller = controller
