@@ -9,8 +9,8 @@ const LARGE_FILESIZE = 32_000_000_000
 export default class TorrentClient extends WebTorrent {
   static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
 
-  constructor (ipc, storageQuota, serverMode, controller) {
-    const settings = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
+  constructor (ipc, storageQuota, serverMode, controller, settingOverrides = {}) {
+    const settings = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}), ...settingOverrides }
     super({
       dht: !settings.torrentDHT,
       maxConns: settings.maxConns,
