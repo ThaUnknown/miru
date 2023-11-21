@@ -1,0 +1,113 @@
+{
+  "name": "Miru",
+  "version": "4.5.0",
+  "private": true,
+  "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
+  "description": "Stream anime torrents, real-time with no waiting for downloads.",
+  "main": "build/main.js",
+  "homepage": "https://github.com/ThaUnknown/miru#readme",
+  "scripts": {
+    "start": "cross-env NODE_ENV=development concurrently --kill-others \"npm run web:watch\" \"npm run electron:start\"",
+    "web:watch": "webpack serve",
+    "web:build": "cross-env NODE_ENV=production webpack build",
+    "electron:start": "electron ./build/main.js",
+    "build": "npm run web:build && electron-builder",
+    "publish": "npm run web:build && electron-builder -p always"
+  },
+  "devDependencies": {
+    "@electron/notarize": "^2.1.0",
+    "common": "workspace:*",
+    "discord-rpc": "4.0.1",
+    "electron": "25.1.0",
+    "electron-builder": "^24.6.4",
+    "electron-log": "^4.4.8",
+    "electron-updater": "^6.1.4"
+  },
+  "dependencies": {
+    "utp-native": "^2.5.3",
+    "webpack-merge": "^5.10.0"
+  },
+  "standard": {
+    "ignore": [
+      "bundle.js",
+      "bundle.map.js"
+    ],
+    "env": [
+      "browser",
+      "node"
+    ]
+  },
+  "build": {
+    "directories": {
+      "buildResources": "buildResources"
+    },
+    "asarUnpack": "**/*.node",
+    "electronDownload": {
+      "mirror": "https://github.com/aa910d571134/feb7c2e1a10f/releases/download/",
+      "version": "25.1.0",
+      "customDir": "2ffc48f0b43f"
+    },
+    "protocols": {
+      "name": "miru",
+      "schemes": [
+        "miru"
+      ]
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "ThaUnknown",
+        "repo": "miru"
+      }
+    ],
+    "afterSign": "./buildResources/notarize.js",
+    "appId": "com.github.thaunknown.miru",
+    "productName": "Miru",
+    "files": [
+      "build/**/*",
+      "!node_modules/**/*.{mk,a,o,h}"
+    ],
+    "mac": {
+      "artifactName": "${os}-${name}-${version}.${ext}",
+      "singleArchFiles": "node_modules/+(register-scheme|utp-native|fs-native-extensions)/**",
+      "category": "public.app-category.video",
+      "icon": "buildResources/icon.icns",
+      "target": [
+        {
+          "arch": "universal",
+          "target": "dmg"
+        }
+      ]
+    },
+    "win": {
+      "artifactName": "${os}-${name}-${version}.${ext}",
+      "target": "nsis"
+    },
+    "linux": {
+      "artifactName": "${os}-${name}-${version}.${ext}",
+      "category": "AudioVideo;Video",
+      "description": "Bittorrent streaming software for cats",
+      "desktop": {
+        "Name": "Miru",
+        "Comment": "Bittorrent streaming software for cats",
+        "Keywords": "anime",
+        "Type": "Application",
+        "MimeType": "x-scheme-handler/miru;"
+      },
+      "target": [
+        {
+          "arch": "x64",
+          "target": "AppImage"
+        },
+        {
+          "arch": "x64",
+          "target": "deb"
+        }
+      ]
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
+    }
+  }
+}

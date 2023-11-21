@@ -1,9 +1,14 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./*"],
+    },
     "checkJs": true,
     "target": "ESNext",
     "moduleResolution": "node",
     "module": "ESNext",
+    "types": ["./types.d.ts"],
     "allowSyntheticDefaultImports": true
   },
   "exclude": ["node_modules/**", "**/node_modules", "dist", "build"]
