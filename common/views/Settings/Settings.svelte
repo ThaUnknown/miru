@@ -107,26 +107,26 @@
       <p class='text-muted px-20 m-0 mb-md-20'>v{version} {platformMap[window.version.platform] || 'dev'} {window.version.arch || 'dev'}</p>
     </div>
     <Tab>
-      <div class='root h-full w-full overflow-y-md-auto p-20'>
+      <div class='root h-full w-full overflow-y-md-auto p-20' use:smoothScroll>
         <PlayerSettings bind:settings={$settings} />
         <!-- spacing element to make space for miniplayer on mobile -->
         <div class='h-250 d-md-none' />
       </div>
     </Tab>
     <Tab>
-      <div class='root h-full w-full overflow-y-md-auto p-20'>
+      <div class='root h-full w-full overflow-y-md-auto p-20' use:smoothScroll>
         <TorrentSettings bind:settings={$settings} />
         <div class='h-250 d-md-none' />
       </div>
     </Tab>
     <Tab>
-      <div class='root h-full w-full overflow-y-md-auto p-20'>
+      <div class='root h-full w-full overflow-y-md-auto p-20' use:smoothScroll>
         <InterfaceSettings bind:settings={$settings} />
         <div class='h-250 d-md-none' />
       </div>
     </Tab>
     <Tab>
-      <div class='root h-full w-full overflow-y-md-auto p-20'>
+      <div class='root h-full w-full overflow-y-md-auto p-20' use:smoothScroll>
         <AppSettings />
         <div class='h-250 d-md-none' />
       </div>

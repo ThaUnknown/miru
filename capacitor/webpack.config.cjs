@@ -36,6 +36,7 @@ const alias = {
   dns: 'capacitor-dns',
   '@silentbot1/nat-api': false,
   'load-ip-set': false,
+  'node-fetch': false,
   'webtorrent/lib/utp.cjs': false,
   '@/modules/ipc.js': join(__dirname, 'src', 'ipc.js'),
   '@/modules/support.js': join(__dirname, 'src', 'support.js'),
