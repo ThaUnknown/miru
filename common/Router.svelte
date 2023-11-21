@@ -1,7 +1,7 @@
 <script>
   import Home from './views/Home/Home.svelte'
   import MediaHandler from './views/Player/MediaHandler.svelte'
-  import Settings from './views/Settings.svelte'
+  import Settings from '@/views/Settings/Settings.svelte'
   import WatchTogether from './views/WatchTogether/WatchTogether.svelte'
   import Miniplayer from 'svelte-miniplayer'
   import Search from './views/Search.svelte'

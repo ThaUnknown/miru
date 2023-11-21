@@ -61,7 +61,8 @@
   }
   @media (pointer: none), (pointer: coarse) {
     .navbar {
-      display: none;
+      display: none !important;
+      height: 0;
     }
   }
 </style>

@@ -22,67 +22,57 @@
   }
 </script>
 
-<div class='position-relative'>
-  <div class='col p-10 d-flex flex-column justify-content-end'>
-    <div class='font-size-24 font-weight-semi-bold d-flex'>
-      <div class='material-symbols-outlined mr-10 font-size-30'>list</div>
-      Home Sections Order
+{#if mouseYCoordinate}
+  <div
+    class='input-group mb-10 ghost w-full'
+    style='top: {mouseYCoordinate + distanceTopGrabbedVsPointer}px;'>
+    <div class='input-group-prepend'>
+      <span class='input-group-text d-flex justify-content-center px-5 material-symbols-outlined font-size-20'>swap_vert</span>
+    </div>
+    <select class='form-control' value={draggingItem}>
+      {#each allowedHomeSections as section}
+        <option>{section}</option>
+      {/each}
+    </select>
+    <div class='input-group-append'>
+      <button type='button' class='btn btn-danger input-group-append px-5 material-symbols-outlined font-size-20'>delete</button>
     </div>
   </div>
-  {#if mouseYCoordinate}
-    <div
-      class='input-group mb-10 form-control-lg ghost w-full'
-      style='top: {mouseYCoordinate + distanceTopGrabbedVsPointer}px;'>
-      <div class='input-group-prepend'>
-        <span class='input-group-text w-100 justify-content-center'>Feed</span>
-      </div>
-      <select class='form-control form-control-lg' value={draggingItem}>
-        {#each allowedHomeSections as section}
-          <option>{section}</option>
-        {/each}
-      </select>
-      <div class='input-group-append'>
-        <button type='button' class='btn btn-danger btn-lg input-group-append'>Remove</button>
-      </div>
+{/if}
+{#each homeSections as item, index}
+  <div
+    class='input-group mb-10'
+    class:tp={draggingItem === item}
+    draggable='true'
+    role='menuitem'
+    tabindex='0'
+    on:dragstart={({ clientY, target }) => {
+      mouseYCoordinate = clientY
+      draggingItem = item
+      draggingItemIndex = index
+      distanceTopGrabbedVsPointer = target.offsetTop - clientY
+    }}
+    on:drag={e => { mouseYCoordinate = e.clientY }}
+    on:dragover={() => { hoveredItemIndex = index }}
+    on:dragend={() => {
+      mouseYCoordinate = null
+      draggingItem = null
+      hoveredItemIndex = null
+    }}>
+    <div class='input-group-prepend grab'>
+      <span class='input-group-text d-flex justify-content-center px-5 material-symbols-outlined font-size-20'>swap_vert</span>
     </div>
-  {/if}
-  {#each homeSections as item, index}
-    <div
-      class='input-group mb-10 form-control-lg'
-      class:tp={draggingItem === item}
-      draggable='true'
-      role='menuitem'
-      tabindex='0'
-      on:dragstart={({ clientY, target }) => {
-        mouseYCoordinate = clientY
-        draggingItem = item
-        draggingItemIndex = index
-        distanceTopGrabbedVsPointer = target.offsetTop - clientY
-      }}
-      on:drag={e => { mouseYCoordinate = e.clientY }}
-      on:dragover={() => { hoveredItemIndex = index }}
-      on:dragend={() => {
-        mouseYCoordinate = null
-        draggingItem = null
-        hoveredItemIndex = null
-      }}>
-      <div class='input-group-prepend grab'>
-        <span class='input-group-text w-100 justify-content-center'>Feed</span>
-      </div>
-      <select class='form-control form-control-lg' bind:value={homeSections[index]}>
-        {#each allowedHomeSections as section}
-          <option>{section}</option>
-        {/each}
-      </select>
-      <div class='input-group-append'>
-        <button type='button' use:click={() => { homeSections.splice(index, 1); homeSections = homeSections }} class='btn btn-danger btn-lg input-group-append'>Remove</button>
-      </div>
+    <select class='form-control bg-dark w-300 mw-full' bind:value={homeSections[index]}>
+      {#each allowedHomeSections as section}
+        <option>{section}</option>
+      {/each}
+    </select>
+    <div class='input-group-append'>
+      <button type='button' use:click={() => { homeSections.splice(index, 1); homeSections = homeSections }} class='btn btn-danger input-group-append px-5 material-symbols-outlined font-size-20'>delete</button>
     </div>
-  {/each}
-  <div class='input-group input-group-lg form-control-lg mb-10 w-500'>
-    <button type='button' use:click={() => { homeSections[homeSections.length] = 'Trending Now' }} class='btn btn-lg btn-primary mb-10'>Add Section</button>
   </div>
-</div>
+{/each}
+<button type='button' use:click={() => { homeSections[homeSections.length] = 'Trending Now' }} class='btn btn-primary'>Add Section</button>
 
 <style>
     .ghost {

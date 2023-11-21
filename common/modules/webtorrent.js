@@ -6,11 +6,17 @@ import { defaults, fontRx, subRx, videoRx } from './util.js'
 
 const LARGE_FILESIZE = 32_000_000_000
 
+let storedSettings = {}
+
+try {
+  storedSettings = JSON.parse(localStorage.getItem('settings')) || {}
+} catch (error) {}
+
 export default class TorrentClient extends WebTorrent {
   static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
 
   constructor (ipc, storageQuota, serverMode, controller, settingOverrides = {}) {
-    const settings = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}), ...settingOverrides }
+    const settings = { ...defaults, ...storedSettings, ...settingOverrides }
     super({
       dht: !settings.torrentDHT,
       maxConns: settings.maxConns,

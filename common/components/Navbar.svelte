@@ -2,7 +2,7 @@
   import { getContext } from 'svelte'
   import { alID } from '@/modules/anilist.js'
   import { media } from '../views/Player/MediaHandler.svelte'
-  import { platformMap } from '../views/Settings.svelte'
+  import { platformMap } from '@/views/Settings/Settings.svelte'
   import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
   import { logout } from './Logout.svelte'

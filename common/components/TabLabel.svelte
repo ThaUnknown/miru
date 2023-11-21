@@ -9,6 +9,12 @@
   registerTab(tab)
 </script>
 
-<div class={'pointer border-bottom ' + ($selectedTab === tab ? 'bg-dark-light' : '')} use:click={() => selectTab(tab)}>
+<div class={'pointer my-5 rounded ' + ($selectedTab === tab ? 'bg-dark-light font-weight-bold' : '')} use:click={() => selectTab(tab)}>
   <slot />
 </div>
+
+<style>
+  div {
+    transition: background .2s ease-in-out;
+  }
+</style>

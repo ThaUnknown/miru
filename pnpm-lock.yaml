@@ -189,6 +189,9 @@ importers:
       quartermoon:
         specifier: ^1.2.3
         version: 1.2.3
+      simple-font-select:
+        specifier: ^1.0.1
+        version: 1.0.1
       simple-store-svelte:
         specifier: ^1.0.1
         version: 1.0.1
@@ -202,8 +205,8 @@ importers:
         specifier: ^3.1.9
         version: 3.1.9(svelte@4.2.3)
       svelte-miniplayer:
-        specifier: ^1.0.4
-        version: 1.0.4
+        specifier: ^1.0.5
+        version: 1.0.5
       svelte-sonner:
         specifier: ^0.3.3
         version: 0.3.3(svelte@4.2.3)
@@ -6805,6 +6808,10 @@ packages:
   /simple-concat@1.0.1:
     resolution: {integrity: sha512-cSFtAPtRhljv69IK0hTVZQ+OfE9nePi/rtJmw5UjHeVyVroEqJXP1sFztKUy1qU+xvz3u/sfYJLa947b7nAN2Q==}
 
+  /simple-font-select@1.0.1:
+    resolution: {integrity: sha512-3myV4hFaijwG6IZoMFxvCJ/k+zKVWUsblGd7VFBW0g8G9Ln7VaXPR0Tg5PpTzFOiPOqL+h5RbSvCGW7ZaMGOqA==}
+    dev: false
+
   /simple-get@4.0.1:
     resolution: {integrity: sha512-brv7p5WgH0jmQJr1ZDDfKDOSeWWg+OVypG99A/5vYGPqJ6pxiaHLy8nxtFjBA7oMa01ebA9gfh1uMCFqOuXxvA==}
     dependencies:
@@ -7189,8 +7196,8 @@ packages:
       svelte-hmr: 0.14.12(svelte@4.2.3)
     dev: false
 
-  /svelte-miniplayer@1.0.4:
-    resolution: {integrity: sha512-U1WLsokF4aEtLrCgzjZ8T/TXG6uFjJJykc+DuYaG3YdZkYkt/RDz+CEoHBMXpk85WoUt6D+8tleWEx5CuzW6jQ==}
+  /svelte-miniplayer@1.0.5:
+    resolution: {integrity: sha512-jzYqqBuXcSH5KzoPDlYQL6CQVbpY2LQB4/wBPG4T5R75wE8Dqu4auMU6NnJxHBRhgNCGlH+XBQvxy9G6yX/XQw==}
     dev: false
 
   /svelte-sonner@0.3.3(svelte@4.2.3):

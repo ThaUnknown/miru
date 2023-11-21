@@ -25,4 +25,4 @@ async function storageQuota () {
   return quota - usage
 }
 
-globalThis.client = new TorrentClient(ipcRendererWebTorrent, storageQuota, 'browser', controller, { torrentPort: Math.random() * 65535 + 1 })
+globalThis.client = new TorrentClient(ipcRendererWebTorrent, storageQuota, 'browser', controller, { torrentPort: Math.floor(Math.random() * 65535 + 1) })
