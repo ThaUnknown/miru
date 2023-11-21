@@ -43,6 +43,7 @@
     "@capacitor/ios": "^5.5.1",
     "@capacitor/status-bar": "^5.0.6",
     "@superfrogbe/cordova-plugin-chrome-apps-sockets-udp": "github:superfrogbe/cordova-plugin-chrome-apps-sockets-udp",
+    "capacitor-dns": "github:funniray/capacitor-dns",
     "capacitor-plugin-safe-area": "^2.0.5",
     "common": "workspace:*",
     "cordova-plugin-chrome-apps-common": "^1.0.7",
