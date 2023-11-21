@@ -21,10 +21,10 @@
   function joinLobby (code = generateRandomHexCode(16)) {
     if (p2pt) cleanup()
     p2pt = new P2PT([
-      'wss://tracker.openwebtorrent.com',
-      'wss://tracker.webtorrent.dev',
-      'wss://tracker.files.fm:7073/announce',
-      'wss://tracker.btorrent.xyz/'
+      atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
+      atob('d3NzOi8vdHJhY2tlci53ZWJ0b3JyZW50LmRldg=='),
+      atob('d3NzOi8vdHJhY2tlci5maWxlcy5mbTo3MDczL2Fubm91bmNl'),
+      atob('d3NzOi8vdHJhY2tlci5idG9ycmVudC54eXov')
     ], code)
     p2pt.on('peerconnect', async peer => {
       console.log(peer.id)
