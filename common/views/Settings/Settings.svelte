@@ -131,7 +131,7 @@
       </div>
     </Tab>
     <Tab>
-      <div class='root m-20 px-20 pre-wrap overflow-y-md-auto'>
+      <div class='root my-20 px-20 pre-wrap overflow-y-md-auto w-full'>
         {#await changeLog}
           <h1 class='font-weight-bold'>Loading changelog...</h1>
         {:then changes}

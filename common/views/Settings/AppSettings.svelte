@@ -16,6 +16,10 @@
       duration: 5000
     })
   }
+  function restoreSettigs () {
+    resetSettings()
+    location.reload()
+  }
   function checkUpdate () {
     IPC.emit('update')
   }
@@ -43,7 +47,7 @@
     </button>
   {/if}
   <button
-    use:click={resetSettings}
+    use:click={restoreSettigs}
     class='btn btn-danger mx-20 mt-10'
     type='button'
     data-toggle='tooltip'

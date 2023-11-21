@@ -76,7 +76,7 @@
   </div>
 </SettingCard>
 <SettingCard title='Sections And Order' description="Sections and their order on the home screen, if you want more RSS feeds to show up here, create them first in the RSS feed list. Adding many multiple normal lists doesn't impact performance, but adding a lot of RSS feeds will impact app startup times. Drag/drop these sections to re-order them.">
-  <div>
+  <div class='position-relative'>
     <HomeSections bind:homeSections={settings.homeSections} />
   </div>
 </SettingCard>

@@ -1,6 +1,6 @@
 <script context='module'>
   import SectionsManager, { sections } from '@/modules/sections.js'
-  import { settings } from '@/modules/settings.js'
+  import { alToken, settings } from '@/modules/settings.js'
   import { alRequest, currentSeason, currentYear, userLists } from '@/modules/anilist.js'
 
   const bannerData = alRequest({ method: 'Search', sort: 'POPULARITY_DESC', perPage: 1, onList: false, season: currentSeason, year: currentYear })
@@ -15,14 +15,16 @@
 
   for (const sectionTitle of settings.value.homeSections) manager.add(mappedSections[sectionTitle])
 
-  const userSections = ['Continue Watching', 'Sequels You Missed', 'Your List', 'Completed List', 'Paused List', 'Dropped List', 'Currently Watching List']
+  if (alToken) {
+    const userSections = ['Continue Watching', 'Sequels You Missed', 'Your List', 'Completed List', 'Paused List', 'Dropped List', 'Currently Watching List']
 
-  userLists.subscribe(() => {
-    for (const section of manager.sections) {
-      // remove preview value, to force UI to re-request data, which updates it once in viewport
-      if (userSections.includes(section.title)) section.preview.value = undefined
-    }
-  })
+    userLists.subscribe(() => {
+      for (const section of manager.sections) {
+        // remove preview value, to force UI to re-request data, which updates it once in viewport
+        if (userSections.includes(section.title)) section.preview.value = section.load(1, 15)
+      }
+    })
+  }
 </script>
 
 <script>

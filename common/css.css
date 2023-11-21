@@ -1,5 +1,4 @@
 :root {
-  --navbar-height: 28px;
   --accent-color: #e5204c;
   --dm-link-text-color: var(--dm-muted-text-color) !important;
   --dm-link-text-color-hover: var(--dm-text-color) !important;
@@ -25,6 +24,9 @@
   --safe-area-top: 0px;
   --safe-area-left: 0px;
   color-scheme: dark;
+}
+.dark-mode {
+  background-color: var(--dark-color) !important;
 }
 
 @media (min-width: 769px) {

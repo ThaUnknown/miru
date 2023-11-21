@@ -157,7 +157,7 @@ export const defaults = {
   dhtPort: 0,
   missingFont: true,
   maxConns: 50,
-  subtitleRenderHeight: 0,
+  subtitleRenderHeight: '0',
   subtitleLanguage: 'eng',
   audioLanguage: 'jpn',
   enableDoH: false,

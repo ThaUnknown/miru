@@ -62,7 +62,7 @@ settings.subscribe(() => {
 function createSections () {
   return [
   // RSS feeds
-    ...[...settings.value.rssFeedsNew].reverse().map(([title, url]) => {
+    ...settings.value.rssFeedsNew.map(([title, url]) => {
       const section = {
         title,
         load: (page = 1, perPage = 8) => RSSManager.getMediaForRSS(page, perPage, url),

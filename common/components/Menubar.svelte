@@ -29,6 +29,9 @@
 </div>
 
 <style>
+  .navbar {
+    --navbar-height: 28px !important;
+  }
   .z-101 {
     z-index: 101 !important
   }

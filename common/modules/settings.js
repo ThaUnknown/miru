@@ -5,12 +5,18 @@ export let alToken = localStorage.getItem('ALtoken') || null
 
 let storedSettings = { ...defaults }
 
+let scopedDefaults = { ...defaults }
+
 try {
   storedSettings = JSON.parse(localStorage.getItem('settings')) || { ...defaults }
 } catch (e) {}
-
-const scopedDefaults = {
-  homeSections: [...[...storedSettings.rssFeedsNew.reverse()].map(([title]) => title), 'Continue Watching', 'Sequels You Missed', 'Your List', 'Popular This Season', 'Trending Now', 'All Time Popular', 'Romance', 'Action', 'Adventure', 'Fantasy', 'Comedy']
+try {
+  scopedDefaults = {
+    homeSections: [...(storedSettings.rssFeedsNew || defaults.rssFeedsNew).map(([title]) => title), 'Continue Watching', 'Sequels You Missed', 'Your List', 'Popular This Season', 'Trending Now', 'All Time Popular', 'Romance', 'Action', 'Adventure', 'Fantasy', 'Comedy']
+  }
+} catch (e) {
+  resetSettings()
+  location.reload()
 }
 
 /**
