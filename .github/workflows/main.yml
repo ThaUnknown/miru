@@ -32,6 +32,9 @@ jobs:
           node-version: '16'
           cache: 'pnpm'
 
+      - name: Enter Electron
+        run: cd electron
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 

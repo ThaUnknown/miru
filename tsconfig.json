@@ -4,7 +4,10 @@
     "target": "ESNext",
     "moduleResolution": "node",
     "module": "ESNext",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@/*": ["./common/*"],
+    }
   },
   "exclude": ["node_modules/**", "**/node_modules", "dist", "build"]
 }
