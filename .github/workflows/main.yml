@@ -32,13 +32,10 @@ jobs:
           node-version: '16'
           cache: 'pnpm'
 
-      - name: Enter Electron
-        run: cd electron
-
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: cd electron && pnpm install --frozen-lockfile
 
       - name: Build and Publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run publish
+        run: cd electron && npm run publish

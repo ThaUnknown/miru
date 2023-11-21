@@ -50,6 +50,7 @@
   import TorrentSettings from './TorrentSettings.svelte'
   import InterfaceSettings from './InterfaceSettings.svelte'
   import AppSettings from './AppSettings.svelte'
+  import smoothScroll from '@/modules/scroll.js'
 
   onDestroy(() => {
     IPC.off('path')
@@ -84,7 +85,7 @@
 </script>
 
 <Tabs>
-  <div class='d-flex w-full h-full position-relative settings root flex-md-row flex-column overflow-y-auto overflow-y-md-hidden'>
+  <div class='d-flex w-full h-full position-relative settings root flex-md-row flex-column overflow-y-auto overflow-y-md-hidden' use:smoothScroll>
     <div class='d-flex flex-column flex-row h-full w-md-300 bg-dark position-relative px-20 px-md-0 flex-basis-0-md-custom'>
       <div class='px-20 py-15 font-size-24 font-weight-semi-bold'>Settings</div>
       {#each Object.values(groups) as group}
@@ -131,7 +132,7 @@
       </div>
     </Tab>
     <Tab>
-      <div class='root my-20 px-20 pre-wrap overflow-y-md-auto w-full'>
+      <div class='root my-20 px-20 pre-wrap overflow-y-md-auto w-full' use:smoothScroll>
         {#await changeLog}
           <h1 class='font-weight-bold'>Loading changelog...</h1>
         {:then changes}
