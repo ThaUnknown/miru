@@ -8,7 +8,7 @@ No. See above. The miniplayer provides feedback that something is happening in t
 No. See above. This app is also meant to seed the torrents the user downloads, if you want freeleech go to some private tracker.
 
 ## **Is this safe?**
-I recommend you read the [guide about basics of piracy.](https://thewiki.moe/guides/torrenting)
+I recommend you read the [guide about basics of piracy.](https://thewiki.moe/getting-started/torrenting/)
 
 ## **Will this replace streaming sites?**
 Not really. The underlying source of video are still torrents, which aren't always seeded, so anime that's a few years old might not play back smoothly.
