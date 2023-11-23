@@ -26,7 +26,7 @@
 {#if ('queryLocalFonts' in self)}
   <h4 class='mb-10 font-weight-bold'>Subtitle Settings</h4>
   <SettingCard title='Default Subtitle Font' description={"What font to use when the current loaded video doesn't provide or specify one.\nThis uses fonts installed on your OS."}>
-    <FontSelect class='form-control bg-dark w-300 mw-full' on:change={changeFont} value={settings.font?.value} />
+    <FontSelect class='form-control bg-dark w-300 mw-full' on:change={changeFont} value={settings.font?.name} />
   </SettingCard>
   <SettingCard title='Find Missing Subtitle Fonts' description="Automatically finds and loads fonts that are missing from a video's subtitles.">
     <div class='custom-switch'>

@@ -183,11 +183,11 @@ export default class Subtitles {
   }
 
   static convertSubText (text, type) {
-    const srtRx = /(?:\d+\n)?(\S{9,12})\s?-->\s?(\S{9,12})(.*)\n([\s\S]*)$/i
+    const srtRx = /(?:\d+\r?\n)?(\S{9,12})\s?-->\s?(\S{9,12})(.*)\r?\n([\s\S]*)$/i
     const srt = text => {
       const subtitles = []
       const replaced = text.replace(/\r/g, '')
-      for (const split of replaced.split('\n\n')) {
+      for (const split of replaced.split(/\r?\n\r?\n/)) {
         const match = split.match(srtRx)
         if (match) {
           // timestamps
@@ -220,7 +220,7 @@ export default class Subtitles {
               }
             })
           }
-          subtitles.push('Dialogue: 0,' + match[1].replace(',', '.') + ',' + match[2].replace(',', '.') + ',Default,,0,0,0,,' + match[4].replace(/\n/g, '\\N'))
+          subtitles.push('Dialogue: 0,' + match[1].replace(',', '.') + ',' + match[2].replace(',', '.') + ',Default,,0,0,0,,' + match[4].replace(/\r?\n/g, '\\N'))
         }
       }
       return subtitles
@@ -231,7 +231,7 @@ export default class Subtitles {
       const replaced = text.replace(/\r/g, '')
       let frames = 1000 / Number(replaced.match(subRx)[3])
       if (!frames || isNaN(frames)) frames = 41.708
-      for (const split of replaced.split('\n')) {
+      for (const split of replaced.split('\r?\n')) {
         const match = split.match(subRx)
         if (match) subtitles.push('Dialogue: 0,' + toTS((match[1] * frames) / 1000, 1) + ',' + toTS((match[2] * frames) / 1000, 1) + ',Default,,0,0,0,,' + match[3].replace('|', '\\N'))
       }
@@ -264,7 +264,7 @@ export default class Subtitles {
         })
       }
       // replace all html special tags with normal ones
-      subtitle.text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, '\\h').replace(/\n/g, '\\N')
+      subtitle.text = subtitle.text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, '\\h').replace(/\r?\n/g, '\\N')
     }
     return {
       Start: subtitle.time,
