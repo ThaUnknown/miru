@@ -5,7 +5,7 @@ export const SUPPORTS = {
   update: false,
   angle: false,
   doh: false,
-  dht: false,
+  dht: true,
   discord: false,
   torrentPort: false,
   torrentPath: false,
