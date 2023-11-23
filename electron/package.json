@@ -15,12 +15,12 @@
     "publish": "npm run web:build && electron-builder -p always"
   },
   "devDependencies": {
-    "@electron/notarize": "^2.1.0",
+    "@electron/notarize": "^2.2.0",
     "common": "workspace:*",
     "discord-rpc": "4.0.1",
     "electron": "25.1.0",
     "electron-builder": "^24.6.4",
-    "electron-log": "^4.4.8",
+    "electron-log": "^5.0.1",
     "electron-updater": "^6.1.4"
   },
   "dependencies": {
