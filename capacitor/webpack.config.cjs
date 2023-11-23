@@ -32,7 +32,7 @@ const capacitorConfig = {
 const alias = {
   fs: false,
   ws: false,
-  'default-gateway': false,
+  'default-gateway': join(__dirname, 'src', 'gateway.js'),
   'load-ip-set': false,
   'node-fetch': false,
   'webtorrent/lib/utp.cjs': false,

@@ -1,4 +1,5 @@
 import EventEmitter from 'events'
+import { ready } from './gateway.js'
 
 export const ipcRendererUI = new EventEmitter()
 
@@ -33,6 +34,7 @@ async function portRequest (data) {
   }
   await globalThis.controller
   await globalThis.prefetchNetworkInterfaces
+  await ready
   await new Promise(resolve => setTimeout(() => resolve(), 50))
   ipcRendererUI.emit('port', { ports: [port2] })
   ipcRendererWebTorrent.emit('port', { ports: [port1] })

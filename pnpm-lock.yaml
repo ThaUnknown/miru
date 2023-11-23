@@ -80,6 +80,9 @@ importers:
       '@superfrogbe/cordova-plugin-chrome-apps-sockets-udp':
         specifier: github:superfrogbe/cordova-plugin-chrome-apps-sockets-udp
         version: github.com/superfrogbe/cordova-plugin-chrome-apps-sockets-udp/4b740017299c81cfc7d5b49c7d6122a6650b57d4
+      capacitor-default-gateway:
+        specifier: github:funniray/capacitor-default-gateway
+        version: github.com/funniray/capacitor-default-gateway/786bd15a6d445c82f009a4a9b4b331afa3b45725(@capacitor/core@5.5.1)
       capacitor-dns:
         specifier: github:funniray/capacitor-dns
         version: github.com/funniray/capacitor-dns/6362cd1ad0a6b9b5bdbdc9fee3fba4c8dae91e16(@capacitor/core@5.5.1)
@@ -8301,6 +8304,17 @@ packages:
       node-addon-api: 1.7.2
     dev: true
     optional: true
+
+  github.com/funniray/capacitor-default-gateway/786bd15a6d445c82f009a4a9b4b331afa3b45725(@capacitor/core@5.5.1):
+    resolution: {tarball: https://codeload.github.com/funniray/capacitor-default-gateway/tar.gz/786bd15a6d445c82f009a4a9b4b331afa3b45725}
+    id: github.com/funniray/capacitor-default-gateway/786bd15a6d445c82f009a4a9b4b331afa3b45725
+    name: capacitor-default-gateway
+    version: 0.0.1
+    peerDependencies:
+      '@capacitor/core': ^5.0.0
+    dependencies:
+      '@capacitor/core': 5.5.1
+    dev: false
 
   github.com/funniray/capacitor-dns/6362cd1ad0a6b9b5bdbdc9fee3fba4c8dae91e16(@capacitor/core@5.5.1):
     resolution: {tarball: https://codeload.github.com/funniray/capacitor-dns/tar.gz/6362cd1ad0a6b9b5bdbdc9fee3fba4c8dae91e16}

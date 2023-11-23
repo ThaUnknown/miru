@@ -1,6 +1,7 @@
 import TorrentClient from 'common/modules/webtorrent.js'
 import { ipcRendererWebTorrent } from './ipc.js'
 import { prefetchNetworkInterfaces } from 'os'
+import { ready } from './gateway.js'
 
 globalThis.chrome.runtime = { lastError: false, id: 'something' }
 
@@ -28,5 +29,6 @@ async function storageQuota () {
 }
 
 await prefetchNetworkInterfaces
+await ready
 
 globalThis.client = new TorrentClient(ipcRendererWebTorrent, storageQuota, 'browser', controller, { torrentPort: Math.floor(Math.random() * 65535 + 1) })
