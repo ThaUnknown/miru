@@ -31,10 +31,8 @@ const capacitorConfig = {
 }
 const alias = {
   fs: false,
-  os: false,
   ws: false,
-  dns: 'capacitor-dns',
-  '@silentbot1/nat-api': false,
+  'default-gateway': false,
   'load-ip-set': false,
   'node-fetch': false,
   'webtorrent/lib/utp.cjs': false,
@@ -42,8 +40,12 @@ const alias = {
   '@/modules/support.js': join(__dirname, 'src', 'support.js'),
   net: join(__dirname, 'src', 'chrome-net.js'),
   dgram: join(__dirname, 'src', 'chrome-dgram.js'),
+  os: 'capacitor-os-interfaces-hack',
+  dns: 'capacitor-dns',
   http: 'stream-http',
   https: 'stream-http',
+  'utp-native': false,
+  socks: false,
   assert: 'assert',
   ut_pex: 'ut_pex',
   path: 'path-esm',
@@ -52,10 +54,14 @@ const alias = {
   timers: 'timers-browserify',
   crypto: 'crypto-browserify',
   buffer: 'buffer',
+  '@silentbot1/nat-api': '@silentbot1/nat-api',
   'bittorrent-tracker': 'bittorrent-tracker',
   querystring: 'querystring',
   zlib: 'webtorrent/polyfills/inflate-sync-web.js',
+  'bittorrent-tracker/server.js': false,
+  'cross-fetch-ponyfill': resolve('../node_modules/cross-fetch-ponyfill/browser.js'),
+  'abort-controller': false,
   'bittorrent-tracker/lib/client/http-tracker.js': resolve('../node_modules/bittorrent-tracker/lib/client/http-tracker.js')
 }
 
-module.exports = merge(commonConfig(__dirname, alias, 'chromeapp', 'index'), capacitorConfig)
+module.exports = merge(commonConfig(__dirname, alias, 'node', 'index'), capacitorConfig)

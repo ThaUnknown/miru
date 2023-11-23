@@ -83,6 +83,9 @@ importers:
       capacitor-dns:
         specifier: github:funniray/capacitor-dns
         version: github.com/funniray/capacitor-dns/6362cd1ad0a6b9b5bdbdc9fee3fba4c8dae91e16(@capacitor/core@5.5.1)
+      capacitor-os-interfaces-hack:
+        specifier: github:funniray/capacitor-os-interfaces-hack
+        version: github.com/funniray/capacitor-os-interfaces-hack/95a51afe9dee88b3ae8df4b1b96fd106c1655954(@capacitor/core@5.5.1)
       capacitor-plugin-safe-area:
         specifier: ^2.0.5
         version: 2.0.5(@capacitor/core@5.5.1)
@@ -8303,6 +8306,17 @@ packages:
     resolution: {tarball: https://codeload.github.com/funniray/capacitor-dns/tar.gz/6362cd1ad0a6b9b5bdbdc9fee3fba4c8dae91e16}
     id: github.com/funniray/capacitor-dns/6362cd1ad0a6b9b5bdbdc9fee3fba4c8dae91e16
     name: capacitor-dns
+    version: 0.0.1
+    peerDependencies:
+      '@capacitor/core': ^5.0.0
+    dependencies:
+      '@capacitor/core': 5.5.1
+    dev: false
+
+  github.com/funniray/capacitor-os-interfaces-hack/95a51afe9dee88b3ae8df4b1b96fd106c1655954(@capacitor/core@5.5.1):
+    resolution: {tarball: https://codeload.github.com/funniray/capacitor-os-interfaces-hack/tar.gz/95a51afe9dee88b3ae8df4b1b96fd106c1655954}
+    id: github.com/funniray/capacitor-os-interfaces-hack/95a51afe9dee88b3ae8df4b1b96fd106c1655954
+    name: capacitor-os-interfaces-hack
     version: 0.0.1
     peerDependencies:
       '@capacitor/core': ^5.0.0

@@ -93,7 +93,7 @@ class Socket extends EventEmitter {
   constructor (options, listener) {
     super()
     if (typeof options === 'string') options = { type: options }
-    if (options.type !== 'udp4') throw new Error('Bad socket type specified. Valid types are: udp4')
+    if (options.type !== 'udp4' && options.type !== 'udp6') throw new Error('Bad socket type specified. Valid types are: udp4')
 
     if (typeof listener === 'function') this.on('message', listener)
 

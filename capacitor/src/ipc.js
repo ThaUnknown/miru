@@ -32,6 +32,8 @@ async function portRequest (data) {
     }
   }
   await globalThis.controller
+  await globalThis.prefetchNetworkInterfaces
+  await new Promise(resolve => setTimeout(() => resolve(), 50))
   ipcRendererUI.emit('port', { ports: [port2] })
   ipcRendererWebTorrent.emit('port', { ports: [port1] })
 }
