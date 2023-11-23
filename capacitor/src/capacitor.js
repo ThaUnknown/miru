@@ -34,7 +34,12 @@ function sendToken (line) {
 }
 
 App.getLaunchUrl().then(res => {
-  if (res) handleProtocol(res.url)
+  if (location.hash !== '#skipAlLogin') {
+    location.hash = '#skipAlLogin'
+    if (res) handleProtocol(res.url)
+  } else {
+    location.hash = ''
+  }
 })
 
 SafeArea.addListener('safeAreaChanged', updateInsets)
