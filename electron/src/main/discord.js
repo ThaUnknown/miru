@@ -3,7 +3,6 @@ import { ipcMain } from 'electron'
 import { debounce } from '@/modules/util.js'
 
 export default class {
-  window
   defaultStatus = {
     activity: {
       timestamps: { start: Date.now() },
@@ -25,7 +24,6 @@ export default class {
   }
 
   discord
-  requestedDiscordDetails
   allowDiscordDetails
   cachedPresence
 
@@ -33,7 +31,6 @@ export default class {
    * @param {import('electron').BrowserWindow} window
    */
   constructor (window) {
-    this.window = window
     this.discord = new Client({
       transport: 'ipc'
     })
@@ -56,7 +53,7 @@ export default class {
     })
 
     this.discord.on('ACTIVITY_JOIN', ({ secret }) => {
-      this.window.webContents.send('w2glink', secret)
+      window.webContents.send('w2glink', secret)
     })
 
     this.loginRPC()
