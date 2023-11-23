@@ -6,6 +6,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 
 import com.getcapacitor.BridgeActivity;
+
 public class MainActivity extends BridgeActivity {
  // this isn't generated! required patch to be able to register service workers
     @Override

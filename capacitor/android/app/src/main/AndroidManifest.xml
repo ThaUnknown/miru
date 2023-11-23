@@ -15,7 +15,11 @@
             android:launchMode="singleTask"
             android:exported="true">
             <intent-filter>
-                <!-- added scheme rest is generated -->
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- added scheme rest is generated -->
+            <intent-filter>
                 <data android:scheme="miru" />
 
                 <action android:name="android.intent.action.VIEW" />
