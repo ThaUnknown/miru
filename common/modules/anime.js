@@ -230,6 +230,7 @@ export async function anitomyscript (...args) {
   const parseObjs = Array.isArray(res) ? res : [res]
 
   for (const obj of parseObjs) {
+    obj.anime_title ??= ''
     const seasonMatch = obj.anime_title.match(/S(\d{2})E(\d{2})/)
     if (seasonMatch) {
       obj.anime_season = seasonMatch[1]
