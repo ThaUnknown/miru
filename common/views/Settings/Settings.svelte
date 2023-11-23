@@ -40,7 +40,7 @@
     const json = await res.json()
     return json.map(({ body, tag_name: version }) => ({ body, version }))
   })()
-  IPC.emit('discord_status', settings.value.showDetailsInRPC)
+  IPC.emit('show-discord-status', settings.value.showDetailsInRPC)
 </script>
 
 <script>
@@ -78,7 +78,7 @@
       icon: 'description'
     }
   }
-  $: IPC.emit('discord_status', $settings.showDetailsInRPC)
+  $: IPC.emit('show-discord-status', $settings.showDetailsInRPC)
   IPC.on('path', data => {
     $settings.torrentPath = data
   })

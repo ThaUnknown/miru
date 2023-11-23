@@ -45,9 +45,9 @@ export function fastPrettyBytes (num) {
 /**
  * @type {DOMParser['parseFromString']}
  */
-export const DOMPARSER = DOMParser.prototype.parseFromString.bind(new DOMParser())
+export const DOMPARSER = (typeof DOMParser !== 'undefined') && DOMParser.prototype.parseFromString.bind(new DOMParser())
 
-export const sleep = t => new Promise(resolve => setTimeout(resolve, t))
+export const sleep = t => new Promise(resolve => setTimeout(resolve, t).unref?.())
 
 export function toTS (sec, full) {
   if (isNaN(sec) || sec < 0) {
@@ -106,7 +106,7 @@ export function throttle (fn, time) {
       setTimeout(() => {
         fn()
         wait = false
-      }, time)
+      }, time).unref?.()
     }
   }
 }
@@ -119,7 +119,7 @@ export function debounce (fn, time) {
       fn(...args)
     }
     clearTimeout(timeout)
-    timeout = setTimeout(later, time)
+    timeout = setTimeout(later, time).unref?.()
   }
 }
 

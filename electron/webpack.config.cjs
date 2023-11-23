@@ -62,7 +62,10 @@ module.exports = [
       filename: 'main.js'
     },
     resolve: {
-      aliasFields: []
+      aliasFields: [],
+      alias: {
+        '@': resolve(__dirname, '..', 'common')
+      }
     },
     mode,
     target: 'electron20.0-main'

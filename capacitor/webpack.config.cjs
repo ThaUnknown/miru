@@ -14,14 +14,10 @@ const capacitorConfig = {
       process: 'webtorrent/polyfills/process-fast.js',
       Buffer: ['buffer', 'Buffer']
     }),
-    new webpack.DefinePlugin({
-      global: 'globalThis'
-    })
+    new webpack.DefinePlugin({ global: 'globalThis' })
   ],
   devServer: {
-    devMiddleware: {
-      writeToDisk: true
-    },
+    devMiddleware: { writeToDisk: true },
     hot: true,
     client: {
       overlay: { errors: true, warnings: false, runtimeErrors: false }
