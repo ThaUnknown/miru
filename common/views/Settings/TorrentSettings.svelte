@@ -34,11 +34,11 @@
     </div>
   </SettingCard>
   <SettingCard title='DNS Over HTTPS URL' description='What URL to use for querying DNS Over HTTPS.'>
-    <input type='text' class='form-control bg-dark w-300 mw-full' bind:value={settings.doHURL} placeholder={defaults.doHURL} />
+    <input type='url' class='form-control bg-dark w-300 mw-full' bind:value={settings.doHURL} placeholder={defaults.doHURL} />
   </SettingCard>
 {/if}
 <SettingCard title='Torrent API URL' description='URL of the API used to query data for torrents. Useful for proxies if your ISP blocks some domains. Needs to be CORS enabled.'>
-  <input type='text' class='form-control bg-dark w-300 mw-full' bind:value={settings.toshoURL} placeholder={defaults.toshoURL} />
+  <input type='url' class='form-control bg-dark w-300 mw-full' bind:value={settings.toshoURL} placeholder={defaults.toshoURL} />
 </SettingCard>
 
 <h4 class='mb-10 font-weight-bold'>Client Settings</h4>
@@ -49,7 +49,7 @@
       <div class='input-group-prepend'>
         <button type='button' use:click={handleFolder} class='btn btn-primary input-group-append'>Select Folder</button>
       </div>
-      <input type='text' class='form-control bg-dark' bind:value={settings.torrentPath} placeholder='/tmp' />
+      <input type='url' class='form-control bg-dark' bind:value={settings.torrentPath} placeholder='/tmp' />
     </div>
   </SettingCard>
 {/if}

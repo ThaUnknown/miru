@@ -32,10 +32,14 @@ ipcMain.on('open', (event, url) => {
 })
 
 ipcMain.on('doh', (event, dns) => {
-  app.configureHostResolver({
-    secureDnsMode: 'secure',
-    secureDnsServers: [dns]
-  })
+  try {
+    const url = new URL(dns)
+
+    app.configureHostResolver({
+      secureDnsMode: 'secure',
+      secureDnsServers: [url.toString()]
+    })
+  } catch (e) {}
 })
 
 ipcMain.on('angle', (e, data) => {

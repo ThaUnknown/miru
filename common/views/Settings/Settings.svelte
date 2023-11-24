@@ -152,6 +152,9 @@
   .settings :global(select.form-control:invalid) {
     color: var(--dm-input-placeholder-text-color);
   }
+  .settings :global(input:not(:focus):invalid) {
+    box-shadow: 0 0 0 0.2rem var(--danger-color) !important;
+  }
 
   .flex-basis-0-md-custom {
     flex-basis: 0%;
