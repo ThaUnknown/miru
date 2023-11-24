@@ -36,8 +36,9 @@ export function parseRSSNodes (nodes) {
 
 const rssmap = {
   SubsPlease: settings.value.toshoURL + 'rss2?qx=1&q="[SubsPlease] "',
-  'NC-Raws': settings.value.toshoURL + 'rss2?qx=1&q="[NC-Raws] "',
-  'Erai-raws [Multi-Sub]': settings.value.toshoURL + 'rss2?qx=1&q="[Erai-raws] "'
+  'Erai-raws [Multi-Sub]': settings.value.toshoURL + 'rss2?qx=1&q="[Erai-raws] "',
+  'Yameii [Dubbed]': settings.value.toshoURL + 'rss2?qx=1&q="[Yameii] "',
+  'Judas [Small Size]': settings.value.toshoURL + 'rss2?qx=1&q="[Judas] "'
 }
 export function getReleasesRSSurl (val) {
   const rss = rssmap[val] || val

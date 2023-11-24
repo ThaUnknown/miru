@@ -18,7 +18,7 @@
       {/if}
     </div>
   </span>
-  <div class='d-flex text-capitalize flex-wrap pt-10'>
+  <div class='d-flex text-capitalize flex-wrap pt-10 justify-content-center'>
     {#each list.slice(0, showMore ? 100 : 4) as item}
       <slot {item} />
     {/each}

@@ -6,6 +6,8 @@
 
   export let media
 
+  export let episodeOrder = true
+
   const id = media.id
 
   const duration = media.duration
@@ -40,14 +42,14 @@
   load()
 </script>
 
-{#each episodeList as { episode, image, summary, rating, title, length, airdate }}
+{#each episodeOrder ? episodeList : [...episodeList].reverse() as { episode, image, summary, rating, title, length, airdate }}
   {@const completed = userProgress >= episode}
   {@const target = userProgress + 1 === episode}
   <div class='w-full my-20 content-visibility-auto scale' class:opacity-half={completed} class:px-20={!target} class:h-150={image || summary} use:click={() => play(episode)}>
-    <div class='rounded w-full h-full overflow-hidden d-flex flex-row pointer' class:border={target} class:bg-black={completed} class:bg-dark={!completed}>
+    <div class='rounded w-full h-full overflow-hidden d-flex flex-xsm-column flex-row pointer' class:border={target} class:bg-black={completed} class:bg-dark={!completed}>
       {#if image}
-        <div class='w-450 h-full'>
-          <img alt='thumbnail' src={image} class='img-cover h-full w-full' />
+        <div class='h-full'>
+          <img alt='thumbnail' src={image} class='img-cover h-full' />
         </div>
       {/if}
       <div class='h-full w-full px-20 py-15 d-flex flex-column'>
@@ -96,5 +98,17 @@
   }
   .border {
     --dm-border-color: white
+  }
+  @media (max-width: 470px) {
+    .flex-xsm-column {
+      flex-direction: column !important;
+    }
+    .scale {
+      height: auto !important;
+    }
+    img {
+      width: 100%;
+      height: 15rem !important;
+    }
   }
 </style>

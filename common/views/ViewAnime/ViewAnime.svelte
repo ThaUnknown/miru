@@ -73,6 +73,7 @@
   function openInBrowser (url) {
     IPC.emit('open', url)
   }
+  let episodeOrder = true
 </script>
 
 <div class='modal modal-full z-100' class:show={media} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
@@ -80,13 +81,13 @@
     <div class='h-full modal-content bg-very-dark p-0 overflow-y-auto position-relative' use:smoothScroll>
       <button class='close pointer z-30 bg-dark top-20 right-0 position-fixed' type='button' use:click={close}> &times; </button>
       <img class='w-full cover-img banner position-absolute' alt='banner' src={media.bannerImage || ' '} />
-      <div class='row'>
+      <div class='row px-20'>
         <div class='col-lg-7 col-12 pb-10'>
-          <div class='d-flex flex-md-row flex-column align-items-md-end pb-20 mb-15'>
-            <div class='cover d-flex flex-row align-items-md-end align-items-center mw-full w-full mb-md-0 mb-20'>
-              <img class='rounded cover-img w-full overflow-hidden h-full' alt='cover-art' src={media.coverImage?.extraLarge || media.coverImage?.medium} />
+          <div class='d-flex flex-sm-row flex-column align-items-sm-end pb-20 mb-15'>
+            <div class='cover d-flex flex-row align-items-sm-end align-items-center justify-content-center mw-full w-full mb-sm-0 mb-20' style='max-height: 50vh;'>
+              <img class='rounded cover-img overflow-hidden h-full' alt='cover-art' src={media.coverImage?.extraLarge || media.coverImage?.medium} />
             </div>
-            <div class='pl-md-20 ml-md-20'>
+            <div class='pl-sm-20 ml-sm-20'>
               <h1 class='font-weight-very-bold text-white select-all mb-0'>{media.title.userPreferred}</h1>
               <div class='d-flex flex-row font-size-18 flex-wrap mt-5'>
                 {#if media.averageScore}
@@ -179,14 +180,16 @@
               <h5 class='font-weight-bold text-white mb-5'>{item.node.mediaRecommendation.title.userPreferred}</h5>
             </div>
           </ToggleList>
-          <div class='w-full d-flex d-lg-none flex-row align-items-center pt-20 mt-10'>
+          <div class='w-full d-flex d-lg-none flex-row align-items-center pt-20 mt-10 pointer'>
             <hr class='w-full' />
             <div class='font-size-18 font-weight-semi-bold px-20 text-white'>Episodes</div>
             <hr class='w-full' />
+
+            <div class='ml-auto pl-20 font-size-12 more text-muted text-nowrap' use:click={() => { episodeOrder = !episodeOrder }}>Reverse</div>
           </div>
         </div>
-        <div class='col-lg-5 col-12 d-flex flex-column pl-20'>
-          <EpisodeList {media} userProgress={media.mediaListEntry && media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress} episodeCount={getMediaMaxEp(media)} {play} />
+        <div class='col-lg-5 col-12 d-flex flex-column pl-lg-20'>
+          <EpisodeList {media} {episodeOrder} userProgress={media.mediaListEntry && media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress} episodeCount={getMediaMaxEp(media)} {play} />
         </div>
       </div>
     </div>
@@ -203,15 +206,20 @@
     opacity: 0.5;
     z-index: 0;
     aspect-ratio: 5/1;
+    min-height: 20rem;
   }
-  @media (min-width: 769px) {
+  @media (min-width: 577px) {
     .cover {
       max-width: 35% !important;
     }
   }
   .row {
-    padding: 0 10rem;
-    padding-top: 12rem
+    padding-top: 12rem !important
+  }
+  @media (min-width: 769px) {
+    .row  {
+      padding: 0 10rem;
+    }
   }
   .cover {
     aspect-ratio: 7/10;

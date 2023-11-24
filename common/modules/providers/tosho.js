@@ -28,19 +28,20 @@ export default async function ({ media, episode }) {
 
   const id = crypto.randomUUID()
 
-  const updated = await Promise.race([new Promise(resolve => {
-    function check ({ detail }) {
-      if (detail.id !== id) return
-      client.removeListener('scrape', check)
-      resolve(detail.result)
-      console.log(detail)
-    }
-    client.on('scrape', check)
-    client.send('scrape', { id, infoHashes: mapped.map(({ hash }) => hash) })
-  }),
-  sleep(5000)
+  const updated = await Promise.race([
+    new Promise(resolve => {
+      function check ({ detail }) {
+        if (detail.id !== id) return
+        client.removeListener('scrape', check)
+        resolve(detail.result)
+        console.log(detail)
+      }
+      client.on('scrape', check)
+      client.send('scrape', { id, infoHashes: mapped.map(({ hash }) => hash) })
+    }),
+    sleep(5000)
   ])
-  for (const { hash, complete, downloaded, incomplete } of updated) {
+  for (const { hash, complete, downloaded, incomplete } of updated || []) {
     const found = mapped.find(mapped => mapped.hash === hash)
     found.downloads = downloaded
     found.leechers = incomplete
