@@ -4,6 +4,7 @@
 
 <script>
   import Card from '@/components/cards/Card.svelte'
+  import ErrorCard from '@/components/cards/ErrorCard.svelte'
   import { search } from '../Search.svelte'
   import { page } from '@/App.svelte'
   import { click } from '@/modules/click.js'
@@ -42,6 +43,9 @@
   {#each $preview || fakecards as card}
     <Card {card} />
   {/each}
+  {#if $preview?.length}
+    <ErrorCard promise={$preview[0].data} />
+  {/if}
 </div>
 
 <style>

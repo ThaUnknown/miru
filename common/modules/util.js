@@ -119,7 +119,8 @@ export function debounce (fn, time) {
       fn(...args)
     }
     clearTimeout(timeout)
-    timeout = setTimeout(later, time).unref?.()
+    timeout = setTimeout(later, time)
+    timeout.unref?.()
   }
 }
 

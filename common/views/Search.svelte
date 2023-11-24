@@ -15,6 +15,7 @@
   import smoothScroll from '@/modules/scroll.js'
   import { debounce } from '@/modules/util.js'
   import { onDestroy, onMount } from 'svelte'
+  import ErrorCard from '@/components/cards/ErrorCard.svelte'
 
   let page = 0
   items.value = []
@@ -65,11 +66,14 @@
 
 <div class='bg-dark h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden justify-content-center align-content-start' use:smoothScroll bind:this={container} on:scroll={infiniteScroll}>
   <Search bind:search={$search} on:input={update} />
-  <div class='h-full w-full d-flex flex-wrap flex-row px-50 justify-content-center align-content-start'>
+  <div class='w-full d-flex flex-wrap flex-row px-50 justify-content-center align-content-start'>
     {#key $key}
       {#each $items as card}
         <Card {card} />
       {/each}
+      {#if $items?.length}
+        <ErrorCard promise={$items[0].data} />
+      {/if}
     {/key}
   </div>
 </div>
