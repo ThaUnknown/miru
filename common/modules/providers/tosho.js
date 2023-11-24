@@ -1,5 +1,5 @@
 import { mapBestRelease, anitomyscript } from '../anime.js'
-import { fastPrettyBytes } from '../util.js'
+import { fastPrettyBytes, sleep } from '../util.js'
 import { exclusions } from '../rss.js'
 import { settings } from '@/modules/settings.js'
 import { alRequest } from '../anilist.js'
@@ -28,7 +28,7 @@ export default async function ({ media, episode }) {
 
   const id = crypto.randomUUID()
 
-  const updated = await new Promise(resolve => {
+  const updated = await Promise.race([new Promise(resolve => {
     function check ({ detail }) {
       if (detail.id !== id) return
       client.removeListener('scrape', check)
@@ -37,7 +37,9 @@ export default async function ({ media, episode }) {
     }
     client.on('scrape', check)
     client.send('scrape', { id, infoHashes: mapped.map(({ hash }) => hash) })
-  })
+  }),
+  sleep(5000)
+  ])
   for (const { hash, complete, downloaded, incomplete } of updated) {
     const found = mapped.find(mapped => mapped.hash === hash)
     found.downloads = downloaded
