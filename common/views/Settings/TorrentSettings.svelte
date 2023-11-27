@@ -30,7 +30,7 @@
   <SettingCard title='Use DNS Over HTTPS' description='Enables DNS Over HTTPS, useful if your ISP blocks certain domains.'>
     <div class='custom-switch'>
       <input type='checkbox' id='rss-dohtoggle' bind:checked={settings.enableDoH} />
-      <label for='rss-dohtoggle'>{settings.rssAutoplay ? 'On' : 'Off'}</label>
+      <label for='rss-dohtoggle'>{settings.enableDoH ? 'On' : 'Off'}</label>
     </div>
   </SettingCard>
   <SettingCard title='DNS Over HTTPS URL' description='What URL to use for querying DNS Over HTTPS.'>

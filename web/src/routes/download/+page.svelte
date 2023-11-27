@@ -6,6 +6,9 @@
   import AndroidTVSVG from '$lib/svg/AndroidTVSVG.svelte'
   import SteamOSSVG from '$lib/svg/SteamOSSVG.svelte'
 
+  /** @type {import('./$types').PageData} */
+  export let data
+
   function getOS () {
     const platform = navigator.userAgentData?.platform || navigator.platform
     const macosPlatforms = ['macOS', 'Macintosh', 'MacIntel', 'MacPPC', 'Mac68K']
@@ -17,105 +20,124 @@
     if (windowsPlatforms.includes(platform)) return 'Windows'
     if (/Android/.test(navigator.userAgent)) return 'Android'
     if (/Linux/.test(platform)) return 'Linux'
+    return 'Windows'
   }
 
-  async function downloadForOS (os = userOS || 'Windows', linuxFormat = '.AppImage') {
-    if (os === 'iOS') return
-    if (os === 'Android') return open('https://play.google.com/')
+  let downloads = {
+    iOS: '',
+    Android: '',
+    Windows: '',
+    'Mac OS': '',
+    Linux: '',
+    Debian: ''
+  }
 
+  const releases = 'https://github.com/ThaUnknown/miru/releases'
+
+  async function downloadForOS () {
     const releases = await data.releases
 
     const { assets } = releases[0]
-    if (os === 'Windows') return (location.href = assets.find(({ name }) => name.endsWith('.exe')).browser_download_url)
-    if (os === 'Mac OS') return (location.href = assets.find(({ name }) => name.endsWith('.dmg')).browser_download_url)
-    if (os === 'Linux') return (location.href = assets.find(({ name }) => name.endsWith(linuxFormat)).browser_download_url)
+    downloads = {
+      iOS: '',
+      Android: 'https://play.google.com',
+      Windows: assets.find(({ name }) => name.endsWith('.exe')).browser_download_url,
+      'Mac OS': assets.find(({ name }) => name.endsWith('.dmg')).browser_download_url,
+      Linux: assets.find(({ name }) => name.endsWith('.AppImage')).browser_download_url,
+      Debian: assets.find(({ name }) => name.endsWith('.deb')).browser_download_url
+    }
+    return downloads
   }
 
   const userOS = getOS()
 
-  // setTimeout(() => downloadForOS(), 2000)
+  downloadForOS()
 
-  /** @type {import('./$types').PageData} */
-  export let data
+  setTimeout(async () => {
+    const downloads = await downloadForOS()
+    location.href = downloads[userOS]
+  }, 2000)
 </script>
 
 <div class='container'>
-  <div class='h-vh-half d-flex justify-content-center align-items-center flex-column px-20 px-sm-0 pt-20'>
-    <h1 class='font-weight-bold text-white title mt-20 pt-20 text-center'>Almost there!</h1>
-    <div class='font-size-18 text-muted text-center'>
-      Now run the installer that just downloaded.<br /><br />
-      Your download should begin automatically. Didn’t work?
+  {#key downloads}
+    <div class='h-vh-half d-flex justify-content-center align-items-center flex-column px-20 px-sm-0 pt-20'>
+      <h1 class='font-weight-bold text-white title mt-20 pt-20 text-center'>Almost there!</h1>
+      <div class='font-size-18 text-muted text-center'>
+        Now run the installer that just downloaded.<br /><br />
+        Your download should begin automatically. Didn’t work?
+      </div>
+      <a class='btn btn-lg btn-link mb-20' href={downloads[userOS] || releases}>
+        Try downloading again.
+      </a>
     </div>
-    <button class='btn btn-lg btn-link mb-20' on:click={() => downloadForOS()}>
-      Try downloading again.
-    </button>
-  </div>
-  <hr class='my-20' />
-  <div class='px-20 px-sm-0 row'>
-    <div class='col-12 col-lg-6 d-flex flex-column align-items-center d-lg-block pr-lg-20 pt-20'>
-      <h3 class='font-weight-bold text-white text-center text-lg-left pb-15'>Get Miru for other devices</h3>
-      <button class='card pointer col-2 m-0 mb-20 mw-full pb-20 w-500 d-block' on:click={() => downloadForOS('Windows')}>
-        <WindowsSVG />
-        <div class='font-size-18 font-weight-semi-bold mt-5'>Windows</div>
-        <div class='text-muted'>exe</div>
-      </button>
-      <button class='card pointer col-2 m-0 mb-20 mw-full pb-20 w-500 d-block' on:click={() => downloadForOS('Mac OS')}>
-        <MacOSSVG />
-        <div class='font-size-18 font-weight-semi-bold mt-5'>Mac OS</div>
-        <div class='text-muted'>Universal dmg</div>
-      </button>
-      <div class='d-flex w-500 mw-full gap-2'>
-        <button class='card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' on:click={() => downloadForOS('Linux', '.AppImage')}>
-          <LinuxSVG />
-          <div class='font-size-18 font-weight-semi-bold mt-5'>Linux</div>
+    <hr class='my-20' />
+    <div class='px-20 px-sm-0 row'>
+      <div class='col-12 col-lg-6 d-flex flex-column align-items-center d-lg-block pr-lg-20 pt-20'>
+        <h3 class='font-weight-bold text-white text-center text-lg-left pb-15'>Get Miru for other devices</h3>
+        <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-500 d-block' href={downloads.Windows || releases}>
+          <WindowsSVG />
+          <div class='font-size-18 font-weight-semi-bold mt-5'>Windows</div>
+          <div class='text-muted'>exe</div>
+        </a>
+        <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-500 d-block' href={downloads['Mac OS'] || releases}>
+          <MacOSSVG />
+          <div class='font-size-18 font-weight-semi-bold mt-5'>Mac OS</div>
+          <div class='text-muted'>Universal dmg</div>
+        </a>
+        <div class='d-flex w-500 mw-full gap-2'>
+          <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' href={downloads.Linux || releases}>
+            <LinuxSVG />
+            <div class='font-size-18 font-weight-semi-bold mt-5'>Linux</div>
+            <div class='text-muted'>AppImage</div>
+          </a>
+          <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' href={downloads.Debian || releases}>
+            <LinuxSVG />
+            <div class='font-size-18 font-weight-semi-bold mt-5'>Linux</div>
+            <div class='text-muted'>deb</div>
+          </a>
+        </div>
+        <div class='d-flex w-500 mw-full gap-2'>
+          <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' href={downloads.Android || releases}>
+            <AndroidSVG />
+            <div class='font-size-18 font-weight-semi-bold mt-5'>Android</div>
+            <div class='text-muted'>apk</div>
+          </a>
+          <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' href={downloads.Android || releases}>
+            <AndroidTVSVG />
+            <div class='font-size-18 font-weight-semi-bold mt-5'>Android TV</div>
+            <div class='text-muted'>apk</div>
+          </a>
+        </div>
+        <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-500 d-block' href={downloads.Linux || releases}>
+          <SteamOSSVG />
+          <div class='font-size-18 font-weight-semi-bold mt-5'>Steam OS</div>
           <div class='text-muted'>AppImage</div>
-        </button>
-        <button class='card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' on:click={() => downloadForOS('Linux', '.deb')}>
-          <LinuxSVG />
-          <div class='font-size-18 font-weight-semi-bold mt-5'>Linux</div>
-          <div class='text-muted'>deb</div>
-        </button>
-      </div>
-      <div class='d-flex w-500 mw-full gap-2'>
-        <button class='card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' on:click={() => downloadForOS('Android')}>
-          <AndroidSVG />
-          <div class='font-size-18 font-weight-semi-bold mt-5'>Android</div>
-          <div class='text-muted'>apk</div>
-        </button>
-        <button class='card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' on:click={() => downloadForOS('Android')}>
-          <AndroidTVSVG />
-          <div class='font-size-18 font-weight-semi-bold mt-5'>Android TV</div>
-          <div class='text-muted'>apk</div>
-        </button>
-      </div>
-      <button class='card pointer col-2 m-0 mb-20 mw-full pb-20 w-500 d-block' on:click={() => downloadForOS('Linux', '.AppImage')}>
-        <SteamOSSVG />
-        <div class='font-size-18 font-weight-semi-bold mt-5'>Steam OS</div>
-        <div class='text-muted'>AppImage</div>
-      </button>
-    </div>
-    <div class='col-12 col-lg-6 d-flex flex-column align-items-center d-lg-block pl-lg-20 pt-20'>
-      <hr class='w-full my-20 d-lg-none' />
-      <h3 class='font-weight-bold text-white text-center text-lg-left pb-15'>Additional resources</h3>
-      <div class='d-flex flex-column'>
-        <div class='pb-5 font-size-18 font-weight-bold'>
-          Current version:
-          {#await data.releases then releases}
-            {releases[0].version}
-          {/await}
-        </div>
-        <a href='/changelog' class='hyperlink-underline pb-20 font-size-16 font-weight-bold'>
-          View changelog
-        </a>
-        <div class='pb-5 font-size-18 font-weight-bold'>
-          Older versions of Miru
-        </div>
-        <a href='https://github.com/ThaUnknown/miru/releases' class='hyperlink-underline pb-20 font-size-16 font-weight-bold'>
-          View older versions of Miru on GitHub
         </a>
       </div>
+      <div class='col-12 col-lg-6 d-flex flex-column align-items-center d-lg-block pl-lg-20 pt-20'>
+        <hr class='w-full my-20 d-lg-none' />
+        <h3 class='font-weight-bold text-white text-center text-lg-left pb-15'>Additional resources</h3>
+        <div class='d-flex flex-column'>
+          <div class='pb-5 font-size-18 font-weight-bold'>
+            Current version:
+            {#await data.releases then releases}
+              {releases[0].version}
+            {/await}
+          </div>
+          <a href='/changelog' class='hyperlink-underline pb-20 font-size-16 font-weight-bold'>
+            View changelog
+          </a>
+          <div class='pb-5 font-size-18 font-weight-bold'>
+            Older versions of Miru
+          </div>
+          <a href={releases} class='hyperlink-underline pb-20 font-size-16 font-weight-bold'>
+            View older versions of Miru on GitHub
+          </a>
+        </div>
+      </div>
     </div>
-  </div>
+  {/key}
 </div>
 
 <style>
