@@ -5,7 +5,7 @@ import '@fontsource/roboto'
 import '@/css.css'
 import '$lib/css.css'
 
-export const prerender = true
+export const prerender = false
 export const csr = true
 export const trailingSlash = 'always'
 
