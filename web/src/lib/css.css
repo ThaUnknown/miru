@@ -1,0 +1,12 @@
+.dark-mode {
+  background-color: #101113 !important;
+}
+
+hr {
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.00) 14%, #38393c 50%, rgba(0, 0, 0, 0.00) 86%) !important;
+  height: 1px !important;
+}
+
+.h-vh-half {
+  height: 50vh;
+}

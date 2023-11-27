@@ -21,11 +21,11 @@
     "electron": "25.1.0",
     "electron-builder": "^24.6.4",
     "electron-log": "^5.0.1",
-    "electron-updater": "^6.1.4"
+    "electron-updater": "^6.1.4",
+    "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "utp-native": "^2.5.3",
-    "webpack-merge": "^5.10.0"
+    "utp-native": "^2.5.3"
   },
   "standard": {
     "ignore": [

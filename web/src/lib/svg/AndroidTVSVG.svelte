@@ -1,0 +1,3 @@
+<svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMidYMid meet' {...$$restProps}>
+  <path fill-rule='evenodd' clip-rule='evenodd' d='M22 20H2a2 2 0 01-2-2V3a2 2 0 012-2h20a2 2 0 012 2v15a2 2 0 01-2 2zM3 18h2v-5a1 1 0 00-2 0v5zm3 0h12v-6H6v6zm13 0h2v-5a1 1 0 00-2 0v5zM15.281 5.98l1.135-1.703a.5.5 0 10-.832-.554l-1.186 1.779a5.975 5.975 0 00-4.796 0L8.416 3.723a.5.5 0 10-.832.554L8.719 5.98A5.992 5.992 0 006 11h12a5.992 5.992 0 00-2.719-5.02zM10 9a1 1 0 110-2 1 1 0 010 2zm4 0a1 1 0 110-2 1 1 0 010 2zM6 21h12a1 1 0 110 2H6a1 1 0 110-2z' fill='currentColor' />
+</svg>

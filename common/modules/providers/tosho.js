@@ -41,6 +41,7 @@ export default async function ({ media, episode }) {
     }),
     sleep(5000)
   ])
+
   for (const { hash, complete, downloaded, incomplete } of updated || []) {
     const found = mapped.find(mapped => mapped.hash === hash)
     found.downloads = downloaded
