@@ -19,7 +19,7 @@
     "svelte-keybinds": "^1.0.5",
     "svelte-loader": "^3.1.9",
     "svelte-miniplayer": "^1.0.5",
-    "svelte-sonner": "^0.3.3",
+    "svelte-sonner": "^0.3.6",
     "webpack-merge": "^5.10.0"
   }
 }

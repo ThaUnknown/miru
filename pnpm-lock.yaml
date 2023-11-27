@@ -217,8 +217,8 @@ importers:
         specifier: ^1.0.5
         version: 1.0.5
       svelte-sonner:
-        specifier: ^0.3.3
-        version: 0.3.3(svelte@4.2.7)
+        specifier: ^0.3.6
+        version: 0.3.6(svelte@4.2.7)
       webpack-merge:
         specifier: ^5.10.0
         version: 5.10.0
@@ -257,13 +257,13 @@ importers:
   web:
     dependencies:
       '@fontsource-variable/material-symbols-outlined':
-        specifier: ^5.0.16
+        specifier: latest
         version: 5.0.16
       '@fontsource-variable/nunito':
-        specifier: ^5.0.16
+        specifier: latest
         version: 5.0.16
       '@fontsource/roboto':
-        specifier: ^5.0.8
+        specifier: latest
         version: 5.0.8
       quartermoon:
         specifier: ^1.2.3
@@ -7893,8 +7893,8 @@ packages:
       typescript: 5.3.2
     dev: true
 
-  /svelte-sonner@0.3.3(svelte@4.2.7):
-    resolution: {integrity: sha512-fUPHh5X88GctOjUBXflfXWplJxErDDm2erYh3EUjMWdfYiT9SGMpAv5NGDGbmKfZ+qUKOiTFrJ2P/iahYrTvhA==}
+  /svelte-sonner@0.3.6(svelte@4.2.7):
+    resolution: {integrity: sha512-MwVhh4nxCqTBLHYamRw+q9erZC2Y4wuL8mUa7phgq/9kq9VdTr+/6S1PX1CnALJPy2rkc7TlIECYTJavUkoWlg==}
     peerDependencies:
       svelte: '>=3 <5'
     dependencies:
