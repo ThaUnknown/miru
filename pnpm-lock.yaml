@@ -255,6 +255,19 @@ importers:
         version: 5.10.0
 
   web:
+    dependencies:
+      '@fontsource-variable/material-symbols-outlined':
+        specifier: latest
+        version: 5.0.16
+      '@fontsource-variable/nunito':
+        specifier: latest
+        version: 5.0.16
+      '@fontsource/roboto':
+        specifier: latest
+        version: 5.0.8
+      quartermoon:
+        specifier: ^1.2.3
+        version: 1.2.3
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^2.0.0
@@ -3451,6 +3464,7 @@ packages:
 
   /domexception@1.0.1:
     resolution: {integrity: sha512-raigMkn7CJNNo6Ihro1fzG7wr3fHuYVytzquZKX5n0yizGsTcYgzdIUwj1X9pK0VvjeihV+XiclP+DjwbsSKug==}
+    deprecated: Use your platform's native DOMException instead
     requiresBuild: true
     dependencies:
       webidl-conversions: 4.0.2

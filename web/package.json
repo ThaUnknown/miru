@@ -18,5 +18,11 @@
 		"typescript": "^5.0.0",
 		"vite": "^4.4.2"
 	},
+	"dependencies": {
+    "@fontsource-variable/material-symbols-outlined": "latest",
+    "@fontsource-variable/nunito": "latest",
+    "@fontsource/roboto": "latest",
+		"quartermoon": "^1.2.3"
+	},
 	"type": "module"
 }
