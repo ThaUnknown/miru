@@ -131,7 +131,7 @@
           <div class='material-symbols-outlined text-danger symbol-bold' title='Badges Are a Rough Guess of Information And Might Not Be Representative of Actual Data'>
             warning
           </div>
-          <input type='text' class='form-control bg-dark w-300 ml-15' placeholder='Search...' on:input={filter} />
+          <input type='text' class='form-control bg-dark w-300 ml-15' placeholder='Search...' on:input={filter} on:keydown|stopPropagation|stopImmediatePropagation|capture />
           <button class='btn btn-square bg-dark rounded-circle ml-auto pointer' type='button' use:click={close}> &times; </button>
         </div>
         <table class='table table-hover font-size-14 position-relative'>
