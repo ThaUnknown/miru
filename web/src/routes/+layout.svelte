@@ -1,8 +1,10 @@
 <script>
   import Footer from '$lib/components/Footer.svelte'
+  import Loader from '$lib/components/Loader.svelte'
   import Navbar from '$lib/components/Navbar.svelte'
 </script>
 
+<Loader />
 <div class='page-wrapper with-transitions position-relative' data-sidebar-type='overlayed-all'>
   <Navbar />
   <div class='overflow-x-hidden content-wrapper h-full overflow-y-scroll position-relative'>
