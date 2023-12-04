@@ -10,3 +10,7 @@ hr {
 .h-vh-half {
   height: 50vh;
 }
+
+:root {
+  --container-xl-max-width: 150rem
+}

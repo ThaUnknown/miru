@@ -22,7 +22,8 @@
 		"@fontsource-variable/material-symbols-outlined": "^5.0.16",
 		"@fontsource-variable/nunito": "^5.0.16",
 		"@fontsource/roboto": "^5.0.8",
-		"quartermoon": "^1.2.3"
+		"quartermoon": "^1.2.3",
+		"simple-store-svelte": "^1.0.1"
 	},
 	"type": "module"
 }
