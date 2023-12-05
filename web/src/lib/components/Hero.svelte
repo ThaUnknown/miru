@@ -9,7 +9,7 @@
 </script>
 
 <div class='d-flex position-relative justify-content-center align-items-center hero flex-column' bind:this={hero}>
-  <div class='position-absolute ghost text-nowrap font-weight-semi-bold'>
+  <div class='position-absolute ghost text-nowrap font-weight-semi-bold' data-nosnippet>
     MIRU MIRU MIRU MIRU MIRU MIRU MIRU MIRU MIRU MIRU MIRU MIRU MIRU
   </div>
   <div class='h-50' />
