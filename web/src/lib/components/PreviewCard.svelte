@@ -28,6 +28,9 @@
     muted = !muted
   }
   const noop = () => {}
+  function play () {
+    open('miru://anime/' + media.id)
+  }
 </script>
 
 <div class='position-absolute w-350 h-400 absolute-container top-0 bottom-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer'>
@@ -55,7 +58,7 @@
     </div>
     <div class='d-flex flex-row pt-5'>
       <button class='btn btn-secondary flex-grow-1 text-dark font-weight-bold shadow-none border-0 d-flex align-items-center justify-content-center'
-        use:click={noop}
+        use:click={play}
         disabled={media.status === 'NOT_YET_RELEASED'}>
         <span class='material-symbols-outlined font-size-20 filled pr-10'>
           play_arrow
