@@ -33,7 +33,7 @@ try {
 export default class TorrentClient extends WebTorrent {
   static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
 
-  constructor (ipc, storageQuota, serverMode, controller, settingOverrides = {}) {
+  constructor (ipc, storageQuota, serverMode, settingOverrides = {}, controller) {
     const settings = { ...defaults, ...storedSettings, ...settingOverrides }
     super({
       dht: !settings.torrentDHT,

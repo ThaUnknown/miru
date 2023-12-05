@@ -1,26 +1,26 @@
-import EventEmitter from 'events'
-import { ready } from './gateway.js'
+import { NodeJS } from 'capacitor-nodejs'
 
-export const ipcRendererUI = new EventEmitter()
-
-export const main = new EventEmitter()
+let portListener
 
 export default {
   emit: (event, data) => {
-    main.emit(event, data)
+    if (event === 'portRequest') return portRequest()
+    NodeJS.send({ eventName: event, args: [data] })
   },
   on: (event, callback) => {
-    ipcRendererUI.on(event, (...args) => callback(...args))
+    NodeJS.addListener(event, ({ args }) => callback(...args))
+    if (event === 'port') portListener = callback
   },
   once: (event, callback) => {
-    ipcRendererUI.once(event, (...args) => callback(...args))
+    const handle = NodeJS.addListener(event, ({ args }) => {
+      NodeJS.removeListener(handle)
+      callback(...args)
+    })
   },
   off: event => {
-    ipcRendererUI.removeAllListeners(event)
+    NodeJS.removeAllListeners(event)
   }
 }
-
-main.on('portRequest', portRequest)
 
 async function portRequest (data) {
   const { port1, port2 } = new MessageChannel()
@@ -32,15 +32,11 @@ async function portRequest (data) {
       port2.postMessage(a, b)
     }
   }
-  await globalThis.controller
-  await globalThis.prefetchNetworkInterfaces
-  await ready
+  await NodeJS.whenReady()
   await new Promise(resolve => setTimeout(() => resolve(), 50))
-  ipcRendererUI.emit('port', { ports: [port2] })
-  ipcRendererWebTorrent.emit('port', { ports: [port1] })
+  portListener({ ports: [port2] })
+  NodeJS.send({ eventName: 'port', args: [{ ports: [port1] }] })
 }
-
-export const ipcRendererWebTorrent = new EventEmitter()
 
 const [_platform, arch] = navigator.platform.split(' ')
 

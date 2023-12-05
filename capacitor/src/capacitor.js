@@ -3,9 +3,9 @@ import { StatusBar, Style } from '@capacitor/status-bar'
 import { SafeArea } from 'capacitor-plugin-safe-area'
 import { App } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
-import { ipcRendererUI, main } from './ipc.js'
+// import { ipcRendererUI, main } from './ipc.js'
 
-main.on('open', url => Browser.open({ url }))
+// main.on('open', url => Browser.open({ url }))
 
 App.addListener('appUrlOpen', ({ url }) => handleProtocol(url))
 

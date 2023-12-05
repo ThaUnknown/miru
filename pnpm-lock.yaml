@@ -86,6 +86,9 @@ importers:
       capacitor-dns:
         specifier: github:funniray/capacitor-dns
         version: github.com/funniray/capacitor-dns/6362cd1ad0a6b9b5bdbdc9fee3fba4c8dae91e16(@capacitor/core@5.5.1)
+      capacitor-nodejs:
+        specifier: github:hampoelz/capacitor-nodejs
+        version: github.com/hampoelz/capacitor-nodejs/3ee9d8d1d0266c228249005f73a2403d551d3aac(@capacitor/core@5.5.1)
       capacitor-os-interfaces-hack:
         specifier: github:funniray/capacitor-os-interfaces-hack
         version: github.com/funniray/capacitor-os-interfaces-hack/95a51afe9dee88b3ae8df4b1b96fd106c1655954(@capacitor/core@5.5.1)
@@ -9089,6 +9092,17 @@ packages:
     id: github.com/funniray/capacitor-os-interfaces-hack/95a51afe9dee88b3ae8df4b1b96fd106c1655954
     name: capacitor-os-interfaces-hack
     version: 0.0.1
+    peerDependencies:
+      '@capacitor/core': ^5.0.0
+    dependencies:
+      '@capacitor/core': 5.5.1
+    dev: false
+
+  github.com/hampoelz/capacitor-nodejs/3ee9d8d1d0266c228249005f73a2403d551d3aac(@capacitor/core@5.5.1):
+    resolution: {tarball: https://codeload.github.com/hampoelz/capacitor-nodejs/tar.gz/3ee9d8d1d0266c228249005f73a2403d551d3aac}
+    id: github.com/hampoelz/capacitor-nodejs/3ee9d8d1d0266c228249005f73a2403d551d3aac
+    name: capacitor-nodejs
+    version: 1.0.0-beta.6
     peerDependencies:
       '@capacitor/core': ^5.0.0
     dependencies:
