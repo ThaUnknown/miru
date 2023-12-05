@@ -9,8 +9,9 @@
   setContext('scroll-position', scrollPosition)
   function smoothScroll (t, { speed = 120, smooth = 10 } = {}) {
     let moving = false
-    let pos = 0
-    let scrollTop = 0
+    let pos = t.scrollTop
+    let scrollTop = t.scrollTop
+    scrollPosition.value = t.scrollTop
     let lastTime = null
     t.addEventListener('wheel', e => {
       e.preventDefault()
@@ -34,7 +35,7 @@
       return deltaTime / 14
     }
 
-    t.addEventListener('pointerup', () => { pos = scrollTop = t.scrollTop })
+    t.addEventListener('pointerup', () => { pos = scrollTop = scrollPosition.value = t.scrollTop })
 
     function update () {
       const delta = pos - scrollTop === smooth * 2 ? 0 : ((pos - scrollTop) / smooth) * getDeltaTime()

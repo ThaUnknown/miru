@@ -10,9 +10,12 @@
   function setHoverState (state) {
     preview = state
   }
+  function initPreview (node) {
+    if (preview) node.dispatchEvent(new PointerEvent('pointerenter'))
+  }
 </script>
 
-<div class='d-flex p-20 position-relative first-check' use:hoverClick={[noop, setHoverState]}>
+<div class='d-flex p-20 position-relative first-check' use:hoverClick={[noop, setHoverState]} use:initPreview>
   {#if preview}
     <PreviewCard {media} />
   {/if}
