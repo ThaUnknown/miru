@@ -19,7 +19,7 @@
           {#each stargazerRow as { htmlUrl, avatarUrl, login }}
             <a href={htmlUrl} class='d-inline-flex p-10 text-reset zoom' target='_blank'>
               <div class='bg-dark py-15 px-20 rounded font-weight-bold d-flex align-items-center'>
-                <img src={avatarUrl} alt='avatar' class='rounded-circle mr-10' />
+                <img src={avatarUrl} alt='avatar' class='rounded-circle mr-10' loading='lazy' />
                 {login}
               </div>
             </a>

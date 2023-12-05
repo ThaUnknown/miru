@@ -9,7 +9,7 @@
 </script>
 
 <div class='h-full con font-weight-bold overflow-hidden position-absolute' class:animate>
-  <div class='h-full text d-flex align-items-center justify-content-center text-nowrap text-capitalize'>
+  <div class='h-full text d-flex align-items-center justify-content-center text-nowrap text-capitalize' data-nosnippet>
     Loading...
   </div>
 </div>

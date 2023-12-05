@@ -20,7 +20,7 @@
 <Hero />
 <div class='container-xl'>
   <div class='position-relative'>
-    <img src='app.png' alt='app' class='mw-full px-20' />
+    <img src='app.webp' alt='app' class='mw-full px-20' />
     <div class='overlay-gradient position-absolute top-0 left-0 w-full h-full' />
   </div>
 
@@ -74,7 +74,7 @@
     <div class='row flex-column-reverse flex-md-row'>
       <div class='col-md-5 col-12'>
         <div class='content'>
-          <img src='player.png' alt='player' class='mw-full' />
+          <img src='player.webp' alt='player' class='mw-full' />
         </div>
       </div>
       <div class='col-md-7 col-12'>
