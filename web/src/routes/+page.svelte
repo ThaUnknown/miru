@@ -24,8 +24,8 @@
     <div class='overlay-gradient position-absolute top-0 left-0 w-full h-full' />
   </div>
 
-  <div class='content pb-20' id='about'>
-    <h1 class='w-full font-weight-bold text-white px-20'>
+  <div class='my-20 pb-20' id='about'>
+    <h1 class='w-full font-weight-bold text-white content'>
       Torrenting made simple.
     </h1>
     <div class='row'>
@@ -50,7 +50,7 @@
     </div>
   </div>
   <hr class='my-20' />
-  <div class='content py-20'>
+  <div class='my-20 py-20'>
     <div class='row'>
       <div class='col-md-7 col-12'>
         <div class='content'>
@@ -70,7 +70,7 @@
     </div>
   </div>
   <hr class='my-20' />
-  <div class='content py-20'>
+  <div class='my-20 py-20'>
     <div class='row flex-column-reverse flex-md-row'>
       <div class='col-md-5 col-12'>
         <div class='content'>
@@ -88,7 +88,7 @@
     </div>
   </div>
   <hr class='my-20' />
-  <div class='content py-20'>
+  <div class='my-20 py-20'>
     <div class='row'>
       <div class='col-md-7 col-12'>
         <div class='content'>
@@ -109,8 +109,8 @@
     </div>
   </div>
   <hr class='my-20' />
-  <div class='content pt-20'>
-    <h1 class='w-full font-weight-bold text-white px-20'>
+  <div class='mt-20 pt-20'>
+    <h1 class='w-full font-weight-bold text-white content'>
       Loved by thousands.
     </h1>
   </div>

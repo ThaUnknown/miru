@@ -1,5 +1,6 @@
 <!-- eslint-disable svelte/indent  -->
 <div class='container pre-wrap font-size-18 pb-20'>
+<div class='content'>
 <h1 class='text-white font-weight-bold'>Terms of Use</h1>
 Last updated: November 27th, 2023.
 
@@ -18,6 +19,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 <h3 class='text-white font-weight-bold'>Updates to Terms</h3>These terms of use may be updated at any time without notice. It is the user's responsibility to review these terms for any modifications. Continued use of the software after any such changes shall constitute your consent to such changes.
 
 <h3 class='text-white font-weight-bold'>Contact Information</h3>For inquiries regarding these Terms of Use or concerns related to data management, please contact us at [<a class='hyperlink-underline' href={'mailto:' + atob('Y2FzaXN0YWtlbkBnbWFpbC5jb20=')}>{atob('Y2FzaXN0YWtlbkBnbWFpbC5jb20=')}</a>].
+</div>
 </div>
 
 <style>

@@ -1,5 +1,6 @@
 <!-- eslint-disable svelte/indent  -->
 <div class='container pre-wrap font-size-18 pb-20'>
+<div class='content'>
 <h1 class='text-white font-weight-bold'>Privacy Policy</h1>
 Last updated: November 27th, 2023.
 
@@ -39,6 +40,7 @@ This exposure is inherent to the functionality of the BitTorrent protocol and is
 Users are encouraged to review the policy for any modifications. Continued use of the application implies acceptance of the updated policy.
 
 <h3 class='text-white font-weight-bold'>Contact Information</h3>For inquiries regarding this Privacy Policy or concerns related to data management, please contact us at [<a class='hyperlink-underline' href={'mailto:' + atob('Y2FzaXN0YWtlbkBnbWFpbC5jb20=')}>{atob('Y2FzaXN0YWtlbkBnbWFpbC5jb20=')}</a>].
+</div>
 </div>
 
 <style>
