@@ -31,20 +31,37 @@
   function play () {
     open('miru://anime/' + media.id)
   }
+  function lazyload (video) {
+    if ('IntersectionObserver' in window) {
+      const lazyVideoObserver = new IntersectionObserver(entries => {
+        for (const { target, isIntersecting } of entries) {
+          if (isIntersecting) {
+            video.src = video.dataset.src
+            lazyVideoObserver.unobserve(target)
+          }
+        }
+      })
+      lazyVideoObserver.observe(video.parentNode)
+    } else {
+      video.src = video.dataset.src
+    }
+  }
 </script>
 
 <div class='position-absolute w-350 h-400 absolute-container top-0 bottom-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer'>
   <div class='banner position-relative overflow-hidden bg-black'>
-    <img src={media.bannerImage || ' '} alt='banner' class='img-cover w-full h-full' />
+    <img src={media.bannerImage || ' '} alt='banner' class='img-cover w-full h-full' loading='lazy' />
     {#if media.trailer?.id}
       <div class='material-symbols-outlined filled position-absolute z-10 top-0 right-0 p-15 font-size-22' class:d-none={hide} use:click={toggleMute}>{muted ? 'volume_off' : 'volume_up'}</div>
       <!-- for now we use some invidious instance, would be nice to somehow get these links outselves, this redirects straight to some google endpoint -->
       <!-- eslint-disable-next-line svelte/valid-compile -->
-      <video src={`https://yewtu.be/latest_version?id=${media.trailer.id}&itag=18`}
+      <video data-src={`https://yewtu.be/latest_version?id=${media.trailer.id}&itag=18`}
         class='w-full position-absolute left-0'
         class:d-none={hide}
         playsinline
         preload='none'
+        loading='lazy'
+        use:lazyload
         loop
         use:volume
         bind:muted

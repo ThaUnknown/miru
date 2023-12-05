@@ -20,7 +20,7 @@
 <Hero />
 <div class='container-xl'>
   <div class='position-relative'>
-    <img src='app.webp' alt='app' class='mw-full px-20' />
+    <img src='app.webp' alt='app' class='mw-full px-20 w-full app-image' />
     <div class='overlay-gradient position-absolute top-0 left-0 w-full h-full' />
   </div>
 
@@ -118,6 +118,10 @@
 <Stargazers stargazers={data.stargazers} />
 
 <style>
+  .app-image {
+    aspect-ratio: 2/1;
+    object-fit: contain;
+  }
   .overlay-gradient {
     background: linear-gradient(0deg, #0F1113 15.27%, rgba(15, 17, 19, 0.92) 41.28%, rgba(15, 17, 19, 0.25) 74.32%);
   }
