@@ -21,6 +21,15 @@ export function load ({ fetch }) {
       } catch (e) {
         return []
       }
+    })(),
+    stargazers: (async () => {
+      try {
+        const res = await fetch('https://api.github.com/repos/ThaUnknown/miru/stargazers?per_page=100&page=' + (Math.round(Math.random() * 10) + 1))
+        const json = await res.json()
+        return json.map(({ html_url: htmlUrl, avatar_url: avatarUrl, login }) => ({ htmlUrl, avatarUrl, login }))
+      } catch (e) {
+        return []
+      }
     })()
   }
 }

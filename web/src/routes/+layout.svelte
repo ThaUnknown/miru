@@ -2,6 +2,7 @@
   import Footer from '$lib/components/Footer.svelte'
   import Loader from '$lib/components/Loader.svelte'
   import Navbar from '$lib/components/Navbar.svelte'
+  import { throttle } from '@/modules/util.js'
   import { setContext } from 'svelte'
   import { writable } from 'simple-store-svelte'
 
@@ -15,6 +16,7 @@
     let lastTime = null
     t.addEventListener('wheel', e => {
       e.preventDefault()
+      console.log(e.deltaY)
       // is trackpad
       const spd = (e.deltaY !== (e.deltaY | 0) || e.wheelDelta % 10 !== 0) ? speed / 10 : speed
       pos = Math.max(0, Math.min(pos - Math.max(-1, Math.min(1, e.deltaY * -1)) * spd, (t.scrollHeight - t.clientHeight) + (smooth * 2)))
@@ -36,6 +38,8 @@
     }
 
     t.addEventListener('pointerup', () => { pos = scrollTop = scrollPosition.value = t.scrollTop })
+
+    t.addEventListener('scrollend', throttle(() => { scrollTop = scrollPosition.value = t.scrollTop }, 1000))
 
     function update () {
       const delta = pos - scrollTop === smooth * 2 ? 0 : ((pos - scrollTop) / smooth) * getDeltaTime()

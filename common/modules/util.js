@@ -99,12 +99,12 @@ export function generateRandomHexCode (len) {
 
 export function throttle (fn, time) {
   let wait = false
-  return () => {
+  return (...args) => {
     if (!wait) {
-      fn()
+      fn(...args)
       wait = true
       setTimeout(() => {
-        fn()
+        fn(...args)
         wait = false
       }, time).unref?.()
     }

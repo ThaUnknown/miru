@@ -8,9 +8,13 @@
   import MacOssvg from '$lib/svg/MacOSSVG.svelte'
   import SteamOssvg from '$lib/svg/SteamOSSVG.svelte'
   import WindowsSvg from '$lib/svg/WindowsSVG.svelte'
+  import Stargazers from '$lib/components/Stargazers.svelte'
   import { getContext } from 'svelte'
 
   const scrollPosition = getContext('scroll-position')
+
+  /** @type {import('./$types').PageData} */
+  export let data
 </script>
 
 <Hero />
@@ -67,9 +71,11 @@
   </div>
   <hr class='my-20' />
   <div class='content py-20'>
-    <div class='row'>
+    <div class='row flex-column-reverse flex-md-row'>
       <div class='col-md-5 col-12'>
-        player goes here
+        <div class='content'>
+          <img src='player.png' alt='player' class='mw-full' />
+        </div>
       </div>
       <div class='col-md-7 col-12'>
         <div class='content'>
@@ -103,12 +109,13 @@
     </div>
   </div>
   <hr class='my-20' />
-  <div class='content py-20'>
+  <div class='content pt-20'>
     <h1 class='w-full font-weight-bold text-white px-20'>
       Loved by thousands.
     </h1>
   </div>
 </div>
+<Stargazers stargazers={data.stargazers} />
 
 <style>
   .overlay-gradient {
@@ -126,6 +133,11 @@
   }
   h1 {
     font-size: 5rem
+  }
+  @media (pointer: none), (pointer: coarse){
+    .gallery {
+      padding-left: 0 !important;
+    }
   }
   .gallery {
     padding-left: clamp(0px, var(--left), 100px);
