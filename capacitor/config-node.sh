@@ -29,7 +29,8 @@ export npm_gyp_defines="target_arch=$node_target_arch v8_target_arch=$node_targe
 
 #mv node_modules ../node_modules.bak
 # --from-from-source is used by node-pre-gyp
-cd resources/nodejs && npm rebuild --build-from-source
+cd resources/nodejs
+npm rebuild --build-from-source
 # Remove executable permissions from native node modules
 # find node_modules -iname '*.node' -exec chmod -x '{}' \;
 
