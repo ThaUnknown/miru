@@ -2,6 +2,7 @@
   "name": "capacitor",
   "private": true,
   "scripts": {
+    "postinstall": "cd resources/nodejs/ && npm install",
     "build:app": "cross-env NODE_ENV=production run-s build:web build:assets build:android",
     "build:web": "webpack build",
     "build:android": "cap build android",
@@ -25,6 +26,7 @@
     "cordova-res": "^0.15.4",
     "crypto-browserify": "^3.12.0",
     "hybrid-chunk-store": "^1.2.2",
+    "nodejs-mobile-gyp": "^0.3.1",
     "npm-run-all": "^4.1.5",
     "path-esm": "^1.0.0",
     "querystring": "^0.2.1",
@@ -32,7 +34,8 @@
     "stream-http": "^3.2.0",
     "timers-browserify": "^2.0.12",
     "util": "^0.12.5",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-merge": "^5.10.0"
   },
   "dependencies": {
     "@capacitor/android": "^5.5.1",
@@ -47,7 +50,6 @@
     "common": "workspace:*",
     "cordova-plugin-navigationbar": "^1.0.31",
     "cordova-plugin-screen-orientation": "^3.0.4",
-    "es6-promise-plugin": "^4.2.2",
-    "webpack-merge": "^5.10.0"
+    "es6-promise-plugin": "^4.2.2"
   }
 }
