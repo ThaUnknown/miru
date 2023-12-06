@@ -1,5 +1,2 @@
 packages:
-  - 'common'
-  - 'capacitor/*'
-  - 'electron/*'
-  - 'web/*'
+  - './*'

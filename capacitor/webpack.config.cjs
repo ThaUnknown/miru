@@ -1,6 +1,7 @@
 const commonConfig = require('common/webpack.config.cjs')
 const { merge } = require('webpack-merge')
 const { join, resolve } = require('path')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const mode = process.env.NODE_ENV?.trim() || 'development'
 
@@ -35,7 +36,14 @@ const capacitorConfig = {
       overlay: { errors: true, warnings: false, runtimeErrors: false }
     },
     port: 5000
-  }
+  },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: join(__dirname, 'public', 'nodejs') }
+      ]
+    }),
+  ]
 }
 
 const alias = {

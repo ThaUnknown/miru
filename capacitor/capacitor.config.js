@@ -4,7 +4,6 @@ const config = {
   appId: 'watch.miru',
   appName: 'Miru',
   webDir: 'build',
-  bundledWebRuntime: false,
   android: {
     buildOptions: {
       keystorePath: './watch.miru',

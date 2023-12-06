@@ -1,5 +1,5 @@
 {
-  "name": "capacitor-nodejs-thread",
+  "name": "nodejs-capacitor-thread",
   "private": true,
   "dependencies": {
     "utp-native": "^2.5.3"
