@@ -3,15 +3,18 @@ import { NodeJS } from 'capacitor-nodejs'
 let portListener
 
 export default {
-  emit: (event, data) => {
+  emit: async (event, data) => {
     if (event === 'portRequest') return portRequest()
+    await NodeJS.whenReady()
     NodeJS.send({ eventName: event, args: [data] })
   },
-  on: (event, callback) => {
+  on: async (event, callback) => {
     NodeJS.addListener(event, ({ args }) => callback(...args))
+    await NodeJS.whenReady()
     if (event === 'port') portListener = callback
   },
-  once: (event, callback) => {
+  once: async (event, callback) => {
+    await NodeJS.whenReady()
     const handle = NodeJS.addListener(event, ({ args }) => {
       NodeJS.removeListener(handle)
       callback(...args)

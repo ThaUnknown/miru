@@ -7,4 +7,4 @@ async function storageQuota (directory) {
   return bsize * bavail
 }
 
-globalThis.client = new TorrentClient(channel, storageQuota, 'browser')
+globalThis.client = new TorrentClient(channel, storageQuota, 'node')
