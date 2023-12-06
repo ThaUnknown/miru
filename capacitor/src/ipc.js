@@ -1,20 +1,21 @@
 import { NodeJS } from 'capacitor-nodejs'
 
 let portListener
+const ready = NodeJS.whenReady()
 
 export default {
   emit: async (event, data) => {
     if (event === 'portRequest') return portRequest()
-    await NodeJS.whenReady()
+    await ready
     NodeJS.send({ eventName: event, args: [data] })
   },
   on: async (event, callback) => {
     NodeJS.addListener(event, ({ args }) => callback(...args))
-    await NodeJS.whenReady()
-    if (event === 'port') portListener = callback
+    await ready
   },
   once: async (event, callback) => {
-    await NodeJS.whenReady()
+    if (event === 'port') portListener = callback
+    await ready
     const handle = NodeJS.addListener(event, ({ args }) => {
       NodeJS.removeListener(handle)
       callback(...args)
@@ -29,16 +30,15 @@ async function portRequest (data) {
   const { port1, port2 } = new MessageChannel()
   globalThis.port = {
     onmessage: cb => {
-      port2.onmessage = ({ type, data }) => cb({ type, data })
+      NodeJS.addListener('ipc', ({ args }) => cb(args[0]))
     },
     postMessage: (a, b) => {
-      port2.postMessage(a, b)
+      NodeJS.send({ eventName: 'ipc', args: [a] })
     }
   }
-  await NodeJS.whenReady()
-  await new Promise(resolve => setTimeout(() => resolve(), 50))
-  portListener({ ports: [port2] })
-  NodeJS.send({ eventName: 'port', args: [{ ports: [port1] }] })
+  await ready
+  portListener()
+  NodeJS.send({ eventName: 'port-init' })
 }
 
 const [_platform, arch] = navigator.platform.split(' ')

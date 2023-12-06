@@ -7,4 +7,17 @@ async function storageQuota (directory) {
   return bsize * bavail
 }
 
+channel.on('port-init', () => {
+  const port = {
+    onmessage: () => {},
+    postMessage: data=> {
+      channel.send('ipc', data)
+    }
+  }
+  channel.on('ipc', port.onmessage)
+  channel.emit('port', ({
+    ports: [port]
+  }))
+})
+
 globalThis.client = new TorrentClient(channel, storageQuota, 'node')
