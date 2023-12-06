@@ -35,7 +35,7 @@ const capacitorConfig = {
     client: {
       overlay: { errors: true, warnings: false, runtimeErrors: false }
     },
-    port: 5000
+    port: 5001
   },
   plugins: [
     new CopyWebpackPlugin({

@@ -1,20 +1,28 @@
 import TorrentClient from 'common/modules/webtorrent.js'
-import { statfs } from 'fs/promises'
 import { channel } from 'bridge'
 
 async function storageQuota (directory) {
-  const { bsize, bavail } = await statfs(directory)
-  return bsize * bavail
+  return Infinity
 }
 
-channel.on('port-init', () => {
+if (typeof localStorage === 'undefined') {
+  const data = {}
+  globalThis.localStorage = {
+    setItem: (k,v) => { data[k] = v },
+    getItem: (k) => data[k] || null
+  }
+}
+
+channel.on('port-init', data => {
+  localStorage.setItem('settings', data)
   const port = {
-    onmessage: () => {},
-    postMessage: data=> {
-      channel.send('ipc', data)
+    onmessage: _ => {},
+    postMessage: data => {
+      channel.send('ipc', { data })
     }
   }
-  channel.on('ipc', port.onmessage)
+  channel.on('ipc', console.log)
+  channel.on('ipc', a => port.onmessage(a))
   channel.emit('port', ({
     ports: [port]
   }))

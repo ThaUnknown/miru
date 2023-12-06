@@ -27,18 +27,17 @@ export default {
 }
 
 async function portRequest (data) {
-  const { port1, port2 } = new MessageChannel()
   globalThis.port = {
     onmessage: cb => {
       NodeJS.addListener('ipc', ({ args }) => cb(args[0]))
     },
-    postMessage: (a, b) => {
-      NodeJS.send({ eventName: 'ipc', args: [a] })
+    postMessage: (data, b) => {
+      NodeJS.send({ eventName: 'ipc', args: [{ data }] })
     }
   }
   await ready
   portListener()
-  NodeJS.send({ eventName: 'port-init' })
+  NodeJS.send({ eventName: 'port-init', args: [localStorage.getItem('settings')] })
 }
 
 const [_platform, arch] = navigator.platform.split(' ')
