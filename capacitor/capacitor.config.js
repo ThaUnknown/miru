@@ -4,7 +4,6 @@ const config = {
   appId: 'watch.miru',
   appName: 'Miru',
   webDir: 'build',
-  bundledWebRuntime: false,
   android: {
     buildOptions: {
       keystorePath: './watch.miru',
@@ -14,7 +13,11 @@ const config = {
   },
   plugins: {
     SplashScreen: { launchShowDuration: 0 },
-    CapacitorHttp: { enabled: false }
+    CapacitorHttp: { enabled: false },
+    CapacitorNodeJS: { nodeDir: 'nodejs' }
+  },
+  server: {
+    cleartext: true
   }
 }
 

@@ -7,13 +7,6 @@ android/app/src/*
 !android/app/src/main
 android/app/src/main/*
 !android/app/src/main/AndroidManifest.xml
-!android/app/src/main/java
-android/app/src/main/java/*
-!android/app/src/main/java/watch
-android/app/src/main/java/watch/*
-!android/app/src/main/java/watch/miru
-android/app/src/main/java/watch/miru/*
-!android/app/src/main/java/watch/miru/MainActivity.java
 ios/
 
 package-lock.json

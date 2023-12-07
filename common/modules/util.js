@@ -12,7 +12,7 @@ export function countdown (s) {
   return tmp.join(' ')
 }
 
-const formatter = new Intl.RelativeTimeFormat('en')
+const formatter = (typeof Intl !== 'undefined') && new Intl.RelativeTimeFormat('en')
 const ranges = {
   years: 3600 * 24 * 365,
   months: 3600 * 24 * 30,

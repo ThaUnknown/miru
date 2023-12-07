@@ -1,46 +1,44 @@
-import EventEmitter from 'events'
-import { ready } from './gateway.js'
+import { NodeJS } from 'capacitor-nodejs'
 
-export const ipcRendererUI = new EventEmitter()
-
-export const main = new EventEmitter()
+let portListener
+const ready = NodeJS.whenReady()
 
 export default {
-  emit: (event, data) => {
-    main.emit(event, data)
+  emit: async (event, data) => {
+    if (event === 'portRequest') return portRequest()
+    await ready
+    NodeJS.send({ eventName: event, args: [data] })
   },
-  on: (event, callback) => {
-    ipcRendererUI.on(event, (...args) => callback(...args))
+  on: async (event, callback) => {
+    NodeJS.addListener(event, ({ args }) => callback(...args))
+    await ready
   },
-  once: (event, callback) => {
-    ipcRendererUI.once(event, (...args) => callback(...args))
+  once: async (event, callback) => {
+    if (event === 'port') portListener = callback
+    await ready
+    const handle = NodeJS.addListener(event, ({ args }) => {
+      NodeJS.removeListener(handle)
+      callback(...args)
+    })
   },
   off: event => {
-    ipcRendererUI.removeAllListeners(event)
+    NodeJS.removeAllListeners(event)
   }
 }
-
-main.on('portRequest', portRequest)
 
 async function portRequest (data) {
-  const { port1, port2 } = new MessageChannel()
   globalThis.port = {
     onmessage: cb => {
-      port2.onmessage = ({ type, data }) => cb({ type, data })
+      NodeJS.addListener('ipc', ({ args }) => cb(args[0]))
     },
-    postMessage: (a, b) => {
-      port2.postMessage(a, b)
+    postMessage: (data, b) => {
+      NodeJS.send({ eventName: 'ipc', args: [{ data }] })
     }
   }
-  await globalThis.controller
-  await globalThis.prefetchNetworkInterfaces
   await ready
-  await new Promise(resolve => setTimeout(() => resolve(), 50))
-  ipcRendererUI.emit('port', { ports: [port2] })
-  ipcRendererWebTorrent.emit('port', { ports: [port1] })
+  portListener()
+  NodeJS.send({ eventName: 'port-init', args: [localStorage.getItem('settings')] })
 }
-
-export const ipcRendererWebTorrent = new EventEmitter()
 
 const [_platform, arch] = navigator.platform.split(' ')
 

@@ -1,0 +1,3 @@
+[submodule "capacitor/git_modules/nodejs-mobile"]
+	path = capacitor/git_modules/nodejs-mobile
+	url = https://github.com/nodejs-mobile/nodejs-mobile

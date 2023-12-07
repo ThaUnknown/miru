@@ -33,7 +33,7 @@ try {
 export default class TorrentClient extends WebTorrent {
   static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
 
-  constructor (ipc, storageQuota, serverMode, controller, settingOverrides = {}) {
+  constructor (ipc, storageQuota, serverMode, settingOverrides = {}, controller) {
     const settings = { ...defaults, ...storedSettings, ...settingOverrides }
     super({
       dht: !settings.torrentDHT,
@@ -46,12 +46,12 @@ export default class TorrentClient extends WebTorrent {
     this._ready = new Promise(resolve => {
       ipc.on('port', ({ ports }) => {
         this.message = ports[0].postMessage.bind(ports[0])
-        resolve()
         ports[0].onmessage = ({ data }) => {
-          if (data.type === 'load') this.loadLastTorrent()
+          if (data.type === 'load') this.loadLastTorrent(data.data)
           if (data.type === 'destroy') this.destroy()
           this.handleMessage({ data })
         }
+        resolve()
       })
       ipc.on('destroy', this.destroy.bind(this))
     })
@@ -93,8 +93,8 @@ export default class TorrentClient extends WebTorrent {
     this.on('error', this.dispatchError.bind(this))
   }
 
-  loadLastTorrent () {
-    const torrent = localStorage.getItem('torrent')
+  loadLastTorrent (t) {
+    const torrent = localStorage.getItem('torrent') || t
     if (torrent) this.addTorrent(new Uint8Array(JSON.parse(torrent)), JSON.parse(localStorage.getItem('lastFinished')))
   }
 
@@ -209,6 +209,8 @@ export default class TorrentClient extends WebTorrent {
     switch (data.type) {
       case 'current': {
         if (data.data) {
+          console.log('adding torrent')
+          console.log(data.data)
           const torrent = await this.get(data.data.infoHash)
           const found = torrent?.files.find(file => file.path === data.data.path)
           if (!found) return

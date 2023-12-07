@@ -49,7 +49,7 @@ class TorrentWorker extends EventTarget {
 
 export const client = new TorrentWorker()
 
-client.send('load')
+client.send('load', localStorage.getItem('torrent'))
 
 client.on('files', ({ detail }) => {
   files.set(detail)
@@ -68,6 +68,7 @@ client.on('warn', ({ detail }) => {
 export async function add (torrentID, hide) {
   if (torrentID) {
     console.info('Torrent: adding torrent', { torrentID })
+    localStorage.setItem('torrent', torrentID)
     files.set([])
     if (!hide) page.set('player')
     client.send('torrent', torrentID)
