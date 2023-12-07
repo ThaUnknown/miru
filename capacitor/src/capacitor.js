@@ -3,18 +3,18 @@ import { StatusBar, Style } from '@capacitor/status-bar'
 import { SafeArea } from 'capacitor-plugin-safe-area'
 import { App } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
-// import { ipcRendererUI, main } from './ipc.js'
+import IPC from './ipc.js'
 
-// main.on('open', url => Browser.open({ url }))
+IPC.on('open', url => Browser.open({ url }))
 
 App.addListener('appUrlOpen', ({ url }) => handleProtocol(url))
 
 // schema: miru://key/value
 const protocolMap = {
   auth: token => sendToken(token),
-  anime: id => ipcRendererUI.emit('open-anime', id),
-  w2g: link => ipcRendererUI.emit('w2glink', link),
-  schedule: () => ipcRendererUI.emit('schedule'),
+  anime: id => IPC.emit('open-anime', id),
+  w2g: link => IPC.emit('w2glink', link),
+  schedule: () => IPC.emit('schedule'),
   donate: () => Browser.open({ url: 'https://github.com/sponsors/ThaUnknown/' })
 }
 
@@ -29,7 +29,7 @@ function sendToken (line) {
   let token = line.split('access_token=')[1].split('&token_type')[0]
   if (token) {
     if (token.endsWith('/')) token = token.slice(0, -1)
-    ipcRendererUI.emit('altoken', token)
+    IPC.emit('altoken', token)
   }
 }
 

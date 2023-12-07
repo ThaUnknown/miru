@@ -52,10 +52,6 @@
   import AppSettings from './AppSettings.svelte'
   import smoothScroll from '@/modules/scroll.js'
 
-  onDestroy(() => {
-    IPC.off('path')
-  })
-
   const groups = {
     player: {
       name: 'Player',
@@ -78,10 +74,14 @@
       icon: 'description'
     }
   }
-  $: IPC.emit('show-discord-status', $settings.showDetailsInRPC)
-  IPC.on('path', data => {
+  function pathListener (data) {
     $settings.torrentPath = data
+  }
+  onDestroy(() => {
+    IPC.off('path', pathListener)
   })
+  $: IPC.emit('show-discord-status', $settings.showDetailsInRPC)
+  IPC.on('path', pathListener)
 </script>
 
 <Tabs>

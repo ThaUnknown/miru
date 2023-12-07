@@ -4,7 +4,7 @@ export const SUPPORTS = {
   offscreenRender: false,
   update: false,
   angle: false,
-  doh: true,
+  doh: false,
   dht: true,
   discord: false,
   torrentPort: true,

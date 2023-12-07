@@ -1,32 +1,13 @@
 import { NodeJS } from 'capacitor-nodejs'
+import EventEmitter from 'events'
 
-let portListener
 const ready = NodeJS.whenReady()
 
-export default {
-  emit: async (event, data) => {
-    if (event === 'portRequest') return portRequest()
-    await ready
-    NodeJS.send({ eventName: event, args: [data] })
-  },
-  on: async (event, callback) => {
-    NodeJS.addListener(event, ({ args }) => callback(...args))
-    await ready
-  },
-  once: async (event, callback) => {
-    if (event === 'port') portListener = callback
-    await ready
-    const handle = NodeJS.addListener(event, ({ args }) => {
-      NodeJS.removeListener(handle)
-      callback(...args)
-    })
-  },
-  off: event => {
-    NodeJS.removeAllListeners(event)
-  }
-}
+const main = new EventEmitter()
 
-async function portRequest (data) {
+export default main
+
+main.on('portRequest', async () => {
   globalThis.port = {
     onmessage: cb => {
       NodeJS.addListener('ipc', ({ args }) => cb(args[0]))
@@ -36,9 +17,9 @@ async function portRequest (data) {
     }
   }
   await ready
-  portListener()
   NodeJS.send({ eventName: 'port-init', args: [localStorage.getItem('settings')] })
-}
+  main.emit('port')
+})
 
 const [_platform, arch] = navigator.platform.split(' ')
 
