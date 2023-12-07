@@ -15,6 +15,9 @@ const config = {
     SplashScreen: { launchShowDuration: 0 },
     CapacitorHttp: { enabled: false },
     CapacitorNodeJS: { nodeDir: 'nodejs' }
+  },
+  server: {
+    cleartext: true
   }
 }
 
