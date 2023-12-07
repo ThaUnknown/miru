@@ -11,5 +11,5 @@
     "types": ["./types.d.ts"],
     "allowSyntheticDefaultImports": true
   },
-  "exclude": ["node_modules/**", "**/node_modules", "dist", "build"]
+  "exclude": ["node_modules", "dist", "build", "git_modules", "**/node_modules", "**/dist", "**/build", "**/git_modules",]
 }

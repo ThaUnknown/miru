@@ -21,7 +21,7 @@
     "types": ["./types.d.ts"],
     "allowSyntheticDefaultImports": true
 	},
-  "exclude": ["node_modules/**", "**/node_modules", "dist", "build"]
+  "exclude": ["node_modules", "dist", "build", "git_modules", "**/node_modules", "**/dist", "**/build", "**/git_modules",]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias and https://kit.svelte.dev/docs/configuration#files
 	//
 	// If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes
