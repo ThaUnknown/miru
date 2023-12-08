@@ -2,7 +2,7 @@
   "name": "capacitor",
   "private": true,
   "scripts": {
-    "postinstall": "cd public/nodejs/ && npm install",
+    "postinstall": "cd public/nodejs/ && npm install && docker build -t android-build:latest . && docker run -v ${PWD}:/app/ -it android-build:latest /bin/bash /app/setup-deps.sh",
     "build:app": "cross-env NODE_ENV=production run-s build:web build:assets build:android",
     "build:web": "webpack build",
     "build:android": "cap build android",

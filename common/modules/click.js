@@ -122,12 +122,7 @@ function getFocusableElementPositions () {
 }
 
 function isInViewport ({ top, left, bottom, right }) {
-  return (
-    top >= 0 &&
-    left >= 0 &&
-    bottom <= window.innerHeight &&
-    right <= window.innerWidth
-  )
+  return top >= 0 && left >= 0 && bottom <= window.innerHeight && right <= window.innerWidth
 }
 
 // function isVisible ({ top, left, bottom, right }, element) {
