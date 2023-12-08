@@ -54,6 +54,9 @@ importers:
         specifier: ^2.1.29
         version: 2.1.29
     devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20231121.0
+        version: 4.20231121.0
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -83,7 +86,7 @@ importers:
         version: 5.0.6(@capacitor/core@5.5.1)
       capacitor-nodejs:
         specifier: https://github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz
-        version: '@github.com/hampoelz/capacitor-nodejs/releases/download/v1.0.0-beta.6/capacitor-nodejs.tgz(@capacitor/core@5.5.1)'
+        version: '@github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz(@capacitor/core@5.5.1)'
       capacitor-plugin-safe-area:
         specifier: ^2.0.5
         version: 2.0.5(@capacitor/core@5.5.1)
@@ -402,6 +405,10 @@ packages:
     dependencies:
       '@capacitor/core': 5.5.1
     dev: false
+
+  /@cloudflare/workers-types@4.20231121.0:
+    resolution: {integrity: sha512-+kWfpCkqiepwAKXyHoE0gnkPgkLhz0/9HOBIGhHRsUvUKvhUtm3mbqqoGRWgF1qcjzrDUBbrrOq4MYHfFtc2RA==}
+    dev: true
 
   /@cspotcode/source-map-support@0.8.1:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -9266,9 +9273,9 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  '@github.com/hampoelz/capacitor-nodejs/releases/download/v1.0.0-beta.6/capacitor-nodejs.tgz(@capacitor/core@5.5.1)':
-    resolution: {tarball: https://github.com/hampoelz/capacitor-nodejs/releases/download/v1.0.0-beta.6/capacitor-nodejs.tgz}
-    id: '@github.com/hampoelz/capacitor-nodejs/releases/download/v1.0.0-beta.6/capacitor-nodejs.tgz'
+  '@github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz(@capacitor/core@5.5.1)':
+    resolution: {tarball: https://github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz}
+    id: '@github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz'
     name: capacitor-nodejs
     version: 1.0.0-beta.6
     peerDependencies:
