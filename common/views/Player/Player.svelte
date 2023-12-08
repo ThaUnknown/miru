@@ -13,6 +13,7 @@
 
   import { w2gEmitter, state } from '../WatchTogether/WatchTogether.svelte'
   import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
+  import { SUPPORTS } from '@/modules/support.js'
 
   const emit = createEventDispatcher()
 
@@ -38,7 +39,7 @@
   }
 
   export let miniplayer = false
-  $condition = () => !miniplayer
+  $condition = () => !miniplayer && SUPPORTS.keybinds
   export let page
   export let files = []
   $: updateFiles(files)
@@ -869,7 +870,7 @@
         }
         break
       default:
-        console.warn('An unknown error occurred.')
+        console.warn('An unknown video playback error occurred.')
         break
     }
   }
@@ -881,13 +882,14 @@
   class:pointer={miniplayer}
   class:miniplayer
   class:pip
-  class:immersed
+  class:immersed={immersed && !paused}
   class:buffering={src && buffering}
   bind:this={container}
   role='none'
   on:mousemove={resetImmerse}
   on:touchmove={resetImmerse}
   on:keypress={resetImmerse}
+  on:keydown={resetImmerse}
   on:mouseleave={immersePlayer}>
   {#if showKeybinds && !miniplayer}
     <div class='position-absolute bg-tp w-full h-full z-50 font-size-12 p-20 d-flex align-items-center justify-content-center pointer' on:pointerup|self={() => (showKeybinds = false)} tabindex='-1' role='button'>
@@ -983,7 +985,7 @@
     {/if}
   </div>
   <div class='bottom d-flex z-40 flex-column px-20'>
-    <div class='w-full d-flex align-items-center h-20 mb-5 seekbar'>
+    <div class='w-full d-flex align-items-center h-20 mb-5 seekbar' tabindex='0' role='button'>
       <Seekbar
         accentColor='var(--accent-color)'
         class='font-size-20'
@@ -1082,7 +1084,7 @@
     object-fit: cover;
   }
   .custom-range {
-    color: #e5204c;
+    color: var(--accent-color);
     --thumb-height: 0px;
     --track-height: 3px;
     --track-color: rgba(255, 255, 255, 0.2);
@@ -1350,6 +1352,12 @@
     transition: width 0.1s ease;
     height: 100%;
   }
+
+  @media (pointer: none), (pointer: coarse) {
+    .bottom .volume .custom-range {
+      width: 5vw;
+    }
+  }
   .h-20 {
     height: 2rem
   }
@@ -1371,8 +1379,7 @@
   @media (pointer: none), (pointer: coarse) {
     .bottom .ctrl[data-name='playPause'],
     .bottom .ctrl[data-name='playNext'],
-    .bottom .volume,
-    .bottom .ctrl[data-name='toggleFullscreen'] {
+    .bottom .volume {
       display: none;
     }
     @media (orientation: portrait) {

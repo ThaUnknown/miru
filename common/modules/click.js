@@ -25,7 +25,12 @@ export function click (node, cb = noop) {
   node.addEventListener('pointerleave', e => {
     e.stopPropagation()
   })
-  node.addEventListener('keydown', e => { if (e.key === 'Enter') cb(e) })
+  node.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.stopPropagation()
+      cb(e)
+    }
+  })
 }
 
 export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
@@ -52,6 +57,7 @@ export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
   })
   node.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
+      e.stopPropagation()
       lastTapElement?.(false)
       if (lastTapElement === hoverUpdate) {
         lastTapElement = null
@@ -73,6 +79,8 @@ export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
 }
 
 const Directions = { up: 1, right: 2, down: 3, left: 4 }
+const InverseDirections = { up: 'down', down: 'up', left: 'right', right: 'left' }
+const DirectionKeyMap = { ArrowDown: 'down', ArrowUp: 'up', ArrowLeft: 'left', ArrowRight: 'right' }
 
 function getDirection (anchor, relative) {
   return Math.round((Math.atan2(relative.y - anchor.y, relative.x - anchor.x) * 180 / Math.PI + 180) / 90)
@@ -97,9 +105,10 @@ function getKeyboardFocusableElements (element = document.body) {
  * @param {Element} element
  */
 function getElementPosition (element) {
-  const { x, y, width, height } = element.getBoundingClientRect()
+  const { x, y, width, height, top, left, bottom, right } = element.getBoundingClientRect()
+  const inViewport = isInViewport({ top, left, bottom, right })
   if (width || height) {
-    return { element, x: x + width * 0.5, y: y + height * 0.5 }
+    return { element, x: x + width * 0.5, y: y + height * 0.5, inViewport }
   }
 }
 
@@ -112,30 +121,67 @@ function getFocusableElementPositions () {
   return elements
 }
 
+function isInViewport ({ top, left, bottom, right }) {
+  return (
+    top >= 0 &&
+    left >= 0 &&
+    bottom <= window.innerHeight &&
+    right <= window.innerWidth
+  )
+}
+
+// function isVisible ({ top, left, bottom, right }, element) {
+//   for (const [x, y] of [[left, top], [right, top], [left, bottom], [right, bottom]]) {
+//     if (document.elementFromPoint(x, y)?.isSameNode(element)) return true
+//   }
+//   return false
+// }
+
+function getElementsInDesiredDirection (keyboardFocusable, currentElement, direction) {
+  // first try finding visible elements in desired direction
+  return keyboardFocusable.filter(position => {
+    // in order of computation cost
+    if (position.element === currentElement.element) return false
+    if (getDirection(currentElement, position) !== Directions[direction]) return false
+
+    // filters out elements which are in the viewport, but are overlayed by other elements like a modal
+    if (position.inViewport && !position.element.checkVisibility()) return false
+    return true
+  })
+}
+
 function navigateDPad (direction = 'up') {
   const keyboardFocusable = getFocusableElementPositions()
   const currentElement = !document.activeElement || document.activeElement === document.body ? keyboardFocusable[0] : getElementPosition(document.activeElement)
 
-  const elementsInDesiredDirection = keyboardFocusable.filter(position => {
-    return position.element !== currentElement.element && getDirection(currentElement, position) === Directions[direction]
-  })
+  const elementsInDesiredDirection = getElementsInDesiredDirection(keyboardFocusable, currentElement, direction)
 
-  const closestElement = elementsInDesiredDirection.reduce((reducer, position) => {
-    const distance = getDistance(currentElement, position)
-    if (distance < reducer.distance) return { distance, element: position.element }
-    return reducer
-  }, { distance: Infinity, element: null })
+  // if there are elements in desired direction
+  if (elementsInDesiredDirection.length) {
+    const closestElement = elementsInDesiredDirection.reduce((reducer, position) => {
+      const distance = getDistance(currentElement, position)
+      if (distance < reducer.distance) return { distance, element: position.element }
+      return reducer
+    }, { distance: Infinity, element: null })
 
-  closestElement.element.focus()
-}
-const keyMap = {
-  ArrowDown: 'down',
-  ArrowUp: 'up',
-  ArrowLeft: 'left',
-  ArrowRight: 'right'
+    closestElement.element.focus()
+    return
+  }
+
+  // no elements in desired direction, go to opposite end [wrap around]
+  const elementsInOppositeDirection = getElementsInDesiredDirection(keyboardFocusable, currentElement, InverseDirections[direction])
+  if (elementsInOppositeDirection.length) {
+    const furthestElement = elementsInOppositeDirection.reduce((reducer, position) => {
+      const distance = getDistance(currentElement, position)
+      if (distance > reducer.distance) return { distance, element: position.element }
+      return reducer
+    }, { distance: -Infinity, element: null })
+
+    furthestElement.element.focus()
+  }
 }
 
 document.addEventListener('keydown', e => {
   e.preventDefault()
-  navigateDPad(keyMap[e.key])
+  if (DirectionKeyMap[e.key]) navigateDPad(DirectionKeyMap[e.key])
 })

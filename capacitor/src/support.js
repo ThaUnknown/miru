@@ -9,5 +9,6 @@ export const SUPPORTS = {
   discord: false,
   torrentPort: true,
   torrentPath: false,
-  torrentPersist: true
+  torrentPersist: false,
+  keybinds: false
 }

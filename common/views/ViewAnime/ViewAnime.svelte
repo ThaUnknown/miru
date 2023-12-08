@@ -84,7 +84,7 @@
       <div class='row px-20'>
         <div class='col-lg-7 col-12 pb-10'>
           <div class='d-flex flex-sm-row flex-column align-items-sm-end pb-20 mb-15'>
-            <div class='cover d-flex flex-row align-items-sm-end align-items-center justify-content-center mw-full mb-sm-0 mb-20' style='max-height: 50vh;'>
+            <div class='cover d-flex flex-row align-items-sm-end align-items-center justify-content-center mw-full mb-sm-0 mb-20 w-full' style='max-height: 50vh;'>
               <img class='rounded cover-img overflow-hidden h-full' alt='cover-art' src={media.coverImage?.extraLarge || media.coverImage?.medium} />
             </div>
             <div class='pl-sm-20 ml-sm-20'>

@@ -1,5 +1,6 @@
 import TorrentClient from 'common/modules/webtorrent.js'
 import { channel } from 'bridge'
+import { env } from 'node:process'
 import { statfs } from 'fs/promises'
 
 async function storageQuota (directory) {
@@ -30,4 +31,4 @@ channel.on('port-init', data => {
   }))
 })
 
-globalThis.client = new TorrentClient(channel, storageQuota, 'node')
+globalThis.client = new TorrentClient(channel, storageQuota, 'node', { torrentPath: env.TMPDIR })

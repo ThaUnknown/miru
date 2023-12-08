@@ -1,3 +1,5 @@
+// this is a bit scuffed, but these are cf pages redirect functions
+
 /** @type {PagesFunction} */
 export function onRequest ({ params }) {
   try {
