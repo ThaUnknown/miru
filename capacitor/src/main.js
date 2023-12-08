@@ -1,8 +1,10 @@
 import TorrentClient from 'common/modules/webtorrent.js'
 import { channel } from 'bridge'
+import { statfs } from 'fs/promises'
 
 async function storageQuota (directory) {
-  return Infinity
+  const { bsize, bavail } = await statfs(directory)
+  return bsize * bavail
 }
 
 if (typeof localStorage === 'undefined') {

@@ -128,3 +128,14 @@ function navigateDPad (direction = 'up') {
 
   closestElement.element.focus()
 }
+const keyMap = {
+  ArrowDown: 'down',
+  ArrowUp: 'up',
+  ArrowLeft: 'left',
+  ArrowRight: 'right'
+}
+
+document.addEventListener('keydown', e => {
+  e.preventDefault()
+  navigateDPad(keyMap[e.key])
+})

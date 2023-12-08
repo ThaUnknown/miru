@@ -82,7 +82,7 @@ importers:
         specifier: ^5.0.6
         version: 5.0.6(@capacitor/core@5.5.1)
       capacitor-nodejs:
-        specifier: https://github.com/hampoelz/capacitor-nodejs/releases/download/v1.0.0-beta.6/capacitor-nodejs.tgz
+        specifier: https://github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz
         version: '@github.com/hampoelz/capacitor-nodejs/releases/download/v1.0.0-beta.6/capacitor-nodejs.tgz(@capacitor/core@5.5.1)'
       capacitor-plugin-safe-area:
         specifier: ^2.0.5
@@ -132,10 +132,10 @@ importers:
     dependencies:
       '@fontsource-variable/material-symbols-outlined':
         specifier: latest
-        version: 5.0.16
+        version: 5.0.17
       '@fontsource-variable/nunito':
         specifier: latest
-        version: 5.0.16
+        version: 5.0.17
       '@fontsource/roboto':
         specifier: latest
         version: 5.0.8
@@ -150,7 +150,7 @@ importers:
         version: 1.0.1
       jassub:
         specifier: latest
-        version: 1.7.12
+        version: 1.7.14
       js-levenshtein:
         specifier: ^1.1.6
         version: 1.1.6
@@ -745,8 +745,16 @@ packages:
     resolution: {integrity: sha512-XqGrDFJ15dNHeD4tT4imnTqrPhNb5C49hXwlfGcvcfV64BxFX0S4mq41q/34kxlObnShqKIqHwvxd9SPtG3H/g==}
     dev: false
 
+  /@fontsource-variable/material-symbols-outlined@5.0.17:
+    resolution: {integrity: sha512-K0/pwNGhM+L5/kgRQGBUv+uHJK7f/Vs087PpuwszuU0HQ8QyECQjnwseHt7SUjjYgJC06nLNcm0+EmebO/jHUA==}
+    dev: false
+
   /@fontsource-variable/nunito@5.0.16:
     resolution: {integrity: sha512-ZmmtDc/oBk7l3Tn33OmjUkcOapL8O/8w78Xm9AML0+t00gu5msH/BL5yeowLh8pFnKCIPsTYHqxnu5xdM1N+dA==}
+    dev: false
+
+  /@fontsource-variable/nunito@5.0.17:
+    resolution: {integrity: sha512-e9F+nYc8610HtmVB08kKzHdythbSJBN9CyV3ODzCAs2LuoOviAndYdNfKOw6rHqOh3j99gfOSNlHpLNNF9O5OA==}
     dev: false
 
   /@fontsource/roboto@5.0.8:
@@ -5469,8 +5477,8 @@ packages:
       minimatch: 3.1.2
     dev: true
 
-  /jassub@1.7.12:
-    resolution: {integrity: sha512-mYSI+3Rbyy2XF0Hk44ZbwHqX4PNrY6Rs2U7RxZ450NxSKGClfu6sW2dQSbygWD1Y3xQGtbeN3GIujX2XRaXwdA==}
+  /jassub@1.7.14:
+    resolution: {integrity: sha512-sybiXH8wTlRxk3vTZpyYLX66SPwwBdAT3Y2hFvjs/GWhggap89VUID/H/xJX2LYwHpCyLCvZE34xitNuexW9ZQ==}
     dependencies:
       rvfc-polyfill: 1.0.7
     dev: false

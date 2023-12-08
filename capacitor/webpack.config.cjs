@@ -42,7 +42,7 @@ const capacitorConfig = {
       patterns: [
         { from: join(__dirname, 'public', 'nodejs') }
       ]
-    }),
+    })
   ]
 }
 

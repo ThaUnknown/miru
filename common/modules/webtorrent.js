@@ -90,12 +90,13 @@ export default class TorrentClient extends WebTorrent {
       cat: new HTTPTracker({}, atob('aHR0cDovL255YWEudHJhY2tlci53Zjo3Nzc3L2Fubm91bmNl'))
     }
 
+    process.on('uncaughtException', this.dispatchError.bind(this))
     this.on('error', this.dispatchError.bind(this))
   }
 
   loadLastTorrent (t) {
-    const torrent = localStorage.getItem('torrent') || t
-    if (torrent) this.addTorrent(new Uint8Array(JSON.parse(torrent)), JSON.parse(localStorage.getItem('lastFinished')))
+    const torrent = localStorage.getItem('torrent') ? new Uint8Array(JSON.parse(localStorage.getItem('torrent'))) : t
+    if (torrent) this.addTorrent(t, JSON.parse(localStorage.getItem('lastFinished')))
   }
 
   async handleTorrent (torrent) {
@@ -176,12 +177,12 @@ export default class TorrentClient extends WebTorrent {
   }
 
   dispatchError (e) {
-    if (e instanceof ErrorEvent) return this.dispatchError(e.error)
-    if (e instanceof PromiseRejectionEvent) return this.dispatchError(e.reason)
+    if (typeof ErrorEvent !== 'undefined' && e instanceof ErrorEvent) return this.dispatchError(e.error)
+    if (typeof PromiseRejectionEvent !== 'undefined' && e instanceof PromiseRejectionEvent) return this.dispatchError(e.reason)
     for (const exclude of TorrentClient.excludedErrorMessages) {
       if (e.message?.startsWith(exclude)) return
     }
-    this.dispatch('error', e)
+    this.dispatch('error', JSON.stringify(e))
   }
 
   async addTorrent (data, skipVerify = false) {
@@ -209,8 +210,6 @@ export default class TorrentClient extends WebTorrent {
     switch (data.type) {
       case 'current': {
         if (data.data) {
-          console.log('adding torrent')
-          console.log(data.data)
           const torrent = await this.get(data.data.infoHash)
           const found = torrent?.files.find(file => file.path === data.data.path)
           if (!found) return
