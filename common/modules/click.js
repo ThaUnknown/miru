@@ -175,8 +175,9 @@ function navigateDPad (direction = 'up') {
     furthestElement.element.focus()
   }
 }
-
-document.addEventListener('keydown', e => {
-  e.preventDefault()
-  if (DirectionKeyMap[e.key]) navigateDPad(DirectionKeyMap[e.key])
-})
+if (window.matchMedia('@media (pointer: none), (pointer: coarse)').matches) {
+  document.addEventListener('keydown', e => {
+    e.preventDefault()
+    if (DirectionKeyMap[e.key]) navigateDPad(DirectionKeyMap[e.key])
+  })
+}

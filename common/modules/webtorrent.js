@@ -95,8 +95,9 @@ export default class TorrentClient extends WebTorrent {
   }
 
   loadLastTorrent (t) {
-    const torrent = localStorage.getItem('torrent') ? new Uint8Array(JSON.parse(localStorage.getItem('torrent'))) : t
-    if (torrent) this.addTorrent(t, JSON.parse(localStorage.getItem('lastFinished')))
+    if (!localStorage.getItem('torrent') && !t) return
+    const torrent = new Uint8Array(JSON.parse(localStorage.getItem('torrent'))) || t
+    if (torrent) this.addTorrent(torrent, JSON.parse(localStorage.getItem('lastFinished')))
   }
 
   async handleTorrent (torrent) {
@@ -182,7 +183,7 @@ export default class TorrentClient extends WebTorrent {
     for (const exclude of TorrentClient.excludedErrorMessages) {
       if (e.message?.startsWith(exclude)) return
     }
-    this.dispatch('error', JSON.stringify(e))
+    this.dispatch('error', JSON.stringify(e?.message || e))
   }
 
   async addTorrent (data, skipVerify = false) {

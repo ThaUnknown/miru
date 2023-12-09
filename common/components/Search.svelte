@@ -65,10 +65,8 @@
         <div class='input-group-prepend'>
           <span class='input-group-text d-flex material-symbols-outlined bg-dark-light pr-0 font-size-18'>search</span>
         </div>
-        <!-- svelte-ignore a11y-autofocus -->
         <input
           bind:this={searchTextInput}
-          autofocus
           type='search'
           class='form-control bg-dark-light border-left-0 text-capitalize'
           autocomplete='off'
