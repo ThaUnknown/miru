@@ -288,10 +288,10 @@
     video.currentTime = targetTime
   }
   function forward () {
-    seek(2)
+    seek($settings.playerSeek)
   }
   function rewind () {
-    seek(-2)
+    seek(-$settings.playerSeek)
   }
   function selectAudio (id) {
     if (id !== undefined) {
@@ -397,7 +397,7 @@
   }
   let fitWidth = false
   let showKeybinds = false
-  loadWithDefaults({
+  const ld = () => loadWithDefaults({
     KeyX: {
       fn: () => screenshot(),
       id: 'screenshot_monitor',
@@ -409,7 +409,7 @@
       type: 'icon'
     },
     Backquote: {
-      fn: () => (showKeybinds = !showKeybinds),
+      fn: () => toggleKeybinds(false),
       id: 'help_outline',
       type: 'icon'
     },
@@ -464,11 +464,11 @@
     },
     ArrowLeft: {
       fn: () => rewind(),
-      id: '-2'
+      id: `-${$settings.playerSeek}`
     },
     ArrowRight: {
       fn: () => forward(),
-      id: '+2'
+      id: `+${$settings.playerSeek}`
     },
     ArrowUp: {
       fn: () => (volume = Math.min(1, volume + 0.05)),
@@ -496,6 +496,12 @@
       type: 'icon'
     }
   })
+  ld()
+
+  function toggleKeybinds (always) {
+    ld()
+    showKeybinds = always || !showKeybinds
+  }
 
   function getBurnIn (noSubs) {
     const canvas = document.createElement('canvas')
@@ -1011,7 +1017,7 @@
         <input class='ctrl h-full custom-range' type='range' min='0' max='1' step='any' data-name='setVolume' bind:value={volume} />
       </div>
       <div class='ts mr-auto'>{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
-      <span class='material-symbols-outlined ctrl' title='Keybinds [`]' use:click={() => (showKeybinds = true)}> keyboard </span>
+      <span class='material-symbols-outlined ctrl' title='Keybinds [`]' use:click={() => toggleKeybinds(true)}> keyboard </span>
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
         <div class='dropdown dropup with-arrow' use:click={toggleDropdown}>
           <span class='material-symbols-outlined ctrl' title='Audio Tracks'>
