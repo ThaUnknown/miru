@@ -409,10 +409,7 @@
       type: 'icon'
     },
     Backquote: {
-      fn: () => {
-        ld();
-        (showKeybinds = !showKeybinds);
-      },
+      fn: () => toggleKeybinds(false),
       id: 'help_outline',
       type: 'icon'
     },
@@ -499,6 +496,12 @@
       type: 'icon'
     }
   })
+  ld()
+
+  function toggleKeybinds (always) {
+    ld()
+    showKeybinds = always || !showKeybinds
+  }
 
   function getBurnIn (noSubs) {
     const canvas = document.createElement('canvas')
@@ -521,7 +524,6 @@
     container.append(canvas)
     return { stream: canvas.captureStream(), destroy }
   }
-  ld()
 
   // function initCast (event) {
   //   // these quality settings are likely to make cast overheat, oh noes!
@@ -1015,7 +1017,7 @@
         <input class='ctrl h-full custom-range' type='range' min='0' max='1' step='any' data-name='setVolume' bind:value={volume} />
       </div>
       <div class='ts mr-auto'>{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
-      <span class='material-symbols-outlined ctrl' title='Keybinds [`]' use:click={() => (showKeybinds = true)}> keyboard </span>
+      <span class='material-symbols-outlined ctrl' title='Keybinds [`]' use:click={() => toggleKeybinds(true)}> keyboard </span>
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
         <div class='dropdown dropup with-arrow' use:click={toggleDropdown}>
           <span class='material-symbols-outlined ctrl' title='Audio Tracks'>
