@@ -9,6 +9,7 @@
       "@/*": ["./common/*"],
     },
     "types": ["@cloudflare/workers-types"],
+    "noEmit": true
   },
   "exclude": ["node_modules", "dist", "build", "git_modules", "**/node_modules", "**/dist", "**/build", "**/git_modules",]
 }

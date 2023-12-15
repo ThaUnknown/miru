@@ -9,7 +9,8 @@
     "moduleResolution": "node",
     "module": "ESNext",
     "types": ["./types.d.ts"],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "noEmit": true
   },
   "exclude": ["node_modules", "dist", "build", "git_modules", "**/node_modules", "**/dist", "**/build", "**/git_modules",]
 }
