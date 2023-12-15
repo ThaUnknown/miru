@@ -1,0 +1,89 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Renderer 1",
+      "type": "chrome",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/electron",
+      "runtimeExecutable": "${workspaceFolder}/electron/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/electron/node_modules/.bin/electron.cmd"
+      },
+      "webRoot": "${workspaceFolder}/electron/build",
+      "cleanUp": "wholeBrowser",
+      "enableContentValidation": false,
+      "outFiles": [
+        "${workspaceFolder}/electron/build/*.js",
+        "!**/node_modules/**"
+      ],
+      "sourceMapPathOverrides": {
+        "webpack://Miru/../common/*": "${workspaceFolder}/common/*"
+      },
+      "runtimeArgs": [
+        "${workspaceFolder}/electron",
+        "--profile-directory=${workspaceFolder}/data/",
+        "--user-data-dir=${workspaceFolder}/data/debug1",
+        "--remote-debugging-port=9222"
+      ],
+      "port": 9222,
+      "outputCapture": "std",
+    },
+    {
+      "name": "Debug Renderer 2",
+      "type": "chrome",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/electron",
+      "runtimeExecutable": "${workspaceFolder}/electron/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/electron/node_modules/.bin/electron.cmd"
+      },
+      "webRoot": "${workspaceFolder}/electron/build",
+      "cleanUp": "wholeBrowser",
+      "enableContentValidation": false,
+      "outFiles": [
+        "${workspaceFolder}/electron/build/*.js",
+        "!**/node_modules/**"
+      ],
+      "sourceMapPathOverrides": {
+        "webpack://Miru/../common/*": "${workspaceFolder}/common/*"
+      },
+      "runtimeArgs": [
+        "${workspaceFolder}/electron",
+        "--profile-directory=${workspaceFolder}/data/",
+        "--user-data-dir=${workspaceFolder}/data/debug2",
+        "--remote-debugging-port=9223"
+      ],
+      "port": 9223,
+      "outputCapture": "std",
+    },
+    {
+      "name": "Debug Renderer 3",
+      "type": "chrome",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/electron",
+      "runtimeExecutable": "${workspaceFolder}/electron/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/electron/node_modules/.bin/electron.cmd"
+      },
+      "webRoot": "${workspaceFolder}/electron/build",
+      "cleanUp": "wholeBrowser",
+      "enableContentValidation": false,
+      "outFiles": [
+        "${workspaceFolder}/electron/build/*.js",
+        "!**/node_modules/**"
+      ],
+      "sourceMapPathOverrides": {
+        "webpack://Miru/../common/*": "${workspaceFolder}/common/*"
+      },
+      "runtimeArgs": [
+        "${workspaceFolder}/electron",
+        "--profile-directory=${workspaceFolder}/data/",
+        "--user-data-dir=${workspaceFolder}/data/debug3",
+        "--remote-debugging-port=9224"
+      ],
+      "port": 9224,
+      "outputCapture": "std",
+    },
+  ],
+}
