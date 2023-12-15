@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "target": "ESNext",
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@/*": ["./common/*"],
+    },
+    "types": ["@cloudflare/workers-types"],
+    "noEmit": true
+  },
+  "exclude": ["node_modules", "dist", "build", "git_modules", "**/node_modules", "**/dist", "**/build", "**/git_modules",]
+}
