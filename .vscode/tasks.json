@@ -4,8 +4,10 @@
     {
       "type": "npm",
       "script": "build",
-      "path": "electron",
       "label": "Build electron",
+      "options": {
+        "cwd": "${workspaceFolder}/electron"
+      },
       "problemMatcher": [
         "$jshint"
       ],
@@ -26,8 +28,10 @@
     {
       "type": "npm",
       "script": "web:build",
-      "path": "electron",
       "label": "Build web(production)",
+      "options": {
+        "cwd": "${workspaceFolder}/electron"
+      },
       "problemMatcher": [
         "$jshint"
       ],
@@ -48,8 +52,10 @@
     {
       "type": "npm",
       "script": "web:watch",
-      "path": "electron",
       "label": "Watch web(development)",
+      "options": {
+        "cwd": "${workspaceFolder}/electron"
+      },
       "problemMatcher": [
         "$jshint"
       ],
