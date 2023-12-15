@@ -1,0 +1,95 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "electron",
+      "label": "Build electron",
+      "problemMatcher": [
+        "$jshint"
+      ],
+      "presentation": {
+        "group": "build",
+        "reveal": "silent",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+      },
+      "icon": {
+        "id": "package",
+        "color": "terminal.ansiGreen"
+      },
+      "group": {
+        "kind": "build"
+      },
+    },
+    {
+      "type": "npm",
+      "script": "web:build",
+      "path": "electron",
+      "label": "Build web(production)",
+      "problemMatcher": [
+        "$jshint"
+      ],
+      "presentation": {
+        "group": "build",
+        "reveal": "silent",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+      },
+      "icon": {
+        "id": "package",
+        "color": "terminal.ansiGreen"
+      },
+      "group": {
+        "kind": "build"
+      },
+    },
+    {
+      "type": "npm",
+      "script": "web:watch",
+      "path": "electron",
+      "label": "Watch web(development)",
+      "problemMatcher": [
+        "$jshint"
+      ],
+      "presentation": {
+        "group": "build",
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "icon": {
+        "id": "package",
+        "color": "terminal.ansiGreen"
+      },
+      "group": {
+        "isDefault": true,
+        "kind": "build"
+      },
+    },
+    {
+      "type": "npm",
+      "script": "lint",
+      "label": "Eslint",
+      "problemMatcher": [
+        "$eslint-stylish"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "icon": {
+        "id": "bell",
+        "color": "terminal.ansiGreen"
+      },
+      "group": {
+        "isDefault": true,
+        "kind": "test"
+      },
+    },
+  ]
+}
