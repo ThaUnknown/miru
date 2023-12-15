@@ -15,6 +15,9 @@
       "node"
     ]
   },
+  "scripts": {
+    "lint": "pnpm exec eslint $(find . ! -path '*node_modules*' ! -path '*.svelte-kit*' -and ! -path '*build*' -and -name '*.*js')"
+  },
   "dependencies": {
     "@typescript-eslint/parser": "^6.12.0",
     "concurrently": "^8.2.2",
