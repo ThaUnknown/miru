@@ -17,7 +17,7 @@ const flags = [
   ['disable-color-correct-rendering'],
   ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'],
   ['bypasscsp-schemes'],
-  ['force-color-profile', 'srgb']
+  ['force-color-profile', 'srgb'] // TODO: should this be "scrgb-linear"?
 ]
 for (const [flag, value] of flags) {
   app.commandLine.appendSwitch(flag, value)

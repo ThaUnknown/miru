@@ -125,7 +125,7 @@
     <label for='player-autocomplete'>{settings.playerAutocomplete ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
-<SettingCard title='EXPERIMENTAL: Video Deband' description='Applies the next playing video. This however will likely lead to colors being rendered incorrectly. Not recomended.'>
+<SettingCard title='Deband Video' description='Reduces banding on dark and compressed videos. High performance impact, not recommended for high quality videos.'>
   <div class='custom-switch'>
     <input type='checkbox' id='player-deband' bind:checked={settings.playerDeband} />
     <label for='player-deband'>{settings.playerDeband ? 'On' : 'Off'}</label>

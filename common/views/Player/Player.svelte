@@ -2,7 +2,7 @@
   import { settings } from '@/modules/settings.js'
   import { playAnime } from '../RSSView.svelte'
   import { client } from '@/modules/torrent.js'
-  import { createEventDispatcher } from 'svelte'
+  import { createEventDispatcher, onMount } from 'svelte'
   import { alEntry } from '@/modules/anilist.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, fastPrettyBytes, videoRx } from '@/modules/util.js'
@@ -138,6 +138,19 @@
    */
   let deband
 
+  function loadDeband (load, video) {
+    if (!video) return
+    if (load) {
+      deband = new VideoDeband(video)
+      deband.canvas.classList.add('deband-canvas')
+      video.before(deband.canvas)
+    } else if (deband) {
+      deband.destroy()
+      deband.canvas.remove()
+    }
+  }
+  $: loadDeband($settings.playerDeband, video)
+
   async function handleCurrent (file) {
     if (file) {
       if (thumbnailData.video?.src) URL.revokeObjectURL(video?.src)
@@ -152,20 +165,11 @@
       currentSkippable = null
       completed = false
       if (subs) subs.destroy()
-      if (deband) {
-        deband.destroy()
-        deband.canvas.remove()
-      }
       current = file
       emit('current', current)
       src = file.url
       client.send('current', file)
       subs = new Subtitles(video, files, current, handleHeaders)
-      if ($settings.playerDeband) {
-        deband = new VideoDeband(video)
-        deband.canvas.classList.add('deband-canvas')
-        video.parentNode.append(deband.canvas)
-      }
       video.load()
     }
   }
@@ -1061,7 +1065,7 @@
           <span class='material-symbols-outlined ctrl' title='Subtitles [C]'>
             subtitles
           </span>
-          <div class='dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize w-200'>
+          <div class='dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize'>
             <input name='subtitle-radio-set' type='radio' id='subtitle-off-radio' value='off' checked={subHeaders && subs?.current === -1} />
             <label for='subtitle-off-radio' use:click={() => subs.selectCaptions(-1)} class='text-truncate pb-5'> OFF </label>
             {#each subHeaders as track}
@@ -1072,7 +1076,7 @@
                 </label>
               {/if}
             {/each}
-            <input type='number' step='0.1' bind:value={subDelay} class='form-control text-right form-control-sm' />
+            <input type='number' step='0.1' bind:value={subDelay} on:click|stopPropagation class='form-control text-right form-control-sm' />
           </div>
         </div>
       {/if}
@@ -1105,6 +1109,9 @@
     transform: translate(-50%, -50%);
     pointer-events: none;
     object-fit: contain;
+  }
+  :global(.deband-canvas) ~ video {
+    opacity: 0;
   }
   .fitWidth {
     object-fit: cover;
