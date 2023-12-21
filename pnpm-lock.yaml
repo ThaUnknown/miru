@@ -135,7 +135,7 @@ importers:
     dependencies:
       '@fontsource-variable/material-symbols-outlined':
         specifier: latest
-        version: 5.0.17
+        version: 5.0.19
       '@fontsource-variable/nunito':
         specifier: latest
         version: 5.0.17
@@ -153,7 +153,7 @@ importers:
         version: 1.0.1
       jassub:
         specifier: latest
-        version: 1.7.14
+        version: 1.7.15
       js-levenshtein:
         specifier: ^1.1.6
         version: 1.1.6
@@ -187,6 +187,9 @@ importers:
       svelte-sonner:
         specifier: ^0.3.6
         version: 0.3.6(svelte@4.2.7)
+      video-deband:
+        specifier: ^1.0.5
+        version: 1.0.5
       webpack-merge:
         specifier: ^5.10.0
         version: 5.10.0
@@ -752,8 +755,8 @@ packages:
     resolution: {integrity: sha512-XqGrDFJ15dNHeD4tT4imnTqrPhNb5C49hXwlfGcvcfV64BxFX0S4mq41q/34kxlObnShqKIqHwvxd9SPtG3H/g==}
     dev: false
 
-  /@fontsource-variable/material-symbols-outlined@5.0.17:
-    resolution: {integrity: sha512-K0/pwNGhM+L5/kgRQGBUv+uHJK7f/Vs087PpuwszuU0HQ8QyECQjnwseHt7SUjjYgJC06nLNcm0+EmebO/jHUA==}
+  /@fontsource-variable/material-symbols-outlined@5.0.19:
+    resolution: {integrity: sha512-ZnVtmU4Z6hiKGPN8FDul5A3Fqaj5sdfajjHv4ScFkkiha3mNsdlTStl6dwD524LGjRW9zsdCxwmPIBasF7q88A==}
     dev: false
 
   /@fontsource-variable/nunito@5.0.16:
@@ -5484,8 +5487,8 @@ packages:
       minimatch: 3.1.2
     dev: true
 
-  /jassub@1.7.14:
-    resolution: {integrity: sha512-sybiXH8wTlRxk3vTZpyYLX66SPwwBdAT3Y2hFvjs/GWhggap89VUID/H/xJX2LYwHpCyLCvZE34xitNuexW9ZQ==}
+  /jassub@1.7.15:
+    resolution: {integrity: sha512-8yKAJc++Y1gNfATOPRo3APk0JUhshKl5l7bRkT6WkJ8XP4RvYfVPb6ieH6WDxsMq523exwGzNvjjPEEWT+Z1nQ==}
     dependencies:
       rvfc-polyfill: 1.0.7
     dev: false
@@ -8267,6 +8270,10 @@ packages:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
     dev: false
 
+  /three@0.159.0:
+    resolution: {integrity: sha512-eCmhlLGbBgucuo4VEA9IO3Qpc7dh8Bd4VKzr7WfW4+8hMcIfoAVi1ev0pJYN9PTTsCslbcKgBwr2wNZ1EvLInA==}
+    dev: false
+
   /through2@2.0.5:
     resolution: {integrity: sha512-/mrRod8xqpA+IHSLyGCQ2s8SPHiCDEeQJSep1jqLYeEUClOFG2Qsh+4FU6G9VeqpZnGW/Su8LQGc4YKni5rYSQ==}
     dependencies:
@@ -8726,6 +8733,13 @@ packages:
       extsprintf: 1.4.1
     dev: true
     optional: true
+
+  /video-deband@1.0.5:
+    resolution: {integrity: sha512-ab4FI3ENsgKI+ho8f/Z760isqw3ghKCEMzehZPRs0uQb2o6fHAaGGLQN9oCQZhqfR136C8OJoEplKQ87X1GLtg==}
+    dependencies:
+      rvfc-polyfill: 1.0.7
+      three: 0.159.0
+    dev: false
 
   /vite@5.0.4:
     resolution: {integrity: sha512-RzAr8LSvM8lmhB4tQ5OPcBhpjOZRZjuxv9zO5UcxeoY2bd3kP3Ticd40Qma9/BqZ8JS96Ll/jeBX9u+LJZrhVg==}

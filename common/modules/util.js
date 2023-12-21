@@ -147,6 +147,7 @@ export const defaults = {
   playerAutoplay: true,
   playerPause: true,
   playerAutocomplete: true,
+  playerDeband: false,
   rssQuality: '1080',
   rssFeedsNew: [['New Releases', 'SubsPlease']],
   rssAutoplay: true,

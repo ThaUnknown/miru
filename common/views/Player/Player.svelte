@@ -10,6 +10,7 @@
   import { getChaptersAniSkip } from '@/modules/anime.js'
   import Seekbar from 'perfect-seekbar'
   import { click } from '@/modules/click.js'
+  import VideoDeband from 'video-deband'
 
   import { w2gEmitter, state } from '../WatchTogether/WatchTogether.svelte'
   import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
@@ -132,6 +133,10 @@
   function clearLoadInterval () {
     clearInterval(loadInterval)
   }
+  /**
+   * @type {VideoDeband}
+   */
+  let deband
 
   async function handleCurrent (file) {
     if (file) {
@@ -147,11 +152,20 @@
       currentSkippable = null
       completed = false
       if (subs) subs.destroy()
+      if (deband) {
+        deband.destroy()
+        deband.canvas.remove()
+      }
       current = file
       emit('current', current)
       src = file.url
       client.send('current', file)
       subs = new Subtitles(video, files, current, handleHeaders)
+      if ($settings.playerDeband) {
+        deband = new VideoDeband(video)
+        deband.canvas.classList.add('deband-canvas')
+        video.parentNode.append(deband.canvas)
+      }
       video.load()
     }
   }
@@ -1080,6 +1094,18 @@
 </div>
 
 <style>
+  :global(.deband-canvas) {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100% !important;
+    height: 100% !important;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    object-fit: contain;
+  }
   .fitWidth {
     object-fit: cover;
   }
