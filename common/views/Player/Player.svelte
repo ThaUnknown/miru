@@ -2,7 +2,7 @@
   import { settings } from '@/modules/settings.js'
   import { playAnime } from '../RSSView.svelte'
   import { client } from '@/modules/torrent.js'
-  import { createEventDispatcher, onMount } from 'svelte'
+  import { createEventDispatcher } from 'svelte'
   import { alEntry } from '@/modules/anilist.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, fastPrettyBytes, videoRx } from '@/modules/util.js'
@@ -140,13 +140,14 @@
 
   function loadDeband (load, video) {
     if (!video) return
-    if (load) {
+    if (load && !deband) {
       deband = new VideoDeband(video)
       deband.canvas.classList.add('deband-canvas')
       video.before(deband.canvas)
-    } else if (deband) {
+    } else if (!load && deband) {
       deband.destroy()
       deband.canvas.remove()
+      deband = null
     }
   }
   $: loadDeband($settings.playerDeband, video)
