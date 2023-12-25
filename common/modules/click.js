@@ -76,6 +76,9 @@ export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
     lastHoverElement = hoverUpdate
     if (e.pointerType === 'mouse') hoverUpdate(false)
   })
+  node.addEventListener('pointermove', e => {
+    if (e.pointerType === 'touch') hoverUpdate(false)
+  })
 }
 
 const Directions = { up: 1, right: 2, down: 3, left: 4 }

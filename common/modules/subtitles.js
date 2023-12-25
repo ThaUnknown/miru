@@ -123,7 +123,8 @@ export default class Subtitles {
   }
 
   async addSingleSubtitleFile (file) {
-    const index = this.headers.length
+    // lets hope there's no more than 100 subtitle tracks in a file
+    const index = 100 + this.headers.length
     this.subtitleFiles[index] = file
     const type = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase()
     const subname = file.name.slice(0, file.name.lastIndexOf('.'))

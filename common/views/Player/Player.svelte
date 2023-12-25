@@ -10,10 +10,12 @@
   import { getChaptersAniSkip } from '@/modules/anime.js'
   import Seekbar from 'perfect-seekbar'
   import { click } from '@/modules/click.js'
+  import VideoDeband from 'video-deband'
 
   import { w2gEmitter, state } from '../WatchTogether/WatchTogether.svelte'
   import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
   import { SUPPORTS } from '@/modules/support.js'
+  import 'rvfc-polyfill'
 
   const emit = createEventDispatcher()
 
@@ -132,6 +134,24 @@
   function clearLoadInterval () {
     clearInterval(loadInterval)
   }
+  /**
+   * @type {VideoDeband}
+   */
+  let deband
+
+  function loadDeband (load, video) {
+    if (!video) return
+    if (load && !deband) {
+      deband = new VideoDeband(video)
+      deband.canvas.classList.add('deband-canvas')
+      video.before(deband.canvas)
+    } else if (!load && deband) {
+      deband.destroy()
+      deband.canvas.remove()
+      deband = null
+    }
+  }
+  $: loadDeband($settings.playerDeband, video)
 
   async function handleCurrent (file) {
     if (file) {
@@ -582,11 +602,13 @@
   }
 
   function resetImmerse () {
-    if (immerseTimeout) {
-      clearTimeout(immerseTimeout)
-    }
+    clearTimeout(immerseTimeout)
     immersed = false
-    immerseTimeout = setTimeout(immersePlayer, (paused ? 8 : 1) * 1000)
+    immerseTimeout = setTimeout(immersePlayer, (paused ? 5 : 1) * 1000)
+  }
+
+  function toggleImmerse () {
+    immersed = !immersed
   }
 
   function hideBuffering () {
@@ -620,17 +642,15 @@
   let stats = null
   let requestCallback = null
   function toggleStats () {
-    if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
-      if (requestCallback) {
-        stats = null
-        video.cancelVideoFrameCallback(requestCallback)
-        requestCallback = null
-      } else {
-        requestCallback = video.requestVideoFrameCallback((a, b) => {
-          stats = {}
-          handleStats(a, b, b)
-        })
-      }
+    if (requestCallback) {
+      stats = null
+      video.cancelVideoFrameCallback(requestCallback)
+      requestCallback = null
+    } else {
+      requestCallback = video.requestVideoFrameCallback((a, b) => {
+        stats = {}
+        handleStats(a, b, b)
+      })
     }
   }
   async function handleStats (now, metadata, lastmeta) {
@@ -882,12 +902,11 @@
   class:pointer={miniplayer}
   class:miniplayer
   class:pip
-  class:immersed={immersed && !paused}
+  class:immersed={immersed}
   class:buffering={src && buffering}
   bind:this={container}
   role='none'
-  on:mousemove={resetImmerse}
-  on:touchmove={resetImmerse}
+  on:pointermove={resetImmerse}
   on:keypress={resetImmerse}
   on:keydown={resetImmerse}
   on:mouseleave={immersePlayer}>
@@ -925,6 +944,7 @@
     on:timeupdate={checkSkippableChapters}
     on:waiting={showBuffering}
     on:loadeddata={hideBuffering}
+    on:pause={() => { immersed = false }}
     on:canplay={hideBuffering}
     on:playing={hideBuffering}
     on:loadedmetadata={hideBuffering}
@@ -971,7 +991,9 @@
     <div class='col-4' />
   </div>
   <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
-    <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
+    <div class='w-full h-full position-absolute toggle-fullscreen' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
+    <!-- eslint-disable-next-line svelte/valid-compile -->
+    <div class='w-full h-full position-absolute toggle-immerse d-none' on:dblclick={toggleFullscreen} on:click|self={toggleImmerse} use:click={() => { page = 'player' }} />
     <span class='material-symbols-outlined ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} use:click={playLast}> skip_previous </span>
     <span class='material-symbols-outlined ctrl' use:click={rewind}> fast_rewind </span>
     <span class='material-symbols-outlined ctrl' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
@@ -1047,7 +1069,7 @@
           <span class='material-symbols-outlined ctrl' title='Subtitles [C]'>
             subtitles
           </span>
-          <div class='dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize w-200'>
+          <div class='dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize'>
             <input name='subtitle-radio-set' type='radio' id='subtitle-off-radio' value='off' checked={subHeaders && subs?.current === -1} />
             <label for='subtitle-off-radio' use:click={() => subs.selectCaptions(-1)} class='text-truncate pb-5'> OFF </label>
             {#each subHeaders as track}
@@ -1058,7 +1080,7 @@
                 </label>
               {/if}
             {/each}
-            <input type='number' step='0.1' bind:value={subDelay} class='form-control text-right form-control-sm' />
+            <input type='number' step='0.1' bind:value={subDelay} on:click|stopPropagation class='form-control text-right form-control-sm' />
           </div>
         </div>
       {/if}
@@ -1080,6 +1102,21 @@
 </div>
 
 <style>
+  :global(.deband-canvas) {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100% !important;
+    height: 100% !important;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    object-fit: contain;
+  }
+  :global(.deband-canvas) ~ video {
+    opacity: 0;
+  }
   .fitWidth {
     object-fit: cover;
   }
@@ -1376,6 +1413,9 @@
     font-size: 2rem !important;
   }
 
+  .toggle-immerse:focus-visible {
+    background: hsla(209, 100%, 55%, 0.3);
+  }
   @media (pointer: none), (pointer: coarse) {
     .bottom .ctrl[data-name='playPause'],
     .bottom .ctrl[data-name='playNext'],
@@ -1386,6 +1426,12 @@
       .top  {
         padding-top: max(var(--safe-area-top), env(safe-area-inset-top, 0)) !important;
       }
+    }
+    .toggle-immerse {
+      display: block !important;
+    }
+    .toggle-fullscreen {
+      display: none !important;
     }
   }
 

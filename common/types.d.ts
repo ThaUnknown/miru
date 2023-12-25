@@ -1,3 +1,5 @@
+import type { SvelteComponentTyped } from 'svelte'
+
 export {}
 
 type Track = {
@@ -30,4 +32,8 @@ declare global {
     videoTracks: Track[]
     audioTracks: Track[]
   }
+}
+
+declare module '*.svelte' {
+  export default SvelteComponentTyped
 }
