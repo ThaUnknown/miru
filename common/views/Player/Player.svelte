@@ -15,6 +15,7 @@
   import { w2gEmitter, state } from '../WatchTogether/WatchTogether.svelte'
   import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
   import { SUPPORTS } from '@/modules/support.js'
+  import 'rvfc-polyfill'
 
   const emit = createEventDispatcher()
 
@@ -601,11 +602,13 @@
   }
 
   function resetImmerse () {
-    if (immerseTimeout) {
-      clearTimeout(immerseTimeout)
-    }
+    clearTimeout(immerseTimeout)
     immersed = false
-    immerseTimeout = setTimeout(immersePlayer, (paused ? 8 : 1) * 1000)
+    immerseTimeout = setTimeout(immersePlayer, (paused ? 5 : 1) * 1000)
+  }
+
+  function toggleImmerse () {
+    immersed = !immersed
   }
 
   function hideBuffering () {
@@ -639,17 +642,15 @@
   let stats = null
   let requestCallback = null
   function toggleStats () {
-    if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
-      if (requestCallback) {
-        stats = null
-        video.cancelVideoFrameCallback(requestCallback)
-        requestCallback = null
-      } else {
-        requestCallback = video.requestVideoFrameCallback((a, b) => {
-          stats = {}
-          handleStats(a, b, b)
-        })
-      }
+    if (requestCallback) {
+      stats = null
+      video.cancelVideoFrameCallback(requestCallback)
+      requestCallback = null
+    } else {
+      requestCallback = video.requestVideoFrameCallback((a, b) => {
+        stats = {}
+        handleStats(a, b, b)
+      })
     }
   }
   async function handleStats (now, metadata, lastmeta) {
@@ -901,12 +902,11 @@
   class:pointer={miniplayer}
   class:miniplayer
   class:pip
-  class:immersed={immersed && !paused}
+  class:immersed={immersed}
   class:buffering={src && buffering}
   bind:this={container}
   role='none'
-  on:mousemove={resetImmerse}
-  on:touchmove={resetImmerse}
+  on:pointermove={resetImmerse}
   on:keypress={resetImmerse}
   on:keydown={resetImmerse}
   on:mouseleave={immersePlayer}>
@@ -944,6 +944,7 @@
     on:timeupdate={checkSkippableChapters}
     on:waiting={showBuffering}
     on:loadeddata={hideBuffering}
+    on:pause={() => { immersed = false }}
     on:canplay={hideBuffering}
     on:playing={hideBuffering}
     on:loadedmetadata={hideBuffering}
@@ -990,7 +991,9 @@
     <div class='col-4' />
   </div>
   <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
-    <div class='w-full h-full position-absolute' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
+    <div class='w-full h-full position-absolute toggle-fullscreen' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
+    <!-- eslint-disable-next-line svelte/valid-compile -->
+    <div class='w-full h-full position-absolute toggle-immerse d-none' on:dblclick={toggleFullscreen} on:click|self={toggleImmerse} use:click={() => { page = 'player' }} />
     <span class='material-symbols-outlined ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} use:click={playLast}> skip_previous </span>
     <span class='material-symbols-outlined ctrl' use:click={rewind}> fast_rewind </span>
     <span class='material-symbols-outlined ctrl' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
@@ -1410,6 +1413,9 @@
     font-size: 2rem !important;
   }
 
+  .toggle-immerse:focus-visible {
+    background: hsla(209, 100%, 55%, 0.3);
+  }
   @media (pointer: none), (pointer: coarse) {
     .bottom .ctrl[data-name='playPause'],
     .bottom .ctrl[data-name='playNext'],
@@ -1420,6 +1426,12 @@
       .top  {
         padding-top: max(var(--safe-area-top), env(safe-area-inset-top, 0)) !important;
       }
+    }
+    .toggle-immerse {
+      display: block !important;
+    }
+    .toggle-fullscreen {
+      display: none !important;
     }
   }
 
