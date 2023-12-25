@@ -38,7 +38,7 @@
   const changeLog = (async () => {
     const res = await fetch('https://api.github.com/repos/ThaUnknown/miru/releases')
     const json = await res.json()
-    return json.map(({ body, tag_name: version }) => ({ body, version }))
+    return json.map(({ body, tag_name: version, published_at: date, assets }) => ({ body, version, date, assets }))
   })()
   IPC.emit('show-discord-status', settings.value.showDetailsInRPC)
 </script>
@@ -132,15 +132,71 @@
       </div>
     </Tab>
     <Tab>
-      <div class='root my-20 px-20 pre-wrap overflow-y-md-auto w-full' use:smoothScroll>
+      <div class='root my-20 px-20 overflow-y-md-auto w-full' use:smoothScroll>
+        <div class='h-300 row px-20 px-sm-0'>
+          <div class='col-sm-3 d-none d-sm-flex' />
+          <div class='col-sm-6 d-flex justify-content-center flex-column'>
+            <h1 class='font-weight-bold text-white title'>Changelog</h1>
+            <div class='font-size-18 text-muted'>New updates and improvements to Miru.</div>
+          </div>
+        </div>
         {#await changeLog}
-          <h1 class='font-weight-bold'>Loading changelog...</h1>
-        {:then changes}
-          {#each changes as { body, version }}
-            <h1 class='font-weight-bold mt-20'>{version}</h1>{body}
+          {#each Array(5) as _}
+            <hr class='my-20' />
+            <div class='row py-20 px-20 px-sm-0'>
+              <div class='col-sm-3 my-20 order-last order-sm-first '>
+                <div class='skeloader rounded w-100 h-10 bg-very-dark'>
+                  <div class='skeleloader-swipe' />
+                </div>
+              </div>
+              <div class='col-sm-9'>
+                <div class='skeloader rounded w-150 h-25 bg-very-dark mb-10'>
+                  <div class='skeleloader-swipe' />
+                </div>
+                <div class='skeloader rounded w-250 h-10 bg-very-dark mt-20'>
+                  <div class='skeleloader-swipe' />
+                </div>
+                <div class='skeloader rounded w-200 h-10 bg-very-dark mt-15'>
+                  <div class='skeleloader-swipe' />
+                </div>
+              </div>
+            </div>
           {/each}
-        {:catch error}
-          <h1 class='font-weight-bold mt-20'>Failed to load changelog.</h1>
+        {:then changelog}
+          {#each changelog as { version, date, body }}
+            <hr class='my-20' />
+            <div class='row py-20 px-20 px-sm-0 position-relative'>
+              <div class='col-sm-3 order-last order-sm-first text-white'>
+                <div class='position-sticky top-0 pt-20'>
+                  {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </div>
+              </div>
+              <div class='col-sm-9 pre-wrap text-muted'>
+                <h2 class='mt-0 font-weight-bold text-white'>{version}</h2>{body.replaceAll('- ', '')}</div>
+            </div>
+          {/each}
+        {:catch}
+          {#each Array(5) as _}
+            <hr class='my-20' />
+            <div class='row py-20 px-20 px-sm-0'>
+              <div class='col-sm-3 my-20 order-last order-sm-first '>
+                <div class='skeloader rounded w-100 h-10 bg-very-dark'>
+                  <div class='skeleloader-swipe' />
+                </div>
+              </div>
+              <div class='col-sm-9'>
+                <div class='skeloader rounded w-150 h-25 bg-very-dark mb-10'>
+                  <div class='skeleloader-swipe' />
+                </div>
+                <div class='skeloader rounded w-250 h-10 bg-very-dark mt-20'>
+                  <div class='skeleloader-swipe' />
+                </div>
+                <div class='skeloader rounded w-200 h-10 bg-very-dark mt-15'>
+                  <div class='skeleloader-swipe' />
+                </div>
+              </div>
+            </div>
+          {/each}
         {/await}
         <div class='h-250 d-md-none' />
       </div>
@@ -164,5 +220,8 @@
     .flex-basis-0-md-custom  {
       flex-basis: auto;
     }
+  }
+  .title {
+    font-size: 5rem
   }
 </style>
