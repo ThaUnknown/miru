@@ -56,7 +56,7 @@
             </div>
           {:else if data.similarity}
             <div class='text-muted font-size-12 title overflow-hidden'>
-              {parseInt(data.similarity * 100)}%
+              {Math.round(data.similarity * 100)}%
             </div>
           {/if}
         </div>
