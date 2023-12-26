@@ -182,7 +182,9 @@ function navigateDPad (direction = 'up') {
 // hacky, but make sure keybinds system loads first so it can prevent this from running
 queueMicrotask(() => {
   document.addEventListener('keydown', e => {
-    e.preventDefault()
-    if (DirectionKeyMap[e.key]) navigateDPad(DirectionKeyMap[e.key])
+    if (DirectionKeyMap[e.key]) {
+      e.preventDefault()
+      navigateDPad(DirectionKeyMap[e.key])
+    }
   })
 })
