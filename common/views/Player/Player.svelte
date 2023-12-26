@@ -483,20 +483,36 @@
       type: 'icon'
     },
     ArrowLeft: {
-      fn: () => rewind(),
+      fn: e => {
+        e.stopImmediatePropagation()
+        e.preventDefault()
+        rewind()
+      },
       id: '-2'
     },
     ArrowRight: {
-      fn: () => forward(),
+      fn: e => {
+        e.stopImmediatePropagation()
+        e.preventDefault()
+        forward()
+      },
       id: '+2'
     },
     ArrowUp: {
-      fn: () => (volume = Math.min(1, volume + 0.05)),
+      fn: e => {
+        e.stopImmediatePropagation()
+        e.preventDefault()
+        volume = Math.min(1, volume + 0.05)
+      },
       id: 'volume_up',
       type: 'icon'
     },
     ArrowDown: {
-      fn: () => (volume = Math.max(0, volume - 0.05)),
+      fn: e => {
+        e.stopImmediatePropagation()
+        e.preventDefault()
+        volume = Math.max(0, volume - 0.05)
+      },
       id: 'volume_down',
       type: 'icon'
     },
@@ -1033,7 +1049,7 @@
         <input class='ctrl h-full custom-range' type='range' min='0' max='1' step='any' data-name='setVolume' bind:value={volume} />
       </div>
       <div class='ts mr-auto'>{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
-      <span class='material-symbols-outlined ctrl' title='Keybinds [`]' use:click={() => (showKeybinds = true)}> keyboard </span>
+      <span class='material-symbols-outlined ctrl keybinds' title='Keybinds [`]' use:click={() => (showKeybinds = true)}> keyboard </span>
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
         <div class='dropdown dropup with-arrow' use:click={toggleDropdown}>
           <span class='material-symbols-outlined ctrl' title='Audio Tracks'>
@@ -1413,14 +1429,15 @@
     font-size: 2rem !important;
   }
 
-  .toggle-immerse:focus-visible {
+  .miniplayer .toggle-immerse:focus-visible {
     background: hsla(209, 100%, 55%, 0.3);
   }
   @media (pointer: none), (pointer: coarse) {
     .bottom .ctrl[data-name='playPause'],
     .bottom .ctrl[data-name='playNext'],
-    .bottom .volume {
-      display: none;
+    .bottom .volume,
+    .bottom .keybinds {
+      display: none !important;
     }
     @media (orientation: portrait) {
       .top  {
@@ -1432,9 +1449,6 @@
     }
     .toggle-fullscreen {
       display: none !important;
-    }
-    .volume {
-      display: none;
     }
   }
 

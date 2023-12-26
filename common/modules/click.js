@@ -178,9 +178,11 @@ function navigateDPad (direction = 'up') {
     furthestElement.element.focus()
   }
 }
-if (window.matchMedia('@media (pointer: none), (pointer: coarse)').matches) {
+
+// hacky, but make sure keybinds system loads first so it can prevent this from running
+queueMicrotask(() => {
   document.addEventListener('keydown', e => {
     e.preventDefault()
     if (DirectionKeyMap[e.key]) navigateDPad(DirectionKeyMap[e.key])
   })
-}
+})
