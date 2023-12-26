@@ -78,7 +78,7 @@
           description: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in RSS settings."
         })
       } else if (video.audioTracks.length > 1) {
-        const preferredTrack = [...video.audioTracks].find(({ language }) => language === settings.audioLanguage)
+        const preferredTrack = [...video.audioTracks].find(({ language }) => language === $settings.audioLanguage)
         if (preferredTrack) return selectAudio(preferredTrack.id)
 
         const japaneseTrack = [...video.audioTracks].find(({ language }) => language === 'jpn')
@@ -742,7 +742,7 @@
     const sanitised = []
     const first = chapters[0]
     if (first.start !== 0) {
-      sanitised.push({ size: Math.max(first.start, 0) / 10 / safeduration })
+      sanitised.push({ size: Math.max(first.start, 0) / 10 / safeduration, end: undefined })
     }
     for (let { start, end, text } of chapters) {
       if (start > safeduration * 1000) continue
@@ -1007,9 +1007,11 @@
     <div class='col-4' />
   </div>
   <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
+    <!-- eslint-disable-next-line svelte/valid-compile -->
     <div class='w-full h-full position-absolute toggle-fullscreen' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
     <!-- eslint-disable-next-line svelte/valid-compile -->
-    <div class='w-full h-full position-absolute toggle-immerse d-none' on:dblclick={toggleFullscreen} on:click|self={toggleImmerse} use:click={() => { page = 'player' }} />
+    <div class='w-full h-full position-absolute toggle-immerse d-none' on:dblclick={toggleFullscreen} on:click|self={toggleImmerse} />
+    <div class='w-full h-full position-absolute mobile-focus-target d-none' use:click={() => { page = 'player' }} />
     <span class='material-symbols-outlined ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} use:click={playLast}> skip_previous </span>
     <span class='material-symbols-outlined ctrl' use:click={rewind}> fast_rewind </span>
     <span class='material-symbols-outlined ctrl' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
@@ -1429,9 +1431,6 @@
     font-size: 2rem !important;
   }
 
-  .miniplayer .toggle-immerse:focus-visible {
-    background: hsla(209, 100%, 55%, 0.3);
-  }
   @media (pointer: none), (pointer: coarse) {
     .bottom .ctrl[data-name='playPause'],
     .bottom .ctrl[data-name='playNext'],
@@ -1450,6 +1449,12 @@
     .toggle-fullscreen {
       display: none !important;
     }
+    .miniplayer .mobile-focus-target {
+      display: block !important;
+    }
+    .miniplayer .mobile-focus-target:focus-visible {
+    background: hsla(209, 100%, 55%, 0.3);
+  }
   }
 
 </style>

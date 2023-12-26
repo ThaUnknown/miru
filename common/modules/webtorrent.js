@@ -98,6 +98,7 @@ export default class TorrentClient extends WebTorrent {
     if (!localStorage.getItem('torrent') && !t) return
     let torrent = localStorage.getItem('torrent') && new Uint8Array(JSON.parse(localStorage.getItem('torrent')))
     if (!torrent) {
+      // this can be a magnet string, or a stringified array, lazy way of makign sure it works
       try {
         torrent = new Uint8Array(JSON.parse(t))
       } catch (e) {
