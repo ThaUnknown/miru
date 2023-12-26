@@ -147,7 +147,7 @@ export default class Subtitles {
       this.headers[index].header += subtitles.join('\n')
     }
     if (!this.current) {
-      this.current = 0
+      this.current = index
       this.initSubtitleRenderer()
       this.selectCaptions(this.current)
       this.onHeader()
