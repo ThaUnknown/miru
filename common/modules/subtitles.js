@@ -41,7 +41,7 @@ export default class Subtitles {
     this.timeout = null
     this.handleFile = ({ detail }) => {
       if (this.selected) {
-        const uint8 = new Uint8Array(detail.data)
+        const uint8 = new Uint8Array(JSON.parse(detail.data))
         this.fonts.push(uint8)
         this.renderer?.addFont(uint8)
       }

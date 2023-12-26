@@ -32,8 +32,8 @@ export default class Parser {
       if (this.destroyed) return
       for (const file of files) {
         if (fontRx.test(file.filename) || file.mimetype.toLowerCase().includes('font')) {
-          const data = new Uint8Array(file.data)
-          this.client.dispatch('file', { data }, [data.buffer])
+          // this is cursed, but required, as capacitor-node's IPC hangs for 2mins when runnig on 32bit android when sending uint8's
+          this.client.dispatch('file', { data: JSON.stringify([...file.data]) })
         }
       }
     })

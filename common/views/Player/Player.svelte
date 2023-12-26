@@ -1433,6 +1433,9 @@
     .toggle-fullscreen {
       display: none !important;
     }
+    .volume {
+      display: none;
+    }
   }
 
 </style>
