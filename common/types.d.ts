@@ -32,6 +32,10 @@ declare global {
     videoTracks: Track[]
     audioTracks: Track[]
   }
+
+  interface ScreenOrientation {
+    lock: Function
+  }
 }
 
 declare module '*.svelte' {

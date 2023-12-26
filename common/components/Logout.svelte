@@ -23,19 +23,21 @@
 </script>
 
 <div class='modal z-40' class:show={$logout}>
-  <div class='modal-dialog' on:pointerup|self={close} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
-    <div class='modal-content d-flex justify-content-center flex-column'>
-      <button class='close pointer z-30 top-20 right-0 position-absolute' type='button' use:click={close}> &times; </button>
-      <h5 class='modal-title'>Log Out</h5>
-      <p>
-        Are You Sure You Want To Sign Out?
-      </p>
-      <div class='text-right mt-20'>
-        <button class='btn mr-5' type='button' on:click={close}>Cancel</button>
-        <button class='btn btn-danger' type='button' on:click={confirm}>Sign Out</button>
+  {#if $logout}
+    <div class='modal-dialog' on:pointerup|self={close} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
+      <div class='modal-content d-flex justify-content-center flex-column'>
+        <button class='close pointer z-30 top-20 right-0 position-absolute' type='button' use:click={close}> &times; </button>
+        <h5 class='modal-title'>Log Out</h5>
+        <p>
+          Are You Sure You Want To Sign Out?
+        </p>
+        <div class='text-right mt-20'>
+          <button class='btn mr-5' type='button' on:click={close}>Cancel</button>
+          <button class='btn btn-danger' type='button' on:click={confirm}>Sign Out</button>
+        </div>
       </div>
     </div>
-  </div>
+  {/if}
 </div>
 
 <style>
