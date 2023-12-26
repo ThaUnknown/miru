@@ -26,6 +26,27 @@
       },
     },
     {
+      "type": "shell",
+      "label": "Install dev build",
+      "options": {
+        "cwd": "${workspaceFolder}/electron"
+      },
+      "linux": {
+        "command": "cp -f \"dist/linux-Miru-$(cat package.json | jq .version | tr -d \\\").AppImage\" \"${userHome}/bin/miru\""
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "close": true
+      },
+      "icon": {
+        "id": "arrow-down",
+        "color": "terminal.ansiGreen"
+      },
+      "problemMatcher": [],
+    },
+    {
       "type": "npm",
       "script": "web:build",
       "label": "Build web(production)",
