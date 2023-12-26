@@ -96,7 +96,14 @@ export default class TorrentClient extends WebTorrent {
 
   loadLastTorrent (t) {
     if (!localStorage.getItem('torrent') && !t) return
-    const torrent = new Uint8Array(JSON.parse(localStorage.getItem('torrent'))) || t
+    let torrent = localStorage.getItem('torrent') && new Uint8Array(JSON.parse(localStorage.getItem('torrent')))
+    if (!torrent) {
+      try {
+        torrent = new Uint8Array(JSON.parse(t))
+      } catch (e) {
+        torrent = t
+      }
+    }
     if (torrent) this.addTorrent(torrent, JSON.parse(localStorage.getItem('lastFinished')))
   }
 

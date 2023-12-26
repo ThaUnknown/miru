@@ -144,6 +144,7 @@ export function binarySearch (arr, el) {
 }
 
 export const defaults = {
+  volume: 1,
   playerAutoplay: true,
   playerPause: true,
   playerAutocomplete: true,
