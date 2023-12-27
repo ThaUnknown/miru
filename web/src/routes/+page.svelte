@@ -133,6 +133,7 @@
 <style>
   .glow {
     background-image: radial-gradient(circle farthest-side,rgba(255,0,182,.05),hsla(0,0%,100%,0));
+    pointer-events: none;
     height: 100rem;
     width: 100rem;
   }
