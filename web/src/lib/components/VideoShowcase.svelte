@@ -21,7 +21,7 @@
     <span class='material-symbols-outlined filled text-white'>play_arrow</span>
   </button>
   <img src='app.webp' alt='app' class='mw-full px-20 w-full app-image' />
-  <div class='overlay-gradient position-absolute top-0 left-0 w-full h-full' />
+  <div class='overlay-gradient position-absolute px-20 top-0 left-0 w-full h-full' />
 </div>
 
 <style>

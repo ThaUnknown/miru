@@ -11,12 +11,13 @@
 
   const scrollPosition = writable(0)
   setContext('scroll-position', scrollPosition)
+  /** @param {HTMLDivElement} t */
   function smoothScroll (t, { speed = 120, smooth = 10 } = {}) {
     let moving = false
     let pos = t.scrollTop
     let scrollTop = t.scrollTop
     scrollPosition.value = t.scrollTop
-    let lastTime = null
+    let lastTime = 0
     t.addEventListener('wheel', e => {
       e.preventDefault()
       console.log(e.deltaY)
@@ -24,7 +25,7 @@
       const spd = (e.deltaY !== (e.deltaY | 0) || e.wheelDelta % 10 !== 0) ? speed / 10 : speed
       pos = Math.max(0, Math.min(pos - Math.max(-1, Math.min(1, e.deltaY * -1)) * spd, (t.scrollHeight - t.clientHeight) + (smooth * 2)))
       if (!moving) {
-        lastTime = null
+        lastTime = 0
         update()
       }
     }, { capture: true, passive: false })

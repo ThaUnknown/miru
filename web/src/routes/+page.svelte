@@ -17,7 +17,13 @@
 <Hero />
 <div class='container-xl'>
   <VideoShowcase />
+</div>
 
+<div class='position-relative'>
+  <div class='glow top-0 right-0 position-absolute' />
+</div>
+
+<div class='container-xl'>
   <div class='my-20 pb-20' id='about'>
     <h1 class='font-weight-bold text-white content text-center'>Torrenting made simple.</h1>
     <p class='text-muted font-size-18 content text-center pb-20'> Feature-rich yet wonderfully simple. Miru delivers what you want effortlessly.<br />No complex configurations or high entry barriers — Miru is functional out of the box.</p>
@@ -53,7 +59,9 @@
   </div>
   <hr />
 </div>
-
+<div class='position-relative z-100'>
+  <div class='glow top-0 left-0 position-absolute z-100' />
+</div>
 <div class='overflow-hidden my-20 position-relative'>
   <div class='container-xl'>
     <div class='row'>
@@ -68,7 +76,7 @@
       </div>
       <div class='col-md-5 col-12 overflow-hidden overflow-md-unset h-600 position-relative justify-content-center justify-content-md-end d-flex'>
         <ShowcaseCards />
-        <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-100 d-md-none' />
+        <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50 d-md-none' />
       </div>
     </div>
   </div>
@@ -123,6 +131,17 @@
 <Stargazers stargazers={data.stargazers} />
 
 <style>
+  .glow {
+    background-image: radial-gradient(circle farthest-side,rgba(255,0,182,.05),hsla(0,0%,100%,0));
+    height: 100rem;
+    width: 100rem;
+  }
+  .glow.left-0 {
+    transform: translate(-70%, -20%);
+  }
+  .glow.right-0 {
+    transform: translate(70%, -60%);
+  }
   .overlay-gradient-top-bottom {
     background: linear-gradient(0deg, #101113ff 0%, #10111300 25%, #10111300 75%, #101113ff);
     pointer-events: none;
