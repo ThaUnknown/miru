@@ -1,7 +1,5 @@
 <script>
   import Hero from '$lib/components/Hero.svelte'
-  import SmallCard from '$lib/components/SmallCard.svelte'
-  import { cards } from '$lib/dummyData.js'
   import AndroidSvg from '$lib/svg/AndroidSVG.svelte'
   import AndroidTvsvg from '$lib/svg/AndroidTVSVG.svelte'
   import LinuxSvg from '$lib/svg/LinuxSVG.svelte'
@@ -9,9 +7,7 @@
   import SteamOssvg from '$lib/svg/SteamOSSVG.svelte'
   import WindowsSvg from '$lib/svg/WindowsSVG.svelte'
   import Stargazers from '$lib/components/Stargazers.svelte'
-  import { getContext } from 'svelte'
-
-  const scrollPosition = getContext('scroll-position')
+  import ShowcaseCards from '$lib/components/ShowcaseCards.svelte'
 
   /** @type {import('./$types').PageData} */
   export let data
@@ -25,51 +21,58 @@
   </div>
 
   <div class='my-20 pb-20' id='about'>
-    <h1 class='w-full font-weight-bold text-white content'>
-      Torrenting made simple.
-    </h1>
-    <div class='row'>
+    <h1 class='font-weight-bold text-white content text-center'>Torrenting made simple.</h1>
+    <p class='text-muted font-size-18 content text-center pb-20'> Feature-rich yet wonderfully simple. Miru delivers what you want effortlessly.<br />No complex configurations or high entry barriers — Miru is functional out of the box.</p>
+    <div class='row pt-20'>
       <div class='col-md-4 col-12'>
         <div class='content'>
-          <h3>Quality meets speed</h3>
+          <div class='d-flex flex-row text-white align-items-center'>
+            <h1 class='material-symbols-outlined mr-20 mb-0'>rocket_launch</h1>
+            <h4 class='font-weight-bold mb-0'>Quality meets speed</h4>
+          </div>
           <p class='text-muted font-size-16'>Stream torrents directly for playback, with no time wasted on looking for torrents or waiting for downloads to finish.</p>
         </div>
       </div>
       <div class='col-md-4 col-12'>
         <div class='content'>
-          <h3>No expertise required</h3>
+          <div class='d-flex flex-row text-white align-items-center'>
+            <h1 class='material-symbols-outlined mr-20 mb-0'>link</h1>
+            <h4 class='font-weight-bold mb-0'>No expertise required</h4>
+          </div>
           <p class='text-muted font-size-16'>You don’t need to be a master of torrenting or have a deep understanding of technology, it simply works.</p>
         </div>
       </div>
       <div class='col-md-4 col-12'>
         <div class='content'>
-          <h3>Configuration free</h3>
+          <div class='d-flex flex-row text-white align-items-center'>
+            <h1 class='material-symbols-outlined mr-20 mb-0'>handyman</h1>
+            <h4 class='font-weight-bold mb-0'>Configuration free</h4>
+          </div>
           <p class='text-muted font-size-16'>No need to look for setup guides, no need to worry about the ideal configuration, it’s perfect out of the box.</p>
         </div>
       </div>
     </div>
   </div>
-  <hr class='my-20' />
+  <hr />
   <div class='my-20 py-20'>
-    <div class='row'>
-      <div class='col-md-7 col-12'>
-        <div class='content'>
+    <div class='row overflow-hidden position-relative'>
+      <div class='col-md-7 col-12 align-items-center d-flex'>
+        <div class='content pr-20'>
+          <p class='font-weight-bold text-white font-size-18'>Care to try?</p>
           <h1 class='w-full font-weight-bold text-white'>
-            Tightly integrated.
+            All in one spot.
           </h1>
           <p class='text-muted font-size-16'>Find and download torrents, watch trailers, manage your list, search, browse and discover anime, watch together with friends and more, all in the same interface. No need to open multiple apps, tabs, everything shipped in one package.</p>
         </div>
       </div>
-      <div class='col-md-5 col-12'>
-        <div class='pb-10 w-full position-relative d-flex flex-row justify-content-start gallery' style:--left={(300 - ($scrollPosition - 800)) / 5 + 'px'}>
-          {#each cards as media, i}
-            <SmallCard {media} preview={i === 1} />
-          {/each}
-        </div>
+      <div class='col-md-5 col-12 overflow-y-hidden overflow-y-md-unset h-600 position-relative justify-content-center justify-content-md-end d-flex'>
+        <ShowcaseCards />
+        <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-100 d-md-none' />
       </div>
+      <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-100 d-none d-md-block' />
     </div>
   </div>
-  <hr class='my-20' />
+  <hr />
   <div class='my-20 py-20'>
     <div class='row flex-column-reverse flex-md-row'>
       <div class='col-md-5 col-12'>
@@ -87,28 +90,26 @@
       </div>
     </div>
   </div>
-  <hr class='my-20' />
+  <hr />
   <div class='my-20 py-20'>
-    <div class='row'>
-      <div class='col-md-7 col-12'>
-        <div class='content'>
-          <h1 class='w-full font-weight-bold text-white'>
-            Available everywhere.
-          </h1>
-          <p class='text-muted font-size-16'>No need to install different apps for different devices and platforms, this app is available on every platform and operating system.</p>
-        </div>
-      </div>
-      <div class='col-md-5 col-12 platform-grid p-20 text-white'>
-        <WindowsSvg class='w-50 h-50' />
-        <MacOssvg class='w-50 h-50' />
-        <LinuxSvg class='w-50 h-50' />
-        <AndroidSvg class='w-50 h-50' />
-        <AndroidTvsvg class='w-50 h-50' />
-        <SteamOssvg class='w-50 h-50' />
+    <div>
+      <div class='content'>
+        <h1 class='text-center font-weight-bold text-white'>
+          Available everywhere.
+        </h1>
+        <p class='text-center text-muted font-size-16'>No need to install different apps for different devices and platforms, effortlessly install on any<br />platform, ensuring a seamless anime experience on any device. Whether you prefer Windows, Linux, Mac, Android and more.</p>
       </div>
     </div>
+    <div class='platform-grid p-20 text-white'>
+      <WindowsSvg class='w-50 h-50' />
+      <MacOssvg class='w-50 h-50' />
+      <LinuxSvg class='w-50 h-50' />
+      <AndroidSvg class='w-50 h-50' />
+      <AndroidTvsvg class='w-50 h-50' />
+      <SteamOssvg class='w-50 h-50' />
+    </div>
   </div>
-  <hr class='my-20' />
+  <hr />
   <div class='mt-20 pt-20'>
     <h1 class='w-full font-weight-bold text-white content'>
       Loved by thousands.
@@ -122,13 +123,19 @@
     aspect-ratio: 2/1;
     object-fit: contain;
   }
+  .overlay-gradient-top-bottom {
+    background: linear-gradient(0deg, rgba(15,17,19,1) 0%, rgba(15,17,19,0) 25%, rgba(15,17,19,0) 75%, rgba(15,17,19,1) 100%);
+    pointer-events: none;
+  }
   .overlay-gradient {
     background: linear-gradient(0deg, #0F1113 15.27%, rgba(15, 17, 19, 0.92) 41.28%, rgba(15, 17, 19, 0.25) 74.32%);
+    pointer-events: none;
   }
 
   .platform-grid {
     display: grid;
     grid-template-columns: 8rem 8rem 8rem;
+    gap: 4rem;
     grid-template-rows: 8rem 8rem;
     justify-content: center;
     justify-items: center;
@@ -138,12 +145,13 @@
   h1 {
     font-size: 5rem
   }
-  @media (pointer: none), (pointer: coarse){
-    .gallery {
-      padding-left: 0 !important;
+  @media (min-width: 769px) {
+    .overflow-y-md-unset {
+      overflow-y: unset !important;
     }
   }
-  .gallery {
-    padding-left: clamp(0px, var(--left), 100px);
+
+  hr {
+    margin: 7rem 0;
   }
 </style>

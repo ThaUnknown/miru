@@ -32,7 +32,7 @@
     font-size: 5rem
   }
   .btn-danger {
-    --dm-button-danger-bg-color: #cc4c4e
+    --dm-button-danger-bg-color: #e5204c
   }
   .ghost {
     font-size: 34rem;

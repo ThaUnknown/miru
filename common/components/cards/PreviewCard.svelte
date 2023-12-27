@@ -56,14 +56,14 @@
 </script>
 
 <div class='position-absolute w-350 h-400 absolute-container top-0 bottom-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer'>
-  <div class='banner position-relative overflow-hidden bg-black'>
+  <div class='banner position-relative bg-black'>
     <img src={media.bannerImage || ' '} alt='banner' class='img-cover w-full h-full' />
     {#if media.trailer?.id}
       <div class='material-symbols-outlined filled position-absolute z-10 top-0 right-0 p-15 font-size-22' class:d-none={hide} use:click={toggleMute}>{muted ? 'volume_off' : 'volume_up'}</div>
       <!-- for now we use some invidious instance, would be nice to somehow get these links outselves, this redirects straight to some google endpoint -->
       <!-- eslint-disable-next-line svelte/valid-compile -->
       <video src={`https://yewtu.be/latest_version?id=${media.trailer.id}&itag=18`}
-        class='w-full position-absolute left-0'
+        class='w-full h-full position-absolute left-0'
         class:d-none={hide}
         playsinline
         preload='none'
@@ -150,10 +150,14 @@
   .banner {
     height: 45%
   }
+  video {
+    object-fit: cover;
+  }
   .banner::after {
     content: '';
     position: absolute;
     left: 0 ; bottom: 0;
+    margin-bottom: -1px;
     width: 100%; height: 100% ;
     background: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292fe3 95%, #25292f 100%);
   }

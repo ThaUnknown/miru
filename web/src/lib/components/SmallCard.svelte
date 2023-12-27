@@ -41,9 +41,9 @@
 </div>
 
 <style>
-  .first-check:first-child :global(.absolute-container) {
+  /* .first-check:first-child :global(.absolute-container) {
     left: -48% !important
-  }
+  } */
   .title {
     display: -webkit-box;
     -webkit-line-clamp: 2;
