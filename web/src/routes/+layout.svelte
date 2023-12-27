@@ -5,6 +5,9 @@
   import { throttle } from '@/modules/util.js'
   import { setContext } from 'svelte'
   import { writable } from 'simple-store-svelte'
+  import VideoModal from '$lib/components/VideoModal.svelte'
+
+  setContext('video-modal', writable(false))
 
   const scrollPosition = writable(0)
   setContext('scroll-position', scrollPosition)
@@ -37,9 +40,20 @@
       return deltaTime / 14
     }
 
-    t.addEventListener('pointerup', () => { pos = scrollTop = scrollPosition.value = t.scrollTop })
+    function updateScrollPosition () {
+      const pos = t.scrollTop
+      scrollPosition.value = pos
+      return pos
+    }
 
-    t.addEventListener('scrollend', throttle(() => { scrollTop = scrollPosition.value = t.scrollTop }, 1000))
+    // as lightweight as possible scroll position tracking for mobile touch
+    t.addEventListener('touchmove', updateScrollPosition)
+    t.addEventListener('touchstart', () => t.removeEventListener('scroll', updateScrollPosition, { passive: true }))
+    t.addEventListener('touchend', () => t.addEventListener('scroll', updateScrollPosition, { passive: true }))
+
+    t.addEventListener('pointerup', () => { pos = scrollTop = updateScrollPosition() })
+
+    t.addEventListener('scrollend', throttle(() => { scrollTop = updateScrollPosition() }, 1000))
 
     function update () {
       const delta = pos - scrollTop === smooth * 2 ? 0 : ((pos - scrollTop) / smooth) * getDeltaTime()
@@ -56,6 +70,7 @@
 <Loader />
 <div class='page-wrapper with-transitions position-relative' data-sidebar-type='overlayed-all'>
   <Navbar />
+  <VideoModal />
   <div class='overflow-x-hidden content-wrapper h-full overflow-y-scroll position-relative' use:smoothScroll>
     <slot />
     <Footer />

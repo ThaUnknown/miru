@@ -12,7 +12,7 @@
       <SmallCard {media} preview={i === 1} />
     {/each}
   </div>
-  <div class='d-inline-block gallery' style:--top={(-1100 + ($scrollPosition - 800)) / 5 + 'px'}>
+  <div class='d-inline-block gallery' style:--top={(-1600 + ($scrollPosition - 800)) / 5 + 'px'}>
     {#each cards.slice(4) as media}
       <SmallCard {media} />
     {/each}
@@ -20,11 +20,6 @@
 </div>
 
 <style>
-  @media (pointer: none), (pointer: coarse){
-    .gallery {
-      margin-top: 0 !important;
-    }
-  }
   .gallery {
     margin-top: var(--top);
   }

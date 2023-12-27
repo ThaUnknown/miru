@@ -1,5 +1,8 @@
 <script>
-  export let stargazers = []
+  /**
+   * @type {Promise<any>}
+   */
+  export let stargazers
 
   function * chunks (arr, n) {
     for (let i = 0; i < arr.length; i += n) {
@@ -32,7 +35,7 @@
 
 <style>
   .overlay-gradient {
-    background: linear-gradient(90deg, rgba(15,17,19,1) 0%, rgba(15,17,19,0) 25%, rgba(15,17,19,0) 75%, rgba(15,17,19,1) 100%);
+    background: linear-gradient(90deg, rgba(16,17,19,1) 0%, rgba(16,17,19,0) 25%, rgba(16,17,19,0) 75%, rgba(16,17,19,1) 100%);
     pointer-events: none;
   }
   .stargazers {
