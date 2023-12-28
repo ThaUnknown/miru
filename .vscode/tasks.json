@@ -27,7 +27,7 @@
     },
     {
       "type": "shell",
-      "label": "Install dev build",
+      "label": "Install",
       "options": {
         "cwd": "${workspaceFolder}/electron"
       },
@@ -42,6 +42,20 @@
       },
       "icon": {
         "id": "arrow-down",
+        "color": "terminal.ansiGreen"
+      },
+      "problemMatcher": [],
+    },
+    {
+      "type": "shell",
+      "label": "Build & install",
+      "dependsOn": [
+        "Build electron",
+        "Install",
+      ],
+      "dependsOrder": "sequence",
+      "icon": {
+        "id": "arrow-circle-down",
         "color": "terminal.ansiGreen"
       },
       "problemMatcher": [],
