@@ -3,7 +3,7 @@
   "tasks": [
     {
       "type": "npm",
-      "script": "build",
+      "script": "appimage",
       "label": "Build electron",
       "options": {
         "cwd": "${workspaceFolder}/electron"
