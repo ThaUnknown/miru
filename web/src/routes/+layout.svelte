@@ -49,7 +49,7 @@
 
     // as lightweight as possible scroll position tracking for mobile touch
     t.addEventListener('touchmove', updateScrollPosition)
-    t.addEventListener('touchstart', () => t.removeEventListener('scroll', updateScrollPosition, { passive: true }))
+    t.addEventListener('touchstart', () => t.removeEventListener('scroll', updateScrollPosition))
     t.addEventListener('touchend', () => t.addEventListener('scroll', updateScrollPosition, { passive: true }))
 
     t.addEventListener('pointerup', () => { pos = scrollTop = updateScrollPosition() })
