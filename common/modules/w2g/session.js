@@ -1,43 +1,21 @@
 import { W2GClient } from './client.js'
+import Event from './events.js'
 
 /**
  * @typedef {Record<string, {user: any, peer: import('p2pt').Peer<any>}>} PeerList
  */
 
 export class W2GSession {
-  /**
-   * @type {import('./events').EventData<import('./events').PlayerStateEvent>}
-   */
-  #player = {
+  player = new Event('player', {
     paused: true,
     time: 0
-  }
+  })
 
-  get player () {
-    return this.#player
-  }
+  index = 0
 
-  /**
-   * @type {number}
-   */
-  #index = 0
+  /** @type import('./events').default */
+  magnet = null
 
-  get index () {
-    return this.#index
-  }
-
-  /**
-   * @type {import('./events.js').EventData<import('./events.js').MagnetLinkEvent> | null}
-   */
-  #magnet = null
-
-  get magnet () {
-    return this.#magnet
-  }
-
-  /**
-   * @type {boolean}
-   */
   #isHost = false
 
   get isHost () {
@@ -48,29 +26,16 @@ export class W2GSession {
     this.#isHost = v
   }
 
-  /**
-   * @type {PeerList}
-   */
-  #peers = {}
+  /** @type {PeerList} */
+  peers = {}
 
-  get peers () {
-    return this.#peers
-  }
-
-  /**
-   * @type {W2GClient | null}
-   */
+  /** @type {W2GClient | null} */
   #client
-  /**
-   * @returns Wether client initialized or not
-   */
+
   get initializated () {
     return this.#client !== null
   }
 
-  /**
-   * @returns Invite link ready to be copied
-   */
   get inviteLink () {
     return `https://miru.watch/w2g/${this.#client.code}`
   }
@@ -78,7 +43,7 @@ export class W2GSession {
   /**
    * Creates client initializing connection
    * @param {string | null} code initial code if null new generated and returned
-   * @returns p2p code
+   * @returns {string} p2p code
    */
   createClient (code) {
     this.#client = new W2GClient(this, code)
@@ -86,17 +51,12 @@ export class W2GSession {
     return this.#client.code
   }
 
-  /**
-   * Disposes inner client and some session properties
-   */
-  dispose () {
-    this.#client?.dispose()
+  destroy () {
+    this.#client?.destroy()
     this.#client = null
     this.#isHost = false
-    this.#peers = {}
+    this.peers = {}
   }
-
-  // #region Compatibility events
 
   /**
    * Fires when peer object updated. On 'peerconnect' and 'peerclose' events of underlying client.
@@ -112,16 +72,16 @@ export class W2GSession {
 
   /**
    * Fires when 'player' message received from another peer.
-   * @type {(state: import('./events.js').EventData<import('./events.js').PlayerStateEvent>) => void | null}
+   * @type {(state: import('./events.js').default) => void | null}
   */
   onPlayerStateUpdated
 
   /**
    * Should be called when client picking torrent
-   * @param {import('./events.js').EventData<import('./events.js').MagnetLinkEvent>} magnet
+   * @param {import('./events.js').default} magnet
    */
   localMagnetLink (magnet) {
-    this.#magnet = magnet
+    this.magnet = magnet
     // Prevent uninitialized session from becoming host
     if (this.initializated) {
       this.#isHost = true
@@ -135,21 +95,19 @@ export class W2GSession {
    * @param {number} index
    */
   localMediaIndexChanged (index) {
-    this.#index = index
+    this.index = index
 
     this.#client?.onMediaIndexChanged(index)
   }
 
   /**
    * Should be called when player state changed locally
-   * @param {import('./events.js').EventData<import('./events.js').PlayerStateEvent>} state
+   * @param {import('./events.js').default} state
    */
-  localPlayerStateChanged (state) {
-    this.#player.paused = state.paused
-    this.#player.time = state.time
+  localPlayerStateChanged ({ payload }) {
+    this.player.payload.paused = payload.paused
+    this.player.payload.time = payload.time
 
-    this.#client?.onPlayerStateChanged(this.#player)
+    this.#client?.onPlayerStateChanged(this.player)
   }
-
-  // #endregion
 }

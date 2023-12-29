@@ -3,14 +3,9 @@
  * @template {object} OutEvent
  */
 export class BidirectionalFilteredEventBus {
-  /**
-   * @type {string}
-   */
-  #lastInEvent
-  /**
-   * @type {string}
-   */
-  #lastOutEvent
+  #lastInEvent = '{}'
+
+  #lastOutEvent = '{}'
 
   get isFirstInFired () {
     return this.#lastInEvent !== '{}'

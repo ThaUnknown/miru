@@ -17,24 +17,17 @@
 
   const session = new W2GSession()
 
-  /**
-   * @type {BidirectionalFilteredEventBus<
-   *  import('@/modules/w2g/events.js').EventData<import('@/modules/w2g/events.js').PlayerStateEvent>,
-   *  import('@/modules/w2g/events.js').EventData<import('@/modules/w2g/events.js').PlayerStateEvent>
-   * >}
-   */
   const bus = new BidirectionalFilteredEventBus(
     (state) => w2gEmitter.emit('playerupdate', state),
     (detail) => session.localPlayerStateChanged(detail),
     undefined,
     // Dont send time 0 when non host
-    () => !session.isHost && !bus.isFirstOutFired,
+    () => !session.isHost && !bus.isFirstOutFired
   )
-  
-  session.onPeerListUpdated = (p) => peers.update(() => p)
-  session.onMediaIndexUpdated = (i) => w2gEmitter.emit('setindex', i)
-  session.onPlayerStateUpdated = (state) => bus.in({time: state.time, paused: state.paused})
 
+  session.onPeerListUpdated = p => peers.update(() => p)
+  session.onMediaIndexUpdated = i => w2gEmitter.emit('setindex', i)
+  session.onPlayerStateUpdated = state => bus.in({ time: state.time, paused: state.paused })
 
   w2gEmitter.on('player', ({ detail }) => bus.out(detail))
 
@@ -44,7 +37,7 @@
   function cleanup () {
     state.set(false)
     peers.set({})
-    session.dispose()
+    session.destroy()
     bus.reinit()
   }
 

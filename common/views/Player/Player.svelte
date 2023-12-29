@@ -36,9 +36,6 @@
     }
   }
 
-  /**
-   * @param {Event | undefined} e
-   */
   function updatew2g () {
     w2gEmitter.emit('player', {
       time: Math.floor(currentTime),
