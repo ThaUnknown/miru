@@ -72,33 +72,15 @@
 </script>
 
 <div class='d-flex h-full align-items-center flex-column content'>
-  <div class='font-size-50 font-weight-bold pt-20 mt-20 root'>
-    Watch Together
-  </div>
+  <div class='font-size-50 font-weight-bold pt-20 mt-20 root'>Watch Together</div>
   {#if !$state}
-    <div
-      class='d-flex flex-row flex-wrap justify-content-center align-items-center h-full mb-20 pb-20 root'
-    >
-      <div
-        class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'
-      >
-        <span
-          class='font-size-80 material-symbols-outlined d-flex align-items-center h-full'
-        >add</span
-        >
-        <button
-          class='btn btn-primary btn-lg mt-10 btn-block'
-          type='button'
-          use:click={() => joinLobby()}>Create Lobby</button
-        >
+    <div class='d-flex flex-row flex-wrap justify-content-center align-items-center h-full mb-20 pb-20 root'>
+      <div class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'>
+        <span class='font-size-80 material-symbols-outlined d-flex align-items-center h-full'>add</span>
+        <button class='btn btn-primary btn-lg mt-10 btn-block' type='button' use:click={() => joinLobby()}>Create Lobby</button>
       </div>
-      <div
-        class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'
-      >
-        <span
-          class='font-size-80 material-symbols-outlined d-flex align-items-center h-full'
-        >group_add</span
-        >
+      <div class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'>
+        <span class='font-size-80 material-symbols-outlined d-flex align-items-center h-full'>group_add</span>
         <h2 class='font-weight-bold'>Join Lobby</h2>
         <input
           type='text'
@@ -106,8 +88,7 @@
           autocomplete='off'
           bind:value={joinText}
           data-option='search'
-          placeholder='Lobby code or link'
-        />
+          placeholder='Lobby code or link' />
       </div>
     </div>
   {:else}
