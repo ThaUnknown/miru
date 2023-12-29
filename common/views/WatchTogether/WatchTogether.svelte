@@ -40,31 +40,34 @@
 
       p2pt.send(
         peer,
-        JSON.stringify([{
+        JSON.stringify({
           type: 'init',
           id: user.id || generateRandomHexCode(16),
           user
-        }])
+        })
       )
 
       if (isHost) {
         p2pt.send(
           peer,
-          JSON.stringify([
-            {
-              type: 'torrent',
-              ...playerState.magnet
-            },
-            {
-              type: 'index',
-              index: playerState.index
-            },
-            {
-              type: 'player',
-              time: playerState.time,
-              paused: playerState.paused
-            }
-          ])
+          JSON.stringify({
+            type: 'batch',
+            batch: [
+              {
+                type: 'torrent',
+                ...playerState.magnet
+              },
+              {
+                type: 'index',
+                index: playerState.index
+              },
+              {
+                type: 'player',
+                time: playerState.time,
+                paused: playerState.paused
+              }
+            ]
+          })
         )
       }
     })
@@ -82,8 +85,7 @@
     p2pt.on('msg', (peer, data) => {
       console.log(data)
       data = typeof data === 'string' ? JSON.parse(data) : data
-      if (data instanceof Array) onBatchMsg(peer, data)
-      else onMsg(peer, data)
+      onMsg(peer, data)
     })
 
     p2pt.start()
@@ -121,6 +123,9 @@
           w2gEmitter.emit('setindex', data.index)
         }
         break
+      }
+      case 'batch': {
+        onBatchMsg(peer, data.batch)
       }
       default: {
         console.error('Invalid message type', data)
