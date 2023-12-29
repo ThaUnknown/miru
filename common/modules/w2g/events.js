@@ -26,7 +26,7 @@ export class SessionInitEvent extends SyncEventBase {
   id
 
   /**
-   * @type {string}
+   * @type {string | undefined}
    */
   name
 
@@ -39,7 +39,7 @@ export class SessionInitEvent extends SyncEventBase {
    */
 
   /**
-   * @type {MediaListOptions}
+   * @type {MediaListOptions | undefined}
    */
   mediaListOptions
 
@@ -49,18 +49,20 @@ export class SessionInitEvent extends SyncEventBase {
    */
 
   /**
-   * @type {Avatar}
+   * @type {Avatar | undefined}
    */
   avatar
 
   /**
    * @param {string} id
-   * @param {object} user
+   * @param {Partial<EventData<SessionInitEvent>>} user
    */
   constructor (id, user) {
     super(SessionInitEvent.type)
-    this.id = id
-    Object.assign(this, user)
+    this.id = user?.id ?? id
+    this.name = user.name
+    this.mediaListOptions = user.mediaListOptions
+    this.avatar = user.avatar
   }
 }
 
