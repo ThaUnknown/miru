@@ -21,9 +21,7 @@
 
   function joinLobby (code) {
     isHost = !code
-    if (!code) {
-      code = generateRandomHexCode(16)
-    }
+    code ??= generateRandomHexCode(16)
 
     if (p2pt) cleanup()
     p2pt = new P2PT(
