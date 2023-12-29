@@ -19,32 +19,49 @@ export class W2GSession {
     time: 0
   }
 
-  get player () { return this.#player }
+  get player () {
+    return this.#player
+  }
 
   /**
    * @type {number}
    */
   #index = 0
-  get index () { return this.#index }
+
+  get index () {
+    return this.#index
+  }
 
   /**
    * @type {Magnet | null}
    */
   #magnet = null
-  get magnet () { return this.#magnet }
+
+  get magnet () {
+    return this.#magnet
+  }
 
   /**
    * @type {boolean}
    */
   #isHost = false
-  get isHost () { return this.#isHost }
-  set isHost (v) { this.#isHost = v }
+
+  get isHost () {
+    return this.#isHost
+  }
+
+  set isHost (v) {
+    this.#isHost = v
+  }
 
   /**
    * @type {PeerList}
    */
   #peers = {}
-  get peers () { return this.#peers }
+
+  get peers () {
+    return this.#peers
+  }
 
   /**
    * @type {W2GClient | null}
@@ -53,11 +70,16 @@ export class W2GSession {
   /**
    * @returns Wether client initialized or not
    */
-  get initializated () { return this.#client !== null }
+  get initializated () {
+    return this.#client !== null
+  }
+
   /**
    * @returns Invite link ready to be copied
    */
-  get inviteLink () { return this.#client.inviteLink }
+  get inviteLink () {
+    return this.#client.inviteLink
+  }
 
   /**
    * Creates client initializing connection

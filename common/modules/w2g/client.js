@@ -16,10 +16,14 @@ export class W2GClient {
   #p2pt
   #code
 
-  get code () { return this.#code }
+  get code () {
+    return this.#code
+  }
 
-  // @ts-ignore
-  get inviteLink () { return `https://miru.watch/w2g/${this.#p2pt.identifierString}` }
+  get inviteLink () {
+    // @ts-ignore
+    return `https://miru.watch/w2g/${this.#p2pt.identifierString}`
+  }
 
   /**
    * @param {import('./session').W2GSession} session
