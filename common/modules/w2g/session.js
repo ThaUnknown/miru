@@ -1,15 +1,14 @@
 import { W2GClient } from './client.js'
-import Event from './events.js'
 
 /**
  * @typedef {Record<string, {user: any, peer: import('p2pt').Peer<any>}>} PeerList
  */
 
 export class W2GSession {
-  player = new Event('player', {
+  player = {
     paused: true,
     time: 0
-  })
+  }
 
   index = 0
 
