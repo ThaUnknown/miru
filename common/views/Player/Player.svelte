@@ -40,12 +40,25 @@
     }
   }
 
-  function updatew2g () {
+  let lastUpdateCause = 'pause'
+  /**
+   * @param {Event | undefined} e
+   */
+  function updatew2g (e) {
     const event = {
       time: Math.floor(currentTime),
       paused
     }
 
+    // Prevent seek event after pause
+    if(lastUpdateCause === 'pause' && e?.type === 'seeked') {
+      lastUpdateCause = e?.type
+      return
+    }
+    
+    lastUpdateCause = e?.type
+
+    // Prevent sending same state again
     if(event.paused !== lastPlayerUpdateEvent.paused || event.time !== lastPlayerUpdateEvent.time) {
       w2gEmitter.emit('player', event)
     }
@@ -186,7 +199,8 @@
     subs = new Subtitles(video, files, current, handleHeaders)
     video.load()
 
-    updatew2g()
+    // Initially fire 'player' event to initialize session fields
+    updatew2g(undefined)
   }
 
   export let media
