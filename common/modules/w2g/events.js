@@ -10,12 +10,8 @@
     | { type: MediaIndexEvent.type } & MediaIndexEvent
     | { type: PlayerStateEvent.type } & PlayerStateEvent
   } MsgData
- * @typedef {MsgData['type']} EventType
  */
 
-/**
- * @exports SyncEventBase
- */
 export class SyncEventBase {
   /**
    * @type {String}
@@ -30,9 +26,6 @@ export class SyncEventBase {
   }
 }
 
-/**
- * @exports SessionInitEvent
- */
 export class SessionInitEvent extends SyncEventBase {
   /**
    * @type {'init'}
@@ -85,9 +78,6 @@ export class SessionInitEvent extends SyncEventBase {
   }
 }
 
-/**
- * @exports MagnetLinkEvent
- */
 export class MagnetLinkEvent extends SyncEventBase {
   /**
    * @type {'magnet'}
@@ -114,9 +104,6 @@ export class MagnetLinkEvent extends SyncEventBase {
   }
 }
 
-/**
- * @exports MediaIndexEvent
- */
 export class MediaIndexEvent extends SyncEventBase {
   /**
    * @type {'index'}
@@ -137,9 +124,6 @@ export class MediaIndexEvent extends SyncEventBase {
   }
 }
 
-/**
- * @exports PlayerStateEvent
- */
 export class PlayerStateEvent extends SyncEventBase {
   /**
    * @type {'player'}
