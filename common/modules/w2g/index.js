@@ -1,1 +1,1 @@
-export { W2GSession } from './session'
+export { W2GSession } from './session.js'

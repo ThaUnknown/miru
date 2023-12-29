@@ -19,6 +19,16 @@
   "plugins": ["svelte"],
   "parser": "@typescript-eslint/parser",
   "ignorePatterns": ["*.min.*", "*.build.*"],
+  "rules": {
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "always",
+        "svelte": "always"
+      }
+   ]
+  },
   "overrides": [
     {
       "files": ["*.svelte"],

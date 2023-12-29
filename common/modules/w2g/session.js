@@ -1,4 +1,4 @@
-import { W2GClient } from './client'
+import { W2GClient } from './client.js'
 
 /**
  * @typedef {Object} Magnet

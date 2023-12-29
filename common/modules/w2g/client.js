@@ -1,8 +1,8 @@
 import P2PT from 'p2pt'
-import { generateRandomHexCode } from '../util'
-import { alID } from '../anilist'
-import { MediaIndexEvent, SessionInitEvent, PlayerStateEvent, MagnetLinkEvent } from './events'
-import { add } from '../torrent'
+import { generateRandomHexCode } from '../util.js'
+import { alID } from '../anilist.js'
+import { MediaIndexEvent, SessionInitEvent, PlayerStateEvent, MagnetLinkEvent } from './events.js'
+import { add } from '../torrent.js'
 
 export class W2GClient {
   static #announce = [
