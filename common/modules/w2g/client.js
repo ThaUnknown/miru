@@ -20,11 +20,6 @@ export class W2GClient {
     return this.#code
   }
 
-  get inviteLink () {
-    // @ts-ignore
-    return `https://miru.watch/w2g/${this.#p2pt.identifierString}`
-  }
-
   /**
    * @param {import('./session').W2GSession} session
    * @param {string} code lobby code

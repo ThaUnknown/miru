@@ -78,7 +78,7 @@ export class W2GSession {
    * @returns Invite link ready to be copied
    */
   get inviteLink () {
-    return this.#client.inviteLink
+    return `https://miru.watch/w2g/${this.#client.code}`
   }
 
   /**
