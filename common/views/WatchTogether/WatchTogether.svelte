@@ -4,8 +4,8 @@
   import { toast } from 'svelte-sonner'
   import { page } from '@/App.svelte'
   import { click } from '@/modules/click.js'
-  import { W2GSession } from '@/modules/w2g'
-  import { createFilterProxy } from '@/modules/w2g/filter';
+  import { W2GSession } from '@/modules/w2g/session.js'
+  import { BidirectionalFilteredEventBus } from '@/modules/w2g/filter.js'
   import IPC from '@/modules/ipc.js'
   import 'browser-event-target-emitter'
 
@@ -16,19 +16,27 @@
   export const state = writable(false)
 
   const session = new W2GSession()
-
+  
+  /**
+   * @type {BidirectionalFilteredEventBus<
+   *  import('@/modules/w2g/events.js').EventData<PlayerStateEvent>,
+   *  import('@/modules/w2g/events.js').EventData<PlayerStateEvent>
+   * >}
+   */
+  const bus = new BidirectionalFilteredEventBus(
+    (state) => w2gEmitter.emit('playerupdate', state),
+    (detail) => session.localPlayerStateChanged(detail),
+    undefined,
+    // Dont send time 0 when non host
+    () => !session.isHost && !bus.isFirstOutFired,
+  )
+  
   session.onPeerListUpdated = (p) => peers.update(() => p)
   session.onMediaIndexUpdated = (i) => w2gEmitter.emit('setindex', i)
-  session.onPlayerStateUpdated = (state) => w2gEmitter.emit('playerupdate', state)
+  session.onPlayerStateUpdated = (state) => bus.in({time: state.time, paused: state.paused})
 
-  w2gEmitter.on('player',
-    createFilterProxy(
-      (detail) => session.localPlayerStateChanged(detail),
-      ({ detail }) => detail,
-      // Do not send initial state if not host
-      (arg) => session.isHost === false && arg.time === 0
-    )
-  )
+
+  w2gEmitter.on('player', ({ detail }) => bus.out(detail))
 
   w2gEmitter.on('index', ({ detail }) => session.localMediaIndexChanged(detail.index))
   client.on('magnet', ({ detail }) => session.localMagnetLink(detail))
@@ -37,6 +45,7 @@
     state.set(false)
     peers.set({})
     session.dispose()
+    bus.reinit()
   }
 
   function joinLobby (code) {
@@ -63,6 +72,7 @@
 
 <script>
   import Lobby from './Lobby.svelte'
+    import { PlayerStateEvent } from '@/modules/w2g/events';
 
   let joinText
 

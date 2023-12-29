@@ -1,34 +1,98 @@
 /**
- * Prevent calling function with same arguments twice in a row
- * @template {(...args) => any} Getter
- * @template {(...args) => any} Passer
- * @param {(data: ReturnType<Passer>) => unknown} listener
- * @param {Getter} getter should return what to cache
- * @param {(args: ReturnType<Getter>, lastArgs: ReturnType<Getter>) => boolean} condition additional condition to check last arg can be empty object
- * @param {(data: ReturnType<Getter>) => any} passer should return wрat pass to the function accepts arguments returned by getter
+ * @template {object} InEvent
+ * @template {object} OutEvent
  */
-export function createFilterProxy (listener, getter = undefined, condition = undefined, passer = undefined) {
+export class BidirectionalFilteredEventBus {
   /**
    * @type {string}
    */
-  let lastArgs = '{}'
+  #lastInEvent
+  /**
+   * @type {string}
+   */
+  #lastOutEvent
+
+  get isFirstInFired () {
+    return this.#lastInEvent !== '{}'
+  }
+
+  get isFirstOutFired () {
+    return this.#lastOutEvent !== '{}'
+  }
+
+  #inFilter
+  #outFilter
+
+  #inSink
+  #outSink
 
   /**
-   * @param {Parameters<getter>} args
-   * @returns {unknown}
+   * @template T
+   * @typedef {(event: T, lastEvent: T) => boolean} Filter
    */
-  return function (...args) {
-    const subset = getter?.(...args) ?? args
-    const text = JSON.stringify(subset)
 
-    if (condition?.(subset, JSON.parse(lastArgs)) || text === lastArgs) {
-      lastArgs = text
-      console.log('Dropping', subset)
-      return
+  /**
+   * @typedef {(InEvent) => any} InSink
+   * @typedef {(OutEvent) => any} OutSink
+   */
+
+  /**
+   * @param {InSink} inSink
+   * @param {OutSink} outSink
+   * @param {Filter<InEvent>} inFilter
+   * @param {Filter<OutEvent>} outFilter
+   */
+  constructor (inSink, outSink, inFilter, outFilter) {
+    this.#inSink = inSink
+    this.#outSink = outSink
+    this.#inFilter = inFilter
+    this.#outFilter = outFilter
+    this.reinit()
+  }
+
+  /**
+   * @param {InEvent | OutEvent} event
+   * @param {string} hash
+   * @param {string} lastEvent
+   * @param {Filter<InEvent | OutEvent>} filter
+   * @returns
+   */
+  #drop (event, hash, lastEvent, filter) {
+    return filter?.(event, JSON.parse(lastEvent)) || hash === this.#lastOutEvent || hash === this.#lastInEvent
+  }
+
+  #filter (event, lastEvent, sink, filter) {
+    const hash = JSON.stringify(event)
+
+    if (this.#drop(event, hash, lastEvent, filter)) {
+      console.log('Dropped', event)
+      return hash
     }
 
-    console.log('Passing', subset)
-    lastArgs = text
-    return listener(passer?.(subset) ?? subset)
+    console.log('Passed', event)
+    sink?.(event)
+
+    return hash
+  }
+
+  /**
+   * @param {InEvent} event
+   */
+  in (event) {
+    console.log('IN', event)
+    this.#lastInEvent = this.#filter(event, this.#lastInEvent, this.#inSink, this.#inFilter)
+  }
+
+  /**
+   * @param {OutEvent} event
+   */
+  out (event) {
+    console.log('OUT', event)
+    this.#lastOutEvent = this.#filter(event, this.#lastOutEvent, this.#outSink, this.#outFilter)
+  }
+
+  reinit () {
+    this.#lastInEvent = '{}'
+    this.#lastOutEvent = '{}'
   }
 }
