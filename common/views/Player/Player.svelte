@@ -154,26 +154,28 @@
   $: loadDeband($settings.playerDeband, video)
 
   async function handleCurrent (file) {
-    if (file) {
-      if (thumbnailData.video?.src) URL.revokeObjectURL(video?.src)
-      Object.assign(thumbnailData, {
-        thumbnails: [],
-        interval: undefined,
-        video: undefined
-      })
-      currentTime = 0
-      targetTime = 0
-      chapters = []
-      currentSkippable = null
-      completed = false
-      if (subs) subs.destroy()
-      current = file
-      emit('current', current)
-      src = file.url
-      client.send('current', file)
-      subs = new Subtitles(video, files, current, handleHeaders)
-      video.load()
-    }
+    if (!file) return
+
+    if (thumbnailData.video?.src) URL.revokeObjectURL(video?.src)
+    Object.assign(thumbnailData, {
+      thumbnails: [],
+      interval: undefined,
+      video: undefined
+    })
+    currentTime = 0
+    targetTime = 0
+    chapters = []
+    currentSkippable = null
+    completed = false
+    if (subs) subs.destroy()
+    current = file
+    emit('current', current)
+    src = file.url
+    client.send('current', file)
+    subs = new Subtitles(video, files, current, handleHeaders)
+    video.load()
+
+    updatew2g()
   }
 
   export let media

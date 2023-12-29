@@ -17,75 +17,123 @@
   export const state = writable(false)
 
   let p2pt = null
+  let isHost = false
 
-  function joinLobby (code = generateRandomHexCode(16)) {
+  function joinLobby (code) {
+    isHost = !code
+    if (!code) {
+      code = generateRandomHexCode(16)
+    }
+
     if (p2pt) cleanup()
-    p2pt = new P2PT([
-      atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
-      atob('d3NzOi8vdHJhY2tlci53ZWJ0b3JyZW50LmRldg=='),
-      atob('d3NzOi8vdHJhY2tlci5maWxlcy5mbTo3MDczL2Fubm91bmNl'),
-      atob('d3NzOi8vdHJhY2tlci5idG9ycmVudC54eXov')
-    ], code)
-    p2pt.on('peerconnect', async peer => {
+    p2pt = new P2PT(
+      [
+        atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
+        atob('d3NzOi8vdHJhY2tlci53ZWJ0b3JyZW50LmRldg=='),
+        atob('d3NzOi8vdHJhY2tlci5maWxlcy5mbTo3MDczL2Fubm91bmNl'),
+        atob('d3NzOi8vdHJhY2tlci5idG9ycmVudC54eXov')
+      ],
+      code
+    )
+    p2pt.on('peerconnect', async (peer) => {
       console.log(peer.id)
       console.log('connect')
       const user = (await alID)?.data?.Viewer || {}
-      p2pt.send(peer,
-        JSON.stringify({
+
+      p2pt.send(
+        peer,
+        JSON.stringify([{
           type: 'init',
           id: user.id || generateRandomHexCode(16),
           user
-        })
+        }])
       )
+
+      if (isHost) {
+        p2pt.send(
+          peer,
+          JSON.stringify([
+            {
+              type: 'torrent',
+              ...playerState.magnet
+            },
+            {
+              type: 'index',
+              index: playerState.index
+            },
+            {
+              type: 'player',
+              time: playerState.time,
+              paused: playerState.paused
+            }
+          ])
+        )
+      }
     })
-    p2pt.on('peerclose', peer => {
-      peers.update(object => {
+
+    p2pt.on('peerclose', (peer) => {
+      peers.update((object) => {
         console.log(peer.id)
         console.log('close', object[peer.id])
         delete object[peer.id]
+
         return object
       })
     })
+
     p2pt.on('msg', (peer, data) => {
       console.log(data)
       data = typeof data === 'string' ? JSON.parse(data) : data
-      switch (data.type) {
-        case 'init':
-          console.log('init', data.user)
-          peers.update(object => {
-            object[peer.id] = {
-              peer,
-              user: data.user
-            }
-            return object
-          })
-          break
-        case 'player': {
-          if (setPlayerState(data)) w2gEmitter.emit('playerupdate', data)
-          break
-        }
-        case 'torrent': {
-          if (data.hash !== playerState.hash) {
-            playerState.hash = data.hash
-            add(data.magnet)
-          }
-          break
-        }
-        case 'index': {
-          if (playerState.index !== data.index) {
-            playerState.index = data.index
-            w2gEmitter.emit('setindex', data.index)
-          }
-          break
-        }
-        default: {
-          console.error('Invalid message type', data)
-        }
-      }
+      if (data instanceof Array) onBatchMsg(peer, data)
+      else onMsg(peer, data)
     })
+
     p2pt.start()
     state.set(code)
     console.log(p2pt)
+  }
+
+  function onMsg (peer, data) {
+    switch (data.type) {
+      case 'init':
+        console.log('init', data.user)
+        peers.update((object) => {
+          object[peer.id] = {
+            peer,
+            user: data.user
+          }
+          return object
+        })
+        break
+      case 'player': {
+        if (setPlayerState(data)) w2gEmitter.emit('playerupdate', data)
+        break
+      }
+      case 'torrent': {
+        if (data.hash !== playerState.hash) {
+          playerState.hash = data.hash
+          isHost = false
+          add(data.magnet)
+        }
+        break
+      }
+      case 'index': {
+        if (playerState.index !== data.index) {
+          playerState.index = data.index
+          w2gEmitter.emit('setindex', data.index)
+        }
+        break
+      }
+      default: {
+        console.error('Invalid message type', data)
+      }
+    }
+  }
+
+  function onBatchMsg (peer, data) {
+    for (const event of data) {
+      onMsg(peer, event)
+    }
   }
 
   function setPlayerState (detail) {
@@ -110,8 +158,10 @@
 
   client.on('magnet', ({ detail }) => {
     if (detail.hash !== playerState.hash) {
+      playerState.magnet = detail
       playerState.hash = detail.hash
       playerState.index = 0
+      isHost = true
       emit('torrent', detail)
     }
   })
@@ -128,10 +178,11 @@
     paused: null,
     time: null,
     hash: null,
-    index: 0
+    index: 0,
+    magnet: null
   }
 
-  IPC.on('w2glink', link => {
+  IPC.on('w2glink', (link) => {
     joinLobby(link)
     page.set('watchtogether')
   })
@@ -145,7 +196,9 @@
 
   function invite () {
     if (p2pt) {
-      navigator.clipboard.writeText(`https://miru.watch/w2g/${p2pt.identifierString}`)
+      navigator.clipboard.writeText(
+        `https://miru.watch/w2g/${p2pt.identifierString}`
+      )
       toast('Copied to clipboard', {
         description: 'Copied invite URL to clipboard',
         duration: 5000
@@ -174,15 +227,33 @@
 </script>
 
 <div class='d-flex h-full align-items-center flex-column content'>
-  <div class='font-size-50 font-weight-bold pt-20 mt-20 root'>Watch Together</div>
+  <div class='font-size-50 font-weight-bold pt-20 mt-20 root'>
+    Watch Together
+  </div>
   {#if !$state}
-    <div class='d-flex flex-row flex-wrap justify-content-center align-items-center h-full mb-20 pb-20 root'>
-      <div class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'>
-        <span class='font-size-80 material-symbols-outlined d-flex align-items-center h-full'>add</span>
-        <button class='btn btn-primary btn-lg mt-10 btn-block' type='button' use:click={() => joinLobby()}>Create Lobby</button>
+    <div
+      class='d-flex flex-row flex-wrap justify-content-center align-items-center h-full mb-20 pb-20 root'
+    >
+      <div
+        class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'
+      >
+        <span
+          class='font-size-80 material-symbols-outlined d-flex align-items-center h-full'
+        >add</span
+        >
+        <button
+          class='btn btn-primary btn-lg mt-10 btn-block'
+          type='button'
+          use:click={() => joinLobby()}>Create Lobby</button
+        >
       </div>
-      <div class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'>
-        <span class='font-size-80 material-symbols-outlined d-flex align-items-center h-full'>group_add</span>
+      <div
+        class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'
+      >
+        <span
+          class='font-size-80 material-symbols-outlined d-flex align-items-center h-full'
+        >group_add</span
+        >
         <h2 class='font-weight-bold'>Join Lobby</h2>
         <input
           type='text'
@@ -190,7 +261,8 @@
           autocomplete='off'
           bind:value={joinText}
           data-option='search'
-          placeholder='Lobby code or link' />
+          placeholder='Lobby code or link'
+        />
       </div>
     </div>
   {:else}
