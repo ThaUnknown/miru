@@ -1,23 +1,42 @@
 /**
  * @template T
- * @typedef {Omit<T, 'type'>} EventData
+ * @typedef {Omit<T, 'type'>} EventData<T>
  */
 
+/**
+ * @typedef {
+ *   | { type: 'init' } & SessionInitEvent
+ *   | { type: 'magnet' } & MagnetLinkEvent
+ *   | { type: 'index' } & MediaIndexEvent
+ *   | { type: 'player' } & PlayerStateEvent
+ * } MsgData
+ * @typedef {'init' | 'magnet' | 'index' | 'player'} EventType
+ */
+
+/**
+ * @exports SyncEventBase
+ */
 export class SyncEventBase {
   /**
-   * @type {string}
+   * @type {EventType}
    */
   type
 
   /**
-   * @param {string} type
+   * @param {EventType} type
    */
   constructor (type) {
     this.type = type
   }
 }
 
+/**
+ * @exports SessionInitEvent
+ */
 export class SessionInitEvent extends SyncEventBase {
+  /**
+   * @type {'init'}
+   */
   static type = 'init'
 
   /**
@@ -66,11 +85,17 @@ export class SessionInitEvent extends SyncEventBase {
   }
 }
 
+/**
+ * @exports MagnetLinkEvent
+ */
 export class MagnetLinkEvent extends SyncEventBase {
+  /**
+   * @type {'magnet'}
+   */
   static type = 'magnet'
 
   /**
-   * @type {string}
+   * @type {unknown}
    */
   magnet
   /**
@@ -89,7 +114,13 @@ export class MagnetLinkEvent extends SyncEventBase {
   }
 }
 
+/**
+ * @exports MediaIndexEvent
+ */
 export class MediaIndexEvent extends SyncEventBase {
+  /**
+   * @type {'index'}
+   */
   static type = 'index'
 
   /**
@@ -106,7 +137,13 @@ export class MediaIndexEvent extends SyncEventBase {
   }
 }
 
+/**
+ * @exports PlayerStateEvent
+ */
 export class PlayerStateEvent extends SyncEventBase {
+  /**
+   * @type {'player'}
+   */
   static type = 'player'
 
   /**
