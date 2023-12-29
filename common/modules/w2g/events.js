@@ -5,10 +5,10 @@
 
 /**
  * @typedef {
-    | { type: 'init' } & SessionInitEvent
-    | { type: 'magnet' } & MagnetLinkEvent
-    | { type: 'index' } & MediaIndexEvent
-    | { type: 'player' } & PlayerStateEvent
+    | { type: SessionInitEvent.type } & SessionInitEvent
+    | { type: MagnetLinkEvent.type } & MagnetLinkEvent
+    | { type: MediaIndexEvent.type } & MediaIndexEvent
+    | { type: PlayerStateEvent.type } & PlayerStateEvent
   } MsgData
  * @typedef {'init' | 'magnet' | 'index' | 'player'} EventType
  */
