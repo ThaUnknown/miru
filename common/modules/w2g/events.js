@@ -104,13 +104,6 @@ export class MediaIndexEvent extends SyncEventBase {
   }
 }
 
-export class LeaveEvent extends SyncEventBase {
-  static type = 'leave'
-  constructor () {
-    super(LeaveEvent.type)
-  }
-}
-
 export class PlayerStateEvent extends SyncEventBase {
   static type = 'player'
 

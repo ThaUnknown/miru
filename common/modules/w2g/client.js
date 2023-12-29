@@ -1,7 +1,7 @@
 import P2PT from 'p2pt'
 import { generateRandomHexCode } from '../util'
 import { alID } from '../anilist'
-import { MediaIndexEvent, SessionInitEvent, PlayerStateEvent, MagnetLinkEvent, LeaveEvent } from './events'
+import { MediaIndexEvent, SessionInitEvent, PlayerStateEvent, MagnetLinkEvent } from './events'
 import { add } from '../torrent'
 
 export class W2GClient {
@@ -128,11 +128,6 @@ export class W2GClient {
         this.#session.onPlayerStateUpdated?.(data)
         break
       }
-      // Makes peer deletion faster when pissible
-      case LeaveEvent.type: {
-        this.#onPeerclose(peer)
-        break
-      }
       default:
         console.error('Invalid message type', data)
     }
@@ -155,7 +150,6 @@ export class W2GClient {
   }
 
   dispose () {
-    this.#emit(new LeaveEvent())
     this.#p2pt.destroy()
     this.#p2pt = null
   }
