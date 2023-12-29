@@ -5,6 +5,7 @@
   import { page } from '@/App.svelte'
   import { click } from '@/modules/click.js'
   import { W2GSession } from '@/modules/w2g'
+  import { createFilterProxy } from '@/modules/w2g/filter';
   import IPC from '@/modules/ipc.js'
   import 'browser-event-target-emitter'
 
@@ -20,7 +21,13 @@
   session.onMediaIndexUpdated = (i) => w2gEmitter.emit('setindex', i)
   session.onPlayerStateUpdated = (state) => w2gEmitter.emit('playerupdate', state)
 
-  w2gEmitter.on('player', ({ detail }) => session.localPlayerStateChanged(detail))
+  w2gEmitter.on('player',
+    createFilterProxy(
+      (detail) => session.localPlayerStateChanged(detail),
+      ({ detail }) => detail
+    )
+  )
+
   w2gEmitter.on('index', ({ detail }) => session.localMediaIndexChanged(detail.index))
   client.on('magnet', ({ detail }) => session.localMagnetLink(detail))
 

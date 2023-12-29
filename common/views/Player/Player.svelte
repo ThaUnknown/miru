@@ -19,11 +19,7 @@
 
   const emit = createEventDispatcher()
 
-  const lastPlayerUpdateEvent = { time: 0, paused: true }
   w2gEmitter.on('playerupdate', ({ detail }) => {
-    lastPlayerUpdateEvent.paused = detail.paused
-    lastPlayerUpdateEvent.time = detail.time
-
     currentTime = detail.time
     paused = detail.paused
   })
@@ -40,28 +36,14 @@
     }
   }
 
-  let lastUpdateCause = 'pause'
   /**
    * @param {Event | undefined} e
    */
-  function updatew2g (e) {
-    const event = {
+  function updatew2g () {
+    w2gEmitter.emit('player', {
       time: Math.floor(currentTime),
       paused
-    }
-
-    // Prevent seek event after pause
-    if(lastUpdateCause === 'pause' && e?.type === 'seeked') {
-      lastUpdateCause = e?.type
-      return
-    }
-    
-    lastUpdateCause = e?.type
-
-    // Prevent sending same state again
-    if(event.paused !== lastPlayerUpdateEvent.paused || event.time !== lastPlayerUpdateEvent.time) {
-      w2gEmitter.emit('player', event)
-    }
+    })
   }
 
   export let miniplayer = false
@@ -200,7 +182,7 @@
     video.load()
 
     // Initially fire 'player' event to initialize session fields
-    updatew2g(undefined)
+    updatew2g()
   }
 
   export let media
