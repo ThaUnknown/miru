@@ -10,7 +10,7 @@
     | { type: MediaIndexEvent.type } & MediaIndexEvent
     | { type: PlayerStateEvent.type } & PlayerStateEvent
   } MsgData
- * @typedef {'init' | 'magnet' | 'index' | 'player'} EventType
+ * @typedef {MsgData['type']} EventType
  */
 
 /**
@@ -18,12 +18,12 @@
  */
 export class SyncEventBase {
   /**
-   * @type {EventType}
+   * @type {String}
    */
   type
 
   /**
-   * @param {EventType} type
+   * @param {String} type
    */
   constructor (type) {
     this.type = type
