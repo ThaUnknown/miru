@@ -24,7 +24,9 @@
   w2gEmitter.on('player',
     createFilterProxy(
       (detail) => session.localPlayerStateChanged(detail),
-      ({ detail }) => detail
+      ({ detail }) => detail,
+      // Do not send initial state if not host
+      (arg) => session.isHost === false && arg.time === 0
     )
   )
 
