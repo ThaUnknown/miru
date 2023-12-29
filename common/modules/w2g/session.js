@@ -141,7 +141,10 @@ export class W2GSession {
    */
   localMagnetLink (magnet) {
     this.#magnet = magnet
-    this.#isHost = true
+    // Prevent uninitialized session from becoming host
+    if (this.initializated) {
+      this.#isHost = true
+    }
 
     this.#client?.onMagnetLink(magnet)
   }
