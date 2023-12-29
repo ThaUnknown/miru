@@ -1,12 +1,10 @@
 <script context='module'>
   import { writable } from 'simple-store-svelte'
-  import { alID } from '@/modules/anilist.js'
-  import { add, client } from '@/modules/torrent.js'
-  import { generateRandomHexCode } from '@/modules/util.js'
+  import { client } from '@/modules/torrent.js'
   import { toast } from 'svelte-sonner'
   import { page } from '@/App.svelte'
-  import P2PT from 'p2pt'
   import { click } from '@/modules/click.js'
+  import { W2GSession } from '@/modules/w2g'
   import IPC from '@/modules/ipc.js'
   import 'browser-event-target-emitter'
 
@@ -16,173 +14,26 @@
 
   export const state = writable(false)
 
-  let p2pt = null
-  let isHost = false
+  const session = new W2GSession()
+
+  session.onPeerListUpdated = (p) => peers.update(() => p)
+  session.onMediaIndexUpdated = (i) => w2gEmitter.emit('setindex', i)
+  session.onPlayerStateUpdated = (state) => w2gEmitter.emit('playerupdate', state)
+
+  w2gEmitter.on('player', ({ detail }) => session.localPlayerStateChanged(detail))
+  w2gEmitter.on('index', ({ detail }) => session.localMediaIndexChanged(detail.index))
+  client.on('magnet', ({ detail }) => session.localMagnetLink(detail))
+
+  function cleanup () {
+    state.set(false)
+    peers.set({})
+  }
 
   function joinLobby (code) {
-    isHost = !code
-    code ??= generateRandomHexCode(16)
+    cleanup()
+    state.set(session.reinitialize(code))
 
-    if (p2pt) cleanup()
-    p2pt = new P2PT(
-      [
-        atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
-        atob('d3NzOi8vdHJhY2tlci53ZWJ0b3JyZW50LmRldg=='),
-        atob('d3NzOi8vdHJhY2tlci5maWxlcy5mbTo3MDczL2Fubm91bmNl'),
-        atob('d3NzOi8vdHJhY2tlci5idG9ycmVudC54eXov')
-      ],
-      code
-    )
-    p2pt.on('peerconnect', async (peer) => {
-      console.log(peer.id)
-      console.log('connect')
-      const user = (await alID)?.data?.Viewer || {}
-
-      p2pt.send(
-        peer,
-        JSON.stringify({
-          type: 'init',
-          id: user.id || generateRandomHexCode(16),
-          user
-        })
-      )
-
-      if (isHost) {
-        p2pt.send(
-          peer,
-          JSON.stringify({
-            type: 'batch',
-            batch: [
-              {
-                type: 'torrent',
-                ...playerState.magnet
-              },
-              {
-                type: 'index',
-                index: playerState.index
-              },
-              {
-                type: 'player',
-                time: playerState.time,
-                paused: playerState.paused
-              }
-            ]
-          })
-        )
-      }
-    })
-
-    p2pt.on('peerclose', (peer) => {
-      peers.update((object) => {
-        console.log(peer.id)
-        console.log('close', object[peer.id])
-        delete object[peer.id]
-
-        return object
-      })
-    })
-
-    p2pt.on('msg', (peer, data) => {
-      console.log(data)
-      data = typeof data === 'string' ? JSON.parse(data) : data
-      onMsg(peer, data)
-    })
-
-    p2pt.start()
-    state.set(code)
-    console.log(p2pt)
-  }
-
-  function onMsg (peer, data) {
-    switch (data.type) {
-      case 'init':
-        console.log('init', data.user)
-        peers.update((object) => {
-          object[peer.id] = {
-            peer,
-            user: data.user
-          }
-          return object
-        })
-        break
-      case 'player': {
-        if (setPlayerState(data)) w2gEmitter.emit('playerupdate', data)
-        break
-      }
-      case 'torrent': {
-        if (data.hash !== playerState.hash) {
-          playerState.hash = data.hash
-          isHost = false
-          add(data.magnet)
-        }
-        break
-      }
-      case 'index': {
-        if (playerState.index !== data.index) {
-          playerState.index = data.index
-          w2gEmitter.emit('setindex', data.index)
-        }
-        break
-      }
-      case 'batch': {
-        onBatchMsg(peer, data.batch)
-      }
-      default: {
-        console.error('Invalid message type', data)
-      }
-    }
-  }
-
-  function onBatchMsg (peer, data) {
-    for (const event of data) {
-      onMsg(peer, event)
-    }
-  }
-
-  function setPlayerState (detail) {
-    let emit = false
-    for (const key of ['paused', 'time']) {
-      emit = emit || detail[key] !== playerState[key]
-      playerState[key] = detail[key]
-    }
-    return emit
-  }
-
-  w2gEmitter.on('player', ({ detail }) => {
-    if (setPlayerState(detail)) emit('player', detail)
-  })
-
-  w2gEmitter.on('index', ({ detail }) => {
-    if (playerState.index !== detail.index) {
-      emit('index', detail)
-      playerState.index = detail.index
-    }
-  })
-
-  client.on('magnet', ({ detail }) => {
-    if (detail.hash !== playerState.hash) {
-      playerState.magnet = detail
-      playerState.hash = detail.hash
-      playerState.index = 0
-      isHost = true
-      emit('torrent', detail)
-    }
-  })
-
-  function emit (type, data) {
-    if (p2pt) {
-      for (const { peer } of Object.values(peers.value)) {
-        p2pt.send(peer, { type, ...data })
-      }
-    }
-  }
-
-  const playerState = {
-    paused: null,
-    time: null,
-    hash: null,
-    index: 0,
-    magnet: null
+    if (!code) invite()
   }
 
   IPC.on('w2glink', (link) => {
@@ -190,23 +41,13 @@
     page.set('watchtogether')
   })
 
-  function cleanup () {
-    state.set(false)
-    peers.set({})
-    p2pt.destroy()
-    p2pt = null
-  }
-
   function invite () {
-    if (p2pt) {
-      navigator.clipboard.writeText(
-        `https://miru.watch/w2g/${p2pt.identifierString}`
-      )
-      toast('Copied to clipboard', {
-        description: 'Copied invite URL to clipboard',
-        duration: 5000
-      })
-    }
+    if (!session.initializated) return
+    navigator.clipboard.writeText(session.inviteLink)
+    toast('Copied to clipboard', {
+      description: 'Copied invite URL to clipboard',
+      duration: 5000
+    })
   }
 </script>
 

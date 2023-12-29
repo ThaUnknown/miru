@@ -19,7 +19,11 @@
 
   const emit = createEventDispatcher()
 
+  const lastPlayerUpdateEvent = { time: 0, paused: true }
   w2gEmitter.on('playerupdate', ({ detail }) => {
+    lastPlayerUpdateEvent.paused = detail.paused
+    lastPlayerUpdateEvent.time = detail.time
+
     currentTime = detail.time
     paused = detail.paused
   })
@@ -37,7 +41,14 @@
   }
 
   function updatew2g () {
-    w2gEmitter.emit('player', { time: Math.floor(currentTime), paused })
+    const event = {
+      time: Math.floor(currentTime),
+      paused
+    }
+
+    if(event.paused !== lastPlayerUpdateEvent.paused || event.time !== lastPlayerUpdateEvent.time) {
+      w2gEmitter.emit('player', event)
+    }
   }
 
   export let miniplayer = false
