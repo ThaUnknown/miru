@@ -27,11 +27,12 @@
   function cleanup () {
     state.set(false)
     peers.set({})
+    session.dispose()
   }
 
   function joinLobby (code) {
     cleanup()
-    state.set(session.reinitialize(code))
+    state.set(session.createClient(code))
 
     if (!code) invite()
   }
