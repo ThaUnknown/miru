@@ -1,27 +1,8 @@
 import { W2GClient } from './client.js'
 
-// #region Types
-
-/**
- * @typedef {Object} Magnet
- * @property {string} hash
- * @property {unknown} magnet
- */
-
 /**
  * @typedef {Record<string, {user: any, peer: import('p2pt').Peer<any>}>} PeerList
  */
-
-/**
- * @template T
- * @typedef {import('./events.js').EventData<T>} EventData<T>
- */
-
-/**
- * @typedef {import('./events.js').PlayerStateEvent} PlayerStateEvent
- */
-
-// #endregion
 
 export class W2GSession {
   /**
@@ -46,7 +27,7 @@ export class W2GSession {
   }
 
   /**
-   * @type {Magnet | null}
+   * @type {import('./events.js').EventData<import('./events.js').MagnetLinkEvent> | null}
    */
   #magnet = null
 
@@ -131,13 +112,13 @@ export class W2GSession {
 
   /**
    * Fires when 'player' message received from another peer.
-   * @type {(state: EventData<PlayerStateEvent>) => void | null}
+   * @type {(state: import('./events.js').EventData<import('./events.js').PlayerStateEvent>) => void | null}
   */
   onPlayerStateUpdated
 
   /**
    * Should be called when client picking torrent
-   * @param {Magnet} magnet
+   * @param {import('./events.js').EventData<import('./events.js').MagnetLinkEvent>} magnet
    */
   localMagnetLink (magnet) {
     this.#magnet = magnet
@@ -161,7 +142,7 @@ export class W2GSession {
 
   /**
    * Should be called when player state changed locally
-   * @param {EventData<PlayerStateEvent>} state
+   * @param {import('./events.js').EventData<import('./events.js').PlayerStateEvent>} state
    */
   localPlayerStateChanged (state) {
     this.#player.paused = state.paused

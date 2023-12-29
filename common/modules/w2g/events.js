@@ -4,6 +4,7 @@
  */
 
 /**
+ * Doomed to syntax highlight to fail https://github.com/microsoft/TypeScript/issues/16179
  * @typedef {
     | { type: SessionInitEvent.type } & SessionInitEvent
     | { type: MagnetLinkEvent.type } & MagnetLinkEvent

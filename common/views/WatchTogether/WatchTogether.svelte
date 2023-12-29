@@ -16,11 +16,11 @@
   export const state = writable(false)
 
   const session = new W2GSession()
-  
+
   /**
    * @type {BidirectionalFilteredEventBus<
-   *  import('@/modules/w2g/events.js').EventData<PlayerStateEvent>,
-   *  import('@/modules/w2g/events.js').EventData<PlayerStateEvent>
+   *  import('@/modules/w2g/events.js').EventData<import('@/modules/w2g/events.js').PlayerStateEvent>,
+   *  import('@/modules/w2g/events.js').EventData<import('@/modules/w2g/events.js').PlayerStateEvent>
    * >}
    */
   const bus = new BidirectionalFilteredEventBus(
@@ -72,7 +72,6 @@
 
 <script>
   import Lobby from './Lobby.svelte'
-    import { PlayerStateEvent } from '@/modules/w2g/events';
 
   let joinText
 

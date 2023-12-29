@@ -4,23 +4,6 @@ import { alID } from '../anilist.js'
 import { MediaIndexEvent, SessionInitEvent, PlayerStateEvent, MagnetLinkEvent } from './events.js'
 import { add } from '../torrent.js'
 
-// #region Types
-
-/**
- * @typedef {import('./session.js').Magnet} Magnet
- * @typedef {import('./session.js').W2GSession} W2GSession
- * @typedef {import('p2pt').Peer<any>} Peer
- * @typedef {import('./events.js').SyncEventBase} SyncEventBase
- * @typedef {import('./events.js').MsgData} MsgData
- */
-
-/**
- * @template T
- * @typedef {import('./events.js').EventData<T>} EventData<T>
- */
-
-// #endregion
-
 export class W2GClient {
   static #announce = [
     atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
@@ -38,7 +21,7 @@ export class W2GClient {
   }
 
   /**
-   * @param {W2GSession} session
+   * @param {import('./session.js').W2GSession} session
    * @param {string} code lobby code
    */
   constructor (session, code) {
@@ -55,7 +38,7 @@ export class W2GClient {
   }
 
   /**
-   * @param {Magnet} magnet
+   * @param {import('./events.js').EventData<import('./events.js').MagnetLinkEvent>} magnet
    */
   onMagnetLink (magnet) {
     this.#emit(new MagnetLinkEvent(magnet))
@@ -82,8 +65,8 @@ export class W2GClient {
   }
 
   /**
-   * @param {Peer} peer
-   * @param {SyncEventBase} event
+   * @param {import('p2pt').Peer} peer
+   * @param {import('./events.js').SyncEventBase} event
    */
   #sendEvent (peer, event) {
     console.log('out W2GMsg', event)
@@ -92,8 +75,8 @@ export class W2GClient {
 
   /**
    * Should be called only on 'peerconnect'
-   * @param {Peer} peer
-   * @param {W2GSession} state
+   * @param {import('p2pt').Peer} peer
+   * @param {import('./session.js').W2GSession} state
    */
   #sendInitialSessionState (peer, state) {
     this.#sendEvent(peer, new MagnetLinkEvent(state.magnet))
@@ -110,8 +93,8 @@ export class W2GClient {
   }
 
   /**
-   * @param {Peer} peer
-   * @param {MsgData} data
+   * @param {import('p2pt').Peer} peer
+   * @param {import('./events.js').MsgData} data
    */
   #onMsg (peer, data) {
     data = typeof data === 'string' ? JSON.parse(data) : data
@@ -154,7 +137,7 @@ export class W2GClient {
   }
 
   /**
-   * @param {SyncEventBase} event
+   * @param {import('./events.js').SyncEventBase} event
    */
   #emit (event) {
     if (!this.#p2pt) return
