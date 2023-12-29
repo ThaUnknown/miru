@@ -12,7 +12,7 @@ import { W2GClient } from './client'
 
 export class W2GSession {
   /**
-   * @type {Omit<import('./events').PlayerStateEvent, 'type'>}
+   * @type {import('./events').EventData<import('./events').PlayerStateEvent>}
    */
   #player = {
     paused: true,
@@ -60,12 +60,11 @@ export class W2GSession {
   get inviteLink () { return this.#client.inviteLink }
 
   /**
-   * Reinitializes session with underlying client
+   * Creates client initializing connection
    * @param {string | null} code initial code if null new generated and returned
    * @returns p2p code
    */
-  reinitialize (code) {
-    this.dispose()
+  createClient (code) {
     this.#client = new W2GClient(this, code)
 
     return this.#client.code
@@ -77,6 +76,7 @@ export class W2GSession {
   dispose () {
     this.#client?.dispose()
     this.#client = null
+    this.#isHost = false
     this.#peers = {}
   }
 
@@ -102,14 +102,13 @@ export class W2GSession {
 
   /**
    * Should be called when client picking torrent
-   * @param {{hash: string, magnet: string}} magnet
+   * @param {Magnet} magnet
    */
   localMagnetLink (magnet) {
-    this.#index = 0
     this.#magnet = magnet
     this.#isHost = true
 
-    this.#client?.onMagnetLinkEvent(magnet)
+    this.#client?.onMagnetLink(magnet)
   }
 
   /**
@@ -130,7 +129,7 @@ export class W2GSession {
     this.#player.paused = state.paused
     this.#player.time = state.time
 
-    this.#client?.onPlayerStateChangedEvent(this.#player)
+    this.#client?.onPlayerStateChanged(this.#player)
   }
 
   // #endregion
