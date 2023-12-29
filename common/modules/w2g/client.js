@@ -1,7 +1,7 @@
 import P2PT from 'p2pt'
 import { generateRandomHexCode } from '../util'
 import { alID } from '../anilist'
-import { BatchEvent, MediaIndexEvent, SessionInitEvent, PlayerStateEvent, MagnetLinkEvent } from './events'
+import { MediaIndexEvent, SessionInitEvent, PlayerStateEvent, MagnetLinkEvent, LeaveEvent } from './events'
 import { add } from '../torrent'
 
 export class W2GClient {
@@ -12,19 +12,10 @@ export class W2GClient {
     atob('d3NzOi8vdHJhY2tlci5idG9ycmVudC54eXov')
   ]
 
-  /**
-   * @type {import('./session').W2GSession}
-   */
   #session
+  #p2pt
+  #code
 
-  /**
-   * @type {P2PT | null}
-  */
-  #p2pt = null
-  /**
-   * @type {string}
-   */
-  #code = null
   get code () { return this.#code }
 
   // @ts-ignore
@@ -50,22 +41,22 @@ export class W2GClient {
   /**
    * @param {import('./session').Magnet} magnet
    */
-  onMagnetLinkEvent (magnet) {
+  onMagnetLink (magnet) {
     this.#emit(new MagnetLinkEvent(magnet))
   }
 
+  /**
+   * @param {number} index
+   */
   onMediaIndexChanged (index) {
-    if (index === this.#session.index) return
     this.#emit(new MediaIndexEvent(index))
   }
 
-  onPlayerStateChangedEvent (state) {
+  /**
+   * @param {import('./events').EventData<PlayerStateEvent>} state
+   */
+  onPlayerStateChanged (state) {
     this.#emit(new PlayerStateEvent(state))
-  }
-
-  dispose () {
-    this.#p2pt.destroy()
-    this.#p2pt = null
   }
 
   #wireEvents () {
@@ -84,15 +75,14 @@ export class W2GClient {
   }
 
   /**
+   * Should be called only on 'peerconnect'
    * @param {import('p2pt').Peer} peer
    * @param {import('./session').W2GSession} state
    */
-  #sendSessionState (peer, state) {
-    this.#sendEvent(peer, new BatchEvent([
-      new MagnetLinkEvent(state.magnet),
-      new MediaIndexEvent(state.index),
-      new PlayerStateEvent(state.player)
-    ]))
+  #sendInitialSessionState (peer, state) {
+    this.#sendEvent(peer, new MagnetLinkEvent(state.magnet))
+    this.#sendEvent(peer, new MediaIndexEvent(state.index))
+    this.#sendEvent(peer, new PlayerStateEvent(state.player))
   }
 
   async #onPeerconnect (peer) {
@@ -100,13 +90,13 @@ export class W2GClient {
 
     this.#sendEvent(peer, new SessionInitEvent(user.id || generateRandomHexCode(16), user))
 
-    if (this.#session.isHost) this.#sendSessionState(peer, this.#session)
+    if (this.#session.isHost) this.#sendInitialSessionState(peer, this.#session)
   }
 
   /**
    *
    * @param {import('p2pt').Peer} peer
-   * @param {import('./events').SyncEventBase} data
+   * @param {any} data
    */
   #onMsg (peer, data) {
     data = typeof data === 'string' ? JSON.parse(data) : data
@@ -122,31 +112,25 @@ export class W2GClient {
         this.#session.onPeerListUpdated?.(this.#session.peers)
         break
       case MagnetLinkEvent.type: {
-        // @ts-ignore
         const { hash, magnet } = data
-        if (hash === this.#session.magnet?.hash) break
+        if (hash !== this.#session.magnet?.hash) {
+          this.#session.isHost = false
+          add(magnet)
+        }
 
-        this.#session.isHost = false
-        add(magnet)
         break
       }
       case MediaIndexEvent.type: {
-        // @ts-ignore
         this.#session.onMediaIndexUpdated?.(data.index)
         break
       }
       case PlayerStateEvent.type: {
-        // @ts-ignore
         this.#session.onPlayerStateUpdated?.(data)
         break
       }
-      case BatchEvent.type: {
-        // @ts-ignore
-        const { batch } = data
-
-        for (const event of batch) {
-          this.#onMsg(peer, event)
-        }
+      // Makes peer deletion faster when pissible
+      case LeaveEvent.type: {
+        this.#onPeerclose(peer)
         break
       }
       default:
@@ -168,5 +152,11 @@ export class W2GClient {
     for (const { peer } of Object.values(this.#session.peers)) {
       this.#sendEvent(peer, event)
     }
+  }
+
+  dispose () {
+    this.#emit(new LeaveEvent())
+    this.#p2pt.destroy()
+    this.#p2pt = null
   }
 }
