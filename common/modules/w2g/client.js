@@ -79,7 +79,10 @@ export class W2GClient {
     if (this.#session.isHost) this.#sendInitialSessionState(peer, this.#session)
   }
 
-  /** @param {import('p2pt').Peer} peer */
+  /**
+   * @param {import('p2pt').Peer} peer
+   * @param {Event} data
+   */
   #onMsg (peer, data) {
     data = typeof data === 'string' ? JSON.parse(data) : data
 
@@ -94,7 +97,7 @@ export class W2GClient {
         this.#session.onPeerListUpdated?.(this.#session.peers)
         break
       case EventTypes.MagnetLinkEvent: {
-        const { hash, magnet } = data
+        const { hash, magnet } = data.payload
         if (hash !== this.#session.magnet?.payload.hash) {
           this.#session.isHost = false
           add(magnet)
@@ -103,11 +106,11 @@ export class W2GClient {
         break
       }
       case EventTypes.MediaIndexEvent: {
-        this.#session.onMediaIndexUpdated?.(data.index)
+        this.#session.onMediaIndexUpdated?.(data.payload.index)
         break
       }
       case EventTypes.PlayerStateEvent: {
-        this.#session.onPlayerStateUpdated?.(data)
+        this.#session.onPlayerStateUpdated?.(data.payload)
         break
       }
       default:
