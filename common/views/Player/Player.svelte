@@ -1408,11 +1408,6 @@
     height: 100%;
   }
 
-  @media (pointer: none), (pointer: coarse) {
-    .bottom .volume .custom-range {
-      width: 5vw;
-    }
-  }
   .h-20 {
     height: 2rem
   }
@@ -1453,8 +1448,8 @@
       display: block !important;
     }
     .miniplayer .mobile-focus-target:focus-visible {
-    background: hsla(209, 100%, 55%, 0.3);
-  }
+      background: hsla(209, 100%, 55%, 0.3);
+    }
   }
 
 </style>

@@ -16,8 +16,8 @@
   }
 </script>
 
-<div class='position-relative play-container' on:mousemove={followMouse} bind:this={container} role='none'>
-  <button class='btn rounded-circle btn-square btn-lg d-flex align-items-center justify-content-center position-absolute z-100 w-50 h-50' style:--left={left + 'px'} style:--top={top + 'px'} on:click={() => { show.value = true }}>
+<div class='position-relative play-container' on:mousemove={followMouse} on:wheel={followMouse} bind:this={container} role='none' on:click={() => { show.value = true }}>
+  <button class='btn rounded-circle btn-square btn-lg d-flex align-items-center justify-content-center position-absolute z-100 w-50 h-50' style:--left={left + 'px'} style:--top={top + 'px'}>
     <span class='material-symbols-outlined filled text-white'>play_arrow</span>
   </button>
   <img src='app.webp' alt='app' class='mw-full px-20 w-full app-image' />

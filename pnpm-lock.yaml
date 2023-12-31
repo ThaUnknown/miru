@@ -185,8 +185,8 @@ importers:
         specifier: ^1.0.5
         version: 1.0.5
       svelte-sonner:
-        specifier: ^0.3.6
-        version: 0.3.6(svelte@4.2.7)
+        specifier: ^0.3.9
+        version: 0.3.9(svelte@4.2.7)
       video-deband:
         specifier: ^1.0.5
         version: 1.0.5
@@ -8115,8 +8115,8 @@ packages:
       typescript: 5.3.2
     dev: true
 
-  /svelte-sonner@0.3.6(svelte@4.2.7):
-    resolution: {integrity: sha512-MwVhh4nxCqTBLHYamRw+q9erZC2Y4wuL8mUa7phgq/9kq9VdTr+/6S1PX1CnALJPy2rkc7TlIECYTJavUkoWlg==}
+  /svelte-sonner@0.3.9(svelte@4.2.7):
+    resolution: {integrity: sha512-uwTidxYTZ5Sp8UjGu7N150gLG8EV2SS81rXd8deXpFDMTCKHGxE22UHV0WJxw64SdJHNfXRKorkR5wWZDkh/nA==}
     peerDependencies:
       svelte: '>=3 <5'
     dependencies:

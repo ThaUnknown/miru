@@ -21,10 +21,6 @@ const config = {
   }
 }
 
-if (mode === 'development') {
-  config.server = {
-    url: 'http://localhost:5001/index.html',
-    cleartext: true
-  }
-}
+if (mode === 'development') config.server.url = 'http://localhost:5001/index.html'
+
 module.exports = config

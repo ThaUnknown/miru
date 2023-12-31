@@ -26,7 +26,7 @@
 <div class='container-xl'>
   <div class='my-20 pb-20' id='about'>
     <h1 class='font-weight-bold text-white content text-center'>Torrenting made simple.</h1>
-    <p class='text-muted font-size-18 content text-center pb-20'> Feature-rich yet wonderfully simple. Miru delivers what you want effortlessly.<br />No complex configurations or high entry barriers — Miru is functional out of the box.</p>
+    <p class='text-muted font-size-18 content text-center pb-20'>Feature-rich yet wonderfully simple. Miru delivers what you want effortlessly.<br />No complex configurations or high entry barriers — Miru is perfectly functional out of the box.</p>
     <div class='row pt-20'>
       <div class='col-md-4 col-12'>
         <div class='content'>
