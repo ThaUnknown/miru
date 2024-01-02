@@ -6,10 +6,11 @@ dist/
 build/
 
 # Dependencies
-node_modules/
+node_modules
 **/*.der
 **/*.pem
 **/*.keystore
 **/*.jks
+**/node_modules
 
 package-lock.json

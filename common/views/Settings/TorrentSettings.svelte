@@ -16,7 +16,8 @@
   <select class='form-control bg-dark w-300 mw-full' bind:value={settings.rssQuality}>
     <option value='1080' selected>1080p</option>
     <option value='720'>720p</option>
-    <option value='480||540'>SD</option>
+    <option value='540'>540p</option>
+    <option value='480'>480p</option>
     <option value="">None</option>
   </select>
 </SettingCard>

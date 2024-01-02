@@ -14,7 +14,7 @@
     "paths": {
       "@/*": ["./common/*"],
     },
-    "types": ["@cloudflare/workers-types"],
+    "types": ["@cloudflare/workers-types", "./types.d.ts"],
   },
-  "exclude": ["node_modules", "dist", "build", "git_modules", "**/node_modules", "**/dist", "**/build", "**/git_modules", "**/node_modules/**", "**/dist/**", "**/build/**", "**/git_modules/**"]
+  "exclude": ["node_modules", "dist", "build", "git_modules", ".svelte-kit", "**/node_modules", "**/dist", "**/build", "**/git_modules", "**/.svelte-kit", "**/node_modules/*", "**/dist/*", "**/build/*", "**/git_modules/*", "**/.svelte-kit/*"]
 }

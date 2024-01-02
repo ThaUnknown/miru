@@ -148,17 +148,21 @@
           </thead>
           <tbody class='pointer'>
             {#each filtered as row}
-              <tr class='border-0' class:text-secondary={row.best} use:click={() => play(row)}>
+              <tr class='border-0' class:text-secondary={row.type === 'best'} class:text-danger={row.type === 'alt'} class:text-success={!row.type && row.verified} use:click={() => play(row)}>
                 <td class='py-10 pl-20 pr-0'>
-                  {#if row.best}
+                  {#if row.type === 'best'}
                     <div class='material-symbols-outlined font-size-24 symbol-bold' title='Best Release'>
                       star
                     </div>
+                  {:else if row.type === 'alt'}
+                    <div class='material-symbols-outlined font-size-24 symbol-bold' title='Alt Release'>
+                      star
+                    </div>
                   {:else if row.verified}
-                    <div class='text-success material-symbols-outlined font-size-24 symbol-bold' title='Verified'>
+                    <div class='material-symbols-outlined font-size-24 symbol-bold' title='Verified'>
                       verified
                     </div>
-                  {:else if row.batch}
+                  {:else if row.type === 'batch'}
                     <div class='text-light material-symbols-outlined font-size-24 symbol-bold' title='Batch'>
                       database
                     </div>
@@ -177,7 +181,7 @@
                 <td class='py-10 px-20'>{row.seeders ?? '?'}</td>
                 <td class='py-10 px-20'>{row.leechers ?? '?'}</td>
                 <td class='py-10 px-20'>{row.downloads ?? '?'}</td>
-                <td class='py-10 px-20 text-nowrap'>{since(row.date)}</td>
+                <td class='py-10 px-20 text-nowrap'>{row.date ? since(row.date) : '?'}</td>
               </tr>
             {/each}
           </tbody>

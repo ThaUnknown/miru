@@ -1,31 +1,33 @@
-import { mapBestRelease, anitomyscript } from '../anime.js'
+import { anitomyscript } from '../anime.js'
 import { fastPrettyBytes, sleep } from '../util.js'
 import { exclusions } from '../rss.js'
 import { settings } from '@/modules/settings.js'
 import { alRequest } from '../anilist.js'
 import { client } from '@/modules/torrent.js'
+import mapBestSneedexReleases from './sneedex.js'
+import getSeedexBests from './seadex.js'
 
 export default async function ({ media, episode }) {
   const json = await getAniDBFromAL(media)
-
   if (typeof json !== 'object') throw new Error(json || 'No mapping found.')
-
-  const aniDBEpisode = await getAniDBEpisodeFromAL({ media, episode }, json)
 
   const movie = isMovie(media) // don't query movies with qualities, to allow 4k
 
-  let entries = await getToshoEntries(media, aniDBEpisode, json, !movie && settings.value.rssQuality)
+  const aniDBEpisode = await getAniDBEpisodeFromAL({ media, episode }, json)
+  let entries = await getToshoEntriesForMedia(media, aniDBEpisode, json, !movie && settings.value.rssQuality)
+  if (!entries.length && !movie) entries = await getToshoEntriesForMedia(media, aniDBEpisode, json)
+  if (!entries?.length) throw new Error('No entries found.')
 
-  if (!entries.length && !movie) entries = await getToshoEntries(media, aniDBEpisode, json)
+  const deduped = dedupeEntries(entries)
+  const parseObjects = await anitomyscript(deduped.map(({ title }) => title))
+  for (const i in parseObjects) deduped[i].parseObject = parseObjects[i]
 
-  const mapped = mapBestRelease(mapTosho2dDeDupedEntry(entries))
+  const withBests = dedupeEntries([...await getSeedexBests(media), ...mapBestSneedexReleases(deduped)])
 
-  if (!mapped?.length) throw new Error('No entries found.')
+  return updatePeerCounts(withBests)
+}
 
-  const parseObjects = await anitomyscript(mapped.map(({ title }) => title))
-
-  for (const i in parseObjects) mapped[i].parseObject = parseObjects[i]
-
+async function updatePeerCounts (entries) {
   const id = crypto.randomUUID()
 
   const updated = await Promise.race([
@@ -37,19 +39,18 @@ export default async function ({ media, episode }) {
         console.log(detail)
       }
       client.on('scrape', check)
-      client.send('scrape', { id, infoHashes: mapped.map(({ hash }) => hash) })
+      client.send('scrape', { id, infoHashes: entries.map(({ hash }) => hash) })
     }),
     sleep(5000)
   ])
 
   for (const { hash, complete, downloaded, incomplete } of updated || []) {
-    const found = mapped.find(mapped => mapped.hash === hash)
+    const found = entries.find(mapped => mapped.hash === hash)
     found.downloads = downloaded
     found.leechers = incomplete
     found.seeders = complete
   }
-
-  return mapped
+  return entries
 }
 
 async function getAniDBFromAL (media) {
@@ -61,7 +62,6 @@ async function getAniDBFromAL (media) {
   console.log('failed getting AniDB ID, checking via parent')
 
   const parentID = getParentForSpecial(media)
-
   if (!parentID) return
 
   console.log('found via parent')
@@ -120,7 +120,7 @@ export function getEpisodeNumberByAirDate (alDate, episodes, episode) {
   })
 }
 
-async function getToshoEntries (media, episode, { mappings }, quality) {
+async function getToshoEntriesForMedia (media, episode, { mappings }, quality) {
   const promises = []
 
   if (episode) {
@@ -128,7 +128,7 @@ async function getToshoEntries (media, episode, { mappings }, quality) {
 
     console.log('fetching episode', anidbEid, quality)
 
-    promises.push(fetchSingleEpisode({ id: anidbEid, quality }))
+    promises.push(fetchSingleEpisodeForAnidb({ id: anidbEid, quality }))
   } else {
     // TODO: look for episodes via.... title?
   }
@@ -136,7 +136,7 @@ async function getToshoEntries (media, episode, { mappings }, quality) {
   // look for batches and movies
   const movie = isMovie(media)
   if (mappings.anidb_id && media.status === 'FINISHED' && (movie || media.episodes !== 1)) {
-    promises.push(fetchBatches({ episodeCount: media.episodes, id: mappings.anidb_id, quality, movie }))
+    promises.push(fetchBatchesForAnidb({ episodeCount: media.episodes, id: mappings.anidb_id, quality, movie }))
     console.log('fetching batch', quality, movie)
     if (!movie) {
       const courRelation = getSplitCourRelation(media)
@@ -147,7 +147,7 @@ async function getToshoEntries (media, episode, { mappings }, quality) {
           const mappingsResponse = await fetch('https://api.ani.zip/mappings?anilist_id=' + courRelation.id)
           const json = await mappingsResponse.json()
           console.log('found mappings for split cour', !!json.mappings.anidb_id)
-          if (json.mappings.anidb_id) promises.push(fetchBatches({ episodeCount, id: json.mappings.anidb_id, quality }))
+          if (json.mappings.anidb_id) promises.push(fetchBatchesForAnidb({ episodeCount, id: json.mappings.anidb_id, quality }))
         } catch (e) {
           console.error('failed getting split-cour data', e)
         }
@@ -155,7 +155,7 @@ async function getToshoEntries (media, episode, { mappings }, quality) {
     }
   }
 
-  return (await Promise.all(promises)).flat()
+  return mapToshoEntries((await Promise.all(promises)).flat())
 }
 
 function getSplitCourRelation (media) {
@@ -233,28 +233,30 @@ function isMovie (media) {
   return media.duration > 80 && media.episodes === 1
 }
 
-function buildQuery (quality) {
+const QUALITIES = ['1080', '720', '540', '480']
+
+const ANY = 'e*|a*|r*|i*|o*'
+
+function buildToshoQuery (quality) {
   let query = `&qx=1&q=!("${exclusions.join('"|"')}")`
   if (quality) {
-    query += ` "${quality}"`
+    query += `((${ANY}|"${quality}") !"${QUALITIES.filter(q => q !== quality).join('" !"')}")`
   } else {
-    query += 'e*|a*|r*|i*|o*' // HACK: tosho NEEDS a search string, so we lazy search a single common vowel
+    query += ANY // HACK: tosho NEEDS a search string, so we lazy search a single common vowel
   }
 
   return query
 }
 
-async function fetchBatches ({ episodeCount, id, quality, movie = null }) {
+async function fetchBatchesForAnidb ({ episodeCount, id, quality, movie = null }) {
   try {
-    const queryString = buildQuery(quality)
+    const queryString = buildToshoQuery(quality)
     const torrents = await fetch(settings.value.toshoURL + 'json?order=size-d&aid=' + id + queryString)
 
-    // safe if AL includes EP 0 or doesn't
+    // safe both if AL includes EP 0 or doesn't
     const batches = (await torrents.json()).filter(entry => entry.num_files >= episodeCount)
     if (!movie) {
-      for (const batch of batches) {
-        batch.batch = true
-      }
+      for (const batch of batches) batch.type = 'batch'
     }
     console.log({ batches })
     return batches
@@ -264,9 +266,9 @@ async function fetchBatches ({ episodeCount, id, quality, movie = null }) {
   }
 }
 
-async function fetchSingleEpisode ({ id, quality }) {
+async function fetchSingleEpisodeForAnidb ({ id, quality }) {
   try {
-    const queryString = buildQuery(quality)
+    const queryString = buildToshoQuery(quality)
     const torrents = await fetch(settings.value.toshoURL + 'json?eid=' + id + queryString)
 
     const episodes = await torrents.json()
@@ -278,33 +280,41 @@ async function fetchSingleEpisode ({ id, quality }) {
   }
 }
 
-function mapTosho2dDeDupedEntry (entries) {
+function mapToshoEntries (entries) {
+  return entries.map(entry => {
+    return {
+      title: entry.title || entry.torrent_name,
+      link: entry.magnet_uri,
+      id: entry.nyaa_id, // TODO: used for sneedex mappings, remove later
+      seeders: entry.seeders >= 30000 ? 0 : entry.seeders,
+      leechers: entry.leechers >= 30000 ? 0 : entry.leechers,
+      downloads: entry.torrent_downloaded_count,
+      hash: entry.info_hash,
+      size: entry.total_size && fastPrettyBytes(entry.total_size),
+      verified: !!entry.anidb_fid,
+      type: entry.type,
+      date: entry.timestamp && new Date(entry.timestamp * 1000)
+    }
+  })
+}
+
+function dedupeEntries (entries) {
   const deduped = {}
   for (const entry of entries) {
-    if (deduped[entry.info_hash]) {
-      const dupe = deduped[entry.info_hash]
-      dupe.title ??= entry.title || entry.torrent_name
-      dupe.id ||= entry.nyaa_id
+    if (deduped[entry.hash]) {
+      const dupe = deduped[entry.hash]
+      dupe.title ??= entry.title
+      dupe.link ??= entry.link
+      dupe.id ||= entry.id
       dupe.seeders ||= entry.seeders >= 30000 ? 0 : entry.seeders
       dupe.leechers ||= entry.leechers >= 30000 ? 0 : entry.leechers
-      dupe.downloads ||= entry.torrent_downloaded_count
-      dupe.size ||= entry.total_size && fastPrettyBytes(entry.total_size)
-      dupe.verified ||= !!entry.anidb_fid
-      dupe.date ||= entry.timestamp && new Date(entry.timestamp * 1000)
+      dupe.downloads ||= entry.downloads
+      dupe.size ||= entry.size
+      dupe.verified ||= entry.verified
+      dupe.date ||= entry.date
+      dupe.type ??= entry.type
     } else {
-      deduped[entry.info_hash] = {
-        title: entry.title || entry.torrent_name,
-        link: entry.magnet_uri,
-        id: entry.nyaa_id,
-        seeders: entry.seeders >= 30000 ? 0 : entry.seeders,
-        leechers: entry.leechers >= 30000 ? 0 : entry.leechers,
-        downloads: entry.torrent_downloaded_count,
-        hash: entry.info_hash,
-        size: entry.total_size && fastPrettyBytes(entry.total_size),
-        verified: !!entry.anidb_fid,
-        batch: entry.batch,
-        date: entry.timestamp && new Date(entry.timestamp * 1000)
-      }
+      deduped[entry.hash] = entry
     }
   }
 
