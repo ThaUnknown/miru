@@ -17,6 +17,7 @@ export function click (node, cb = noop) {
   node.role = 'button'
   node.addEventListener('click', e => {
     e.stopPropagation()
+    navigator.vibrate(15)
     cb(e)
   })
   node.addEventListener('pointerup', e => {
@@ -50,6 +51,7 @@ export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
     lastTapElement?.(false)
     if (lastTapElement === hoverUpdate) {
       lastTapElement = null
+      navigator.vibrate(15)
       cb(e)
     } else {
       lastTapElement = hoverUpdate

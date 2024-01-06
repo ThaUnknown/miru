@@ -7,7 +7,7 @@
     "build:web": "webpack build",
     "build:android": "cap build android",
     "build:ios": "cap build ios",
-    "build:assets": "capacitor-assets generate --iconBackgroundColor #17191c --iconBackgroundColorDark #17191c --splashBackgroundColor #17191c --splashBackgroundColorDark #17191c --android",
+    "build:assets": "capacitor-assets generate --iconBackgroundColor #17191c00 --iconBackgroundColorDark #17191c00 --splashBackgroundColor #17191c --splashBackgroundColorDark #17191c --android",
     "dev:adb-port": "adb reverse tcp:5001 tcp:5001",
     "dev:ios": "run-p dev:start cap-run:ios",
     "dev:android": "cap run android",

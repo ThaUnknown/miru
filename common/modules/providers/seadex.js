@@ -17,7 +17,7 @@ export default async function (media) {
       type: torrent.isBest ? 'best' : 'alt',
       date: new Date(torrent.created),
       parseObject: {
-        audio_term: [torrent.dualAudio && 'DUALAUDIO']
+        audio_term: [torrent.dualAudio ? 'DUALAUDIO' : '']
       }
     }
   })
