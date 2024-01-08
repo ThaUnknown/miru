@@ -148,7 +148,7 @@
           </thead>
           <tbody class='pointer'>
             {#each filtered as row}
-              <tr class='border-0' class:text-secondary={row.type === 'best'} class:text-danger={row.type === 'alt'} class:text-success={!row.type && row.verified} use:click={() => play(row)}>
+              <tr class='border-0' class:text-secondary={row.type === 'best'} class:text-danger={row.type === 'alt'} use:click={() => play(row)}>
                 <td class='py-10 pl-20 pr-0'>
                   {#if row.type === 'best'}
                     <div class='material-symbols-outlined font-size-24 symbol-bold' title='Best Release'>
@@ -159,7 +159,7 @@
                       star
                     </div>
                   {:else if row.verified}
-                    <div class='material-symbols-outlined font-size-24 symbol-bold' title='Verified'>
+                    <div class='material-symbols-outlined font-size-24 symbol-bold' class:text-success={!row.type && row.verified} title='Verified'>
                       verified
                     </div>
                   {:else if row.type === 'batch'}
