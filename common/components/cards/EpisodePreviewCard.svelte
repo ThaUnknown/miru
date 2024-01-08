@@ -5,7 +5,7 @@
 
   const media = data.media
 
-  const episodeThumbnail = data.episodeData?.image || media?.bannerImage || media?.coverImage.extraLarge || ' '
+  const episodeThumbnail = ((!media?.mediaListEntry?.status || !(media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress < data.episode)) && data.episodeData?.image) || media?.bannerImage || media?.coverImage.extraLarge || ' '
   let hide = true
 </script>
 

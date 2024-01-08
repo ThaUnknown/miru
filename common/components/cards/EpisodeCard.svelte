@@ -8,11 +8,13 @@
 
   let preview = false
 
-  const episodeThumbnail = data.episodeData?.image || data.media?.bannerImage || data.media?.coverImage?.extraLarge || ' '
+  const media = data.media
+
+  const episodeThumbnail = ((!media?.mediaListEntry?.status || !(media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress < data.episode)) && data.episodeData?.image) || media?.bannerImage || media?.coverImage.extraLarge || ' '
 
   const view = getContext('view')
   function viewMedia () {
-    $view = data.media
+    $view = media
   }
   function setHoverState (state) {
     preview = state
@@ -25,21 +27,21 @@
   {/if}
   <div class='item d-flex flex-column h-full pointer content-visibility-auto'>
     <div class='image h-200 w-full position-relative rounded overflow-hidden d-flex justify-content-between align-items-end text-white' class:bg-black={episodeThumbnail === ' '}>
-      <img loading='lazy' src={episodeThumbnail} alt='cover' class='cover-img w-full h-full position-absolute' style:--color={data.media?.coverImage?.color || '#1890ff'} />
+      <img loading='lazy' src={episodeThumbnail} alt='cover' class='cover-img w-full h-full position-absolute' style:--color={media?.coverImage?.color || '#1890ff'} />
       <div class='pl-10 pb-10 material-symbols-outlined filled z-10'>play_arrow</div>
       <div class='pr-15 pb-10 font-size-16 font-weight-medium z-10'>
-        {#if data.media?.duration}
-          {data.media.duration}m
+        {#if media?.duration}
+          {media.duration}m
         {/if}
       </div>
     </div>
     <div class='row pt-15'>
       <div class='col pr-10'>
         <div class='text-white font-weight-very-bold font-size-16 title overflow-hidden'>
-          {#if data.media?.mediaListEntry?.status}
-            <div style:--statusColor={statusColorMap[data.media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={data.media.mediaListEntry.status} />
+          {#if media?.mediaListEntry?.status}
+            <div style:--statusColor={statusColorMap[media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={media.mediaListEntry.status} />
           {/if}
-          {data.media?.title.userPreferred || data.parseObject.anime_title}
+          {media?.title.userPreferred || data.parseObject.anime_title}
         </div>
         <div class='text-muted font-size-12 title overflow-hidden'>
           {data.episodeData?.title?.en || ''}
