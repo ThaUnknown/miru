@@ -41,7 +41,7 @@
     downloads = {
       iOS: '',
       Android: 'https://play.google.com',
-      Windows: assets.find(({ name }) => name.endsWith('.exe')).browser_download_url,
+      Windows: assets.find(({ name }) => name.endsWith('installer.exe')).browser_download_url,
       'Mac OS': assets.find(({ name }) => name.endsWith('.dmg')).browser_download_url,
       Linux: assets.find(({ name }) => name.endsWith('.AppImage')).browser_download_url,
       Debian: assets.find(({ name }) => name.endsWith('.deb')).browser_download_url

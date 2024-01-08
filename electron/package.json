@@ -81,7 +81,7 @@
     },
     "win": {
       "artifactName": "${os}-${name}-${version}.${ext}",
-      "target": "nsis"
+      "target": ["nsis", "portable"]
     },
     "linux": {
       "artifactName": "${os}-${name}-${version}.${ext}",
@@ -105,9 +105,13 @@
         }
       ]
     },
+    "portable": {
+      "artifactName": "${os}-${name}-${version}-portable.${ext}"
+    },
     "nsis": {
       "allowToChangeInstallationDirectory": true,
-      "oneClick": false
+      "oneClick": false,
+      "artifactName": "${os}-${name}-${version}-installer.${ext}"
     }
   }
 }
