@@ -9,7 +9,11 @@ import getSeedexBests from './seadex.js'
 
 export default async function ({ media, episode }) {
   const json = await getAniDBFromAL(media)
-  if (typeof json !== 'object') throw new Error(json || 'No mapping found.')
+  if (typeof json !== 'object') {
+    const bests = await getSeedexBests(media)
+    if (!bests.length) throw new Error(json || 'No mapping found.')
+    return bests
+  }
 
   const movie = isMovie(media) // don't query movies with qualities, to allow 4k
 
