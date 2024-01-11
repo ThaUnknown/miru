@@ -6,6 +6,7 @@
   import { setContext } from 'svelte'
   import { writable } from 'simple-store-svelte'
   import VideoModal from '$lib/components/VideoModal.svelte'
+  import { afterNavigate } from '$app/navigation'
 
   setContext('video-modal', writable(false))
 
@@ -55,6 +56,10 @@
     t.addEventListener('pointerup', () => { pos = scrollTop = updateScrollPosition() })
 
     t.addEventListener('scrollend', throttle(() => { scrollTop = updateScrollPosition() }, 1000))
+
+    afterNavigate(() => {
+      t.scrollTop = pos = scrollTop = 0
+    })
 
     function update () {
       const delta = pos - scrollTop === smooth * 2 ? 0 : ((pos - scrollTop) / smooth) * getDeltaTime()
