@@ -47,7 +47,7 @@ export default class SectionsManager {
 
   static async fromPending (arr, i) {
     const { data } = await arr
-    return data.Page.media[i]
+    return data?.Page.media[i]
   }
 }
 
@@ -101,7 +101,8 @@ function createSections () {
       title: 'Sequels You Missed',
       load: (page = 1, perPage = 50, variables = {}) => {
         const res = userLists.value.then(res => {
-          const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED').entries
+          const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED')?.entries
+          if (!mediaList) return {}
           const ids = mediaList.flatMap(({ media }) => {
             return media.relations.edges.filter(edge => edge.relationType === 'SEQUEL')
           }).map(({ node }) => node.id)
@@ -115,7 +116,8 @@ function createSections () {
       title: 'Your List',
       load: (page = 1, perPage = 50, variables = {}) => {
         const res = userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PLANNING').entries.map(({ media }) => media.id)
+          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PLANNING')?.entries.map(({ media }) => media.id)
+          if (!ids) return {}
           return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
         })
         return SectionsManager.wrapResponse(res, perPage)
@@ -126,7 +128,8 @@ function createSections () {
       title: 'Completed List',
       load: (page = 1, perPage = 50, variables = {}) => {
         const res = userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED').entries.map(({ media }) => media.id)
+          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED')?.entries.map(({ media }) => media.id)
+          if (!ids) return {}
           return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
         })
         return SectionsManager.wrapResponse(res, perPage)
@@ -137,7 +140,8 @@ function createSections () {
       title: 'Paused List',
       load: (page = 1, perPage = 50, variables = {}) => {
         const res = userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PAUSED').entries.map(({ media }) => media.id)
+          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PAUSED')?.entries.map(({ media }) => media.id)
+          if (!ids) return {}
           return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
         })
         return SectionsManager.wrapResponse(res, perPage)
@@ -148,7 +152,8 @@ function createSections () {
       title: 'Dropped List',
       load: (page = 1, perPage = 50, variables = {}) => {
         const res = userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'DROPPED').entries.map(({ media }) => media.id)
+          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'DROPPED')?.entries.map(({ media }) => media.id)
+          if (!ids) return {}
           return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
         })
         return SectionsManager.wrapResponse(res, perPage)
@@ -159,7 +164,8 @@ function createSections () {
       title: 'Currently Watching List',
       load: (page = 1, perPage = 50, variables = {}) => {
         const res = userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'CURRENT').entries.map(({ media }) => media.id)
+          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'CURRENT')?.entries.map(({ media }) => media.id)
+          if (!ids) return {}
           return alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
         })
         return SectionsManager.wrapResponse(res, perPage)
