@@ -135,7 +135,7 @@ importers:
     dependencies:
       '@fontsource-variable/material-symbols-outlined':
         specifier: latest
-        version: 5.0.19
+        version: 5.0.20
       '@fontsource-variable/nunito':
         specifier: latest
         version: 5.0.17
@@ -170,8 +170,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       simple-store-svelte:
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.6
+        version: 1.0.6
       svelte:
         specifier: ^4.2.7
         version: 4.2.7
@@ -755,8 +755,8 @@ packages:
     resolution: {integrity: sha512-XqGrDFJ15dNHeD4tT4imnTqrPhNb5C49hXwlfGcvcfV64BxFX0S4mq41q/34kxlObnShqKIqHwvxd9SPtG3H/g==}
     dev: false
 
-  /@fontsource-variable/material-symbols-outlined@5.0.19:
-    resolution: {integrity: sha512-ZnVtmU4Z6hiKGPN8FDul5A3Fqaj5sdfajjHv4ScFkkiha3mNsdlTStl6dwD524LGjRW9zsdCxwmPIBasF7q88A==}
+  /@fontsource-variable/material-symbols-outlined@5.0.20:
+    resolution: {integrity: sha512-1WyhGXcITU1R43seyyTPHcFleFuQ3vRjLlVudHaCMZQDKdJrQnssHLObrOVR55yfu9lr9lOUiPwWc/8Hm2LYuQ==}
     dev: false
 
   /@fontsource-variable/nunito@5.0.16:
@@ -7626,6 +7626,10 @@ packages:
 
   /simple-store-svelte@1.0.1:
     resolution: {integrity: sha512-xKsQoalLfLc1cK3FYx6u/FiAxAUq4NrA3zld0jJbgEpIJed7nigoN0fdKc7db4LJ1wfxxMcbaV2hpSDVa7pxhw==}
+    dev: false
+
+  /simple-store-svelte@1.0.6:
+    resolution: {integrity: sha512-39TaQ2LHRAdH+cpWPmGzDfVyoAm/uZ6UkM27O3YhUtJHk0Vw09+6/jUqprns+BgOkKxOkRetKC9SH4bbj0IZ1A==}
     dev: false
 
   /simple-swizzle@0.2.2:

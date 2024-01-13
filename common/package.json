@@ -14,7 +14,7 @@
     "perfect-seekbar": "^1.1.0",
     "quartermoon": "^1.2.3",
     "simple-font-select": "^1.0.1",
-    "simple-store-svelte": "^1.0.1",
+    "simple-store-svelte": "^1.0.6",
     "svelte": "^4.2.7",
     "svelte-keybinds": "^1.0.6",
     "svelte-loader": "^3.1.9",
