@@ -2,7 +2,7 @@
   import { formatMap, setStatus, playMedia, getMediaMaxEp } from '@/modules/anime.js'
   import { alRequest } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
-  import { liveAnimeEpisodeProgress } from "@/modules/animeprogress";
+  import { liveAnimeEpisodeProgress } from '@/modules/animeprogress.js'
   export let media
 
   let hide = true
@@ -84,7 +84,7 @@
         src={`https://www.youtube-nocookie.com/embed/${media.trailer?.id}?autoplay=1&controls=0&mute=1&disablekb=1&loop=1&vq=medium&playlist=${media.trailer?.id}`}
       /> -->
       {#if progress && $progress > 0}
-        <div class="progress container-fluid position-absolute" style="margin-top: -1.5rem">
+        <div class="  position-absolute" style="margin-top: -1.5rem">
           <div class="progress-bar" style="width: {$progress}%"></div>
         </div>
       {/if}

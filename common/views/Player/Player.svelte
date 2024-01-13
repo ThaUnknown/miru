@@ -203,7 +203,7 @@
   async function loadAnimeProgress () {
     const mediaId = current?.media?.media?.id
     const episode = current?.media?.episode
-    if (mediaId !== media?.media?.id || episode !== media?.episode) return
+    if (current?.media.failed || mediaId !== media?.media?.id || episode !== media?.episode) return
     const animeProgress = await getAnimeProgress(mediaId, episode)
     if (!animeProgress) return
     const currentTime = Math.max(animeProgress.currentTime - 5, 0) // Load 5 seconds before
@@ -212,8 +212,9 @@
 
   function saveAnimeProgress () {
     const mediaId = current?.media?.media?.id
-    const episode = current?.media.episode
-    if (mediaId !== media?.media?.id || episode !== media?.episode || buffering || paused || video.readyState < 4) return
+    const episode = current?.media?.episode
+    if (current?.media?.failed || mediaId !== media?.media?.id || episode !== media?.episode) return
+    if (buffering || paused || video.readyState < 4) return
     setAnimeProgress({ mediaId, episode, currentTime: video.currentTime, safeduration })
   }
   setInterval(saveAnimeProgress, 1000)

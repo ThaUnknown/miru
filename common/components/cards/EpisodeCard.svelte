@@ -2,9 +2,9 @@
   import { statusColorMap } from '@/modules/anime.js'
   import EpisodePreviewCard from './EpisodePreviewCard.svelte'
   import { hoverClick } from '@/modules/click.js'
-  import { since } from '@/modules/util'
+  import { since } from '@/modules/util.js'
   import { getContext } from 'svelte'
-  import { liveAnimeEpisodeProgress } from "@/modules/animeprogress";
+  import { liveAnimeEpisodeProgress } from '@/modules/animeprogress.js'
   export let data
 
   let preview = false

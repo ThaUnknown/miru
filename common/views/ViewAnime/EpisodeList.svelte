@@ -2,8 +2,8 @@
   import { since } from '@/modules/util'
   import { click } from '@/modules/click.js'
   import { getEpisodeNumberByAirDate } from '@/modules/providers/tosho.js'
-  import { alRequest } from '@/modules/anilist'
-  import { liveAnimeProgress } from "@/modules/animeprogress";
+  import { alRequest } from '@/modules/anilist.js'
+  import { liveAnimeProgress } from '@/modules/animeprogress.js'
 
   export let media
 

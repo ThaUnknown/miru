@@ -1,7 +1,7 @@
 <script>
   import { statusColorMap, formatMap } from '@/modules/anime.js'
   import { since } from '@/modules/util'
-  import { liveAnimeEpisodeProgress } from "@/modules/animeprogress";
+  import { liveAnimeEpisodeProgress } from '@/modules/animeprogress.js'
   export let data
 
   const media = data.media

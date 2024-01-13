@@ -4,7 +4,7 @@
   import { formatMap, statusColorMap, getMediaMaxEp } from '@/modules/anime.js'
   import { hoverClick } from '@/modules/click.js'
   import { countdown } from '@/modules/util.js'
-  import { liveAnimeEpisodeProgress } from "@/modules/animeprogress";
+  import { liveAnimeEpisodeProgress } from '@/modules/animeprogress.js'
 
   import { page } from '@/App.svelte'
 
