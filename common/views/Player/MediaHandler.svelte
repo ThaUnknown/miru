@@ -1,6 +1,6 @@
 <script context='module'>
   import { writable } from 'simple-store-svelte'
-  import { resolveFileMedia } from '@/modules/anime.js'
+  import AnimeResolver from '@/modules/animeresolver.js'
   import { videoRx } from '@/modules/util.js'
   import { tick } from 'svelte'
   import { state } from '../WatchTogether/WatchTogether.svelte'
@@ -120,7 +120,7 @@
     }
     let nowPlaying = media.value
 
-    const resolved = await resolveFileMedia(videoFiles.map(file => file.name))
+    const resolved = await AnimeResolver.resolveFileAnime(videoFiles.map(file => file.name))
 
     videoFiles.map(file => {
       file.media = resolved.find(({ parseObject }) => file.name.includes(parseObject.file_name))

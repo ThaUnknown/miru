@@ -2,7 +2,8 @@ import { DOMPARSER } from '@/modules/util.js'
 import { settings } from '@/modules/settings.js'
 import { toast } from 'svelte-sonner'
 import { add } from '@/modules/torrent.js'
-import { resolveFileMedia, getEpisodeMetadataForMedia } from './anime.js'
+import { getEpisodeMetadataForMedia } from './anime.js'
+import AnimeResolver from '@/modules/animeresolver.js'
 import { hasNextPage } from '@/modules/sections.js'
 
 export const exclusions = ['DTS', '[EMBER]']
@@ -116,7 +117,7 @@ class RSSMediaManager {
   async queueResolve ({ title, link, date }) {
     await this.lastResult
     const res = {
-      ...(await resolveFileMedia(title))[0],
+      ...(await AnimeResolver.resolveFileAnime(title))[0],
       episodeData: undefined,
       date: undefined,
       onclick: undefined
