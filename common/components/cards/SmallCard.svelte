@@ -1,7 +1,7 @@
 <script>
   import { getContext } from 'svelte'
   import PreviewCard from './PreviewCard.svelte'
-  import {formatMap, getMediaMaxEp, statusColorMap} from '@/modules/anime.js'
+  import { formatMap, statusColorMap, getMediaMaxEp } from '@/modules/anime.js'
   import { hoverClick } from '@/modules/click.js'
   import { countdown } from '@/modules/util.js'
   import { liveAnimeEpisodeProgress } from "@/modules/animeprogress";

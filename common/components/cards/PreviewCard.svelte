@@ -1,5 +1,5 @@
 <script>
-  import {formatMap, setStatus, playMedia, getMediaMaxEp} from '@/modules/anime.js'
+  import { formatMap, setStatus, playMedia, getMediaMaxEp } from '@/modules/anime.js'
   import { alRequest } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
   import { liveAnimeEpisodeProgress } from "@/modules/animeprogress";
