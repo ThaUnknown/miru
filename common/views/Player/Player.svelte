@@ -209,7 +209,7 @@
   }
 
   function saveAnimeProgress () {
-    if (!media?.media?.id || !media?.episode || buffering || paused || !video.readyState) return
+    if (!media?.media?.id || !media?.episode || buffering || paused || video.readyState < 4) return
     setAnimeProgress({ mediaId: media.media.id, episode: media.episode, currentTime: video.currentTime, safeduration })
   }
   setInterval(saveAnimeProgress, 1000)
