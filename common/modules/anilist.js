@@ -60,6 +60,8 @@ let rl = null
 limiter.on('failed', async (error, jobInfo) => {
   printError(error)
 
+  if (error.status === 500) return 1
+
   if (!error.statusText) {
     if (!rl) rl = sleep(61 * 1000).then(() => { rl = null })
     return 61 * 1000
@@ -77,7 +79,7 @@ const handleRequest = limiter.wrap(async opts => {
   } catch (e) {
     if (!res || res.status !== 404) throw e
   }
-  if (!res.ok && res.status === 429) {
+  if (!res.ok && (res.status === 429 || res.status === 500)) {
     throw res
   }
   let json = null
