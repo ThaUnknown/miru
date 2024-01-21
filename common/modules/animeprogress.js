@@ -49,6 +49,7 @@ export function getAnimeProgress(mediaId, episode) {
 
 // Set an individual episode's progress
 export function setAnimeProgress({ mediaId, episode, currentTime, safeduration }) {
+  if (!mediaId || !episode || !currentTime || !safeduration) return
   const data = loadFromLocalStorage()
   // Update the existing entry or create a new one
   const existing = data.find(item => item.mediaId === mediaId && item.episode === episode)
