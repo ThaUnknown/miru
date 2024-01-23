@@ -2,11 +2,13 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
-      "script": "appimage",
-      "label": "Build electron",
+      "type": "shell",
+      "label": "build-electron",
       "options": {
         "cwd": "${workspaceFolder}/electron"
+      },
+      "linux": {
+        "command": "npm run appimage"
       },
       "problemMatcher": [
         "$jshint"
@@ -27,7 +29,7 @@
     },
     {
       "type": "shell",
-      "label": "Install",
+      "label": "install",
       "options": {
         "cwd": "${workspaceFolder}/electron"
       },
@@ -48,10 +50,10 @@
     },
     {
       "type": "shell",
-      "label": "Build & install",
+      "label": "build-and-install",
       "dependsOn": [
-        "Build electron",
-        "Install",
+        "build-electron",
+        "install",
       ],
       "dependsOrder": "sequence",
       "icon": {
@@ -61,11 +63,13 @@
       "problemMatcher": [],
     },
     {
-      "type": "npm",
-      "script": "web:build",
-      "label": "Build web(production)",
+      "type": "shell",
+      "label": "build-web-prod",
       "options": {
         "cwd": "${workspaceFolder}/electron"
+      },
+      "linux": {
+        "command": "npm run web:build"
       },
       "problemMatcher": [
         "$jshint"
@@ -85,11 +89,13 @@
       },
     },
     {
-      "type": "npm",
-      "script": "web:watch",
-      "label": "Watch web(development)",
+      "type": "shell",
+      "label": "watch-web-dev",
       "options": {
         "cwd": "${workspaceFolder}/electron"
+      },
+      "linux": {
+        "command": "npm run web:watch"
       },
       "problemMatcher": [
         "$jshint"
@@ -111,12 +117,14 @@
       },
     },
     {
-      "type": "npm",
-      "script": "lint",
-      "label": "Eslint",
+      "type": "shell",
+      "label": "eslint",
       "problemMatcher": [
         "$eslint-stylish"
       ],
+      "linux": {
+        "command": "npm run lint"
+      },
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
