@@ -3,5 +3,21 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "workspaceKeybindings.selectBeforeDebugging.enabled": true
+  "workspaceKeybindings.selectBeforeDebugging.enabled": true,
+  "javascript.preferGoToSourceDefinition": true,
+  "javascript.preferences.quoteStyle": "single",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "javascript.validate.enable": true,
+  "javascript.suggest.autoImports": true,
+  "javascript.format.insertSpaceAfterCommaDelimiter": true,
+  "javascript.preferences.importModuleSpecifierEnding": "js",
+  "javascript.format.insertSpaceAfterConstructor": true,
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "javascript.format.semicolons": "remove",
+  "javascript.suggest.completeFunctionCalls": true,
+  "javascript.suggest.completeJSDocs": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.suggest.autoImports": true,
+  "typescript.autoClosingTags": false
 }
