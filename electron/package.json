@@ -11,8 +11,9 @@
     "web:watch": "webpack serve",
     "web:build": "cross-env NODE_ENV=production webpack build",
     "electron:start": "electron ./build/main.js",
-    "build": "npm run web:build && electron-builder",
-    "publish": "npm run web:build && electron-builder -p always"
+    "build": "pnpm run web:build && electron-builder",
+    "appimage": "pnpm run build -l AppImage",
+    "publish": "pnpm run web:build && electron-builder -p always"
   },
   "devDependencies": {
     "@electron/notarize": "^2.2.0",

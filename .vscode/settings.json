@@ -1,5 +1,9 @@
 {
   "npm.exclude": "**/git_modules/**",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "workspaceKeybindings.selectBeforeDebugging.enabled": true,
   "javascript.preferGoToSourceDefinition": true,
   "javascript.preferences.quoteStyle": "single",
   "javascript.updateImportsOnFileMove.enabled": "always",

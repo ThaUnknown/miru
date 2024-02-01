@@ -1,0 +1,144 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "build-electron",
+      "options": {
+        "cwd": "${workspaceFolder}/electron"
+      },
+      "linux": {
+        "command": "npm run appimage"
+      },
+      "problemMatcher": [
+        "$jshint"
+      ],
+      "presentation": {
+        "group": "build",
+        "reveal": "silent",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+      },
+      "icon": {
+        "id": "package",
+        "color": "terminal.ansiGreen"
+      },
+      "group": {
+        "kind": "build"
+      },
+    },
+    {
+      "type": "shell",
+      "label": "install",
+      "options": {
+        "cwd": "${workspaceFolder}/electron"
+      },
+      "linux": {
+        "command": "cp -f \"dist/linux-Miru-$(cat package.json | jq .version | tr -d \\\").AppImage\" \"${userHome}/bin/miru\""
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "close": true
+      },
+      "icon": {
+        "id": "arrow-down",
+        "color": "terminal.ansiGreen"
+      },
+      "problemMatcher": [],
+    },
+    {
+      "type": "shell",
+      "label": "build-and-install",
+      "dependsOn": [
+        "build-electron",
+        "install",
+      ],
+      "dependsOrder": "sequence",
+      "icon": {
+        "id": "arrow-circle-down",
+        "color": "terminal.ansiGreen"
+      },
+      "problemMatcher": [],
+    },
+    {
+      "type": "shell",
+      "label": "build-web-prod",
+      "options": {
+        "cwd": "${workspaceFolder}/electron"
+      },
+      "linux": {
+        "command": "npm run web:build"
+      },
+      "problemMatcher": [
+        "$jshint"
+      ],
+      "presentation": {
+        "group": "build",
+        "reveal": "silent",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+      },
+      "icon": {
+        "id": "package",
+        "color": "terminal.ansiGreen"
+      },
+      "group": {
+        "kind": "build"
+      },
+    },
+    {
+      "type": "shell",
+      "label": "watch-web-dev",
+      "options": {
+        "cwd": "${workspaceFolder}/electron"
+      },
+      "linux": {
+        "command": "npm run web:watch"
+      },
+      "problemMatcher": [
+        "$jshint"
+      ],
+      "presentation": {
+        "group": "build",
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "icon": {
+        "id": "package",
+        "color": "terminal.ansiGreen"
+      },
+      "group": {
+        "isDefault": true,
+        "kind": "build"
+      },
+    },
+    {
+      "type": "shell",
+      "label": "eslint",
+      "problemMatcher": [
+        "$eslint-stylish"
+      ],
+      "linux": {
+        "command": "npm run lint"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "icon": {
+        "id": "bell",
+        "color": "terminal.ansiGreen"
+      },
+      "group": {
+        "isDefault": true,
+        "kind": "test"
+      },
+    },
+  ]
+}
