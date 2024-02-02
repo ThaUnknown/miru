@@ -2,7 +2,8 @@
   import { since } from '@/modules/util'
   import { click } from '@/modules/click.js'
   import { getEpisodeNumberByAirDate } from '@/modules/providers/tosho.js'
-  import { alRequest } from '@/modules/anilist'
+  import { alRequest } from '@/modules/anilist.js'
+  import { liveAnimeProgress } from '@/modules/animeprogress.js'
 
   export let media
 
@@ -40,11 +41,14 @@
     }
   }
   load()
+
+  const animeProgress = liveAnimeProgress(id)
 </script>
 
 {#each episodeOrder ? episodeList : [...episodeList].reverse() as { episode, image, summary, rating, title, length, airdate }}
   {@const completed = userProgress >= episode}
   {@const target = userProgress + 1 === episode}
+  {@const progress = $animeProgress?.[episode] ?? 0}
   <div class='w-full my-20 content-visibility-auto scale' class:opacity-half={completed} class:px-20={!target} class:h-150={image || summary} use:click={() => play(episode)}>
     <div class='rounded w-full h-full overflow-hidden d-flex flex-xsm-column flex-row pointer' class:border={target} class:bg-black={completed} class:bg-dark={!completed}>
       {#if image}
@@ -66,6 +70,10 @@
         {#if completed}
           <div class='progress mb-15' style='height: 2px; min-height: 2px;'>
             <div class='progress-bar w-full' />
+          </div>
+        {:else if progress}
+          <div class='progress mb-15' style='height: 2px; min-height: 2px;'>
+            <div class='progress-bar' style="width: {progress}%" />
           </div>
         {/if}
         <div class='font-size-12 overflow-hidden'>

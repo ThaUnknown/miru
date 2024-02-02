@@ -1,12 +1,15 @@
 <script>
   import { statusColorMap, formatMap } from '@/modules/anime.js'
   import { since } from '@/modules/util'
+  import { liveAnimeEpisodeProgress } from '@/modules/animeprogress.js'
   export let data
 
   const media = data.media
 
   const episodeThumbnail = ((!media?.mediaListEntry?.status || !(media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress < data.episode)) && data.episodeData?.image) || media?.bannerImage || media?.coverImage.extraLarge || ' '
   let hide = true
+
+  const progress = liveAnimeEpisodeProgress(media.id, data.episode)
 </script>
 
 <div class='position-absolute w-400 mh-400 absolute-container top-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer d-flex flex-column'>
@@ -29,6 +32,11 @@
         {media.duration}m
       {/if}
     </div>
+    {#if $progress > 0}
+      <div class='progress container-fluid position-absolute mb-5'>
+        <div class='progress-bar' style='width: {$progress}%' />
+      </div>
+    {/if}
   </div>
   <div class='w-full d-flex flex-column flex-grow-1 px-20 pb-15'>
     <div class='row pt-15'>
