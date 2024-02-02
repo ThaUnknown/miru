@@ -37,9 +37,9 @@
           {media.duration}m
         {/if}
       </div>
-      {#if progress && $progress > 0}
-        <div class="progress container-fluid position-absolute" style='height: 2px; min-height: 2px;'>
-          <div class="progress-bar" style="width: {$progress}%"></div>
+      {#if $progress > 0}
+        <div class='progress container-fluid position-absolute' style='height: 2px; min-height: 2px;'>
+          <div class='progress-bar' style='width: {$progress}%' />
         </div>
       {/if}
     </div>

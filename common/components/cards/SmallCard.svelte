@@ -1,10 +1,9 @@
 <script>
   import { getContext } from 'svelte'
   import PreviewCard from './PreviewCard.svelte'
-  import { formatMap, statusColorMap, getMediaMaxEp } from '@/modules/anime.js'
+  import { formatMap, statusColorMap } from '@/modules/anime.js'
   import { hoverClick } from '@/modules/click.js'
   import { countdown } from '@/modules/util.js'
-  import { liveAnimeEpisodeProgress } from '@/modules/animeprogress.js'
 
   import { page } from '@/App.svelte'
 
@@ -18,7 +17,6 @@
   function setHoverState (state) {
     preview = state
   }
-  const progress = liveAnimeEpisodeProgress(media.id, Math.min(getMediaMaxEp(media, true), media.mediaListEntry?.progress + 1 || 1))
 </script>
 
 <div class='d-flex p-20 position-relative first-check' use:hoverClick={[viewMedia, setHoverState]}>
@@ -39,11 +37,7 @@
       </div>
     {/if}
     <img loading='lazy' src={media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full rounded' style:--color={media.coverImage.color || '#1890ff'} />
-    {#if progress && $progress > 0}
-      <div class="progress container-fluid" style="height: 2px; min-height: 2px; margin-top: -2px;">
-        <div class="progress-bar" style="width: {$progress}%"></div>
-      </div>
-    {/if}
+
     <div class='text-white font-weight-very-bold font-size-16 pt-15 title overflow-hidden'>
       {#if media.mediaListEntry?.status}
         <div style:--statusColor={statusColorMap[media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={media.mediaListEntry.status} />

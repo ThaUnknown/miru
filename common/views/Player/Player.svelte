@@ -201,23 +201,23 @@
   }
 
   async function loadAnimeProgress () {
-    const mediaId = current?.media?.media?.id
-    const episode = current?.media?.episode
-    if (current?.media.failed || mediaId !== media?.media?.id || episode !== media?.episode) return
-    const animeProgress = await getAnimeProgress(mediaId, episode)
+    if (!current?.media?.media?.id || !current.media.media.episode || current.media.failed || !media?.media?.id || !media.episode) return
+
+    const animeProgress = await getAnimeProgress(current.media.media.id, current.media.episode)
     if (!animeProgress) return
+
     const currentTime = Math.max(animeProgress.currentTime - 5, 0) // Load 5 seconds before
     seek(currentTime - video.currentTime)
   }
 
   function saveAnimeProgress () {
-    const mediaId = current?.media?.media?.id
-    const episode = current?.media?.episode
-    if (current?.media?.failed || mediaId !== media?.media?.id || episode !== media?.episode) return
+    if (!current?.media?.media?.id || !current.media.media.episode || current.media.failed || !media?.media?.id || !media.episode) return
+
     if (buffering || paused || video.readyState < 4) return
-    setAnimeProgress({ mediaId, episode, currentTime: video.currentTime, safeduration })
+
+    setAnimeProgress({ mediaId: current.media.media.id, episode: current.media.episode, currentTime: video.currentTime, safeduration })
   }
-  setInterval(saveAnimeProgress, 1000)
+  setInterval(saveAnimeProgress, 30000)
 
   function cycleSubtitles () {
     if (current && subs?.headers) {
