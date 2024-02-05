@@ -2,7 +2,7 @@ import { anitomyscript } from '../anime.js'
 import { fastPrettyBytes, sleep } from '../util.js'
 import { exclusions } from '../rss.js'
 import { settings } from '@/modules/settings.js'
-import { alRequest } from '../anilist.js'
+import { anilistClient } from '../anilist.js'
 import { client } from '@/modules/torrent.js'
 import mapBestSneedexReleases from './sneedex.js'
 import getSeedexBests from './seadex.js'
@@ -92,7 +92,7 @@ async function getAniDBEpisodeFromAL ({ media, episode }, { episodes, episodeCou
   // if media has no specials or their episode counts don't match
   if (!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)])) return episodes[Number(episode)]
   console.log('EP count doesn\'t match, checking by air date')
-  const res = await alRequest({ method: 'EpisodeDate', id: media.id, ep: episode })
+  const res = await anilistClient.episodeDate({ id: media.id, ep: episode })
   // TODO: if media only has one episode, and airdate doesn't exist use start/release/end dates
   const alDate = new Date((res.data.AiringSchedule?.airingAt || 0) * 1000)
 

@@ -1,5 +1,5 @@
 import { toast } from 'svelte-sonner'
-import { alRequest, alSearch } from './anilist.js'
+import { anilistClient } from './anilist.js'
 import { anitomyscript } from './anime.js'
 import { PromiseBatch } from './util.js'
 
@@ -27,52 +27,52 @@ export default new class AnimeResolver {
    */
   async findAnimeByTitle (parseObject) {
     const name = parseObject.anime_title
-    const method = { name, method: 'SearchName', perPage: 10, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
-    if (parseObject.anime_year) method.year = parseObject.anime_year
+    const variables = { name, perPage: 10, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
+    if (parseObject.anime_year) variables.year = parseObject.anime_year
 
     // inefficient but readable
 
     let media = null
     try {
     // change S2 into Season 2 or 2nd Season
-      const match = method.name.match(/ S(\d+)/)
-      const oldname = method.name
+      const match = variables.name.match(/ S(\d+)/)
+      const oldname = variables.name
       if (match) {
         if (Number(match[1]) === 1) { // if this is S1, remove the " S1" or " S01"
-          method.name = method.name.replace(/ S(\d+)/, '')
-          media = (await alSearch(method)).data.Page.media[0]
+          variables.name = variables.name.replace(/ S(\d+)/, '')
+          media = await anilistClient.alSearch(variables)
         } else {
-          method.name = method.name.replace(/ S(\d+)/, ` ${Number(match[1])}${postfix[Number(match[1])] || 'th'} Season`)
-          media = (await alSearch(method)).data.Page.media[0]
+          variables.name = variables.name.replace(/ S(\d+)/, ` ${Number(match[1])}${postfix[Number(match[1])] || 'th'} Season`)
+          media = await anilistClient.alSearch(variables)
           if (!media) {
-            method.name = oldname.replace(/ S(\d+)/, ` Season ${Number(match[1])}`)
-            media = (await alSearch(method)).data.Page.media[0]
+            variables.name = oldname.replace(/ S(\d+)/, ` Season ${Number(match[1])}`)
+            media = await anilistClient.alSearch(variables)
           }
         }
       } else {
-        media = (await alSearch(method)).data.Page.media[0]
+        media = await anilistClient.alSearch(variables)
       }
 
       // remove - :
       if (!media) {
-        const match = method.name.match(/[-:]/g)
+        const match = variables.name.match(/[-:]/g)
         if (match) {
-          method.name = method.name.replace(/[-:]/g, '')
-          media = (await alSearch(method)).data.Page.media[0]
+          variables.name = variables.name.replace(/[-:]/g, '')
+          media = await anilistClient.alSearch(variables)
         }
       }
       // remove (TV)
       if (!media) {
-        const match = method.name.match(/\(TV\)/)
+        const match = variables.name.match(/\(TV\)/)
         if (match) {
-          method.name = method.name.replace('(TV)', '')
-          media = (await alSearch(method)).data.Page.media[0]
+          variables.name = variables.name.replace('(TV)', '')
+          media = await anilistClient.alSearch(variables)
         }
       }
       // check adult
       if (!media) {
-        method.isAdult = true
-        media = (await alSearch(method)).data.Page.media[0]
+        variables.isAdult = true
+        media = await anilistClient.alSearch(variables)
       }
     } catch (e) { }
 
@@ -88,7 +88,7 @@ export default new class AnimeResolver {
    * @returns {any}
    */
   getAnimeById (id) {
-    if (!this.animeCache[id]) this.animeCache[id] = alRequest({ method: 'SearchIDSingle', id })
+    if (!this.animeCache[id]) this.animeCache[id] = anilistClient.searchIDSingle({ id })
 
     return this.animeCache[id]
   }

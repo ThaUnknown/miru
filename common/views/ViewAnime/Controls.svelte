@@ -2,7 +2,7 @@
   import { alToken } from '../../views/Settings.svelte'
   import { addToast } from '../../components/Toasts.svelte'
   import IPC from '@/modules/ipc.js'
-  import { alRequest } from '@/modules/anilist.js'
+  import { anilistClient } from '@/modules/anilist.js'
   import { getContext } from 'svelte'
   import { getMediaMaxEp } from '@/modules/anime.js'
   import { playAnime } from '../RSSView.svelte'
@@ -22,12 +22,7 @@
       // add
       await setStatus(toggleStatusMap[media.mediaListEntry?.status] || 'PLANNING')
     } else {
-      // delete
-      const variables = {
-        method: 'Delete',
-        id: media.mediaListEntry.id
-      }
-      await alRequest(variables)
+      await anilistClient.delete({ id: media.mediaListEntry.id })
     }
     update()
   }
@@ -41,24 +36,22 @@
   }
   function setStatus (status, other = {}) {
     const variables = {
-      method: 'Entry',
       id: media.id,
       status,
       ...other
     }
-    return alRequest(variables)
+    return anilistClient.entry(variables)
   }
   async function update () {
-    media = (await alRequest({ method: 'SearchIDSingle', id: media.id })).data.Media
+    media = (await anilistClient.searchIDSingle({ id: media.id })).data.Media
   }
   async function score (media, score) {
     const variables = {
-      method: 'Entry',
       id: media.id,
       score: score * 10
     }
-    await alRequest(variables)
-    media = (await alRequest({ method: 'SearchIDSingle', id: media.id })).data.Media
+    await anilistClient.entry(variables)
+    media = (await anilistClient.searchIDSingle({ id: media.id })).data.Media
   }
   const trailer = getContext('trailer')
   function viewTrailer (media) {

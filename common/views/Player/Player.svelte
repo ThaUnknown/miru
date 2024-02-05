@@ -3,7 +3,7 @@
   import { playAnime } from '../RSSView.svelte'
   import { client } from '@/modules/torrent.js'
   import { createEventDispatcher } from 'svelte'
-  import { alEntry } from '@/modules/anilist.js'
+  import { anilistClient } from '@/modules/anilist.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, fastPrettyBytes, videoRx } from '@/modules/util.js'
   import { toast } from 'svelte-sonner'
@@ -861,7 +861,7 @@
         if (media?.media?.episodes || media?.media?.nextAiringEpisode?.episode) {
           if (media.media.episodes || media.media.nextAiringEpisode?.episode > media.episode) {
             completed = true
-            alEntry(media)
+            anilistClient.alEntry(media)
           }
         }
       }

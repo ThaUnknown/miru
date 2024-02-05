@@ -1,14 +1,14 @@
 <script context='module'>
   import { setContext } from 'svelte'
   import { writable } from 'simple-store-svelte'
-  import { alRequest } from '@/modules/anilist.js'
+  import { anilistClient } from '@/modules/anilist.js'
   import IPC from '@/modules/ipc.js'
 
   export const page = writable('home')
   export const view = writable(null)
   export async function handleAnime (anime) {
     view.set(null)
-    view.set((await alRequest({ method: 'SearchIDSingle', id: anime })).data.Media)
+    view.set((await anilistClient.searchIDSingle({ id: anime })).data.Media)
   }
   IPC.on('open-anime', handleAnime)
   IPC.on('schedule', () => {

@@ -1,5 +1,5 @@
 import { DOMPARSER } from './util.js'
-import { alRequest } from './anilist.js'
+import { anilistClient } from './anilist.js'
 import _anitomyscript from 'anitomyscript'
 import { toast } from 'svelte-sonner'
 import SectionsManager from './sections.js'
@@ -63,7 +63,7 @@ export async function traceAnime (image) { // WAIT lookup logic
     search.value = {
       clearNext: true,
       load: (page = 1, perPage = 50, variables = {}) => {
-        const res = alRequest({ method: 'SearchIDS', page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) }).then(res => {
+        const res = anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) }).then(res => {
           for (const index in res.data?.Page?.media) {
             const media = res.data.Page.media[index]
             const counterpart = result.find(({ anilist }) => anilist === media.id)
@@ -226,12 +226,11 @@ export async function playMedia (media) {
 
 export function setStatus (status, other = {}, media) {
   const variables = {
-    method: 'Entry',
     id: media.id,
     status,
     ...other
   }
-  return alRequest(variables)
+  return anilistClient.entry(variables)
 }
 
 const episodeMetadataMap = {}

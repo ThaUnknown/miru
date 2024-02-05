@@ -1,4 +1,4 @@
-import { alRequest } from '@/modules/anilist.js'
+import { anilistClient } from '@/modules/anilist.js'
 import { settings } from '@/modules/settings.js'
 import { findEdge, resolveSeason, getMediaMaxEp, mapBestRelease } from '../anime.js'
 import { exclusions, getRSSContent, parseRSSNodes } from '../rss.js'
@@ -58,7 +58,7 @@ export default async function getRSSEntries ({ media, episode, mode, ignoreQuali
   // recursive, get all entries for media sequel, and its sequel, and its sequel
   const sequelEntries =
       (sequel?.status === 'FINISHED' || sequel?.status === 'RELEASING') &&
-        (await getRSSEntries({ media: (await alRequest({ method: 'SearchIDSingle', id: sequel.id })).data.Media, episode, mode: mode || 'check' }))
+        (await getRSSEntries({ media: (await anilistClient.searchIDSingle({ id: sequel.id })).data.Media, episode, mode: mode || 'check' }))
 
   const checkPrequelDate = (media.status === 'FINISHED' || media.status === 'RELEASING') && prequel?.status === 'FINISHED' && prequel?.endDate
 

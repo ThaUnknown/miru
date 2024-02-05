@@ -1,9 +1,9 @@
 <script context='module'>
   import SectionsManager, { sections } from '@/modules/sections.js'
   import { alToken, settings } from '@/modules/settings.js'
-  import { alRequest, currentSeason, currentYear, userLists } from '@/modules/anilist.js'
+  import { anilistClient, currentSeason, currentYear } from '@/modules/anilist.js'
 
-  const bannerData = alRequest({ method: 'Search', sort: 'POPULARITY_DESC', perPage: 1, onList: false, season: currentSeason, year: currentYear })
+  const bannerData = anilistClient.search({ method: 'Search', sort: 'POPULARITY_DESC', perPage: 1, onList: false, season: currentSeason, year: currentYear })
 
   const manager = new SectionsManager()
 
@@ -18,7 +18,7 @@
   if (alToken) {
     const userSections = ['Continue Watching', 'Sequels You Missed', 'Your List', 'Completed List', 'Paused List', 'Dropped List', 'Currently Watching List']
 
-    userLists.subscribe(() => {
+    anilistClient.userLists.subscribe(() => {
       for (const section of manager.sections) {
         // remove preview value, to force UI to re-request data, which updates it once in viewport
         if (userSections.includes(section.title)) section.preview.value = section.load(1, 15)

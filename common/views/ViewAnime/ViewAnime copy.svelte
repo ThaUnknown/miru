@@ -1,6 +1,6 @@
 <script>
   import { playAnime } from '../RSSView.svelte'
-  import { alRequest } from '@/modules/anilist.js'
+  import { anilistClient } from '@/modules/anilist.js'
   import { getMediaMaxEp } from '@/modules/anime.js'
   import { getContext } from 'svelte'
   import Details from './Details.svelte'
@@ -91,7 +91,7 @@
             </div>
             <ToggleList list={media.relations?.edges?.filter(({ node }) => node.type === 'ANIME')} let:item title='Relations'>
               <div class='w-150 mx-15 my-10 rel pointer'
-                use:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.id })).data.Media }}>
+                use:click={async () => { $view = null; $view = (await anilistClient.searchIDSingle({ id: item.node.id })).data.Media }}>
                 <img loading='lazy' src={item.node.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img rounded' />
                 <div class='pt-5'>{item.relationType.replace(/_/g, ' ').toLowerCase()}</div>
                 <h5 class='font-weight-bold text-white mb-5'>{item.node.title.userPreferred}</h5>
@@ -119,7 +119,7 @@
             {/if}
             <ToggleList list={media.recommendations.edges.filter(edge => edge.node.mediaRecommendation)} let:item title='Recommendations'>
               <div class='w-150 mx-15 my-10 rel pointer'
-                use:click={async () => { $view = null; $view = (await alRequest({ method: 'SearchIDSingle', id: item.node.mediaRecommendation.id })).data.Media }}>
+                use:click={async () => { $view = null; $view = (await anilistClient.searchIDSingle({ id: item.node.mediaRecommendation.id })).data.Media }}>
                 <img loading='lazy' src={item.node.mediaRecommendation.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img rounded' />
                 <h5 class='font-weight-bold text-white mb-5'>{item.node.mediaRecommendation.title.userPreferred}</h5>
               </div>

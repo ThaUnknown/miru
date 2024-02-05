@@ -1,6 +1,6 @@
 <script context='module'>
   import { writable } from 'simple-store-svelte'
-  import { alID } from '@/modules/anilist.js'
+  import { anilistClient } from '@/modules/anilist.js'
   import { add, client } from '@/modules/torrent.js'
   import { generateRandomHexCode } from '@/modules/util.js'
   import { toast } from 'svelte-sonner'
@@ -29,7 +29,7 @@
     p2pt.on('peerconnect', async peer => {
       console.log(peer.id)
       console.log('connect')
-      const user = (await alID)?.data?.Viewer || {}
+      const user = (await anilistClient.userID)?.data?.Viewer || {}
       p2pt.send(peer,
         JSON.stringify({
           type: 'init',

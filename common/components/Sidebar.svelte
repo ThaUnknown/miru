@@ -1,6 +1,6 @@
 <script>
   import { getContext } from 'svelte'
-  import { alID } from '@/modules/anilist.js'
+  import { anilistClient } from '@/modules/anilist.js'
   import { media } from '../views/Player/MediaHandler.svelte'
   import { platformMap } from '@/views/Settings/Settings.svelte'
   import { settings } from '@/modules/settings.js'
@@ -13,7 +13,7 @@
   const links = [
     {
       click: () => {
-        if (alID) {
+        if (anilistClient.userID) {
           $logout = true
         } else {
           IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
@@ -85,8 +85,8 @@
       text: 'Settings'
     }
   ]
-  if (alID) {
-    alID.then(result => {
+  if (anilistClient.userID) {
+    anilistClient.userID.then(result => {
       if (result?.data?.Viewer) {
         links[0].image = result.data.Viewer.avatar.medium
         links[0].text = 'Logout'

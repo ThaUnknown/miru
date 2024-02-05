@@ -2,7 +2,7 @@
   import { since } from '@/modules/util'
   import { click } from '@/modules/click.js'
   import { getEpisodeNumberByAirDate } from '@/modules/providers/tosho.js'
-  import { alRequest } from '@/modules/anilist'
+  import { anilistClient } from '@/modules/anilist'
 
   export let media
 
@@ -24,10 +24,11 @@
   async function load () {
     const res = await fetch('https://api.ani.zip/mappings?anilist_id=' + id)
     const { episodes, specialCount, episodeCount } = await res.json()
+    /** @type {{ airingAt: number; episode: number; }[]} */
     let alEpisodes = episodeList
 
     if (!(media.episodes && media.episodes === episodeCount && media.status === 'FINISHED')) {
-      const settled = (await alRequest({ method: 'Episodes', id })).data.Page?.airingSchedules
+      const settled = (await anilistClient.episodes({ id })).data.Page?.airingSchedules
       if (settled?.length) alEpisodes = settled
     }
     for (const { episode, airingAt } of alEpisodes) {

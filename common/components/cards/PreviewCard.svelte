@@ -1,6 +1,6 @@
 <script>
   import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
-  import { alRequest } from '@/modules/anilist.js'
+  import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
   export let media
 
@@ -27,18 +27,12 @@
       media.mediaListEntry = res.data.SaveMediaListEntry
     } else {
       // delete
-      alRequest({
-        method: 'Delete',
-        id: media.mediaListEntry.id
-      })
+      anilistClient.delete({ id: media.mediaListEntry.id })
       media.mediaListEntry = undefined
     }
   }
   function toggleFavourite () {
-    alRequest({
-      method: 'Favourite',
-      id: media.id
-    })
+    anilistClient.favourite({ id: media.id })
     media.isFavourite = !media.isFavourite
   }
   function play () {
