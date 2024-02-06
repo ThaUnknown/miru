@@ -4,6 +4,7 @@
   import { click } from '@/modules/click.js'
   import { countdown } from '@/modules/util.js'
   import { page } from '@/App.svelte'
+  /** @type {import('@/modules/al.d.ts').Media} */
   export let media
 
   const view = getContext('view')

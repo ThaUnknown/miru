@@ -1,64 +1,70 @@
 export type Media = {
   id: number
   title: {
-    romaji: string
-    english: string
-    native: string
+    romaji?: string
+    english?: string
+    native?: string
     userPreferred: string
   }
-  description: string
-  season: string
-  seasonYear: string
+  description?: string
+  season?: string
+  seasonYear?: string
   format: string
   status: string
-  episodes: number
-  duration: number
-  averageScore: number
-  genres: string[]
+  episodes?: number
+  duration?: number
+  averageScore?: number
+  genres?: string[]
   isFavourite: boolean
-  coverImage: {
+  coverImage?: {
     extraLarge: string
-    large: string
+    color: string
     medium: string
   }
-  source: string
-  countryOfOrigin: string
-  isAdult: boolean
-  bannerImage: string
-  synonyms: string[]
-  nextAiringEpisode: {
+  source?: string
+  countryOfOrigin?: string
+  isAdult?: boolean
+  bannerImage?: string
+  synonyms?: string[]
+  nextAiringEpisode?: {
     episode: number
     airingAt: number
   }
-  startDate: {
+  startDate?: {
     year: number
-    month: number
-    day: number
+    month?: number
+    day?: number
   }
-  trailer: {
+  trailer?: {
     id: string
     site: string
   }
-  streamingEpisodes: {
+  streamingEpisodes?: {
     title: string
     thumbnail: string
   }[]
-  mediaListEntry: {
+  mediaListEntry?: {
     id: number
     progress: number
     repeat: number
-    status: string
-    cusomLists: string[]
-    score: number
+    status?: string
+    customLists?: string[]
+    score?: number
   }
-  studios: {
+  studios?: {
     edges: {
       node: {
         name: string
       }
     }[]
   }
-  relations: {
+  airingSchedule?: {
+    nodes?: {
+      episode: number
+      airingAt: number
+    }[]
+  }
+  relations?: {
     edges: {
       relationType: string
       node: {
@@ -68,17 +74,17 @@ export type Media = {
         }
         type: string
         status: string
-        format: string
-        episodes: number
-        synonyms: string[]
-        season: string
-        seasonYear: number
-        startDate: {
+        format?: string
+        episodes?: number
+        synonyms?: string[]
+        season?: string
+        seasonYear?: number
+        startDate?: {
           year: number
-          month: number
-          day: number
+          month?: number
+          day?: number
         }
-        endDate: {
+        endDate?: {
           year: number
           month: number
           day: number
@@ -86,15 +92,15 @@ export type Media = {
       }
     }[]
   }
-  recommendations: {
-    edges: {
+  recommendations?: {
+    edges?: {
       node: {
         media: {
           id: number
           title: {
             userPreferred: string
           }
-          coverImage: {
+          coverImage?: {
             medium: string
           }
         }
@@ -125,10 +131,10 @@ export type MediaListCollection = {
         mediaListEntry: {
           progress: number
         }
-        nextAiringEpisode: {
+        nextAiringEpisode?: {
           episode: number
         }
-        relations: {
+        relations?: {
           edges: {
             relationType: string
             node: {
@@ -147,9 +153,9 @@ export type Viewer = {
   }
   name: string
   id: number
-  mediaListOptions: {
-    animeList: {
-      customLists: string[]
+  mediaListOptions?: {
+    animeList?: {
+      customLists?: string[]
     }
   }
 }

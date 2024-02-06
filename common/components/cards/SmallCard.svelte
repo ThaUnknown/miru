@@ -6,7 +6,7 @@
   import { countdown } from '@/modules/util.js'
 
   import { page } from '@/App.svelte'
-
+  /** @type {import('@/modules/al.d.ts').Media} */
   export let media
   let preview = false
 

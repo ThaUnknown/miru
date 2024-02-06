@@ -8,7 +8,7 @@
   export let data
 
   let preview = false
-
+  /** @type {import('@/modules/al.d.ts').Media | null} */
   const media = data.media
 
   const episodeThumbnail = ((!media?.mediaListEntry?.status || !(media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress < data.episode)) && data.episodeData?.image) || media?.bannerImage || media?.coverImage.extraLarge || ' '

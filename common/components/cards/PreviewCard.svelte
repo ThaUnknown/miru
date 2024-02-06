@@ -2,10 +2,14 @@
   import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
+  /** @type {import('@/modules/al.d.ts').Media} */
   export let media
 
   let hide = true
 
+  /**
+   * @param {import('@/modules/al.d.ts').Media} media
+   */
   function getPlayButtonText (media) {
     if (media.mediaListEntry) {
       const { status, progress } = media.mediaListEntry
