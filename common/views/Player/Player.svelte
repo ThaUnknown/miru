@@ -258,6 +258,7 @@
   }
   function playPause () {
     paused = !paused
+    resetImmerse()
   }
   function toggleMute () {
     muted = !muted
@@ -645,6 +646,7 @@
   }
 
   function toggleImmerse () {
+    clearTimeout(immerseTimeout)
     immersed = !immersed
   }
 
