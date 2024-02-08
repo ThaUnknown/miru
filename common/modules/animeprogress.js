@@ -5,12 +5,12 @@ const maxEntries = 1000
 
 // LocalStorage is structured as an array of objects with the following properties:
 // mediaId, episode, currentTime, safeduration, createdAt, updatedAt
-function loadFromLocalStorage() {
+function loadFromLocalStorage () {
   const data = localStorage.getItem('animeEpisodeProgress')
   return data ? JSON.parse(data) : []
 }
 
-function saveToLocalStorage(data) {
+function saveToLocalStorage (data) {
   localStorage.setItem('animeEpisodeProgress', JSON.stringify(data))
   animeProgressStore.set(data)
 }
@@ -18,7 +18,7 @@ function saveToLocalStorage(data) {
 const animeProgressStore = writable(loadFromLocalStorage())
 
 // Return an object with the progress of each episode in percent (0-100), keyed by episode number
-export function liveAnimeProgress (mediaId){
+export function liveAnimeProgress (mediaId) {
   return derived(animeProgressStore, (data) => {
     if (!mediaId) return {}
     const results = data.filter(item => item.mediaId === mediaId)
@@ -42,13 +42,13 @@ export function liveAnimeEpisodeProgress (mediaId, episode) {
 }
 
 // Return an individual episode's record { mediaId, episode, currentTime, safeduration, createdAt, updatedAt }
-export function getAnimeProgress(mediaId, episode) {
+export function getAnimeProgress (mediaId, episode) {
   const data = loadFromLocalStorage()
   return data.find(item => item.mediaId === mediaId && item.episode === episode)
 }
 
 // Set an individual episode's progress
-export function setAnimeProgress({ mediaId, episode, currentTime, safeduration }) {
+export function setAnimeProgress ({ mediaId, episode, currentTime, safeduration }) {
   if (!mediaId || !episode || !currentTime || !safeduration) return
   const data = loadFromLocalStorage()
   // Update the existing entry or create a new one

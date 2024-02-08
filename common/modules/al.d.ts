@@ -109,7 +109,7 @@ export type Media = {
   }
 }
 
-export type MediaList = {
+export type Following = {
   status: string
   score: number
   progress: number
@@ -121,28 +121,30 @@ export type MediaList = {
   }
 }
 
+export type MediaListMedia = {
+  id: number
+  status: string
+  mediaListEntry: {
+    progress: number
+  }
+  nextAiringEpisode?: {
+    episode: number
+  }
+  relations?: {
+    edges: {
+      relationType: string
+      node: {
+        id: number
+      }
+    }[]
+  }
+}
+
 export type MediaListCollection = {
   lists: {
     status: string
     entries: {
-      media: {
-        id: number
-        status: string
-        mediaListEntry: {
-          progress: number
-        }
-        nextAiringEpisode?: {
-          episode: number
-        }
-        relations?: {
-          edges: {
-            relationType: string
-            node: {
-              id: number
-            }
-          }[]
-        }
-      }
+      media: MediaListMedia
     }[]
   }[]
 }

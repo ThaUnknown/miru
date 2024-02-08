@@ -182,6 +182,9 @@ class AnilistClient {
 
   userID
 
+  /** @type {Record<number, import('./al.d.ts').Media>} */
+  mediaCache = {}
+
   constructor () {
     this.limiter.on('failed', async (error, jobInfo) => {
       printError(error)
@@ -315,8 +318,7 @@ class AnilistClient {
     }
   }
 
-  /** @returns {Promise<import('./al.d.ts').PagedQuery<{media: import('./al.d.ts').Media[]}>>} */
-  searchName (variables = {}) {
+  async searchName (variables = {}) {
     const query = /* js */` 
     query($page: Int, $perPage: Int, $sort: [MediaSort], $name: String, $status: [MediaStatus], $year: Int, $isAdult: Boolean){
       Page(page: $page, perPage: $perPage){
@@ -331,11 +333,15 @@ class AnilistClient {
 
     variables.isAdult = variables.isAdult ?? false
 
-    return this.alRequest(query, variables)
+    /** @type {import('./al.d.ts').PagedQuery<{media: import('./al.d.ts').Media[]}>} */
+    const res = await this.alRequest(query, variables)
+
+    this.updateCache(res.data.Page.media)
+
+    return res
   }
 
-  /** @returns {Promise<import('./al.d.ts').Query<{Media: import('./al.d.ts').Media}>>} */
-  searchIDSingle (variables) {
+  async searchIDSingle (variables) {
     const query = /* js */` 
     query($id: Int){ 
       Media(id: $id, type: ANIME){
@@ -343,24 +349,33 @@ class AnilistClient {
       }
     }`
 
-    return this.alRequest(query, variables)
+    /** @type {import('./al.d.ts').Query<{Media: import('./al.d.ts').Media}>} */
+    const res = await this.alRequest(query, variables)
+
+    this.updateCache([res.data.Media])
+
+    return res
   }
 
-  /** @returns {Promise<import('./al.d.ts').PagedQuery<{media: import('./al.d.ts').Media[]}>>} */
-  searchIDS (variables) {
+  async searchIDS (variables) {
     const query = /* js */` 
-      query($id: [Int], $page: Int, $perPage: Int, $status: [MediaStatus], $onList: Boolean, $sort: [MediaSort], $search: String, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat){ 
-        Page(page: $page, perPage: $perPage){
-          pageInfo{
-            hasNextPage
-          },
-          media(id_in: $id, type: ANIME, status_in: $status, onList: $onList, search: $search, sort: $sort, season: $season, seasonYear: $year, genre: $genre, format: $format){
-            ${queryObjects}
-          }
+    query($id: [Int], $page: Int, $perPage: Int, $status: [MediaStatus], $onList: Boolean, $sort: [MediaSort], $search: String, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat){ 
+      Page(page: $page, perPage: $perPage){
+        pageInfo{
+          hasNextPage
+        },
+        media(id_in: $id, type: ANIME, status_in: $status, onList: $onList, search: $search, sort: $sort, season: $season, seasonYear: $year, genre: $genre, format: $format){
+          ${queryObjects}
         }
-      }`
+      }
+    }`
 
-    return this.alRequest(query, variables)
+    /** @type {import('./al.d.ts').PagedQuery<{media: import('./al.d.ts').Media[]}>} */
+    const res = await this.alRequest(query, variables)
+
+    this.updateCache(res.data.Page.media)
+
+    return res
   }
 
   /** @returns {Promise<import('./al.d.ts').Query<{ Viewer: import('./al.d.ts').Viewer }>>} */
@@ -418,6 +433,7 @@ class AnilistClient {
         }
       }`
 
+    // this doesn't need to be cached, as SearchIDStatus is already cached, which is the only thing that uses this
     return await this.alRequest(query, variables)
   }
 
@@ -437,27 +453,31 @@ class AnilistClient {
     return await this.alRequest(query, variables)
   }
 
-  /** @returns {Promise<import('./al.d.ts').PagedQuery<{ airingSchedule: { timeUntilAiring: number, airingAt: number, episode: number, media: import('./al.d.ts').Media[]}}>>} */
-  searchAiringSchedule (variables = {}) {
+  async searchAiringSchedule (variables = {}) {
     variables.to = (variables.from + 7 * 24 * 60 * 60)
     const query = /* js */` 
-      query($page: Int, $perPage: Int, $from: Int, $to: Int){
-        Page(page: $page, perPage: $perPage){
-          pageInfo{
-            hasNextPage
-          },
-          airingSchedules(airingAt_greater: $from, airingAt_lesser: $to){
-            episode,
-            timeUntilAiring,
-            airingAt,
-            media{
-              ${queryObjects}
-            }
+    query($page: Int, $perPage: Int, $from: Int, $to: Int){
+      Page(page: $page, perPage: $perPage){
+        pageInfo{
+          hasNextPage
+        },
+        airingSchedules(airingAt_greater: $from, airingAt_lesser: $to){
+          episode,
+          timeUntilAiring,
+          airingAt,
+          media{
+            ${queryObjects}
           }
         }
-      }`
+      }
+    }`
 
-    return this.alRequest(query, variables)
+    /** @type {import('./al.d.ts').PagedQuery<{ airingSchedules: { timeUntilAiring: number, airingAt: number, episode: number, media: import('./al.d.ts').Media}[]}>} */
+    const res = await this.alRequest(query, variables)
+
+    this.updateCache(res.data.Page.airingSchedules?.map(({ media }) => media))
+
+    return res
   }
 
   /** @returns {Promise<import('./al.d.ts').PagedQuery<{ airingSchedules: { airingAt: number, episode: number }[]}>>} */
@@ -475,21 +495,26 @@ class AnilistClient {
     return this.alRequest(query, variables)
   }
 
-  /** @returns {Promise<import('./al.d.ts').PagedQuery<{media: import('./al.d.ts').Media[]}>>} */
-  search (variables = {}) {
+  async search (variables = {}) {
     variables.sort ||= 'SEARCH_MATCH'
     const query = /* js */` 
-      query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $onList: Boolean, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat){
-        Page(page: $page, perPage: $perPage){
-          pageInfo{
-            hasNextPage
-          },
-          media(type: ANIME, search: $search, sort: $sort, onList: $onList, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format, format_not: MUSIC){
-            ${queryObjects}
-          }
+    query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $onList: Boolean, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat){
+      Page(page: $page, perPage: $perPage){
+        pageInfo{
+          hasNextPage
+        },
+        media(type: ANIME, search: $search, sort: $sort, onList: $onList, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format, format_not: MUSIC){
+          ${queryObjects}
         }
-      }`
-    return this.alRequest(query, variables)
+      }
+    }`
+
+    /** @type {import('./al.d.ts').PagedQuery<{media: import('./al.d.ts').Media[]}>} */
+    const res = await this.alRequest(query, variables)
+
+    this.updateCache(res.data.Page.media)
+
+    return res
   }
 
   /** @returns {Promise<import('./al.d.ts').Query<{ AiringSchedule: { airingAt: number }}>>} */
@@ -504,7 +529,7 @@ class AnilistClient {
     return this.alRequest(query, variables)
   }
 
-  /** @returns {Promise<import('./al.d.ts').PagedQuery<{ mediaList: import('./al.d.ts').MediaList[]}>>} */
+  /** @returns {Promise<import('./al.d.ts').PagedQuery<{ mediaList: import('./al.d.ts').Following[]}>>} */
   following (variables) {
     const query = /* js */`
       query($id: Int){
@@ -570,6 +595,11 @@ class AnilistClient {
       }`
 
     return this.alRequest(query, variables)
+  }
+
+  /** @param {import('./al.d.ts').Media[]} medias */
+  updateCache (medias) {
+    this.mediaCache = { ...this.mediaCache, ...Object.fromEntries(medias.map(media => [media.id, media])) }
   }
 }
 
