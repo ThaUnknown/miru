@@ -1,4 +1,5 @@
 import { writable } from 'simple-store-svelte'
+import { proxy } from 'comlink'
 import { defaults } from './util.js'
 import IPC from '@/modules/ipc.js'
 export let alToken = localStorage.getItem('ALtoken') || null
@@ -45,7 +46,7 @@ window.addEventListener('paste', ({ clipboardData }) => {
     }
   }
 })
-IPC.on('altoken', handleToken)
+IPC.protocol.on('altoken', proxy(handleToken))
 function handleToken (data) {
   localStorage.setItem('ALtoken', data)
   alToken = data

@@ -66,9 +66,6 @@
       duration: '5000'
     })
   }
-  function openInBrowser (url) {
-    IPC.emit('open', url)
-  }
   function getPlayText (media) {
     if (media.mediaListEntry) {
       const { status, progress } = media.mediaListEntry
@@ -136,7 +133,7 @@
       </button>
     {/if}
     <div class='d-flex mb-5 w-full'>
-      <button class='btn flex-fill font-weight-bold font-size-16 d-flex align-items-center' use:click={() => { openInBrowser(`https://anilist.co/anime/${media.id}`) }}>
+      <button class='btn flex-fill font-weight-bold font-size-16 d-flex align-items-center' use:click={() => { IPC.open(`https://anilist.co/anime/${media.id}`) }}>
         <span class='material-symbols-outlined mr-15 font-size-18 w-30'> open_in_new </span>
         Open
       </button>

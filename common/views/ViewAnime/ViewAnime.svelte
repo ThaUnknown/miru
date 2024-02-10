@@ -63,9 +63,6 @@
       duration: 5000
     })
   }
-  function openInBrowser (url) {
-    IPC.emit('open', url)
-  }
   let episodeOrder = true
 </script>
 
@@ -134,7 +131,7 @@
                   <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => copyToClipboard(`https://miru.watch/anime/${media.id}`)}>
                     share
                   </button>
-                  <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => openInBrowser(`https://anilist.co/anime/${media.id}`)}>
+                  <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => IPC.open(`https://anilist.co/anime/${media.id}`)}>
                     open_in_new
                   </button>
                 </div>

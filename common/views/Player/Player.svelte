@@ -17,6 +17,7 @@
   import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
   import { SUPPORTS } from '@/modules/support.js'
   import 'rvfc-polyfill'
+  import { proxy } from 'comlink'
 
   const emit = createEventDispatcher()
 
@@ -171,7 +172,7 @@
       current = file
       emit('current', current)
       src = file.url
-      client.send('current', file)
+      client.setCurrent(file)
       subs = new Subtitles(video, files, current, handleHeaders)
       video.load()
       await loadAnimeProgress()
@@ -718,14 +719,10 @@
     return 0
   }
   let buffer = 0
-  client.on('progress', ({ detail }) => {
-    buffer = detail * 100
-  })
-
   let chapters = []
-  client.on('chapters', ({ detail }) => {
-    if (detail.length) chapters = detail
-  })
+  client.on('chapters', proxy(data => {
+    if (data.length) chapters = data
+  }))
   async function findChapters () {
     if (!chapters.length && current.media.media) {
       chapters = await getChaptersAniSkip(current, safeduration)
@@ -891,11 +888,13 @@
     }
   }
   const torrent = {}
-  client.on('stats', updateStats)
-  function updateStats ({ detail }) {
+  client.on('stats', proxy(updateStats))
+  function updateStats (detail) {
     torrent.peers = detail.numPeers || 0
     torrent.up = detail.uploadSpeed || 0
     torrent.down = detail.downloadSpeed || 0
+
+    buffer = detail.progress * 100
   }
   function checkError ({ target }) {
     // video playback failed - show a message saying why

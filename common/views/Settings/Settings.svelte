@@ -1,10 +1,11 @@
 <script context='module'>
   import { toast } from 'svelte-sonner'
+  import { proxy } from 'comlink'
   import { click } from '@/modules/click.js'
   import { settings } from '@/modules/settings.js'
   import IPC from '@/modules/ipc.js'
 
-  if (settings.value.enableDoH) IPC.emit('doh', settings.value.doHURL)
+  if (settings.value.enableDoH) IPC.doh(settings.value.doHURL)
   export const platformMap = {
     aix: 'Aix',
     darwin: 'MacOS',
@@ -17,35 +18,33 @@
     win32: 'Windows'
   }
   let version = '1.0.0'
-  IPC.on('version', data => (version = data))
-  IPC.emit('version')
+  IPC.version().then(data => (version = data))
 
   let wasUpdated = false
-  IPC.on('update-available', () => {
+  IPC.updater.on('update-available', proxy(() => {
     if (!wasUpdated) {
       wasUpdated = true
       toast('Auto Updater', {
         description: 'A new version of Miru is available. Downloading!'
       })
     }
-  })
-  IPC.on('update-downloaded', () => {
+  }))
+  IPC.updater.on('update-downloaded', proxy(() => {
     toast.success('Auto Updater', {
       description: 'A new version of Miru has downloaded. You can restart to update!'
     })
-  })
+  }))
 
   const changeLog = (async () => {
     const res = await fetch('https://api.github.com/repos/ThaUnknown/miru/releases')
     const json = await res.json()
     return json.map(({ body, tag_name: version, published_at: date, assets }) => ({ body, version, date, assets }))
   })()
-  IPC.emit('show-discord-status', settings.value.showDetailsInRPC)
+  IPC.discord.showDiscordStatus(settings.value.showDetailsInRPC)
 </script>
 
 <script>
   import { Tabs, TabLabel, Tab } from '@/components/Tabination.js'
-  import { onDestroy } from 'svelte'
   import PlayerSettings from './PlayerSettings.svelte'
   import TorrentSettings from './TorrentSettings.svelte'
   import InterfaceSettings from './InterfaceSettings.svelte'
@@ -74,14 +73,7 @@
       icon: 'description'
     }
   }
-  function pathListener (data) {
-    $settings.torrentPath = data
-  }
-  onDestroy(() => {
-    IPC.off('path', pathListener)
-  })
-  $: IPC.emit('show-discord-status', $settings.showDetailsInRPC)
-  IPC.on('path', pathListener)
+  $: IPC.discord.showDiscordStatus($settings.showDetailsInRPC)
 </script>
 
 <Tabs>
@@ -96,7 +88,7 @@
           </div>
         </TabLabel>
       {/each}
-      <div class='pointer my-5 rounded' tabindex='0' role='button' use:click={() => IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')}>
+      <div class='pointer my-5 rounded' tabindex='0' role='button' use:click={() => IPC.open('https://github.com/sponsors/ThaUnknown/')}>
         <div class='px-20 py-10 d-flex'>
           <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>favorite</span>
           <div class='font-weight-bold font-size-16'>Donate</div>

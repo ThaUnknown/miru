@@ -7,7 +7,9 @@
   export let settings
 
   function handleFolder () {
-    IPC.emit('dialog')
+    IPC.dialog().then(data => {
+      settings.torrentPath = data
+    })
   }
 </script>
 

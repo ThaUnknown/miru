@@ -15,6 +15,9 @@
     "node": true,
     "serviceworker": true
   },
+  "rules": {
+    "n/no-callback-literal": 0
+  },
   "extends": ["plugin:svelte/recommended", "standard"],
   "plugins": ["svelte"],
   "parser": "@typescript-eslint/parser",

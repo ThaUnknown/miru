@@ -5,6 +5,10 @@ const mode = process.env.NODE_ENV?.trim() || 'development'
 
 const commonConfig = require('common/webpack.config.cjs')
 
+const alias = {
+  '@/modules/ipc.js': join(__dirname, 'src', 'renderer', 'ipc.js')
+}
+
 module.exports = [
   {
     devtool: 'source-map',
@@ -40,7 +44,7 @@ module.exports = [
       port: 5000
     }
   },
-  commonConfig(__dirname),
+  commonConfig(__dirname, alias),
   {
     devtool: 'source-map',
     entry: join(__dirname, 'src', 'preload', 'preload.js'),

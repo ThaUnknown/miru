@@ -1,5 +1,4 @@
 import { Client } from 'discord-rpc'
-import { ipcMain } from 'electron'
 import { debounce } from '@/modules/util.js'
 
 export default class {
@@ -35,16 +34,6 @@ export default class {
       transport: 'ipc'
     })
 
-    ipcMain.on('show-discord-status', (event, data) => {
-      this.allowDiscordDetails = data
-      this.debouncedDiscordRPC(this.allowDiscordDetails ? this.cachedPresence : undefined)
-    })
-
-    ipcMain.on('discord', (event, data) => {
-      this.cachedPresence = data
-      this.debouncedDiscordRPC(this.allowDiscordDetails ? this.cachedPresence : undefined)
-    })
-
     this.discord.on('ready', async () => {
       this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
       this.discord.subscribe('ACTIVITY_JOIN_REQUEST')
@@ -59,6 +48,16 @@ export default class {
     this.loginRPC()
 
     this.debouncedDiscordRPC = debounce(status => this.setDiscordRPC(status), 4500)
+  }
+
+  handleDiscordStatus (data) {
+    this.cachedPresence = data
+    this.debouncedDiscordRPC(this.allowDiscordDetails && this.cachedPresence)
+  }
+
+  showDiscordStatus (data) {
+    this.allowDiscordDetails = data
+    this.debouncedDiscordRPC(this.allowDiscordDetails & this.cachedPresence)
   }
 
   loginRPC () {

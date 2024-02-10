@@ -1,5 +1,6 @@
+import { statfs } from 'node:fs/promises'
 import { ipcRenderer } from 'electron'
-import { statfs } from 'fs/promises'
+import { expose } from 'comlink'
 
 import TorrentClient from 'common/modules/webtorrent.js'
 
@@ -8,4 +9,7 @@ async function storageQuota (directory) {
   return bsize * bavail
 }
 
-globalThis.client = new TorrentClient(ipcRenderer, storageQuota, 'node')
+globalThis.client = new TorrentClient(storageQuota, 'node')
+ipcRenderer.on('port', ({ ports }) => {
+  expose(globalThis.client, ports[0])
+})

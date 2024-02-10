@@ -35,16 +35,7 @@ async function updatePeerCounts (entries) {
   const id = crypto.randomUUID()
 
   const updated = await Promise.race([
-    new Promise(resolve => {
-      function check ({ detail }) {
-        if (detail.id !== id) return
-        client.removeListener('scrape', check)
-        resolve(detail.result)
-        console.log(detail)
-      }
-      client.on('scrape', check)
-      client.send('scrape', { id, infoHashes: entries.map(({ hash }) => hash) })
-    }),
+    client.scrape({ id, infoHashes: entries.map(({ hash }) => hash) }),
     sleep(5000)
   ])
 

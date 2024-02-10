@@ -1,6 +1,6 @@
+import path from 'node:path'
 import { app, protocol, shell, ipcMain } from 'electron'
 import { development } from './util.js'
-import path from 'path'
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
@@ -10,27 +10,42 @@ if (process.defaultApp) {
   app.setAsDefaultProtocolClient('miru')
 }
 
-export default class {
+export default class Protocol {
   // schema: miru://key/value
   protocolMap = {
     auth: token => this.sendToken(token),
-    anime: id => this.window.webContents.send('open-anime', id),
-    w2g: link => this.window.webContents.send('w2glink', link),
-    schedule: () => this.window.webContents.send('schedule'),
+    anime: id => this.emit('open-anime', id),
+    w2g: link => this.emit('w2glink', link),
+    schedule: () => this.emit('schedule'),
     donate: () => shell.openExternal('https://github.com/sponsors/ThaUnknown/')
   }
 
   protocolRx = /miru:\/\/([a-z0-9]+)\/(.*)/i
 
+  emit (event, ...args) {
+    if (!this.events[event]?.length) return
+    for (const cb of this.events[event]) {
+      cb(...args)
+    }
+  }
+
+  off (event) {
+    delete this.events[event]
+  }
+
+  events = {}
+
+  on (event, cb) {
+    (this.events[event] ||= []).push(cb)
+  }
+
   /**
    * @param {import('electron').BrowserWindow} window
    */
   constructor (window) {
-    this.window = window
-
     protocol.registerHttpProtocol('miru', (req, cb) => {
       const token = req.url.slice(7)
-      this.window.loadURL(development ? 'http://localhost:5000/app.html' + token : `file://${path.join(__dirname, '/app.html')}${token}`)
+      window.loadURL(development ? 'http://localhost:5000/app.html' + token : `file://${path.join(__dirname, '/app.html')}${token}`)
     })
 
     app.on('open-url', (event, url) => {
@@ -48,9 +63,9 @@ export default class {
 
     app.on('second-instance', (event, commandLine, workingDirectory) => {
       // Someone tried to run a second instance, we should focus our window.
-      if (this.window) {
-        if (this.window.isMinimized()) this.window.restore()
-        this.window.focus()
+      if (window) {
+        if (window.isMinimized()) window.restore()
+        window.focus()
       }
       // There's probably a better way to do this instead of a for loop and split[1][0]
       // but for now it works as a way to fix multiple OS's commandLine differences
@@ -64,7 +79,7 @@ export default class {
     let token = line.split('access_token=')[1].split('&token_type')[0]
     if (token) {
       if (token.endsWith('/')) token = token.slice(0, -1)
-      this.window.webContents.send('altoken', token)
+      this.emit('altoken', token)
     }
   }
 

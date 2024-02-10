@@ -1,1 +1,3 @@
-export default window.IPC
+export default globalThis.Native
+
+export const TorrentClient = globalThis.Torrent

@@ -6,7 +6,7 @@
   import SettingCard from './SettingCard.svelte'
   import { SUPPORTS } from '@/modules/support.js'
   function updateAngle () {
-    IPC.emit('angle', settings.value.angle)
+    IPC.angle(settings.value.angle)
   }
   export let settings
 </script>

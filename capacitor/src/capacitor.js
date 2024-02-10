@@ -5,8 +5,6 @@ import { App } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
 import IPC from './ipc.js'
 
-IPC.on('open', url => Browser.open({ url }))
-
 App.addListener('appUrlOpen', ({ url }) => handleProtocol(url))
 
 // schema: miru://key/value

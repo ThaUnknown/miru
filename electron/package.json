@@ -81,7 +81,10 @@
     },
     "win": {
       "artifactName": "${os}-${name}-${version}.${ext}",
-      "target": ["nsis", "portable"]
+      "target": [
+        "nsis",
+        "portable"
+      ]
     },
     "linux": {
       "artifactName": "${os}-${name}-${version}.${ext}",

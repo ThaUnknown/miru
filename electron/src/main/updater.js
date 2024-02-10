@@ -1,24 +1,38 @@
 import log from 'electron-log'
 import { autoUpdater } from 'electron-updater'
-import { ipcMain } from 'electron'
 
 log.transports.file.level = 'info'
 autoUpdater.logger = log
-ipcMain.on('update', () => {
-  autoUpdater.checkForUpdatesAndNotify()
-})
 
 autoUpdater.checkForUpdatesAndNotify()
-export default class {
-  /**
-   * @param {import('electron').BrowserWindow} window
-   */
-  constructor (window) {
+export default class Updater {
+  emit (event, ...args) {
+    if (!this.events[event]?.length) return
+    for (const cb of this.events[event]) {
+      cb(...args)
+    }
+  }
+
+  off (event) {
+    delete this.events[event]
+  }
+
+  events = {}
+
+  on (event, cb) {
+    (this.events[event] ||= []).push(cb)
+  }
+
+  constructor () {
     autoUpdater.on('update-available', () => {
-      window.webContents.send('update-available', true)
+      this.emit('update-available', true)
     })
     autoUpdater.on('update-downloaded', () => {
-      window.webContents.send('update-downloaded', true)
+      this.emit('update-downloaded', true)
     })
+  }
+
+  checkForUpdates () {
+    autoUpdater.checkForUpdatesAndNotify()
   }
 }

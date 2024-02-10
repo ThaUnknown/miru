@@ -240,7 +240,7 @@
         }
       ]
     }
-    IPC.emit('discord', { activity })
+    IPC.discord.handleDiscordStatus({ activity })
   }
   state.subscribe(() => {
     setDiscordRPC()

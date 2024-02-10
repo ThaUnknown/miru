@@ -21,7 +21,7 @@
     location.reload()
   }
   function checkUpdate () {
-    IPC.emit('update')
+    IPC.updater.checkForUpdates()
   }
   setInterval(checkUpdate, 1200000)
 </script>

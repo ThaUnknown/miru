@@ -1,3 +1,4 @@
+import { EventEmitter } from 'node:events'
 import WebTorrent from 'webtorrent'
 import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
 import { hex2bin, arr2hex, text2arr } from 'uint8-util'
@@ -30,12 +31,13 @@ try {
   storedSettings = JSON.parse(localStorage.getItem('settings')) || {}
 } catch (error) {}
 
-export default class TorrentClient extends WebTorrent {
+export default class TorrentClient {
   static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
-
-  constructor (ipc, storageQuota, serverMode, settingOverrides = {}, controller) {
+  emitter = new EventEmitter()
+  client
+  constructor (storageQuota, serverMode, settingOverrides = {}, controller) {
     const settings = { ...defaults, ...storedSettings, ...settingOverrides }
-    super({
+    this.client = new WebTorrent({
       dht: !settings.torrentDHT,
       maxConns: settings.maxConns,
       downloadLimit: settings.torrentSpeed * 1048576 || 0,
@@ -43,18 +45,7 @@ export default class TorrentClient extends WebTorrent {
       torrentPort: settings.torrentPort || 0,
       dhtPort: settings.dhtPort || 0
     })
-    this._ready = new Promise(resolve => {
-      ipc.on('port', ({ ports }) => {
-        this.message = ports[0].postMessage.bind(ports[0])
-        ports[0].onmessage = ({ data }) => {
-          if (data.type === 'load') this.loadLastTorrent(data.data)
-          if (data.type === 'destroy') this.destroy()
-          this.handleMessage({ data })
-        }
-        resolve()
-      })
-      ipc.on('destroy', this.destroy.bind(this))
-    })
+
     this.settings = settings
 
     this.serverMode = serverMode
@@ -64,19 +55,17 @@ export default class TorrentClient extends WebTorrent {
     this.parsed = false
 
     setInterval(() => {
-      this.dispatch('stats', {
-        numPeers: (this.torrents.length && this.torrents[0].numPeers) || 0,
-        uploadSpeed: (this.torrents.length && this.torrents[0].uploadSpeed) || 0,
-        downloadSpeed: (this.torrents.length && this.torrents[0].downloadSpeed) || 0
+      this.emit('stats', {
+        numPeers: (this.client.torrents.length && this.client.torrents[0].numPeers) || 0,
+        uploadSpeed: (this.client.torrents.length && this.client.torrents[0].uploadSpeed) || 0,
+        downloadSpeed: (this.client.torrents.length && this.client.torrents[0].downloadSpeed) || 0,
+        progress: (this.client.torrents[0]?.pieces && this.current?.progress) || 0
       })
-    }, 200)
-    setInterval(() => {
-      if (this.torrents[0]?.pieces) this.dispatch('progress', this.current?.progress)
-    }, 2000)
-    this.on('torrent', this.handleTorrent.bind(this))
+    }, 1000)
+    this.client.on('torrent', this.handleTorrent.bind(this))
 
     const createServer = controller => {
-      this.server = this.createServer({ controller }, serverMode)
+      this.server = this.client.createServer({ controller }, serverMode)
       this.server.listen(0, () => {})
     }
 
@@ -91,7 +80,24 @@ export default class TorrentClient extends WebTorrent {
     }
 
     process.on('uncaughtException', this.dispatchError.bind(this))
-    this.on('error', this.dispatchError.bind(this))
+    this.client.on('error', this.dispatchError.bind(this))
+  }
+
+  emit (event, ...args) {
+    if (!this.events[event]?.length) return
+    for (const cb of this.events[event]) {
+      cb(...args)
+    }
+  }
+
+  off (event) {
+    delete this.events[event]
+  }
+
+  events = {}
+
+  on (event, cb) {
+    (this.events[event] ||= []).push(cb)
   }
 
   loadLastTorrent (t) {
@@ -123,19 +129,19 @@ export default class TorrentClient extends WebTorrent {
       for (const file of torrent.files) {
         file.deselect()
       }
-      this.dispatch('warn', 'Detected Large Torrent! To Conserve Drive Space Files Will Be Downloaded Selectively Instead Of Downloading The Entire Torrent.')
+      this.emit('warn', 'Detected Large Torrent! To Conserve Drive Space Files Will Be Downloaded Selectively Instead Of Downloading The Entire Torrent.')
     }
-    this.dispatch('files', files)
-    this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
+    this.emit('files', files)
+    this.emit('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
     localStorage.setItem('torrent', JSON.stringify([...torrent.torrentFile]))
 
     if (torrent.length > await this.storageQuota(torrent.path)) {
-      this.dispatch('error', 'Torrent Too Big! This Torrent Exceeds The Selected Drive\'s Available Space. Change Download Location In Torrent Settings To A Drive With More Space And Restart The App!')
+      this.emit('error', 'Torrent Too Big! This Torrent Exceeds The Selected Drive\'s Available Space. Change Download Location In Torrent Settings To A Drive With More Space And Restart The App!')
     }
   }
 
   async findFontFiles (targetFile) {
-    const files = this.torrents[0].files
+    const files = this.client.torrents[0].files
     const fontFiles = files.filter(file => fontRx.test(file.name))
 
     const map = {}
@@ -151,12 +157,12 @@ export default class TorrentClient extends WebTorrent {
     for (const file of Object.values(map)) {
       const data = await file.arrayBuffer()
       if (targetFile !== this.current) return
-      this.dispatch('file', { data: new Uint8Array(data) }, [data])
+      this.emit('file', { data: new Uint8Array(data) }, [data])
     }
   }
 
   async findSubtitleFiles (targetFile) {
-    const files = this.torrents[0].files
+    const files = this.client.torrents[0].files
     const videoFiles = files.filter(file => videoRx.test(file.name))
     const videoName = targetFile.name.substring(0, targetFile.name.lastIndexOf('.')) || targetFile.name
     // array of subtitle files that match video name, or all subtitle files when only 1 vid file
@@ -166,22 +172,24 @@ export default class TorrentClient extends WebTorrent {
     for (const file of subfiles) {
       const data = await file.arrayBuffer()
       if (targetFile !== this.current) return
-      this.dispatch('subtitleFile', { name: file.name, data: new Uint8Array(data) }, [data])
+      this.emit('subtitleFile', { name: file.name, data: new Uint8Array(data) }, [data])
     }
   }
 
-  _scrape ({ id, infoHashes }) {
-    this.trackers.cat._request(this.trackers.cat.scrapeUrl, { info_hash: infoHashes.map(infoHash => hex2bin(infoHash)) }, (err, data) => {
-      if (err) {
-        this.dispatch('error', err)
-        return this.dispatch('scrape', { id, result: [] })
-      }
-      const { files } = data
-      const result = []
-      for (const [key, data] of Object.entries(files || {})) {
-        result.push({ hash: key.length !== 40 ? arr2hex(text2arr(key)) : key, ...data })
-      }
-      this.dispatch('scrape', { id, result })
+  scrape ({ id, infoHashes }) {
+    return new Promise((resolve, reject) => {
+      this.trackers.cat._request(this.trackers.cat.scrapeUrl, { info_hash: infoHashes.map(infoHash => hex2bin(infoHash)) }, (err, data) => {
+        if (err) {
+          this.emit('warn', err)
+          return resolve({ id, result: [] })
+        }
+        const { files } = data
+        const result = []
+        for (const [key, data] of Object.entries(files || {})) {
+          result.push({ hash: key.length !== 40 ? arr2hex(text2arr(key)) : key, ...data })
+        }
+        resolve({ id, result })
+      })
     })
   }
 
@@ -191,18 +199,18 @@ export default class TorrentClient extends WebTorrent {
     for (const exclude of TorrentClient.excludedErrorMessages) {
       if (e.message?.startsWith(exclude)) return
     }
-    this.dispatch('error', JSON.stringify(e?.message || e))
+    this.emit('error', JSON.stringify(e?.message || e))
   }
 
   async addTorrent (data, skipVerify = false) {
-    const existing = await this.get(data)
+    const existing = await this.client.get(data)
     if (existing) {
       if (existing.ready) this.handleTorrent(existing)
       return
     }
     localStorage.setItem('lastFinished', false)
-    if (this.torrents.length) await this.remove(this.torrents[0])
-    const torrent = await this.add(data, {
+    if (this.client.torrents.length) await this.client.remove(this.client.torrents[0])
+    const torrent = await this.client.add(data, {
       private: this.settings.torrentPeX,
       path: this.settings.torrentPath,
       destroyStoreOnDestroy: !this.settings.torrentPersist,
@@ -215,44 +223,25 @@ export default class TorrentClient extends WebTorrent {
     })
   }
 
-  async handleMessage ({ data }) {
-    switch (data.type) {
-      case 'current': {
-        if (data.data) {
-          const torrent = await this.get(data.data.infoHash)
-          const found = torrent?.files.find(file => file.path === data.data.path)
-          if (!found) return
-          if (this.current) {
-            this.current.removeAllListeners('stream')
-          }
-          this.parser?.destroy()
-          found.select()
-          this.current = found
-          this.parser = new Parser(this, found)
-          this.findSubtitleFiles(found)
-          this.findFontFiles(found)
-        }
-        break
-      }
-      case 'scrape': {
-        this._scrape(data.data)
-        break
-      }
-      case 'torrent': {
-        this.addTorrent(data.data)
-        break
-      }
+  async setCurrent (file) {
+    const torrent = await this.client.get(file.infoHash)
+    const found = torrent?.files.find(f => f.path === file.path)
+    if (!found) return
+    if (this.current) {
+      this.current.removeAllListeners('stream')
     }
+    this.parser?.destroy()
+    found.select()
+    this.current = found
+    this.parser = new Parser(this, found)
+    this.findSubtitleFiles(found)
+    this.findFontFiles(found)
   }
 
-  async dispatch (type, data, transfer) {
-    await this._ready
-    this.message?.({ type, data }, transfer)
-  }
 
   destroy () {
     this.parser?.destroy()
     this.server.close()
-    super.destroy()
+    this.client.destroy()
   }
 }

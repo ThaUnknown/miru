@@ -16,7 +16,7 @@
         if (anilistClient.userID) {
           $logout = true
         } else {
-          IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
+          IPC.open('https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
           if (platformMap[window.version.platform] === 'Linux') {
             toast('Support Notification', {
               description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
@@ -70,7 +70,7 @@
     },
     {
       click: () => {
-        IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')
+        IPC.open('https://github.com/sponsors/ThaUnknown/')
       },
       icon: 'favorite',
       text: 'Support This App',

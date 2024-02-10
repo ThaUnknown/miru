@@ -1,7 +1,74 @@
-import { app, ipcMain, shell, dialog } from 'electron'
+import { app, dialog, shell } from 'electron'
 import store from './store.js'
+import Discord from './discord.js'
+import Protocol from './protocol.js'
+import Updater from './updater.js'
 
 export const development = process.env.NODE_ENV?.trim() === 'development'
+
+export class Util {
+  mainWindow
+  discord
+  protocol
+  updater
+  /**
+   * @param {import('electron').BrowserWindow} mainWindow
+   */
+  constructor (mainWindow) {
+    this.mainWindow = mainWindow
+    this.discord = new Discord(mainWindow)
+    this.protocol = new Protocol(mainWindow)
+    this.updater = new Updater()
+  }
+
+  close () {
+    this.mainWindow = null
+    // try {
+    //   this.webtorrentWindow.webContents.postMessage('destroy', null)
+    // } catch (e) {}
+    app.quit()
+  }
+
+  open (url) {
+    shell.openExternal(url)
+  }
+
+  doh (dns) {
+    try {
+      const url = new URL(dns)
+
+      app.configureHostResolver({
+        secureDnsMode: 'secure',
+        secureDnsServers: [url.toString()]
+      })
+    } catch (e) {}
+  }
+
+  angle (angle) {
+    return store.set('angle', angle)
+  }
+
+  async dialog () {
+    const { filePaths } = await dialog.showOpenDialog({
+      properties: ['openDirectory']
+    })
+    if (filePaths.length) {
+      let path = filePaths[0]
+      if (!(path.endsWith('\\') || path.endsWith('/'))) {
+        if (path.indexOf('\\') !== -1) {
+          path += '\\'
+        } else if (path.indexOf('/') !== -1) {
+          path += '/'
+        }
+      }
+      return path
+    }
+  }
+
+  version () {
+    return app.getVersion()
+  }
+}
 
 const flags = [
   ['disable-gpu-sandbox'],
@@ -26,50 +93,6 @@ for (const [flag, value] of flags) {
 app.commandLine.appendSwitch('use-angle', store.get('angle') || 'default')
 
 if (!app.requestSingleInstanceLock()) app.quit()
-
-ipcMain.on('open', (event, url) => {
-  shell.openExternal(url)
-})
-
-ipcMain.on('doh', (event, dns) => {
-  try {
-    const url = new URL(dns)
-
-    app.configureHostResolver({
-      secureDnsMode: 'secure',
-      secureDnsServers: [url.toString()]
-    })
-  } catch (e) {}
-})
-
-ipcMain.on('angle', (e, data) => {
-  store.set('angle', data)
-})
-
-ipcMain.on('close', () => {
-  app.quit()
-})
-
-ipcMain.on('dialog', async (event, data) => {
-  const { filePaths } = await dialog.showOpenDialog({
-    properties: ['openDirectory']
-  })
-  if (filePaths.length) {
-    let path = filePaths[0]
-    if (!(path.endsWith('\\') || path.endsWith('/'))) {
-      if (path.indexOf('\\') !== -1) {
-        path += '\\'
-      } else if (path.indexOf('/') !== -1) {
-        path += '/'
-      }
-    }
-    event.sender.send('path', path)
-  }
-})
-
-ipcMain.on('version', (event) => {
-  event.sender.send('version', app.getVersion()) // fucking stupid
-})
 
 app.setJumpList?.([
   {

@@ -1,25 +1,52 @@
-import { NodeJS } from 'capacitor-nodejs'
 import EventEmitter from 'events'
+import { NodeJS } from 'capacitor-nodejs'
+import { wrap } from 'comlink'
 
 const ready = NodeJS.whenReady()
 
-const main = new EventEmitter()
-
-export default main
-
-main.on('portRequest', async () => {
-  globalThis.port = {
-    onmessage: cb => {
-      NodeJS.addListener('ipc', ({ args }) => cb(args[0]))
+function capacitorEndpoint (nep) {
+  const listeners = new WeakMap()
+  return {
+    postMessage: async (...args) => {
+      await ready
+      nep.send({ eventName: 'message', args })
     },
-    postMessage: (data, b) => {
-      NodeJS.send({ eventName: 'ipc', args: [{ data }] })
+    addEventListener: (_, eh) => {
+      const l = (data) => {
+        if ('handleEvent' in eh) {
+          eh.handleEvent({ data })
+        } else {
+          eh({ data })
+        }
+      }
+      const handle = nep.addListener('message', ({ args }) => l(...args))
+      listeners.set(eh, handle)
+    },
+    removeEventListener: (_, eh) => {
+      const l = listeners.get(eh)
+      if (!l) return
+      nep.removeListener(l)
+      listeners.delete(eh)
     }
   }
-  await ready
-  NodeJS.send({ eventName: 'port-init', args: [localStorage.getItem('settings')] })
-  main.emit('port')
-})
+}
+export default {
+  discord: {
+    on () {},
+    handleDiscordStatus () {},
+    showDiscordStatus () {}
+  },
+  protocol: new EventEmitter(),
+  updater: new EventEmitter(),
+  close () {},
+  open () {},
+  doh () {},
+  angle () {},
+  dialog () {},
+  async version () {}
+}
+
+export const TorrentClient = wrap(capacitorEndpoint(NodeJS))
 
 const [_platform, arch] = navigator.platform.split(' ')
 

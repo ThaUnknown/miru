@@ -1,3 +1,4 @@
+import { proxy } from 'comlink'
 import JASSUB from 'jassub'
 import { toTS, subRx, videoRx } from './util.js'
 import { settings } from '@/modules/settings.js'
@@ -39,14 +40,14 @@ export default class Subtitles {
     this.videoFiles = files.filter(file => videoRx.test(file.name))
     this.subtitleFiles = []
     this.timeout = null
-    this.handleFile = ({ detail }) => {
+    this.handleFile = (detail) => {
       if (this.selected) {
         const uint8 = new Uint8Array(JSON.parse(detail.data))
         this.fonts.push(uint8)
         this.renderer?.addFont(uint8)
       }
     }
-    this.handleSubtitle = ({ detail }) => {
+    this.handleSubtitle = (detail) => {
       const { subtitle, trackNumber } = detail
       if (this.selected) {
         const string = JSON.stringify(subtitle)
@@ -59,7 +60,7 @@ export default class Subtitles {
       }
     }
 
-    this.handleTracks = ({ detail }) => {
+    this.handleTracks = (detail) => {
       if (this.selected) {
         for (const track of detail) {
           if (!this.tracks[track.number]) {
@@ -110,14 +111,14 @@ export default class Subtitles {
         if (subRx.test(file.name)) this.addSingleSubtitleFile(file)
       }
     }
-    this.handleSubtitleFile = ({ detail }) => {
+    this.handleSubtitleFile = (detail) => {
       this.addSingleSubtitleFile(new File([detail.data], detail.name))
     }
 
-    client.on('tracks', this.handleTracks)
-    client.on('subtitle', this.handleSubtitle)
-    client.on('file', this.handleFile)
-    client.on('subtitleFile', this.handleSubtitleFile)
+    client.on('tracks', proxy(this.handleTracks))
+    client.on('subtitle', proxy(this.handleSubtitle))
+    client.on('file', proxy(this.handleFile))
+    client.on('subtitleFile', proxy(this.handleSubtitleFile))
     clipboard.on('text', this.handleClipboardText)
     clipboard.on('files', this.handleClipboardFiles)
   }

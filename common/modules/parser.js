@@ -5,6 +5,7 @@ export default class Parser {
   parsed = false
   /** @type {Metadata} */
   metadata = null
+  /** @type {import('./webtorrent.js').default} */
   client = null
   file = null
   destroyed = false
@@ -19,13 +20,13 @@ export default class Parser {
         this.parsed = true
         this.destroy()
       } else {
-        this.client.dispatch('tracks', tracks)
+        this.client.emit('tracks', tracks)
       }
     })
 
     this.metadata.getChapters().then(chapters => {
       if (this.destroyed) return
-      this.client.dispatch('chapters', chapters)
+      this.client.emit('chapters', chapters)
     })
 
     this.metadata.getAttachments().then(files => {
@@ -33,14 +34,14 @@ export default class Parser {
       for (const file of files) {
         if (fontRx.test(file.filename) || file.mimetype.toLowerCase().includes('font')) {
           // this is cursed, but required, as capacitor-node's IPC hangs for 2mins when runnig on 32bit android when sending uint8's
-          this.client.dispatch('file', { data: JSON.stringify([...file.data]) })
+          this.client.emit('file', { data: JSON.stringify([...file.data]) })
         }
       }
     })
 
     this.metadata.on('subtitle', (subtitle, trackNumber) => {
       if (this.destroyed) return
-      this.client.dispatch('subtitle', { subtitle, trackNumber })
+      this.client.emit('subtitle', { subtitle, trackNumber })
     })
 
     if (this.file.name.endsWith('.mkv') || this.file.name.endsWith('.webm')) {

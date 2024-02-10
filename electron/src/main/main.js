@@ -1,19 +1,46 @@
 /* eslint-disable no-new */
-import { app, BrowserWindow, shell, ipcMain, dialog, MessageChannelMain } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron'
 import path from 'path'
-import Discord from './discord.js'
-import Updater from './updater.js'
-import Protocol from './protocol.js'
-import { development } from './util.js'
+import { expose } from 'comlink'
+import { Util, development } from './util.js'
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
-let webtorrentWindow
+function electronEndpoint (nep) {
+  const listeners = new WeakMap()
+  return {
+    postMessage: (...args) => {
+      nep.postMessage(...args)
+    },
+    addEventListener: (_, eh) => {
+      const l = data => {
+        if (data.data?.argumentList) {
+          for (const arg of data.data.argumentList) {
+            if (arg.type === 'HANDLER' && arg.name === 'proxy') arg.value = electronEndpoint(data.ports[0])
+          }
+        }
+        if ('handleEvent' in eh) {
+          eh.handleEvent(data)
+        } else {
+          eh(data)
+        }
+      }
+      nep.on('message', l)
+      listeners.set(eh, l)
+    },
+    removeEventListener: (_, eh) => {
+      const l = listeners.get(eh)
+      if (!l) {
+        return
+      }
+      nep.off('message', l)
+      listeners.delete(eh)
+    },
+    start: nep.start && nep.start.bind(nep)
+  }
+}
 
 function createWindow () {
   // Create the browser window.
-  webtorrentWindow = new BrowserWindow({
+  const webtorrentWindow = new BrowserWindow({
     show: development,
     webPreferences: {
       nodeIntegration: true,
@@ -21,7 +48,7 @@ function createWindow () {
       backgroundThrottling: false
     }
   })
-  mainWindow = new BrowserWindow({
+  let mainWindow = new BrowserWindow({
     width: 1600,
     height: 900,
     frame: process.platform === 'darwin', // Only keep the native frame on Mac
@@ -36,14 +63,22 @@ function createWindow () {
     webPreferences: {
       enableBlinkFeatures: 'FontAccess, AudioVideoTracks',
       backgroundThrottling: false,
+      contextIsolation: false,
       preload: path.join(__dirname, '/preload.js')
     },
     icon: path.join(__dirname, '/logo.ico'),
     show: false
   })
-  new Discord(mainWindow)
-  new Protocol(mainWindow)
-  new Updater(mainWindow)
+
+  ipcMain.on('mainPort', ({ ports }) => {
+    expose(new Util(mainWindow), electronEndpoint(ports[0]))
+  })
+
+  ipcMain.on('torrentPort', async ({ ports }) => {
+    await torrentLoad
+    webtorrentWindow.webContents.postMessage('port', null, [ports[0]])
+  })
+
   mainWindow.setMenuBarVisibility(false)
 
   mainWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, fn) => {
@@ -72,14 +107,6 @@ function createWindow () {
     app.quit()
   })
 
-  ipcMain.on('close', () => {
-    mainWindow = null
-    try {
-      webtorrentWindow.webContents.postMessage('destroy', null)
-    } catch (e) {}
-    app.quit()
-  })
-
   let crashcount = 0
   mainWindow.webContents.on('render-process-gone', (e, { reason }) => {
     if (reason === 'crashed') {
@@ -100,16 +127,10 @@ function createWindow () {
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
   })
-  ipcMain.on('portRequest', async ({ sender }) => {
-    const { port1, port2 } = new MessageChannelMain()
-    await torrentLoad
-    webtorrentWindow.webContents.postMessage('port', null, [port1])
-    sender.postMessage('port', null, [port2])
-  })
 }
 
 app.on('ready', createWindow)
 
 app.on('activate', () => {
-  if (mainWindow === null) createWindow()
+  if (!BrowserWindow.getAllWindows().length) createWindow()
 })

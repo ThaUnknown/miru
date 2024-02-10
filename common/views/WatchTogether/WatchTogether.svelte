@@ -6,6 +6,7 @@
   import { toast } from 'svelte-sonner'
   import { page } from '@/App.svelte'
   import P2PT from 'p2pt'
+  import { proxy } from 'comlink'
   import { click } from '@/modules/click.js'
   import IPC from '@/modules/ipc.js'
   import 'browser-event-target-emitter'
@@ -108,13 +109,13 @@
     }
   })
 
-  client.on('magnet', ({ detail }) => {
+  client.on('magnet', proxy((detail) => {
     if (detail.hash !== playerState.hash) {
       playerState.hash = detail.hash
       playerState.index = 0
       emit('torrent', detail)
     }
-  })
+  }))
 
   function emit (type, data) {
     if (p2pt) {
@@ -131,10 +132,10 @@
     index: 0
   }
 
-  IPC.on('w2glink', link => {
+  IPC.protocol.on('w2glink', proxy(link => {
     joinLobby(link)
     page.set('watchtogether')
-  })
+  }))
 
   function cleanup () {
     state.set(false)

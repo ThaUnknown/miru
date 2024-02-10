@@ -1,6 +1,7 @@
 <script context='module'>
   import { setContext } from 'svelte'
   import { writable } from 'simple-store-svelte'
+  import { proxy } from 'comlink'
   import { anilistClient } from '@/modules/anilist.js'
   import IPC from '@/modules/ipc.js'
 
@@ -10,10 +11,11 @@
     view.set(null)
     view.set((await anilistClient.searchIDSingle({ id: anime })).data.Media)
   }
-  IPC.on('open-anime', handleAnime)
-  IPC.on('schedule', () => {
+  IPC.protocol.on('open-anime', proxy(handleAnime))
+  IPC.protocol.on('schedule', proxy(() => {
     page.set('schedule')
-  })
+  }))
+
 </script>
 
 <script>
