@@ -1,7 +1,7 @@
 <nav class='navbar flex-column bg-transparent border-0 d-flex'>
   <div class='container p-0'>
     <a href='/' class='navbar-brand ml-20'>
-      <img src='/logo.ico' alt='Logo' />
+      <img src='/logo_filled.svg' alt='Logo' class='p-10' />
     </a>
     <ul class='navbar-nav d-flex ml-auto'>
       <li class='nav-item mr-10'>

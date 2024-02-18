@@ -5,7 +5,23 @@ export function onRequest ({ params }) {
   try {
     const id = Number(params.id)
     if (Number.isSafeInteger(id)) {
-      const html = /* html */`<!DOCTYPE html><html style=background:#000><head><meta http-equiv=refresh content="5; url=https://miru.watch"><meta property="og:title" content="Anime"><meta property="og:description" content="Stream anime torrents, real-time with no waiting for downloads"><meta property="og:site_name" content="Miru"><meta property="og:image" content=https://github.com/ThaUnknown/miru/blob/master/docs/show.gif?raw=true><meta property="og:url" content=miru://anime/${id}><meta data-vmid="twitter:card" name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#23a559"></head><body><iframe src=miru://anime/${id} style=border:none></iframe>Redirecting...</body></html>`
+      const html = /* html */`
+<!DOCTYPE html>
+<html style=background:#000>
+  <head>
+    <meta http-equiv=refresh content="5; url=https://miru.watch">
+    <meta property="og:title" content="Anime">
+    <meta property="og:description" content="Stream anime torrents, real-time with no waiting for downloads">
+    <meta property="og:site_name" content="Miru">
+    <meta property="og:image" content=https://miru.watch/app_original.png>
+    <meta property="og:url" content=miru://anime/${id}>
+    <meta data-vmid="twitter:card" name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#17191C">
+  </head>
+  <body>
+    <iframe src=miru://anime/${id} style=border:none></iframe>Redirecting...
+  </body>
+</html>`
 
       return new Response(html, {
         headers: {
@@ -13,8 +29,6 @@ export function onRequest ({ params }) {
         }
       })
     }
-  } catch (e) {
-    return Response.redirect('https://miru.watch/')
-  }
+  } catch (e) {}
   return Response.redirect('https://miru.watch/')
 }

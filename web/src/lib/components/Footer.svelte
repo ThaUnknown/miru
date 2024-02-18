@@ -8,7 +8,7 @@
   <div class='row px-20 px-sm-0 mb-20 content'>
     <div class='col-12 col-md-4 pt-20 mb-20 text-md-left'>
       <a href='/'>
-        <img src='/logo.ico' alt='logo' class='w-50 h-50' />
+        <img src='/logo_filled.svg' alt='logo' class='w-50 h-50 p-5' />
       </a>
       <br />
       © 2020 - {new Date().getFullYear()}, ThaUnknown

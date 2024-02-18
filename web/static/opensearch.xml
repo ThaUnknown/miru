@@ -2,7 +2,7 @@
   <ShortName>Miru</ShortName>
   <Description>Search Miru</Description>
   <InputEncoding>UTF-8</InputEncoding>
-  <Image width="16" height="16" type="image/x-icon">https://miru.watch/logo.ico</Image>
+  <Image width="512" height="512" type="image/png">https://miru.watch/logo_filled.png</Image>
   <Url type="text/html" method="get" template="https://miru.watch/anime/{searchTerms}"/>
   <Url type="application/opensearchdescription+xml" rel="self" template="https://miru.watch/opensearch.xml"/>
   <moz:SearchForm>https://miru.watch/anime/</moz:SearchForm>
