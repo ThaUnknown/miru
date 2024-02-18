@@ -33,13 +33,7 @@
         "no-use-before-define": 0,
         "svelte/html-self-closing": ["error", "always"],
         "svelte/html-closing-bracket-spacing": ["error", { "startTag": "never", "endTag": "never", "selfClosingTag": "always" }],
-        "svelte/html-quotes": [
-          "error",
-          {
-            "prefer": "single",
-            "dynamic": { "quoted": false, "avoidInvalidUnquotedInHTML": false }
-          }
-        ],
+        "svelte/html-quotes": [ "error", { "prefer": "single", "dynamic": { "quoted": false, "avoidInvalidUnquotedInHTML": false } }],
         "svelte/shorthand-attribute": ["warn", { "prefer": "always" }],
         "svelte/spaced-html-comment": ["error", "always"]
       }
