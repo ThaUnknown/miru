@@ -1,3 +1,12 @@
+<script context='module'>
+  const mql = matchMedia('(min-width: 769px)')
+  const isMobile = readable(!mql.matches, set => {
+    const check = ({ matches }) => set(!matches)
+    mql.addEventListener('change', check)
+    return () => mql.removeEventListener('change', check)
+  })
+</script>
+
 <script>
   import Home from './views/Home/Home.svelte'
   import MediaHandler from './views/Player/MediaHandler.svelte'
@@ -9,11 +18,6 @@
   import { readable } from 'simple-store-svelte'
 
   export let page = 'home'
-
-  const mql = matchMedia('(min-width: 769px)')
-  const isMobile = readable(!mql.matches, set => {
-    mql.addEventListener('change', ({ matches }) => set(!matches))
-  })
 
   $: minwidth = $isMobile ? '200px' : '35rem'
   $: maxwidth = $isMobile ? '200px' : '60rem'
