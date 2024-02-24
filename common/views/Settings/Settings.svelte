@@ -50,6 +50,8 @@
   import TorrentSettings from './TorrentSettings.svelte'
   import InterfaceSettings from './InterfaceSettings.svelte'
   import AppSettings from './AppSettings.svelte'
+  import { anilistClient } from '@/modules/anilist.js'
+  import { logout } from '@/components/Logout.svelte'
   import smoothScroll from '@/modules/scroll.js'
 
   const groups = {
@@ -77,6 +79,20 @@
   function pathListener (data) {
     $settings.torrentPath = data
   }
+
+  function loginButton () {
+    if (anilistClient.userID) {
+      $logout = true
+    } else {
+      IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
+      if (platformMap[window.version.platform] === 'Linux') {
+        toast('Support Notification', {
+          description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
+          duration: 300000
+        })
+      }
+    }
+  }
   onDestroy(() => {
     IPC.off('path', pathListener)
   })
@@ -99,7 +115,25 @@
       <div class='pointer my-5 rounded' tabindex='0' role='button' use:click={() => IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')}>
         <div class='px-20 py-10 d-flex'>
           <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>favorite</span>
-          <div class='font-weight-bold font-size-16'>Donate</div>
+          <div class='font-size-16'>Donate</div>
+        </div>
+      </div>
+      <div class='pointer my-5 rounded' use:click={loginButton}>
+        <div class='px-20 py-10 d-flex'>
+          {#if anilistClient.userID}
+            {#await anilistClient.userID}
+              <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>login</span>
+              <div class='font-size-16'>Login With AniList</div>
+            {:then result}
+              <span class='material-symbols-outlined rounded mr-10'>
+                <img src={result.data.Viewer.avatar.medium} class='h-30 rounded' alt='logo' />
+              </span>
+              <div class='font-size-16 login-image-text'>Logout</div>
+            {/await}
+          {:else}
+            <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>login</span>
+            <div class='font-size-16'>Login With AniList</div>
+          {/if}
         </div>
       </div>
       <p class='text-muted px-20 py-10 m-0 mt-md-auto'>Restart may be required for some settings to take effect.</p>
@@ -207,6 +241,15 @@
 <style>
   .settings :global(select.form-control:invalid) {
     color: var(--dm-input-placeholder-text-color);
+  }
+  .login-image-text {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .h-30 {
+    width: 3rem;
+    height: 3rem;
   }
   .settings :global(input:not(:focus):invalid) {
     box-shadow: 0 0 0 0.2rem var(--danger-color) !important;

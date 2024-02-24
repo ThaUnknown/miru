@@ -6,12 +6,21 @@
   import Miniplayer from 'svelte-miniplayer'
   import Search from './views/Search.svelte'
   import AiringSchedule from './views/AiringSchedule.svelte'
+  import { readable } from 'simple-store-svelte'
 
   export let page = 'home'
+
+  const mql = matchMedia('(min-width: 769px)')
+  const isMobile = readable(!mql.matches, set => {
+    mql.addEventListener('change', ({ matches }) => set(!matches))
+  })
+
+  $: minwidth = $isMobile ? '200px' : '35rem'
+  $: maxwidth = $isMobile ? '200px' : '60rem'
 </script>
 
 <div class='w-full h-full position-absolute overflow-hidden'>
-  <Miniplayer active={page !== 'player'} class='bg-dark-light z-10 {page === 'player' ? 'h-full' : ''}' minwidth='35rem' maxwidth='60rem' width='300px' padding='2rem'>
+  <Miniplayer active={page !== 'player'} class='bg-dark-light z-10 {page === 'player' ? 'h-full' : ''}' {minwidth} {maxwidth} width='300px' padding='2rem' resize={!$isMobile}>
     <MediaHandler miniplayer={page !== 'player'} bind:page />
   </Miniplayer>
 </div>
