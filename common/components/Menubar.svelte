@@ -14,7 +14,7 @@
 <div class='w-full z-101 navbar bg-transparent border-0 p-0 d-flex'>
   <div class='d-flex h-full draggable align-items-center text-center'>
     {#if window.version.platform !== 'darwin'}
-      <img src='./logo.ico' class='position-absolute w-50 h-50 m-10 pointer d-md-block d-none' alt='ico' use:click={close} />
+      <img src='./logo_filled.png' class='position-absolute w-50 h-50 m-10 pointer d-md-block d-none p-5' alt='ico' use:click={close} />
     {/if}
   </div>
   <div class='h-full bg-dark flex-grow-1'>

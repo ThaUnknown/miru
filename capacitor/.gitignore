@@ -8,6 +8,11 @@ android/app/src/*
 android/app/src/main/*
 !android/app/src/main/AndroidManifest.xml
 ios/
+*.jks
+*.pepk
+*.bat
+pepk.jar
+encryption_public_key.pem
 
 package-lock.json
 .env

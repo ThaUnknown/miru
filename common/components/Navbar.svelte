@@ -100,7 +100,7 @@
 
 <nav class='navbar navbar-fixed-bottom d-block d-md-none border-0 bg-dark'>
   <div class='navbar-menu h-full d-flex flex-row justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
-    <img src='./logo.ico' class='w-50 h-50 m-10 pointer' alt='ico' use:click={close} />
+    <img src='./logo_filled.png' class='w-50 h-50 m-10 pointer p-5' alt='ico' use:click={close} />
     {#each links as { click: _click, icon, text, image, css, page: _page }, i (i)}
       <div
         class='navbar-link navbar-link-with-icon pointer overflow-hidden {css}'

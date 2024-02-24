@@ -38,7 +38,7 @@ function createWindow () {
       backgroundThrottling: false,
       preload: path.join(__dirname, '/preload.js')
     },
-    icon: path.join(__dirname, '/logo.ico'),
+    icon: path.join(__dirname, '/logo_filled.png'),
     show: false
   })
   new Discord(mainWindow)
@@ -84,7 +84,7 @@ function createWindow () {
   mainWindow.webContents.on('render-process-gone', (e, { reason }) => {
     if (reason === 'crashed') {
       if (++crashcount > 10) {
-        dialog.showMessageBox({ message: 'Crashed too many times.', title: 'Miru', detail: 'App crashed too many times. For a fix visit https://github.com/ThaUnknown/miru/blob/master/docs/faq.md#miru-crashed-too-many-times', icon: '/renderer/public/logo.ico' }).then(() => {
+        dialog.showMessageBox({ message: 'Crashed too many times.', title: 'Miru', detail: 'App crashed too many times. For a fix visit https://github.com/ThaUnknown/miru/blob/master/docs/faq.md#miru-crashed-too-many-times', icon: '/renderer/public/logo_filled.png' }).then(() => {
           shell.openExternal('https://github.com/ThaUnknown/miru/blob/master/docs/faq.md#miru-crashed-too-many-times')
           app.quit()
         })
