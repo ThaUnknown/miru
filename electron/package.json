@@ -15,13 +15,13 @@
     "publish": "npm run web:build && electron-builder -p always"
   },
   "devDependencies": {
-    "@electron/notarize": "^2.2.0",
+    "@electron/notarize": "^2.3.0",
     "common": "workspace:*",
     "discord-rpc": "4.0.1",
     "electron": "25.1.0",
-    "electron-builder": "^24.6.4",
-    "electron-log": "^5.0.1",
-    "electron-updater": "^6.1.4",
+    "electron-builder": "^24.13.3",
+    "electron-log": "^5.1.1",
+    "electron-updater": "^6.1.8",
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
@@ -81,7 +81,10 @@
     },
     "win": {
       "artifactName": "${os}-${name}-${version}.${ext}",
-      "target": ["nsis", "portable"]
+      "target": [
+        "nsis",
+        "portable"
+      ]
     },
     "linux": {
       "artifactName": "${os}-${name}-${version}.${ext}",

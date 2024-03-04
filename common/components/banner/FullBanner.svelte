@@ -22,11 +22,11 @@
 </script>
 
 <img src={media.bannerImage || ''} alt='banner' class='img-cover w-full h-full position-absolute' />
-<div class='pl-20 pb-20 justify-content-end d-flex flex-column h-full w-600 mw-full banner'>
-  <div class='text-white font-weight-bold font-size-40 title overflow-hidden'>
+<div class='pl-20 pb-20 justify-content-end d-flex flex-column h-full banner mw-full '>
+  <div class='text-white font-weight-bold font-size-40 title w-700 mw-full overflow-hidden'>
     {media.title.userPreferred}
   </div>
-  <div class='details text-white text-capitalize pt-15 pb-10 d-flex'>
+  <div class='details text-white text-capitalize pt-15 pb-10 d-flex w-600 mw-full'>
     <span class='text-nowrap d-flex align-items-center'>
       {#if media.format}
         {formatMap[media.format]}
@@ -51,17 +51,17 @@
       </span>
     {/if}
   </div>
-  <div class='text-muted description overflow-hidden'>
+  <div class='text-muted description overflow-hidden w-600 mw-full'>
     {media.description?.replace(/<[^>]*>/g, '')}
   </div>
-  <div class='details text-white text-capitalize pt-15 pb-10 d-flex'>
+  <div class='details text-white text-capitalize pt-15 pb-10 d-flex w-600 mw-full'>
     {#each media.genres as genre}
       <span class='text-nowrap d-flex align-items-center'>
         {genre}
       </span>
     {/each}
   </div>
-  <div class='d-flex flex-row pb-20'>
+  <div class='d-flex flex-row pb-20 w-600 mw-full'>
     <button class='btn bg-dark-light px-20 shadow-none border-0'
       use:click={() => playMedia(media)}>
       Watch Now
@@ -76,6 +76,9 @@
 </div>
 
 <style>
+  .w-700 {
+    width: 70rem
+  }
   .details span + span::before {
     content: '•';
     padding: 0 .5rem;

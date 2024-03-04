@@ -10,6 +10,7 @@
   export let data
 
   function getOS () {
+    // @ts-ignore
     const platform = navigator.userAgentData?.platform || navigator.platform
     const macosPlatforms = ['macOS', 'Macintosh', 'MacIntel', 'MacPPC', 'Mac68K']
     const windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE']
@@ -39,12 +40,12 @@
 
     const { assets } = releases[0]
     downloads = {
-      iOS: '',
-      Android: 'https://play.google.com',
-      Windows: assets.find(({ name }) => name.endsWith('installer.exe')).browser_download_url,
-      'Mac OS': assets.find(({ name }) => name.endsWith('.dmg')).browser_download_url,
-      Linux: assets.find(({ name }) => name.endsWith('.AppImage')).browser_download_url,
-      Debian: assets.find(({ name }) => name.endsWith('.deb')).browser_download_url
+      iOS: 'https://www.android.com',
+      Android: '',
+      Windows: assets.find(({ name }) => name.endsWith('installer.exe'))?.browser_download_url || '',
+      'Mac OS': assets.find(({ name }) => name.endsWith('.dmg'))?.browser_download_url || '',
+      Linux: assets.find(({ name }) => name.endsWith('.AppImage'))?.browser_download_url || '',
+      Debian: assets.find(({ name }) => name.endsWith('.deb'))?.browser_download_url || ''
     }
     return downloads
   }
@@ -55,6 +56,7 @@
 
   setTimeout(async () => {
     const downloads = await downloadForOS()
+    if (!downloads) return
     location.href = downloads[userOS]
   }, 2000)
 </script>
@@ -101,7 +103,7 @@
           <div class='d-flex w-500 mw-full gap-2'>
             <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' href={downloads.Android || releases}>
               <AndroidSVG />
-              <div class='font-size-18 font-weight-semi-bold mt-5'>Android</div>
+              <div class='font-size-18 font-weight-semi-bold mt-5'>Android Soon™️</div>
               <div class='text-muted'>apk</div>
             </a>
             <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' href={downloads.Android || releases}>

@@ -2,9 +2,9 @@
   "name": "common",
   "private": true,
   "dependencies": {
-    "@fontsource-variable/material-symbols-outlined": "latest",
-    "@fontsource-variable/nunito": "latest",
-    "@fontsource/roboto": "latest",
+    "@fontsource-variable/material-symbols-outlined": "^5.0.24",
+    "@fontsource-variable/nunito": "^5.0.18",
+    "@fontsource/roboto": "^5.0.12",
     "anitomyscript": "github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00",
     "bottleneck": "^2.19.5",
     "browser-event-target-emitter": "^1.0.1",
@@ -15,11 +15,11 @@
     "quartermoon": "^1.2.3",
     "simple-font-select": "^1.0.1",
     "simple-store-svelte": "^1.0.6",
-    "svelte": "^4.2.7",
+    "svelte": "^4.2.12",
     "svelte-keybinds": "^1.0.6",
     "svelte-loader": "^3.1.9",
     "svelte-miniplayer": "^1.0.5",
-    "svelte-sonner": "^0.3.9",
+    "svelte-sonner": "^0.3.19",
     "video-deband": "^1.0.5",
     "webpack-merge": "^5.10.0"
   }

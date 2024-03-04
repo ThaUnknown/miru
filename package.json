@@ -16,24 +16,24 @@
     ]
   },
   "dependencies": {
-    "@typescript-eslint/parser": "^6.12.0",
+    "@typescript-eslint/parser": "^7.1.1",
     "concurrently": "^8.2.2",
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^12.0.2",
     "cross-env": "^7.0.3",
-    "css-loader": "^6.8.1",
-    "eslint": "^8.54.0",
+    "css-loader": "^6.10.0",
+    "eslint": "^8.57.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-svelte": "^2.35.1",
-    "html-webpack-plugin": "^5.5.3",
-    "matroska-metadata": "^1.0.4",
-    "mini-css-extract-plugin": "^2.7.6",
-    "webpack": "^5.89.0",
+    "html-webpack-plugin": "^5.6.0",
+    "matroska-metadata": "^1.0.5",
+    "mini-css-extract-plugin": "^2.8.1",
+    "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1",
-    "webtorrent": "^2.1.29"
+    "webpack-dev-server": "^5.0.2",
+    "webtorrent": "^2.1.37"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20231121.0",
+    "@cloudflare/workers-types": "^4.20240222.0",
     "npm-run-all": "^4.1.5"
   }
 }

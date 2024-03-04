@@ -43,7 +43,7 @@
     animation: 2s transition ease forwards;
   }
   .text {
-    font-size: 10rem;
+    font-size: clamp(0px, 10rem, 15vw);
     color: transparent;
     font-family: Verdana, sans-serif;
     width: 100vw;
