@@ -4,7 +4,7 @@
 </script>
 
 <div class='container pb-20 font-weight-light font-size-16 text-muted position-sticky' style='top: 100%'>
-  <hr class='w-full my-20' />
+  <hr class='w-full mb-20 mt-0' />
   <div class='row px-20 px-sm-0 mb-20 content'>
     <div class='col-12 col-md-4 pt-20 mb-20 text-md-left'>
       <a href='/'>

@@ -25,10 +25,6 @@
 </div>
 
 <style>
-  .app-image {
-    aspect-ratio: 2/1;
-    object-fit: contain;
-  }
   .overlay-gradient {
     background: linear-gradient(0deg, #101113 15.27%, rgba(16, 17, 19, 0.92) 41.28%, rgba(16, 17, 19, 0.25) 74.32%);
     pointer-events: none;

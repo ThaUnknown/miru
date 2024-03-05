@@ -6,7 +6,6 @@
   import AndroidTVSVG from '$lib/svg/AndroidTVSVG.svelte'
   import SteamOSSVG from '$lib/svg/SteamOSSVG.svelte'
 
-  /** @type {import('./$types').PageData} */
   export let data
 
   function getOS () {
@@ -39,13 +38,17 @@
     const releases = await data.releases
 
     const { assets } = releases[0]
+
+    /** @param {string} ext */
+    const url = ext => assets.find(({ name }) => name.endsWith(ext))?.browser_download_url || ''
+
     downloads = {
       iOS: 'https://www.android.com',
       Android: '',
-      Windows: assets.find(({ name }) => name.endsWith('installer.exe'))?.browser_download_url || '',
-      'Mac OS': assets.find(({ name }) => name.endsWith('.dmg'))?.browser_download_url || '',
-      Linux: assets.find(({ name }) => name.endsWith('.AppImage'))?.browser_download_url || '',
-      Debian: assets.find(({ name }) => name.endsWith('.deb'))?.browser_download_url || ''
+      Windows: url('installer.exe'),
+      'Mac OS': url('.dmg'),
+      Linux: url('.AppImage'),
+      Debian: url('.deb')
     }
     return downloads
   }

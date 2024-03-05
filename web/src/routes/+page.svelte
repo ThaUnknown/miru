@@ -9,8 +9,8 @@
   import Stargazers from '$lib/components/Stargazers.svelte'
   import ShowcaseCards from '$lib/components/ShowcaseCards.svelte'
   import VideoShowcase from '$lib/components/VideoShowcase.svelte'
+  import ShowcaseEpisodes from '$lib/components/ShowcaseEpisodes.svelte'
 
-  /** @type {import('./$types').PageData} */
   export let data
 </script>
 
@@ -86,13 +86,13 @@
 <div class='container-xl'>
   <hr />
   <div class='my-20 py-20'>
-    <div class='row flex-column-reverse flex-md-row'>
-      <div class='col-md-5 col-12'>
+    <div class='row flex-column-reverse flex-lg-row'>
+      <div class='col-lg-6 col-12'>
         <div class='content'>
-          <img src='player.webp' alt='player' class='mw-full' />
+          <ShowcaseEpisodes />
         </div>
       </div>
-      <div class='col-md-7 col-12'>
+      <div class='col-lg-6 col-12 align-items-center d-flex'>
         <div class='content'>
           <h1 class='w-full font-weight-bold text-white'>
             It already does that.
@@ -104,13 +104,11 @@
   </div>
   <hr />
   <div class='my-20 py-20'>
-    <div>
-      <div class='content'>
-        <h1 class='text-center font-weight-bold text-white'>
-          Available everywhere.
-        </h1>
-        <p class='text-center text-muted font-size-16'>No need to install different apps for different devices and platforms, effortlessly install on any<br />platform, ensuring a seamless anime experience on any device. Whether you prefer Windows, Linux, Mac, Android and more.</p>
-      </div>
+    <div class='content'>
+      <h1 class='text-center font-weight-bold text-white'>
+        Available everywhere.
+      </h1>
+      <p class='text-center text-muted font-size-16'>No need to install different apps for different devices and platforms, effortlessly install on any<br />platform, ensuring a seamless anime experience on any device. Whether you prefer Windows, Linux, Mac, Android and more.</p>
     </div>
     <div class='platform-grid p-20 text-white'>
       <WindowsSvg class='w-50 h-50' />
@@ -129,8 +127,31 @@
   </div>
 </div>
 <Stargazers stargazers={data.stargazers} />
+<hr class='mb-0' />
+<div class='bg-dark'>
+  <div class='container-xl pt-20'>
+    <div class='pt-20'>
+      <div class='content my-0 align-items-center d-flex flex-column'>
+        <h1 class='text-center font-weight-bold text-white mb-0'>
+          MIRU
+        </h1>
+        <p class='text-center text-muted font-size-16'>Start your journey right here. Right now. Get started by<br />clicking download button below.</p>
+        <a href='/download' class='btn btn-danger btn-lg'>
+          Download
+        </a>
+
+        <div class='h-150 w-full overflow-hidden mt-20 pt-20'>
+          <img src='app.webp' alt='app' class='mw-full px-20 w-full app-image' />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <style>
+  .btn-danger {
+    --dm-button-danger-bg-color: #e5204c
+  }
   .glow {
     background-image: radial-gradient(circle farthest-side,rgba(255,0,182,.05),hsla(0,0%,100%,0));
     pointer-events: none;

@@ -14,3 +14,8 @@ hr {
 :root {
   --container-xl-max-width: 150rem
 }
+
+.app-image {
+  aspect-ratio: 2/1;
+  object-fit: contain;
+}
