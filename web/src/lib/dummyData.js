@@ -459,3 +459,159 @@ export const cards = [
     }
   }
 ]
+
+export const violetEpisodes = [
+  {
+    episode: 1,
+    image: 'https://artworks.thetvdb.com/banners/series/330139/episodes/5e9182bfcfe47.jpg',
+    summary: 'Hodgins retrieves Violet from the hospital, as Major Gilbert asked him to look out for her. After they meet Gilbert`s relatives, he offers her a job.',
+    title: {
+      en: '"I Love You" and Auto Memoir Dolls'
+    },
+    length: 25,
+    airdate: '2018-01-11'
+  },
+  {
+    episode: 2,
+    image: 'https://artworks.thetvdb.com/banners/series/330139/episodes/5e918871eb4d4.jpg',
+    summary: 'Violet tries to adjust to her new job: she needs to learn typing, and her coworkers question whether she has the right demeanor for letter writing.',
+    title: {
+      en: 'Not Coming Back'
+    },
+    length: 25,
+    airdate: '2018-01-18'
+  }
+]
+
+export const horimiyaEpisodes = [
+  {
+    episode: 1,
+    image: 'https://artworks.thetvdb.com/banners/series/388593/episodes/5ff9fadc853c1.jpg',
+    summary: 'Hori-san lives a double life: trendy, popular girl at school, simple, strong-willed caretaker at home. After a chance encounter with her classmate Miyamura, she finds out that she`s not the only one who hides her true self away.\nSource: Funimation',
+    title: {
+      en: 'A Tiny Happenstance'
+    },
+    length: 25,
+    airdate: '2021-01-10'
+  },
+  {
+    episode: 2,
+    image: 'https://artworks.thetvdb.com/banners/series/388593/episodes/6003ea1e05389.jpg',
+    summary: 'When her mother asks about Miyamura, Hori comes to a frightening realization. Later, the Student Council ropes Hori into extra work, but when conflict arises, it`s up to Miyamura to smooth things over.\nSource: Funimation',
+    title: {
+      en: 'You Wear More Than One Face'
+    },
+    length: 25,
+    airdate: '2021-01-17'
+  },
+  {
+    episode: 3,
+    image: 'https://artworks.thetvdb.com/banners/series/388593/episodes/600c4c8ece821.jpg',
+    summary: 'Miyamura reflects on his past and present. Hori responds to Remi`s selfish demand. A heated conversation between Ishikawa and Miyamura ends with a fistfight. \nSource: Funimation',
+    title: {
+      en: 'That`s Why It`s Okay'
+    },
+    length: 25,
+    airdate: '2021-01-24'
+  },
+  {
+    episode: 4,
+    image: 'https://artworks.thetvdb.com/banners/series/388593/episodes/6015843705271.jpg',
+    summary: 'The student council room becomes a cool hangout. Hori tries to get Miyamura flustered. An old friend brings out a new side of Miyamura. Later, when Hori gets sick, Miyamura comes to her rescue.\nSource: Funimation',
+    title: {
+      en: 'Everybody Loves Somebody'
+    },
+    length: 25,
+    airdate: '2021-01-31'
+  },
+  {
+    episode: 5,
+    image: 'https://artworks.thetvdb.com/banners/series/388593/episodes/601fc19257c5f.jpg',
+    summary: 'A rumor complicates Hori and Miyamura`s budding relationship. Kyosuke comes home to roost and instantly takes a liking to Miyamura. Sakura evaluates her friendship with Remi.\nSource: Funimation',
+    title: {
+      en: 'I Can`t Say It Out Loud'
+    },
+    length: 25,
+    airdate: '2021-02-07'
+  },
+  {
+    episode: 6,
+    image: 'https://artworks.thetvdb.com/banners/series/388593/episodes/6028021687d7d.jpg',
+    summary: 'Miyamura ends up staying the night. Rumors spread like wildfire at school. Shindo calls the couple over to share a bag of candy. A second-year girl begins to stalk Miyamura.\nSource: Funimation',
+    title: {
+      en: 'This Summer`s Going to Be a Hot One'
+    },
+    length: 25,
+    airdate: '2021-02-14'
+  },
+  {
+    episode: 7,
+    image: 'https://artworks.thetvdb.com/banners/series/388593/episodes/603140c678b1d.jpg',
+    summary: 'Sakura finds the courage to get closer to Toru. Yoshikawa struggles to voice what she truly wants. Miyamura goes away for a week-long trip. Hori worries about her horror obsession.\nSource: Funimation',
+    title: {
+      en: 'You`re Here, I`m Here'
+    },
+    length: 25,
+    airdate: '2021-02-21'
+  },
+  {
+    episode: 8,
+    image: 'https://artworks.thetvdb.com/banners/series/388593/episodes/603a964fe5b9c.jpg',
+    summary: 'Remi reflects on how she and Sengoku started dating. Miyamura discovers a hidden side of Hori. When Yoshikawa gets asked out, the gang gets Ishikawa to help.\nSource: Funimation',
+    title: {
+      en: 'The Truth Deception Reveals'
+    },
+    length: 25,
+    airdate: '2021-02-28'
+  },
+  {
+    episode: 9,
+    image: 'https://artworks.thetvdb.com/banners/series/388593/episodes/6043a769b00b8.jpg',
+    summary: 'Miyamura runs into some unfriendly faces. Hori tries to get Miyamura to fulfill her darkest desires. Mizouchi`s love is unrequited. Tanihara confronts his past with Miyamura.\nSource: Funimation',
+    title: {
+      en: 'It`s Hard, but Not Impossible'
+    },
+    length: 25,
+    airdate: '2021-03-07'
+  },
+  {
+    episode: 10,
+    image: 'https://artworks.thetvdb.com/banners/v4/episode/8130228/screencap/604ce2b265143.jpg',
+    summary: 'Hori has an unexpected demand of Miyamura. When Yoshikawa learns her fake relationship with Ishikawa might be coming to an end, she`s forced to reflect on her own feelings.\nSource: Funimation',
+    title: {
+      en: 'Until the Snow Melts'
+    },
+    length: 25,
+    airdate: '2021-03-14'
+  },
+  {
+    episode: 11,
+    image: 'https://artworks.thetvdb.com/banners/v4/episode/8130229/screencap/605637617b11d.jpg',
+    summary: 'The gang tries to get Yanagi to loosen up. Iura is clueless as to how much he terrifies Sawada. When Iura`s sister Motoko is struggling with entrance exams, Iura asks Hori to help.\nSource: Funimation',
+    title: {
+      en: 'It May Seem Like Hate'
+    },
+    length: 25,
+    airdate: '2021-03-21'
+  },
+  {
+    episode: 12,
+    image: 'https://artworks.thetvdb.com/banners/v4/episode/8130230/screencap/605f710ee2da0.jpg',
+    summary: 'Yoshikawa heads over to Ishikawa`s house. Christmas brings romantic holiday cheer to all. Hori and Miyamura discuss their future.\nSource: Funimation',
+    title: {
+      en: 'Hitherto, and Forevermore'
+    },
+    length: 25,
+    airdate: '2021-03-28'
+  },
+  {
+    episode: 13,
+    image: 'https://artworks.thetvdb.com/banners/v4/episode/8130231/screencap/6068a4a604d75.jpg',
+    summary: 'As graduation approaches, Miyamura reflects on the past year, an uncertain future, and the new life he`s found.\nSource: Funimation',
+    title: {
+      en: 'I Would Gift You the Sky'
+    },
+    length: 25,
+    airdate: '2021-04-04'
+  }
+]

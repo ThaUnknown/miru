@@ -9,7 +9,8 @@
   import Stargazers from '$lib/components/Stargazers.svelte'
   import ShowcaseCards from '$lib/components/ShowcaseCards.svelte'
   import VideoShowcase from '$lib/components/VideoShowcase.svelte'
-  import ShowcaseEpisodes from '$lib/components/ShowcaseEpisodes.svelte'
+  import EpisodeList from '$lib/components/EpisodeList.svelte'
+  import { violetEpisodes } from '$lib/dummyData.js'
 
   export let data
 </script>
@@ -89,7 +90,7 @@
     <div class='row flex-column-reverse flex-lg-row'>
       <div class='col-lg-6 col-12'>
         <div class='content'>
-          <ShowcaseEpisodes />
+          <EpisodeList episodeList={violetEpisodes} userProgress={1} />
         </div>
       </div>
       <div class='col-lg-6 col-12 align-items-center d-flex'>
