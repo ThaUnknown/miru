@@ -59,7 +59,7 @@
 
   setTimeout(async () => {
     const downloads = await downloadForOS()
-    if (!downloads) return
+    if (!downloads || !downloads[userOS]) return
     location.href = downloads[userOS]
   }, 2000)
 </script>
