@@ -28,7 +28,7 @@
         <p class='text-center text-muted font-size-14'>With a click of a button you can track your watch progress in no time.</p>
         <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/episodes.webp' alt='search' class='w-full h-full' />
+          <img src='/episodes.webp' alt='episodes' class='w-full h-full' />
         </div>
       </div>
     </div>
@@ -40,8 +40,8 @@
         <p class='text-center text-muted font-size-14'>Find new anime, watch trailers, bookmark and share with friends.</p>
         <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/episodes.webp' alt='search' class='w-full h-full' />
-          <!-- preview card hover -->
+          <img src='/hovercard.png' alt='hoverCard' class='w-full h-full' />
+          <!-- TODO: crop and compress -->
         </div>
       </div>
     </div>
@@ -53,8 +53,8 @@
         <p class='text-center text-muted font-size-14'>View airing schedules, upcoming releases and the expected release times.</p>
         <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/episodes.webp' alt='search' class='w-full h-full' />
-          <!-- schedule page -->
+          <img src='/schedule.png' alt='airingSchedule' class='w-full h-full' />
+          <!-- TODO: crop and compress -->
         </div>
       </div>
     </div>
@@ -66,13 +66,13 @@
         <p class='text-center text-muted font-size-14'>Browse sequels, prequels and side stories. Track friends<br />and view recommendations.</p>
         <div class='flex-grow-1 w-full overflow-hidden d-flex position-relative'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <!-- view details left side -->
-          <img src='/search.webp' alt='search' class='w-full h-full' />
+          <!-- TODO: crop and compress -->
+          <img src='/viewanime.png' alt='viewAnime' class='w-full h-full' />
         </div>
       </div>
     </div>
   </div>
-  <!-- <div class='content px-10'>
+  <div class='content px-10'>
     <h1 class='w-full font-weight-bold text-white'>
       Control Every Frame of Your Viewing Experience.
     </h1>
@@ -84,50 +84,52 @@
     <div class='w-full w-lg-three-quarter p-10'>
       <div class='w-full card flex-grow-1 pb-0 pt-15 m-0 d-flex flex-column h-500'>
         <h4 class='text-center font-weight-bold text-white mb-0'>
-          Anything you want
+          Play any video
         </h4>
-        <p class='text-center text-muted font-size-14'>Filter anime by name, genre, season, year, format, status.<br />Browse your lists, track sequels and more.</p>
+        <p class='text-center text-muted font-size-14'>Support for every video format and codec, without worrying<br />about support transcoding or hardware.</p>
         <div class='flex-grow-1 w-full overflow-hidden d-flex position-relative'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
           <img src='/search.webp' alt='search' class='w-full h-full' />
+          <!-- generic video player screenshot -->
         </div>
       </div>
     </div>
     <div class='w-full w-lg-quarter p-10'>
       <div class='w-full card flex-grow-1 pb-0 pt-15 m-0 d-flex flex-column align-items-center h-lg-500 h-600'>
         <h4 class='text-center font-weight-bold text-white mb-0'>
-          Track your progress
+          Full subtitle integration
         </h4>
-        <p class='text-center text-muted font-size-14'>With a click of a button you can track your watch progress in no time.</p>
+        <p class='text-center text-muted font-size-14'>Change subtitles or disable them, even in Picture-in-Picture, with support for any subtitle format, external or embedded.</p>
         <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
           <img src='/episodes.webp' alt='search' class='w-full h-full' />
+          <!-- subtitle modal with a lot of languages -->
         </div>
       </div>
     </div>
     <div class='w-full w-lg-quarter p-10'>
       <div class='w-full card flex-grow-1 pb-0 pt-15 m-0 d-flex flex-column align-items-center h-lg-500 h-600'>
         <h4 class='text-center font-weight-bold text-white mb-0'>
-          Discover anime
+          Watch with friends
         </h4>
-        <p class='text-center text-muted font-size-14'>Find new anime, watch trailers, bookmark and share with friends.</p>
+        <p class='text-center text-muted font-size-14'>Watch anime together with your friends, regardless of where they are or what device they are using.</p>
         <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
           <img src='/episodes.webp' alt='search' class='w-full h-full' />
-          <!-- preview card hover
+          <!-- w2g lobby -->
         </div>
       </div>
     </div>
     <div class='w-full w-lg-three-quarter p-10'>
       <div class='w-full card flex-grow-1 pb-0 pt-15 m-0 d-flex flex-column h-500'>
         <h4 class='text-center font-weight-bold text-white mb-0'>
-          Don't miss out on anything
+          Painlessly simple
         </h4>
-        <p class='text-center text-muted font-size-14'>Browse sequels, prequels and side stories. Track friends<br />and view recommendations.</p>
+        <p class='text-center text-muted font-size-14'>Simple easy to navigate UI, no comple configuration,<br />perfect video playback out of the box.</p>
         <div class='flex-grow-1 w-full overflow-hidden d-flex position-relative'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <!-- view details left side
           <img src='/search.webp' alt='search' class='w-full h-full' />
+          <!-- half/half image of video settings and keybinds overlay -->
         </div>
       </div>
     </div>
@@ -144,54 +146,56 @@
     <div class='w-full w-lg-three-quarter p-10'>
       <div class='w-full card flex-grow-1 pb-0 pt-15 m-0 d-flex flex-column h-500'>
         <h4 class='text-center font-weight-bold text-white mb-0'>
-          Anything you want
+          Fully automated
         </h4>
-        <p class='text-center text-muted font-size-14'>Filter anime by name, genre, season, year, format, status.<br />Browse your lists, track sequels and more.</p>
+        <p class='text-center text-muted font-size-14'>Finds and selects the best releases, for any source without<br />any configuration required.</p>
         <div class='flex-grow-1 w-full overflow-hidden d-flex position-relative'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
           <img src='/search.webp' alt='search' class='w-full h-full' />
+          <!-- torrent modal -->
         </div>
       </div>
     </div>
     <div class='w-full w-lg-quarter p-10'>
       <div class='w-full card flex-grow-1 pb-0 pt-15 m-0 d-flex flex-column align-items-center h-lg-500 h-600'>
         <h4 class='text-center font-weight-bold text-white mb-0'>
-          Track your progress
+          Hands free
         </h4>
-        <p class='text-center text-muted font-size-14'>With a click of a button you can track your watch progress in no time.</p>
+        <p class='text-center text-muted font-size-14'>Streams torrents with, no setup and no manual intervention, without waiting for downloads to finish.</p>
         <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
           <img src='/episodes.webp' alt='search' class='w-full h-full' />
+          <!-- idk :/ -->
         </div>
       </div>
     </div>
     <div class='w-full w-lg-quarter p-10'>
       <div class='w-full card flex-grow-1 pb-0 pt-15 m-0 d-flex flex-column align-items-center h-lg-500 h-600'>
         <h4 class='text-center font-weight-bold text-white mb-0'>
-          Discover anything
+          Download locally
         </h4>
-        <p class='text-center text-muted font-size-14'>Find new anime, watch trailers, bookmark and share with friends.</p>
+        <p class='text-center text-muted font-size-14'>Save data locally to watch later, or load existing data and downloads from other apps.</p>
         <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
           <img src='/episodes.webp' alt='search' class='w-full h-full' />
-          <!-- preview card hover
+          <!-- anime downloads folder -->
         </div>
       </div>
     </div>
     <div class='w-full w-lg-three-quarter p-10'>
       <div class='w-full card flex-grow-1 pb-0 pt-15 m-0 d-flex flex-column h-500'>
         <h4 class='text-center font-weight-bold text-white mb-0'>
-          Don't miss out on anything
+          From any source
         </h4>
-        <p class='text-center text-muted font-size-14'>Browse sequels, prequels and side stories. Track friends<br />and view recommendations.</p>
+        <p class='text-center text-muted font-size-14'>Add extensions for any source or tracker, with support<br />for community tracker and sources.</p>
         <div class='flex-grow-1 w-full overflow-hidden d-flex position-relative'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <!-- view details left side
           <img src='/search.webp' alt='search' class='w-full h-full' />
+          <!-- todo: create extensions ui for settings -->
         </div>
       </div>
     </div>
-  </div> -->
+  </div>
 </div>
 
 <style>
