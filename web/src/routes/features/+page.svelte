@@ -40,8 +40,7 @@
         <p class='text-center text-muted font-size-14'>Find new anime, watch trailers, bookmark and share with friends.</p>
         <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/hovercard.png' alt='hoverCard' class='w-full h-full' />
-          <!-- TODO: crop and compress -->
+          <img src='/hovercard.webp' alt='hoverCard' class='w-full h-full img-contain' />
         </div>
       </div>
     </div>
@@ -53,8 +52,7 @@
         <p class='text-center text-muted font-size-14'>View airing schedules, upcoming releases and the expected release times.</p>
         <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/schedule.png' alt='airingSchedule' class='w-full h-full' />
-          <!-- TODO: crop and compress -->
+          <img src='/schedule.webp' alt='airingSchedule' class='w-full h-full' />
         </div>
       </div>
     </div>
@@ -66,8 +64,7 @@
         <p class='text-center text-muted font-size-14'>Browse sequels, prequels and side stories. Track friends<br />and view recommendations.</p>
         <div class='flex-grow-1 w-full overflow-hidden d-flex position-relative'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <!-- TODO: crop and compress -->
-          <img src='/viewanime.png' alt='viewAnime' class='w-full h-full' />
+          <img src='/viewanime.webp' alt='viewAnime' class='w-full h-full img-center' />
         </div>
       </div>
     </div>
@@ -89,8 +86,7 @@
         <p class='text-center text-muted font-size-14'>Support for every video format and codec, without worrying<br />about support transcoding or hardware.</p>
         <div class='flex-grow-1 w-full overflow-hidden d-flex position-relative'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/search.webp' alt='search' class='w-full h-full' />
-          <!-- generic video player screenshot -->
+          <img src='/videoplayer.webp' alt='search' class='w-full h-full img-center' />
         </div>
       </div>
     </div>
@@ -102,8 +98,7 @@
         <p class='text-center text-muted font-size-14'>Change subtitles or disable them, even in Picture-in-Picture, with support for any subtitle format, external or embedded.</p>
         <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/episodes.webp' alt='search' class='w-full h-full' />
-          <!-- subtitle modal with a lot of languages -->
+          <img src='/subtitles.webp' alt='search' class='w-full h-full img-center' />
         </div>
       </div>
     </div>
@@ -115,8 +110,7 @@
         <p class='text-center text-muted font-size-14'>Watch anime together with your friends, regardless of where they are or what device they are using.</p>
         <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/episodes.webp' alt='search' class='w-full h-full' />
-          <!-- w2g lobby -->
+          <img src='/w2g.webp' alt='search' class='w-full h-full img-center img-contain' />
         </div>
       </div>
     </div>
@@ -125,11 +119,10 @@
         <h4 class='text-center font-weight-bold text-white mb-0'>
           Painlessly simple
         </h4>
-        <p class='text-center text-muted font-size-14'>Simple easy to navigate UI, no comple configuration,<br />perfect video playback out of the box.</p>
+        <p class='text-center text-muted font-size-14'>Simple easy to navigate UI, no complex configuration,<br />perfect video playback out of the box.</p>
         <div class='flex-grow-1 w-full overflow-hidden d-flex position-relative'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/search.webp' alt='search' class='w-full h-full' />
-          <!-- half/half image of video settings and keybinds overlay -->
+          <img src='/simple.webp' alt='search' class='w-full h-full img-center' />
         </div>
       </div>
     </div>
@@ -151,8 +144,7 @@
         <p class='text-center text-muted font-size-14'>Finds and selects the best releases, for any source without<br />any configuration required.</p>
         <div class='flex-grow-1 w-full overflow-hidden d-flex position-relative'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/search.webp' alt='search' class='w-full h-full' />
-          <!-- torrent modal -->
+          <img src='/modal.webp' alt='search' class='w-full h-full' />
         </div>
       </div>
     </div>
@@ -175,10 +167,9 @@
           Download locally
         </h4>
         <p class='text-center text-muted font-size-14'>Save data locally to watch later, or load existing data and downloads from other apps.</p>
-        <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full w-lg-full w-sm-three-quarter'>
+        <div class='flex-grow-1 overflow-hidden d-flex position-relative w-full'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/episodes.webp' alt='search' class='w-full h-full' />
-          <!-- anime downloads folder -->
+          <img src='/downloads.webp' alt='search' class='w-full h-full ' />
         </div>
       </div>
     </div>
@@ -206,6 +197,12 @@
   img {
     object-fit: cover;
     object-position: top;
+  }
+  .img-contain {
+    object-fit: contain;
+  }
+  .img-center {
+    object-position: center;
   }
   .container-xl {
     padding-top: 10rem;
