@@ -10,6 +10,7 @@
   import ShowcaseCards from '$lib/components/ShowcaseCards.svelte'
   import VideoShowcase from '$lib/components/VideoShowcase.svelte'
   import EpisodeList from '$lib/components/EpisodeList.svelte'
+  import Testimonials from '$lib/components/Testimonials.svelte'
   import { violetEpisodes } from '$lib/dummyData.js'
 
   export let data
@@ -128,6 +129,17 @@
   </div>
 </div>
 <Stargazers stargazers={data.stargazers} />
+<div class='container-xl'>
+  <hr />
+  <div class='my-20 py-20'>
+    <div class='content'>
+      <h1 class='text-center font-weight-bold text-white'>
+        What they say...
+      </h1>
+    </div>
+    <Testimonials />
+  </div>
+</div>
 <hr class='mb-0' />
 <div class='bg-dark'>
   <div class='container-xl pt-20'>
