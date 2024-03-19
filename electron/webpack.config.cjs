@@ -21,6 +21,7 @@ module.exports = [
       aliasFields: [],
       mainFields: ['module', 'main', 'node'],
       alias: {
+        '@': resolve(__dirname, '..', 'common'),
         'node-fetch': false,
         ws: false,
         wrtc: false,

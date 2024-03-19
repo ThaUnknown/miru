@@ -201,7 +201,7 @@
   }
 
   async function loadAnimeProgress () {
-    if (!current?.media?.media?.id || !current.media.media.episode || current.media.failed || !media?.media?.id || !media.episode) return
+    if (!current?.media?.media?.id || !current?.media?.episode || current?.media?.failed || !media?.media?.id || !media?.episode) return
 
     const animeProgress = await getAnimeProgress(current.media.media.id, current.media.episode)
     if (!animeProgress) return
@@ -211,7 +211,7 @@
   }
 
   function saveAnimeProgress () {
-    if (!current?.media?.media?.id || !current.media.media.episode || current.media.failed || !media?.media?.id || !media.episode) return
+    if (!current?.media?.media?.id || !current?.media?.episode || current?.media?.failed || !media?.media?.id || !media?.episode) return
 
     if (buffering || paused || video.readyState < 4) return
 
@@ -1036,11 +1036,11 @@
     <!-- eslint-disable-next-line svelte/valid-compile -->
     <div class='w-full h-full position-absolute toggle-immerse d-none' on:dblclick={toggleFullscreen} on:click|self={toggleImmerse} />
     <div class='w-full h-full position-absolute mobile-focus-target d-none' use:click={() => { page = 'player' }} />
-    <span class='d-md-block material-symbols-outlined ctrl' class:d-none={miniplayer} class:text-muted={!hasLast} class:disabled={!hasLast} use:click={playLast}> skip_previous </span>
-    <span class='d-md-block material-symbols-outlined ctrl' class:d-none={miniplayer} use:click={rewind}> fast_rewind </span>
-    <span class='d-md-block material-symbols-outlined ctrl' class:d-none={miniplayer} data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
-    <span class='d-md-block material-symbols-outlined ctrl' class:d-none={miniplayer} use:click={forward}> fast_forward </span>
-    <span class='d-md-block material-symbols-outlined ctrl' class:d-none={miniplayer} class:text-muted={!hasNext} class:disabled={!hasNext} use:click={playNext}> skip_next </span>
+    <span class='material-symbols-outlined ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} use:click={playLast}> skip_previous </span>
+    <span class='material-symbols-outlined ctrl' use:click={rewind}> fast_rewind </span>
+    <span class='material-symbols-outlined ctrl' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
+    <span class='material-symbols-outlined ctrl' use:click={forward}> fast_forward </span>
+    <span class='material-symbols-outlined ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} use:click={playNext}> skip_next </span>
     <div class='position-absolute bufferingDisplay' />
     {#if currentSkippable}
       <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold' use:click={skip}>
@@ -1464,6 +1464,12 @@
       .top  {
         padding-top: max(var(--safe-area-top), env(safe-area-inset-top, 0)) !important;
       }
+    }
+    .middle .ctrl {
+      display: flex !important;
+    }
+    .miniplayer .middle .ctrl {
+      display: none !important;
     }
     .toggle-immerse {
       display: block !important;
