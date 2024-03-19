@@ -1,7 +1,7 @@
 <script>
   import { settings } from '@/modules/settings.js'
   import { getAnimeProgress, setAnimeProgress } from '@/modules/animeprogress.js'
-  import { playAnime } from '../RSSView.svelte'
+  import { playAnime } from '@/views/TorrentSearch/TorrentModal.svelte'
   import { client } from '@/modules/torrent.js'
   import { createEventDispatcher } from 'svelte'
   import { anilistClient } from '@/modules/anilist.js'
@@ -1125,7 +1125,7 @@
                 </label>
               {/if}
             {/each}
-            <input type='number' step='0.1' bind:value={subDelay} on:click|stopPropagation class='form-control text-right form-control-sm' />
+            <input type='text' inputmode='numeric' pattern='[0-9]*' step='0.1' bind:value={subDelay} on:click|stopPropagation class='form-control text-right form-control-sm' />
           </div>
         </div>
       {/if}

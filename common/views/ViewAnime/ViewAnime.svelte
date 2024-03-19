@@ -1,7 +1,7 @@
 <script>
   import { getContext } from 'svelte'
   import { getMediaMaxEp, formatMap, playMedia, setStatus } from '@/modules/anime.js'
-  import { playAnime } from '../RSSView.svelte'
+  import { playAnime } from '@/views/TorrentSearch/TorrentModal.svelte'
   import { toast } from 'svelte-sonner'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'

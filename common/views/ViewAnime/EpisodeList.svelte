@@ -1,7 +1,7 @@
 <script>
   import { since } from '@/modules/util'
   import { click } from '@/modules/click.js'
-  import { getEpisodeNumberByAirDate } from '@/modules/providers/tosho.js'
+  import { episodeByAirDate } from '@/modules/extensions/index.js'
   import { anilistClient } from '@/modules/anilist'
   import { liveAnimeProgress } from '@/modules/animeprogress.js'
 
@@ -36,7 +36,7 @@
       const alDate = new Date((airingAt || 0) * 1000)
 
       const needsValidation = !(!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)]))
-      const { image, summary, rating, title, length, airdate } = needsValidation ? getEpisodeNumberByAirDate(alDate, episodes, episode) : (episodes[Number(episode)] || {})
+      const { image, summary, rating, title, length, airdate } = needsValidation ? episodeByAirDate(alDate, episodes, episode) : (episodes[Number(episode)] || {})
 
       episodeList[episode - 1] = { episode, image, summary, rating, title, length: length || duration, airdate: +alDate || airdate, airingAt: +alDate || airdate }
     }

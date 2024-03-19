@@ -20,7 +20,7 @@ try {
 }
 
 /**
- * @type {import('svelte/store').Writable & { value: any }}
+ * @type {import('simple-store-svelte').Writable<typeof defaults>}
  */
 export const settings = writable({ ...defaults, ...scopedDefaults, ...storedSettings })
 

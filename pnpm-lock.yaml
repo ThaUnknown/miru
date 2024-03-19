@@ -133,8 +133,11 @@ importers:
       '@fontsource/roboto':
         specifier: ^5.0.12
         version: 5.0.12
+      '@thaunknown/ani-resourced':
+        specifier: ^1.0.3
+        version: 1.0.3
       anitomyscript:
-        specifier: github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00
+        specifier: github:ThaUnknown/anitomyscript#51abfeaa99114659fb4c0d30e32c61d50d6d1a8a
         version: github.com/ThaUnknown/anitomyscript/42290c4b3f256893be08a4e89051f448ff5e9d00
       bottleneck:
         specifier: ^2.19.5
@@ -142,6 +145,9 @@ importers:
       browser-event-target-emitter:
         specifier: ^1.0.1
         version: 1.0.1
+      comlink:
+        specifier: ^4.4.1
+        version: 4.4.1
       jassub:
         specifier: latest
         version: 1.7.15
@@ -1198,6 +1204,10 @@ packages:
     dependencies:
       defer-to-connect: 2.0.1
     dev: true
+
+  /@thaunknown/ani-resourced@1.0.3:
+    resolution: {integrity: sha512-flrfEMbSwwdhu+5wVsMgX0tGG+njCtAQ4jnA7ywjLNhSil/KirlzN34q3l0lKCnitFJgp1vOoHNCgkkkMWQ85Q==}
+    dev: false
 
   /@thaunknown/idb-chunk-store@1.0.2:
     resolution: {integrity: sha512-UdKshbKdHDP+p0XPdv55QiU/scdB9TzvovGFSgXThf+7Yd3noLeYp6KpkYyc1jzUXvI3/8+TemPeASOimrOXvw==}
@@ -2877,6 +2887,10 @@ packages:
     dependencies:
       delayed-stream: 1.0.0
     dev: true
+
+  /comlink@4.4.1:
+    resolution: {integrity: sha512-+1dlx0aY5Jo1vHy/tSsIGpSkN4tS9rZSW8FIhG0JH/crs9wwweswIo/POr451r7bZww3hFbPAKnTpimzL/mm4Q==}
+    dev: false
 
   /commander@10.0.1:
     resolution: {integrity: sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==}

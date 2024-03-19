@@ -124,7 +124,7 @@
             <option>{year}</option>
           {/each}
         </datalist>
-        <input type='number' placeholder='Any' min='1940' max='2100' list='search-year' class='bg-dark-light form-control' disabled={search.disableSearch} bind:value={search.year} />
+        <input type='number' inputmode='numeric' pattern='[0-9]*' placeholder='Any' min='1940' max='2100' list='search-year' class='bg-dark-light form-control' disabled={search.disableSearch} bind:value={search.year} />
       </div>
     </div>
     <div class='col p-10 d-flex flex-column justify-content-end'>

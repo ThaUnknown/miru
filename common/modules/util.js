@@ -1,3 +1,5 @@
+import { SUPPORTS } from './support.js'
+
 export function countdown (s) {
   const d = Math.floor(s / (3600 * 24))
   s -= d * 3600 * 24
@@ -166,14 +168,15 @@ export const defaults = {
   enableDoH: false,
   doHURL: 'https://cloudflare-dns.com/dns-query',
   disableSubtitleBlur: false,
-  toshoURL: decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnLw==')),
   showDetailsInRPC: true,
   smoothScroll: true,
   cards: 'small',
   expandingSidebar: true,
   torrentPath: undefined,
   font: undefined,
-  angle: 'default'
+  angle: 'default',
+  extensions: SUPPORTS.extensions ? ['@thaunknown/ani-resourced'] : [],
+  sources: {}
 }
 
 export const subtitleExtensions = ['srt', 'vtt', 'ass', 'ssa', 'sub', 'txt']

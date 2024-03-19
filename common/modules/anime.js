@@ -8,7 +8,7 @@ import clipboard from './clipboard.js'
 
 import { search, key } from '@/views/Search.svelte'
 
-import { playAnime } from '../views/RSSView.svelte'
+import { playAnime } from '@/views/TorrentSearch/TorrentModal.svelte'
 
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 

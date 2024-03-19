@@ -10,5 +10,6 @@ export const SUPPORTS = {
   torrentPort: true,
   torrentPath: true,
   torrentPersist: true,
-  keybinds: true
+  keybinds: true,
+  extensions: true
 }
