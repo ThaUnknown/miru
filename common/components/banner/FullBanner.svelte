@@ -36,6 +36,7 @@
   let timeout = schedule(currentIndex() + 1)
 
   function setCurrent (media) {
+    if (current === media) return
     clearTimeout(timeout)
     current = media
     timeout = schedule(currentIndex() + 1)
@@ -84,7 +85,7 @@
       </span>
     {/each}
   </div>
-  <div class='d-flex flex-row pb-20 w-600 mw-full'>
+  <div class='d-flex flex-row pb-10 w-600 mw-full'>
     <button class='btn bg-dark-light px-20 shadow-none border-0'
       use:click={() => playMedia(current)}>
       Watch Now
@@ -99,8 +100,10 @@
   <div class='d-flex'>
     {#each mediaList as media}
       {@const active = current === media}
-      <div class='rounded bg-dark-light mr-10 progress-badge overflow-hidden pointer' class:active style='height: 3px;' style:width={active ? '5rem' : '2.7rem'} use:click={() => setCurrent(media)}>
-        <div class='progress-content h-full' class:bg-white={active} />
+      <div class='pt-10 badge-wrapper' class:pointer={!active} use:click={() => setCurrent(media)}>
+        <div class='rounded bg-dark-light mr-10 progress-badge overflow-hidden' class:active style='height: 3px;' style:width={active ? '5rem' : '2.7rem'}>
+          <div class='progress-content h-full' class:bg-white={active} />
+        </div>
       </div>
     {/each}
   </div>
@@ -161,7 +164,7 @@
       opacity: 1;
     }
   }
-  button:hover {
+  button:hover, .badge-wrapper.pointer:hover .progress-badge {
     background: #292d33 !important;
   }
 </style>
