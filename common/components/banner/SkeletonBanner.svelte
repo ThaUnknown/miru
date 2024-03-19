@@ -7,4 +7,5 @@
   <div class='h-10 w-250 skeloader bg-dark-light rounded mb-10'><div class='skeleloader-swipe' /></div>
   <div class='my-20 d-flex h-10 w-150 skeloader bg-dark-light rounded'><div class='skeleloader-swipe' /></div>
   <div class='mb-20 h-25 w-200 skeloader bg-dark-light rounded'><div class='skeleloader-swipe' /></div>
+  <div class='pb-10' />
 </div>

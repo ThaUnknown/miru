@@ -16,7 +16,7 @@
     }
 
     const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL']
-    const season = seasons[(seasons.indexOf(vars.season) + 3) % 4]
+    const season = seasons.at(seasons.indexOf(vars.season) - 1)
     const year = vars.season === 'WINTER' ? vars.year - 1 : vars.year
 
     const res = await anilistClient.search({ format: 'TV', ...SectionsManager.sanitiseObject(variables), year, season, status: 'RELEASING', page: 1, perPage: 50 })
