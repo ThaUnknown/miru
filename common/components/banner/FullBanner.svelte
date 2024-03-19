@@ -100,7 +100,7 @@
   <div class='d-flex'>
     {#each mediaList as media}
       {@const active = current === media}
-      <div class='pt-10 badge-wrapper' class:pointer={!active} use:click={() => setCurrent(media)}>
+      <div class='pt-10 pb-5 badge-wrapper' class:pointer={!active} use:click={() => setCurrent(media)}>
         <div class='rounded bg-dark-light mr-10 progress-badge overflow-hidden' class:active style='height: 3px;' style:width={active ? '5rem' : '2.7rem'}>
           <div class='progress-content h-full' class:bg-white={active} />
         </div>
