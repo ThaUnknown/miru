@@ -11,5 +11,6 @@ export const SUPPORTS = {
   torrentPath: true,
   torrentPersist: true,
   keybinds: true,
-  extensions: true
+  extensions: true,
+  isAndroid: false
 }

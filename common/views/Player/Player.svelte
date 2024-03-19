@@ -1036,11 +1036,11 @@
     <!-- eslint-disable-next-line svelte/valid-compile -->
     <div class='w-full h-full position-absolute toggle-immerse d-none' on:dblclick={toggleFullscreen} on:click|self={toggleImmerse} />
     <div class='w-full h-full position-absolute mobile-focus-target d-none' use:click={() => { page = 'player' }} />
-    <span class='d-none d-md-block material-symbols-outlined ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} use:click={playLast}> skip_previous </span>
-    <span class='d-none d-md-block material-symbols-outlined ctrl' use:click={rewind}> fast_rewind </span>
-    <span class='d-none d-md-block material-symbols-outlined ctrl' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
-    <span class='d-none d-md-block material-symbols-outlined ctrl' use:click={forward}> fast_forward </span>
-    <span class='d-none d-md-block material-symbols-outlined ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} use:click={playNext}> skip_next </span>
+    <span class='d-md-block material-symbols-outlined ctrl' class:d-none={miniplayer} class:text-muted={!hasLast} class:disabled={!hasLast} use:click={playLast}> skip_previous </span>
+    <span class='d-md-block material-symbols-outlined ctrl' class:d-none={miniplayer} use:click={rewind}> fast_rewind </span>
+    <span class='d-md-block material-symbols-outlined ctrl' class:d-none={miniplayer} data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
+    <span class='d-md-block material-symbols-outlined ctrl' class:d-none={miniplayer} use:click={forward}> fast_forward </span>
+    <span class='d-md-block material-symbols-outlined ctrl' class:d-none={miniplayer} class:text-muted={!hasNext} class:disabled={!hasNext} use:click={playNext}> skip_next </span>
     <div class='position-absolute bufferingDisplay' />
     {#if currentSkippable}
       <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold' use:click={skip}>
@@ -1074,11 +1074,11 @@
         <span class='material-symbols-outlined ctrl' title='Mute [M]' data-name='toggleMute' use:click={toggleMute}> {muted ? 'volume_off' : 'volume_up'} </span>
         <input class='ctrl h-full custom-range' type='range' min='0' max='1' step='any' data-name='setVolume' bind:value={volume} />
       </div>
-      <div class='ts'>{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
+      <div class='ts' class:mr-auto={playbackRate === 1}>{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
       {#if playbackRate !== 1}
-        <div class='ts'>x{playbackRate.toFixed(1)}</div>
+        <div class='ts mr-auto'>x{playbackRate.toFixed(1)}</div>
       {/if}
-      <span class='ml-auto material-symbols-outlined ctrl keybinds' title='Keybinds [`]' use:click={() => (showKeybinds = true)}> keyboard </span>
+      <span class='material-symbols-outlined ctrl keybinds' title='Keybinds [`]' use:click={() => (showKeybinds = true)}> keyboard </span>
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
         <div class='dropdown dropup with-arrow' use:click={toggleDropdown}>
           <span class='material-symbols-outlined ctrl' title='Audio Tracks'>

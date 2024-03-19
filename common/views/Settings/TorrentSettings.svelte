@@ -59,7 +59,59 @@
   }
 </script>
 
+<h4 class='mb-10 font-weight-bold'>Extension Settings</h4>
+<SettingCard title='Extensions' description='List of URLs to load sources from. While the extensions are sandboxed and should be safe from attacks, it is not recommended to add unknown or untrusted extensions.'>
+  <div>
+    <div class='input-group w-400 mw-full'>
+      <input placeholder='Enter extension URL or NPM name' type='url' class='form-control w-400 bg-dark mw-full' bind:value={extensionUrl} />
+      <div class='input-group-append'>
+        <button class='btn btn-primary' type='button' use:click={addExtension}>Add</button>
+      </div>
+    </div>
+    <div class='w-full d-flex flex-column pt-10'>
+      {#each settings.extensions as extension, i}
+        <div class='btn-group mt-5 w-400 mw-full'>
+          <div class='input-group-prepend overflow-hidden w-full'>
+            <span class='input-group-text bg-dark w-full'>{extension}</span>
+          </div>
+          <button type='button' class='btn btn-danger btn-square px-5 material-symbols-outlined font-size-20' use:click={() => removeExtension(i)}>delete</button>
+        </div>
+      {/each}
+    </div>
+  </div>
+</SettingCard>
+<SettingCard title='Sources' description='List of sources to discover torrents from.'>
+  <div class='w-400 mw-full'>
+    <div class='w-full d-flex flex-column mb-10'>
+      {#key settings.extensions}
+        {#await extensionsWorker then worker}
+          {#await worker.metadata then metadata}
+            {#each metadata as { accuracy, name, description }}
+              <div class='card m-0 p-15 mt-10'>
+                <div class='mr-10 mb-5 mb-md-0'>
+                  <div class='font-size-16 font-weight-semi-bold mb-5'>{name}</div>
+                  <div class='text-muted pre-wrap'>{description}</div>
+                </div>
+                <div class='d-flex justify-content-between align-items-end'>
+                  <div>Accuracy: {accuracy}</div>
+                  <div class='custom-switch mt-10'>
+                    <input type='checkbox' id={`extension-${name}`} bind:checked={settings.sources[name]} />
+                    <label for={`extension-${name}`}>{settings.sources[name] ? 'On' : 'Off'}</label>
+                  </div>
+                </div>
+              </div>
+            {/each}
+          {/await}
+        {/await}
+      {/key}
+    </div>
+  </div>
+</SettingCard>
+
 <h4 class='mb-10 font-weight-bold'>Lookup Settings</h4>
+<SettingCard title='Torrent API URL' description='URL of the API used to query data for torrents. Useful for proxies if your ISP blocks some domains. Needs to be CORS enabled.'>
+  <input type='url' class='form-control bg-dark w-300 mw-full' bind:value={settings.toshoURL} placeholder={defaults.toshoURL} />
+</SettingCard>
 <SettingCard title='Torrent Quality' description="What quality to use when trying to find torrents. None might rarely find less results than specific qualities. This doesn't exclude other qualities from being found like 4K or weird DVD resolutions.">
   <select class='form-control bg-dark w-300 mw-full' bind:value={settings.rssQuality}>
     <option value='1080' selected>1080p</option>
@@ -138,55 +190,5 @@
   <div class='custom-switch'>
     <input type='checkbox' id='torrent-pex' bind:checked={settings.torrentPeX} />
     <label for='torrent-pex'>{settings.torrentPeX ? 'On' : 'Off'}</label>
-  </div>
-</SettingCard>
-
-<h4 class='mb-10 font-weight-bold'>Extension Settings</h4>
-
-<SettingCard title='Extensions' description='List of URLs to load sources from. While the extensions are sandboxed and should be safe from attacks, it is not recommended to add unknown or untrusted extensions.'>
-  <div>
-    <div class='input-group w-400 mw-full'>
-      <input placeholder='Enter extension URL or NPM name' type='url' class='form-control w-400 bg-dark mw-full' bind:value={extensionUrl} />
-      <div class='input-group-append'>
-        <button class='btn btn-primary' type='button' use:click={addExtension}>Add</button>
-      </div>
-    </div>
-    <div class='w-full d-flex flex-column pt-10'>
-      {#each settings.extensions as extension, i}
-        <div class='btn-group mt-5 w-400 mw-full'>
-          <div class='input-group-prepend overflow-hidden w-full'>
-            <span class='input-group-text bg-dark w-full'>{extension}</span>
-          </div>
-          <button type='button' class='btn btn-danger btn-square px-5 material-symbols-outlined font-size-20' use:click={() => removeExtension(i)}>delete</button>
-        </div>
-      {/each}
-    </div>
-  </div>
-</SettingCard>
-<SettingCard title='Sources' description='List of sources to discover torrents from.'>
-  <div class='w-400 mw-full'>
-    <div class='w-full d-flex flex-column mb-10'>
-      {#key settings.extensions}
-        {#await extensionsWorker then worker}
-          {#await worker.metadata then metadata}
-            {#each metadata as { accuracy, name, description }}
-              <div class='card m-0 p-15 mt-10'>
-                <div class='mr-10 mb-5 mb-md-0'>
-                  <div class='font-size-16 font-weight-semi-bold mb-5'>{name}</div>
-                  <div class='text-muted pre-wrap'>{description}</div>
-                </div>
-                <div class='d-flex justify-content-between align-items-end'>
-                  <div>Accuracy: {accuracy}</div>
-                  <div class='custom-switch mt-10'>
-                    <input type='checkbox' id={`extension-${name}`} bind:checked={settings.sources[name]} />
-                    <label for={`extension-${name}`}>{settings.sources[name] ? 'On' : 'Off'}</label>
-                  </div>
-                </div>
-              </div>
-            {/each}
-          {/await}
-        {/await}
-      {/key}
-    </div>
   </div>
 </SettingCard>

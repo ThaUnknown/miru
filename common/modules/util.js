@@ -1,4 +1,4 @@
-import { SUPPORTS } from './support.js'
+import { SUPPORTS } from '@/modules/support.js'
 
 export function countdown (s) {
   const d = Math.floor(s / (3600 * 24))
@@ -152,7 +152,7 @@ export const defaults = {
   playerAutocomplete: true,
   playerDeband: false,
   rssQuality: '1080',
-  rssFeedsNew: [['New Releases', 'SubsPlease']],
+  rssFeedsNew: SUPPORTS.extensions ? [['New Releases', 'SubsPlease']] : [],
   rssAutoplay: true,
   torrentSpeed: 5,
   torrentPersist: false,
@@ -162,12 +162,12 @@ export const defaults = {
   dhtPort: 0,
   missingFont: true,
   maxConns: 50,
-  subtitleRenderHeight: '0',
+  subtitleRenderHeight: SUPPORTS.isAndroid ? '720' : '0',
   subtitleLanguage: 'eng',
   audioLanguage: 'jpn',
   enableDoH: false,
   doHURL: 'https://cloudflare-dns.com/dns-query',
-  disableSubtitleBlur: false,
+  disableSubtitleBlur: SUPPORTS.isAndroid,
   showDetailsInRPC: true,
   smoothScroll: true,
   cards: 'small',
@@ -175,6 +175,7 @@ export const defaults = {
   torrentPath: undefined,
   font: undefined,
   angle: 'default',
+  toshoURL: SUPPORTS.extensions ? decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnLw==')) : '',
   extensions: SUPPORTS.extensions ? ['@thaunknown/ani-resourced'] : [],
   sources: {}
 }

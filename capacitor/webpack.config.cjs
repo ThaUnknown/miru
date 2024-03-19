@@ -5,6 +5,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const mode = process.env.NODE_ENV?.trim() || 'development'
 
+const alias = {
+  '@/modules/ipc.js': join(__dirname, 'src', 'ipc.js'),
+  '@/modules/support.js': join(__dirname, 'src', 'support.js')
+}
+
 /** @type {import('webpack').Configuration} */
 const capacitorConfig = {
   devtool: 'source-map',
@@ -22,6 +27,7 @@ const capacitorConfig = {
     aliasFields: [],
     mainFields: ['module', 'main', 'node'],
     alias: {
+      ...alias,
       wrtc: false,
       'bittorrent-tracker/lib/client/http-tracker.js': resolve('../node_modules/bittorrent-tracker/lib/client/http-tracker.js')
     }
@@ -44,11 +50,6 @@ const capacitorConfig = {
       ]
     })
   ]
-}
-
-const alias = {
-  '@/modules/ipc.js': join(__dirname, 'src', 'ipc.js'),
-  '@/modules/support.js': join(__dirname, 'src', 'support.js')
 }
 
 module.exports = [capacitorConfig, merge(commonConfig(__dirname, alias, 'browser', 'index'), { entry: [join(__dirname, 'src', 'capacitor.js')] })]

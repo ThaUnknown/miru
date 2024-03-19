@@ -34,22 +34,22 @@
       <label for='player-missingFont'>{settings.missingFont ? 'On' : 'Off'}</label>
     </div>
   </SettingCard>
-  <SettingCard title='Fast Subtitle Rendering' description='Disables blur when rendering subtitles reducing lag. Will cause text and subtitle edges to appear sharper and in rare cases might break styling. If you want better rendering speeds without sacrificing accuracy lower the render resolution limit.'>
-    <div class='custom-switch'>
-      <input type='checkbox' id='player-sub-blur' bind:checked={settings.disableSubtitleBlur} />
-      <label for='player-sub-blur'>{settings.disableSubtitleBlur ? 'On' : 'Off'}</label>
-    </div>
-  </SettingCard>
-  <SettingCard title='Subtitle Render Resolution Limit' description="Max resolution to render subtitles at. If your resolution is higher than this setting the subtitles will be upscaled lineary. This will GREATLY improve rendering speeds for complex typesetting for slower devices. It's best to lower this on mobile devices which often have high pixel density where their effective resolution might be ~1440p while having small screens and slow processors.">
-    <select class='form-control bg-dark w-300 mw-full' bind:value={settings.subtitleRenderHeight}>
-      <option value='0' selected>None</option>
-      <option value='1440'>1440p</option>
-      <option value='1080'>1080p</option>
-      <option value='720'>720p</option>
-      <option value='480'>480p</option>
-    </select>
-  </SettingCard>
 {/if}
+<SettingCard title='Fast Subtitle Rendering' description='Disables blur when rendering subtitles reducing lag. Will cause text and subtitle edges to appear sharper and in rare cases might break styling. If you want better rendering speeds without sacrificing accuracy lower the render resolution limit.'>
+  <div class='custom-switch'>
+    <input type='checkbox' id='player-sub-blur' bind:checked={settings.disableSubtitleBlur} />
+    <label for='player-sub-blur'>{settings.disableSubtitleBlur ? 'On' : 'Off'}</label>
+  </div>
+</SettingCard>
+<SettingCard title='Subtitle Render Resolution Limit' description="Max resolution to render subtitles at. If your resolution is higher than this setting the subtitles will be upscaled lineary. This will GREATLY improve rendering speeds for complex typesetting for slower devices. It's best to lower this on mobile devices which often have high pixel density where their effective resolution might be ~1440p while having small screens and slow processors.">
+  <select class='form-control bg-dark w-300 mw-full' bind:value={settings.subtitleRenderHeight}>
+    <option value='0' selected>None</option>
+    <option value='1440'>1440p</option>
+    <option value='1080'>1080p</option>
+    <option value='720'>720p</option>
+    <option value='480'>480p</option>
+  </select>
+</SettingCard>
 
 <h4 class='mb-10 font-weight-bold'>Language Settings</h4>
 <SettingCard title='Preferred Subtitle Language' description="What subtitle language to automatically select when a video is loaded if it exists. This won't find torrents with this language automatically. If not found defaults to English.">
