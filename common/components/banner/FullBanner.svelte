@@ -2,60 +2,83 @@
   import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
-  export let media
+  export let mediaList
+
+  let current = mediaList[0]
 
   async function toggleStatus () {
-    if (!media.mediaListEntry) {
+    if (!current.mediaListEntry) {
       // add
-      const res = await setStatus('PLANNING', {}, media)
-      media.mediaListEntry = res.data.SaveMediaListEntry
+      const res = await setStatus('PLANNING', {}, current)
+      current.mediaListEntry = res.data.SaveMediaListEntry
     } else {
       // delete
-      anilistClient.delete({ id: media.mediaListEntry.id })
-      media.mediaListEntry = undefined
+      anilistClient.delete({ id: current.mediaListEntry.id })
+      current.mediaListEntry = undefined
     }
   }
   function toggleFavourite () {
-    anilistClient.favourite({ id: media.id })
-    media.isFavourite = !media.isFavourite
+    anilistClient.favourite({ id: current.id })
+    current.isFavourite = !current.isFavourite
+  }
+
+  function currentIndex () {
+    return mediaList.indexOf(current)
+  }
+
+  function schedule (index) {
+    return setTimeout(() => {
+      current = mediaList[index % mediaList.length]
+      timeout = schedule(index + 1)
+    }, 15000)
+  }
+
+  let timeout = schedule(currentIndex() + 1)
+
+  function setCurrent (media) {
+    clearTimeout(timeout)
+    current = media
+    timeout = schedule(currentIndex() + 1)
   }
 </script>
 
-<img src={media.bannerImage || ''} alt='banner' class='img-cover w-full h-full position-absolute' />
+{#key current}
+  <img src={current.bannerImage || ''} alt='banner' class='img-cover w-full h-full position-absolute' />
+{/key}
 <div class='pl-20 pb-20 justify-content-end d-flex flex-column h-full banner mw-full '>
   <div class='text-white font-weight-bold font-size-40 title w-700 mw-full overflow-hidden'>
-    {media.title.userPreferred}
+    {current.title.userPreferred}
   </div>
   <div class='details text-white text-capitalize pt-15 pb-10 d-flex w-600 mw-full'>
     <span class='text-nowrap d-flex align-items-center'>
-      {#if media.format}
-        {formatMap[media.format]}
+      {#if current.format}
+        {formatMap[current.format]}
       {/if}
     </span>
-    {#if media.episodes && media.episodes !== 1}
+    {#if current.episodes && current.episodes !== 1}
       <span class='text-nowrap d-flex align-items-center'>
-        {#if media.mediaListEntry?.status === 'CURRENT' && media.mediaListEntry?.progress }
-          {media.mediaListEntry.progress} / {media.episodes} Episodes
+        {#if current.mediaListEntry?.status === 'CURRENT' && current.mediaListEntry?.progress }
+          {current.mediaListEntry.progress} / {current.episodes} Episodes
         {:else}
-          {media.episodes} Episodes
+          {current.episodes} Episodes
         {/if}
       </span>
-    {:else if media.duration}
+    {:else if current.duration}
       <span class='text-nowrap d-flex align-items-center'>
-        {media.duration + ' Minutes'}
+        {current.duration + ' Minutes'}
       </span>
     {/if}
-    {#if media.season || media.seasonYear}
+    {#if current.season || current.seasonYear}
       <span class='text-nowrap d-flex align-items-center'>
-        {[media.season?.toLowerCase(), media.seasonYear].filter(s => s).join(' ')}
+        {[current.season?.toLowerCase(), current.seasonYear].filter(s => s).join(' ')}
       </span>
     {/if}
   </div>
   <div class='text-muted description overflow-hidden w-600 mw-full'>
-    {media.description?.replace(/<[^>]*>/g, '')}
+    {current.description?.replace(/<[^>]*>/g, '')}
   </div>
   <div class='details text-white text-capitalize pt-15 pb-10 d-flex w-600 mw-full'>
-    {#each media.genres as genre}
+    {#each current.genres as genre}
       <span class='text-nowrap d-flex align-items-center'>
         {genre}
       </span>
@@ -63,19 +86,42 @@
   </div>
   <div class='d-flex flex-row pb-20 w-600 mw-full'>
     <button class='btn bg-dark-light px-20 shadow-none border-0'
-      use:click={() => playMedia(media)}>
+      use:click={() => playMedia(current)}>
       Watch Now
     </button>
-    <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
+    <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={current.isFavourite} use:click={toggleFavourite}>
       favorite
     </button>
-    <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.mediaListEntry} use:click={toggleStatus}>
+    <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={current.mediaListEntry} use:click={toggleStatus}>
       bookmark
     </button>
+  </div>
+  <div class='d-flex'>
+    {#each mediaList as media}
+      {@const active = current === media}
+      <div class='rounded bg-dark-light mr-10 progress-badge overflow-hidden pointer' class:active style='height: 3px;' style:width={active ? '5rem' : '2.7rem'} use:click={() => setCurrent(media)}>
+        <div class='progress-content h-full' class:bg-white={active} />
+      </div>
+    {/each}
   </div>
 </div>
 
 <style>
+  .progress-badge {
+    transition: width .8s ease;
+  }
+  .progress-badge.active .progress-content {
+    animation: fill 15s linear;
+  }
+
+  @keyframes fill {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
   .w-700 {
     width: 70rem
   }
