@@ -3,7 +3,7 @@
   import { alToken, settings } from '@/modules/settings.js'
   import { anilistClient, currentSeason, currentYear } from '@/modules/anilist.js'
 
-  const bannerData = anilistClient.search({ method: 'Search', sort: 'POPULARITY_DESC', perPage: 25, onList: false, season: currentSeason, year: currentYear })
+  const bannerData = anilistClient.search({ method: 'Search', sort: 'POPULARITY_DESC', perPage: 15, onList: false, season: currentSeason, year: currentYear })
 
   const manager = new SectionsManager()
 

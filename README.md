@@ -1,27 +1,28 @@
-<h1 align="center">
+<p align="center">
 	<a href="https://github.com/ThaUnknown/miru">
-		<img src="./docs/logo.png" width="200">
+		<img src="./web/static/logo_filled.svg" width="200">
 	</a>
-</h1>
+</p>
+<h1 align="center"><b>Miru</b></h1>
 
 <h4 align="center"><b>Stream anime torrents, real-time with no waiting for downloads</b></h4>
 
 <p align="center">
-  <a href="#about">About</a> •
-  <a href="#features">Features</a> •
-  <a href="./docs/faq.md">Frequently Asked Questions</a> •
+  <a href="https://miru.watch/#about">About</a> •
+  <a href="https://miru.watch/features/">Features</a> •
+  <a href="https://miru.watch/faq/">Frequently Asked Questions</a> •
   <a href="#building-and-development">Building and Development</a> •
-  <a href="https://github.com/ThaUnknown/miru/releases/latest">Download</a>
+  <a href="https://miru.watch/download/">Download</a>
 </p>
 <p align="center">
-  <img src="./docs/show.gif" alt="chat"><br>
+  <video src="./docs/showcase.mp4" autoplay muted controls></video>
+  <br><br>
   <a href="https://discord.gg/Z87Nh7c4Ac">
     <img src="https://img.shields.io/discord/953341991134064651?style=flat-square" alt="chat">
   </a>
-  <a href="https://github.com/ThaUnknown/miru/releases/latest">
+  <a href="https://miru.watch/download/">
     <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/ThaUnknown/miru/total?style=flat-square">
   </a>
-
 </p>
 
 ## **About**
@@ -52,8 +53,6 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritise downloa
   - support for VTT, SSA, ASS, SUB, TXT subtitles
   - subtitle display in PiP
 - keybinds for all functions:
-  - **,** - seek 1 frame backwards
-  - **.** - seek 1 frame forwards
   - **S** - seek forwards 90 seconds [skip opening]
   - **R** - seek backwards 90 seconds
   - **→** - seek forwards 2 seconds
@@ -63,6 +62,7 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritise downloa
   - **M** - mute volume
   - **C** - cycle through subtitle tracks
   - **N** - play next episode [if available]
+  - **B** - play last episode [if available]
   - **F** - toggle fullscreen
   - **P** - toggle picture in picture
   - **[** - increase playback speed
@@ -87,6 +87,7 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritise downloa
 - support for custom torrent RSS feeds for latest releases
 - change what resolution to find torrents in
 - stream real-time with no waiting for downloads
+- support for custom extensions for custom sources and trackers
 
 ## **Linux Installation**
 
@@ -113,21 +114,12 @@ apt install linux-Miru-*.deb
 
 ## **Building and Development**
 
+*dont*
+
 Dependencies:
  - Node 16 or above
  - PNPM
-
-To build/develop, in the root folder of the repo you need to first run:
-```bash
-pnpm install
-```
-
-To build for your OS just run:
-```bash
-pnpm run build
-```
-
-To run the development server run:
-```bash
-pnpm start
-``` 
+ - Docker
+ - Android Debug Bridge
+ - Java 18 or above [probably?]
+ - maybe others... have fun.
