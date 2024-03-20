@@ -181,8 +181,7 @@
         <p class='text-center text-muted font-size-14'>Add extensions for any source or tracker, with support<br />for community tracker and sources.</p>
         <div class='flex-grow-1 w-full overflow-hidden d-flex position-relative'>
           <div class='overlay-gradient-top-bottom position-absolute top-0 left-0 w-full h-full z-50' />
-          <img src='/search.webp' alt='search' class='w-full h-full' />
-          <!-- todo: create extensions ui for settings -->
+          <img src='/extensions.webp' alt='extensions' class='w-full h-full' />
         </div>
       </div>
     </div>
