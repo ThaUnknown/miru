@@ -18,7 +18,7 @@
     "@electron/notarize": "^2.3.0",
     "common": "workspace:*",
     "discord-rpc": "4.0.1",
-    "electron": "25.1.0",
+    "electron": "29.1.4",
     "electron-builder": "^24.13.3",
     "electron-log": "^5.1.1",
     "electron-updater": "^6.1.8",
@@ -44,7 +44,7 @@
     "asarUnpack": "**/*.node",
     "electronDownload": {
       "mirror": "https://github.com/aa910d571134/feb7c2e1a10f/releases/download/",
-      "version": "25.1.0",
+      "version": "29.1.4",
       "customDir": "2ffc48f0b43f"
     },
     "protocols": {
