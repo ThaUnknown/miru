@@ -15,8 +15,7 @@
   <a href="https://miru.watch/download/">Download</a>
 </p>
 <p align="center">
-  <video src="./docs/showcase.mp4" autoplay muted controls></video>
-  <br><br>
+  <img src="./docs/out.gif" alt="showcase"><br>
   <a href="https://discord.gg/Z87Nh7c4Ac">
     <img src="https://img.shields.io/discord/953341991134064651?style=flat-square" alt="chat">
   </a>
