@@ -6,7 +6,7 @@
     "@fontsource-variable/nunito": "^5.0.18",
     "@fontsource/roboto": "^5.0.12",
     "@thaunknown/ani-resourced": "^1.0.3",
-    "anitomyscript": "github:ThaUnknown/anitomyscript#51abfeaa99114659fb4c0d30e32c61d50d6d1a8a",
+    "anitomyscript": "github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00",
     "bottleneck": "^2.19.5",
     "browser-event-target-emitter": "^1.0.1",
     "comlink": "^4.4.1",

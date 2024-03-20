@@ -137,8 +137,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
       anitomyscript:
-        specifier: github:ThaUnknown/anitomyscript#51abfeaa99114659fb4c0d30e32c61d50d6d1a8a
-        version: github.com/ThaUnknown/anitomyscript/51abfeaa99114659fb4c0d30e32c61d50d6d1a8a
+        specifier: github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00
+        version: github.com/ThaUnknown/anitomyscript/42290c4b3f256893be08a4e89051f448ff5e9d00
       bottleneck:
         specifier: ^2.19.5
         version: 2.19.5
@@ -9693,10 +9693,10 @@ packages:
       '@capacitor/core': 5.5.1
     dev: false
 
-  github.com/ThaUnknown/anitomyscript/51abfeaa99114659fb4c0d30e32c61d50d6d1a8a:
-    resolution: {tarball: https://codeload.github.com/ThaUnknown/anitomyscript/tar.gz/51abfeaa99114659fb4c0d30e32c61d50d6d1a8a}
+  github.com/ThaUnknown/anitomyscript/42290c4b3f256893be08a4e89051f448ff5e9d00:
+    resolution: {tarball: https://codeload.github.com/ThaUnknown/anitomyscript/tar.gz/42290c4b3f256893be08a4e89051f448ff5e9d00}
     name: anitomyscript
-    version: 2.0.7
+    version: 2.0.5
     dev: false
 
   github.com/ThaUnknown/p2pt/9ad7a56ed6ee43f5664ebad33b803702ee349316:
