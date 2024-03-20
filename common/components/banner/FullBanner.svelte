@@ -44,10 +44,10 @@
 </script>
 
 {#key current}
-  <img src={current.bannerImage || ''} alt='banner' class='img-cover w-full h-full position-absolute' />
+  <img src={current.bannerImage || `https://i.ytimg.com/vi/${current.trailer?.id}/maxresdefault.jpg` || ''} alt='banner' class='img-cover w-full h-full position-absolute' />
 {/key}
 <div class='pl-20 pb-20 justify-content-end d-flex flex-column h-full banner mw-full '>
-  <div class='text-white font-weight-bold font-size-40 title w-700 mw-full overflow-hidden'>
+  <div class='text-white font-weight-bold font-size-40 title w-800 mw-full overflow-hidden'>
     {current.title.userPreferred}
   </div>
   <div class='details text-white text-capitalize pt-15 pb-10 d-flex w-600 mw-full'>
@@ -125,8 +125,8 @@
       width: 100%;
     }
   }
-  .w-700 {
-    width: 70rem
+  .w-800 {
+    width: 80rem
   }
   .details span + span::before {
     content: '•';
@@ -143,7 +143,7 @@
   }
   .title {
     display: -webkit-box !important;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
   }
   img {

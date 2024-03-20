@@ -3,12 +3,6 @@
   import SkeletonBanner from './SkeletonBanner.svelte'
   export let data
 
-  /**
-   * Shuffles array in place.
-   * @template T
-   * @param {T[]} array items An array containing the items.
-   * @returns {T[]}
-   */
   function shuffle (array) {
     let currentIndex = array.length
     let randomIndex
@@ -21,13 +15,17 @@
 
     return array
   }
+
+  function shuffleAndFilter (media) {
+    return shuffle(media).filter(media => media.bannerImage || media.trailer?.id).slice(0, 5)
+  }
 </script>
 
 <div class='w-full h-450 position-relative gradient'>
   {#await data}
     <SkeletonBanner />
   {:then { data }}
-    <FullBanner mediaList={shuffle(data.Page.media).slice(0, 5)} />
+    <FullBanner mediaList={shuffleAndFilter(data.Page.media)} />
   {/await}
 </div>
 
