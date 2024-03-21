@@ -86,7 +86,7 @@
 
   /** @param {import('@thaunknown/ani-resourced/sources/types.d.ts').Result} result */
   function play (result) {
-    $currentMedia = search.media
+    $currentMedia = search
     $currentMedia.verified = result.verified
     if (!isNaN(result.seeders) && result.seeders < 10) {
       toast('Availability Warning', {
