@@ -88,7 +88,7 @@ module.exports = (parentDir, alias = {}, aliasFields = 'browser', filename = 'ap
 ${htmlWebpackPlugin.tags.headTags}
 </head>
 
-<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars">
+<body class="dark-mode with-custom-webkit-scrollbars">
 ${htmlWebpackPlugin.tags.bodyTags}
 </body>
 

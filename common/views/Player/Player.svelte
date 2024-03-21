@@ -17,6 +17,7 @@
   import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
   import { SUPPORTS } from '@/modules/support.js'
   import 'rvfc-polyfill'
+  import IPC from '@/modules/ipc.js'
 
   const emit = createEventDispatcher()
 
@@ -263,17 +264,19 @@
   function toggleMute () {
     muted = !muted
   }
-  let visibilityPaused = true
-  document.addEventListener('visibilitychange', () => {
+  const handleVisibility = visibility => {
     if (!video?.ended && $settings.playerPause && !pip) {
-      if (document.visibilityState === 'hidden') {
+      if (visibility === 'hidden') {
         visibilityPaused = paused
         paused = true
       } else {
         if (!visibilityPaused) paused = false
       }
     }
-  })
+  }
+  let visibilityPaused = true
+  document.addEventListener('visibilitychange', () => handleVisibility(document.visibilityState))
+  IPC.on('visibilitychange', handleVisibility)
   function tryPlayNext () {
     if ($settings.playerAutoplay && !state.value) playNext()
   }

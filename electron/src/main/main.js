@@ -64,6 +64,9 @@ function createWindow () {
     webtorrentWindow.webContents.openDevTools()
   })
 
+  mainWindow.on('minimize', () => mainWindow.webContents.postMessage('visibilitychange', 'hidden'))
+  mainWindow.on('restore', () => mainWindow.webContents.postMessage('visibilitychange', 'visible'))
+
   mainWindow.on('closed', () => {
     mainWindow = null
     try {
