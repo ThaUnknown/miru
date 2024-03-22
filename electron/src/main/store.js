@@ -27,4 +27,4 @@ function parseDataFile (filePath, defaults) {
   }
 }
 
-export default new Store('settings', { angle: 'default', player: '' })
+export default new Store('settings', { angle: 'default', player: '', torrentPath: '' })

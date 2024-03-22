@@ -48,24 +48,6 @@ ipcMain.on('close', () => {
   app.quit()
 })
 
-ipcMain.on('dialog', async ({ sender }) => {
-  const { filePaths, canceled } = await dialog.showOpenDialog({
-    properties: ['openDirectory']
-  })
-  if (canceled) return
-  if (filePaths.length) {
-    let path = filePaths[0]
-    if (!(path.endsWith('\\') || path.endsWith('/'))) {
-      if (path.indexOf('\\') !== -1) {
-        path += '\\'
-      } else if (path.indexOf('/') !== -1) {
-        path += '/'
-      }
-    }
-    sender.send('path', path)
-  }
-})
-
 ipcMain.on('version', ({ sender }) => {
   sender.send('version', app.getVersion()) // fucking stupid
 })

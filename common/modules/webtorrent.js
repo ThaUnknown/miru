@@ -37,6 +37,7 @@ export default class TorrentClient extends WebTorrent {
   player = ''
   /** @type {ReturnType<spawn>} */
   playerProcess = null
+  torrentPath = ''
 
   constructor (ipc, storageQuota, serverMode, settingOverrides = {}, controller) {
     const settings = { ...defaults, ...storedSettings, ...settingOverrides }
@@ -62,6 +63,9 @@ export default class TorrentClient extends WebTorrent {
     })
     ipc.on('player', (event, data) => {
       this.player = data
+    })
+    ipc.on('torrentPath', (event, data) => {
+      this.torrentPath = data
     })
     this.settings = settings
 
@@ -212,7 +216,7 @@ export default class TorrentClient extends WebTorrent {
     if (this.torrents.length) await this.remove(this.torrents[0])
     const torrent = await this.add(data, {
       private: this.settings.torrentPeX,
-      path: this.settings.torrentPath,
+      path: this.torrentPath,
       destroyStoreOnDestroy: !this.settings.torrentPersist,
       skipVerify,
       announce
@@ -247,7 +251,6 @@ export default class TorrentClient extends WebTorrent {
             this.playerProcess.once('close', () => {
               this.playerProcess = null
               const seconds = (Date.now() - startTime) / 1000
-              console.log(seconds)
               this.dispatch('externalWatched', seconds)
             })
           } else {

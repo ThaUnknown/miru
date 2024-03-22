@@ -111,6 +111,7 @@ function createWindow () {
     await torrentLoad
     webtorrentWindow.webContents.postMessage('port', null, [port1])
     webtorrentWindow.webContents.postMessage('player', store.get('player'))
+    webtorrentWindow.webContents.postMessage('torrentPath', store.get('torrentPath'))
     sender.postMessage('port', null, [port2])
   })
 }
