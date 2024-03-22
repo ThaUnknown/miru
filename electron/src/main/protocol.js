@@ -10,7 +10,7 @@ if (process.defaultApp) {
   app.setAsDefaultProtocolClient('miru')
 }
 
-export default class {
+export default class Protocol {
   // schema: miru://key/value
   protocolMap = {
     auth: token => this.sendToken(token),

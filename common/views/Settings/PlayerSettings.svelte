@@ -2,6 +2,9 @@
   import { toast } from 'svelte-sonner'
   import FontSelect from 'simple-font-select'
   import SettingCard from './SettingCard.svelte'
+  import { SUPPORTS } from '@/modules/support.js'
+  import { click } from '@/modules/click.js'
+  import IPC from '@/modules/ipc.js'
   export let settings
 
   async function changeFont ({ detail }) {
@@ -20,6 +23,9 @@
         duration: 8000
       })
     }
+  }
+  function handleExecutable () {
+    IPC.emit('player')
   }
 </script>
 
@@ -131,3 +137,22 @@
     <label for='player-deband'>{settings.playerDeband ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
+
+{#if SUPPORTS.externalPlayer}
+  <h4 class='mb-10 font-weight-bold'>External Player Settings</h4>
+  <SettingCard title='Enable External Player' description='Tells Miru to open a custom user-defined video player to play video, instead of using the built-in one.'>
+    <div class='custom-switch'>
+      <input type='checkbox' id='player-external-enabled' bind:checked={settings.enableExternal} />
+      <label for='player-external-enabled'>{settings.enableExternal ? 'On' : 'Off'}</label>
+    </div>
+  </SettingCard>
+  <SettingCard title='External Video Player' description='Executable for an external video player. Make sure the player supports HTTP sources.'>
+    <div
+      class='input-group w-300 mw-full'>
+      <div class='input-group-prepend'>
+        <button type='button' use:click={handleExecutable} class='btn btn-primary input-group-append'>Select Executable</button>
+      </div>
+      <input type='url' class='form-control bg-dark' readonly value={settings.playerPath} />
+    </div>
+  </SettingCard>
+{/if}

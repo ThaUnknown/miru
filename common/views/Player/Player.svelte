@@ -155,6 +155,8 @@
   }
   $: loadDeband($settings.playerDeband, video)
 
+  let watchedListener
+
   async function handleCurrent (file) {
     if (file) {
       if (thumbnailData.video?.src) URL.revokeObjectURL(video?.src)
@@ -168,14 +170,26 @@
       chapters = []
       currentSkippable = null
       completed = false
-      if (subs) subs.destroy()
+      if (subs) {
+        subs.destroy()
+        subs = null
+      }
       current = file
       emit('current', current)
-      src = file.url
-      client.send('current', file)
-      subs = new Subtitles(video, files, current, handleHeaders)
-      video.load()
-      await loadAnimeProgress()
+      client.send('current', { current: file, external: settings.value.enableExternal })
+      if (!settings.value.enableExternal) {
+        src = file.url
+        subs = new Subtitles(video, files, current, handleHeaders)
+        video.load()
+        await loadAnimeProgress()
+      } else if (current.media?.media?.duration) {
+        const duration = current.media?.media?.duration
+        client.removeEventListener('externalWatched', watchedListener)
+        watchedListener = ({ detail }) => {
+          checkCompletionByTime(detail, duration)
+        }
+        client.addEventListener('externalWatched', watchedListener)
+      }
     }
   }
 
@@ -882,13 +896,17 @@
   let completed = false
   function checkCompletion () {
     if (!completed && $settings.playerAutocomplete) {
-      const fromend = Math.max(180, safeduration / 10)
-      if (safeduration && currentTime && video?.readyState && safeduration - fromend < currentTime) {
-        if (media?.media?.episodes || media?.media?.nextAiringEpisode?.episode) {
-          if (media.media.episodes || media.media.nextAiringEpisode?.episode > media.episode) {
-            completed = true
-            anilistClient.alEntry(media)
-          }
+      checkCompletionByTime(currentTime, safeduration)
+    }
+  }
+
+  function checkCompletionByTime (time, duration) {
+    const fromend = Math.max(180, duration / 10)
+    if (time && time && video?.readyState && time - fromend < time) {
+      if (media?.media?.episodes || media?.media?.nextAiringEpisode?.episode) {
+        if (media.media.episodes || media.media.nextAiringEpisode?.episode > media.episode) {
+          completed = true
+          anilistClient.alEntry(media)
         }
       }
     }

@@ -80,6 +80,10 @@
     $settings.torrentPath = data
   }
 
+  function playerListener (data) {
+    $settings.playerPath = data
+  }
+
   function loginButton () {
     if (anilistClient.userID) {
       $logout = true
@@ -95,9 +99,11 @@
   }
   onDestroy(() => {
     IPC.off('path', pathListener)
+    IPC.off('player', playerListener)
   })
   $: IPC.emit('show-discord-status', $settings.showDetailsInRPC)
   IPC.on('path', pathListener)
+  IPC.on('player', playerListener)
 </script>
 
 <Tabs>

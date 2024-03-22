@@ -33,11 +33,9 @@ ipcMain.on('open', (event, url) => {
 
 ipcMain.on('doh', (event, dns) => {
   try {
-    const url = new URL(dns)
-
     app.configureHostResolver({
       secureDnsMode: 'secure',
-      secureDnsServers: [url.toString()]
+      secureDnsServers: ['' + new URL(dns)]
     })
   } catch (e) {}
 })
@@ -50,10 +48,11 @@ ipcMain.on('close', () => {
   app.quit()
 })
 
-ipcMain.on('dialog', async (event, data) => {
-  const { filePaths } = await dialog.showOpenDialog({
+ipcMain.on('dialog', async ({ sender }) => {
+  const { filePaths, canceled } = await dialog.showOpenDialog({
     properties: ['openDirectory']
   })
+  if (canceled) return
   if (filePaths.length) {
     let path = filePaths[0]
     if (!(path.endsWith('\\') || path.endsWith('/'))) {
@@ -63,12 +62,12 @@ ipcMain.on('dialog', async (event, data) => {
         path += '/'
       }
     }
-    event.sender.send('path', path)
+    sender.send('path', path)
   }
 })
 
-ipcMain.on('version', (event) => {
-  event.sender.send('version', app.getVersion()) // fucking stupid
+ipcMain.on('version', ({ sender }) => {
+  sender.send('version', app.getVersion()) // fucking stupid
 })
 
 app.setJumpList?.([

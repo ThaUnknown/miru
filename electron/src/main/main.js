@@ -5,6 +5,8 @@ import Discord from './discord.js'
 import Updater from './updater.js'
 import Protocol from './protocol.js'
 import { development } from './util.js'
+import Dialog from './dialog.js'
+import store from './store.js'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -44,6 +46,7 @@ function createWindow () {
   new Discord(mainWindow)
   new Protocol(mainWindow)
   new Updater(mainWindow)
+  new Dialog(webtorrentWindow)
   mainWindow.setMenuBarVisibility(false)
 
   mainWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, fn) => {
@@ -107,6 +110,7 @@ function createWindow () {
     const { port1, port2 } = new MessageChannelMain()
     await torrentLoad
     webtorrentWindow.webContents.postMessage('port', null, [port1])
+    webtorrentWindow.webContents.postMessage('player', store.get('player'))
     sender.postMessage('port', null, [port2])
   })
 }

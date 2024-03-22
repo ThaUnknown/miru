@@ -2,7 +2,7 @@ import { Client } from 'discord-rpc'
 import { ipcMain } from 'electron'
 import { debounce } from '@/modules/util.js'
 
-export default class {
+export default class Discord {
   defaultStatus = {
     activity: {
       timestamps: { start: Date.now() },

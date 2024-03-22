@@ -1,3 +1,4 @@
+import { spawn } from 'node:child_process'
 import WebTorrent from 'webtorrent'
 import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
 import { hex2bin, arr2hex, text2arr } from 'uint8-util'
@@ -33,6 +34,10 @@ try {
 export default class TorrentClient extends WebTorrent {
   static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
 
+  player = ''
+  /** @type {ReturnType<spawn>} */
+  playerProcess = null
+
   constructor (ipc, storageQuota, serverMode, settingOverrides = {}, controller) {
     const settings = { ...defaults, ...storedSettings, ...settingOverrides }
     super({
@@ -54,6 +59,9 @@ export default class TorrentClient extends WebTorrent {
         resolve()
       })
       ipc.on('destroy', this.destroy.bind(this))
+    })
+    ipc.on('player', (event, data) => {
+      this.player = data
     })
     this.settings = settings
 
@@ -219,18 +227,34 @@ export default class TorrentClient extends WebTorrent {
     switch (data.type) {
       case 'current': {
         if (data.data) {
-          const torrent = await this.get(data.data.infoHash)
-          const found = torrent?.files.find(file => file.path === data.data.path)
+          const torrent = await this.get(data.data.current.infoHash)
+          const found = torrent?.files.find(file => file.path === data.data.current.path)
           if (!found) return
+          if (this.playerProcess) {
+            this.playerProcess.kill()
+            this.playerProcess = null
+          }
           if (this.current) {
             this.current.removeAllListeners('stream')
           }
           this.parser?.destroy()
           found.select()
           this.current = found
-          this.parser = new Parser(this, found)
-          this.findSubtitleFiles(found)
-          this.findFontFiles(found)
+          if (data.data.external && this.player) {
+            this.playerProcess = spawn(this.player, ['http://localhost:' + this.server.address().port + found.streamURL])
+            this.playerProcess.stdout.on('data', () => {})
+            const startTime = Date.now()
+            this.playerProcess.once('close', () => {
+              this.playerProcess = null
+              const seconds = (Date.now() - startTime) / 1000
+              console.log(seconds)
+              this.dispatch('externalWatched', seconds)
+            })
+          } else {
+            this.parser = new Parser(this, found)
+            this.findSubtitleFiles(found)
+            this.findFontFiles(found)
+          }
         }
         break
       }

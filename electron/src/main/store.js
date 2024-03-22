@@ -27,4 +27,4 @@ function parseDataFile (filePath, defaults) {
   }
 }
 
-export default new Store('settings', { angle: 'default' })
+export default new Store('settings', { angle: 'default', player: '' })
