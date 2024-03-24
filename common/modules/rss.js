@@ -62,7 +62,6 @@ export async function getRSSContent (url) {
 class RSSMediaManager {
   constructor () {
     this.resultMap = {}
-    this.lastResult = null
   }
 
   getMediaForRSS (page, perPage, url, ignoreErrors) {
@@ -101,7 +100,7 @@ class RSSMediaManager {
     const targetPage = [...changed.content.querySelectorAll('item')].slice(index, index + perPage)
     const items = parseRSSNodes(targetPage)
     hasNextPage.value = items.length === perPage
-    const result = items.map(item => this.resolveAnimeFromRSSItem(item))
+    const result = this.structureResolveResults(items)
     this.resultMap[url] = {
       date: changed.pubDate,
       result
@@ -109,29 +108,26 @@ class RSSMediaManager {
     return result
   }
 
-  resolveAnimeFromRSSItem (item) {
-    this.lastResult = this.queueResolve(item)
-    return this.lastResult
-  }
-
-  async queueResolve ({ title, link, date }) {
-    await this.lastResult
-    const res = {
-      ...(await AnimeResolver.resolveFileAnime(title))[0],
-      episodeData: undefined,
-      date: undefined,
-      onclick: undefined
-    }
-    if (res.media?.id) {
-      try {
-        res.episodeData = (await getEpisodeMetadataForMedia(res.media))?.[res.episode]
-      } catch (e) {
-        console.warn('failed fetching episode metadata', e)
+  async structureResolveResults (items) {
+    const results = await AnimeResolver.resolveFileAnime(items.map(item => item.title))
+    return results.map(async (result, i) => {
+      const res = {
+        ...result,
+        episodeData: undefined,
+        date: undefined,
+        onclick: undefined
       }
-    }
-    res.date = date
-    res.onclick = () => add(link)
-    return res
+      if (res.media?.id) {
+        try {
+          res.episodeData = (await getEpisodeMetadataForMedia(res.media))?.[res.episode]
+        } catch (e) {
+          console.warn('failed fetching episode metadata', e)
+        }
+      }
+      res.date = items[i].date
+      res.onclick = () => add(items[i].link)
+      return res
+    })
   }
 }
 

@@ -83,7 +83,7 @@ module.exports = (parentDir, alias = {}, aliasFields = 'browser', filename = 'ap
 <title>Miru</title>
 
 <!-- <link rel="preconnect" href="https://www.youtube-nocookie.com"> -->
-<link rel="preconnect" href="https://graphql.anilist.co">
+<link rel="preconnect" href="https://graphql.anilist.co/">
 <link rel='icon' href='/logo_filled.png' type="image/png" >
 ${htmlWebpackPlugin.tags.headTags}
 </head>

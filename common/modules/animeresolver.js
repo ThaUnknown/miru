@@ -1,7 +1,6 @@
 import { toast } from 'svelte-sonner'
 import { anilistClient } from './anilist.js'
 import { anitomyscript } from './anime.js'
-import { PromiseBatch } from './util.js'
 
 const postfix = {
   1: 'st', 2: 'nd', 3: 'rd'
@@ -22,83 +21,79 @@ export default new class AnimeResolver {
   }
 
   /**
-   * resolve anime name based on file name and store it
-   * @param {import('anitomyscript').AnitomyResult} parseObject
+   * @param {string} title
+   * @returns {string[]}
    */
-  async findAnimeByTitle (parseObject) {
-    const name = parseObject.anime_title
-    const variables = { name, perPage: 10, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' }
-    if (parseObject.anime_year) variables.year = parseObject.anime_year
+  alternativeTitles (title) {
+    const titles = []
 
-    // inefficient but readable
-
-    let media = null
-    try {
-    // change S2 into Season 2 or 2nd Season
-      const match = variables.name.match(/ S(\d+)/)
-      const oldname = variables.name
-      if (match) {
-        if (Number(match[1]) === 1) { // if this is S1, remove the " S1" or " S01"
-          variables.name = variables.name.replace(/ S(\d+)/, '')
-          media = await anilistClient.alSearch(variables)
-        } else {
-          variables.name = variables.name.replace(/ S(\d+)/, ` ${Number(match[1])}${postfix[Number(match[1])] || 'th'} Season`)
-          media = await anilistClient.alSearch(variables)
-          if (!media) {
-            variables.name = oldname.replace(/ S(\d+)/, ` Season ${Number(match[1])}`)
-            media = await anilistClient.alSearch(variables)
-          }
-        }
+    let modified = title
+    // preemptively change S2 into Season 2 or 2nd Season, otherwise this will have accuracy issues
+    const seasonMatch = title.match(/ S(\d+)/)
+    if (seasonMatch) {
+      if (Number(seasonMatch[1]) === 1) { // if this is S1, remove the " S1" or " S01"
+        modified = title.replace(/ S(\d+)/, '')
+        titles.push(modified)
       } else {
-        media = await anilistClient.alSearch(variables)
+        modified = title.replace(/ S(\d+)/, ` ${Number(seasonMatch[1])}${postfix[Number(seasonMatch[1])] || 'th'} Season`)
+        titles.push(modified)
+        titles.push(title.replace(/ S(\d+)/, ` Season ${Number(seasonMatch[1])}`))
       }
+    } else {
+      titles.push(title)
+    }
 
-      // remove - :
-      if (!media) {
-        const match = variables.name.match(/[-:]/g)
-        if (match) {
-          variables.name = variables.name.replace(/[-:]/g, '')
-          media = await anilistClient.alSearch(variables)
-        }
-      }
-      // remove (TV)
-      if (!media) {
-        const match = variables.name.match(/\(TV\)/)
-        if (match) {
-          variables.name = variables.name.replace('(TV)', '')
-          media = await anilistClient.alSearch(variables)
-        }
-      }
-      // check adult
-      if (!media) {
-        variables.isAdult = true
-        media = await anilistClient.alSearch(variables)
-      }
-    } catch (e) { }
+    // remove - :
+    const specialMatch = modified.match(/[-:]/g)
+    if (specialMatch) {
+      modified = modified.replace(/[-:]/g, '')
+      titles.push(modified)
+    }
 
-    if (media) this.animeNameCache[this.getCacheKeyForTitle(parseObject)] = media
+    // remove (TV)
+    const tvMatch = modified.match(/\(TV\)/)
+    if (tvMatch) {
+      modified = modified.replace('(TV)', '')
+      titles.push(modified)
+    }
+
+    return titles
   }
 
-  // id keyed cache for anilist media
-  animeCache = {}
+  /**
+   * resolve anime name based on file name and store it
+   * @param {import('anitomyscript').AnitomyResult[]} parseObjects
+   */
+  async findAnimesByTitle (parseObjects) {
+    const titleObjects = parseObjects.map(obj => {
+      const key = this.getCacheKeyForTitle(obj)
+      const titleObjects = this.alternativeTitles(obj.anime_title).map(title => ({ title, year: obj.anime_year, key, isAdult: false }))
+      titleObjects.push({ ...titleObjects.at(-1), isAdult: true })
+      return titleObjects
+    }).flat()
 
-  // TODO: this should use global anime cache once that is create
+    for (const [key, media] of await anilistClient.alSearchCompound(titleObjects)) {
+      this.animeNameCache[key] = media
+    }
+  }
+
   /**
    * @param {number} id
-   * @returns {any}
    */
-  getAnimeById (id) {
-    if (!this.animeCache[id]) this.animeCache[id] = anilistClient.searchIDSingle({ id })
+  async getAnimeById (id) {
+    if (anilistClient.mediaCache[id]) return anilistClient.mediaCache[id]
+    const res = await anilistClient.searchIDSingle({ id })
 
-    return this.animeCache[id]
+    return res.data.Media
   }
 
-  // TODO: anidb aka true episodes need to be mapped to anilist episodes a bit better
+  // TODO: anidb aka true episodes need to be mapped to anilist episodes a bit better, shit like mushoku offsets caused by episode 0's in between seasons
   /**
    * @param {string | string[]} fileName
    * @returns {Promise<any[]>}
    */
   async resolveFileAnime (fileName) {
+    if (!fileName) return [{}]
     const parseObjs = await anitomyscript(fileName)
 
     // batches promises in 10 at a time, because of CF burst protection, which still sometimes gets triggered :/
@@ -108,7 +103,7 @@ export default new class AnimeResolver {
       if (key in this.animeNameCache) continue
       uniq[key] = obj
     }
-    await PromiseBatch(this.findAnimeByTitle.bind(this), Object.values(uniq), 10)
+    await this.findAnimesByTitle(Object.values(uniq))
 
     const fileAnimes = []
     for (const parseObj of parseObjs) {
@@ -131,7 +126,7 @@ export default new class AnimeResolver {
               // parent check is to break out of those incorrectly resolved OVA's
               // if we used anime season to resolve anime name, then there's no need to march into prequel!
               const prequel = !parseObj.anime_season && (this.findEdge(media, 'PREQUEL')?.node || ((media.format === 'OVA' || media.format === 'ONA') && this.findEdge(media, 'PARENT')?.node))
-              const root = prequel && (await this.resolveSeason({ media: (await this.getAnimeById(prequel.id)).data.Media, force: true })).media
+              const root = prequel && (await this.resolveSeason({ media: await this.getAnimeById(prequel.id), force: true })).media
 
               // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
               const result = await this.resolveSeason({ media: root || media, episode: parseObj.episode_number[1], increment: !parseObj.anime_season ? null : true })
@@ -148,7 +143,7 @@ export default new class AnimeResolver {
           if (maxep && parseInt(parseObj.episode_number) > maxep) {
             // see big comment above
             const prequel = !parseObj.anime_season && (this.findEdge(media, 'PREQUEL')?.node || ((media.format === 'OVA' || media.format === 'ONA') && this.findEdge(media, 'PARENT')?.node))
-            const root = prequel && (await this.resolveSeason({ media: (await this.getAnimeById(prequel.id)).data.Media, force: true })).media
+            const root = prequel && (await this.resolveSeason({ media: await this.getAnimeById(prequel.id), force: true })).media
 
             // value bigger than episode count
             const result = await this.resolveSeason({ media: root || media, episode: parseInt(parseObj.episode_number), increment: !parseObj.anime_season ? null : true })
@@ -212,7 +207,7 @@ export default new class AnimeResolver {
       }
       return obj
     }
-    media = (await this.getAnimeById(edge.id)).data.Media
+    media = await this.getAnimeById(edge.id)
 
     const highest = media.nextAiringEpisode?.episode || media.episodes
 

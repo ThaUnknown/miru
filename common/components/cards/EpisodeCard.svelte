@@ -21,7 +21,7 @@
     preview = state
   }
 
-  const progress = liveAnimeEpisodeProgress(media.id, data.episode)
+  const progress = liveAnimeEpisodeProgress(media?.id, data?.episode)
 </script>
 
 <div class='d-flex p-20 pb-10 position-relative' use:hoverClick={[data.onclick || viewMedia, setHoverState]}>

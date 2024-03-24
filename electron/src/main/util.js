@@ -1,4 +1,4 @@
-import { app, ipcMain, shell, dialog } from 'electron'
+import { app, ipcMain, shell } from 'electron'
 import store from './store.js'
 
 export const development = process.env.NODE_ENV?.trim() === 'development'
@@ -14,10 +14,8 @@ const flags = [
   ['enable-features', 'PlatformEncryptedDolbyVision,EnableDrDc,CanvasOopRasterization,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
   ['force_high_performance_gpu'],
   ['disable-features', 'Vulkan,CalculateNativeWinOcclusion,WidgetLayering'],
-  ['disable-color-correct-rendering'],
   ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'],
-  ['bypasscsp-schemes'],
-  ['force-color-profile', 'srgb'] // TODO: should this be "scrgb-linear"?
+  ['bypasscsp-schemes']
 ]
 for (const [flag, value] of flags) {
   app.commandLine.appendSwitch(flag, value)

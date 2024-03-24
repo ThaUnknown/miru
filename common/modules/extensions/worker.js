@@ -38,7 +38,6 @@ class Extensions {
 
 /** @param {string[]} extensions */
 export async function loadExtensions (extensions) {
-  // TODO: handle import errors
   const sources = (await Promise.all(extensions.map(async extension => {
     try {
       if (!extension.startsWith('http')) extension = `https://esm.sh/${extension}`

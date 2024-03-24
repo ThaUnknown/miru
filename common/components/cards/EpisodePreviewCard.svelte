@@ -9,7 +9,7 @@
   const episodeThumbnail = ((!media?.mediaListEntry?.status || !(media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress < data.episode)) && data.episodeData?.image) || media?.bannerImage || media?.coverImage.extraLarge || ' '
   let hide = true
 
-  const progress = liveAnimeEpisodeProgress(media.id, data.episode)
+  const progress = liveAnimeEpisodeProgress(media?.id, data?.episode)
 </script>
 
 <div class='position-absolute w-400 mh-400 absolute-container top-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer d-flex flex-column'>
