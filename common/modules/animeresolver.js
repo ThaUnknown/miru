@@ -1,6 +1,7 @@
 import { toast } from 'svelte-sonner'
 import { anilistClient } from './anilist.js'
 import { anitomyscript } from './anime.js'
+import { chunks } from './util.js'
 
 const postfix = {
   1: 'st', 2: 'nd', 3: 'rd'
@@ -65,6 +66,7 @@ export default new class AnimeResolver {
    * @param {import('anitomyscript').AnitomyResult[]} parseObjects
    */
   async findAnimesByTitle (parseObjects) {
+    if (!parseObjects.length) return
     const titleObjects = parseObjects.map(obj => {
       const key = this.getCacheKeyForTitle(obj)
       const titleObjects = this.alternativeTitles(obj.anime_title).map(title => ({ title, year: obj.anime_year, key, isAdult: false }))
@@ -96,14 +98,16 @@ export default new class AnimeResolver {
     if (!fileName) return [{}]
     const parseObjs = await anitomyscript(fileName)
 
-    // batches promises in 10 at a time, because of CF burst protection, which still sometimes gets triggered :/
+    /** @type {Record<string, import('anitomyscript').AnitomyResult>} */
     const uniq = {}
     for (const obj of parseObjs) {
       const key = this.getCacheKeyForTitle(obj)
       if (key in this.animeNameCache) continue
       uniq[key] = obj
     }
-    await this.findAnimesByTitle(Object.values(uniq))
+    for (const chunk of chunks(Object.values(uniq), 50)) {
+      await this.findAnimesByTitle(chunk)
+    }
 
     const fileAnimes = []
     for (const parseObj of parseObjs) {

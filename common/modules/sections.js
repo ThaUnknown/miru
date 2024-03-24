@@ -91,6 +91,7 @@ function createSections () {
             if (media.status === 'FINISHED') return true
             return media.mediaListEntry?.progress < media.nextAiringEpisode?.episode - 1
           }).map(({ media }) => media.id)
+          if (!ids.length) return {}
           return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
         })
         return SectionsManager.wrapResponse(res, perPage)
@@ -106,6 +107,7 @@ function createSections () {
           const ids = mediaList.flatMap(({ media }) => {
             return media.relations.edges.filter(edge => edge.relationType === 'SEQUEL')
           }).map(({ node }) => node.id)
+          if (!ids.length) return {}
           return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables), status: ['FINISHED', 'RELEASING'], onList: false })
         })
         return SectionsManager.wrapResponse(res, perPage)

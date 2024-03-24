@@ -178,6 +178,7 @@ class AnilistClient {
 
   rateLimitPromise = null
 
+  /** @type {import('simple-store-svelte').Writable<ReturnType<AnilistClient['getUserLists']>>} */
   userLists = writable()
 
   userID
@@ -282,16 +283,22 @@ class AnilistClient {
    * @param {{key: string, title: string, year?: string, isAdult: boolean}[]} flattenedTitles
    **/
   async alSearchCompound (flattenedTitles) {
+    if (!flattenedTitles.length) return []
     /** @type {Record<`v${number}`, string>} */
-    const requestVariables = flattenedTitles.reduce((obj, { title }, i) => {
+    const requestVariables = flattenedTitles.reduce((obj, { title, isAdult }, i) => {
+      if (isAdult) return obj
       obj[`v${i}`] = title
       return obj
     }, {})
 
-    const queryVariables = flattenedTitles.map((_, i) => `$v${i}: String`).join(', ')
+    const queryVariables = flattenedTitles.reduce((arr, { isAdult }, i) => {
+      if (isAdult) return arr
+      arr.push(`$v${i}: String`)
+      return arr
+    }, []).join(', ')
     const fragmentQueries = flattenedTitles.map(({ year, isAdult }, i) => /* js */`
     v${i}: Page(perPage: 10) {
-      media(type: ANIME, search: $v${i}, status_in: [RELEASING, FINISHED], isAdult: ${!!isAdult} ${year ? `, seasonYear: ${year}` : ''}) {
+      media(type: ANIME, search: $v${isAdult ? i - 1 : i}, status_in: [RELEASING, FINISHED], isAdult: ${!!isAdult} ${year ? `, seasonYear: ${year}` : ''}) {
         ...med
       }
     }`)

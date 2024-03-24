@@ -18,7 +18,8 @@
   if (alToken) {
     const userSections = ['Continue Watching', 'Sequels You Missed', 'Your List', 'Completed List', 'Paused List', 'Dropped List', 'Currently Watching List']
 
-    anilistClient.userLists.subscribe(() => {
+    anilistClient.userLists.subscribe(value => {
+      if (!value) return
       for (const section of manager.sections) {
         // remove preview value, to force UI to re-request data, which updates it once in viewport
         if (userSections.includes(section.title)) section.preview.value = section.load(1, 15)
