@@ -49,6 +49,10 @@ function createWindow () {
   new Dialog(webtorrentWindow)
   mainWindow.setMenuBarVisibility(false)
 
+  mainWindow.webContents.setWindowOpenHandler(() => {
+    return { action: 'deny' }
+  })
+
   mainWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, fn) => {
     delete responseHeaders['Access-Control-Allow-Origin']
     responseHeaders['access-control-allow-origin'] = ['*']
