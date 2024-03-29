@@ -26,9 +26,9 @@ channel.on('port-init', data => {
   }
 
   channel.on('ipc', a => port.onmessage(a))
-  channel.emit('port', ({
+  channel.emit('port', {
     ports: [port]
-  }))
+  })
 })
 
-globalThis.client = new TorrentClient(channel, storageQuota, 'node', { torrentPath: env.TMPDIR })
+globalThis.client = new TorrentClient(channel, storageQuota, 'node', env.TMPDIR)

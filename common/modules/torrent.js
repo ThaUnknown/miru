@@ -57,12 +57,12 @@ client.on('files', ({ detail }) => {
 
 client.on('error', ({ detail }) => {
   console.error(detail)
-  toast.error('Torrent Error', { description: detail.message || detail })
+  toast.error('Torrent Error', { description: '' + (detail.message || detail) })
 })
 
 client.on('warn', ({ detail }) => {
   console.error(detail)
-  toast.warning('Torrent Warning', { description: detail.message || detail })
+  toast.warning('Torrent Warning', { description: '' + (detail.message || detail) })
 })
 
 export async function add (torrentID, hide) {

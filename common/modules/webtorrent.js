@@ -39,8 +39,8 @@ export default class TorrentClient extends WebTorrent {
   playerProcess = null
   torrentPath = ''
 
-  constructor (ipc, storageQuota, serverMode, settingOverrides = {}, controller) {
-    const settings = { ...defaults, ...storedSettings, ...settingOverrides }
+  constructor (ipc, storageQuota, serverMode, torrentPath, controller) {
+    const settings = { ...defaults, ...storedSettings }
     super({
       dht: !settings.torrentDHT,
       maxConns: settings.maxConns,
@@ -49,6 +49,7 @@ export default class TorrentClient extends WebTorrent {
       torrentPort: settings.torrentPort || 0,
       dhtPort: settings.dhtPort || 0
     })
+    this.torrentPath = torrentPath
     this._ready = new Promise(resolve => {
       ipc.on('port', ({ ports }) => {
         this.message = ports[0].postMessage.bind(ports[0])
