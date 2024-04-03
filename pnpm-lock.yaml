@@ -51,8 +51,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2(webpack-cli@5.1.4)(webpack@5.90.3)
       webtorrent:
-        specifier: ^2.1.37
-        version: 2.1.37
+        specifier: ^2.2.1
+        version: 2.2.1
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20240222.0
@@ -2183,13 +2183,8 @@ packages:
     dependencies:
       dequal: 2.0.3
 
-  /b4a@1.6.4:
-    resolution: {integrity: sha512-fpWrvyVHEKyeEvbKZTVOeZF3VSKKWtJxFIxX/jaVPf+cLbGUSitjb49pHLqPV2BUNNZ0LcoeEGfE/YCpyDYHIw==}
-    dev: true
-
   /b4a@1.6.6:
     resolution: {integrity: sha512-5Tk1HLk6b6ctmjIkAcU/Ujv/1WqiDl0F0JdRCR80VsOcUlHcu7pWeWRlOqQLHfDEsVx9YH/aif5AG4ehoCtTmg==}
-    dev: false
 
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -2357,8 +2352,8 @@ packages:
       - supports-color
     dev: false
 
-  /bittorrent-tracker@11.0.1:
-    resolution: {integrity: sha512-WDvixbEkLgnEeVk8iiF2/LwB2zsuxehir3wBFkHskB/LvYE4HQI+6RoWPHjwGqi9POPJdeOnSPFa8pZvB0Bd8A==}
+  /bittorrent-tracker@11.0.2:
+    resolution: {integrity: sha512-MUv1zqWd1OZKPkgncj9JkpumhtF2Q+xeHptz8rJz+APK5/ZIAOIiHyLqDmoDL06JMa1iHPmeOlJG8I5Hi1UIbw==}
     engines: {node: '>=12.20.0'}
     hasBin: true
     dependencies:
@@ -4726,8 +4721,8 @@ packages:
   /fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
 
-  /fsa-chunk-store@1.1.4:
-    resolution: {integrity: sha512-Z4SJTYxZIta37RXJofM6HsKrgM9W+pQxiyQuw0bpvsfn1HGXcBWyXZWhsCfi7wbNb6GIlykXZ9Jxwc95IiPMzA==}
+  /fsa-chunk-store@1.1.5:
+    resolution: {integrity: sha512-+3G6d/syYrw4tGJCivHWjtTKNeP7rOXfX1wgnwzsu81CVHKVOah74XxGdlRHRrMTN5dU15lWbnhgtRsBop3V5A==}
     dependencies:
       filename-reserved-regex: 3.0.0
     dev: false
@@ -5271,12 +5266,12 @@ packages:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
 
-  /hybrid-chunk-store@1.2.2:
-    resolution: {integrity: sha512-oZtxLfVHWKVKPS8KoYpWgVohEKbq3s90s7a1FwG7+EZFC/8bqZrdX4axlH5tO/g2PnGpZTVxS2YnftyCpydKSw==}
+  /hybrid-chunk-store@1.2.4:
+    resolution: {integrity: sha512-wLVIU7rDAz0bQ9sOVwqNWV44A+yAitm+yw66vilkIhZ7V1lVQtiZBQ98YF4vr8rmbqnysgW+pW/PZ1UQtnQCCA==}
     dependencies:
       '@thaunknown/idb-chunk-store': 1.0.2
       cache-chunk-store: 3.2.2
-      fsa-chunk-store: 1.1.4
+      fsa-chunk-store: 1.1.5
       memory-chunk-store: 1.3.5
     dev: false
 
@@ -8504,7 +8499,7 @@ packages:
   /tar-stream@3.1.6:
     resolution: {integrity: sha512-B/UyjYwPpMBv+PaFSWAmtYjwdrlEaZQEhMIBFNC5oEG8lpiW8XjcSdmEaClj28ArfKScKHs2nshz3k2le6crsg==}
     dependencies:
-      b4a: 1.6.4
+      b4a: 1.6.6
       fast-fifo: 1.3.2
       streamx: 2.16.1
     dev: true
@@ -8667,13 +8662,13 @@ packages:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
 
-  /torrent-discovery@11.0.1:
-    resolution: {integrity: sha512-+QhOUWRxhR8Y6e5z5I0qil812q11Xz9Yaj1pfYwVkereTBQT1THBCeSHxWZEHuGjKLiIBueVzPP7+wiPtedXKg==}
+  /torrent-discovery@11.0.2:
+    resolution: {integrity: sha512-oDpBMfSsrIGAM4TzZFMwdyFqD2GLFSZXw/IHojB8TpVPqrwXO3hOpfLqM5MOVEtr43+pTGLjULXLFihrh06X7A==}
     engines: {node: '>=12.20.0'}
     dependencies:
       bittorrent-dht: 11.0.5
       bittorrent-lsd: 2.0.0
-      bittorrent-tracker: 11.0.1
+      bittorrent-tracker: 11.0.2
       debug: 4.3.4
       run-parallel: 1.2.0
     transitivePeerDependencies:
@@ -9342,8 +9337,8 @@ packages:
     resolution: {integrity: sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==}
     engines: {node: '>=0.8.0'}
 
-  /webtorrent@2.1.37:
-    resolution: {integrity: sha512-phvPd+f0aSa2CH0woeQqym8VqljHs1quXyBIJQoVQjCVsx3BleZ98StyoWy6FafF2ML6khWfOYn2rJC9nN6msA==}
+  /webtorrent@2.2.1:
+    resolution: {integrity: sha512-dK9AI0kKHl6VrSCzCSdy8EUqNrjsIHfLCcMsObMZe9mEsetJYuLsA8ZI6exxwpbyiOlsa920TNYNbSqP0/v/6w==}
     engines: {node: '>=14'}
     dependencies:
       '@silentbot1/nat-api': 0.4.7
@@ -9361,7 +9356,7 @@ packages:
       debug: 4.3.4
       escape-html: 1.0.3
       fs-chunk-store: 4.1.0
-      hybrid-chunk-store: 1.2.2
+      hybrid-chunk-store: 1.2.4
       immediate-chunk-store: 2.2.0
       join-async-iterator: 1.1.1
       load-ip-set: 3.0.1
@@ -9379,7 +9374,7 @@ packages:
       speed-limiter: 1.0.2
       streamx: 2.16.1
       throughput: 1.0.1
-      torrent-discovery: 11.0.1
+      torrent-discovery: 11.0.2
       torrent-piece: 3.0.0
       uint8-util: 2.2.4
       unordered-array-remove: 1.0.2

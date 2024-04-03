@@ -188,7 +188,7 @@
         watchedListener = ({ detail }) => {
           checkCompletionByTime(detail, duration)
         }
-        client.addEventListener('externalWatched', watchedListener)
+        client.on('externalWatched', watchedListener)
       }
     }
   }

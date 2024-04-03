@@ -1,9 +1,10 @@
 <script>
+  /** @type {HTMLDivElement} */
   let hero
   function about () {
-    document.querySelector('#about').scrollIntoView({ behavior: 'smooth', block: 'center' })
+    document.querySelector('#about')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     setTimeout(() => {
-      hero.parentNode.dispatchEvent(new PointerEvent('pointerup'))
+      hero.parentNode?.dispatchEvent(new PointerEvent('pointerup'))
     }, 500)
   }
 </script>

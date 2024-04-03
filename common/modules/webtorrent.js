@@ -217,7 +217,7 @@ export default class TorrentClient extends WebTorrent {
     if (this.torrents.length) await this.remove(this.torrents[0])
     const torrent = await this.add(data, {
       private: this.settings.torrentPeX,
-      path: this.torrentPath,
+      path: this.torrentPath || undefined,
       destroyStoreOnDestroy: !this.settings.torrentPersist,
       skipVerify,
       announce

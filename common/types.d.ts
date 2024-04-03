@@ -36,6 +36,16 @@ declare global {
   interface ScreenOrientation {
     lock: Function
   }
+
+  namespace svelteHTML {
+    interface HTMLAttributes {
+      'on:leavepictureinpicture'?: (
+        event: Event<{
+          target: EventTarget;
+        }>
+      ) => void;
+    }
+  }
 }
 
 declare module '*.svelte' {

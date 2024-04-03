@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script>
   import { since } from '@/modules/util'
 
   export let userProgress = 0
