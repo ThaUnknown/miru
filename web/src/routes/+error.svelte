@@ -1,8 +1,7 @@
 <script>
   import { page } from '$app/stores'
-
-  console.log($page)
 </script>
+
 <div class='overflow-x-hidden content-wrapper h-full overflow-y-scroll position-relative d-flex justify-content-center align-items-center text-white font-weight-lighter line-height-11 px-15'>
   <div class='w-600 d-sm-flex justify-content-center align-items-center flex-row d-none'>
     <div class='fs-80 border-right pr-20'>{$page.status}</div>

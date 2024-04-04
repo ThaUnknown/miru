@@ -37,7 +37,12 @@
 <SettingCard title='CSS Variables' description='Used for custom themes. Can change colors, sizes, spacing and more. Best way to discover variables is to use the built-in devtools via Ctrl+Shift+I or F12.'>
   <textarea class='form-control w-500 mw-full bg-dark' placeholder='--accent-color: #e5204c;' bind:value={$variables} />
 </SettingCard>
-
+<SettingCard title='Card Type' description='What type of cards to display in menus.'>
+  <select class='form-control bg-dark w-300 mw-full' bind:value={settings.cards}>
+    <option value='small' selected>Small</option>
+    <option value='full'>Full</option>
+  </select>
+</SettingCard>
 {#if SUPPORTS.angle}
   <h4 class='mb-10 font-weight-bold'>Rendering Settings</h4>
   <SettingCard title='ANGLE Backend' description="What ANGLE backend to use for rendering. DON'T CHANGE WITHOUT REASON! On some Windows machines D3D9 might help with flicker. Changing this setting to something your device doesn't support might prevent Miru from opening which will require a full reinstall. While Vulkan is an available option it might not be fully supported on Linux.">

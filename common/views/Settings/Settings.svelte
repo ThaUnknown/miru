@@ -77,7 +77,7 @@
     }
   }
   function pathListener (data) {
-    $settings.torrentPath = data
+    $settings.torrentPathNew = data
   }
 
   function playerListener (data) {

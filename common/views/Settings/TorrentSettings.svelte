@@ -147,7 +147,7 @@
       <div class='input-group-prepend'>
         <button type='button' use:click={handleFolder} class='btn btn-primary input-group-append'>Select Folder</button>
       </div>
-      <input type='url' class='form-control bg-dark' readonly value={settings.torrentPath} placeholder='/tmp' />
+      <input type='url' class='form-control bg-dark' readonly value={settings.torrentPathNew} placeholder='/tmp' />
     </div>
   </SettingCard>
 {/if}

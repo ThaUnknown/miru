@@ -29,7 +29,7 @@
   $: search && modal?.focus()
 </script>
 
-<div class='modal z-40' class:show={search} id='viewAnime'>
+<div class='modal z-100' class:show={search} id='viewAnime'>
   {#if search}
     <div class='modal-dialog d-flex align-items-center px-md-15 pt-md-20' on:pointerup|self={close} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
       <div class='modal-content m-0 mw-full h-full rounded overflow-hidden bg-very-dark d-flex flex-column overflow-y-scroll pt-0 px-0'>

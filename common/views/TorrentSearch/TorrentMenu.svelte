@@ -40,6 +40,7 @@
   import TorrentCard from './TorrentCard.svelte'
   import { add } from '@/modules/torrent.js'
   import TorrentSkeletonCard from './TorrentSkeletonCard.svelte'
+  import { onDestroy } from 'svelte'
 
   /** @type {{ media: Media, episode?: number }} */
   export let search
@@ -72,12 +73,14 @@
   $: lookup = sortResults(getResultsFromExtensions({ ...search, batch, movie, resolution }))
   $: best = getBest(lookup)
 
+  onDestroy(() => clearTimeout(timeoutHandle))
+
   $: if (!$settings.rssAutoplay) clearTimeout(timeoutHandle)
   $: autoPlay(best, $settings.rssAutoplay)
 
   $: lookup.catch(err => {
     console.error(err)
-    toast.error(`Couldn't find torrents for ${search.media.title.userPreferred} Episode ${search.episode}! Try specifying a torrent manually.\n${err.message}`)
+    toast.error(`No torrent found for ${search.media.title.userPreferred} Episode ${search.episode}!`, { description: err.message })
   })
 
   $: firstLoad = !firstLoad && lookup.catch(close)

@@ -147,7 +147,7 @@ export const defaults = {
   smoothScroll: true,
   cards: 'small',
   expandingSidebar: true,
-  torrentPath: undefined,
+  torrentPathNew: undefined,
   font: undefined,
   angle: 'default',
   toshoURL: SUPPORTS.extensions ? decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnLw==')) : '',

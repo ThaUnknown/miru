@@ -14,11 +14,12 @@ import { extensionsWorker } from '@/views/Settings/TorrentSettings.svelte'
  * @returns {Promise<(Result & { parseObject: import('anitomyscript').AnitomyResult })[]>}
  * **/
 export default async function getResultsFromExtensions ({ media, episode, batch, movie, resolution }) {
+  const worker = await /** @type {ReturnType<import('@/modules/extensions/worker.js').loadExtensions>} */(extensionsWorker)
+  if (!(await worker.metadata)?.length) throw new Error('No torrent sources configured. Add extensions in settings.')
+
   const aniDBMeta = await ALToAniDB(media)
   const anidbAid = aniDBMeta?.mappings?.anidb_id
   const anidbEid = anidbAid && (await ALtoAniDBEpisode({ media, episode }, aniDBMeta))?.anidbEid
-
-  const worker = await /** @type {ReturnType<import('@/modules/extensions/worker.js').loadExtensions>} */(extensionsWorker)
 
   /** @type {Options} */
   const options = {
@@ -36,7 +37,7 @@ export default async function getResultsFromExtensions ({ media, episode, batch,
 
   const deduped = dedupe(results)
 
-  if (!deduped?.length) throw new Error('No results found')
+  if (!deduped?.length) throw new Error('No results found. Try specifying a torrent manually.')
 
   const parseObjects = await anitomyscript(deduped.map(({ title }) => title))
   // @ts-ignore
