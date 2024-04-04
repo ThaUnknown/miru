@@ -51,6 +51,7 @@
   /** @param {ReturnType<typeof getBest>} promise */
   async function autoPlay (promise, autoPlay) {
     const best = await promise
+    if (!search) return
     if ($settings.rssAutoplay) {
       clearTimeout(timeoutHandle)
       const decrement = () => {
@@ -73,7 +74,10 @@
   $: lookup = sortResults(getResultsFromExtensions({ ...search, batch, movie, resolution }))
   $: best = getBest(lookup)
 
-  onDestroy(() => clearTimeout(timeoutHandle))
+  onDestroy(() => {
+    clearTimeout(timeoutHandle)
+    search = null
+  })
 
   $: if (!$settings.rssAutoplay) clearTimeout(timeoutHandle)
   $: autoPlay(best, $settings.rssAutoplay)
