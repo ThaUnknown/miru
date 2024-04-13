@@ -439,7 +439,10 @@
             if (pip) {
               canvasVideo.requestPictureInPicture().then(pipwindow => {
                 pipwindow.onresize = () => {
-                  subs.renderer.resize(pipwindow.width, pipwindow.height)
+                  const { width, height } = pipwindow
+                  if (isNaN(width) || isNaN(height)) return
+                  if (!isFinite(width) || !isFinite(height)) return
+                  subs.renderer.resize(width, height)
                 }
               }).catch(e => {
                 cleanup()
