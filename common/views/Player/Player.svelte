@@ -964,6 +964,7 @@
   class:pip
   class:immersed={immersed}
   class:buffering={src && buffering}
+  class:fitWidth
   bind:this={container}
   role='none'
   on:pointermove={resetImmerse}
@@ -981,7 +982,6 @@
   <video
     crossorigin='anonymous'
     class='position-absolute h-full w-full'
-    class:fitWidth
     style={`margin-top: ${menubarOffset}px`}
     preload='auto'
     {src}
@@ -1183,8 +1183,8 @@
   :global(.deband-canvas) ~ video {
     opacity: 0;
   }
-  .fitWidth {
-    object-fit: cover;
+  .fitWidth video, .fitWidth :global(.deband-canvas) {
+    object-fit: cover !important;
   }
   .custom-range {
     color: var(--accent-color);
