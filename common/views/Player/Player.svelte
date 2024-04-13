@@ -6,6 +6,7 @@
   import { createEventDispatcher } from 'svelte'
   import { anilistClient } from '@/modules/anilist.js'
   import Subtitles from '@/modules/subtitles.js'
+  import { subsceneSearch , subsceneSubs, subsceneDownload} from '@/modules/subscene.js'
   import { toTS, fastPrettyBytes, videoRx } from '@/modules/util.js'
   import { toast } from 'svelte-sonner'
   import { getChaptersAniSkip } from '@/modules/anime.js'
@@ -43,7 +44,7 @@
   }
 
   export let miniplayer = false
-  $condition = () => !miniplayer && SUPPORTS.keybinds
+  $condition = () => !miniplayer && !subscene.currentPage && SUPPORTS.keybinds
   export let page
   export let files = []
   $: updateFiles(files)
@@ -954,6 +955,37 @@
         break
     }
   }
+  let subscene = {
+    currentPage: '',
+    title: '',
+    filter: '',
+    languages: [],
+    selectedLanguage: '',
+    handleTitlePromise: undefined,
+    handleSubtitlePromise: undefined,
+    handleFilePromise: undefined,
+    handleTitle: async(title) => {
+      const titleList = await subsceneSearch(title)
+      subscene.subtitleLanguages = []
+      return titleList
+    },
+    handleSubtitle: async (path) => {
+      const subtitleList = await subsceneSubs(path)
+      subscene.languages = Object.keys(subtitleList)
+      subscene.selectedLanguage = subscene.languages[0]
+      return subtitleList
+    },
+    handleFile: async(path) => {
+      const fileList = await subsceneDownload(path)
+      return fileList
+    },
+    handleAddSubtitle: (file) => {
+      console.log(file)
+      subs.addSingleSubtitleFile(new File([file.data], file.name))
+      console.log(subs)
+    }
+  }
+
 </script>
 
 <!-- <svelte:window bind:innerWidth bind:innerHeight /> -->
@@ -970,6 +1002,77 @@
   on:keypress={resetImmerse}
   on:keydown={resetImmerse}
   on:mouseleave={immersePlayer}>
+  {#if subscene.currentPage && !miniplayer}
+    <div class="position-absolute bg-tp w-full h-full z-50 d-flex align-items-center justify-content-center">
+      <div class="position-absolute w-half h-half bg-dark p-20 pt-30 border rounded d-flex">
+        <button class="close" on:click={() => subscene.currentPage = ''}>x</button>
+        <div class="w-full d-flex flex-column">
+            <form class="input-group mb-20" on:submit|preventDefault={() => {subscene.handleTitlePromise = subscene.handleTitle(subscene.title); subscene.currentPage = 'title'}}>
+              <input type="text" bind:value={subscene.title} placeholder="Title" class="form-control border rounded">
+              <button type="submit" class="ml-5 btn px-15 text-center bg-light">Search</button>
+            </form>
+            <div class="input-group mb-20 d-flex">
+              <select bind:value={subscene.selectedLanguage} class="form-control border rounded" aria-label="Select example" placeholder="Select language">
+                {#if subscene.languages}
+                  {#each subscene.languages as language}
+                    <option value={language}>{language}</option>
+                  {/each}
+                {/if}
+              </select>
+              <input bind:value={subscene.filter} class="form-control ml-10 border rounded" placeholder="Subtitle filter" type="text">
+            </div>
+            <div class="border h-full rounded overflow-y-auto">
+              <table class="table">
+                <tbody>
+                  {#if subscene.currentPage == 'title'}
+                    {#await subscene.handleTitlePromise}
+                      <p>Searching...</p>
+                    {:then titleList}
+                      {#if titleList?.length}
+                        {#each titleList as title}
+                          <tr class="pointer" on:click={() => {subscene.handleSubtitlePromise = subscene.handleSubtitle(title.path); subscene.currentPage = 'subtitle'}}>
+                            <td>{title.title}</td>
+                          </tr>
+                        {/each}
+                      {:else}
+                        <p>No results found.</p>
+                      {/if}
+                    {/await}
+                  {:else if subscene.currentPage == 'subtitle'}
+                    {#await subscene.handleSubtitlePromise}
+                      <p>Loading...</p>
+                    {:then subtitleList}
+                      {#if subtitleList[subscene.selectedLanguage]?.length}
+                        {#each subtitleList[subscene.selectedLanguage].filter(subtitle => subscene.filter.toLowerCase().split(" ").every(x => subtitle.title.toLowerCase().includes(x))) as subtitle}
+                          <tr class="pointer" on:click={() => {subscene.handleFilePromise = subscene.handleFile(subtitle.path); subscene.currentPage = 'file'}}>
+                            <td>{subtitle.rating}</td>
+                            <td>{subtitle.title}</td>
+                          </tr>
+                        {/each}
+                      {/if}
+                    {/await}
+                  {:else if subscene.currentPage == 'file'}
+                    {#await subscene.handleFilePromise}
+                      <p>Downloading...</p>
+                    {:then fileList} 
+                      {#if fileList?.length}
+                        {#each fileList.filter(file => subscene.filter.toLowerCase().split(" ").every(x => file.name.toLowerCase().includes(x))) as file}
+                          <tr class="pointer" on:click={() => subscene.handleAddSubtitle(file)}>
+                            <td>{file.name}</td>
+                          </tr>
+                        {/each}
+                      {:else}
+                        <p>No files found.</p>
+                      {/if}
+                    {/await}
+                  {/if}
+                </tbody>
+              </table>
+            </div>
+        </div>
+      </div>
+    </div>
+  {/if}
   {#if showKeybinds && !miniplayer}
     <div class='position-absolute bg-tp w-full h-full z-50 font-size-12 p-20 d-flex align-items-center justify-content-center pointer' on:pointerup|self={() => (showKeybinds = false)} tabindex='-1' role='button'>
       <Keybinds let:prop={item} autosave={true} clickable={true}>
@@ -1130,14 +1233,14 @@
           </div>
         </div>
       {/if}
-      {#if subHeaders?.length}
-        <div class='subtitles dropdown dropup with-arrow' use:click={toggleDropdown}>
-          <span class='material-symbols-outlined ctrl' title='Subtitles [C]'>
-            subtitles
-          </span>
-          <div class='dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize'>
-            <input name='subtitle-radio-set' type='radio' id='subtitle-off-radio' value='off' checked={subHeaders && subs?.current === -1} />
-            <label for='subtitle-off-radio' use:click={() => subs.selectCaptions(-1)} class='text-truncate pb-5'> OFF </label>
+      <div class='subtitles dropdown dropup with-arrow' use:click={toggleDropdown}>
+        <span class='material-symbols-outlined ctrl' title='Subtitles [C]'>
+          subtitles
+        </span> 
+        <div class='dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize'>
+          <input name='subtitle-radio-set' type='radio' id='subtitle-off-radio' value='off' checked={subHeaders && subs?.current === -1} />
+          <label for='subtitle-off-radio' use:click={() => subs.selectCaptions(-1)} class='text-truncate pb-5'> OFF </label>
+          {#if subHeaders?.length}
             {#each subHeaders as track}
               {#if track}
                 <input name='subtitle-radio-set' type='radio' id='subtitle-{track.number}-radio' value={track.numer} checked={track.number === subs.current} />
@@ -1146,10 +1249,12 @@
                 </label>
               {/if}
             {/each}
-            <input type='text' inputmode='numeric' pattern='[0-9]*' step='0.1' bind:value={subDelay} on:click|stopPropagation class='form-control text-right form-control-sm' />
-          </div>
+          {/if}
+          <button on:click={() => {subscene.currentPage = 'title'; if (media.title) {subscene.title = media.title; subscene.handleTitlePromise = subscene.handleTitle(media.title); subscene.filter = media.episode ? (media.episode.toString().length == 1 ? '0' + media.episode.toString() : media.episode ) : ''}}}>Subscene</button>
+          <input type='text' inputmode='numeric' pattern='[0-9]*' step='0.1' bind:value={subDelay} on:click|stopPropagation class='form-control text-right form-control-sm' />
         </div>
-      {/if}
+      </div>
+      
       {#if 'PresentationRequest' in window && canCast && current}
         <span class='material-symbols-outlined ctrl' title='Cast Video [D]' data-name='toggleCast' use:click={toggleCast}>
           {presentationConnection ? 'cast_connected' : 'cast'}

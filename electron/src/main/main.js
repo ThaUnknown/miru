@@ -38,7 +38,8 @@ function createWindow () {
     webPreferences: {
       enableBlinkFeatures: 'FontAccess, AudioVideoTracks',
       backgroundThrottling: false,
-      preload: path.join(__dirname, '/preload.js')
+      preload: path.join(__dirname, '/preload.js'),
+      webSecurity: false
     },
     icon: path.join(__dirname, '/logo_filled.png'),
     show: false
@@ -124,4 +125,5 @@ app.on('ready', createWindow)
 
 app.on('activate', () => {
   if (mainWindow === null) createWindow()
+  app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
 })
