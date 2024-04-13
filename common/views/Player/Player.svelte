@@ -386,7 +386,7 @@
       context.drawImage(video, 0, 0)
       if (subs?.renderer) {
         subs.renderer.resize(video.videoWidth, video.videoHeight)
-        await new Promise(resolve => setTimeout(resolve, 1000)) // this is hacky, but TLDR wait for canvas to update and re-render, in practice this will take at MOST 100ms, but just to be safe
+        await new Promise(resolve => setTimeout(resolve, 500)) // this is hacky, but TLDR wait for canvas to update and re-render, in practice this will take at MOST 100ms, but just to be safe
         context.drawImage(subs.renderer._canvas, 0, 0, canvas.width, canvas.height)
         subs.renderer.resize(0, 0, 0, 0) // undo resize
       }
@@ -608,7 +608,7 @@
     canvas.height = video.videoHeight
     if (!noSubs) subs.renderer.resize(video.videoWidth, video.videoHeight)
     const renderFrame = () => {
-      context.drawImage(video, 0, 0)
+      context.drawImage(deband ? deband.canvas : video, 0, 0)
       if (!noSubs) context.drawImage(subs.renderer?._canvas, 0, 0, canvas.width, canvas.height)
       loop = video.requestVideoFrameCallback(renderFrame)
     }
