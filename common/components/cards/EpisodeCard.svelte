@@ -5,11 +5,12 @@
   import { since } from '@/modules/util.js'
   import { getContext } from 'svelte'
   import { liveAnimeEpisodeProgress } from '@/modules/animeprogress.js'
+  import { anilistClient } from '@/modules/anilist.js'
   export let data
 
   let preview = false
   /** @type {import('@/modules/al.d.ts').Media | null} */
-  const media = data.media
+  const media = data.media && anilistClient.mediaCache[data.media.id]
 
   const episodeThumbnail = ((!media?.mediaListEntry?.status || !(media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress < data.episode)) && data.episodeData?.image) || media?.bannerImage || media?.coverImage.extraLarge || ' '
 
