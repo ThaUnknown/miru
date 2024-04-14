@@ -991,29 +991,39 @@
     title: '',
     filter: '',
     languages: [],
+    selectedTitle: '',
+    selectedSubtitle: '',
     selectedLanguage: '',
     handleTitlePromise: undefined,
     handleSubtitlePromise: undefined,
     handleFilePromise: undefined,
     handleTitle: async(title) => {
+      subscene.languages = []
       const titleList = await subsceneSearch(title)
-      subscene.subtitleLanguages = []
       return titleList
     },
-    handleSubtitle: async (path) => {
-      const subtitleList = await subsceneSubs(path)
+    handleSubtitle: async (title) => {
+      subscene.selectedTitle = title.title
+      const subtitleList = await subsceneSubs(title.path)
       subscene.languages = Object.keys(subtitleList)
       subscene.selectedLanguage = subscene.languages[0]
       return subtitleList
     },
-    handleFile: async(path) => {
-      const fileList = await subsceneDownload(path)
+    handleFile: async(subtitle) => {
+      subscene.selectedSubtitle = subtitle.title
+      const fileList = await subsceneDownload(subtitle.path)
       return fileList
     },
     handleAddSubtitle: (file) => {
-      console.log(file)
+      if (!subs) return toast.error('Failed to add subtitle',{
+        description: 'There is no video playing.',
+        duration: 3000
+      })
       subs.addSingleSubtitleFile(new File([file.data], file.name))
-      console.log(subs)
+      toast.success("Subtitle added", {
+        description: file.name,
+        duration: 5000
+      })
     }
   }
 
@@ -1043,7 +1053,7 @@
               <input type="text" bind:value={subscene.title} placeholder="Title" class="form-control border rounded">
               <button type="submit" class="ml-5 btn px-15 text-center bg-light">Search</button>
             </form>
-            <div class="input-group mb-20 d-flex">
+            <div class="input-group d-flex">
               <select bind:value={subscene.selectedLanguage} class="form-control border rounded" aria-label="Select example" placeholder="Select language">
                 {#if subscene.languages}
                   {#each subscene.languages as language}
@@ -1052,6 +1062,18 @@
                 {/if}
               </select>
               <input bind:value={subscene.filter} class="form-control ml-10 border rounded" placeholder="Subtitle filter" type="text">
+            </div>
+            <div>
+              <!-- svelte-ignore-a11y -->
+              <div class="font-size-12">
+                <span on:click={() => {subscene.currentPage = "title"; subscene.languages = []}} class="pointer">Search</span><span class="font-size-18 text-primary mx-5">/</span>
+                {#if subscene.currentPage == 'subtitle' || subscene.currentPage == 'file'}
+                  <span on:click={() => subscene.currentPage = "subtitle"} class="pointer">{subscene.selectedTitle}</span><span class="font-size-18 text-primary mx-5">/</span>
+                  {#if subscene.currentPage == 'file'}
+                    <span>{subscene.selectedSubtitle}</span>
+                  {/if}
+                {/if}
+              </div>
             </div>
             <div class="border h-full rounded overflow-y-auto">
               <table class="table">
@@ -1062,7 +1084,7 @@
                     {:then titleList}
                       {#if titleList?.length}
                         {#each titleList as title}
-                          <tr class="pointer" on:click={() => {subscene.handleSubtitlePromise = subscene.handleSubtitle(title.path); subscene.currentPage = 'subtitle'}}>
+                          <tr class="pointer" on:click={() => {subscene.handleSubtitlePromise = subscene.handleSubtitle(title); subscene.currentPage = 'subtitle'}}>
                             <td>{title.title}</td>
                           </tr>
                         {/each}
@@ -1076,7 +1098,7 @@
                     {:then subtitleList}
                       {#if subtitleList[subscene.selectedLanguage]?.length}
                         {#each subtitleList[subscene.selectedLanguage].filter(subtitle => subscene.filter.toLowerCase().split(" ").every(x => subtitle.title.toLowerCase().includes(x))) as subtitle}
-                          <tr class="pointer" on:click={() => {subscene.handleFilePromise = subscene.handleFile(subtitle.path); subscene.currentPage = 'file'}}>
+                          <tr class="pointer" on:click={() => {subscene.handleFilePromise = subscene.handleFile(subtitle); subscene.currentPage = 'file'}}>
                             <td>{subtitle.rating}</td>
                             <td>{subtitle.title}</td>
                             <td>{subtitle.comment}</td>
