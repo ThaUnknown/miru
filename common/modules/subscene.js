@@ -34,14 +34,15 @@ export async function subsceneSubs (path) {
   })
   const html = $(await res.text())
   const subtitles = {}
-  const subElems = $('table tr .a1 a', html)
-  for (let i = 0; i < subElems.length; i++) {
-    const el = $(subElems[i])
-    const path = el.attr('href')
-    const lang = $('span.l', el).text().replace(/\t|\n|\r/g, '')
-    const title = $('span:not(.l)', el).text().replace(/\t|\n|\r/g, '')
+  const subElems = $('table tbody tr', html)
+  for (let i = 1; i < subElems.length; i++) {
+    const a1 = $('.a1 a', subElems[i])
+    if (!a1.length) continue
+    const path = a1.attr('href')
+    const lang = $('span.l', a1).text().replace(/\t|\n|\r/g, '')
+    const title = $('span:not(.l)', a1).text().replace(/\t|\n|\r/g, '')
     let rating
-    switch ($('span.l', el).attr('class').split(' ').pop()) {
+    switch ($('span.l', a1).attr('class').split(' ').pop()) {
       case 'bad-icon':
         rating = '💢'
         break
@@ -51,8 +52,9 @@ export async function subsceneSubs (path) {
       case 'positive-icon':
         rating = '✅'
     }
+    const comment = $('.a6', subElems[i]).text().replace(/\t|\n|\r/g, '')
     if (!Object.keys(subtitles).includes(lang)) subtitles[lang] = []
-    subtitles[lang].push({ lang, path, title, rating })
+    subtitles[lang].push({ lang, path, title, rating, comment })
   }
   console.log(subtitles)
   return subtitles

@@ -1079,6 +1079,7 @@
                           <tr class="pointer" on:click={() => {subscene.handleFilePromise = subscene.handleFile(subtitle.path); subscene.currentPage = 'file'}}>
                             <td>{subtitle.rating}</td>
                             <td>{subtitle.title}</td>
+                            <td>{subtitle.comment}</td>
                           </tr>
                         {/each}
                       {/if}
