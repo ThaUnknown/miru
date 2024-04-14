@@ -85,7 +85,7 @@
   }
 
   function loginButton () {
-    if (anilistClient.userID) {
+    if (anilistClient.userID?.viewer?.data?.Viewer) {
       $logout = true
     } else {
       IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
@@ -126,16 +126,13 @@
       </div>
       <div class='pointer my-5 rounded' use:click={loginButton}>
         <div class='px-20 py-10 d-flex'>
-          {#if anilistClient.userID}
-            {#await anilistClient.userID}
-              <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>login</span>
-              <div class='font-size-16'>Login With AniList</div>
-            {:then result}
-              <span class='material-symbols-outlined rounded mr-10'>
-                <img src={result.data.Viewer.avatar.medium} class='h-30 rounded' alt='logo' />
-              </span>
-              <div class='font-size-16 login-image-text'>Logout</div>
-            {/await}
+          {#if anilistClient.userID?.viewer?.data?.Viewer}
+            <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>login</span>
+            <div class='font-size-16'>Login With AniList</div>
+            <span class='material-symbols-outlined rounded mr-10'>
+              <img src={anilistClient.userID.viewer.data.Viewer.avatar.medium} class='h-30 rounded' alt='logo' />
+            </span>
+            <div class='font-size-16 login-image-text'>Logout</div>
           {:else}
             <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>login</span>
             <div class='font-size-16'>Login With AniList</div>

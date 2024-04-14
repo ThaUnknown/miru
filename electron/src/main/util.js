@@ -5,20 +5,13 @@ export const development = process.env.NODE_ENV?.trim() === 'development'
 
 const flags = [
   // not sure if safe?
-  ['disable-gpu-sandbox'],
-  // not sure if safe?
-  ['disable-direct-composition-video-overlays'],
-  // not sure if safe?
-  ['double-buffer-compositing'],
-  // not sure if safe?
-  ['enable-zero-copy'],
-  // not sure if safe?
-  ['ignore-gpu-blocklist'],
+  ['disable-gpu-sandbox'], ['disable-direct-composition-video-overlays'], ['double-buffer-compositing'], ['enable-zero-copy'], ['ignore-gpu-blocklist'],
+  // should be safe
   ['enable-hardware-overlays', 'single-fullscreen,single-on-top,underlay'],
-  // dv, drdc display compositor uses 2 gpu threads instead of 1, rest is safe performance
-  ['enable-features', 'PlatformEncryptedDolbyVision,EnableDrDc,CanvasOopRasterization,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
-  // disabling shit, vulkan rendering, native window occlusion calculation, widget layering aka right click context menus [I think] for macOS [I think]
-  ['disable-features', 'Vulkan,CalculateNativeWinOcclusion,WidgetLayering'],
+  // safe performance stuff
+  ['enable-features', 'PlatformEncryptedDolbyVision,CanvasOopRasterization,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
+  // disabling shit, vulkan rendering, widget layering aka right click context menus [I think] for macOS [I think]
+  ['disable-features', 'Vulkan,WidgetLayering'],
   // utility stuff, aka website security that's useless for a native app:
   ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'], ['bypasscsp-schemes']
 ]

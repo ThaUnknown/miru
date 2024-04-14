@@ -18,6 +18,8 @@ function createWindow () {
   webtorrentWindow = new BrowserWindow({
     show: development,
     webPreferences: {
+      webSecurity: false,
+      allowRunningInsecureContent: false,
       nodeIntegration: true,
       contextIsolation: false,
       backgroundThrottling: false
@@ -36,6 +38,8 @@ function createWindow () {
     backgroundColor: '#17191c',
     autoHideMenuBar: true,
     webPreferences: {
+      webSecurity: false,
+      allowRunningInsecureContent: false,
       enableBlinkFeatures: 'FontAccess, AudioVideoTracks',
       backgroundThrottling: false,
       preload: path.join(__dirname, '/preload.js')
@@ -51,12 +55,6 @@ function createWindow () {
 
   mainWindow.webContents.setWindowOpenHandler(() => {
     return { action: 'deny' }
-  })
-
-  mainWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, fn) => {
-    delete responseHeaders['Access-Control-Allow-Origin']
-    responseHeaders['access-control-allow-origin'] = ['*']
-    fn({ responseHeaders })
   })
 
   const torrentLoad = webtorrentWindow.loadURL(development ? 'http://localhost:5000/background.html' : `file://${path.join(__dirname, '/background.html')}`)
@@ -94,8 +92,8 @@ function createWindow () {
   mainWindow.webContents.on('render-process-gone', (e, { reason }) => {
     if (reason === 'crashed') {
       if (++crashcount > 10) {
-        dialog.showMessageBox({ message: 'Crashed too many times.', title: 'Miru', detail: 'App crashed too many times. For a fix visit https://github.com/ThaUnknown/miru/blob/master/docs/faq.md#miru-crashed-too-many-times', icon: '/renderer/public/logo_filled.png' }).then(() => {
-          shell.openExternal('https://github.com/ThaUnknown/miru/blob/master/docs/faq.md#miru-crashed-too-many-times')
+        dialog.showMessageBox({ message: 'Crashed too many times.', title: 'Miru', detail: 'App crashed too many times. For a fix visit https://miru.watch/faq/', icon: '/renderer/public/logo_filled.png' }).then(() => {
+          shell.openExternal('https://miru.watch/faq/')
           app.quit()
         })
       } else {

@@ -26,10 +26,10 @@
       atob('d3NzOi8vdHJhY2tlci5maWxlcy5mbTo3MDczL2Fubm91bmNl'),
       atob('d3NzOi8vdHJhY2tlci5idG9ycmVudC54eXov')
     ], code)
-    p2pt.on('peerconnect', async peer => {
+    p2pt.on('peerconnect', peer => {
       console.log(peer.id)
       console.log('connect')
-      const user = (await anilistClient.userID)?.data?.Viewer || {}
+      const user = anilistClient.userID?.viewer?.data?.Viewer || {}
       p2pt.send(peer,
         JSON.stringify({
           type: 'init',

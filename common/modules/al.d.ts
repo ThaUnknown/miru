@@ -92,21 +92,21 @@ export type Media = {
       }
     }[]
   }
-  recommendations?: {
-    edges?: {
-      node: {
-        media: {
-          id: number
-          title: {
-            userPreferred: string
-          }
-          coverImage?: {
-            medium: string
-          }
-        }
-      }
-    }[]
-  }
+  // recommendations?: {
+  //   edges?: {
+  //     node: {
+  //       media: {
+  //         id: number
+  //         title: {
+  //           userPreferred: string
+  //         }
+  //         coverImage?: {
+  //           medium: string
+  //         }
+  //       }
+  //     }
+  //   }[]
+  // }
 }
 
 export type Following = {

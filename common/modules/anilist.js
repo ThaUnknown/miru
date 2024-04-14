@@ -150,22 +150,23 @@ relations {
       }
     }
   }
-},
-recommendations{
-  edges{
-    node{
-      mediaRecommendation{
-        id,
-        title{
-          userPreferred
-        },
-        coverImage{
-          medium
-        }
-      }
-    }
-  }
 }`
+
+// recommendations{
+//   edges{
+//     node{
+//       mediaRecommendation{
+//         id,
+//         title{
+//           userPreferred
+//         },
+//         coverImage{
+//           medium
+//         }
+//       }
+//     }
+//   }
+// }
 
 class AnilistClient {
   limiter = new Bottleneck({
@@ -181,7 +182,7 @@ class AnilistClient {
   /** @type {import('simple-store-svelte').Writable<ReturnType<AnilistClient['getUserLists']>>} */
   userLists = writable()
 
-  userID
+  userID = alToken
 
   /** @type {Record<number, import('./al.d.ts').Media>} */
   mediaCache = {}
@@ -201,14 +202,7 @@ class AnilistClient {
       return time
     })
 
-    if (alToken) {
-      this.userID = this.viewer({ token: alToken }).then(result => {
-        const lists = result?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
-        if (!lists.includes('Watched using Miru')) {
-          this.customList({ lists })
-        }
-        return result
-      })
+    if (this.userID?.viewer?.data?.Viewer) {
       this.userLists.value = this.getUserLists()
       // update userLists every 15 mins
       setInterval(() => { this.userLists.value = this.getUserLists() }, 1000 * 60 * 15)
@@ -250,8 +244,10 @@ class AnilistClient {
    * @param {Record<string, any>} variables
    */
   alRequest (query, variables) {
+    /** @type {RequestInit} */
     const options = {
       method: 'POST',
+      credentials: 'omit',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json'
@@ -267,7 +263,8 @@ class AnilistClient {
         }
       })
     }
-    if (alToken) options.headers.Authorization = alToken
+    // @ts-ignore
+    if (alToken?.token) options.headers.Authorization = alToken.token
 
     return this.handleRequest(options)
   }
@@ -440,7 +437,6 @@ class AnilistClient {
 
   /** @returns {Promise<import('./al.d.ts').Query<{ Viewer: import('./al.d.ts').Viewer }>>} */
   viewer (variables = {}) {
-    variables.id = alToken
     const query = /* js */` 
     query{
       Viewer{
@@ -462,7 +458,7 @@ class AnilistClient {
 
   /** @returns {Promise<import('./al.d.ts').Query<{ MediaListCollection: import('./al.d.ts').MediaListCollection }>>} */
   async getUserLists (variables = {}) {
-    const userId = (await this.userID)?.data?.Viewer.id
+    const userId = this.userID?.viewer?.data?.Viewer.id
     variables.id = userId
     const query = /* js */` 
       query($id: Int){
@@ -499,7 +495,7 @@ class AnilistClient {
 
   /** @returns {Promise<import('./al.d.ts').Query<{ MediaList: { status: string, progress: number, repeat: number }}>>} */
   async searchIDStatus (variables = {}) {
-    const userId = (await this.userID)?.data?.Viewer.id
+    const userId = this.userID?.viewer?.data?.Viewer.id
     variables.id = userId
     const query = /* js */` 
       query($id: Int, $mediaId: Int){

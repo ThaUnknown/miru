@@ -166,13 +166,13 @@
             </div>
           </ToggleList>
           <Following {media} />
-          <ToggleList list={media.recommendations.edges.filter(edge => edge.node.mediaRecommendation)} let:item title='Recommendations'>
+          <!-- <ToggleList list={media.recommendations.edges.filter(edge => edge.node.mediaRecommendation)} let:item title='Recommendations'>
             <div class='w-150 mx-15 my-10 rel pointer'
               use:click={async () => { $view = null; $view = (await anilistClient.searchIDSingle({ id: item.node.mediaRecommendation.id })).data.Media }}>
               <img loading='lazy' src={item.node.mediaRecommendation.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img rounded' />
               <h5 class='font-weight-bold text-white mb-5'>{item.node.mediaRecommendation.title.userPreferred}</h5>
             </div>
-          </ToggleList>
+          </ToggleList> -->
           <div class='w-full d-flex d-lg-none flex-row align-items-center pt-20 mt-10 pointer'>
             <hr class='w-full' />
             <div class='font-size-18 font-weight-semi-bold px-20 text-white'>Episodes</div>
