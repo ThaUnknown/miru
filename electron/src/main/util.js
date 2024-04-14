@@ -4,18 +4,23 @@ import store from './store.js'
 export const development = process.env.NODE_ENV?.trim() === 'development'
 
 const flags = [
+  // not sure if safe?
   ['disable-gpu-sandbox'],
+  // not sure if safe?
   ['disable-direct-composition-video-overlays'],
+  // not sure if safe?
   ['double-buffer-compositing'],
-  ['enable-gpu-rasterization'],
+  // not sure if safe?
   ['enable-zero-copy'],
+  // not sure if safe?
   ['ignore-gpu-blocklist'],
   ['enable-hardware-overlays', 'single-fullscreen,single-on-top,underlay'],
+  // dv, drdc display compositor uses 2 gpu threads instead of 1, rest is safe performance
   ['enable-features', 'PlatformEncryptedDolbyVision,EnableDrDc,CanvasOopRasterization,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
-  ['force_high_performance_gpu'],
+  // disabling shit, vulkan rendering, native window occlusion calculation, widget layering aka right click context menus [I think] for macOS [I think]
   ['disable-features', 'Vulkan,CalculateNativeWinOcclusion,WidgetLayering'],
-  ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'],
-  ['bypasscsp-schemes']
+  // utility stuff, aka website security that's useless for a native app:
+  ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'], ['bypasscsp-schemes']
 ]
 for (const [flag, value] of flags) {
   app.commandLine.appendSwitch(flag, value)

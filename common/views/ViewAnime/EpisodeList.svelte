@@ -30,6 +30,7 @@
     /** @type {{ airingAt: number; episode: number; }[]} */
     let alEpisodes = episodeList
 
+    // fallback: pull episodes from airing schedule if anime doesn't have expected episode count
     if (!(media.episodes && media.episodes === episodeCount && media.status === 'FINISHED')) {
       const settled = (await anilistClient.episodes({ id })).data.Page?.airingSchedules
       if (settled?.length) alEpisodes = settled
@@ -37,6 +38,7 @@
     for (const { episode, airingAt } of alEpisodes) {
       const alDate = new Date((airingAt || 0) * 1000)
 
+      // validate by air date if the anime has specials AND doesn't have matching episode count
       const needsValidation = !(!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)]))
       const { image, summary, rating, title, length, airdate } = needsValidation ? episodeByAirDate(alDate, episodes, episode) : (episodes[Number(episode)] || {})
 
