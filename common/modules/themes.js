@@ -9,5 +9,5 @@ export const variables = writable(localStorage.getItem('theme') || '')
 
 variables.subscribe(value => {
   localStorage.setItem('theme', value)
-  style.textContent = `:root{${value.replaceAll('}', '')}}`
+  style.textContent = `:root{${value.replace(/{|}/g, '')}}`
 })

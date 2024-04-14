@@ -9,6 +9,8 @@
 
   export let episodeOrder = true
 
+  export let watched = false
+
   const id = media.id
 
   const duration = media.duration
@@ -47,9 +49,9 @@
 </script>
 
 {#each episodeOrder ? episodeList : [...episodeList].reverse() as { episode, image, summary, rating, title, length, airdate }}
-  {@const completed = userProgress >= episode}
+  {@const completed = !watched && userProgress >= episode}
   {@const target = userProgress + 1 === episode}
-  {@const progress = $animeProgress?.[episode] ?? 0}
+  {@const progress = !watched && ($animeProgress?.[episode] ?? 0)}
   <div class='w-full my-20 content-visibility-auto scale' class:opacity-half={completed} class:px-20={!target} class:h-150={image || summary} use:click={() => play(episode)}>
     <div class='rounded w-full h-full overflow-hidden d-flex flex-xsm-column flex-row pointer' class:border={target} class:bg-black={completed} class:bg-dark={!completed}>
       {#if image}
