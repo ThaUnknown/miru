@@ -1,17 +1,16 @@
 <script>
-  import { alToken } from '@/modules/settings.js'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
   import IPC from '@/modules/ipc.js'
 
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
-  $: following = anilistClient.following({ id: media.id })
+  $: following = anilistClient.userID?.viewer?.data?.Viewer && anilistClient.following({ id: media.id })
 </script>
 
 {#await following then res}
-  {@const following = res.data.Page.mediaList}
-  {#if following?.length && alToken}
+  {@const following = res?.data?.Page?.mediaList}
+  {#if following?.length}
     <div class='w-full d-flex flex-row align-items-center pt-20 mt-10'>
       <hr class='w-full' />
       <div class='font-size-18 font-weight-semi-bold px-20 text-white'>Following</div>

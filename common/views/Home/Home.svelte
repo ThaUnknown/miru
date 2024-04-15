@@ -1,6 +1,6 @@
 <script context='module'>
   import SectionsManager, { sections } from '@/modules/sections.js'
-  import { alToken, settings } from '@/modules/settings.js'
+  import { settings } from '@/modules/settings.js'
   import { anilistClient, currentSeason, currentYear } from '@/modules/anilist.js'
 
   const bannerData = anilistClient.search({ method: 'Search', sort: 'POPULARITY_DESC', perPage: 15, onList: false, season: currentSeason, year: currentYear })
@@ -15,7 +15,7 @@
 
   for (const sectionTitle of settings.value.homeSections) manager.add(mappedSections[sectionTitle])
 
-  if (alToken) {
+  if (anilistClient.userID?.viewer?.data?.Viewer) {
     const userSections = ['Continue Watching', 'Sequels You Missed', 'Your List', 'Completed List', 'Paused List', 'Dropped List', 'Currently Watching List']
 
     anilistClient.userLists.subscribe(value => {

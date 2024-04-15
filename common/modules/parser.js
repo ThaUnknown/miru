@@ -31,7 +31,7 @@ export default class Parser {
     this.metadata.getAttachments().then(files => {
       if (this.destroyed) return
       for (const file of files) {
-        if (fontRx.test(file.filename) || file.mimetype.toLowerCase().includes('font')) {
+        if (fontRx.test(file.filename) || file.mimetype?.toLowerCase().includes('font')) {
           // this is cursed, but required, as capacitor-node's IPC hangs for 2mins when runnig on 32bit android when sending uint8's
           this.client.dispatch('file', { data: JSON.stringify([...file.data]) })
         }

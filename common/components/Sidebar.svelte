@@ -13,7 +13,7 @@
   const links = [
     {
       click: () => {
-        if (anilistClient.userID) {
+        if (anilistClient.userID?.viewer?.data?.Viewer) {
           $logout = true
         } else {
           IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
@@ -85,13 +85,9 @@
       text: 'Settings'
     }
   ]
-  if (anilistClient.userID) {
-    anilistClient.userID.then(result => {
-      if (result?.data?.Viewer) {
-        links[0].image = result.data.Viewer.avatar.medium
-        links[0].text = 'Logout'
-      }
-    })
+  if (anilistClient.userID?.viewer?.data?.Viewer) {
+    links[0].image = anilistClient.userID.viewer.data.Viewer.avatar.medium
+    links[0].text = 'Logout'
   }
 </script>
 

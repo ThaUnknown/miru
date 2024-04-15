@@ -1,7 +1,10 @@
 import { writable } from 'simple-store-svelte'
 import { defaults } from './util.js'
 import IPC from '@/modules/ipc.js'
-export let alToken = localStorage.getItem('ALtoken') || null
+import { anilistClient } from './anilist.js'
+import { toast } from 'svelte-sonner'
+/** @type {{viewer: import('./al').Query<{Viewer: import('./al').Viewer}>, token: string} | null} */
+export let alToken = JSON.parse(localStorage.getItem('ALviewer')) || null
 
 let storedSettings = { ...defaults }
 
@@ -46,8 +49,18 @@ window.addEventListener('paste', ({ clipboardData }) => {
   }
 })
 IPC.on('altoken', handleToken)
-function handleToken (data) {
-  localStorage.setItem('ALtoken', data)
-  alToken = data
+async function handleToken (token) {
+  alToken = { token, viewer: null }
+  const viewer = await anilistClient.viewer({ token })
+  if (!viewer.data?.Viewer) {
+    toast.error('Failed to sign in with AniList. Please try again.', { description: JSON.stringify(viewer) })
+    console.error(viewer)
+    return
+  }
+  const lists = viewer?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
+  if (!lists.includes('Watched using Miru')) {
+    await anilistClient.customList({ lists })
+  }
+  localStorage.setItem('ALviewer', JSON.stringify({ token, viewer }))
   location.reload()
 }

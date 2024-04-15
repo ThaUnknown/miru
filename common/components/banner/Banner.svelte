@@ -22,6 +22,8 @@
 </script>
 
 <div class='w-full h-450 position-relative gradient'>
+  <!-- really shit and hacky way of fixing scroll position jumping when banner changes height -->
+  <div class='position-absolute top-0 transparent h-450 opacity-0'>.</div>
   {#await data}
     <SkeletonBanner />
   {:then { data }}
@@ -32,5 +34,8 @@
 <style>
   .gradient {
     background: linear-gradient(0deg, #17191D 0%, #0000 15%, #0000 100%), linear-gradient(90deg, #17191D 0%, rgba(23, 25, 29, 0.885417) 15%, rgba(25, 28, 32, 0) 72%);
+  }
+  .opacity-0 {
+    opacity: 0;
   }
 </style>

@@ -5,7 +5,7 @@
   export const logout = writable(false)
 
   function confirm () {
-    localStorage.removeItem('ALtoken')
+    localStorage.removeItem('ALviewer')
     location.hash = ''
     location.reload()
   }
