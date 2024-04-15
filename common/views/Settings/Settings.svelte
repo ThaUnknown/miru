@@ -126,9 +126,7 @@
       </div>
       <div class='pointer my-5 rounded' use:click={loginButton}>
         <div class='px-20 py-10 d-flex'>
-          {#if !anilistClient.userID?.viewer?.data?.Viewer}
-            <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>login</span>
-            <div class='font-size-16'>Login With AniList</div>
+          {#if anilistClient.userID?.viewer?.data?.Viewer}
             <span class='material-symbols-outlined rounded mr-10'>
               <img src={anilistClient.userID.viewer.data.Viewer.avatar.medium} class='h-30 rounded' alt='logo' />
             </span>
