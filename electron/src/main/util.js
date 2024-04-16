@@ -13,7 +13,8 @@ const flags = [
   // disabling shit, vulkan rendering, widget layering aka right click context menus [I think] for macOS [I think]
   ['disable-features', 'Vulkan,WidgetLayering'],
   // utility stuff, aka website security that's useless for a native app:
-  ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'], ['bypasscsp-schemes']
+  ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'], ['bypasscsp-schemes'],
+  ['force_high_performance_gpu', 'disable-renderer-backgroundin']
 ]
 for (const [flag, value] of flags) {
   app.commandLine.appendSwitch(flag, value)
