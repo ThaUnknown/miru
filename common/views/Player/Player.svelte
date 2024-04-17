@@ -245,7 +245,7 @@
   let subDelay = 0
   $: updateDelay(subDelay)
   function updateDelay (delay) {
-    if (subs?.renderer) subs.renderer.timeOffset = delay
+    if (subs?.renderer) subs.renderer.timeOffset = Number(delay)
   }
 
   let currentTime = 0
@@ -1177,7 +1177,7 @@
                 </label>
               {/if}
             {/each}
-            <input type='text' inputmode='numeric' pattern='[0-9]*' step='0.1' bind:value={subDelay} on:click|stopPropagation class='form-control text-right form-control-sm' />
+            <input type='text' inputmode='numeric' pattern='-?[0-9]*.?[0-9]*' step='0.1' bind:value={subDelay} on:click|stopPropagation class='form-control text-right form-control-sm' />
           </div>
         </div>
       {/if}

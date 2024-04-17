@@ -161,7 +161,7 @@
 {/if}
 <SettingCard title='Transfer Speed Limit' description='Download/Upload speed limit for torrents, higher values increase CPU usage, and values higher than your storage write speeds will quickly fill up RAM.'>
   <div class='input-group w-100 mw-full'>
-    <input type='number' inputmode='numeric' pattern={'[0-9]*.[0-9]{1, 2}'} bind:value={settings.torrentSpeed} min='0' max='50' step='0.1' class='form-control text-right bg-dark' />
+    <input type='number' inputmode='numeric' pattern={'[0-9]*.?[0-9]*'} bind:value={settings.torrentSpeed} min='0' max='50' step='0.1' class='form-control text-right bg-dark' />
     <div class='input-group-append'>
       <span class='input-group-text bg-dark'>MB/s</span>
     </div>
