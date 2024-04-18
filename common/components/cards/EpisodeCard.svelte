@@ -32,6 +32,11 @@
   <div class='item d-flex flex-column h-full pointer content-visibility-auto'>
     <div class='image h-200 w-full position-relative rounded overflow-hidden d-flex justify-content-between align-items-end text-white' class:bg-black={episodeThumbnail === ' '}>
       <img loading='lazy' src={episodeThumbnail} alt='cover' class='cover-img w-full h-full position-absolute' style:--color={media?.coverImage?.color || '#1890ff'} />
+      {#if data.failed}
+        <div class='material-symbols-outlined pl-10 pt-10 position-absolute top-0 left-0 text-danger filled font-weight-medium' title='Failed to resolve media z-10'>
+          sync_problem
+        </div>
+      {/if}
       <div class='pl-10 pb-10 material-symbols-outlined filled z-10'>play_arrow</div>
       <div class='pr-15 pb-10 font-size-16 font-weight-medium z-10'>
         {#if media?.duration}

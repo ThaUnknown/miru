@@ -26,6 +26,11 @@
         on:loadeddata={() => { hide = false }}
         autoplay />
     {/if}
+    {#if data.failed}
+      <div class='material-symbols-outlined pl-10 pt-10 position-absolute top-0 left-0 text-danger filled font-weight-medium z-10' title='Failed to resolve media'>
+        sync_problem
+      </div>
+    {/if}
     <div class='pl-15 pb-10 material-symbols-outlined filled z-10'>play_arrow</div>
     <div class='pr-20 pb-10 font-size-16 font-weight-medium z-10'>
       {#if media?.duration}

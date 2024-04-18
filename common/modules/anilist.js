@@ -338,11 +338,12 @@ class AnilistClient {
   async alEntry (filemedia) {
     // check if values exist
     if (filemedia.media && alToken) {
+      if (filemedia.failed) return
       const { media } = filemedia
       // check if media can even be watched, ex: it was resolved incorrectly
       if (media.status === 'FINISHED' || media.status === 'RELEASING') {
         // some anime/OVA's can have a single episode, or some movies can have multiple episodes
-        const singleEpisode = (!media.episodes || (media.format === 'MOVIE' && media.episodes === 1)) && 1
+        const singleEpisode = ((!media.episodes && (Number(filemedia.episode) === 1 || isNaN(Number(filemedia.episode)))) || (media.format === 'MOVIE' && media.episodes === 1)) && 1 // movie check
         const videoEpisode = Number(filemedia.episode) || singleEpisode
         const mediaEpisode = media.episodes || media.nextAiringEpisode?.episode || singleEpisode
         // check episode range

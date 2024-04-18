@@ -203,12 +203,7 @@ export default new class AnimeResolver {
 
     if (!edge) {
       const obj = { media, episode: episode - offset, offset, increment, rootMedia, failed: true }
-      if (!force) {
-        console.warn('Error in parsing!', obj)
-        toast('Parsing Error', {
-          description: `Failed resolving anime episode!\n${media.title.userPreferred} - ${episode - offset}`
-        })
-      }
+      if (!force) console.warn('Error in parsing!', obj)
       return obj
     }
     media = await this.getAnimeById(edge.id)
