@@ -65,6 +65,9 @@ module.exports = [
       path: join(__dirname, 'build'),
       filename: 'main.js'
     },
+    externals: {
+      '@paymoapp/electron-shutdown-handler': 'require("@paymoapp/electron-shutdown-handler")'
+    },
     resolve: {
       aliasFields: [],
       alias: {
