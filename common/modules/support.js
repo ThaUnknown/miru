@@ -13,5 +13,6 @@ export const SUPPORTS = {
   keybinds: true,
   extensions: true,
   isAndroid: false,
-  externalPlayer: true
+  externalPlayer: true,
+  permamentNAT: true
 }

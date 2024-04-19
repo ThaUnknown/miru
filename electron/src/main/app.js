@@ -1,0 +1,134 @@
+import { join } from 'node:path'
+import process from 'node:process'
+
+import { BrowserWindow, MessageChannelMain, app, dialog, ipcMain, powerMonitor, shell } from 'electron'
+import electronShutdownHandler from '@paymoapp/electron-shutdown-handler'
+
+import { development } from './util.js'
+import Discord from './discord.js'
+import Protocol from './protocol.js'
+import Updater from './updater.js'
+import Dialog from './dialog.js'
+import store from './store.js'
+
+export default class App {
+  webtorrentWindow = new BrowserWindow({
+    show: development,
+    webPreferences: {
+      webSecurity: false,
+      allowRunningInsecureContent: false,
+      nodeIntegration: true,
+      contextIsolation: false,
+      backgroundThrottling: false
+    }
+  })
+
+  mainWindow = new BrowserWindow({
+    width: 1600,
+    height: 900,
+    frame: process.platform === 'darwin', // Only keep the native frame on Mac
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#17191c',
+      symbolColor: '#eee',
+      height: 28
+    },
+    backgroundColor: '#17191c',
+    autoHideMenuBar: true,
+    webPreferences: {
+      webSecurity: false,
+      allowRunningInsecureContent: false,
+      enableBlinkFeatures: 'FontAccess, AudioVideoTracks',
+      backgroundThrottling: false,
+      preload: join(__dirname, '/preload.js')
+    },
+    icon: join(__dirname, '/logo_filled.png'),
+    show: false
+  })
+
+  discord = new Discord(this.mainWindow)
+  protocol = new Protocol(this.mainWindow)
+  updater = new Updater(this.mainWindow)
+  dialog = new Dialog(this.webtorrentWindow)
+
+  constructor () {
+    this.mainWindow.setMenuBarVisibility(false)
+    this.mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+    this.mainWindow.once('ready-to-show', () => this.mainWindow.show())
+    this.mainWindow.on('minimize', () => this.mainWindow.webContents.postMessage('visibilitychange', 'hidden'))
+    this.mainWindow.on('restore', () => this.mainWindow.webContents.postMessage('visibilitychange', 'visible'))
+    ipcMain.on('devtools', () => this.webtorrentWindow.webContents.openDevTools())
+
+    this.mainWindow.on('closed', () => this.destroy())
+    ipcMain.on('close', () => this.destroy())
+    app.on('before-quit', e => {
+      if (this.destroyed) return
+      e.preventDefault()
+      this.destroy()
+    })
+
+    powerMonitor.on('shutdown', e => {
+      if (this.destroyed) return
+      e.preventDefault()
+      this.destroy()
+    })
+
+    if (process.platform === 'win32') {
+      // this message usually fires in dev-mode from the parent process
+      process.on('message', data => {
+        if (data === 'graceful-exit') this.destroy()
+      })
+      electronShutdownHandler.setWindowHandle(this.mainWindow.getNativeWindowHandle())
+      electronShutdownHandler.blockShutdown('Saving torrent data...')
+      electronShutdownHandler.on('shutdown', async () => {
+        await this.destroy()
+        electronShutdownHandler.releaseShutdown()
+      })
+    } else {
+      process.on('SIGTERM', () => this.destroy())
+    }
+
+    const torrentLoad = this.webtorrentWindow.loadURL(development ? 'http://localhost:5000/background.html' : `file://${join(__dirname, '/background.html')}`)
+    this.mainWindow.loadURL(development ? 'http://localhost:5000/app.html' : `file://${join(__dirname, '/app.html')}`)
+
+    if (development) {
+      this.webtorrentWindow.webContents.openDevTools()
+      this.mainWindow.webContents.openDevTools()
+    }
+
+    let crashcount = 0
+    this.mainWindow.webContents.on('render-process-gone', async (e, { reason }) => {
+      if (reason === 'crashed') {
+        if (++crashcount > 10) {
+          await dialog.showMessageBox({ message: 'Crashed too many times.', title: 'Miru', detail: 'App crashed too many times. For a fix visit https://miru.watch/faq/', icon: '/renderer/public/logo_filled.png' })
+          shell.openExternal('https://miru.watch/faq/')
+        } else {
+          app.relaunch()
+        }
+        app.quit()
+      }
+    })
+
+    ipcMain.on('portRequest', async ({ sender }) => {
+      const { port1, port2 } = new MessageChannelMain()
+      await torrentLoad
+      this.webtorrentWindow.webContents.postMessage('port', null, [port1])
+      this.webtorrentWindow.webContents.postMessage('player', store.get('player'))
+      this.webtorrentWindow.webContents.postMessage('torrentPath', store.get('torrentPath'))
+      sender.postMessage('port', null, [port2])
+    })
+  }
+
+  destroyed = false
+
+  async destroy () {
+    if (this.destroyed) return
+    this.webtorrentWindow.webContents.postMessage('destroy', null)
+    await new Promise(resolve => {
+      ipcMain.once('destroyed', resolve)
+      setTimeout(resolve, 5000).unref?.()
+    })
+    this.destroyed = true
+    app.quit()
+  }
+}

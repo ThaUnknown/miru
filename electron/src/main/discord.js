@@ -23,18 +23,15 @@ export default class Discord {
     }
   }
 
-  discord
+  discord = new Client({ transport: 'ipc' })
+
+  /** @type {Discord['defaultStatus'] | undefined} */
   allowDiscordDetails
+  /** @type {Discord['defaultStatus'] | undefined} */
   cachedPresence
 
-  /**
-   * @param {import('electron').BrowserWindow} window
-   */
+  /** @param {import('electron').BrowserWindow} window */
   constructor (window) {
-    this.discord = new Client({
-      transport: 'ipc'
-    })
-
     ipcMain.on('show-discord-status', (event, data) => {
       this.allowDiscordDetails = data
       this.debouncedDiscordRPC(this.allowDiscordDetails ? this.cachedPresence : undefined)

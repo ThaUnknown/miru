@@ -5,9 +5,11 @@ const mode = process.env.NODE_ENV?.trim() || 'development'
 
 const commonConfig = require('common/webpack.config.cjs')
 
+/** @type {import('webpack').WebpackOptionsNormalized[]} */
 module.exports = [
   {
     devtool: 'source-map',
+    stats: { warnings: false },
     entry: join(__dirname, 'src', 'background', 'background.js'),
     output: {
       path: join(__dirname, 'build'),
@@ -44,6 +46,7 @@ module.exports = [
   commonConfig(__dirname),
   {
     devtool: 'source-map',
+    stats: { warnings: false },
     entry: join(__dirname, 'src', 'preload', 'preload.js'),
     output: {
       path: join(__dirname, 'build'),

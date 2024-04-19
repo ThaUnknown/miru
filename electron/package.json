@@ -7,7 +7,7 @@
   "main": "build/main.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
   "scripts": {
-    "start": "cross-env NODE_ENV=development concurrently --kill-others \"npm run web:watch\" \"npm run electron:start\"",
+    "start": "cross-env NODE_ENV=development webpack build && concurrently --kill-others \"npm run web:watch\" \"npm run electron:start\"",
     "web:watch": "webpack serve",
     "web:build": "cross-env NODE_ENV=production webpack build",
     "electron:start": "electron ./build/main.js",
@@ -25,6 +25,7 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
+    "@paymoapp/electron-shutdown-handler": "^1.0.15",
     "utp-native": "^2.5.3"
   },
   "standard": {

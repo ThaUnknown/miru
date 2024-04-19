@@ -39,6 +39,8 @@ export default class TorrentClient extends WebTorrent {
   playerProcess = null
   torrentPath = ''
 
+  ipc
+
   constructor (ipc, storageQuota, serverMode, torrentPath, controller) {
     const settings = { ...defaults, ...storedSettings }
     super({
@@ -47,8 +49,10 @@ export default class TorrentClient extends WebTorrent {
       downloadLimit: settings.torrentSpeed * 1048576 || 0,
       uploadLimit: settings.torrentSpeed * 1572864 || 0, // :trolled:
       torrentPort: settings.torrentPort || 0,
-      dhtPort: settings.dhtPort || 0
+      dhtPort: settings.dhtPort || 0,
+      natUpnp: SUPPORTS.permamentNAT ? 'permanent' : true
     })
+    this.ipc = ipc
     this.torrentPath = torrentPath
     this._ready = new Promise(resolve => {
       ipc.on('port', ({ ports }) => {
@@ -279,8 +283,11 @@ export default class TorrentClient extends WebTorrent {
   }
 
   destroy () {
+    if (this.destroyed) return
     this.parser?.destroy()
     this.server.close()
-    super.destroy()
+    super.destroy(() => {
+      this.ipc.send('destroyed')
+    })
   }
 }

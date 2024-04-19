@@ -60,6 +60,9 @@ export default class Protocol {
     })
   }
 
+  /**
+   * @param {string} line
+   */
   sendToken (line) {
     let token = line.split('access_token=')[1].split('&token_type')[0]
     if (token) {
@@ -68,6 +71,9 @@ export default class Protocol {
     }
   }
 
+  /**
+   * @param {string} text
+   */
   handleProtocol (text) {
     const match = text.match(this.protocolRx)
     if (match) this.protocolMap[match[1]]?.(match[2])
