@@ -167,7 +167,7 @@
     </div>
   </div>
 </SettingCard>
-<SettingCard title='Max Number of Connections' description='Numer of peers per torrent. Higher values will increase download speeds but might quickly fill up available ports if your ISP limits the maximum allowed number of open connections.'>
+<SettingCard title='Max Number of Connections' description='Number of peers per torrent. Higher values will increase download speeds but might quickly fill up available ports if your ISP limits the maximum allowed number of open connections.'>
   <input type='number' inputmode='numeric' pattern='[0-9]*' bind:value={settings.maxConns} min='1' max='512' class='form-control text-right bg-dark w-100 mw-full' />
 </SettingCard>
 {#if SUPPORTS.torrentPort}
