@@ -9,7 +9,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 /** @type {(parentDir: string, alias?: Record<string, string>, aliasFields?: (string | string[]), filename?: string) => import('webpack').WebpackOptionsNormalized} */
 module.exports = (parentDir, alias = {}, aliasFields = 'browser', filename = 'app') => ({
   devtool: 'source-map',
-  entry: join(__dirname, 'main.js'),
+  entry: [join(__dirname, 'main.js')],
   stats: { warnings: false },
   output: {
     path: join(parentDir, 'build'),

@@ -44,7 +44,7 @@
 
     downloads = {
       iOS: 'https://www.android.com',
-      Android: '',
+      Android: 'https://play.google.com/store/apps/details?id=watch.miru',
       Windows: url('installer.exe'),
       'Mac OS': url('.dmg'),
       Linux: url('.AppImage'),
@@ -106,7 +106,7 @@
           <div class='d-flex w-500 mw-full gap-2'>
             <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' href={downloads.Android || releases}>
               <AndroidSVG />
-              <div class='font-size-18 font-weight-semi-bold mt-5'>Android Soon™️</div>
+              <div class='font-size-18 font-weight-semi-bold mt-5'>Android</div>
               <div class='text-muted'>apk</div>
             </a>
             <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-250 flex-grow-1' href={downloads.Android || releases}>
