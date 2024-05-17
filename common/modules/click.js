@@ -112,14 +112,12 @@ function getKeyboardFocusableElements (element = document.body) {
 function getElementPosition (element) {
   const { x, y, width, height, top, left, bottom, right } = element.getBoundingClientRect()
   const inViewport = isInViewport({ top, left, bottom, right })
-  if (width || height) {
-    return { element, x: x + width * 0.5, y: y + height * 0.5, inViewport }
-  }
+  return { element, x: x + width * 0.5, y: y + height * 0.5, inViewport }
 }
 
 function getFocusableElementPositions () {
   const elements = []
-  for (const element of getKeyboardFocusableElements()) {
+  for (const element of getKeyboardFocusableElements(document.querySelector('.modal.show') ?? document.body)) {
     const position = getElementPosition(element)
     if (position) elements.push(position)
   }
@@ -165,6 +163,7 @@ function navigateDPad (direction = 'up') {
     }, { distance: Infinity, element: null })
 
     closestElement.element.focus()
+    closestElement.element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' })
     return
   }
 
