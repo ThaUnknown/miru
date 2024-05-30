@@ -15,6 +15,10 @@ export type Media = {
   duration?: number
   averageScore?: number
   genres?: string[]
+  tags?: {
+    name: string
+    rank: integer
+  }[]
   isFavourite: boolean
   coverImage?: {
     extraLarge: string
