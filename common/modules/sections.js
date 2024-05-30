@@ -221,13 +221,13 @@ function createSections () {
       hide: !alToken
     },
     // common, non-user specific sections
-    { title: 'Popular This Season', variables: { sort: 'POPULARITY_DESC'} },
-    { title: 'Trending Now', variables: { sort: 'TRENDING_DESC'} },
-    { title: 'All Time Popular', variables: { sort: 'POPULARITY_DESC'} },
-    { title: 'Romance', variables: { sort: 'TRENDING_DESC', genre: ['Romance']} },
-    { title: 'Action', variables: { sort: 'TRENDING_DESC', genre: ['Action']} },
-    { title: 'Adventure', variables: { sort: 'TRENDING_DESC', genre: ['Adventure'] } },
-    { title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: ['Fantasy']} },
-    { title: 'Comedy', variables: { sort: 'TRENDING_DESC', genre: ['Comedy'] } }
+    { title: 'Popular This Season', variables: { sort: 'POPULARITY_DESC', season: currentSeason, year: currentYear, hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } },
+    { title: 'Trending Now', variables: { sort: 'TRENDING_DESC', hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } },
+    { title: 'All Time Popular', variables: { sort: 'POPULARITY_DESC', hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } },
+    { title: 'Romance', variables: { sort: 'TRENDING_DESC', genre: ['Romance'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } },
+    { title: 'Action', variables: { sort: 'TRENDING_DESC', genre: ['Action'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } },
+    { title: 'Adventure', variables: { sort: 'TRENDING_DESC', genre: ['Adventure'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } },
+    { title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: ['Fantasy'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } },
+    { title: 'Comedy', variables: { sort: 'TRENDING_DESC', genre: ['Comedy'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } }
   ]
 }
