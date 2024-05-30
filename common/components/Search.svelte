@@ -1,6 +1,6 @@
 <script context='module'>
-  const badgeKeys = ['title', 'search', 'genre', 'tag', 'season', 'year', 'format', 'status', 'sort']
-  const badgeDisplayNames = { title: 'List:', search: 'Title:', genre: 'Genre:', tag: 'Tag:', season: 'Season:', year: 'Year:', format: 'Format:', status: 'Status:', sort: 'Sort:'}
+  const badgeKeys = ['title', 'search', 'genre', 'tag', 'season', 'year', 'format', 'status', 'sort', 'hideMyAnime', 'hideStatus']
+  const badgeDisplayNames = { title: 'List:', search: 'Title:', genre: 'Genre:', tag: 'Tag:', season: 'Season:', year: 'Year:', format: 'Format:', status: 'Status:', sort: 'Sort:', hideMyAnime: 'Hide My Anime'}
   const sortOptions = { START_DATE_DESC: 'Release Date', SCORE_DESC: 'Score', POPULARITY_DESC: 'Popularity', TRENDING_DESC: 'Trending', UPDATED_TIME_DESC: 'Last Updated', STARTED_ON_DESC: 'Started On', FINISHED_ON_DESC: 'Finished On', PROGRESS_DESC: 'Your Progress', USER_SCORE_DESC: 'Your Score' }
 
   export function searchCleanup (search) {
@@ -92,7 +92,9 @@
       year: null,
       format: '',
       status: '',
-      sort: ''
+      sort: '',
+      hideMyAnime: false,
+      hideStatus: ''
     }
     searchTextInput.title.focus()
     form.dispatchEvent(new Event('input', { bubbles: true }))
@@ -117,7 +119,9 @@
       search.sort = ''
     } else if (badge.key === 'genre' || badge.key === 'tag') {
       delete search.title
-    }
+    } else if (badge.key === 'hideMyAnime') {
+      delete search.hideStatus
+    } 
     if (Array.isArray(search[badge.key])) {
       search[badge.key] = search[badge.key].filter(
         (item) => item !== badge.value
@@ -128,6 +132,12 @@
     } else {
       search[badge.key] = ''
     }
+    form.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+
+  function toggleHideMyAnime() {
+    search.hideMyAnime = !search.hideMyAnime
+    search.hideStatus = search.hideMyAnime ? ['CURRENT', 'PLANNING', 'COMPLETED', 'DROPPED', 'PAUSED', 'REPEATING'] : ''
     form.dispatchEvent(new Event('input', { bubbles: true }))
   }
 
@@ -307,6 +317,18 @@
         </select>
       </div>
     </div>
+    <div class='col-auto p-10 d-flex'>
+      <div class='align-self-end'>
+        <button
+          class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0'
+          type='button'
+          use:click={toggleHideMyAnime}
+          disabled={search.disableHide}
+          class:text-primary={search.hideMyAnime}>
+          <label for='hide-my-anime' class='pointer mb-0'> tune </label>
+        </button>
+      </div>
+    </div>
     <input type='file' class='d-none' id='search-image' accept='image/*' on:input|preventDefault|stopPropagation={handleFile} />
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
@@ -333,9 +355,9 @@
       {#each badgeKeys as key}
         {#each sanitisedSearch as badge}
           {#if badge.key === key}
-            {#if (search.userList || badge.key  !== 'title') }
+            {#if badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title') }
               <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>
-                {badge.key === 'sort' ? 'Sort: ' : getBadgeDisplayName(badge.key)} {badge.key === 'sort' ? getSortDisplayName(badge.value) : ('' + badge.value).replace(/_/g, ' ').toLowerCase()}
+                {badge.key === 'sort' ? 'Sort: ' : getBadgeDisplayName(badge.key)} {badge.key === 'sort' ? getSortDisplayName(badge.value) : (badge.key !== 'hideMyAnime' ? ('' + badge.value).replace(/_/g, ' ').toLowerCase() : '')}
                 <button on:click={() => removeBadge(badge)} class='badge-remove-btn'>x</button>
               </span>
             {/if}

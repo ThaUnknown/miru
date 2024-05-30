@@ -24,8 +24,16 @@ export default class SectionsManager {
 
   static createFallbackLoad (variables, type) {
     return (page = 1, perPage = 50, search = variables) => {
-      const res = anilistClient.search({ page, perPage, ...SectionsManager.sanitiseObject(search) })
-      return SectionsManager.wrapResponse(res, perPage, type)
+      if (search.hideMyAnime) {
+        const res = anilistClient.userLists.value.then(res => {
+          const ids = Array.from(new Set(res.data.MediaListCollection.lists.filter(({ status }) => search.hideStatus.includes(status)).flatMap(list => list.entries.map(({ media }) => media.id))));
+          return anilistClient.search({ page, perPage, id_not: ids, ...SectionsManager.sanitiseObject(search) })
+        })
+        return SectionsManager.wrapResponse(res, perPage, type)
+      } else {
+        const res = anilistClient.search({ page, perPage, ...SectionsManager.sanitiseObject(search) })
+        return SectionsManager.wrapResponse(res, perPage, type)
+      }
     }
   }
 
@@ -118,7 +126,7 @@ function createSections () {
     }),
     // user specific sections
     {
-      title: 'Sequels You Missed',
+      title: 'Sequels You Missed', variables : { disableHide: true },
       load: (page = 1, perPage = 50, variables = {}) => {
         const res = anilistClient.userLists.value.then(res => {
           const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED')?.entries
@@ -134,7 +142,7 @@ function createSections () {
       hide: !alToken
     },
     {
-      title: 'Continue Watching', variables: { sort: 'UPDATED_TIME_DESC', userList: true, continueWatching: true },
+      title: 'Continue Watching', variables: { sort: 'UPDATED_TIME_DESC', userList: true, continueWatching: true, disableHide: true },
       load: (_page = 1, perPage = 50, variables = {}) => {
         const userLists = (!SectionsManager.isUserSort(variables) || variables.sort === 'UPDATED_TIME_DESC') ? anilistClient.userLists.value : anilistClient.getUserLists({ sort: variables.sort })
         const res = userLists.then(res => {
@@ -149,7 +157,7 @@ function createSections () {
       hide: !alToken
     },
     {
-      title: 'Watching List', variables : { sort: 'UPDATED_TIME_DESC', userList: true },
+      title: 'Watching List', variables : { sort: 'UPDATED_TIME_DESC', userList: true, disableHide: true },
       load: (_page = 1, perPage = 50, variables = {}) => {
         const userLists = (!SectionsManager.isUserSort(variables) || variables.sort === 'UPDATED_TIME_DESC') ? anilistClient.userLists.value : anilistClient.getUserLists({ sort: variables.sort })
         const res = userLists.then(res => {
@@ -162,7 +170,7 @@ function createSections () {
       hide: !alToken
     },
     {
-      title: 'Completed List', variables : { sort: 'UPDATED_TIME_DESC', userList: true, completedList: true },
+      title: 'Completed List', variables : { sort: 'UPDATED_TIME_DESC', userList: true, completedList: true, disableHide: true },
       load: (_page = 1, perPage = 50, variables = {}) => {
         const userLists = (!SectionsManager.isUserSort(variables) || variables.sort === 'UPDATED_TIME_DESC') ? anilistClient.userLists.value : anilistClient.getUserLists({ sort: variables.sort })
         const res = userLists.then(res => {
@@ -175,7 +183,7 @@ function createSections () {
       hide: !alToken
     },
     {
-      title: 'Planning List', variables : { sort: 'POPULARITY_DESC', userList: true },
+      title: 'Planning List', variables : { sort: 'POPULARITY_DESC', userList: true, disableHide: true },
       load: (_page = 1, perPage = 50, variables = {}) => {
         const res = anilistClient.userLists.value.then(res => {
           const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'PLANNING')?.entries
@@ -187,7 +195,7 @@ function createSections () {
       hide: !alToken
     },
     {
-      title: 'Paused List', variables : { sort: 'UPDATED_TIME_DESC', userList: true },
+      title: 'Paused List', variables : { sort: 'UPDATED_TIME_DESC', userList: true, disableHide: true },
       load: (_page = 1, perPage = 50, variables = {}) => {
         const userLists = (!SectionsManager.isUserSort(variables) || variables.sort === 'UPDATED_TIME_DESC') ? anilistClient.userLists.value : anilistClient.getUserLists({ sort: variables.sort })
         const res = userLists.then(res => {
@@ -200,7 +208,7 @@ function createSections () {
       hide: !alToken
     },
     {
-      title: 'Dropped List', variables : { sort: 'UPDATED_TIME_DESC', userList: true},
+      title: 'Dropped List', variables : { sort: 'UPDATED_TIME_DESC', userList: true, disableHide: true },
       load: (_page = 1, perPage = 50, variables = {}) => {
         const userLists = (!SectionsManager.isUserSort(variables) || variables.sort === 'UPDATED_TIME_DESC') ? anilistClient.userLists.value : anilistClient.getUserLists({ sort: variables.sort })
         const res = userLists.then(res => {
