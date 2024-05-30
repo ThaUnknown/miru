@@ -16,7 +16,8 @@ jobs:
 
     steps:
       - name: Install Setuptools for Python
-        run: pip3 install setuptools
+        if: matrix.os == 'macos-latest'
+        run: pip3 install setuptools --break-system-packages
 
       - name: Check out Git repository
         uses: actions/checkout@v3
@@ -29,7 +30,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
           cache: 'pnpm'
 
       - name: Install dependencies
