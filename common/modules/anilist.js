@@ -203,9 +203,9 @@ class AnilistClient {
     })
 
     if (this.userID?.viewer?.data?.Viewer) {
-      this.userLists.value = this.getUserLists()
+      this.userLists.value = this.getUserLists({ sort: 'UPDATED_TIME_DESC' })
       // update userLists every 15 mins
-      setInterval(() => { this.userLists.value = this.getUserLists() }, 1000 * 60 * 15)
+      setInterval(() => this.userLists.value = this.getUserLists({ sort: 'UPDATED_TIME_DESC' }), 1000 * 60 * 15)
     }
   }
 
@@ -257,8 +257,8 @@ class AnilistClient {
         variables: {
           sort: 'TRENDING_DESC',
           page: 1,
-          perPage: 30,
-          status_in: '[CURRENT,PLANNING]',
+          perPage: 50,
+          status_in: '[CURRENT,PLANNING,COMPLETED,DROPPED,PAUSED,REPEATING]',
           ...variables
         }
       })
@@ -369,7 +369,7 @@ class AnilistClient {
               variables.lists.push('Watched using Miru')
             }
             await this.entry(variables)
-            this.userLists.value = this.getUserLists()
+            this.userLists.value = this.getUserLists({ sort: 'UPDATED_TIME_DESC' })
           }
         }
       }
@@ -458,40 +458,29 @@ class AnilistClient {
   }
 
   /** @returns {Promise<import('./al.d.ts').Query<{ MediaListCollection: import('./al.d.ts').MediaListCollection }>>} */
-  async getUserLists (variables = {}) {
+  async getUserLists (variables) {
     const userId = this.userID?.viewer?.data?.Viewer.id
     variables.id = userId
+    if (variables.sort) { variables.sort = variables.sort.replace('USER_SCORE_DESC', 'SCORE_DESC')}
     const query = /* js */` 
-      query($id: Int){
-        MediaListCollection(userId: $id, type: ANIME, forceSingleCompletedList: true) {
+      query($id: Int $sort: [MediaListSort]){
+        MediaListCollection(userId: $id, type: ANIME, sort: $sort, forceSingleCompletedList: true) {
           lists {
             status,
             entries {
               media {
-                id,
-                status,
-                mediaListEntry {
-                  progress
-                },
-                nextAiringEpisode {
-                  episode
-                },
-                relations {
-                  edges {
-                    relationType(version:2)
-                    node {
-                      id
-                    }
-                  }
-                }
+                ${queryObjects}
               }
             }
           }
         }
       }`
 
-    // this doesn't need to be cached, as SearchIDStatus is already cached, which is the only thing that uses this
-    return await this.alRequest(query, variables)
+    const res = await this.alRequest(query, variables)
+
+    this.updateCache(res.data.MediaListCollection.lists.flatMap(list => list.entries.map(entry => entry.media)));
+
+    return res
   }
 
   /** @returns {Promise<import('./al.d.ts').Query<{ MediaList: { status: string, progress: number, repeat: number }}>>} */

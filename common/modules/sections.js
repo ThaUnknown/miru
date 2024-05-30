@@ -24,8 +24,7 @@ export default class SectionsManager {
 
   static createFallbackLoad (variables, type) {
     return (page = 1, perPage = 50, search = variables) => {
-      const options = { page, perPage, ...SectionsManager.sanitiseObject(search) }
-      const res = anilistClient.search(options)
+      const res = anilistClient.search({ page, perPage, ...SectionsManager.sanitiseObject(search) })
       return SectionsManager.wrapResponse(res, perPage, type)
     }
   }
@@ -48,6 +47,44 @@ export default class SectionsManager {
   static async fromPending (arr, i) {
     const { data } = await arr
     return data?.Page.media[i]
+  }
+  
+  static isUserSort(variables) {
+    return ['UPDATED_TIME_DESC', 'STARTED_ON_DESC', 'FINISHED_ON_DESC', 'PROGRESS_DESC', 'USER_SCORE_DESC'].includes(variables.sort);
+  }
+
+  static async getPaginatedMediaList(_page, perPage, variables, mediaList) {
+    const ids = mediaList.filter(({ media }) => {
+      if ((!variables.search || (media.title.userPreferred && media.title.userPreferred.toLowerCase().includes(variables.search.toLowerCase())) || (media.title.english && media.title.english.toLowerCase().includes(variables.search.toLowerCase())) || (media.title.romaji && media.title.romaji.toLowerCase().includes(variables.search.toLowerCase())) || (media.title.native && media.title.native.toLowerCase().includes(variables.search.toLowerCase()))) &&
+        (!variables.genre || variables.genre.map(genre => genre.trim().toLowerCase()).every(genre => media.genres.map(genre => genre.trim().toLowerCase()).includes(genre))) &&
+        (!variables.tag || variables.tag.map(tag => tag.trim().toLowerCase()).every(tag => media.tags.map(tag => tag.name.trim().toLowerCase()).includes(tag))) &&
+        (!variables.season || variables.season === media.season) &&
+        (!variables.year || variables.year === media.seasonYear) &&
+        (!variables.format || variables.format === media.format) &&
+        (!variables.status || variables.status === media.status) &&
+        (!variables.continueWatching || (media.status === 'FINISHED' || media.mediaListEntry?.progress < media.nextAiringEpisode?.episode - 1))) {
+        return true;
+      }
+    }).map(({ media }) => (this.isUserSort(variables) ? media : media.id));
+    if (!ids.length) return {}
+    if (this.isUserSort(variables)) {
+      const startIndex = (perPage * (_page - 1));
+      const endIndex = startIndex + perPage;
+      const paginatedIds = ids.slice(startIndex, endIndex);
+      const hasNextPage = ids.length > endIndex;
+      return {
+        data: {
+          Page: {
+            pageInfo: {
+              hasNextPage: hasNextPage
+            },
+            media: paginatedIds
+          }
+        }
+      }
+    } else {
+      return anilistClient.searchIDS({ _page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+    }
   }
 }
 
@@ -81,24 +118,6 @@ function createSections () {
     }),
     // user specific sections
     {
-      title: 'Continue Watching',
-      load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
-          const mediaList = res.data.MediaListCollection.lists.reduce((filtered, { status, entries }) => {
-            return (status === 'CURRENT' || status === 'REPEATING') ? filtered.concat(entries) : filtered
-          }, [])
-          const ids = mediaList.filter(({ media }) => {
-            if (media.status === 'FINISHED') return true
-            return media.mediaListEntry?.progress < media.nextAiringEpisode?.episode - 1
-          }).map(({ media }) => media.id)
-          if (!ids.length) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
-        })
-        return SectionsManager.wrapResponse(res, perPage)
-      },
-      hide: !alToken
-    },
-    {
       title: 'Sequels You Missed',
       load: (page = 1, perPage = 50, variables = {}) => {
         const res = anilistClient.userLists.value.then(res => {
@@ -115,73 +134,92 @@ function createSections () {
       hide: !alToken
     },
     {
-      title: 'Your List',
-      load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PLANNING')?.entries.map(({ media }) => media.id)
-          if (!ids) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+      title: 'Continue Watching', variables: { sort: 'UPDATED_TIME_DESC', userList: true, continueWatching: true },
+      load: (_page = 1, perPage = 50, variables = {}) => {
+        const userLists = (!SectionsManager.isUserSort(variables) || variables.sort === 'UPDATED_TIME_DESC') ? anilistClient.userLists.value : anilistClient.getUserLists({ sort: variables.sort })
+        const res = userLists.then(res => {
+          const mediaList = res.data.MediaListCollection.lists.reduce((filtered, { status, entries }) => {
+            return (status === 'CURRENT' || status === 'REPEATING') ? filtered.concat(entries) : filtered
+          }, []);
+          if (!mediaList) return {}
+          return SectionsManager.getPaginatedMediaList(_page, perPage, variables, mediaList)
+        });
+        return SectionsManager.wrapResponse(res, perPage);
+      },
+      hide: !alToken
+    },
+    {
+      title: 'Watching List', variables : { sort: 'UPDATED_TIME_DESC', userList: true },
+      load: (_page = 1, perPage = 50, variables = {}) => {
+        const userLists = (!SectionsManager.isUserSort(variables) || variables.sort === 'UPDATED_TIME_DESC') ? anilistClient.userLists.value : anilistClient.getUserLists({ sort: variables.sort })
+        const res = userLists.then(res => {
+          const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'CURRENT')?.entries
+          if (!mediaList) return {}
+          return SectionsManager.getPaginatedMediaList(_page, perPage, variables, mediaList)
         })
         return SectionsManager.wrapResponse(res, perPage)
       },
       hide: !alToken
     },
     {
-      title: 'Completed List',
-      load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED')?.entries.map(({ media }) => media.id)
-          if (!ids) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+      title: 'Completed List', variables : { sort: 'UPDATED_TIME_DESC', userList: true, completedList: true },
+      load: (_page = 1, perPage = 50, variables = {}) => {
+        const userLists = (!SectionsManager.isUserSort(variables) || variables.sort === 'UPDATED_TIME_DESC') ? anilistClient.userLists.value : anilistClient.getUserLists({ sort: variables.sort })
+        const res = userLists.then(res => {
+          const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED')?.entries
+          if (!mediaList) return {}
+          return SectionsManager.getPaginatedMediaList(_page, perPage, variables, mediaList)
         })
         return SectionsManager.wrapResponse(res, perPage)
       },
       hide: !alToken
     },
     {
-      title: 'Paused List',
-      load: (page = 1, perPage = 50, variables = {}) => {
+      title: 'Planning List', variables : { sort: 'POPULARITY_DESC', userList: true },
+      load: (_page = 1, perPage = 50, variables = {}) => {
         const res = anilistClient.userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PAUSED')?.entries.map(({ media }) => media.id)
-          if (!ids) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+          const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'PLANNING')?.entries
+          if (!mediaList) return {}
+          return SectionsManager.getPaginatedMediaList(_page, perPage, variables, mediaList)
         })
         return SectionsManager.wrapResponse(res, perPage)
       },
       hide: !alToken
     },
     {
-      title: 'Dropped List',
-      load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'DROPPED')?.entries.map(({ media }) => media.id)
-          if (!ids) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+      title: 'Paused List', variables : { sort: 'UPDATED_TIME_DESC', userList: true },
+      load: (_page = 1, perPage = 50, variables = {}) => {
+        const userLists = (!SectionsManager.isUserSort(variables) || variables.sort === 'UPDATED_TIME_DESC') ? anilistClient.userLists.value : anilistClient.getUserLists({ sort: variables.sort })
+        const res = userLists.then(res => {
+          const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'PAUSED')?.entries
+          if (!mediaList) return {}
+          return SectionsManager.getPaginatedMediaList(_page, perPage, variables, mediaList)
         })
         return SectionsManager.wrapResponse(res, perPage)
       },
       hide: !alToken
     },
     {
-      title: 'Currently Watching List',
-      load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'CURRENT')?.entries.map(({ media }) => media.id)
-          if (!ids) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+      title: 'Dropped List', variables : { sort: 'UPDATED_TIME_DESC', userList: true},
+      load: (_page = 1, perPage = 50, variables = {}) => {
+        const userLists = (!SectionsManager.isUserSort(variables) || variables.sort === 'UPDATED_TIME_DESC') ? anilistClient.userLists.value : anilistClient.getUserLists({ sort: variables.sort })
+        const res = userLists.then(res => {
+          const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'DROPPED')?.entries
+          if (!mediaList) return {}
+          return SectionsManager.getPaginatedMediaList(_page, perPage, variables, mediaList)
         })
         return SectionsManager.wrapResponse(res, perPage)
       },
       hide: !alToken
     },
     // common, non-user specific sections
-    { title: 'Popular This Season', variables: { sort: 'POPULARITY_DESC', season: currentSeason, year: currentYear } },
-    { title: 'Trending Now', variables: { sort: 'TRENDING_DESC' } },
-    { title: 'All Time Popular', variables: { sort: 'POPULARITY_DESC' } },
-    { title: 'Romance', variables: { sort: 'TRENDING_DESC', genre: 'Romance' } },
-    { title: 'Action', variables: { sort: 'TRENDING_DESC', genre: 'Action' } },
-    { title: 'Adventure', variables: { sort: 'TRENDING_DESC', genre: 'Adventure' } },
-    { title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: 'Fantasy' } },
-    { title: 'Comedy', variables: { sort: 'TRENDING_DESC', genre: 'Comedy' } }
+    { title: 'Popular This Season', variables: { sort: 'POPULARITY_DESC'} },
+    { title: 'Trending Now', variables: { sort: 'TRENDING_DESC'} },
+    { title: 'All Time Popular', variables: { sort: 'POPULARITY_DESC'} },
+    { title: 'Romance', variables: { sort: 'TRENDING_DESC', genre: ['Romance']} },
+    { title: 'Action', variables: { sort: 'TRENDING_DESC', genre: ['Action']} },
+    { title: 'Adventure', variables: { sort: 'TRENDING_DESC', genre: ['Adventure'] } },
+    { title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: ['Fantasy']} },
+    { title: 'Comedy', variables: { sort: 'TRENDING_DESC', genre: ['Comedy'] } }
   ]
 }

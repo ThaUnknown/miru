@@ -16,13 +16,12 @@
   for (const sectionTitle of settings.value.homeSections) manager.add(mappedSections[sectionTitle])
 
   if (anilistClient.userID?.viewer?.data?.Viewer) {
-    const userSections = ['Continue Watching', 'Sequels You Missed', 'Your List', 'Completed List', 'Paused List', 'Dropped List', 'Currently Watching List']
-
+    const userSections = ['Continue Watching', 'Sequels You Missed', 'Planning List', 'Completed List', 'Paused List', 'Dropped List', 'Watching List']
     anilistClient.userLists.subscribe(value => {
       if (!value) return
       for (const section of manager.sections) {
         // remove preview value, to force UI to re-request data, which updates it once in viewport
-        if (userSections.includes(section.title)) section.preview.value = section.load(1, 15)
+        if (userSections.includes(section.title)) section.preview.value = section.load(1, 15, section.variables)
       }
     })
   }

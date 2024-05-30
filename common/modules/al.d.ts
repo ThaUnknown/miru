@@ -144,7 +144,7 @@ export type MediaListCollection = {
   lists: {
     status: string
     entries: {
-      media: MediaListMedia
+      media: Media
     }[]
   }[]
 }
