@@ -26,7 +26,8 @@
   function _click () {
     $search = {
       ...opts.variables,
-      load: opts.load
+      load: opts.load,
+      title: opts.title,
     }
     $page = 'search'
   }
