@@ -360,7 +360,7 @@
                 {#if badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title') }
                   <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>
                     {badge.key === 'sort' ? 'Sort: ' : getBadgeDisplayName(badge.key)} {badge.key === 'sort' ? getSortDisplayName(badge.value) : (badge.key !== 'hideMyAnime' ? ('' + badge.value).replace(/_/g, ' ').toLowerCase() : '')}
-                    <button on:click={() => removeBadge(badge)} class='badge-remove-btn'>x</button>
+                    <button on:click={() => removeBadge(badge)} class='pointer bg-transparent border-0 text-white font-size-12 position-relative ml-10'>x</button>
                   </span>
                 {/if}
               {/if}
@@ -398,17 +398,5 @@
   }
   .font-size-30 {
     font-size: 3rem !important;
-  }
-
-  .badge-remove-btn {
-    background: none;
-    border: none;
-    color: white;
-    margin-left: 10px;
-    cursor: pointer;
-    font-size: 12px;
-  }
-  .badge-remove-btn:hover {
-    color: red;
   }
 </style>
