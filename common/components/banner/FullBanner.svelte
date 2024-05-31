@@ -2,6 +2,7 @@
   import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
+  import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   export let mediaList
 
   let current = mediaList[0]
@@ -69,6 +70,9 @@
         {current.duration + ' Minutes'}
       </span>
     {/if}
+    <span class='text-nowrap d-flex align-items-center'>
+      <AudioLabel media={current} banner={true}/>
+    </span>
     {#if current.season || current.seasonYear}
       <span class='text-nowrap d-flex align-items-center'>
         {[current.season?.toLowerCase(), current.seasonYear].filter(s => s).join(' ')}

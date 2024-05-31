@@ -8,6 +8,7 @@
   import Details from './Details.svelte'
   import EpisodeList from './EpisodeList.svelte'
   import ToggleList from './ToggleList.svelte'
+  import AudioLabel from './AudioLabel.svelte'
   import Following from './Following.svelte'
   import smoothScroll from '@/modules/scroll.js'
   import IPC from '@/modules/ipc.js'
@@ -114,6 +115,9 @@
                     </span>
                   </div>
                 {/if}
+                <div class='d-flex flex-row mt-10'>
+                  <AudioLabel {media} viewAnime={true}/>
+                </div>
               </div>
               <div class='d-flex flex-row flex-wrap'>
                 <button class='btn btn-lg btn-secondary w-250 text-dark font-weight-bold shadow-none border-0 d-flex align-items-center justify-content-center mr-10 mt-20'

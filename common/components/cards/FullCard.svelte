@@ -4,6 +4,7 @@
   import { click } from '@/modules/click.js'
   import { countdown } from '@/modules/util.js'
   import { page } from '@/App.svelte'
+  import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
 
@@ -17,8 +18,9 @@
   <div class='card m-0 p-0 overflow-hidden pointer content-visibility-auto'
     style:--color={media.coverImage.color || '#1890ff'}>
     <div class='row h-full'>
-      <div class='col-4'>
+      <div class='col-4 d-inline-block position-relative'>
         <img loading='lazy' src={media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full h-full' />
+        <AudioLabel {media} />
       </div>
       <div class='col-8 h-full card-grid'>
         <div class='px-15 py-10 bg-very-dark'>
@@ -59,6 +61,9 @@
             {:else if media.duration}
               <span class='text-nowrap'>{media.duration + ' Minutes'}</span>
             {/if}
+            <span class='text-nowrap'>
+              <AudioLabel {media} banner={true}/>
+            </span>
             {#if media.status}
               <span class='text-nowrap'>{media.status?.toLowerCase().replace(/_/g, ' ')}</span>
             {/if}

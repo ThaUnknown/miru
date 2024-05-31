@@ -4,6 +4,7 @@
   import { formatMap, statusColorMap } from '@/modules/anime.js'
   import { hoverClick } from '@/modules/click.js'
   import { countdown } from '@/modules/util.js'
+  import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
 
   import { page } from '@/App.svelte'
   /** @type {import('@/modules/al.d.ts').Media} */
@@ -36,8 +37,10 @@
         {/if}
       </div>
     {/if}
-    <img loading='lazy' src={media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full rounded' style:--color={media.coverImage.color || '#1890ff'} />
-
+    <div class="d-inline-block position-relative">
+      <img loading='lazy' src={media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full rounded' style:--color={media.coverImage.color || '#1890ff'} />
+      <AudioLabel {media} />
+    </div>
     <div class='text-white font-weight-very-bold font-size-16 pt-15 title overflow-hidden'>
       {#if media.mediaListEntry?.status}
         <div style:--statusColor={statusColorMap[media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={media.mediaListEntry.status} />

@@ -6,7 +6,7 @@ import { alToken } from '@/modules/settings.js'
 import { toast } from 'svelte-sonner'
 import { sleep } from './util.js'
 
-const codes = {
+export const codes = {
   400: 'Bad Request',
   401: 'Unauthorized',
   402: 'Payment Required',
@@ -465,7 +465,7 @@ class AnilistClient {
   async getUserLists (variables) {
     const userId = this.userID?.viewer?.data?.Viewer.id
     variables.id = userId
-    if (variables.sort) { variables.sort = variables.sort.replace('USER_SCORE_DESC', 'SCORE_DESC')}
+    variables.sort = variables.sort?.replace('USER_SCORE_DESC', 'SCORE_DESC');
     const query = /* js */` 
       query($id: Int $sort: [MediaListSort]){
         MediaListCollection(userId: $id, type: ANIME, sort: $sort, forceSingleCompletedList: true) {

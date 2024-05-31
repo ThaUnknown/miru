@@ -2,6 +2,7 @@
   import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
+  import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
 
@@ -119,6 +120,9 @@
           {media.duration + ' Minutes'}
         </span>
       {/if}
+      <span class='text-nowrap d-flex align-items-center'>
+        <AudioLabel {media} banner={true}/>
+      </span>
       {#if media.season || media.seasonYear}
         <span class='text-nowrap d-flex align-items-center'>
           {[media.season?.toLowerCase(), media.seasonYear].filter(s => s).join(' ')}
