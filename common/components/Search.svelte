@@ -348,23 +348,27 @@
     </div>
   </div>
   <div class='w-full px-10 pt-10 h-50 d-flex flex-colum align-items-center'>
-    {#if sanitisedSearch?.length}
-      <span
-        class='material-symbols-outlined font-size-24 mr-20 filled text-dark-light'
-        >sell</span>
-      {#each badgeKeys as key}
-        {#each sanitisedSearch as badge}
-          {#if badge.key === key}
-            {#if badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title') }
-              <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>
-                {badge.key === 'sort' ? 'Sort: ' : getBadgeDisplayName(badge.key)} {badge.key === 'sort' ? getSortDisplayName(badge.value) : (badge.key !== 'hideMyAnime' ? ('' + badge.value).replace(/_/g, ' ').toLowerCase() : '')}
-                <button on:click={() => removeBadge(badge)} class='badge-remove-btn'>x</button>
-              </span>
-            {/if}
-          {/if}
-        {/each}
-      {/each}
-    {/if}
+    <form>
+      <div role="button" tabindex="0">
+        {#if sanitisedSearch?.length}
+          <span
+            class='material-symbols-outlined font-size-24 mr-20 filled text-dark-light'
+            >sell</span>
+          {#each badgeKeys as key}
+            {#each sanitisedSearch as badge}
+              {#if badge.key === key}
+                {#if badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title') }
+                  <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>
+                    {badge.key === 'sort' ? 'Sort: ' : getBadgeDisplayName(badge.key)} {badge.key === 'sort' ? getSortDisplayName(badge.value) : (badge.key !== 'hideMyAnime' ? ('' + badge.value).replace(/_/g, ' ').toLowerCase() : '')}
+                    <button on:click={() => removeBadge(badge)} class='badge-remove-btn'>x</button>
+                  </span>
+                {/if}
+              {/if}
+            {/each}
+          {/each}
+        {/if}
+      </div>
+    </form>
     <span class='material-symbols-outlined font-size-24 mr-10 filled ml-auto text-dark-light pointer' class:text-muted={$settings.cards === 'small'} use:click={() => changeCardMode('small')}>grid_on</span>
     <span class='material-symbols-outlined font-size-24 filled text-dark-light pointer' class:text-muted={$settings.cards === 'full'} use:click={() => changeCardMode('full')}>grid_view</span>
   </div>
