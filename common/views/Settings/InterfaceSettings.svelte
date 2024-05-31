@@ -5,6 +5,7 @@
   import IPC from '@/modules/ipc.js'
   import SettingCard from './SettingCard.svelte'
   import { SUPPORTS } from '@/modules/support.js'
+  import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   function updateAngle () {
     IPC.emit('angle', settings.value.angle)
   }
@@ -42,6 +43,14 @@
     <option value='small' selected>Small</option>
     <option value='full'>Full</option>
   </select>
+</SettingCard>
+<SettingCard title='Card Audio' description={'If the dub or sub icon should be shown on the cards in the menu.\nThis will show one of three simple icons which are previewed as follows:'}>
+  <AudioLabel example={true}/>
+  <div class='custom-switch'>
+    <input type='checkbox' id='card-audio' bind:checked={settings.cardAudio} />
+    <label for='card-audio'>{settings.cardAudio ? 'On' : 'Off'}</label>
+    
+  </div>
 </SettingCard>
 {#if SUPPORTS.angle}
   <h4 class='mb-10 font-weight-bold'>Rendering Settings</h4>
