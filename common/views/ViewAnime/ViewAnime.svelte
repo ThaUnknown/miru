@@ -142,6 +142,13 @@
             </div>
           </div>
           <Details {media} />
+          <div class='m-0 px-20 pb-0 pt-10 d-flex flex-row text-nowrap overflow-x-scroll text-capitalize align-items-start'>
+            {#each media.tags as tag}
+              <div class='bg-dark px-20 py-10 mr-10 rounded text-nowrap'>
+                <span class='font-weight-bolder'>{tag.name}</span><span class='font-weight-light'>: {tag.rank}%</span>
+              </div>
+          {/each}
+          </div>
           <div class='d-flex flex-row mt-20 pt-10'>
             {#each media.genres as genre}
               <div class='bg-dark px-20 py-10 mr-10 rounded font-size-16'>
