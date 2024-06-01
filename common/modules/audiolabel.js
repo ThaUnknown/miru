@@ -13,7 +13,7 @@ export async function cacheDubs() {
             dubInfo.value = await getDubInfo()
             initialized.set(true)
             // update dubInfo every hour
-            setInterval(() => dubInfo.value = getDubInfo(), 1000 * 60 * 60)
+            setInterval(async () => dubInfo.value = await getDubInfo(), 1000 * 60 * 60)
         }
     })
 }
