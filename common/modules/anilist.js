@@ -6,6 +6,8 @@ import { alToken } from '@/modules/settings.js'
 import { toast } from 'svelte-sonner'
 import { sleep } from './util.js'
 
+import { cacheDubs } from '@/modules/audiolabel.js'
+
 export const codes = {
   400: 'Bad Request',
   401: 'Unauthorized',
@@ -205,6 +207,8 @@ class AnilistClient {
       if (!this.rateLimitPromise) this.rateLimitPromise = sleep(time).then(() => { this.rateLimitPromise = null })
       return time
     })
+
+    cacheDubs()
 
     if (this.userID?.viewer?.data?.Viewer) {
       this.userLists.value = this.getUserLists({ sort: 'UPDATED_TIME_DESC' })

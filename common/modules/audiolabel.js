@@ -4,18 +4,10 @@ import { codes } from '@/modules/anilist.js'
 
 export const dubInfo = writable()
 
-const initialized = writable(false)
-
-
 export async function cacheDubs() {
-    await initialized.subscribe(async value => {
-        if (!value) {
-            dubInfo.value = await getDubInfo()
-            initialized.set(true)
-            // update dubInfo every hour
-            setInterval(async () => dubInfo.value = await getDubInfo(), 1000 * 60 * 60)
-        }
-    })
+    dubInfo.value = await getDubInfo()
+    // update dubInfo every hour
+    setInterval(async () => dubInfo.value = await getDubInfo(), 1000 * 60 * 60)
 }
 
 async function getDubInfo() {

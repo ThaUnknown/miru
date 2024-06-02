@@ -1,7 +1,6 @@
 <script>
     import { onMount } from 'svelte'
     import { settings } from '@/modules/settings.js'
-    import { cacheDubs } from '@/modules/audiolabel.js'
     import { dubInfo } from '@/modules/audiolabel.js'
 
     /** @type {import('@/modules/al.d.ts').Media} */
@@ -17,18 +16,17 @@
     /**
      * @param {number} id
      */
-    async function setLabel(id) {
-        const info = await dubInfo
+    function setLabel(id) {
+        const info = dubInfo
         if (info && info.value) {
             isDubbed = info.value.dubbed.includes(id)
             isPartial = info.value.incomplete.includes(id)
         }
     }
 
-    onMount(async () => {
-        await cacheDubs()
+    onMount(() => {
         if (media != null) {
-            await setLabel(media.idMal)
+            setLabel(media.idMal)
         }
     })
 </script>
