@@ -2,12 +2,23 @@ import { toast } from 'svelte-sonner'
 import { writable } from 'simple-store-svelte'
 import { codes } from '@/modules/anilist.js'
 
+const initialized = writable(false)
+
 export const dubInfo = writable()
 
-export async function cacheDubs() {
-    dubInfo.value = await getDubInfo()
-    // update dubInfo every hour
-    setInterval(async () => dubInfo.value = await getDubInfo(), 1000 * 60 * 60)
+export async function loadDubs() {
+    initialized.subscribe(async value => {
+        if (!value) {
+            initialized.set(true)
+            dubInfo.value = await getDubInfo()
+            window.dispatchEvent(new Event('audio-label'));
+            // update dubInfo every hour
+            setInterval(async () => {
+                dubInfo.value = await getDubInfo();
+                window.dispatchEvent(new Event('audio-label'))
+            }, 1000 * 60 * 60);
+        }
+    })
 }
 
 async function getDubInfo() {

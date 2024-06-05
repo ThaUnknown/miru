@@ -1,7 +1,8 @@
 <script>
     import { onMount } from 'svelte'
     import { settings } from '@/modules/settings.js'
-    import { dubInfo } from '@/modules/audiolabel.js'
+    import { loadDubs, dubInfo } from '@/modules/audiolabel.js'
+    import { writable } from 'svelte/store';
 
     /** @type {import('@/modules/al.d.ts').Media} */
     export let media = null
@@ -10,39 +11,37 @@
     export let viewAnime = false
     export let example = false
 
-    let isDubbed = false
-    let isPartial = false
+    let isDubbed = writable(false)
+    let isPartial = writable(false)
 
-    /**
-     * @param {number} id
-     */
-    function setLabel(id) {
-        const info = dubInfo
-        if (info && info.value) {
-            isDubbed = info.value.dubbed.includes(id)
-            isPartial = info.value.incomplete.includes(id)
+    function setLabel() {
+        if (media != null && dubInfo.value) {
+            isDubbed.set(dubInfo.value.dubbed.includes(media.idMal))
+            isPartial.set(dubInfo.value.incomplete.includes(media.idMal))
         }
     }
 
     onMount(() => {
-        if (media != null) {
-            setLabel(media.idMal)
+        if (!example) {
+            loadDubs();
+            setLabel()
+            window.addEventListener('audio-label', setLabel);
         }
     })
 </script>
 
 {#if !banner && !viewAnime && !example && settings.value.cardAudio}
-    <span class='material-symbols-outlined font-size-24 label position-absolute {isDubbed ? 'dubbed' : isPartial ? 'incomplete' : 'subbed'}'>
-        {isDubbed ? 'mic' : isPartial ? 'mic_off' : 'closed_caption'}
+    <span class='material-symbols-outlined font-size-24 label position-absolute {$isDubbed ? 'dubbed' : $isPartial ? 'incomplete' : 'subbed'}'>
+        {$isDubbed ? 'mic' : $isPartial ? 'mic_off' : 'closed_caption'}
     </span>
 {:else if !viewAnime && !example}
-    {isDubbed ? 'Dub' : isPartial ? 'Partial Dub' : 'Sub'}
+    {$isDubbed ? 'Dub' : $isPartial ? 'Partial Dub' : 'Sub'}
 {:else if !example}
     <span class='material-symbols-outlined mx-10 font-size-24'>
-        {isDubbed ? 'mic' : isPartial ? 'mic_off' : 'closed_caption'}
+        {$isDubbed ? 'mic' : $isPartial ? 'mic_off' : 'closed_caption'}
     </span>
     <span class='mr-20'>
-        {isDubbed ? 'Dub' : isPartial ? 'Partial Dub' : 'Sub'}
+        {$isDubbed ? 'Dub' : $isPartial ? 'Partial Dub' : 'Sub'}
     </span>
 {:else}
     <div>
