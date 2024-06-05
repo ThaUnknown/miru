@@ -1,7 +1,8 @@
 <script>
-  import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
+  import { formatMap, playMedia } from '@/modules/anime.js'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
+  import Scoring from '@/views/ViewAnime/Scoring.svelte'
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
@@ -25,17 +26,6 @@
     return 'Watch Now'
   }
   const playButtonText = getPlayButtonText(media)
-  async function toggleStatus () {
-    if (!media.mediaListEntry) {
-      // add
-      const res = await setStatus('PLANNING', {}, media)
-      media.mediaListEntry = res.data.SaveMediaListEntry
-    } else {
-      // delete
-      anilistClient.delete({ id: media.mediaListEntry.id })
-      media.mediaListEntry = undefined
-    }
-  }
   function toggleFavourite () {
     anilistClient.favourite({ id: media.id })
     media.isFavourite = !media.isFavourite
@@ -97,9 +87,7 @@
       <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
         favorite
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.mediaListEntry} use:click={toggleStatus}>
-        bookmark
-      </button>
+      <Scoring {media} previewAnime={true}/>
     </div>
     <div class='details text-white text-capitalize pt-15 pb-10 d-flex'>
       <span class='text-nowrap d-flex align-items-center'>

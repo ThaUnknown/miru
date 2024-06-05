@@ -1,23 +1,13 @@
 <script>
-  import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
+  import { formatMap, playMedia } from '@/modules/anime.js'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
+  import Scoring from '@/views/ViewAnime/Scoring.svelte'
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   export let mediaList
 
   let current = mediaList[0]
 
-  async function toggleStatus () {
-    if (!current.mediaListEntry) {
-      // add
-      const res = await setStatus('PLANNING', {}, current)
-      current.mediaListEntry = res.data.SaveMediaListEntry
-    } else {
-      // delete
-      anilistClient.delete({ id: current.mediaListEntry.id })
-      current.mediaListEntry = undefined
-    }
-  }
   function toggleFavourite () {
     anilistClient.favourite({ id: current.id })
     current.isFavourite = !current.isFavourite
@@ -97,9 +87,7 @@
     <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={current.isFavourite} use:click={toggleFavourite}>
       favorite
     </button>
-    <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={current.mediaListEntry} use:click={toggleStatus}>
-      bookmark
-    </button>
+    <Scoring media={current} />
   </div>
   <div class='d-flex'>
     {#each mediaList as media}

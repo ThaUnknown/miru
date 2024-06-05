@@ -608,6 +608,7 @@ class AnilistClient {
           id,
           status,
           progress,
+          score,
           repeat
         }
       }`

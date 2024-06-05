@@ -1,6 +1,6 @@
 <script>
   import { getContext } from 'svelte'
-  import { getMediaMaxEp, formatMap, playMedia, setStatus } from '@/modules/anime.js'
+  import { getMediaMaxEp, formatMap, playMedia } from '@/modules/anime.js'
   import { playAnime } from '@/views/TorrentSearch/TorrentModal.svelte'
   import { toast } from 'svelte-sonner'
   import { anilistClient } from '@/modules/anilist.js'
@@ -8,6 +8,7 @@
   import Details from './Details.svelte'
   import EpisodeList from './EpisodeList.svelte'
   import ToggleList from './ToggleList.svelte'
+  import Scoring from './Scoring.svelte'
   import AudioLabel from './AudioLabel.svelte'
   import Following from './Following.svelte'
   import smoothScroll from '@/modules/scroll.js'
@@ -43,16 +44,6 @@
     return 'Watch Now'
   }
   $: playButtonText = getPlayButtonText(media)
-  async function toggleStatus () {
-    if (!media.mediaListEntry) {
-      // add
-      const res = await setStatus('PLANNING', {}, media)
-      media.mediaListEntry = res.data.SaveMediaListEntry
-    } else {
-      anilistClient.delete({ id: media.mediaListEntry.id })
-      media.mediaListEntry = undefined
-    }
-  }
   function toggleFavourite () {
     anilistClient.favourite({ id: media.id })
     media.isFavourite = !media.isFavourite
@@ -132,9 +123,7 @@
                   <button class='btn bg-dark btn-lg btn-square material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
                     favorite
                   </button>
-                  <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.mediaListEntry} use:click={toggleStatus}>
-                    bookmark
-                  </button>
+                  <Scoring {media} viewAnime={true} />
                   <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => copyToClipboard(`https://miru.watch/anime/${media.id}`)}>
                     share
                   </button>
