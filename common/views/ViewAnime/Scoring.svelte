@@ -1,9 +1,6 @@
 <script>
-  import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
-  import Scoring from '@/views/ViewAnime/Scoring.svelte'
-  import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   import { writable } from 'svelte/store'
 
   /** @type {import('@/modules/al.d.ts').Media} */
@@ -58,6 +55,9 @@
     }
   }
 
+  /**
+     * @param {{ target: { value: any; }; }} event
+     */
   function handleEpisodes(event) {
     const enteredValue = event.target.value
     if (/^\d+$/.test(enteredValue)) {
@@ -122,7 +122,7 @@
 </div>
 
 <style>
-  .modal :global(.absolute-container) {
+  .modal:global(.absolute-container) {
     left: -48% !important;
   }
 
