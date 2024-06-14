@@ -117,7 +117,7 @@
       delete search.continueWatching
       delete search.completedList
       search.sort = ''
-    } else if (badge.key === 'genre' || badge.key === 'tag') {
+    } else if ((badge.key === 'genre' || badge.key === 'tag') && !search.userList) {
       delete search.title
     } else if (badge.key === 'hideMyAnime') {
       delete search.hideStatus
