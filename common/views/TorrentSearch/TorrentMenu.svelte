@@ -134,7 +134,7 @@
       class='form-control bg-dark border-left-0'
       autocomplete='off'
       data-option='search'
-      placeholder='Find a specific torrent...' bind:value={searchText} on:keydown|stopPropagation|stopImmediatePropagation|capture />
+      placeholder='Find a specific torrent...' bind:value={searchText} />
   </div>
   <div class='row mt-20 mb-10'>
     <div class='col-12 col-md-6 d-flex align-items-center justify-content-around'>

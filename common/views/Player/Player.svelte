@@ -43,7 +43,7 @@
   }
 
   export let miniplayer = false
-  $condition = () => !miniplayer && SUPPORTS.keybinds
+  $condition = () => !miniplayer && SUPPORTS.keybinds && !document.querySelector('.modal.show')
   export let page
   export let files = []
   $: updateFiles(files)
