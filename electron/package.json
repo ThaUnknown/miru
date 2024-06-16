@@ -15,17 +15,17 @@
     "publish": "npm run web:build && electron-builder -p always"
   },
   "devDependencies": {
-    "@electron/notarize": "^2.3.0",
+    "@electron/notarize": "^2.3.2",
     "common": "workspace:*",
     "discord-rpc": "4.0.1",
     "electron": "29.1.4",
     "electron-builder": "^24.13.3",
-    "electron-log": "^5.1.1",
-    "electron-updater": "^6.1.8",
+    "electron-log": "^5.1.5",
+    "electron-updater": "^6.2.1",
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "@paymoapp/electron-shutdown-handler": "^1.0.15",
+    "@paymoapp/electron-shutdown-handler": "^1.1.2",
     "utp-native": "^2.5.3"
   },
   "standard": {
