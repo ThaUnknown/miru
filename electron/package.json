@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "private": true,
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
@@ -73,6 +73,8 @@
       "singleArchFiles": "node_modules/+(register-scheme|utp-native|fs-native-extensions)/**",
       "category": "public.app-category.video",
       "icon": "buildResources/icon.icns",
+      "hardenedRuntime": true,
+      "entitlements": "buildResources/entitlements.mac.plist",
       "target": [
         {
           "arch": "universal",
