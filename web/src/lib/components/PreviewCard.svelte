@@ -55,7 +55,7 @@
       <div class='material-symbols-outlined filled position-absolute z-10 top-0 right-0 p-15 font-size-22' class:d-none={hide} use:click={toggleMute}>{muted ? 'volume_off' : 'volume_up'}</div>
       <!-- for now we use some invidious instance, would be nice to somehow get these links outselves, this redirects straight to some google endpoint -->
       <!-- eslint-disable-next-line svelte/valid-compile -->
-      <video data-src={`https://yewtu.be/latest_version?id=${media.trailer.id}&itag=18`}
+      <video data-src={`https://inv.tux.pizza/latest_version?id=${media.trailer.id}&itag=18`}
         class='w-full h-full position-absolute left-0'
         class:d-none={hide}
         playsinline

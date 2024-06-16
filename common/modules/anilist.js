@@ -227,7 +227,7 @@ class AnilistClient {
     } catch (error) {
       if (res.ok) printError(error)
     }
-    if (!res.ok) {
+    if (!res.ok && res.status !== 404) {
       if (json) {
         for (const error of json?.errors || []) {
           printError(error)
