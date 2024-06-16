@@ -141,7 +141,7 @@
 
 <h4 class='mb-10 font-weight-bold'>Client Settings</h4>
 {#if SUPPORTS.torrentPath}
-  <SettingCard title='Torrent Download Location' description='Path to the folder used to store torrents. By default this is the TMP folder, which might loose data when your OS tries to reclaim storage.'>
+  <SettingCard title='Torrent Download Location' description='Path to the folder used to store torrents. By default this is the TMP folder, which might lose data when your OS tries to reclaim storage.'>
     <div
       class='input-group w-300 mw-full'>
       <div class='input-group-prepend'>
@@ -167,7 +167,7 @@
     </div>
   </div>
 </SettingCard>
-<SettingCard title='Max Number of Connections' description='Numer of peers per torrent. Higher values will increase download speeds but might quickly fill up available ports if your ISP limits the maximum allowed number of open connections.'>
+<SettingCard title='Max Number of Connections' description='Number of peers per torrent. Higher values will increase download speeds but might quickly fill up available ports if your ISP limits the maximum allowed number of open connections.'>
   <input type='number' inputmode='numeric' pattern='[0-9]*' bind:value={settings.maxConns} min='1' max='512' class='form-control text-right bg-dark w-100 mw-full' />
 </SettingCard>
 {#if SUPPORTS.torrentPort}
