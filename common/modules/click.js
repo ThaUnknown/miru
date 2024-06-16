@@ -1,3 +1,5 @@
+import { SUPPORTS } from '@/modules/support.js'
+
 let lastTapElement = null
 let lastHoverElement = null
 
@@ -26,12 +28,14 @@ export function click (node, cb = noop) {
   node.addEventListener('pointerleave', e => {
     e.stopPropagation()
   })
-  node.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.stopPropagation()
-      cb(e)
-    }
-  })
+  if (!SUPPORTS.isAndroid) {
+    node.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.stopPropagation()
+        cb(e)
+      }
+    })
+  }
 }
 
 export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
@@ -57,19 +61,21 @@ export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
       lastTapElement = hoverUpdate
     }
   })
-  node.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.stopPropagation()
-      lastTapElement?.(false)
-      if (lastTapElement === hoverUpdate) {
-        lastTapElement = null
-        cb(e)
-      } else {
-        hoverUpdate(true)
-        lastTapElement = hoverUpdate
+  if (!SUPPORTS.isAndroid) {
+    node.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.stopPropagation()
+        lastTapElement?.(false)
+        if (lastTapElement === hoverUpdate) {
+          lastTapElement = null
+          cb(e)
+        } else {
+          hoverUpdate(true)
+          lastTapElement = hoverUpdate
+        }
       }
-    }
-  })
+    })
+  }
   node.addEventListener('pointerup', e => {
     e.stopPropagation()
     if (e.pointerType === 'mouse') setTimeout(() => hoverUpdate(false))

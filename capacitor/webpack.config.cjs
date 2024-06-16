@@ -29,8 +29,9 @@ const capacitorConfig = {
     alias: {
       ...alias,
       wrtc: false,
+      'node-datachannel': false,
       'bittorrent-tracker/lib/client/http-tracker.js': resolve('../node_modules/bittorrent-tracker/lib/client/http-tracker.js'),
-      'webrtc-polyfill': resolve('../node_modules/webrtc-polyfill/browser.js')
+      'webrtc-polyfill': false // no webrtc on mobile, need the resources
     }
   },
   target: 'node',

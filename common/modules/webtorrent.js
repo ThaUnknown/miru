@@ -28,7 +28,7 @@ const announce = [
 let storedSettings = {}
 
 // HACK: this is https only, but electron doesnt run in https
-if (!globalThis.FileSystemFileHandle) global.FileSystemFileHandle = false
+if (!globalThis.FileSystemFileHandle) globalThis.FileSystemFileHandle = false
 
 try {
   storedSettings = JSON.parse(localStorage.getItem('settings')) || {}
