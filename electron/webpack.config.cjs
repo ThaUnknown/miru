@@ -27,6 +27,7 @@ module.exports = [
         'node-fetch': false,
         ws: false,
         wrtc: false,
+        'hybrid-chunk-store': false,
         'bittorrent-tracker/lib/client/http-tracker.js': resolve('../node_modules/bittorrent-tracker/lib/client/http-tracker.js'),
         'webrtc-polyfill': resolve('../node_modules/webrtc-polyfill/browser.js')
       }

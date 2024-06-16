@@ -30,6 +30,7 @@ const capacitorConfig = {
       ...alias,
       wrtc: false,
       'node-datachannel': false,
+      'hybrid-chunk-store': false,
       'bittorrent-tracker/lib/client/http-tracker.js': resolve('../node_modules/bittorrent-tracker/lib/client/http-tracker.js'),
       'webrtc-polyfill': false // no webrtc on mobile, need the resources
     }

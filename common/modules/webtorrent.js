@@ -6,6 +6,9 @@ import Parser from './parser.js'
 import { defaults, fontRx, subRx, videoRx } from './util.js'
 import { SUPPORTS } from './support.js'
 
+// HACK: this is https only, but electron doesnt run in https, weirdge
+if (!globalThis.FileSystemFileHandle) globalThis.FileSystemFileHandle = false
+
 const LARGE_FILESIZE = 32_000_000_000
 
 const announce = [
@@ -26,9 +29,6 @@ const announce = [
 ]
 
 let storedSettings = {}
-
-// HACK: this is https only, but electron doesnt run in https
-if (!globalThis.FileSystemFileHandle) globalThis.FileSystemFileHandle = false
 
 try {
   storedSettings = JSON.parse(localStorage.getItem('settings')) || {}
