@@ -6,6 +6,9 @@ import Parser from './parser.js'
 import { defaults, fontRx, subRx, videoRx } from './util.js'
 import { SUPPORTS } from './support.js'
 
+// HACK: this is https only, but electron doesnt run in https, weirdge
+if (!globalThis.FileSystemFileHandle) globalThis.FileSystemFileHandle = false
+
 const LARGE_FILESIZE = 32_000_000_000
 
 const announce = [
@@ -112,15 +115,18 @@ export default class TorrentClient extends WebTorrent {
   }
 
   loadLastTorrent (t) {
-    if (!localStorage.getItem('torrent') && !t) return
-    let torrent = localStorage.getItem('torrent') && new Uint8Array(JSON.parse(localStorage.getItem('torrent')))
-    if (!torrent) {
-      // this can be a magnet string, or a stringified array, lazy way of makign sure it works
-      try {
-        torrent = new Uint8Array(JSON.parse(t))
-      } catch (e) {
-        torrent = t
+    if (!t) return
+    let torrent
+    // this can be a magnet string, or a stringified array, lazy way of makign sure it works
+    try {
+      const parsed = JSON.parse(t)
+      if (typeof parsed === 'string') {
+        torrent = parsed
+      } else {
+        torrent = new Uint8Array(parsed)
       }
+    } catch (e) {
+      torrent = t
     }
     if (torrent) this.addTorrent(torrent, JSON.parse(localStorage.getItem('lastFinished')))
   }
@@ -144,10 +150,10 @@ export default class TorrentClient extends WebTorrent {
     }
     this.dispatch('files', files)
     this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
-    localStorage.setItem('torrent', JSON.stringify([...torrent.torrentFile]))
+    localStorage.setItem('torrent', JSON.stringify([...torrent.torrentFile])) // this won't work on mobile, but really it only speeds stuff up by ~1-2 seconds since magnet data doesn't need to be resolved
 
     if (torrent.length > await this.storageQuota(torrent.path)) {
-      this.dispatch('error', 'Torrent Too Big! This Torrent Exceeds The Selected Drive\'s Available Space. Change Download Location In Torrent Settings To A Drive With More Space And Restart The App!')
+      this.dispatchError('Torrent Too Big! This Torrent Exceeds The Selected Drive\'s Available Space. Change Download Location In Torrent Settings To A Drive With More Space And Restart The App!')
     }
   }
 
@@ -190,7 +196,7 @@ export default class TorrentClient extends WebTorrent {
   _scrape ({ id, infoHashes }) {
     this.trackers.cat._request(this.trackers.cat.scrapeUrl, { info_hash: infoHashes.map(infoHash => hex2bin(infoHash)) }, (err, data) => {
       if (err) {
-        this.dispatch('error', err)
+        this.dispatchError(err)
         return this.dispatch('scrape', { id, result: [] })
       }
       const { files } = data
@@ -203,12 +209,25 @@ export default class TorrentClient extends WebTorrent {
   }
 
   dispatchError (e) {
-    if (typeof ErrorEvent !== 'undefined' && e instanceof ErrorEvent) return this.dispatchError(e.error)
-    if (typeof PromiseRejectionEvent !== 'undefined' && e instanceof PromiseRejectionEvent) return this.dispatchError(e.reason)
-    for (const exclude of TorrentClient.excludedErrorMessages) {
-      if (e.message?.startsWith(exclude)) return
+    if (typeof Event !== 'undefined' && e instanceof Event) {
+      if (e.error) return this.dispatchError(e.error)
+      if (e.message) return this.dispatchError(e.message)
+      if (e.reason) return this.dispatchError(e.reason)
+      return this.dispatchError(JSON.stringify(e))
     }
-    this.dispatch('error', JSON.stringify(e?.message || e))
+    if (typeof Error !== 'undefined' && e instanceof Error) {
+      if (e.message) return this.dispatchError(e.message)
+      if (e.cause) return this.dispatchError(e.cause)
+      if (e.reason) return this.dispatchError(e.reason)
+      if (e.name) return this.dispatchError(e.name)
+      return this.dispatchError(JSON.stringify(e))
+    }
+    if (typeof e !== 'string') return this.dispatchError(JSON.stringify(e))
+    for (const exclude of TorrentClient.excludedErrorMessages) {
+      if (e.startsWith(exclude)) return
+    }
+    console.error(e)
+    this.dispatch('error', e)
   }
 
   async addTorrent (data, skipVerify = false) {
@@ -217,7 +236,7 @@ export default class TorrentClient extends WebTorrent {
       if (existing.ready) this.handleTorrent(existing)
       return
     }
-    localStorage.setItem('lastFinished', false)
+    localStorage.setItem('lastFinished', 'false')
     if (this.torrents.length) await this.remove(this.torrents[0])
     const torrent = await this.add(data, {
       private: this.settings.torrentPeX,
@@ -228,7 +247,7 @@ export default class TorrentClient extends WebTorrent {
     })
 
     torrent.once('done', () => {
-      if (SUPPORTS.torrentPersist && this.settings.torrentPath) localStorage.setItem('lastFinished', true)
+      if (SUPPORTS.torrentPersist && this.settings.torrentPath) localStorage.setItem('lastFinished', 'true')
     })
   }
 
@@ -250,7 +269,7 @@ export default class TorrentClient extends WebTorrent {
           found.select()
           this.current = found
           if (data.data.external && this.player) {
-            this.playerProcess = spawn(this.player, ['http://localhost:' + this.server.address().port + found.streamURL])
+            this.playerProcess = spawn(this.player, [encodeURI('http://localhost:' + this.server.address().port + found.streamURL)])
             this.playerProcess.stdout.on('data', () => {})
             const startTime = Date.now()
             this.playerProcess.once('close', () => {

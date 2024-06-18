@@ -175,10 +175,6 @@ export default class Subtitles {
         useLocalFonts: settings.value.missingFont,
         dropAllBlur: settings.value.disableSubtitleBlur
       }
-      if (settings.value.font) {
-        options.availableFonts[settings.value.font.name.toLowerCase()] = new Uint8Array(settings.value.font.data)
-        this.fonts.push(new Uint8Array(settings.value.font.data))
-      }
       this.renderer = new JASSUB(options)
     }
   }

@@ -145,25 +145,25 @@
       <div class='root h-full w-full overflow-y-md-auto p-20' use:smoothScroll>
         <PlayerSettings bind:settings={$settings} />
         <!-- spacing element to make space for miniplayer on mobile -->
-        <div class='h-250 d-md-none' />
+        <div class='h-250' />
       </div>
     </Tab>
     <Tab>
       <div class='root h-full w-full overflow-y-md-auto p-20' use:smoothScroll>
         <TorrentSettings bind:settings={$settings} />
-        <div class='h-250 d-md-none' />
+        <div class='h-250' />
       </div>
     </Tab>
     <Tab>
       <div class='root h-full w-full overflow-y-md-auto p-20' use:smoothScroll>
         <InterfaceSettings bind:settings={$settings} />
-        <div class='h-250 d-md-none' />
+        <div class='h-250' />
       </div>
     </Tab>
     <Tab>
       <div class='root h-full w-full overflow-y-md-auto p-20' use:smoothScroll>
         <AppSettings />
-        <div class='h-250 d-md-none' />
+        <div class='h-250' />
       </div>
     </Tab>
     <Tab>

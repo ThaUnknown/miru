@@ -10,12 +10,12 @@
   async function changeFont ({ detail }) {
     try {
       const blob = await detail.blob()
-      const data = await blob.arrayBuffer()
+      await blob.arrayBuffer()
       settings.font = {
         name: detail.fullName,
-        value: detail.postscriptName,
-        data: [...new Uint8Array(data)]
+        value: detail.postscriptName
       }
+      settings.missingFont = true
     } catch (error) {
       console.warn(error)
       toast.error('File Error', {
@@ -24,15 +24,24 @@
       })
     }
   }
+  function removeFont () {
+    settings.font = null
+  }
   function handleExecutable () {
     IPC.emit('player')
   }
+  $: if (!settings.missingFont) removeFont()
 </script>
 
+<h4 class='mb-10 font-weight-bold'>Subtitle Settings</h4>
 {#if ('queryLocalFonts' in self)}
-  <h4 class='mb-10 font-weight-bold'>Subtitle Settings</h4>
   <SettingCard title='Default Subtitle Font' description={"What font to use when the current loaded video doesn't provide or specify one.\nThis uses fonts installed on your OS."}>
-    <FontSelect class='form-control bg-dark w-300 mw-full' on:change={changeFont} value={settings.font?.name} />
+    <div class='input-group w-400 mw-full'>
+      <FontSelect class='form-control bg-dark w-300 mw-full' on:change={changeFont} value={settings.font?.name} />
+      <div class='input-group-append'>
+        <button type='button' class='btn btn-danger btn-square px-5 material-symbols-outlined font-size-20' use:click={() => removeFont()}>delete</button>
+      </div>
+    </div>
   </SettingCard>
   <SettingCard title='Find Missing Subtitle Fonts' description="Automatically finds and loads fonts that are missing from a video's subtitles.">
     <div class='custom-switch'>

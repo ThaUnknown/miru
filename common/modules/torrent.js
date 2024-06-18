@@ -68,7 +68,11 @@ client.on('warn', ({ detail }) => {
 export async function add (torrentID, hide) {
   if (torrentID) {
     console.info('Torrent: adding torrent', { torrentID })
-    localStorage.setItem('torrent', torrentID)
+    if (torrentID.startsWith?.('magnet:')) {
+      localStorage.setItem('torrent', JSON.stringify(torrentID))
+    } else {
+      localStorage.setItem('torrent', torrentID)
+    }
     files.set([])
     if (!hide) page.set('player')
     client.send('torrent', torrentID)

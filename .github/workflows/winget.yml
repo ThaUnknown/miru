@@ -10,5 +10,5 @@ jobs:
         uses: vedantmgoyal2009/winget-releaser@v2
         with:
           identifier: ThaUnknown.Miru
-          installers-regex: '\.exe$'
+          installers-regex: '\installer.exe$'
           token: ${{ secrets.WINGET_TOKEN }}

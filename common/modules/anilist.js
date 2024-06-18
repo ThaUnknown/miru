@@ -231,7 +231,7 @@ class AnilistClient {
     } catch (error) {
       if (res.ok) printError(error)
     }
-    if (!res.ok) {
+    if (!res.ok && res.status !== 404) {
       if (json) {
         for (const error of json?.errors || []) {
           printError(error)
@@ -285,6 +285,7 @@ class AnilistClient {
    **/
   async alSearchCompound (flattenedTitles) {
     if (!flattenedTitles.length) return []
+    // isAdult doesn't need an extra variable, as the title is the same regardless of type, so we re-use the same variable for adult and non-adult requests
     /** @type {Record<`v${number}`, string>} */
     const requestVariables = flattenedTitles.reduce((obj, { title, isAdult }, i) => {
       if (isAdult) return obj
@@ -342,41 +343,46 @@ class AnilistClient {
   async alEntry (filemedia) {
     // check if values exist
     if (filemedia.media && alToken) {
-      if (filemedia.failed) return
-      const { media } = filemedia
+      const { media, failed } = filemedia
+
+      if (failed) return
+      if (media.status !== 'FINISHED' && media.status !== 'RELEASING') return
+
       // check if media can even be watched, ex: it was resolved incorrectly
-      if (media.status === 'FINISHED' || media.status === 'RELEASING') {
-        // some anime/OVA's can have a single episode, or some movies can have multiple episodes
-        const singleEpisode = ((!media.episodes && (Number(filemedia.episode) === 1 || isNaN(Number(filemedia.episode)))) || (media.format === 'MOVIE' && media.episodes === 1)) && 1 // movie check
-        const videoEpisode = Number(filemedia.episode) || singleEpisode
-        const mediaEpisode = media.episodes || media.nextAiringEpisode?.episode || singleEpisode
-        // check episode range
-        if (videoEpisode && mediaEpisode && (mediaEpisode >= videoEpisode)) {
-          // check user's own watch progress
-          const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name) || []
+      // some anime/OVA's can have a single episode, or some movies can have multiple episodes
+      const singleEpisode = ((!media.episodes && (Number(filemedia.episode) === 1 || isNaN(Number(filemedia.episode)))) || (media.format === 'MOVIE' && media.episodes === 1)) && 1 // movie check
+      const videoEpisode = Number(filemedia.episode) || singleEpisode
+      const mediaEpisode = media.episodes || media.nextAiringEpisode?.episode || singleEpisode
 
-          const status = media.mediaListEntry?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
+      if (!videoEpisode || !mediaEpisode) return
+      // check episode range, safety check if `failed` didn't catch this
+      if (videoEpisode > mediaEpisode) return
 
-          if (!media.mediaListEntry || (media.mediaListEntry?.progress <= videoEpisode) || singleEpisode) {
-            const variables = {
-              repeat: media.mediaListEntry?.repeat || 0,
-              id: media.id,
-              status,
-              episode: videoEpisode,
-              lists
-            }
-            if (videoEpisode === mediaEpisode) {
-              variables.status = 'COMPLETED'
-              if (media.mediaListEntry?.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
-            }
-            if (!lists.includes('Watched using Miru')) {
-              variables.lists.push('Watched using Miru')
-            }
-            await this.entry(variables)
-            this.userLists.value = this.getUserLists({ sort: 'UPDATED_TIME_DESC' })
-          }
-        }
+      const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name) || []
+
+      const status = media.mediaListEntry?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
+      const progress = media.mediaListEntry?.progress
+
+      // check user's own watch progress
+      if (progress > videoEpisode) return
+      if (progress === videoEpisode && videoEpisode !== mediaEpisode && !singleEpisode) return
+
+      const variables = {
+        repeat: media.mediaListEntry?.repeat || 0,
+        id: media.id,
+        status,
+        episode: videoEpisode,
+        lists
       }
+      if (videoEpisode === mediaEpisode) {
+        variables.status = 'COMPLETED'
+        if (media.mediaListEntry?.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
+      }
+      if (!lists.includes('Watched using Miru')) {
+        variables.lists.push('Watched using Miru')
+      }
+      await this.entry(variables)
+      this.userLists.value = this.getUserLists()
     }
   }
 
