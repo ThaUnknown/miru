@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import process from 'node:process'
 
-import { BrowserWindow, MessageChannelMain, app, dialog, ipcMain, powerMonitor, shell } from 'electron'
+import { BrowserWindow, MessageChannelMain, Notification, app, dialog, ipcMain, nativeImage, powerMonitor, shell } from 'electron'
 import electronShutdownHandler from '@paymoapp/electron-shutdown-handler'
 
 import { development } from './util.js'
@@ -73,7 +73,24 @@ export default class App {
       this.destroy()
     })
 
+    ipcMain.on('notification', async (e, opts) => {
+      if (opts.icon) {
+        const res = await fetch(opts.icon)
+        const buffer = await res.arrayBuffer()
+        opts.icon = nativeImage.createFromBuffer(Buffer.from(buffer))
+      }
+      const notification = new Notification(opts)
+      notification.on('click', () => {
+        if (opts.data.id) {
+          this.mainWindow.show()
+          this.protocol.protocolMap.anime(opts.data.id)
+        }
+      })
+      notification.show()
+    })
+
     if (process.platform === 'win32') {
+      app.setAppUserModelId('com.github.thaunknown.miru')
       // this message usually fires in dev-mode from the parent process
       process.on('message', data => {
         if (data === 'graceful-exit') this.destroy()

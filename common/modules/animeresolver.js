@@ -1,4 +1,3 @@
-import { toast } from 'svelte-sonner'
 import { anilistClient } from './anilist.js'
 import { anitomyscript } from './anime.js'
 import { chunks } from './util.js'
