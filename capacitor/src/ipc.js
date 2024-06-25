@@ -1,3 +1,4 @@
+import { App } from '@capacitor/app'
 import { NodeJS } from 'capacitor-nodejs'
 import EventEmitter from 'events'
 
@@ -25,6 +26,10 @@ const [_platform, arch] = navigator.platform.split(' ')
 
 globalThis.version = {
   platform: globalThis.cordova?.platformId,
-  arch,
-  version: globalThis.cordova?.version
+  arch
 }
+
+main.once('version', async () => {
+  const { version } = await App.getInfo()
+  main.emit('version', version)
+})

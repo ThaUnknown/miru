@@ -1,7 +1,9 @@
 /node_modules/
 android/*
+!android/variables.gradle
 !android/app
 android/app/*
+!android/app/build.gradle
 !android/app/src
 android/app/src/*
 !android/app/src/main

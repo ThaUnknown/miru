@@ -81,6 +81,9 @@ importers:
       '@capacitor/ios':
         specifier: ^5.5.1
         version: 5.5.1(@capacitor/core@5.5.1)
+      '@capacitor/local-notifications':
+        specifier: 5.0.8
+        version: 5.0.8(@capacitor/core@5.5.1)
       '@capacitor/status-bar':
         specifier: ^5.0.6
         version: 5.0.6(@capacitor/core@5.5.1)
@@ -370,6 +373,14 @@ packages:
     resolution: {integrity: sha512-h00qt8u32t8eEbIkuG4IjR0r34YZC0sIXglDH8fRDdA84xDkTybmz3WtdpRWDzh6ukE2RIY7rmD7p410WSJ2yA==}
     peerDependencies:
       '@capacitor/core': ^5.5.0
+    dependencies:
+      '@capacitor/core': 5.5.1
+    dev: false
+
+  /@capacitor/local-notifications@5.0.8(@capacitor/core@5.5.1):
+    resolution: {integrity: sha512-rNmEF1OntokzcKtb4H9hAF//4Z6svWxRlzlNHP3Am7Q9WdNScmq/KjolX4Z9tLGHapF6JfBytdADih5KHjB45A==}
+    peerDependencies:
+      '@capacitor/core': ^5.0.0
     dependencies:
       '@capacitor/core': 5.5.1
     dev: false
