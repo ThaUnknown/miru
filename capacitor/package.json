@@ -31,6 +31,7 @@
     "@capacitor/cli": "^5.5.1",
     "@capacitor/core": "^5.5.1",
     "@capacitor/ios": "^5.5.1",
+    "@capacitor/local-notifications": "5.0.8",
     "@capacitor/status-bar": "^5.0.6",
     "capacitor-nodejs": "https://github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz",
     "capacitor-plugin-safe-area": "^2.0.5",

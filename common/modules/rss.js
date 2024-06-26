@@ -5,6 +5,7 @@ import { add } from '@/modules/torrent.js'
 import { getEpisodeMetadataForMedia } from './anime.js'
 import AnimeResolver from '@/modules/animeresolver.js'
 import { hasNextPage } from '@/modules/sections.js'
+import IPC from '@/modules/ipc.js'
 
 export const exclusions = ['DTS', '[EMBER]']
 const isDev = location.hostname === 'localhost'
@@ -101,11 +102,31 @@ class RSSMediaManager {
     const items = parseRSSNodes(targetPage)
     hasNextPage.value = items.length === perPage
     const result = this.structureResolveResults(items)
+
+    this.findNewReleasesAndNotify(result, this.resultMap[url]?.date)
+
     this.resultMap[url] = {
       date: changed.pubDate,
       result
     }
     return result
+  }
+
+  async findNewReleasesAndNotify (results, oldDate) {
+    if (!oldDate) return
+
+    const res = await Promise.all(await results)
+    const newReleases = res.filter(({ date }) => date > oldDate)
+
+    for (const { media, parseObject, episode } of newReleases) {
+      const options = {
+        title: media?.title.userPreferred || parseObject.anime_title,
+        body: `Episode ${episode || 1} is out!`,
+        icon: media?.coverImage.medium,
+        data: { id: media?.id }
+      }
+      IPC.emit('notification', options)
+    }
   }
 
   async structureResolveResults (items) {

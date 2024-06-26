@@ -3,11 +3,42 @@ import { StatusBar, Style } from '@capacitor/status-bar'
 import { SafeArea } from 'capacitor-plugin-safe-area'
 import { App } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
+import { LocalNotifications } from '@capacitor/local-notifications'
 import IPC from './ipc.js'
 
 IPC.on('open', url => Browser.open({ url }))
 
 App.addListener('appUrlOpen', ({ url }) => handleProtocol(url))
+
+let canShowNotifications = false
+
+LocalNotifications.checkPermissions().then(async value => {
+  if (value) {
+    try {
+      await LocalNotifications.requestPermissions()
+      canShowNotifications = true
+    } catch (e) {
+      console.error(e)
+    }
+  }
+})
+
+let id = 0
+IPC.on('notification', noti => {
+  /** @type {import('@capacitor/local-notifications').LocalNotificationSchema} */
+  const notification = {
+    title: noti.title,
+    body: noti.body,
+    id: id++,
+    attachments: [
+      {
+        id: '' + id++,
+        url: noti.icon
+      }
+    ]
+  }
+  if (canShowNotifications) LocalNotifications.schedule({ notifications: [notification] })
+})
 
 // schema: miru://key/value
 const protocolMap = {

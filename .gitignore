@@ -4,7 +4,6 @@
 # Build output
 **/dist/
 **/build/
-**/android/
 
 # Dependencies
 node_modules
