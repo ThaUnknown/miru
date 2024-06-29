@@ -985,6 +985,25 @@
         break
     }
   }
+
+  function handleSeekbarKey (e) {
+    if (e.key === 'ArrowLeft') {
+      e.stopPropagation()
+      e.stopImmediatePropagation()
+      e.preventDefault()
+      rewind()
+    } else if (e.key === 'ArrowRight') {
+      e.stopPropagation()
+      e.stopImmediatePropagation()
+      e.preventDefault()
+      forward()
+    } else if (e.key === 'ArrowDown') {
+      e.stopPropagation()
+      e.stopImmediatePropagation()
+      e.preventDefault()
+      document.querySelector('div[data-name=\'toggleFullscreen\']')?.focus()
+    }
+  }
 </script>
 
 <!-- <svelte:window bind:innerWidth bind:innerHeight /> -->
@@ -1101,7 +1120,7 @@
     {/if}
   </div>
   <div class='bottom d-flex z-40 flex-column px-20'>
-    <div class='w-full d-flex align-items-center h-20 mb-5 seekbar' tabindex='0' role='button'>
+    <div class='w-full d-flex align-items-center h-20 mb-5 seekbar' tabindex='0' role='button' on:keydown={handleSeekbarKey}>
       <Seekbar
         accentColor='var(--accent-color)'
         class='font-size-20'

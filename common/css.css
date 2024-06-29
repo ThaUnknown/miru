@@ -128,7 +128,8 @@ img[src=''], img[src=' '] {
 
 *:focus-visible {
   outline: none;
-  box-shadow: var(--dm-button-primary-box-shadow-focus) !important;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1.5px #eee !important;
 }
 
 .modal:focus-visible {

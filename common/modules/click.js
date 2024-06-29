@@ -14,6 +14,13 @@ document.addEventListener('pointerup', () => {
   })
 })
 
+/** @typedef {{element: Element, x: number, y: number, inViewport: boolean}} ElementPosition  */
+
+/**
+ * Adds click event listener to the specified node.
+ * @param {HTMLElement} node - The node to attach the click event listener to.
+ * @param {Function} [cb=noop] - The callback function to be executed on click.
+ */
 export function click (node, cb = noop) {
   node.tabIndex = 0
   node.role = 'button'
@@ -38,6 +45,11 @@ export function click (node, cb = noop) {
   }
 }
 
+// TODO: this needs to be re-written.... again... it should detect pointer type and have separate functionality for mouse and touch and none for dpad
+/**
+ * Adds hover and click event listeners to the specified node.
+ * @param {HTMLElement} node - The node to attach the event listeners to.
+ */
 export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
   let pointerType = 'mouse'
   node.tabIndex = 0
@@ -93,18 +105,30 @@ const Directions = { up: 1, right: 2, down: 3, left: 4 }
 const InverseDirections = { up: 'down', down: 'up', left: 'right', right: 'left' }
 const DirectionKeyMap = { ArrowDown: 'down', ArrowUp: 'up', ArrowLeft: 'left', ArrowRight: 'right' }
 
+/**
+ * Calculates the direction between two points.
+ * @param {Object} anchor - The anchor point.
+ * @param {Object} relative - The relative point.
+ * @returns {number} - The direction between the two points.
+ */
 function getDirection (anchor, relative) {
   return Math.round((Math.atan2(relative.y - anchor.y, relative.x - anchor.x) * 180 / Math.PI + 180) / 90)
 }
 
+/**
+ * Calculates the distance between two points.
+ * @param {Object} anchor - The anchor point.
+ * @param {Object} relative - The relative point.
+ * @returns {number} - The distance between the two points.
+ */
 function getDistance (anchor, relative) {
   return Math.hypot(relative.x - anchor.x, relative.y - anchor.y)
 }
 
 /**
- * Gets keyboard-focusable elements within a specified element
- * @param {Element} [element=document.body] element
- * @returns {Element[]}
+ * Gets keyboard-focusable elements within a specified element.
+ * @param {Element} [element=document.body] - The element to search within.
+ * @returns {Element[]} - An array of keyboard-focusable elements.
  */
 function getKeyboardFocusableElements (element = document.body) {
   return [...element.querySelectorAll('a[href], button:not([disabled]), fieldset:not([disabled]), input:not([disabled]), optgroup:not([disabled]), option:not([disabled]), select:not([disabled]), textarea:not([disabled]), details, [tabindex]:not([tabindex="-1"]), [contenteditable], [controls]')].filter(
@@ -113,7 +137,9 @@ function getKeyboardFocusableElements (element = document.body) {
 }
 
 /**
- * @param {Element} element
+ * Gets the position of an element.
+ * @param {Element} element - The element to get the position of.
+ * @returns {ElementPosition} - The position of the element.
  */
 function getElementPosition (element) {
   const { x, y, width, height, top, left, bottom, right } = element.getBoundingClientRect()
@@ -121,6 +147,10 @@ function getElementPosition (element) {
   return { element, x: x + width * 0.5, y: y + height * 0.5, inViewport }
 }
 
+/**
+ * Gets the positions of all focusable elements.
+ * @returns {ElementPosition[]} - An array of element positions.
+ */
 function getFocusableElementPositions () {
   const elements = []
   for (const element of getKeyboardFocusableElements(document.querySelector('.modal.show') ?? document.body)) {
@@ -130,6 +160,11 @@ function getFocusableElementPositions () {
   return elements
 }
 
+/**
+ * Checks if an element is within the viewport.
+ * @param {Object} rect - The coordinates of the element.
+ * @returns {boolean} - True if the element is within the viewport, false otherwise.
+ */
 function isInViewport ({ top, left, bottom, right }) {
   return top >= 0 && left >= 0 && bottom <= window.innerHeight && right <= window.innerWidth
 }
@@ -141,6 +176,12 @@ function isInViewport ({ top, left, bottom, right }) {
 //   return false
 // }
 
+/**
+ * @param {ElementPosition[]} keyboardFocusable
+ * @param {ElementPosition} currentElement
+ * @param {string} direction
+ * @returns {ElementPosition[]}
+ */
 function getElementsInDesiredDirection (keyboardFocusable, currentElement, direction) {
   // first try finding visible elements in desired direction
   return keyboardFocusable.filter(position => {
@@ -154,6 +195,10 @@ function getElementsInDesiredDirection (keyboardFocusable, currentElement, direc
   })
 }
 
+/**
+ * Navigates using D-pad keys.
+ * @param {string} [direction='up'] - The direction to navigate.
+ */
 function navigateDPad (direction = 'up') {
   const keyboardFocusable = getFocusableElementPositions()
   const currentElement = !document.activeElement || document.activeElement === document.body ? keyboardFocusable[0] : getElementPosition(document.activeElement)
@@ -168,8 +213,15 @@ function navigateDPad (direction = 'up') {
       return reducer
     }, { distance: Infinity, element: null })
 
-    closestElement.element.focus()
-    closestElement.element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' })
+    /** @type {{element: HTMLElement}} */
+    const { element } = closestElement
+
+    const isInput = element.matches('input[type=text], input[type=url], input[type=number], textarea')
+    // make readonly
+    if (isInput) element.readOnly = true
+    element.focus()
+    if (isInput) setTimeout(() => { element.readOnly = false })
+    element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' })
     return
   }
 

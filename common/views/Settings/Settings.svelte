@@ -200,7 +200,7 @@
         {:then changelog}
           {#each changelog as { version, date, body }}
             <hr class='my-20' />
-            <div class='row py-20 px-20 px-sm-0 position-relative'>
+            <div class='row py-20 px-20 px-sm-0 position-relative' tabindex='0' role='button'>
               <div class='col-sm-3 order-last order-sm-first text-white'>
                 <div class='position-sticky top-0 pt-20'>
                   {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

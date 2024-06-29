@@ -54,8 +54,8 @@
   {@const completed = !watched && userProgress >= episode}
   {@const target = userProgress + 1 === episode}
   {@const progress = !watched && ($animeProgress?.[episode] ?? 0)}
-  <div class='w-full my-20 content-visibility-auto scale' class:opacity-half={completed} class:px-20={!target} class:h-150={image || summary} use:click={() => play(episode)}>
-    <div class='rounded w-full h-full overflow-hidden d-flex flex-xsm-column flex-row pointer' class:border={target} class:bg-black={completed} class:bg-dark={!completed}>
+  <div class='w-full my-20 content-visibility-auto scale' class:opacity-half={completed} class:px-20={!target} class:h-150={image || summary}>
+    <div class='rounded w-full h-full overflow-hidden d-flex flex-xsm-column flex-row pointer' class:border={target} class:bg-black={completed} class:bg-dark={!completed} use:click={() => play(episode)}>
       {#if image}
         <div class='h-full'>
           <img alt='thumbnail' src={image} class='img-cover h-full' />
