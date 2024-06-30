@@ -34,18 +34,19 @@
 </script>
 
 <span class='d-flex px-20 align-items-end pointer text-decoration-none text-muted'
-  use:click={_click}
   use:deferredLoad>
-  <div class='font-size-24 font-weight-semi-bold'>{opts.title}</div>
-  <div class='pr-10 ml-auto font-size-12'>View More</div>
+  <div class='font-size-24 font-weight-semi-bold' use:click={_click}>{opts.title}</div>
+  <div class='pr-10 ml-auto font-size-12' use:click={_click}>View More</div>
 </span>
-<div class='pb-10 w-full position-relative d-flex flex-row justify-content-start gallery'>
-  {#each $preview || fakecards as card}
-    <Card {card} />
-  {/each}
-  {#if $preview?.length}
-    <ErrorCard promise={$preview[0].data} />
-  {/if}
+<div class='position-relative'>
+  <div class='pb-10 w-full d-flex flex-row justify-content-start gallery'>
+    {#each $preview || fakecards as card}
+      <Card {card} />
+    {/each}
+    {#if $preview?.length}
+      <ErrorCard promise={$preview[0].data} />
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -62,6 +63,10 @@
     pointer-events: none;
   }
   .gallery {
-    overflow-x: clip
+    overflow-x: scroll;
+    flex-shrink: 0;
+  }
+  .gallery::-webkit-scrollbar {
+    display: none;
   }
 </style>

@@ -1001,7 +1001,7 @@
       e.stopPropagation()
       e.stopImmediatePropagation()
       e.preventDefault()
-      document.querySelector('div[data-name=\'toggleFullscreen\']')?.focus()
+      document.querySelector('[data-name=\'toggleFullscreen\']')?.focus()
     }
   }
 </script>

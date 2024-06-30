@@ -143,7 +143,7 @@ function getKeyboardFocusableElements (element = document.body) {
  */
 function getElementPosition (element) {
   const { x, y, width, height, top, left, bottom, right } = element.getBoundingClientRect()
-  const inViewport = isInViewport({ top, left, bottom, right })
+  const inViewport = isInViewport({ top, left, bottom, right, width, height })
   return { element, x: x + width * 0.5, y: y + height * 0.5, inViewport }
 }
 
@@ -165,8 +165,8 @@ function getFocusableElementPositions () {
  * @param {Object} rect - The coordinates of the element.
  * @returns {boolean} - True if the element is within the viewport, false otherwise.
  */
-function isInViewport ({ top, left, bottom, right }) {
-  return top >= 0 && left >= 0 && bottom <= window.innerHeight && right <= window.innerWidth
+function isInViewport ({ top, left, bottom, right, width, height }) {
+  return top + height >= 0 && left + width >= 0 && bottom - height <= window.innerHeight && right - width <= window.innerWidth
 }
 
 // function isVisible ({ top, left, bottom, right }, element) {
@@ -191,6 +191,7 @@ function getElementsInDesiredDirection (keyboardFocusable, currentElement, direc
 
     // filters out elements which are in the viewport, but are overlayed by other elements like a modal
     if (position.inViewport && !position.element.checkVisibility()) return false
+    if (!position.inViewport && direction === 'right') return false // HACK: prevent right navigation from going to offscreen elements, but allow vertical elements!
     return true
   })
 }
@@ -221,21 +222,21 @@ function navigateDPad (direction = 'up') {
     if (isInput) element.readOnly = true
     element.focus()
     if (isInput) setTimeout(() => { element.readOnly = false })
-    element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' })
-    return
+    element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' })
+    // return
   }
 
-  // no elements in desired direction, go to opposite end [wrap around]
-  const elementsInOppositeDirection = getElementsInDesiredDirection(keyboardFocusable, currentElement, InverseDirections[direction])
-  if (elementsInOppositeDirection.length) {
-    const furthestElement = elementsInOppositeDirection.reduce((reducer, position) => {
-      const distance = getDistance(currentElement, position)
-      if (distance > reducer.distance) return { distance, element: position.element }
-      return reducer
-    }, { distance: -Infinity, element: null })
+  // no elements in desired direction, go to opposite end [wrap around] // this wasnt a good idea in the long run
+  // const elementsInOppositeDirection = getElementsInDesiredDirection(keyboardFocusable, currentElement, InverseDirections[direction])
+  // if (elementsInOppositeDirection.length) {
+  //   const furthestElement = elementsInOppositeDirection.reduce((reducer, position) => {
+  //     const distance = getDistance(currentElement, position)
+  //     if (distance > reducer.distance) return { distance, element: position.element }
+  //     return reducer
+  //   }, { distance: -Infinity, element: null })
 
-    furthestElement.element.focus()
-  }
+  //   furthestElement.element.focus()
+  // }
 }
 
 // hacky, but make sure keybinds system loads first so it can prevent this from running
