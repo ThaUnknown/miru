@@ -47,7 +47,7 @@ export default async function getResultsFromExtensions ({ media, episode, batch,
 }
 
 async function updatePeerCounts (entries) {
-  const id = crypto.randomUUID()
+  const id = Math.trunc(Math.random() * Number.MAX_SAFE_INTEGER).toString()
 
   const updated = await Promise.race([
     new Promise(resolve => {
