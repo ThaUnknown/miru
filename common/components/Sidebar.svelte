@@ -205,7 +205,7 @@
   .sidebar-overlay {
     width: var(--sidebar-width);
     transition: width .8s cubic-bezier(0.25, 0.8, 0.25, 1), left .8s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-    background: linear-gradient(90deg, #17191D 15.62%, rgba(23, 25, 29, 0.92) 36.46%, rgba(23, 25, 29, 0.619632) 70.83%, rgba(23, 25, 29, 0) 100%);
+    background: var(--sidebar-gradient);
     backdrop-filter: blur(2px);
     z-index: -1;
   }

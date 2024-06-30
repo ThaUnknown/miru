@@ -128,7 +128,7 @@
     position: absolute;
     left: 0 ; bottom: 0;
     width: 100%; height: 100%;
-    background: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292f 95%, #25292f 100%);
+    background: var(--episode-preview-card-gradient);
   }
   .list-status-circle {
     background: var(--statusColor);

@@ -79,7 +79,7 @@
   {#if media.bannerImage}
     <div class='position-absolute top-0 left-0 w-full h-full'>
       <img src={media.bannerImage} alt='bannerImage' class='img-cover w-full h-full' style='border-radius: 5px;' />
-      <div class='position-absolute top-0 left-0 w-full h-full' style='background: linear-gradient(90deg, #17191C 32%, rgba(23, 25, 28, 0.90) 100%);' />
+      <div class='position-absolute top-0 left-0 w-full h-full' style='background: var(--torrent-card-gradient)' />
     </div>
   {/if}
   <div class='d-flex pl-10 flex-column justify-content-between w-full h-100 position-relative' style='min-width: 0;'>

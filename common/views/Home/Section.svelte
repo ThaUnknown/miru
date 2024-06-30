@@ -59,7 +59,7 @@
     right: 0;
     height: 100%;
     width: 8rem;
-    background: linear-gradient(270deg, #17191cff 0%, #17191c00 100%);
+    background: var(--section-end-gradient);
     pointer-events: none;
   }
   .gallery {
