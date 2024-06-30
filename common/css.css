@@ -197,3 +197,10 @@ img[src=''], img[src=' '] {
   padding-left: 5rem;
   padding-right: 5rem;
 }
+
+@media (min-width: 769px) {
+  .px-md-50 {
+    padding-left: 5rem !important;
+    padding-right: 5rem !important;
+  }
+}

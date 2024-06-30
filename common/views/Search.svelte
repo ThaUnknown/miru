@@ -66,7 +66,7 @@
 
 <div class='bg-dark h-full w-full overflow-y-scroll d-flex flex-wrap flex-row root overflow-x-hidden justify-content-center align-content-start' use:smoothScroll bind:this={container} on:scroll={infiniteScroll}>
   <Search bind:search={$search} on:input={update} />
-  <div class='w-full d-flex flex-wrap flex-row px-50 justify-content-center align-content-start'>
+  <div class='w-full d-grid d-md-flex flex-wrap flex-row px-md-50 px-20 justify-content-center align-content-start'>
     {#key $key}
       {#each $items as card}
         <Card {card} />
@@ -77,3 +77,20 @@
     {/key}
   </div>
 </div>
+
+<style>
+  .d-grid:has(.item.small-card) {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important
+  }
+  .d-grid:has(.card.full-card) {
+    grid-template-columns: repeat(auto-fill, minmax(52rem, 1fr)) !important
+  }
+  .d-grid {
+    grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr))
+  }
+  @media (min-width: 769px) {
+    .d-grid :global(.item.small-card) {
+      width: 19rem !important;
+    }
+  }
+</style>

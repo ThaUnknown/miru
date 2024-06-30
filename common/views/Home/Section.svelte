@@ -39,7 +39,7 @@
   <div class='pr-10 ml-auto font-size-12' use:click={_click}>View More</div>
 </span>
 <div class='position-relative'>
-  <div class='pb-10 w-full d-flex flex-row justify-content-start gallery'>
+  <div class='pb-10 w-full d-flex flex-row justify-content-start gallery' class:isRSS={opts.isRSS}>
     {#each $preview || fakecards as card}
       <Card {card} />
     {/each}
@@ -65,6 +65,12 @@
   .gallery {
     overflow-x: scroll;
     flex-shrink: 0;
+  }
+  .gallery.isRSS {
+    overflow-x: clip;
+  }
+  .gallery :global(.item.small-card) {
+    width: 19rem !important
   }
   .gallery::-webkit-scrollbar {
     display: none;

@@ -19,11 +19,11 @@
   }
 </script>
 
-<div class='d-flex p-20 position-relative first-check' use:hoverClick={[viewMedia, setHoverState]}>
+<div class='d-flex p-md-20 p-15 position-relative first-check' use:hoverClick={[viewMedia, setHoverState]}>
   {#if preview}
     <PreviewCard {media} />
   {/if}
-  <div class='item d-flex flex-column h-full pointer content-visibility-auto'>
+  <div class='item small-card d-flex flex-column h-full pointer content-visibility-auto'>
     {#if $page === 'schedule'}
       <div class='w-full text-center pb-10'>
         {#if media.airingSchedule?.nodes?.[0]?.airingAt}
@@ -67,12 +67,13 @@
     -webkit-box-orient: vertical;
   }
   img {
-    height: 27rem;
+    width: 100%;
+    aspect-ratio: 230/331;
   }
   .item {
     animation: 0.3s ease 0s 1 load-in;
-    width: 19rem;
-    contain-intrinsic-height: 36.7rem;
+    width: 100%;
+    aspect-ratio: 152/296;
   }
   .cover-img {
     background-color: var(--color) !important;

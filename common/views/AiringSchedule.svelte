@@ -22,6 +22,9 @@
     const res = await anilistClient.search({ format: 'TV', ...SectionsManager.sanitiseObject(variables), year, season, status: 'RELEASING', page: 1, perPage: 50 })
     results.data.Page.media = results.data.Page.media.concat(res.data.Page.media)
 
+    // filter out entries without airing schedule and duplicates [only allow first occurence]
+    results.data.Page.media = results.data.Page.media.filter((media, index, self) => media.airingSchedule?.nodes?.[0]?.airingAt && self.findIndex(m => m.id === media.id) === index)
+
     results.data.Page.media.sort((a, b) => a.airingSchedule?.nodes?.[0]?.airingAt - b.airingSchedule?.nodes?.[0]?.airingAt)
 
     return results

@@ -1,5 +1,5 @@
-<div class='d-flex px-20 py-10 position-relative content-visibility-auto'>
-  <div class='card m-0 p-0 overflow-hidden'>
+<div class='d-flex px-20 py-10 position-relative content-visibility-auto justify-content-center'>
+  <div class='card m-0 p-0 overflow-hidden full-card'>
     <div class='row h-full'>
       <div class='col-4 skeloader bg-dark-light'><div class='skeleloader-swipe' /></div>
       <div class='col-8 bg-very-dark px-15 py-10'>

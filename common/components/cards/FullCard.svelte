@@ -13,14 +13,14 @@
   }
 </script>
 
-<div class='d-flex px-20 py-10 position-relative' use:click={viewMedia}>
-  <div class='card m-0 p-0 overflow-hidden pointer content-visibility-auto'
+<div class='d-flex px-20 py-10 position-relative justify-content-center' use:click={viewMedia}>
+  <div class='card m-0 p-0 overflow-hidden pointer content-visibility-auto full-card'
     style:--color={media.coverImage.color || '#1890ff'}>
     <div class='row h-full'>
-      <div class='col-4'>
+      <div class='col-4 img-col'>
         <img loading='lazy' src={media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full h-full' />
       </div>
-      <div class='col-8 h-full card-grid'>
+      <div class='col h-full card-grid'>
         <div class='px-15 py-10 bg-very-dark'>
           <h5 class='m-0 text-white text-capitalize font-weight-bold'>
             {#if media.mediaListEntry?.status}
@@ -94,7 +94,7 @@
 }
 .card {
   animation: 0.3s ease 0s 1 load-in;
-  width: 50rem !important;
+  width: 52rem !important;
   height: 27rem !important;
   box-shadow: rgba(0, 4, 12, 0.3) 0px 7px 15px, rgba(0, 4, 12, 0.05) 0px 4px 4px;
   contain-intrinsic-height: 27rem;

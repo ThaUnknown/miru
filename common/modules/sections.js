@@ -67,7 +67,8 @@ function createSections () {
         title,
         load: (page = 1, perPage = 12) => RSSManager.getMediaForRSS(page, perPage, url),
         preview: writable(RSSManager.getMediaForRSS(1, 12, url)),
-        variables: { disableSearch: true }
+        variables: { disableSearch: true },
+        isRSS: true
       }
 
       // update every 30 seconds
