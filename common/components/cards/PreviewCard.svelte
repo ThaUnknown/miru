@@ -149,7 +149,7 @@
     left: 0 ; bottom: 0;
     margin-bottom: -1px;
     width: 100%; height: 100% ;
-    background: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292fe3 95%, #25292f 100%);
+    background: var(--preview-card-gradient);
   }
   @keyframes load-in {
     from {

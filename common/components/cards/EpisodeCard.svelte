@@ -91,7 +91,7 @@
     -webkit-box-orient: vertical;
   }
   .image:after {
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 77.08%, rgba(0, 0, 0, 0.7) 100%);
+    background: var(--episode-card-gradient);
     content:'';
     position:absolute;
     left:0; top:0;

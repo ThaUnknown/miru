@@ -724,5 +724,3 @@ class AnilistClient {
 }
 
 export const anilistClient = new AnilistClient()
-
-globalThis.alc = anilistClient
