@@ -1,4 +1,4 @@
-import { Menu, app } from 'electron'
+import { app } from 'electron'
 import App from './app.js'
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -9,7 +9,7 @@ function createWindow () {
   main = new App()
 }
 
-Menu.setApplicationMenu(null) // performance
+// Menu.setApplicationMenu(null) // performance, but no keyboard shortcuts, sucks
 app.on('ready', createWindow)
 
 app.on('activate', () => {
