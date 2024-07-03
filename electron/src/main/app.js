@@ -146,6 +146,6 @@ export default class App {
       setTimeout(resolve, 5000).unref?.()
     })
     this.destroyed = true
-    app.quit()
+    if (!this.updater.install()) app.quit()
   }
 }

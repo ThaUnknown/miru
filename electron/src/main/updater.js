@@ -10,6 +10,7 @@ ipcMain.on('update', () => {
 
 autoUpdater.checkForUpdatesAndNotify()
 export default class Updater {
+  hasUpdate = false
   /**
    * @param {import('electron').BrowserWindow} window
    */
@@ -18,7 +19,15 @@ export default class Updater {
       window.webContents.send('update-available', true)
     })
     autoUpdater.on('update-downloaded', () => {
+      this.hasUpdate = true
       window.webContents.send('update-downloaded', true)
     })
+  }
+
+  install () {
+    if (this.hasUpdate) {
+      autoUpdater.quitAndInstall()
+      return true
+    }
   }
 }

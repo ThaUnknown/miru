@@ -69,9 +69,9 @@ class RSSMediaManager {
     if (!ignoreErrors) {
       res.catch(e => {
         toast.error('Search Failed', {
-          description: 'Failed Loading Media for Home Feed!\n' + e.message
+          description: 'Failed to loading media for home feed!\n' + e.message
         })
-        console.error('Failed Loading Media for Home Feed', e)
+        console.error('Failed to loading media for home feed', e)
       })
     }
     return Array.from({ length: perPage }, (_, i) => ({ type: 'episode', data: this.fromPending(res, i) }))
