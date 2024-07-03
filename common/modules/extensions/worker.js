@@ -15,24 +15,51 @@ class Extensions {
 
   /**
    * @param {Options} options
-   * @param {{ movie: boolean, batch: boolean }} param1
-   * @param {Record<string, boolean>} sources
+   * @param {{ movie: boolean, batch: boolean }} types
+   * @param {Record<string, boolean>} sourcesToQuery
    */
-  async query (options, { movie, batch }, sources) {
-    /** @type {Promise<Result[]>[]} */
+  async query (options, types, sourcesToQuery) {
+    /** @type {Promise<{ results: Result[], errors: string[] }>[]} */
     const promises = []
     for (const source of Object.values(this.sources)) {
-      if (!sources[source.name]) continue
-      if (movie) promises.push(source.movie(options))
-      if (batch) promises.push(source.batch(options))
-      promises.push(source.single(options))
+      if (!sourcesToQuery[source.name]) continue
+      promises.push(this._querySource(source, options, types))
     }
     /** @type {Result[]} */
     const results = []
-    for (const result of await Promise.allSettled(promises)) {
-      if (result.status === 'fulfilled') results.push(...result.value)
+    const errors = []
+    for (const res of await Promise.all(promises)) {
+      results.push(...res.results)
+      errors.push(...res.errors)
     }
-    return results.flat()
+
+    return { results, errors }
+  }
+
+  /**
+   * @param {AbstractSource} source
+   * @param {Options} options
+   * @param {{ movie: boolean, batch: boolean }} types
+   * @returns {Promise<{ results: Result[], errors: string[] }>}
+   */
+  async _querySource (source, options, { movie, batch }) {
+    const promises = []
+    promises.push(source.single(options))
+    if (movie) promises.push(source.movie(options))
+    if (batch) promises.push(source.batch(options))
+
+    const results = []
+    const errors = []
+    for (const result of await Promise.allSettled(promises)) {
+      if (result.status === 'fulfilled') {
+        results.push(...result.value)
+      } else {
+        console.error(result)
+        errors.push('Source ' + source.name + ' failed to load results:\n' + result.reason.message)
+      }
+    }
+
+    return { results, errors }
   }
 }
 

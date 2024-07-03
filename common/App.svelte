@@ -22,7 +22,6 @@
   import ViewAnime from './views/ViewAnime/ViewAnime.svelte'
   import TorrentModal from './views/TorrentSearch/TorrentModal.svelte'
   import Menubar from './components/Menubar.svelte'
-  import IspBlock from './views/IspBlock.svelte'
   import { Toaster } from 'svelte-sonner'
   import Logout from './components/Logout.svelte'
   import Navbar from './components/Navbar.svelte'
@@ -31,7 +30,6 @@
 </script>
 
 <div class='page-wrapper with-transitions bg-dark position-relative' data-sidebar-type='overlayed-all'>
-  <IspBlock />
   <Menubar bind:page={$page} />
   <ViewAnime />
   <Logout />

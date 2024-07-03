@@ -5,6 +5,7 @@ import { anilistClient } from '../anilist.js'
 import { anitomyscript } from '../anime.js'
 import { client } from '@/modules/torrent.js'
 import { extensionsWorker } from '@/views/Settings/TorrentSettings.svelte'
+import { toast } from 'svelte-sonner'
 
 /** @typedef {import('@thaunknown/ani-resourced/sources/types.d.ts').Options} Options */
 /** @typedef {import('@thaunknown/ani-resourced/sources/types.d.ts').Result} Result */
@@ -33,7 +34,14 @@ export default async function getResultsFromExtensions ({ media, episode, batch,
     exclusions
   }
 
-  const results = await worker.query(options, { movie, batch }, settings.value.sources)
+  const { results, errors } = await worker.query(options, { movie, batch }, settings.value.sources)
+
+  for (const error of errors) {
+    console.error(error)
+    toast.error('Source Fetch Failed!', {
+      description: error
+    })
+  }
 
   const deduped = dedupe(results)
 
