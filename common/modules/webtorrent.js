@@ -245,16 +245,16 @@ export default class TorrentClient extends WebTorrent {
       case 'current': {
         if (data.data) {
           const torrent = await this.get(data.data.current.infoHash)
-          if (!torrent) return
+          if (!torrent || torrent.destroyed) return
           const found = torrent.files.find(file => file.path === data.data.current.path)
-          if (!found) return
+          if (!found || found._destroyed) return
           if (this.playerProcess) {
             this.playerProcess.kill()
             this.playerProcess = null
           }
           if (this.current) {
             this.current.removeAllListeners('stream')
-            this.current.deselect()
+            if (!this.current._destroyed) this.current.deselect()
           }
           this.parser?.destroy()
           found.select()
