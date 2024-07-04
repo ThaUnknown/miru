@@ -134,6 +134,7 @@ export const defaults = {
   torrentDHT: false,
   torrentPeX: false,
   torrentPort: 0,
+  torrentStreamedDownload: true,
   dhtPort: 0,
   missingFont: true,
   maxConns: 50,

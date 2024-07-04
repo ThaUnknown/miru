@@ -64,6 +64,10 @@
   /* --error-text: hsl(358, 100%, 81%); */
 }
 
+[data-sonner-toaster] [data-description] {
+  white-space: pre-wrap;
+}
+
 .z-100 {
   z-index: 100;
 }

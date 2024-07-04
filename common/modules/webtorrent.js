@@ -9,8 +9,6 @@ import { SUPPORTS } from './support.js'
 // HACK: this is https only, but electron doesnt run in https, weirdge
 if (!globalThis.FileSystemFileHandle) globalThis.FileSystemFileHandle = false
 
-const LARGE_FILESIZE = 32_000_000_000
-
 const announce = [
   atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
   atob('d3NzOi8vdHJhY2tlci53ZWJ0b3JyZW50LmRldg=='),
@@ -142,19 +140,9 @@ export default class TorrentClient extends WebTorrent {
         url: this.serverMode === 'node' ? 'http://localhost:' + this.server.address().port + file.streamURL : file.streamURL
       }
     })
-    if (torrent.length > LARGE_FILESIZE) {
-      for (const file of torrent.files) {
-        file.deselect()
-      }
-      this.dispatch('warn', 'Detected Large Torrent! To Conserve Drive Space Files Will Be Downloaded Selectively Instead Of Downloading The Entire Torrent.')
-    }
     this.dispatch('files', files)
     this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
     localStorage.setItem('torrent', JSON.stringify([...torrent.torrentFile])) // this won't work on mobile, but really it only speeds stuff up by ~1-2 seconds since magnet data doesn't need to be resolved
-
-    if (torrent.length > await this.storageQuota(torrent.path)) {
-      this.dispatchError('Torrent Too Big! This Torrent Exceeds The Selected Drive\'s Available Space. Change Download Location In Torrent Settings To A Drive With More Space And Restart The App!')
-    }
   }
 
   async findFontFiles (targetFile) {
@@ -243,7 +231,8 @@ export default class TorrentClient extends WebTorrent {
       path: this.torrentPath || undefined,
       destroyStoreOnDestroy: !this.settings.torrentPersist,
       skipVerify,
-      announce
+      announce,
+      deselect: this.settings.torrentStreamedDownload
     })
 
     torrent.once('done', () => {
@@ -256,7 +245,8 @@ export default class TorrentClient extends WebTorrent {
       case 'current': {
         if (data.data) {
           const torrent = await this.get(data.data.current.infoHash)
-          const found = torrent?.files.find(file => file.path === data.data.current.path)
+          if (!torrent) return
+          const found = torrent.files.find(file => file.path === data.data.current.path)
           if (!found) return
           if (this.playerProcess) {
             this.playerProcess.kill()
@@ -264,9 +254,13 @@ export default class TorrentClient extends WebTorrent {
           }
           if (this.current) {
             this.current.removeAllListeners('stream')
+            this.current.deselect()
           }
           this.parser?.destroy()
           found.select()
+          if (found.length > await this.storageQuota(torrent.path)) {
+            this.dispatchError('File Too Big! This File Exceeds The Selected Drive\'s Available Space. Change Download Location In Torrent Settings To A Drive With More Space And Restart The App!')
+          }
           this.current = found
           if (data.data.external && this.player) {
             this.playerProcess = spawn(this.player, [encodeURI('http://localhost:' + this.server.address().port + found.streamURL)])
