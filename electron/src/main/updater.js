@@ -2,6 +2,7 @@ import log from 'electron-log'
 import { autoUpdater } from 'electron-updater'
 import { ipcMain } from 'electron'
 
+log.initialize({ spyRendererConsole: true })
 log.transports.file.level = 'info'
 autoUpdater.logger = log
 ipcMain.on('update', () => {

@@ -6,15 +6,16 @@ export const development = process.env.NODE_ENV?.trim() === 'development'
 const flags = [
   // not sure if safe?
   ['disable-gpu-sandbox'], ['disable-direct-composition-video-overlays'], ['double-buffer-compositing'], ['enable-zero-copy'], ['ignore-gpu-blocklist'],
+  ['force_high_performance_gpu'],
   // should be safe
   ['enable-hardware-overlays', 'single-fullscreen,single-on-top,underlay'],
   // safe performance stuff
   ['enable-features', 'PlatformEncryptedDolbyVision,CanvasOopRasterization,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
+  ['disable-renderer-backgrounding'],
   // disabling shit, vulkan rendering, widget layering aka right click context menus [I think] for macOS [I think]
   ['disable-features', 'Vulkan,WidgetLayering'],
   // utility stuff, aka website security that's useless for a native app:
-  ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'], ['bypasscsp-schemes'],
-  ['force_high_performance_gpu', 'disable-renderer-backgroundin']
+  ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'], ['bypasscsp-schemes']
 ]
 for (const [flag, value] of flags) {
   app.commandLine.appendSwitch(flag, value)

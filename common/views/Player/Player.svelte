@@ -175,8 +175,6 @@
         subs = null
       }
       current = file
-      emit('current', current)
-      client.send('current', { current: file, external: settings.value.enableExternal })
       if (!settings.value.enableExternal) {
         src = file.url
         subs = new Subtitles(video, files, current, handleHeaders)
@@ -190,6 +188,8 @@
         }
         client.on('externalWatched', watchedListener)
       }
+      emit('current', current)
+      client.send('current', { current: file, external: settings.value.enableExternal })
     }
   }
 
