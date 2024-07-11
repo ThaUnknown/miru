@@ -61,6 +61,11 @@
   .first-check:first-child :global(.absolute-container) {
     left: -48% !important
   }
+  .first-check:hover {
+    z-index: 30;
+    /* fixes transform scaling on click causing z-index issues */
+  }
+
   .title {
     display: -webkit-box;
     -webkit-line-clamp: 2;

@@ -48,7 +48,7 @@
   }
 </script>
 
-<div class='position-absolute w-350 h-400 absolute-container top-0 bottom-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer'>
+<div class='position-absolute w-350 h-400 absolute-container top-0 bottom-0 m-auto bg-dark-light rounded overflow-hidden pointer'>
   <div class='banner position-relative bg-black'>
     <img src={media.bannerImage || ' '} alt='banner' class='img-cover w-full h-full' loading='lazy' />
     {#if media.trailer?.id}
