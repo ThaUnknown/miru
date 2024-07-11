@@ -80,7 +80,7 @@
 
 <style>
   .d-grid:has(.item.small-card) {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)) !important
   }
   .d-grid:has(.card.full-card) {
     grid-template-columns: repeat(auto-fill, minmax(52rem, 1fr)) !important

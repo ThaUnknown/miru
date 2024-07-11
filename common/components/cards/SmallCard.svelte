@@ -45,11 +45,11 @@
       {media.title.userPreferred}
     </div>
     <div class='d-flex flex-row mt-auto pt-10 font-weight-medium justify-content-between w-full text-muted'>
-      <div class='d-flex align-items-center' style='margin-left: -3px'>
+      <div class='d-flex align-items-center pr-5' style='margin-left: -2px'>
         <span class='material-symbols-outlined font-size-24 pr-5'>calendar_month</span>
         {media.seasonYear || 'N/A'}
       </div>
-      <div class='d-flex align-items-center'>
+      <div class='d-flex align-items-center text-nowrap text-right'>
         {formatMap[media.format]}
         <span class='material-symbols-outlined font-size-24 pl-5'>monitor</span>
       </div>
@@ -58,9 +58,6 @@
 </div>
 
 <style>
-  .first-check:first-child :global(.absolute-container) {
-    left: -48% !important
-  }
   .first-check:hover {
     z-index: 30;
     /* fixes transform scaling on click causing z-index issues */

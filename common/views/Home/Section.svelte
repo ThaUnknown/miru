@@ -50,6 +50,9 @@
 </div>
 
 <style>
+  .gallery :global(.first-check:first-child) :global(.absolute-container) {
+    left: -48% !important
+  }
   .text-muted:hover {
     color: var(--dm-link-text-color-hover) !important;
   }

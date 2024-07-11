@@ -4,7 +4,7 @@ import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
 import { hex2bin, arr2hex, text2arr } from 'uint8-util'
 import Parser from './parser.js'
 import { defaults, fontRx, subRx, videoRx } from './util.js'
-import { SUPPORTS } from './support.js'
+import { SUPPORTS } from '@/modules/support.js'
 
 // HACK: this is https only, but electron doesnt run in https, weirdge
 if (!globalThis.FileSystemFileHandle) globalThis.FileSystemFileHandle = false
