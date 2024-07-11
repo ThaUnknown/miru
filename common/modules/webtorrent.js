@@ -184,7 +184,8 @@ export default class TorrentClient extends WebTorrent {
   _scrape ({ id, infoHashes }) {
     this.trackers.cat._request(this.trackers.cat.scrapeUrl, { info_hash: infoHashes.map(infoHash => hex2bin(infoHash)) }, (err, data) => {
       if (err) {
-        this.dispatchError(err)
+        const error = this._errorToString(err)
+        this.dispatch('warn', `Failed to update seeder counts: ${error}`)
         return this.dispatch('scrape', { id, result: [] })
       }
       const { files } = data
@@ -196,26 +197,31 @@ export default class TorrentClient extends WebTorrent {
     })
   }
 
-  dispatchError (e) {
+  _errorToString (e) {
     if (typeof Event !== 'undefined' && e instanceof Event) {
-      if (e.error) return this.dispatchError(e.error)
-      if (e.message) return this.dispatchError(e.message)
-      if (e.reason) return this.dispatchError(e.reason)
-      return this.dispatchError(JSON.stringify(e))
+      if (e.error) return this._errorToString(e.error)
+      if (e.message) return this._errorToString(e.message)
+      if (e.reason) return this._errorToString(e.reason)
+      return JSON.stringify(e)
     }
     if (typeof Error !== 'undefined' && e instanceof Error) {
-      if (e.message) return this.dispatchError(e.message)
-      if (e.cause) return this.dispatchError(e.cause)
-      if (e.reason) return this.dispatchError(e.reason)
-      if (e.name) return this.dispatchError(e.name)
-      return this.dispatchError(JSON.stringify(e))
+      if (e.message) return this._errorToString(e.message)
+      if (e.cause) return this._errorToString(e.cause)
+      if (e.reason) return this._errorToString(e.reason)
+      if (e.name) return this._errorToString(e.name)
+      return JSON.stringify(e)
     }
-    if (typeof e !== 'string') return this.dispatchError(JSON.stringify(e))
+    if (typeof e !== 'string') return JSON.stringify(e)
+    return e
+  }
+
+  dispatchError (e) {
+    const error = this._errorToString(e)
     for (const exclude of TorrentClient.excludedErrorMessages) {
-      if (e.startsWith(exclude)) return
+      if (error.startsWith(exclude)) return
     }
-    console.error(e)
-    this.dispatch('error', e)
+    console.error(error)
+    this.dispatch('error', error)
   }
 
   async addTorrent (data, skipVerify = false) {
