@@ -24,7 +24,8 @@
   --safe-area-top: 0px;
   --safe-area-left: 0px;
   --sidebar-gradient: linear-gradient(90deg, #17191D 15.62%, rgba(23, 25, 29, 0.92) 36.46%, rgba(23, 25, 29, 0.619632) 70.83%, rgba(23, 25, 29, 0) 100%);
-  --banner-gradient: linear-gradient(0deg, #17191D 0%, #0000 15%, #0000 100%), linear-gradient(90deg, #17191D 0%, rgba(23, 25, 29, 0.885417) 15%, rgba(25, 28, 32, 0) 72%);
+  --banner-gradient-bottom: linear-gradient(0deg, #17191D 0%, #0000 15%, #0000 100%);
+  --banner-gradient-left: linear-gradient(90deg, #17191D 0%, rgba(23, 25, 29, 0.5) 75%, rgba(25, 28, 32, 0) 100%);
   --torrent-card-gradient: linear-gradient(90deg, #17191C 32%, rgba(23, 25, 28, 0.90) 100%);
   --episode-card-gradient: linear-gradient(180deg, rgba(0, 0, 0, 0) 77.08%, rgba(0, 0, 0, 0.7) 100%);
   --episode-preview-card-gradient: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292f 95%, #25292f 100%);
