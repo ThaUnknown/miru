@@ -624,12 +624,12 @@ class AnilistClient {
   async search (variables = {}) {
     variables.sort ||= 'SEARCH_MATCH'
     const query = /* js */` 
-    query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $onList: Boolean, $status: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
+    query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $onList: Boolean, $status: MediaStatus, $status_not: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
       Page(page: $page, perPage: $perPage) {
         pageInfo {
           hasNextPage
         },
-        media(type: ANIME, search: $search, sort: $sort, onList: $onList, status: $status, season: $season, seasonYear: $year, genre: $genre, format: $format, format_not: MUSIC) {
+        media(type: ANIME, search: $search, sort: $sort, onList: $onList, status: $status, status_not: $status_not, season: $season, seasonYear: $year, genre: $genre, format: $format, format_not: MUSIC) {
           ${queryObjects}
         }
       }

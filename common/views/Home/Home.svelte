@@ -3,7 +3,7 @@
   import { settings } from '@/modules/settings.js'
   import { anilistClient, currentSeason, currentYear } from '@/modules/anilist.js'
 
-  const bannerData = anilistClient.search({ method: 'Search', sort: 'POPULARITY_DESC', perPage: 15, onList: false, season: currentSeason, year: currentYear })
+  const bannerData = anilistClient.search({ method: 'Search', sort: 'POPULARITY_DESC', perPage: 15, onList: false, season: currentSeason, year: currentYear, status_not: 'NOT_YET_RELEASED' })
 
   const manager = new SectionsManager()
 
