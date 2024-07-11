@@ -51,7 +51,7 @@ export function click (node, cb = noop) {
  * @param {HTMLElement} node - The node to attach the event listeners to.
  */
 export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
-  let pointerType = 'mouse'
+  let pointerType = 'touch'
   node.tabIndex = 0
   node.role = 'button'
   node.addEventListener('pointerenter', e => {
@@ -68,26 +68,25 @@ export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
     if (lastTapElement === hoverUpdate) {
       lastTapElement = null
       navigator.vibrate(15)
+      hoverUpdate(false)
       cb(e)
     } else {
       lastTapElement = hoverUpdate
     }
   })
-  if (!SUPPORTS.isAndroid) {
-    node.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        e.stopPropagation()
-        lastTapElement?.(false)
-        if (lastTapElement === hoverUpdate) {
-          lastTapElement = null
-          cb(e)
-        } else {
-          hoverUpdate(true)
-          lastTapElement = hoverUpdate
-        }
+  node.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.stopPropagation()
+      lastTapElement?.(false)
+      if (lastTapElement === hoverUpdate) {
+        lastTapElement = null
+        cb(e)
+      } else {
+        hoverUpdate(true)
+        if (!SUPPORTS.isAndroid) lastTapElement = hoverUpdate
       }
-    })
-  }
+    }
+  })
   node.addEventListener('pointerup', e => {
     e.stopPropagation()
     if (e.pointerType === 'mouse') setTimeout(() => hoverUpdate(false))
@@ -102,7 +101,7 @@ export function hoverClick (node, [cb = noop, hoverUpdate = noop]) {
 }
 
 const Directions = { up: 1, right: 2, down: 3, left: 4 }
-const InverseDirections = { up: 'down', down: 'up', left: 'right', right: 'left' }
+// const InverseDirections = { up: 'down', down: 'up', left: 'right', right: 'left' }
 const DirectionKeyMap = { ArrowDown: 'down', ArrowUp: 'up', ArrowLeft: 'left', ArrowRight: 'right' }
 
 /**
@@ -219,9 +218,13 @@ function navigateDPad (direction = 'up') {
 
     const isInput = element.matches('input[type=text], input[type=url], input[type=number], textarea')
     // make readonly
-    if (isInput) element.readOnly = true
+    let wasReadOnly = false
+    if (isInput) {
+      wasReadOnly = element.readOnly
+      element.readOnly = true
+    }
     element.focus()
-    if (isInput) setTimeout(() => { element.readOnly = false })
+    if (isInput && !wasReadOnly) setTimeout(() => { element.readOnly = false })
     element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' })
     // return
   }
