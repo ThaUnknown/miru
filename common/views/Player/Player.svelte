@@ -1114,7 +1114,7 @@
     <span class='material-symbols-outlined ctrl h-full align-items-center w-150 mw-full ml-auto' use:click={forward}> fast_forward </span>
     <div class='position-absolute bufferingDisplay' />
     {#if currentSkippable}
-      <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold' use:click={skip}>
+      <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold z-30' use:click={skip}>
         Skip {currentSkippable}
       </button>
     {/if}
@@ -1434,7 +1434,6 @@
 
   .middle .ctrl {
     font-size: 4rem;
-    margin: 2rem;
     z-index: 3;
     display: none;
   }
@@ -1453,10 +1452,9 @@
     width: 100%;
     height: 100%;
   }
-  .miniplayer .middle .ctrl {
+  .miniplayer .middle .ctrl[data-name='playPause'] {
     display: flex;
     font-size: 2.8rem;
-    margin: 0.6rem;
   }
   .miniplayer .middle .ctrl[data-name='playPause'] {
     font-size: 5.625rem;
