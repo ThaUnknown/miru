@@ -49,7 +49,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-a[href]:active, button:not([disabled]):active, fieldset:not([disabled]):active, input:not([disabled], [type='range']):active, optgroup:not([disabled]):active, option:not([disabled]):active, select:not([disabled]):active, textarea:not([disabled]):active, details:active, [tabindex]:not([tabindex="-1"], .seekbar):active, [contenteditable]:active, [controls]:active {
+a[href]:active, button:not([disabled]):active, fieldset:not([disabled]):active, input:not([disabled], [type='range']):active, optgroup:not([disabled]):active, option:not([disabled]):active, select:not([disabled]):active, textarea:not([disabled]):active, details:active, [tabindex]:not([tabindex="-1"], .seekbar, .dropdown):active, [contenteditable]:active, [controls]:active {
   transition: transform 0.1s ease-in-out;
   transform: scale(0.95) !important;
 }
