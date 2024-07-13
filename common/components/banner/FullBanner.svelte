@@ -37,7 +37,9 @@
 {#key current}
   <img src={current.bannerImage || `https://i.ytimg.com/vi/${current.trailer?.id}/maxresdefault.jpg` || ''} alt='banner' class='img-cover w-full h-full position-absolute' />
 {/key}
-<div class='pl-20 pb-20 justify-content-end d-flex flex-column h-full banner mw-full '>
+<div class='gradient-bottom h-full position-absolute top-0 w-full' />
+<div class='gradient-left h-full position-absolute top-0 w-800' />
+<div class='pl-20 pb-20 justify-content-end d-flex flex-column h-full banner mw-full'>
   <div class='text-white font-weight-bold font-size-40 title w-800 mw-full overflow-hidden'>
     {current.title.userPreferred}
   </div>
@@ -102,6 +104,12 @@
 </div>
 
 <style>
+  .gradient-bottom {
+    background: var(--banner-gradient-bottom);
+  }
+  .gradient-left {
+    background: var(--banner-gradient-left);
+  }
   .progress-badge {
     transition: width .8s ease;
   }
@@ -138,7 +146,7 @@
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
   }
-  img {
+  img, .gradient-bottom, .gradient-left {
     z-index: -1;
   }
   .font-size-40 {

@@ -1,4 +1,4 @@
-/* globals navigationbar */
+/* globals navigationbar, PictureInPicture */
 import { StatusBar, Style } from '@capacitor/status-bar'
 import { SafeArea } from 'capacitor-plugin-safe-area'
 import { App } from '@capacitor/app'
@@ -91,3 +91,17 @@ StatusBar.setOverlaysWebView({ overlay: true })
 navigationbar.setUp(true)
 
 // cordova screen orientation plugin is also used, and it patches global screen.orientation.lock
+
+// hook into pip request, and use our own pip implementation, then instantly report exit pip
+// this is more like DOM PiP, rather than video PiP
+HTMLVideoElement.prototype.requestPictureInPicture = function () {
+  PictureInPicture.enter(this.videoWidth, this.videoHeight, success => {
+    this.dispatchEvent(new Event('leavepictureinpicture'))
+    if (success) document.querySelector('.content-wrapper').requestFullscreen()
+  }, err => {
+    this.dispatchEvent(new Event('leavepictureinpicture'))
+    console.error(err)
+  })
+
+  return Promise.resolve({})
+}

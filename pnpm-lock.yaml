@@ -99,6 +99,9 @@ importers:
       cordova-plugin-navigationbar:
         specifier: ^1.0.31
         version: 1.0.31
+      cordova-plugin-pip:
+        specifier: ^0.0.2
+        version: 0.0.2
       cordova-plugin-screen-orientation:
         specifier: ^3.0.4
         version: 3.0.4
@@ -3280,6 +3283,10 @@ packages:
   /cordova-plugin-navigationbar@1.0.31:
     resolution: {integrity: sha512-xt9tx5Aprf052OvuG2JohjRkkU/6U6XQ8mXOx93HaHFz6cCZI1+B0pl/uoyU/FkJsP41QIw1upnMdzgav11ifw==}
     engines: {'0': {name: cordova, version: '>=3.0.0'}}
+    dev: false
+
+  /cordova-plugin-pip@0.0.2:
+    resolution: {integrity: sha512-Wy9aK7rQX3kif6+kUl7RwTG/+arixvW5Sphyr0bPxsVrkVIliseW/S/JhO7BVX25/HGU0lGMvQe8a134yvI9iQ==}
     dev: false
 
   /cordova-plugin-screen-orientation@3.0.4:

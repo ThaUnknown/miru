@@ -25,7 +25,7 @@
   const progress = liveAnimeEpisodeProgress(media?.id, data?.episode)
 </script>
 
-<div class='d-flex p-20 pb-10 position-relative' use:hoverClick={[data.onclick || viewMedia, setHoverState]}>
+<div class='d-flex p-20 pb-10 position-relative episode-card' use:hoverClick={[data.onclick || viewMedia, setHoverState]}>
   {#if preview}
     <EpisodePreviewCard {data} />
   {/if}
@@ -82,6 +82,10 @@
 </div>
 
 <style>
+  .episode-card:hover {
+    z-index: 30;
+    /* fixes transform scaling on click causing z-index issues */
+  }
   .material-symbols-outlined {
     font-size: 3rem;
   }

@@ -414,6 +414,7 @@
       if (!subs?.renderer) {
         if (video !== document.pictureInPictureElement) {
           video.requestPictureInPicture()
+          resetImmerse()
           pip = true
         } else {
           document.exitPictureInPicture()
@@ -433,6 +434,7 @@
             canvasVideo.remove()
           }
           pip = true
+          resetImmerse()
           canvasVideo.srcObject = stream
           canvasVideo.onloadedmetadata = () => {
             canvasVideo.play()
@@ -612,7 +614,7 @@
     if (!noSubs) subs.renderer.resize(video.videoWidth, video.videoHeight)
     const renderFrame = () => {
       context.drawImage(deband ? deband.canvas : video, 0, 0)
-      if (!noSubs) context.drawImage(subs.renderer?._canvas, 0, 0, canvas.width, canvas.height)
+      if (!noSubs && canvas.width && canvas.height) context.drawImage(subs.renderer?._canvas, 0, 0, canvas.width, canvas.height)
       loop = video.requestVideoFrameCallback(renderFrame)
     }
     renderFrame()
@@ -1107,14 +1109,12 @@
     <!-- eslint-disable-next-line svelte/valid-compile -->
     <div class='w-full h-full position-absolute toggle-immerse d-none' on:dblclick={toggleFullscreen} on:click|self={toggleImmerse} />
     <div class='w-full h-full position-absolute mobile-focus-target d-none' use:click={() => { page = 'player' }} />
-    <span class='material-symbols-outlined ctrl' class:text-muted={!hasLast} class:disabled={!hasLast} use:click={playLast}> skip_previous </span>
-    <span class='material-symbols-outlined ctrl' use:click={rewind}> fast_rewind </span>
+    <span class='material-symbols-outlined ctrl h-full align-items-center justify-content-end w-150 mw-full mr-auto' use:click={rewind}> fast_rewind </span>
     <span class='material-symbols-outlined ctrl' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
-    <span class='material-symbols-outlined ctrl' use:click={forward}> fast_forward </span>
-    <span class='material-symbols-outlined ctrl' class:text-muted={!hasNext} class:disabled={!hasNext} use:click={playNext}> skip_next </span>
+    <span class='material-symbols-outlined ctrl h-full align-items-center w-150 mw-full ml-auto' use:click={forward}> fast_forward </span>
     <div class='position-absolute bufferingDisplay' />
     {#if currentSkippable}
-      <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold' use:click={skip}>
+      <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold z-30' use:click={skip}>
         Skip {currentSkippable}
       </button>
     {/if}
@@ -1136,10 +1136,10 @@
     <div class='d-flex'>
       <span class='material-symbols-outlined ctrl' title='Play/Pause [Space]' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
       {#if hasLast}
-        <span class='material-symbols-outlined ctrl' title='Last [B]' data-name='playLast' use:click={playLast}> skip_previous </span>
+        <span class='material-symbols-outlined ctrl' title='Last [B]' use:click={playLast}> skip_previous </span>
       {/if}
       {#if hasNext}
-        <span class='material-symbols-outlined ctrl' title='Next [N]' data-name='playNext' use:click={playNext}> skip_next </span>
+        <span class='material-symbols-outlined ctrl' title='Next [N]' use:click={playNext}> skip_next </span>
       {/if}
       <div class='d-flex w-auto volume'>
         <span class='material-symbols-outlined ctrl' title='Mute [M]' data-name='toggleMute' use:click={toggleMute}> {muted ? 'volume_off' : 'volume_up'} </span>
@@ -1434,7 +1434,6 @@
 
   .middle .ctrl {
     font-size: 4rem;
-    margin: 2rem;
     z-index: 3;
     display: none;
   }
@@ -1453,10 +1452,9 @@
     width: 100%;
     height: 100%;
   }
-  .miniplayer .middle .ctrl {
+  .miniplayer .middle .ctrl[data-name='playPause'] {
     display: flex;
     font-size: 2.8rem;
-    margin: 0.6rem;
   }
   .miniplayer .middle .ctrl[data-name='playPause'] {
     font-size: 5.625rem;
@@ -1526,7 +1524,6 @@
 
   @media (pointer: none), (pointer: coarse) {
     .bottom .ctrl[data-name='playPause'],
-    .bottom .ctrl[data-name='playNext'],
     .bottom .volume,
     .bottom .keybinds {
       display: none !important;

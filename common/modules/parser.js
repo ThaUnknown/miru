@@ -1,5 +1,7 @@
-import { fontRx } from './util.js'
 import Metadata from 'matroska-metadata'
+import { arr2hex, hex2bin } from 'uint8-util'
+import { fontRx } from './util.js'
+import { SUPPORTS } from '@/modules/support.js'
 
 export default class Parser {
   parsed = false
@@ -33,7 +35,10 @@ export default class Parser {
       for (const file of files) {
         if (fontRx.test(file.filename) || file.mimetype?.toLowerCase().includes('font')) {
           // this is cursed, but required, as capacitor-node's IPC hangs for 2mins when runnig on 32bit android when sending uint8's
-          this.client.dispatch('file', { data: JSON.stringify([...file.data]) })
+          const data = hex2bin(arr2hex(file.data))
+          // IPC crashes if the message is >16MB, wild
+          if (SUPPORTS.isAndroid && data.length > 15_000_000) continue
+          this.client.dispatch('file', data)
         }
       }
     })

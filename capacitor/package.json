@@ -37,6 +37,7 @@
     "capacitor-plugin-safe-area": "^2.0.5",
     "common": "workspace:*",
     "cordova-plugin-navigationbar": "^1.0.31",
+    "cordova-plugin-pip": "^0.0.2",
     "cordova-plugin-screen-orientation": "^3.0.4",
     "es6-promise-plugin": "^4.2.2"
   }

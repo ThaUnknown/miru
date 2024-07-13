@@ -1,4 +1,5 @@
 import JASSUB from 'jassub'
+import { hex2arr, bin2hex } from 'uint8-util'
 import { toTS, subRx, videoRx } from './util.js'
 import { settings } from '@/modules/settings.js'
 import { client } from '@/modules/torrent.js'
@@ -41,7 +42,7 @@ export default class Subtitles {
     this.timeout = null
     this.handleFile = ({ detail }) => {
       if (this.selected) {
-        const uint8 = new Uint8Array(JSON.parse(detail.data))
+        const uint8 = hex2arr(bin2hex(detail))
         this.fonts.push(uint8)
         this.renderer?.addFont(uint8)
       }
