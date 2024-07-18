@@ -18,7 +18,7 @@
     <p>You can disable sources in the sources list by clicking on it's toggle.</p>
     <hr class='my-20' />
     <h3 class='text-white font-weight-bold'>How to develop new extensions?</h3>
-    <p>Extensions for Miru need to be written in JavaScriptn which are run in an isolated <a href='https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API' target='_blank'>Web Worker</a>. Make sure the data you're fetching is CORS enabled. Extension type definitions and example structures are available on <a href='https://github.com/ThaUnknown/miru/tree/master/extensions' target='_blank'>GitHub</a>.</p>
+    <p>Extensions for Miru need to be written in JavaScript which are run in an isolated <a href='https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API' target='_blank'>Web Worker</a>. Make sure the data you're fetching is CORS enabled. Extension type definitions and example structures are available on <a href='https://github.com/ThaUnknown/miru/tree/master/extensions' target='_blank'>GitHub</a>.</p>
     <p>Options object, which is passed to the class's single, batch and movie functions as the first parameters has the following fields:</p>
     <ul>
       <li>anilistId: number - Anilist anime id, can be used to query data from Anilist, such as MalID, episode metadata etc</li>
