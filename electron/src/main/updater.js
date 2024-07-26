@@ -28,6 +28,7 @@ export default class Updater {
   install () {
     if (this.hasUpdate) {
       autoUpdater.quitAndInstall()
+      this.hasUpdate = false
       return true
     }
   }
