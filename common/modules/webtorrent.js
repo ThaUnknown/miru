@@ -269,7 +269,7 @@ export default class TorrentClient extends WebTorrent {
           }
           this.current = found
           if (data.data.external && this.player) {
-            this.playerProcess = spawn(this.player, [encodeURI('' + new URL('http://localhost:' + this.server.address().port + found.streamURL))])
+            this.playerProcess = spawn(this.player, ['' + new URL('http://localhost:' + this.server.address().port + found.streamURL)])
             this.playerProcess.stdout.on('data', () => {})
             const startTime = Date.now()
             this.playerProcess.once('close', () => {

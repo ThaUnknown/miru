@@ -1109,9 +1109,11 @@
     <!-- eslint-disable-next-line svelte/valid-compile -->
     <div class='w-full h-full position-absolute toggle-immerse d-none' on:dblclick={toggleFullscreen} on:click|self={toggleImmerse} />
     <div class='w-full h-full position-absolute mobile-focus-target d-none' use:click={() => { page = 'player' }} />
-    <span class='material-symbols-outlined ctrl h-full align-items-center justify-content-end w-150 mw-full mr-auto' use:click={rewind}> fast_rewind </span>
+    <!-- eslint-disable-next-line svelte/valid-compile -->
+    <span class='material-symbols-outlined ctrl h-full align-items-center justify-content-end w-150 mw-full mr-auto' on:click={rewind}> fast_rewind </span>
     <span class='material-symbols-outlined ctrl' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>
-    <span class='material-symbols-outlined ctrl h-full align-items-center w-150 mw-full ml-auto' use:click={forward}> fast_forward </span>
+    <!-- eslint-disable-next-line svelte/valid-compile -->
+    <span class='material-symbols-outlined ctrl h-full align-items-center w-150 mw-full ml-auto' on:click={forward}> fast_forward </span>
     <div class='position-absolute bufferingDisplay' />
     {#if currentSkippable}
       <button class='skip btn text-dark position-absolute bottom-0 right-0 mr-20 mb-5 font-weight-bold z-30' use:click={skip}>
