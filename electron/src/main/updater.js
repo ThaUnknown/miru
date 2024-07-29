@@ -23,6 +23,12 @@ export default class Updater {
       this.hasUpdate = true
       window.webContents.send('update-downloaded', true)
     })
+    ipcMain.on('quit-and-install', () => {
+      if (this.hasUpdate) {
+        autoUpdater.quitAndInstall()
+        this.hasUpdate = false
+      }
+    })
   }
 
   install () {

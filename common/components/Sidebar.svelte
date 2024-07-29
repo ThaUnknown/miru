@@ -8,9 +8,40 @@
   import { click } from '@/modules/click.js'
   import { logout } from './Logout.svelte'
   import IPC from '@/modules/ipc.js'
+
+  let wasUpdated = false
+
+  globalThis.dd = IPC
+
+  IPC.on('update-available', () => {
+    console.log('uwu')
+    if (!wasUpdated) {
+      // insert icon in 2nd to last position
+      links.splice(links.length - 1, 0, {
+        click: () => {
+          toast('Update is downloading...')
+        },
+        icon: 'download',
+        text: 'Update Downloading...'
+      })
+      links = links
+    }
+    wasUpdated = true
+  })
+  IPC.on('update-downloaded', () => {
+    links[links.length - 2].css = 'update'
+    links[links.length - 2].text = 'Update Ready!'
+    links[links.length - 2].click = () => {
+      IPC.emit('quit-and-install')
+    }
+    links = links
+  })
+
   const view = getContext('view')
+
   export let page
-  const links = [
+
+  let links = [
     {
       click: () => {
         if (anilistClient.userID?.viewer?.data?.Viewer) {
@@ -94,7 +125,7 @@
 <div class='sidebar z-30 d-md-block' class:animated={$settings.expandingSidebar}>
   <div class='sidebar-overlay pointer-events-none h-full position-absolute' />
   <div class='sidebar-menu h-full d-flex flex-column justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
-    {#each links as { click: _click, icon, text, image, css, page: _page }, i (i)}
+    {#each links as { click: _click, icon, text, image, css, page: _page } (_click)}
       <div
         class='sidebar-link sidebar-link-with-icon pointer overflow-hidden {css}'
         use:click={_click}>
@@ -134,6 +165,10 @@
     font-variation-settings: 'FILL' 1;
     color: #fa68b6;
     text-shadow: 0 0 1rem #fa68b6;
+  }
+  .update .material-symbols-outlined {
+    color: #47cb6a;
+    font-variation-settings: 'FILL' 1;
   }
   .sidebar-menu {
     padding-top: 10rem;
