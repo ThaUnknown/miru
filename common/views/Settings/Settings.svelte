@@ -20,21 +20,6 @@
   IPC.on('version', data => (version = data))
   IPC.emit('version')
 
-  let wasUpdated = false
-  IPC.on('update-available', () => {
-    if (!wasUpdated) {
-      wasUpdated = true
-      toast('Auto Updater', {
-        description: 'A new version of Miru is available. Downloading!'
-      })
-    }
-  })
-  IPC.on('update-downloaded', () => {
-    toast.success('Auto Updater', {
-      description: 'A new version of Miru has downloaded. You can restart to update!'
-    })
-  })
-
   const changeLog = (async () => {
     const res = await fetch('https://api.github.com/repos/ThaUnknown/miru/releases')
     const json = await res.json()
