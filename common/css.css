@@ -28,7 +28,7 @@
   --banner-gradient-left: linear-gradient(90deg, #17191D 0%, rgba(23, 25, 29, 0.5) 75%, rgba(25, 28, 32, 0) 100%);
   --torrent-card-gradient: linear-gradient(90deg, #17191C 32%, rgba(23, 25, 28, 0.90) 100%);
   --episode-card-gradient: linear-gradient(180deg, rgba(0, 0, 0, 0) 77.08%, rgba(0, 0, 0, 0.7) 100%);
-  --episode-preview-card-gradient: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292f 95%, #25292f 100%);
+  --episode-preview-card-gradient: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292f 100%);
   --preview-card-gradient: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292fe3 95%, #25292f 100%);
   --section-end-gradient: linear-gradient(270deg, #17191cff 0%, #17191c00 100%);
   color-scheme: dark;
