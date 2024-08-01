@@ -78,12 +78,14 @@
 {/if}
 
 <h4 class='mb-10 font-weight-bold'>Home Screen Settings</h4>
-<SettingCard title='Hide My Anime' description={'The anime on your Completed or Dropped list will automatically be hidden from the default sections, this excludes manually added RSS feeds and user specific feeds.\nThis setting does not apply to manual searches.'}>
-  <div class='custom-switch'>
-    <input type='checkbox' id='hide-my-anime' bind:checked={settings.hideMyAnime} />
-    <label for='hide-my-anime'>{settings.hideMyAnime ? 'On' : 'Off'}</label>
-  </div>
-</SettingCard>
+{#if Helper.isAuthorized()}
+  <SettingCard title='Hide My Anime' description={'The anime on your Completed or Dropped list will automatically be hidden from the default sections, this excludes manually added RSS feeds and user specific feeds.'}>
+    <div class='custom-switch'>
+      <input type='checkbox' id='hide-my-anime' bind:checked={settings.hideMyAnime} />
+      <label for='hide-my-anime'>{settings.hideMyAnime ? 'On' : 'Off'}</label>
+    </div>
+  </SettingCard>
+{/if}
 <SettingCard title='RSS Feeds' description={'RSS feeds to display on the home screen. This needs to be a CORS enabled URL to a Nyaa or Tosho like RSS feed which cotains either an "infoHash" or "enclosure" tag.\nThis only shows the releases on the home screen, it doesn\'t automatically download the content.\nSince the feeds only provide the name of the file, Miru might not always detect the anime correctly!\nSome presets for popular groups are already provided as an example, custom feeds require the FULL URL.'}>
   <div>
     {#each settings.rssFeedsNew as _, i}
