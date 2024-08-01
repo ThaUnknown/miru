@@ -3,9 +3,10 @@
   import { since } from '@/modules/util'
   import { liveAnimeEpisodeProgress } from '@/modules/animeprogress.js'
   import { anilistClient } from "@/modules/anilist"
+  import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   export let data
   /** @type {import('@/modules/al.d.ts').Media | null} */
-  const media = data.media
+  const media = data.media && anilistClient.mediaCache[data.media.id]
 
   const episodeThumbnail = ((!media?.mediaListEntry?.status || !((media.mediaListEntry.status === 'CURRENT' || media.mediaListEntry.status === 'PAUSED' || media.mediaListEntry.status === 'DROPPED') && media.mediaListEntry.progress < data.episode)) && data.episodeData?.image) || media?.bannerImage || media?.coverImage.extraLarge || ' '
   let hide = true
@@ -53,7 +54,7 @@
   <div class='w-full d-flex flex-column flex-grow-1 px-20 pb-15'>
     <div class='row pt-15'>
       <div class='col pr-10'>
-        <div class='text-white font-weight-very-bold font-size-16 title overflow-hidden' title={data.media?.title.userPreferred || data.parseObject.anime_title}>
+        <div class='text-white font-weight-very-bold font-size-16 title overflow-hidden' title={anilistClient.title(media) || data.parseObject.anime_title}>
           {#if media?.mediaListEntry?.status}
             <div style:--statusColor={statusColorMap[media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={media.mediaListEntry.status} />
           {/if}
@@ -76,18 +77,26 @@
           {/if}
         </div>
         <div class='d-flex align-items-center'>
+          <div class='text-nowrap font-size-12 title text-muted d-flex align-items-center'>
+            <AudioLabel {media} {data} banner={true} episode={true} />
           </div>
           {#if data.date}
+            <div class='text-muted font-size-12 title ml-5 mr-5 overflow-hidden'>
+              •
+            </div>
             <div class='text-muted font-size-12 title overflow-hidden'>
               {since(data.date)}
             </div>
           {:else if data.similarity}
+            <div class='text-muted font-size-12 title ml-5 mr-5 overflow-hidden'>
+              •
+            </div>
             <div class='text-muted font-size-12 title overflow-hidden'>
               {Math.round(data.similarity * 100)}%
             </div>
           {/if}
         </div>
-      {/if}
+      </div>
     </div>
     <div class='w-full text-muted description overflow-hidden pt-15'>
       {data.episodeData?.description || media?.description?.replace(/<[^>]*>/g, '') || ''}

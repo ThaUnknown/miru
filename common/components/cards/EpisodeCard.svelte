@@ -3,6 +3,7 @@
   import EpisodePreviewCard from './EpisodePreviewCard.svelte'
   import { hoverClick } from '@/modules/click.js'
   import { since } from '@/modules/util.js'
+  import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   import { getContext } from 'svelte'
   import { liveAnimeEpisodeProgress } from '@/modules/animeprogress.js'
   import { anilistClient } from '@/modules/anilist.js'
@@ -79,18 +80,27 @@
             Batch
           {/if}
         </div>
+        <div class='d-flex align-items-center'>
+          <div class='text-nowrap font-size-12 title text-muted d-flex align-items-center'>
+            <AudioLabel {media} {data} banner={true} episode={true} />
           </div>
           {#if data.date}
+            <div class='text-muted font-size-12 title ml-5 mr-5 overflow-hidden'>
+              •
+            </div>
             <div class='text-muted font-size-12 title overflow-hidden'>
               {since(data.date)}
             </div>
           {:else if data.similarity}
+            <div class='text-muted font-size-12 title ml-5 mr-5 overflow-hidden'>
+              •
+            </div>
             <div class='text-muted font-size-12 title overflow-hidden'>
               {Math.round(data.similarity * 100)}%
             </div>
           {/if}
         </div>
-      {/if}
+      </div>
     </div>
   </div>
 </div>
@@ -99,6 +109,9 @@
   .episode-card:hover {
     z-index: 30;
     /* fixes transform scaling on click causing z-index issues */
+  }
+  .opacity-half {
+    opacity: 30%;
   }
   .material-symbols-outlined {
     font-size: 3rem;
