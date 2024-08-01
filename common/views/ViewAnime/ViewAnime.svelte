@@ -130,9 +130,11 @@
                   {playButtonText}
                 </button>
                 <div class='mt-20'>
-                  <button class='btn bg-dark btn-lg btn-square material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
-                    favorite
-                  </button>
+                  {#if Helper.isAniAuth()}
+                    <button class='btn bg-dark btn-lg btn-square material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
+                      favorite
+                    </button>
+                  {/if}
                   <Scoring {media} viewAnime={true} />
                   <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => copyToClipboard(`https://miru.watch/anime/${media.id}`)}>
                     share

@@ -84,9 +84,11 @@
         </span>
         {playButtonText}
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
-        favorite
-      </button>
+      {#if Helper.isAniAuth()}
+        <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
+          favorite
+        </button>
+      {/if}
       <Scoring {media} previewAnime={true}/>
     </div>
     <div class='details text-white text-capitalize pt-15 pb-10 d-flex'>
