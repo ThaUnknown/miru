@@ -3,9 +3,9 @@
   const badgeDisplayNames = { title: 'List:', search: 'Title:', genre: 'Genre:', tag: 'Tag:', season: 'Season:', year: 'Year:', format: 'Format:', status: 'Status:', sort: 'Sort:', hideMyAnime: 'Hide My Anime'}
   const sortOptions = { START_DATE_DESC: 'Release Date', SCORE_DESC: 'Score', POPULARITY_DESC: 'Popularity', TRENDING_DESC: 'Trending', UPDATED_TIME_DESC: 'Last Updated', STARTED_ON_DESC: 'Started On', FINISHED_ON_DESC: 'Finished On', PROGRESS_DESC: 'Your Progress', USER_SCORE_DESC: 'Your Score' }
 
-  export function searchCleanup (search) {
+  export function searchCleanup (search, badge) {
     return Object.fromEntries(Object.entries(search).map((entry) => {
-      return badgeKeys.includes(entry[0]) && entry
+      return (!badge || badgeKeys.includes(entry[0])) && entry
     }).filter(a => a?.[1]))
   }
 </script>
@@ -25,32 +25,6 @@
     tag: null
   }
   let form
-
-  const tagList = [
-    'Boys\' Love',
-    'Demons',
-    'Yuri',
-    'Food',
-    'Isekai',
-    'Iyashikei',
-    'Josei',
-    'Magic',
-    'Martial Arts',
-    'Military',
-    'Parody',
-    'Female Harem',
-    'Male Harem',
-    'Mixed Gender Harem',
-    'Parody',
-    'School',
-    'Seinen',
-    'Shoujo',
-    'Shounen',
-    'Space',
-    'Super Power',
-    'Vampire',
-    'Kids'
-  ]
 
   const genreList = [
     'Action',
@@ -73,7 +47,182 @@
     'Thriller'
   ]
 
-  $: sanitisedSearch = Object.entries(searchCleanup(search)).flatMap(
+  const tagList = [
+    'Chuunibyou',
+    'Demons',
+    'Food',
+    'Heterosexual',
+    'Isekai',
+    'Iyashikei',
+    'Josei',
+    'Magic',
+    'Yuri',
+    'Love Triangle',
+    'Female Harem',
+    'Male Harem',
+    'Mixed Gender Harem',
+    'Arranged Marriage',
+    'Marriage',
+    'Martial Arts',
+    'Military',
+    'Nudity',
+    'Parody',
+    'Reincarnation',
+    'Satire',
+    'School',
+    'Seinen',
+    'Shoujo',
+    'Shounen',
+    'Slavery',
+    'Space',
+    'Super Power',
+    'Superhero',
+    'Teens\' Love',
+    'Unrequited Love',
+    'Vampire',
+    'Kids',
+    'Gender Bending',
+    'Body Swapping',
+    'Boys\' Love',
+    'Cute Boys Doing Cute Things',
+    'Cute Girls Doing Cute Things',
+    'Acting',
+    'Afterlife',
+    'Age Gap',
+    'Age Regression',
+    'Aliens',
+    'Alternate Universe',
+    'Amnesia',
+    'Angels',
+    'Anti-Hero',
+    'Archery',
+    'Artificial Intelligence',
+    'Assassins',
+    'Asexual',
+    'Augmented Reality',
+    'Band',
+    'Bar',
+    'Battle Royale',
+    'Board Game',
+    'Boarding School',
+    'Bullying',
+    'Calligraphy',
+    'CGI',
+    'Classic Literature',
+    'College',
+    'Cosplay',
+    'Crime',
+    'Crossdressing',
+    'Cult',
+    'Dancing',
+    'Death Game',
+    'Desert',
+    'Disability',
+    'Drawing',
+    'Dragons',
+    'Dungeon',
+    'Elf',
+    'Espionage',
+    'Fairy',
+    'Femboy',
+    'Female Protagonist',
+    'Fashion',
+    'Foreign',
+    'Full CGI',
+    'Fugitive',
+    'Gambling',
+    'Ghost',
+    'Gods',
+    'Goblin',
+    'Guns',
+    'Gyaru',
+    'Hikikomori',
+    'Historical',
+    'Homeless',
+    'Idol',
+    'Inn',
+    'Kaiju',
+    'Konbini',
+    'Kuudere',
+    'Language Barrier',
+    'Makeup',
+    'Maids',
+    'Male Protagonist',
+    'Matriarchy',
+    'Matchmaking',
+    'Mermaid',
+    'Monster Boy',
+    'Monster Girl',
+    'Natural Disaster',
+    'Necromancy',
+    'Ninja',
+    'Nun',
+    'Office',
+    'Office Lady',
+    'Omegaverse',
+    'Orphan',
+    'Outdoor',
+    'Photography',
+    'Pirates',
+    'Polyamorous',
+    'Post-Apocalyptic',
+    'Primarily Adult Cast',
+    'Primarily Female Cast',
+    'Primarily Male Cast',
+    'Primarily Teen Cast',
+    'Prison',
+    'Rakugo',
+    'Restaurant',
+    'Robots',
+    'Rural',
+    'Samurai',
+    'School Club',
+    'Shapeshifting',
+    'Shrine Maiden',
+    'Skeleton',
+    'Slapstick',
+    'Snowscape',
+    'Space',
+    'Spearplay',
+    'Succubus',
+    'Surreal Comedy',
+    'Survival',
+    'Swordplay',
+    'Teacher',
+    'Time Loop',
+    'Time Manipulation',
+    'Time Skip',
+    'Transgender',
+    'Tsundere',
+    'Twins',
+    'Urban',
+    'Urban Fantasy',
+    'Video Games',
+    'Villainess',
+    'Virtual World',
+    'VTuber',
+    'War',
+    'Werewolf',
+    'Witch',
+    'Work',
+    'Writing',
+    'Wuxia',
+    'Yakuza',
+    'Yandere',
+    'Youkai',
+    'Zombie'
+  ]
+  let filteredTags = []
+
+  $: {
+    const searchInput = (searchTextInput.tag ? searchTextInput.tag.toLowerCase() : null)
+    filteredTags = tagList.filter(tag =>
+            (!search.tag || !search.tag.includes(tag)) && (!searchInput ||
+            tag.toLowerCase().includes(searchInput))
+    ).slice(0, 20)
+  }
+
+  $: sanitisedSearch = Object.entries(searchCleanup(search, true)).flatMap(
     ([key, value]) => {
       if (Array.isArray(value)) {
         return value.map((item) => ({ key, value: item }))
@@ -117,7 +266,9 @@
       delete search.userList
       delete search.continueWatching
       delete search.completedList
-      search.sort = ''
+      if (Helper.isUserSort(search)) {
+        search.sort = ''
+      }
     } else if ((badge.key === 'genre' || badge.key === 'tag') && !search.userList) {
       delete search.title
     } else if (badge.key === 'hideMyAnime') {
@@ -138,17 +289,24 @@
 
   function toggleHideMyAnime() {
     search.hideMyAnime = !search.hideMyAnime
-    search.hideStatus = search.hideMyAnime ? ['CURRENT', 'PLANNING', 'COMPLETED', 'DROPPED', 'PAUSED', 'REPEATING'] : ''
+    search.hideStatus = search.hideMyAnime ? ['CURRENT', 'COMPLETED', 'DROPPED', 'PAUSED', 'REPEATING'] : ''
     form.dispatchEvent(new Event('input', { bubbles: true }))
   }
 
-  function filterList(event, type) {
     const list = type === 'tag' ? tagList : genreList
     const searchKey = type === 'tag' ? 'tag' : 'genre'
-    const selectedValue = event.target.value
-    if (list.includes(selectedValue) && (!search[searchKey] || !search[searchKey].includes(selectedValue))) {
-      search[searchKey] = search[searchKey] ? [...search[searchKey], selectedValue] : [selectedValue]
+    const inputValue = event.target.value
+    let bestMatch = list.find(item => item.toLowerCase() === inputValue.toLowerCase())
+    if (!bestMatch) {
+      bestMatch = list.find(item => item.toLowerCase().startsWith(inputValue.toLowerCase()))
+    }
+    if (bestMatch && (!search[searchKey] || !search[searchKey].includes(bestMatch))) {
+      search[searchKey] = search[searchKey] ? [...search[searchKey], bestMatch] : [bestMatch]
       searchTextInput[searchKey] = null
+      form.dispatchEvent(new Event('input', { bubbles: true }))
+    }
+  }
+
   function clearTags() { // cannot specify genre and tag filtering with user specific sorting options when using alternative authentication.
     if (!Helper.isAniAuth() && Helper.isUserSort(search)) {
       search.genre = ''
@@ -205,11 +363,13 @@
       </div>
       <div class='input-group'>
         <input
+          id='genre'
           type='search'
+          title={(!Helper.isAniAuth() && Helper.isUserSort(search)) ? 'Cannot use with sort: ' + sortOptions[search.sort] : ''}
           class='form-control bg-dark-light border-left-0 text-capitalize'
           autocomplete='off'
           bind:value={searchTextInput.genre}
-          on:change={(event) => filterList(event, 'genre')}
+          on:change={(event) => filterTags(event, 'genre')}
           data-option='search'
           disabled={search.disableSearch || (!Helper.isAniAuth() && Helper.isUserSort(search))}
           placeholder='Any'
@@ -217,7 +377,9 @@
       </div>
       <datalist id='search-genre'>
         {#each genreList as genre}
-          <option>{genre}</option>
+          {#if !search.genre || !search.genre.includes(genre) }
+            <option>{genre}</option>
+          {/if}
         {/each}
       </datalist>
     </div>
@@ -228,18 +390,20 @@
       </div>
       <div class='input-group'>
         <input
+          id='tag'
           type='search'
+          title={(!Helper.isAniAuth() && Helper.isUserSort(search)) ? 'Cannot use with sort: ' + sortOptions[search.sort] : ''}
           class='form-control bg-dark-light border-left-0 text-capitalize'
           autocomplete='off'
           bind:value={searchTextInput.tag}
-          on:change={(event) => filterList(event, 'tag')}
+          on:change={(event) => filterTags(event, 'tag')}
           data-option='search'
           disabled={search.disableSearch || (!Helper.isAniAuth() && Helper.isUserSort(search))}
           placeholder='Any'
           list='search-tag'/>
       </div>
       <datalist id='search-tag'>
-        {#each tagList as tag}
+        {#each filteredTags as tag}
           <option>{tag}</option>
         {/each}
       </datalist>
@@ -303,7 +467,7 @@
         Sort
       </div>
       <div class='input-group'>
-        <select class='form-control bg-dark-light' required bind:value={search.sort} disabled={search.disableSearch}>
+        <select class='form-control bg-dark-light' required bind:value={search.sort} on:change={clearTags} disabled={search.disableSearch}>
           <option value selected disabled hidden>Any</option>
           <option value='START_DATE_DESC'>Release Date</option>
           <option value='SCORE_DESC'>Score</option>
@@ -322,13 +486,15 @@
         </select>
       </div>
     </div>
+    {#if Helper.isAuthorized()}
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
         <button
           class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0'
           type='button'
+          title='Hide My Anime'
           use:click={toggleHideMyAnime}
-          disabled={search.disableHide}
+          disabled={search.disableHide || search.disableSearch}
           class:text-primary={search.hideMyAnime}>
           <label for='hide-my-anime' class='pointer mb-0'> tune </label>
         </button>
@@ -337,7 +503,7 @@
     <input type='file' class='d-none' id='search-image' accept='image/*' on:input|preventDefault|stopPropagation={handleFile} />
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
-        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button'>
+        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button' title='Image Search'>
           <label for='search-image' class='pointer mb-0'>
             image
           </label>
@@ -346,7 +512,7 @@
     </div>
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
-        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button' use:click={searchClear} disabled={sanitisedSearch.length <= 0} class:text-danger={!!sanitisedSearch?.length || search.disableSearch || search.clearNext}>
+        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button' title='Clear Search' use:click={searchClear} disabled={sanitisedSearch.length <= 0} class:text-danger={!!sanitisedSearch?.length || search.disableSearch || search.clearNext}>
           {!!sanitisedSearch?.length || search.disableSearch || search.clearNext ? 'filter_alt_off' : 'filter_alt'}
         </button>
       </div>
@@ -361,13 +527,11 @@
             >sell</span>
           {#each badgeKeys as key}
             {#each sanitisedSearch as badge}
-              {#if badge.key === key}
-                {#if badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title') }
-                  <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>
-                    {badge.key === 'sort' ? 'Sort: ' : getBadgeDisplayName(badge.key)} {badge.key === 'sort' ? getSortDisplayName(badge.value) : (badge.key !== 'hideMyAnime' ? ('' + badge.value).replace(/_/g, ' ').toLowerCase() : '')}
-                    <button on:click={() => removeBadge(badge)} class='pointer bg-transparent border-0 text-white font-size-12 position-relative ml-10'>x</button>
-                  </span>
-                {/if}
+              {#if badge.key === key && (badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title')) }
+                <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>
+                  {badge.key === 'sort' ? 'Sort: ' : getBadgeDisplayName(badge.key)} {badge.key === 'sort' ? getSortDisplayName(badge.value) : (badge.key !== 'hideMyAnime' && badge.key !== 'hideSubs' ? ('' + badge.value).replace(/_/g, ' ').toLowerCase() : '')}
+                  <button on:click={() => removeBadge(badge)} class='pointer bg-transparent border-0 text-white font-size-12 position-relative ml-10' type='button'>x</button>
+                </span>
               {/if}
             {/each}
           {/each}

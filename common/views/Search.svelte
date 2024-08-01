@@ -27,8 +27,10 @@
     $items = [...$items, ...nextData]
     return nextData[nextData.length - 1].data
   }
-  const update = debounce(() => {
-    $key = {}
+  const update = debounce((event) => {
+    if (event.target.id !== 'genre' && event.target.id !== 'tag') {
+      $key = {}
+    }
   }, 300)
 
   $: loadTillFull($key)
