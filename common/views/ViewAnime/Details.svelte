@@ -6,6 +6,7 @@
     { property: 'status', label: 'Status', icon: 'live_tv' },
     { property: 'nodes', label: 'Studio', icon: 'business' },
     { property: 'source', label: 'Source', icon: 'source' },
+    { property: 'countryOfOrigin', label: 'Country', icon: 'public', custom: 'property' },
     { property: 'isAdult', label: 'Adult', icon: '18_up_rating' },
     { property: 'english', label: 'English', icon: 'title' },
     { property: 'romaji', label: 'Romaji', icon: 'translate' },
@@ -16,6 +17,13 @@
       return media.averageScore + '%'
     } else if (detail.property === 'season') {
       return [media.season?.toLowerCase(), media.seasonYear].filter(f => f).join(' ')
+    } else if (detail.property === 'countryOfOrigin') {
+      const countryMap = {
+        JP: 'Japan',
+        CN: 'China',
+        US: 'United States'
+      }
+      return countryMap[media.countryOfOrigin] || 'Unknown'
     } else {
       return media[detail.property]
     }
