@@ -1,11 +1,13 @@
 <script context='module'>
   import { click } from '@/modules/click.js'
   import { writable } from 'simple-store-svelte'
+  import Helper from '@/modules/helper.js'
 
   export const logout = writable(false)
 
   function confirm () {
     localStorage.removeItem('ALviewer')
+    localStorage.removeItem('MALviewer')
     location.hash = ''
     location.reload()
   }
@@ -29,7 +31,7 @@
         <button class='close pointer z-30 top-20 right-0 position-absolute' type='button' use:click={close}> &times; </button>
         <h5 class='modal-title'>Log Out</h5>
         <p>
-          Are You Sure You Want To Sign Out?
+          Are You Sure You Want To Sign Out? Your Progress Will No Longer Be Tracked On <u>{Helper.isAniAuth() ? 'AniList' : 'MyAnimeList'}</u>.
         </p>
         <div class='text-right mt-20'>
           <button class='btn mr-5' type='button' on:click={close}>Cancel</button>

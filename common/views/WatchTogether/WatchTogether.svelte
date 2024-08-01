@@ -1,12 +1,12 @@
 <script context='module'>
   import { writable } from 'simple-store-svelte'
-  import { anilistClient } from '@/modules/anilist.js'
   import { add, client } from '@/modules/torrent.js'
   import { generateRandomHexCode } from '@/modules/util.js'
   import { toast } from 'svelte-sonner'
   import { page } from '@/App.svelte'
   import P2PT from 'p2pt'
   import { click } from '@/modules/click.js'
+  import Helper from '@/modules/helper.js'
   import IPC from '@/modules/ipc.js'
   import 'browser-event-target-emitter'
 
@@ -29,7 +29,7 @@
     p2pt.on('peerconnect', peer => {
       console.log(peer.id)
       console.log('connect')
-      const user = anilistClient.userID?.viewer?.data?.Viewer || {}
+      const user = Helper.getUser() || {}
       p2pt.send(peer,
         JSON.stringify({
           type: 'init',

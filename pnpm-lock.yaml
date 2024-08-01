@@ -32,6 +32,9 @@ importers:
       eslint-plugin-svelte:
         specifier: ^2.35.1
         version: 2.35.1(eslint@8.57.0)
+      fuse.js:
+        specifier: ^7.0.0
+        version: 7.0.0
       html-webpack-plugin:
         specifier: ^5.6.0
         version: 5.6.0(webpack@5.91.0)
@@ -4883,6 +4886,10 @@ packages:
 
   /functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
+    
+  /fuse.js@7.0.0:
+    resolution: {integrity: sha512-14F4hBIxqKvD4Zz/XjDc3y94mNZN6pRv3U13Udo0lNLCWRBUsrMv2xwcF/y/Z5sV6+FQW+/ow68cHpm4sunt8Q==}
+    engines: {node: '>=10'}
 
   /gauge@2.7.4:
     resolution: {integrity: sha512-14x4kjc6lkD3ltw589k0NrPD6cCNTD6CWoVUNpB85+DrtONoZn+Rug6xZU5RvSC4+TZPxA5AnBibQYAvZn41Hg==}

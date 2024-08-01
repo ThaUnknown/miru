@@ -7,6 +7,7 @@
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
+  export let variables = null
 
   const view = getContext('view')
   function viewMedia () {
@@ -15,7 +16,7 @@
 </script>
 
 <div class='d-flex px-20 py-10 position-relative justify-content-center' use:click={viewMedia}>
-  <div class='card m-0 p-0 overflow-hidden pointer content-visibility-auto full-card'
+  <div class='card m-0 p-0 overflow-hidden pointer content-visibility-auto full-card' class:opacity-half={variables?.continueWatching && Helper.isMalAuth() && media?.status !== 'FINISHED' && media?.mediaListEntry?.progress >= media?.nextAiringEpisode?.episode - 1}
     style:--color={media.coverImage.color || '#1890ff'}>
     <div class='row h-full'>
       <div class='col-4 img-col d-inline-block position-relative'>
@@ -95,6 +96,9 @@
 }
 .details span + span::before {
   content: ' • ';
+.opacity-half {
+  opacity: 30%;
+}
   white-space: normal;
 }
 .card {

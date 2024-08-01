@@ -24,6 +24,7 @@
     "eslint": "^8.57.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-svelte": "^2.35.1",
+    "fuse.js": "^7.0.0",
     "html-webpack-plugin": "^5.6.0",
     "matroska-metadata": "^1.0.6",
     "mini-css-extract-plugin": "^2.8.1",

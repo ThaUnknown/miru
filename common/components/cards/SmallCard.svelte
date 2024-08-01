@@ -9,6 +9,7 @@
   import { page } from '@/App.svelte'
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
+  export let variables = null
   let preview = false
 
   const view = getContext('view')
@@ -24,7 +25,7 @@
   {#if preview}
     <PreviewCard {media} />
   {/if}
-  <div class='item small-card d-flex flex-column h-full pointer content-visibility-auto'>
+  <div class='item small-card d-flex flex-column h-full pointer content-visibility-auto' class:opacity-half={variables?.continueWatching && Helper.isMalAuth() && media?.status !== 'FINISHED' && media?.mediaListEntry?.progress >= media?.nextAiringEpisode?.episode - 1}>
     {#if $page === 'schedule'}
       <div class='w-full text-center pb-10'>
         {#if media.airingSchedule?.nodes?.[0]?.airingAt}
@@ -65,7 +66,9 @@
     z-index: 30;
     /* fixes transform scaling on click causing z-index issues */
   }
-
+  .opacity-half {
+    opacity: 30%;
+  }
   .title {
     display: -webkit-box;
     -webkit-line-clamp: 2;

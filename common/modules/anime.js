@@ -9,6 +9,7 @@ import clipboard from './clipboard.js'
 import { search, key } from '@/views/Search.svelte'
 
 import { playAnime } from '@/views/TorrentSearch/TorrentModal.svelte'
+import Helper from "@/modules/helper.js"
 
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 
@@ -227,12 +228,17 @@ export async function playMedia (media) {
 }
 
 export function setStatus (status, other = {}, media) {
+  const fuzzyDate = Helper.getFuzzyDate(media, status)
   const variables = {
     id: media.id,
+    idMal: media.idMal,
     status,
+    score: media.mediaListEntry?.score || 0,
+    repeat: media.mediaListEntry?.repeat || 0,
+    ...fuzzyDate,
     ...other
   }
-  return anilistClient.entry(variables)
+  return Helper.entry(media, variables)
 }
 
 const episodeMetadataMap = {}

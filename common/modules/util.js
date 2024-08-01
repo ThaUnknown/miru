@@ -1,4 +1,5 @@
 import { SUPPORTS } from '@/modules/support.js'
+import levenshtein from 'js-levenshtein'
 
 export function countdown (s) {
   const d = Math.floor(s / (3600 * 24))
@@ -91,6 +92,23 @@ export function generateRandomHexCode (len) {
   }
 
   return hexCode
+}
+
+export function matchPhrase(search, phrase, threshold) {
+  if (!search) return false
+  const normalizedSearch = search.toLowerCase().replace(/[^\w\s]/g, '')
+  phrase = Array.isArray(phrase) ? phrase : [phrase]
+
+  for (let p of phrase) {
+    const normalizedPhrase = p.toLowerCase().replace(/[^\w\s]/g, '')
+    if (normalizedSearch.includes(normalizedPhrase)) return true
+
+    const wordsInFileName = normalizedSearch.split(/\s+/)
+    for (let word of wordsInFileName) {
+      if (levenshtein(word, normalizedPhrase) <= threshold) return true
+    }
+  }
+  return false
 }
 
 export function throttle (fn, time) {

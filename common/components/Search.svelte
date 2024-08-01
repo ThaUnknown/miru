@@ -16,6 +16,7 @@
   import { click } from '@/modules/click.js'
   import { page } from '@/App.svelte'
   import { toast } from 'svelte-sonner'
+  import Helper from '@/modules/helper.js'
 
   export let search
   let searchTextInput = {
@@ -148,6 +149,10 @@
     if (list.includes(selectedValue) && (!search[searchKey] || !search[searchKey].includes(selectedValue))) {
       search[searchKey] = search[searchKey] ? [...search[searchKey], selectedValue] : [selectedValue]
       searchTextInput[searchKey] = null
+  function clearTags() { // cannot specify genre and tag filtering with user specific sorting options when using alternative authentication.
+    if (!Helper.isAniAuth() && Helper.isUserSort(search)) {
+      search.genre = ''
+      search.tag = ''
     }
   }
 
@@ -206,7 +211,7 @@
           bind:value={searchTextInput.genre}
           on:change={(event) => filterList(event, 'genre')}
           data-option='search'
-          disabled={search.disableSearch}
+          disabled={search.disableSearch || (!Helper.isAniAuth() && Helper.isUserSort(search))}
           placeholder='Any'
           list='search-genre'/>
       </div>
@@ -229,7 +234,7 @@
           bind:value={searchTextInput.tag}
           on:change={(event) => filterList(event, 'tag')}
           data-option='search'
-          disabled={search.disableSearch}
+          disabled={search.disableSearch || (!Helper.isAniAuth() && Helper.isUserSort(search))}
           placeholder='Any'
           list='search-tag'/>
       </div>

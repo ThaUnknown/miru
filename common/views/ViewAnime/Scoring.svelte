@@ -28,30 +28,62 @@
     }
   }
 
-  function deleteEntry() {
+  async function deleteEntry() {
     score = 0
     episode = 0
     status = 'NOT IN LIST'
     if (media.mediaListEntry) {
-      anilistClient.delete({ id: media.mediaListEntry.id })
-      media.mediaListEntry = undefined
+      const res = await Helper.delete(media)
+      const description = `${anilistClient.title(media)} has been deleted from your list.`
+      if (res) {
+        console.log('List Updated: ' + description)
+        toast.warning('List Updated', {
+          description,
+          duration: 6000
+        })
+        media.mediaListEntry = undefined
+      } else {
+        const error = `\n${429} - ${codes[429]}`
+        console.error('Failed to delete title from user list with: ' + description + error)
+        toast.error('Failed to Delete Title', {
+          description: description + error,
+          duration: 9000
+        })
+      }
     }
   }
 
   async function saveChanges() {
     if (!status.includes('NOT IN LIST')) {
+      const fuzzyDate = Helper.getFuzzyDate(media, status)
       const variables = {
-              repeat: media.mediaListEntry?.repeat || 0,
               id: media.id,
+              idMal: media.idMal,
               status,
               episode,
-              score: score * 10,
-              lists: media.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || []
+              score: Helper.isAniAuth() ? (score * 10) : score, // AniList score scale is out of 100, others use a scale of 10.
+              repeat: media.mediaListEntry?.repeat || 0,
+              lists: media.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || [],
+              ...fuzzyDate
             }
-      const res = await anilistClient.entry(variables)
-      media.mediaListEntry = res.data.SaveMediaListEntry
+      let res = await Helper.entry(media, variables)
+      const description = `Title: ${anilistClient.title(media)}\nStatus: ${Helper.statusName[media.mediaListEntry.status]}\nEpisode: ${episode} / ${totalEpisodes}${score !== 0 ? `\nYour Score: ${score}` : ''}`
+      if (res?.data?.SaveMediaListEntry) {
+        console.log('List Updated: ' + description)
+        toast.success('List Updated', {
+          description,
+          duration: 6000
+        })
+      } else {
+        const error = `\n${429} - ${codes[429]}`
+        console.error('Failed to update user list with: ' + description + error)
+        toast.error('Failed to Update List', {
+          description: description + error,
+          duration: 9000
+        })
+      }
     } else {
-       deleteEntry()
+       await deleteEntry()
     }
   }
 

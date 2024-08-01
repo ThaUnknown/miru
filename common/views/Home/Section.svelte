@@ -14,7 +14,7 @@
   function deferredLoad (element) {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        if (!opts.preview.value) opts.preview.value = opts.load(1, 15)
+        if (!opts.preview.value) opts.preview.value = opts.load(1, 15, { ...opts.variables })
         observer.unobserve(element)
       }
     }, { threshold: 0 })
@@ -42,7 +42,7 @@
 <div class='position-relative'>
   <div class='pb-10 w-full d-flex flex-row justify-content-start gallery' class:isRSS={opts.isRSS}>
     {#each $preview || fakecards as card}
-      <Card {card} />
+      <Card {card} variables={{...opts.variables}} />
     {/each}
     {#if $preview?.length}
       <ErrorCard promise={$preview[0].data} />

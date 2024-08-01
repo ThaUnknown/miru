@@ -1,12 +1,12 @@
 <script>
   import { getContext } from 'svelte'
-  import { anilistClient } from '@/modules/anilist.js'
   import { media } from '../views/Player/MediaHandler.svelte'
-  import { platformMap } from '@/views/Settings/Settings.svelte'
   import { settings } from '@/modules/settings.js'
   import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
+  import { login } from './Login.svelte'
   import { logout } from './Logout.svelte'
+  import Helper from '@/modules/helper.js'
   import IPC from '@/modules/ipc.js'
 
   let wasUpdated = false
@@ -44,20 +44,14 @@
   let links = [
     {
       click: () => {
-        if (anilistClient.userID?.viewer?.data?.Viewer) {
+        if (Helper.getUser()) {
           $logout = true
         } else {
-          IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
-          if (platformMap[window.version.platform] === 'Linux') {
-            toast('Support Notification', {
-              description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
-              duration: 300000
-            })
-          }
+          $login = true
         }
       },
       icon: 'login',
-      text: 'Login With AniList',
+      text: 'Login',
       css: 'mt-auto'
     },
     {
@@ -116,8 +110,8 @@
       text: 'Settings'
     }
   ]
-  if (anilistClient.userID?.viewer?.data?.Viewer) {
-    links[0].image = anilistClient.userID.viewer.data.Viewer.avatar.medium
+  if (Helper.getUser()) {
+    links[0].image = Helper.getUserAvatar()
     links[0].text = 'Logout'
   }
 </script>

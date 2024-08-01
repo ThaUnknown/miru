@@ -4,7 +4,6 @@
   import { playAnime } from '@/views/TorrentSearch/TorrentModal.svelte'
   import { client } from '@/modules/torrent.js'
   import { createEventDispatcher } from 'svelte'
-  import { anilistClient } from '@/modules/anilist.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, fastPrettyBytes, videoRx } from '@/modules/util.js'
   import { toast } from 'svelte-sonner'
@@ -12,6 +11,7 @@
   import Seekbar from 'perfect-seekbar'
   import { click } from '@/modules/click.js'
   import VideoDeband from 'video-deband'
+  import Helper from '@/modules/helper.js'
 
   import { w2gEmitter, state } from '../WatchTogether/WatchTogether.svelte'
   import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
@@ -939,7 +939,7 @@
       if (media?.media?.episodes || media?.media?.nextAiringEpisode?.episode) {
         if (media.media.episodes || media.media.nextAiringEpisode?.episode > media.episode) {
           completed = true
-          anilistClient.alEntry(media)
+          Helper.updateEntry(media)
         }
       }
     }

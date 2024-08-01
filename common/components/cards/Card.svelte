@@ -10,6 +10,7 @@
 
   export let card
 
+  export let variables = null
   const type = card.type || $settings.cards
 </script>
 
@@ -29,7 +30,7 @@
     <FullSkeletonCard />
   {:then media}
     {#if media}
-      <FullCard media={anilistClient.mediaCache[media.id]} />
+      <FullCard media={anilistClient.mediaCache[media.id]} {variables} />
     {/if}
   {/await}
 
@@ -39,7 +40,7 @@
     <SkeletonCard />
   {:then media}
     {#if media}
-      <SmallCard media={anilistClient.mediaCache[media.id]} />
+      <SmallCard media={anilistClient.mediaCache[media.id]} {variables} />
     {/if}
   {/await}
 

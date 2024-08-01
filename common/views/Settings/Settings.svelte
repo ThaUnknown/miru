@@ -1,5 +1,4 @@
 <script context='module'>
-  import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
   import { settings } from '@/modules/settings.js'
   import IPC from '@/modules/ipc.js'
@@ -35,9 +34,10 @@
   import TorrentSettings from './TorrentSettings.svelte'
   import InterfaceSettings from './InterfaceSettings.svelte'
   import AppSettings from './AppSettings.svelte'
-  import { anilistClient } from '@/modules/anilist.js'
+  import { login } from '@/components/Login.svelte'
   import { logout } from '@/components/Logout.svelte'
   import smoothScroll from '@/modules/scroll.js'
+  import Helper from '@/modules/helper.js'
 
   const groups = {
     player: {
@@ -70,16 +70,10 @@
   }
 
   function loginButton () {
-    if (anilistClient.userID?.viewer?.data?.Viewer) {
+    if (Helper.getUser()) {
       $logout = true
     } else {
-      IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
-      if (platformMap[window.version.platform] === 'Linux') {
-        toast('Support Notification', {
-          description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
-          duration: 300000
-        })
-      }
+      $login = true
     }
   }
   onDestroy(() => {
@@ -111,14 +105,14 @@
       </div>
       <div class='pointer my-5 rounded' use:click={loginButton}>
         <div class='px-20 py-10 d-flex'>
-          {#if anilistClient.userID?.viewer?.data?.Viewer}
+          {#if Helper.getUser()}
             <span class='material-symbols-outlined rounded mr-10'>
-              <img src={anilistClient.userID.viewer.data.Viewer.avatar.medium} class='h-30 rounded' alt='logo' />
+              <img src={Helper.getUserAvatar()} class='h-30 rounded' alt='logo' />
             </span>
             <div class='font-size-16 login-image-text'>Logout</div>
           {:else}
             <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>login</span>
-            <div class='font-size-16'>Login With AniList</div>
+            <div class='font-size-16'>Login</div>
           {/if}
         </div>
       </div>
