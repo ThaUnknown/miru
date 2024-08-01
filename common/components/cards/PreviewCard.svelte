@@ -141,6 +141,12 @@
           {[media.season?.toLowerCase(), media.seasonYear].filter(s => s).join(' ')}
         </span>
       {/if}
+      {#if media.averageScore}
+        <span class='text-nowrap d-flex align-items-center'>{media.averageScore + '%'} Rating</span>
+      {/if}
+      {#if media.stats?.scoreDistribution}
+        <span class='text-nowrap d-flex align-items-center'>{anilistClient.reviews(media)} Reviews</span>
+      {/if}
     </div>
     {#if media.description}
       <div class='w-full h-full text-muted description overflow-hidden'>

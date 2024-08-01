@@ -89,7 +89,7 @@
               <h1 class='font-weight-very-bold text-white select-all mb-0'>{anilistClient.title(media)}</h1>
               <div class='d-flex flex-row font-size-18 flex-wrap mt-5'>
                 {#if media.averageScore}
-                  <div class='d-flex flex-row mt-10'>
+                  <div class='d-flex flex-row mt-10' title='{media.averageScore / 10} by {anilistClient.reviews(media)} reviews'>
                     <span class='material-symbols-outlined mx-10 font-size-24'> trending_up </span>
                     <span class='mr-20'>
                       Rating: {media.averageScore + '%'}
@@ -116,6 +116,14 @@
                     <span class='material-symbols-outlined mx-10 font-size-24'> timer </span>
                     <span class='mr-20'>
                       Length: {media.duration + ' min'}
+                    </span>
+                  </div>
+                {/if}
+                {#if media.stats?.scoreDistribution}
+                  <div class='d-flex flex-row mt-10'>
+                    <span class='material-symbols-outlined mx-10 font-size-24'> group </span>
+                    <span class='mr-20' title='{media.averageScore / 10} by {anilistClient.reviews(media)} reviews'>
+                      Reviews: {anilistClient.reviews(media)}
                     </span>
                   </div>
                 {/if}

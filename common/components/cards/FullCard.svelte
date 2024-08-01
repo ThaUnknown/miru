@@ -5,6 +5,7 @@
   import { countdown } from '@/modules/util.js'
   import { page } from '@/App.svelte'
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
+  import { anilistClient } from "@/modules/anilist"
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
   export let variables = null
@@ -77,6 +78,12 @@
               <span class='text-nowrap'>
                 {[media.season?.toLowerCase(), media.seasonYear].filter(s => s).join(' ')}
               </span>
+            {/if}
+            {#if media.averageScore}
+              <span class='text-nowrap d-flex align-items-center'>{media.averageScore + '%'} Rating</span>
+            {/if}
+            {#if media.stats?.scoreDistribution}
+              <span class='text-nowrap d-flex align-items-center'>{anilistClient.reviews(media)} Reviews</span>
             {/if}
           </p>
         </div>

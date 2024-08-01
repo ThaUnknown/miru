@@ -722,6 +722,12 @@ class AnilistClient {
     }
   }
 
+  /** @param {import('./al.d.ts').Media} media */
+  reviews(media) {
+    const totalReviewers = media.stats?.scoreDistribution?.reduce((total, score) => total + score.amount, 0)
+    return totalReviewers ? totalReviewers.toLocaleString() : '?'
+  }
+
   /** @param {import('./al.d.ts').Media[]} medias */
   async updateCache (medias) {
     for (const media of medias) {
