@@ -1,6 +1,6 @@
 <script context='module'>
-  const badgeKeys = ['title', 'search', 'genre', 'tag', 'season', 'year', 'format', 'status', 'sort', 'hideMyAnime', 'hideStatus']
-  const badgeDisplayNames = { title: 'List:', search: 'Title:', genre: 'Genre:', tag: 'Tag:', season: 'Season:', year: 'Year:', format: 'Format:', status: 'Status:', sort: 'Sort:', hideMyAnime: 'Hide My Anime'}
+  const badgeKeys = ['title', 'search', 'genre', 'tag', 'season', 'year', 'format', 'status', 'sort', 'hideSubs', 'hideMyAnime', 'hideStatus']
+  const badgeDisplayNames = { title: 'List:', search: 'Title:', genre: 'Genre:', tag: 'Tag:', season: 'Season:', year: 'Year:', format: 'Format:', status: 'Status:', sort: 'Sort:', hideMyAnime: 'Hide My Anime', hideSubs: 'Audio: Dubbed' }
   const sortOptions = { START_DATE_DESC: 'Release Date', SCORE_DESC: 'Score', POPULARITY_DESC: 'Popularity', TRENDING_DESC: 'Trending', UPDATED_TIME_DESC: 'Last Updated', STARTED_ON_DESC: 'Started On', FINISHED_ON_DESC: 'Finished On', PROGRESS_DESC: 'Your Progress', USER_SCORE_DESC: 'Your Score' }
 
   export function searchCleanup (search, badge) {
@@ -243,6 +243,7 @@
       format: '',
       status: '',
       sort: '',
+      hideSubs: false,
       hideMyAnime: false,
       hideStatus: ''
     }
@@ -293,6 +294,12 @@
     form.dispatchEvent(new Event('input', { bubbles: true }))
   }
 
+  function toggleSubs() {
+    search.hideSubs = !search.hideSubs
+    form.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+
+  function filterTags(event, type) {
     const list = type === 'tag' ? tagList : genreList
     const searchKey = type === 'tag' ? 'tag' : 'genre'
     const inputValue = event.target.value
@@ -497,6 +504,20 @@
           disabled={search.disableHide || search.disableSearch}
           class:text-primary={search.hideMyAnime}>
           <label for='hide-my-anime' class='pointer mb-0'> tune </label>
+        </button>
+      </div>
+    </div>
+    {/if}
+    <div class='col-auto p-10 d-flex'>
+      <div class='align-self-end'>
+        <button
+          class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0'
+          type='button'
+          title='Dubbed Audio'
+          use:click={toggleSubs}
+          disabled={search.disableSearch}
+          class:text-primary={search.hideSubs}>
+          <label for='hide-subs' class='pointer mb-0'> mic </label>
         </button>
       </div>
     </div>
