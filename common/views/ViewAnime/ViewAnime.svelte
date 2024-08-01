@@ -213,7 +213,7 @@
           </div>
         </div>
         <div class='col-lg-5 col-12 d-flex flex-column pl-lg-20'>
-          <EpisodeList {media} {episodeOrder} userProgress={media.mediaListEntry?.status === 'CURRENT' && media.mediaListEntry.progress} watched={media.mediaListEntry?.status === 'COMPLETED'} episodeCount={getMediaMaxEp(media)} {play} />
+          <EpisodeList {media} {episodeOrder} userProgress={(media.mediaListEntry?.status === 'CURRENT' || media.mediaListEntry?.status === 'PAUSED' || media.mediaListEntry?.status === 'DROPPED') && media.mediaListEntry.progress} watched={media.mediaListEntry?.status === 'COMPLETED'} episodeCount={getMediaMaxEp(media)} {play} />
         </div>
       </div>
     </div>
