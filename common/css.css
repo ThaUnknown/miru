@@ -82,6 +82,10 @@ a[href]:active, button:not([disabled]):active, fieldset:not([disabled]):active, 
   z-index: 100;
 }
 
+.z-101 {
+  z-index: 101;
+}
+
 .material-symbols-outlined {
   font-family: "Material Symbols Outlined Variable";
   font-weight: normal;

@@ -45,6 +45,7 @@
   export let miniplayer = false
   $condition = () => !miniplayer && SUPPORTS.keybinds && !document.querySelector('.modal.show')
   export let page
+  export let overlay
   export let files = []
   $: updateFiles(files)
   let src = null
@@ -1105,10 +1106,10 @@
   </div>
   <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
     <!-- eslint-disable-next-line svelte/valid-compile -->
-    <div class='w-full h-full position-absolute toggle-fullscreen' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
+    <div class='w-full h-full position-absolute toggle-fullscreen' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player' && ['none', 'player'].includes(overlay)) playPause(); page = 'player'; window.dispatchEvent(new Event('overlay-check')) }} />
     <!-- eslint-disable-next-line svelte/valid-compile -->
     <div class='w-full h-full position-absolute toggle-immerse d-none' on:dblclick={toggleFullscreen} on:click|self={toggleImmerse} />
-    <div class='w-full h-full position-absolute mobile-focus-target d-none' use:click={() => { page = 'player' }} />
+    <div class='w-full h-full position-absolute mobile-focus-target d-none' use:click={() => { page = 'player'; window.dispatchEvent(new Event('overlay-check')) }} />
     <!-- eslint-disable-next-line svelte/valid-compile -->
     <span class='material-symbols-outlined ctrl h-full align-items-center justify-content-end w-150 mw-full mr-auto' on:click={rewind}> fast_rewind </span>
     <span class='material-symbols-outlined ctrl' data-name='playPause' use:click={playPause}> {ended ? 'replay' : paused ? 'play_arrow' : 'pause'} </span>

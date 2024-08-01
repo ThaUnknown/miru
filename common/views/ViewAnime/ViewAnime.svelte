@@ -14,18 +14,23 @@
   import smoothScroll from '@/modules/scroll.js'
   import IPC from '@/modules/ipc.js'
 
+  export let overlay
   const view = getContext('view')
-  function close () {
+  function close (play) {
     $view = null
+    if (!play) {
+      overlay = 'none'
+    }
   }
-  $: media = $view
   let modal
-  $: media && modal?.focus()
+  let container = null
+  $: media = $view
+  $: media && (modal?.focus(), overlay = 'viewanime', (container && container.dispatchEvent(new Event('scrolltop'))))
   function checkClose ({ keyCode }) {
     if (keyCode === 27) close()
   }
   function play (episode) {
-    close()
+    close(true)
     if (episode) return playAnime(media, episode)
     if (media.status === 'NOT_YET_RELEASED') return
     playMedia(media)
@@ -59,12 +64,17 @@
     IPC.emit('open', url)
   }
   let episodeOrder = true
+  window.addEventListener('overlay-check', () => {
+    if (media) {
+      close()
+    }
+  })
 </script>
 
-<div class='modal modal-full z-100' class:show={media} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
+<div class='modal modal-full z-50' class:show={media} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
   {#if media}
-    <div class='h-full modal-content bg-very-dark p-0 overflow-y-auto position-relative' use:smoothScroll>
-      <button class='close pointer z-30 bg-dark top-20 right-0 position-fixed' type='button' use:click={close}> &times; </button>
+    <div class='h-full modal-content bg-very-dark p-0 overflow-y-auto position-relative' bind:this={container} use:smoothScroll>
+      <button class='close pointer z-30 bg-dark top-20 right-0 position-fixed' type='button' use:click={() => close()}> &times; </button>
       <img class='w-full cover-img banner position-absolute' alt='banner' src={media.bannerImage || ' '} />
       <div class='row px-20'>
         <div class='col-lg-7 col-12 pb-10'>

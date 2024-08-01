@@ -5,6 +5,7 @@
   import IPC from '@/modules/ipc.js'
 
   export const page = writable('home')
+  export const overlay = writable('none')
   export const view = writable(null)
   export async function handleAnime (anime) {
     view.set(null)
@@ -23,6 +24,7 @@
   import TorrentModal from './views/TorrentSearch/TorrentModal.svelte'
   import Menubar from './components/Menubar.svelte'
   import { Toaster } from 'svelte-sonner'
+  import Login from './components/Login.svelte'
   import Logout from './components/Logout.svelte'
   import Navbar from './components/Navbar.svelte'
 
@@ -31,13 +33,14 @@
 
 <div class='page-wrapper with-transitions bg-dark position-relative' data-sidebar-type='overlayed-all'>
   <Menubar bind:page={$page} />
-  <ViewAnime />
+  <Login />
   <Logout />
   <Sidebar bind:page={$page} />
-  <div class='overflow-hidden content-wrapper h-full z-10'>
+  <div class='overflow-hidden content-wrapper h-full'>
     <Toaster visibleToasts={6} position='top-right' theme='dark' richColors duration={10000} closeButton />
-    <TorrentModal />
-    <Router bind:page={$page} />
+    <ViewAnime bind:overlay={$overlay} />
+    <TorrentModal bind:overlay={$overlay} />
+    <Router bind:page={$page} bind:overlay={$overlay} />
   </div>
   <Navbar bind:page={$page} />
 </div>
@@ -45,6 +48,7 @@
 <style>
   .content-wrapper {
     will-change: width;
+    white-space: pre-line;
     top: 0 !important;
   }
 

@@ -24,7 +24,7 @@
   $: $logout && modal?.focus()
 </script>
 
-<div class='modal z-40' class:show={$logout}>
+<div class='modal z-101' class:show={$logout}>
   {#if $logout}
     <div class='modal-dialog' on:pointerup|self={close} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
       <div class='modal-content d-flex justify-content-center flex-column'>

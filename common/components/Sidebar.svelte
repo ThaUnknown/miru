@@ -1,6 +1,6 @@
 <script>
   import { getContext } from 'svelte'
-  import { media } from '../views/Player/MediaHandler.svelte'
+  import { media } from '@/views/Player/MediaHandler.svelte'
   import { settings } from '@/modules/settings.js'
   import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
@@ -57,6 +57,7 @@
     {
       click: () => {
         page = 'home'
+        if ($view) $view = null
       },
       page: 'home',
       icon: 'home',
@@ -65,6 +66,7 @@
     {
       click: () => {
         page = 'search'
+        if ($view) $view = null
       },
       page: 'search',
       icon: 'search',
@@ -122,7 +124,7 @@
     {#each links as { click: _click, icon, text, image, css, page: _page } (_click)}
       <div
         class='sidebar-link sidebar-link-with-icon pointer overflow-hidden {css}'
-        use:click={_click}>
+        use:click={() => { _click(); if (!icon.includes("login") && !icon.includes("favorite")) { window.dispatchEvent(new Event('overlay-check')) } } }>
         <span class='text-nowrap d-flex align-items-center w-full h-full'>
           {#if image}
             <span class='material-symbols-outlined rounded' class:filled={page === _page}>
@@ -230,6 +232,9 @@
   }
   .sidebar.animated:hover {
     width: 22rem
+  }
+  .sidebar.animated {
+    z-index: 60 !important;
   }
   .sidebar-overlay {
     width: var(--sidebar-width);
