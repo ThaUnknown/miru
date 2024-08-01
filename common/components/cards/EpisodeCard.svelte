@@ -12,7 +12,7 @@
   /** @type {import('@/modules/al.d.ts').Media | null} */
   const media = data.media && anilistClient.mediaCache[data.media.id]
 
-  const episodeThumbnail = ((!media?.mediaListEntry?.status || !(media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress < data.episode)) && data.episodeData?.image) || media?.bannerImage || media?.coverImage.extraLarge || ' '
+  const episodeThumbnail = ((!media?.mediaListEntry?.status || !((media.mediaListEntry.status === 'CURRENT' || media.mediaListEntry.status === 'PAUSED' || media.mediaListEntry.status === 'DROPPED') && media.mediaListEntry.progress < data.episode)) && data.episodeData?.image) || media?.bannerImage || media?.coverImage.extraLarge || ' '
 
   const view = getContext('view')
   function viewMedia () {
@@ -23,13 +23,15 @@
   }
 
   const progress = liveAnimeEpisodeProgress(media?.id, data?.episode)
+  const watched = media?.mediaListEntry?.status === 'COMPLETED'
+  const completed = !watched && media?.mediaListEntry?.progress >= data?.episode
 </script>
 
 <div class='d-flex p-20 pb-10 position-relative episode-card' use:hoverClick={[data.onclick || viewMedia, setHoverState]}>
   {#if preview}
     <EpisodePreviewCard {data} />
   {/if}
-  <div class='item d-flex flex-column h-full pointer content-visibility-auto'>
+  <div class='item d-flex flex-column h-full pointer content-visibility-auto' class:opacity-half={completed}>
     <div class='image h-200 w-full position-relative rounded overflow-hidden d-flex justify-content-between align-items-end text-white' class:bg-black={episodeThumbnail === ' '}>
       <img loading='lazy' src={episodeThumbnail} alt='cover' class='cover-img w-full h-full position-absolute' style:--color={media?.coverImage?.color || '#1890ff'} />
       {#if data.failed}
