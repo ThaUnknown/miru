@@ -4,8 +4,10 @@
   import { click } from '@/modules/click.js'
   import Scoring from '@/views/ViewAnime/Scoring.svelte'
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
+  import Helper from "@/modules/helper.js"
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
+  export let type = null
 
   let hide = true
 
@@ -91,7 +93,21 @@
       {/if}
       <Scoring {media} previewAnime={true}/>
     </div>
-    <div class='details text-white text-capitalize pt-15 pb-10 d-flex'>
+    <div class='details text-white text-capitalize pt-15 d-flex'>
+      {#if type || type === 0}
+        <span class='context-type text-nowrap d-flex align-items-center'>
+          {#if Number.isInteger(type) && type >= 0}
+            <span class='material-symbols-outlined filled font-size-18 pr-5 {type === 0 ? "text-muted" : "text-success"}'>
+              thumb_up
+            </span>
+          {:else if Number.isInteger(type) && type < 0}
+            <span class='material-symbols-outlined text-danger filled font-size-18 pr-5'>
+              thumb_down
+            </span>
+          {/if}
+          {(Number.isInteger(type) ? Math.abs(type).toLocaleString() + (type >= 0 ? ' likes' : ' dislikes') : type)}
+        </span>
+      {/if}
       <span class='text-nowrap d-flex align-items-center'>
         {#if media.format}
           {formatMap[media.format]}
@@ -118,15 +134,19 @@
           Rated 18+
         </span>
       {/if}
+    </div>
+    <div class='details text-white text-capitalize pb-10 d-flex'>
       {#if media.season || media.seasonYear}
         <span class='text-nowrap d-flex align-items-center'>
           {[media.season?.toLowerCase(), media.seasonYear].filter(s => s).join(' ')}
         </span>
       {/if}
     </div>
-    <div class='w-full h-full text-muted description overflow-hidden'>
-      {media.description?.replace(/<[^>]*>/g, '')}
-    </div>
+    {#if media.description}
+      <div class='w-full h-full text-muted description overflow-hidden'>
+        {media.description?.replace(/<[^>]*>/g, '')}
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -136,9 +156,9 @@
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
   }
-  .details span + span::before {
+  .details > span:not(:last-child)::after {
     content: '•';
-    padding: 0 .5rem;
+    padding: .5rem;
     font-size: .6rem;
     align-self: center;
     white-space: normal;

@@ -31,6 +31,12 @@ export type Media = {
   isAdult?: boolean
   bannerImage?: string
   synonyms?: string[]
+  stats: {
+    scoreDistribution: {
+      score: number
+      amount: number
+    }[]
+  }
   nextAiringEpisode?: {
     episode: number
     airingAt: number
@@ -55,6 +61,16 @@ export type Media = {
     status?: string
     customLists?: string[]
     score?: number
+    startedAt?: {
+      year: number
+      month: number
+      day: number
+    }
+    completedAt?: {
+      year: number
+      month: number
+      day: number
+    }
   }
   studios?: {
     edges: {
@@ -74,7 +90,11 @@ export type Media = {
       relationType: string
       node: {
         id: number
+        idMal: number
         title: {
+          romaji?: string
+          english?: string
+          native?: string
           userPreferred: string
         }
         type: string
@@ -97,21 +117,16 @@ export type Media = {
       }
     }[]
   }
-  // recommendations?: {
-  //   edges?: {
-  //     node: {
-  //       media: {
-  //         id: number
-  //         title: {
-  //           userPreferred: string
-  //         }
-  //         coverImage?: {
-  //           medium: string
-  //         }
-  //       }
-  //     }
-  //   }[]
-  // }
+   recommendations?: {
+     edges?: {
+       node: {
+         rating: number
+         mediaRecommendation: {
+           id: number
+         }
+       }
+     }[]
+   }
 }
 
 export type Following = {

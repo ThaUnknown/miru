@@ -94,6 +94,12 @@ countryOfOrigin,
 isAdult,
 bannerImage,
 synonyms,
+stats {
+  scoreDistribution {
+    score,
+    amount
+    }
+},
 nextAiringEpisode {
   timeUntilAiring,
   episode
@@ -117,7 +123,17 @@ mediaListEntry {
   repeat,
   status,
   customLists(asArray: true),
-  score(format: POINT_10)
+  score(format: POINT_10),
+  startedAt {
+    year,
+    month,
+    day
+  },
+  completedAt {
+    year,
+    month,
+    day
+  }
 },
 studios(isMain: true) {
   nodes {
@@ -135,9 +151,17 @@ relations {
     relationType(version:2),
     node {
       id,
-      title {userPreferred},
-      coverImage {medium},
       idMal,
+      title {
+        romaji,
+        english,
+        native,
+        userPreferred
+      },
+      coverImage {
+        medium,
+        extraLarge
+      },
       type,
       status,
       format,
@@ -157,23 +181,17 @@ relations {
       }
     }
   }
-}`
-
-// recommendations {
-//   edges {
-//     node {
-//       mediaRecommendation {
-//         id,
-//         title {
-//           userPreferred
-//         },
-//         coverImage {
-//           medium
-//         }
-//       }
-//     }
-//   }
-// }
+},
+ recommendations {
+   edges {
+     node {
+       rating,
+       mediaRecommendation {
+         id
+       }
+     }
+   }
+ }`
 
 class AnilistClient {
   limiter = new Bottleneck({

@@ -6,6 +6,7 @@
     showMore = !showMore
   }
   export let title = 'Relations'
+  export let promise = null
 </script>
 {#if list?.length}
   <span class='d-flex align-items-end pointer' use:click={toggleList}>
@@ -18,14 +19,17 @@
       {/if}
     </div>
   </span>
-  <div class='d-flex text-capitalize flex-wrap pt-10 justify-content-center'>
+  <div class='d-flex text-capitalize flex-wrap pt-10 justify-content-center gallery'>
     {#each list.slice(0, showMore ? 100 : 4) as item}
-      <slot {item} />
+      <slot {item} {promise} />
     {/each}
   </div>
 {/if}
 
 <style>
+  .gallery :global(.first-check:first-child) :global(.absolute-container) {
+    left: -48% !important;
+  }
   .more:hover {
     color: var(--dm-link-text-color-hover) !important;
   }

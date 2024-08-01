@@ -28,6 +28,15 @@ export default function (t, { speed = 120, smooth = 10 } = {}) {
     return deltaTime / 14
   }
 
+  t.addEventListener('scrolltop', () => {
+    pos = 0
+    t.scrollTop = scrollTop
+    if (!moving) {
+      lastTime = null
+      update()
+    }
+  })
+
   t.addEventListener('pointerup', () => { pos = scrollTop = t.scrollTop })
 
   function update () {

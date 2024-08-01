@@ -7,8 +7,11 @@
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
 
   import { page } from '@/App.svelte'
+  import { anilistClient } from "@/modules/anilist"
+  import Helper from "@/modules/helper.js"
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
+  export let type = null
   export let variables = null
   let preview = false
 
@@ -23,7 +26,7 @@
 
 <div class='d-flex p-md-20 p-15 position-relative first-check' use:hoverClick={[viewMedia, setHoverState]}>
   {#if preview}
-    <PreviewCard {media} />
+    <PreviewCard {media} {type} />
   {/if}
   <div class='item small-card d-flex flex-column h-full pointer content-visibility-auto' class:opacity-half={variables?.continueWatching && Helper.isMalAuth() && media?.status !== 'FINISHED' && media?.mediaListEntry?.progress >= media?.nextAiringEpisode?.episode - 1}>
     {#if $page === 'schedule'}
@@ -42,6 +45,20 @@
       <img loading='lazy' src={media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full rounded' style:--color={media.coverImage.color || '#1890ff'} />
       <AudioLabel {media} />
     </div>
+    {#if type || type === 0}
+      <div class='context-type d-flex align-items-center'>
+        {#if Number.isInteger(type) && type >= 0}
+          <span class='material-symbols-outlined filled font-size-18 pr-5 {type === 0 ? "text-muted" : "text-success"}'>
+            thumb_up
+          </span>
+        {:else if Number.isInteger(type) && type < 0}
+          <span class='material-symbols-outlined text-danger filled font-size-18 pr-5'>
+            thumb_down
+          </span>
+        {/if}
+        {(Number.isInteger(type) ? Math.abs(type).toLocaleString() + (type >= 0 ? ' likes' : ' dislikes') : type)}
+      </div>
+    {/if}
     <div class='text-white font-weight-very-bold font-size-16 pt-15 title overflow-hidden'>
       {#if media.mediaListEntry?.status}
         <div style:--statusColor={statusColorMap[media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={media.mediaListEntry.status} />

@@ -13,6 +13,9 @@
   import Following from './Following.svelte'
   import smoothScroll from '@/modules/scroll.js'
   import IPC from '@/modules/ipc.js'
+  import SmallCard from "@/components/cards/SmallCard.svelte"
+  import SkeletonCard from "@/components/cards/SkeletonCard.svelte"
+  import Helper from "@/modules/helper.js"
 
   export let overlay
   const view = getContext('view')
@@ -161,20 +164,32 @@
               </div>
             {/each}
           </div>
-          <div class='w-full d-flex flex-row align-items-center pt-20 mt-10'>
-            <hr class='w-full' />
-            <div class='font-size-18 font-weight-semi-bold px-20 text-white'>Synopsis</div>
-            <hr class='w-full' />
-          </div>
-          <div class='font-size-16 pre-wrap pt-20 select-all'>
-            {media.description?.replace(/<[^>]*>/g, '') || ''}
-          </div>
-          <ToggleList list={media.relations?.edges?.filter(({ node }) => node.type === 'ANIME')} let:item title='Relations'>
-            <div class='w-150 mx-15 my-10 rel pointer'
-              use:click={async () => { $view = null; $view = (await anilistClient.searchIDSingle({ id: item.node.id })).data.Media }}>
-              <img loading='lazy' src={item.node.coverImage.medium || ''} alt='cover' class='cover-img w-full h-200 rel-img rounded' />
-              <div class='pt-5'>{item.relationType.replace(/_/g, ' ').toLowerCase()}</div>
-              <h5 class='font-weight-bold text-white mb-5'>{item.node.title.userPreferred}</h5>
+          {#if media.description}
+            <div class='w-full d-flex flex-row align-items-center pt-20 mt-10'>
+              <hr class='w-full' />
+              <div class='font-size-18 font-weight-semi-bold px-20 text-white'>Synopsis</div>
+              <hr class='w-full' />
+            </div>
+            <div class='font-size-16 pre-wrap pt-20 select-all'>
+              {media.description?.replace(/<[^>]*>/g, '') || ''}
+            </div>
+          {/if}
+          <ToggleList list={
+            media.relations?.edges?.filter(({ node, relationType }) => node.type === 'ANIME' && relationType !== 'CHARACTER').sort((a, b) => {
+               const relationTypeComparison = a.relationType.localeCompare(b.relationType)
+               if (relationTypeComparison !== 0) {
+                  return relationTypeComparison
+               }
+               return (a.node.seasonYear || 0) - (b.node.seasonYear || 0)
+            })} promise={ anilistClient.searchIDS({ page: 1, perPage: 50, id: media.relations?.edges?.filter(({ node, relationType }) => node.type === 'ANIME' && relationType !== 'CHARACTER').map(({ node }) => node.id) }) } let:item let:promise title='Relations'>
+            <div class='small-card'>
+              {#await promise}
+                <SkeletonCard />
+              {:then res }
+                {#if res}
+                  <SmallCard media={anilistClient.mediaCache[item.node.id]} type={item.relationType.replace(/_/g, ' ').toLowerCase()} />
+                {/if}
+              {/await}
             </div>
           </ToggleList>
           <Following {media} />
@@ -228,6 +243,9 @@
   }
   .cover {
     aspect-ratio: 7/10;
+  }
+  .small-card {
+    width: 23rem !important;
   }
 
   button.bg-dark:hover {
