@@ -4,6 +4,7 @@
   import { click } from '@/modules/click.js'
   import Scoring from '@/views/ViewAnime/Scoring.svelte'
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
+  import Helper from "@/modules/helper.js"
   export let mediaList
 
   let current = mediaList[0]
@@ -65,6 +66,11 @@
     <span class='text-nowrap d-flex align-items-center'>
       <AudioLabel media={current} banner={true}/>
     </span>
+    {#if current.isAdult}
+      <span class='text-nowrap d-flex align-items-center'>
+        Rated 18+
+      </span>
+    {/if}
     {#if current.season || current.seasonYear}
       <span class='text-nowrap d-flex align-items-center'>
         {[current.season?.toLowerCase(), current.seasonYear].filter(s => s).join(' ')}

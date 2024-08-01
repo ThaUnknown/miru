@@ -113,6 +113,11 @@
       <span class='text-nowrap d-flex align-items-center'>
         <AudioLabel {media} banner={true}/>
       </span>
+      {#if media.isAdult}
+      <span class='text-nowrap d-flex align-items-center'>
+          Rated 18+
+        </span>
+      {/if}
       {#if media.season || media.seasonYear}
         <span class='text-nowrap d-flex align-items-center'>
           {[media.season?.toLowerCase(), media.seasonYear].filter(s => s).join(' ')}

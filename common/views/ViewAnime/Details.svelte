@@ -6,6 +6,7 @@
     { property: 'status', label: 'Status', icon: 'live_tv' },
     { property: 'nodes', label: 'Studio', icon: 'business' },
     { property: 'source', label: 'Source', icon: 'source' },
+    { property: 'isAdult', label: 'Adult', icon: '18_up_rating' },
     { property: 'english', label: 'English', icon: 'title' },
     { property: 'romaji', label: 'Romaji', icon: 'translate' },
     { property: 'native', label: 'Native', icon: '語', custom: 'icon' }
@@ -24,6 +25,8 @@
       return media.nextAiringEpisode?.episode
     } else if (property === 'english' || property === 'romaji' || property === 'native') {
       return media.title[property]
+    } else if (property === 'isAdult') {
+      return (media.isAdult === true ? 'Rated 18+' : false)
     }
     return media[property]
   }

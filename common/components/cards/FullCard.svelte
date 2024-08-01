@@ -65,6 +65,11 @@
             <span class='text-nowrap'>
               <AudioLabel {media} banner={true}/>
             </span>
+            {#if media.isAdult}
+              <span class='text-nowrap d-flex align-items-center'>
+                Rated 18+
+              </span>
+            {/if}
             {#if media.status}
               <span class='text-nowrap'>{media.status?.toLowerCase().replace(/_/g, ' ')}</span>
             {/if}
