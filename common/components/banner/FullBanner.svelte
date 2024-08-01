@@ -41,7 +41,7 @@
 <div class='gradient-left h-full position-absolute top-0 w-800' />
 <div class='pl-20 pb-20 justify-content-end d-flex flex-column h-full banner mw-full'>
   <div class='text-white font-weight-bold font-size-40 title w-800 mw-full overflow-hidden'>
-    {current.title.userPreferred}
+    {anilistClient.title(current)}
   </div>
   <div class='details text-white text-capitalize pt-15 pb-10 d-flex w-600 mw-full'>
     <span class='text-nowrap d-flex align-items-center'>

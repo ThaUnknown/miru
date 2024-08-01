@@ -690,6 +690,20 @@ class AnilistClient {
     return this.alRequest(query, variables)
   }
 
+  /** @param {import('./al.d.ts').Media} media */
+  title(media) {
+    const preferredTitle = media?.title.userPreferred
+    if (alToken) {
+      return preferredTitle
+    }
+
+    if (settings.value.titleLang === 'romaji') {
+      return media?.title.romaji || preferredTitle
+    } else {
+      return media?.title.english || preferredTitle
+    }
+  }
+
   /** @param {import('./al.d.ts').Media[]} medias */
   async updateCache (medias) {
     for (const media of medias) {

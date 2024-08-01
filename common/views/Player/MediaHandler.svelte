@@ -5,6 +5,7 @@
   import { tick } from 'svelte'
   import { state } from '../WatchTogether/WatchTogether.svelte'
   import IPC from '@/modules/ipc.js'
+  import { anilistClient } from "@/modules/anilist.js"
 
   const episodeRx = /Episode (\d+) - (.*)/
 
@@ -60,7 +61,7 @@
 
       const np = {
         media,
-        title: media?.title.userPreferred || parseObject.anime_title,
+        title: anilistClient.title(media) || parseObject.anime_title,
         episode: ep,
         episodeTitle: streamingEpisode && episodeRx.exec(streamingEpisode.title)[2],
         thumbnail: streamingEpisode?.thumbnail || media?.coverImage.extraLarge

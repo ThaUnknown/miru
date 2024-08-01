@@ -6,6 +6,7 @@
   import SettingCard from './SettingCard.svelte'
   import { SUPPORTS } from '@/modules/support.js'
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
+  import Helper from "@/modules/helper.js"
   function updateAngle () {
     IPC.emit('angle', settings.value.angle)
   }
@@ -38,6 +39,14 @@
 <SettingCard title='CSS Variables' description='Used for custom themes. Can change colors, sizes, spacing and more. Supports only variables. Best way to discover variables is to use the built-in devtools via Ctrl+Shift+I or F12.'>
   <textarea class='form-control w-500 mw-full bg-dark' placeholder='--accent-color: #e5204c;' bind:value={$variables} />
 </SettingCard>
+{#if !Helper.isAniAuth()}
+  <SettingCard title='Preferred Title Language' description='What title language to automatically select when displaying the title of an anime.'>
+    <select class='form-control bg-dark w-300 mw-full' bind:value={settings.titleLang}>
+      <option value='romaji' selected>Japanese</option>
+      <option value='english'>English</option>
+    </select>
+  </SettingCard>
+{/if}
 <SettingCard title='Card Type' description='What type of cards to display in menus.'>
   <select class='form-control bg-dark w-300 mw-full' bind:value={settings.cards}>
     <option value='small' selected>Small</option>
@@ -49,7 +58,6 @@
   <div class='custom-switch'>
     <input type='checkbox' id='card-audio' bind:checked={settings.cardAudio} />
     <label for='card-audio'>{settings.cardAudio ? 'On' : 'Off'}</label>
-    
   </div>
 </SettingCard>
 {#if SUPPORTS.angle}

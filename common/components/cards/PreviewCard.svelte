@@ -72,8 +72,8 @@
     {/if}
   </div>
   <div class='w-full px-20'>
-    <div class='font-size-24 font-weight-bold text-truncate d-inline-block w-full text-white' title={media.title.userPreferred}>
-      {media.title.userPreferred}
+    <div class='font-size-24 font-weight-bold text-truncate d-inline-block w-full text-white' title={anilistClient.title(media)}>
+      {anilistClient.title(media)}
     </div>
     <div class='d-flex flex-row pt-5'>
       <button class='btn btn-secondary flex-grow-1 text-dark font-weight-bold shadow-none border-0 d-flex align-items-center justify-content-center'

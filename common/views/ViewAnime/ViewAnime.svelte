@@ -83,7 +83,7 @@
               <img class='rounded cover-img overflow-hidden h-full' alt='cover-art' src={media.coverImage?.extraLarge || media.coverImage?.medium} />
             </div>
             <div class='pl-sm-20 ml-sm-20'>
-              <h1 class='font-weight-very-bold text-white select-all mb-0'>{media.title.userPreferred}</h1>
+              <h1 class='font-weight-very-bold text-white select-all mb-0'>{anilistClient.title(media)}</h1>
               <div class='d-flex flex-row font-size-18 flex-wrap mt-5'>
                 {#if media.averageScore}
                   <div class='d-flex flex-row mt-10'>

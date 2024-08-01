@@ -29,7 +29,7 @@
             {#if media.mediaListEntry?.status}
               <div style:--statusColor={statusColorMap[media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={media.mediaListEntry.status} />
             {/if}
-            {media.title.userPreferred}
+            {anilistClient.title(media)}
           </h5>
           {#if $page === 'schedule'}
             <div class='py-5'>

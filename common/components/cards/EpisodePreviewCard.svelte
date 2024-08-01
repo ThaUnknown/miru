@@ -50,7 +50,7 @@
           {#if media?.mediaListEntry?.status}
             <div style:--statusColor={statusColorMap[media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={media.mediaListEntry.status} />
           {/if}
-          {data.media?.title.userPreferred || data.parseObject.anime_title}
+          {anilistClient.title(media) || data.parseObject.anime_title}
         </div>
         <div class='text-muted font-size-12 title overflow-hidden' title={data.episodeData?.title?.en}>
           {data.episodeData?.title?.en || ''}

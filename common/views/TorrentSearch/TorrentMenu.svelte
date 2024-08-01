@@ -1,6 +1,7 @@
 <script context='module'>
   import { toast } from 'svelte-sonner'
   import { settings } from '@/modules/settings.js'
+  import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
   import getResultsFromExtensions from '@/modules/extensions/index.js'
 
@@ -84,7 +85,7 @@
 
   $: lookup.catch(err => {
     console.error(err)
-    toast.error(`No torrent found for ${search.media.title.userPreferred} Episode ${search.episode}!`, { description: err.message })
+    toast.error(`No torrent found for ${anilistClient.title(search.media)} Episode ${search.episode}!`, { description: err.message })
   })
 
   $: firstLoad = !firstLoad && lookup.catch(close)

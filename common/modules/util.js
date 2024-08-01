@@ -165,6 +165,7 @@ export const defaults = {
   showDetailsInRPC: true,
   smoothScroll: !SUPPORTS.isAndroid,
   cards: 'small',
+  titleLang: 'romaji',
   expandingSidebar: !SUPPORTS.isAndroid,
   torrentPathNew: undefined,
   font: undefined,

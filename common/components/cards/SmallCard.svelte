@@ -46,7 +46,7 @@
       {#if media.mediaListEntry?.status}
         <div style:--statusColor={statusColorMap[media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={media.mediaListEntry.status} />
       {/if}
-      {media.title.userPreferred}
+      {anilistClient.title(media)}
     </div>
     <div class='d-flex flex-row mt-auto pt-10 font-weight-medium justify-content-between w-full text-muted'>
       <div class='d-flex align-items-center pr-5' style='margin-left: -2px'>
