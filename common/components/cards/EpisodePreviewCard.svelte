@@ -63,10 +63,19 @@
           {data.episodeData?.title?.en || ''}
         </div>
       </div>
-      {#if data.episode}
-        <div class='col-auto d-flex flex-column align-items-end text-right'>
-          <div class='text-white font-weight-bold'>
+      <div class='col-auto d-flex flex-column align-items-end text-right' title={data.parseObject?.file_name} >
+        <div class='text-white font-weight-bold font-weight-very-bold'>
+          {#if data.episode}
             Episode {data.episode}
+          {:else if media?.format === 'MOVIE' }
+            Movie
+          {:else if data.parseObject?.anime_title?.match(/S(\d{2})/)}
+            Season {parseInt(data.parseObject.anime_title.match(/S(\d{2})/)[1], 10)}
+          {:else}
+            Batch
+          {/if}
+        </div>
+        <div class='d-flex align-items-center'>
           </div>
           {#if data.date}
             <div class='text-muted font-size-12 title overflow-hidden'>
