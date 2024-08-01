@@ -142,8 +142,7 @@
 <h4 class='mb-10 font-weight-bold'>Client Settings</h4>
 {#if SUPPORTS.torrentPath}
   <SettingCard title='Torrent Download Location' description='Path to the folder used to store torrents. By default this is the TMP folder, which might lose data when your OS tries to reclaim storage.'>
-    <div
-      class='input-group w-300 mw-full'>
+    <div class='input-group w-300 mw-full'>
       <div class='input-group-prepend'>
         <button type='button' use:click={handleFolder} class='btn btn-primary input-group-append'>Select Folder</button>
       </div>
