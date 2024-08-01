@@ -35,7 +35,7 @@
 </script>
 
 {#key current}
-  <img src={current.bannerImage || `https://i.ytimg.com/vi/${current.trailer?.id}/maxresdefault.jpg` || ''} alt='banner' class='img-cover w-full h-full position-absolute' />
+  <img src={current.bannerImage || (current.trailer?.id ? `https://i.ytimg.com/vi/${current.trailer?.id}/maxresdefault.jpg` : current.coverImage?.extraLarge || ' ')} alt='banner' class='img-cover w-full h-full position-absolute' />
 {/key}
 <div class='gradient-bottom h-full position-absolute top-0 w-full' />
 <div class='gradient-left h-full position-absolute top-0 w-800' />
