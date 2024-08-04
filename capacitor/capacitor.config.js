@@ -9,7 +9,8 @@ const config = {
       keystorePath: './watch.miru',
       keystorePassword: '',
       keystoreAlias: 'watch.miru'
-    }
+    },
+    webContentsDebuggingEnabled: true
   },
   plugins: {
     SplashScreen: { launchShowDuration: 0 },
