@@ -138,7 +138,7 @@ export default class Helper {
   }
 
   static async delete(media) {
-    return await this.getClient().delete(...(this.isAniAuth() ? {id: media.mediaListEntry.id} : {idMal: media.idMal}))
+    return await this.getClient().delete((this.isAniAuth() ? {id: media.mediaListEntry.id} : {idMal: media.idMal}))
   }
 
   static matchTitle(media, phrase, keys) {
