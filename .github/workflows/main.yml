@@ -39,4 +39,9 @@ jobs:
       - name: Build and Publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # CSC_LINK: ${{ secrets.APPLE_SIGNING_CERT }}
+          # API_KEY: ${{ secrets.APPLE_API_KEY }}
+          # APPLE_API_KEY: apple.p8
+          # APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          # APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: cd electron && npm run publish

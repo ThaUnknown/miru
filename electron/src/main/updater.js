@@ -1,6 +1,6 @@
 import log from 'electron-log'
 import { autoUpdater } from 'electron-updater'
-import { ipcMain } from 'electron'
+import { ipcMain, shell } from 'electron'
 
 log.initialize({ spyRendererConsole: true })
 log.transports.file.level = 'info'
@@ -37,6 +37,7 @@ export default class Updater {
         this.torrentWindow.close()
         autoUpdater.quitAndInstall(true, forceRunAfter)
       })
+      if (process.platform === 'darwin') shell.openExternal('https://miru.watch/download')
       this.hasUpdate = false
       return true
     }
