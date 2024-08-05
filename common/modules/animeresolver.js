@@ -132,7 +132,13 @@ export default new class AnimeResolver {
               const root = prequel && (await this.resolveSeason({ media: await this.getAnimeById(prequel.id), force: true })).media
 
               // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
-              const result = await this.resolveSeason({ media: root || media, episode: parseObj.episode_number[1], increment: !parseObj.anime_season ? null : true })
+              let result = await this.resolveSeason({ media: root || media, episode: parseObj.episode_number[1], increment: !parseObj.anime_season ? null : true })
+
+              // last ditch attempt to resolve the correct episode count, resolves most issues especially with Misfit of a Demon King.
+              if (result.failed && parseObj.anime_season) {
+                result = await this.resolveSeason({ media: root || media, episode: parseObj.episode_number[1] })
+              }
+
               media = result.rootMedia
               const diff = parseObj.episode_number[1] - result.episode
               episode = `${parseObj.episode_number[0] - diff} ~ ${result.episode}`
@@ -149,7 +155,13 @@ export default new class AnimeResolver {
             const root = prequel && (await this.resolveSeason({ media: await this.getAnimeById(prequel.id), force: true })).media
 
             // value bigger than episode count
-            const result = await this.resolveSeason({ media: root || media, episode: parseInt(parseObj.episode_number), increment: !parseObj.anime_season ? null : true })
+            let result = await this.resolveSeason({ media: root || media, episode: parseInt(parseObj.episode_number), increment: !parseObj.anime_season ? null : true })
+
+            // last ditch attempt, see above
+            if (result.failed && parseObj.anime_season) {
+              result = await this.resolveSeason({ media: root || media, episode: parseInt(parseObj.episode_number) })
+            }
+
             media = result.rootMedia
             episode = result.episode
             failed = result.failed
