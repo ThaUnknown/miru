@@ -1,10 +1,13 @@
 <script>
   import { statusColorMap, formatMap } from '@/modules/anime.js'
-  import { since } from '@/modules/util'
+  import { since } from '@/modules/util.js'
+  import { click } from '@/modules/click.js'
   import { liveAnimeEpisodeProgress } from '@/modules/animeprogress.js'
   import { anilistClient } from "@/modules/anilist"
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
+  import { getContext } from 'svelte'
   export let data
+  export let prompt
   /** @type {import('@/modules/al.d.ts').Media | null} */
   const media = data.media && anilistClient.mediaCache[data.media.id]
 
@@ -14,6 +17,11 @@
   const progress = liveAnimeEpisodeProgress(media?.id, data?.episode)
   const watched = media?.mediaListEntry?.status === 'COMPLETED'
   const completed = !watched && media?.mediaListEntry?.progress >= data?.episode
+
+  const view = getContext('view')
+  function viewMedia () {
+    $view = media
+  }
 </script>
 
 <div class='position-absolute w-400 mh-400 absolute-container top-0 m-auto bg-dark-light z-30 rounded overflow-hidden pointer d-flex flex-column'>
@@ -114,9 +122,24 @@
       </div>
     {/if}
   </div>
+  <div class='overlay position-absolute w-full h-200 z-40 d-flex flex-column justify-content-center align-items-center {prompt ? "visible" : "invisible"}'>
+    <p class='ml-20 mr-20 font-size-24 text-white text-center'>Your Current Progress Is At <b>Episode {media?.mediaListEntry?.progress}</b></p>
+    <button class='btn btn-lg btn-secondary w-250 text-dark font-weight-bold shadow-none border-0 d-flex align-items-center justify-content-center mt-10'
+            use:click={() => {
+              data.onclick() || viewMedia()
+            }}>
+            <span class='material-symbols-outlined font-size-24 filled pr-10'>
+              play_arrow
+            </span>
+      Continue Anyway?
+    </button>
+   </div>
 </div>
 
 <style>
+  .overlay {
+    background-color: rgba(28, 28, 28, 0.9);
+  }
   .material-symbols-outlined {
     font-size: 3rem;
   }

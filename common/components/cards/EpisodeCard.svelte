@@ -1,7 +1,8 @@
 <script>
   import { statusColorMap } from '@/modules/anime.js'
   import EpisodePreviewCard from './EpisodePreviewCard.svelte'
-  import { hoverClick } from '@/modules/click.js'
+  import { hoverClick, hoverChange } from '@/modules/click.js'
+  import { writable } from 'svelte/store'
   import { since } from '@/modules/util.js'
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   import { getContext } from 'svelte'
@@ -10,6 +11,7 @@
   export let data
 
   let preview = false
+  let prompt = writable(false)
   /** @type {import('@/modules/al.d.ts').Media | null} */
   const media = data.media && anilistClient.mediaCache[data.media.id]
 
@@ -18,6 +20,13 @@
   const view = getContext('view')
   function viewMedia () {
     $view = media
+  }
+  function setClickState() {
+    if ($prompt === false && media?.mediaListEntry?.progress < (data.episode - 1)) {
+      prompt.set(true)
+    } else {
+      data.onclick() || viewMedia()
+    }
   }
   function setHoverState (state) {
     preview = state
@@ -28,9 +37,9 @@
   const completed = !watched && media?.mediaListEntry?.progress >= data?.episode
 </script>
 
-<div class='d-flex p-20 pb-10 position-relative episode-card' use:hoverClick={[data.onclick || viewMedia, setHoverState]}>
+<div class='d-flex p-20 pb-10 position-relative episode-card' use:hoverChange={() => prompt.set(false)} use:hoverClick={[setClickState, setHoverState]}>
   {#if preview}
-    <EpisodePreviewCard {data} />
+    <EpisodePreviewCard {data} bind:prompt={$prompt} />
   {/if}
   <div class='item d-flex flex-column h-full pointer content-visibility-auto' class:opacity-half={completed}>
     <div class='image h-200 w-full position-relative rounded overflow-hidden d-flex justify-content-between align-items-end text-white' class:bg-black={episodeThumbnail === ' '}>
