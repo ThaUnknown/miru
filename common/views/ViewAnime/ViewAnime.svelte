@@ -29,6 +29,7 @@
   let container = null
   $: media = $view
   $: media && (modal?.focus(), overlay = 'viewanime', (container && container.dispatchEvent(new Event('scrolltop'))))
+  $: mediaRecommendation = media && anilistClient.recommendations({ id: media.id })
   function checkClose ({ keyCode }) {
     if (keyCode === 27) close()
   }
@@ -183,13 +184,13 @@
             </div>
           {/if}
           <ToggleList list={
-            media.relations?.edges?.filter(({ node, relationType }) => node.type === 'ANIME' && relationType !== 'CHARACTER').sort((a, b) => {
-               const relationTypeComparison = a.relationType.localeCompare(b.relationType)
-               if (relationTypeComparison !== 0) {
-                  return relationTypeComparison
+            media.relations?.edges?.filter(({ node }) => node.type === 'ANIME').sort((a, b) => {
+               const typeComparison = a.relationType.localeCompare(b.relationType)
+               if (typeComparison !== 0) {
+                  return typeComparison
                }
                return (a.node.seasonYear || 0) - (b.node.seasonYear || 0)
-            })} promise={ anilistClient.searchIDS({ page: 1, perPage: 50, id: media.relations?.edges?.filter(({ node, relationType }) => node.type === 'ANIME' && relationType !== 'CHARACTER').map(({ node }) => node.id) }) } let:item let:promise title='Relations'>
+            })} promise={ anilistClient.searchIDS({ page: 1, perPage: 50, id: media.relations?.edges?.filter(({ node }) => node.type === 'ANIME').map(({ node }) => node.id) }) } let:item let:promise title='Relations'>
             <div class='small-card'>
               {#await promise}
                 <SkeletonCard />
@@ -200,17 +201,20 @@
               {/await}
             </div>
           </ToggleList>
-          <ToggleList list={ media.recommendations?.edges?.filter(({ node }) => node.mediaRecommendation).sort((a, b) => b.node.rating - a.node.rating) } promise={ anilistClient.searchIDS({ page: 1, perPage: 50, id: media.recommendations?.edges?.map(({ node }) => node.mediaRecommendation?.id) }) } let:item let:promise title='Recommendations'>
-            <div class='small-card'>
-              {#await promise}
-                <SkeletonCard />
-              {:then res }
-                {#if res}
-                  <SmallCard media={anilistClient.mediaCache[item.node.mediaRecommendation.id]} type={item.node.rating} />
-                {/if}
-              {/await}
-            </div>
-          </ToggleList>
+          {#await mediaRecommendation then res} <!-- reduces query complexity improving load times -->
+            {@const mediaRecommendation = res?.data?.Media}
+            <ToggleList list={ mediaRecommendation.recommendations?.edges?.filter(({ node }) => node.mediaRecommendation).sort((a, b) => b.node.rating - a.node.rating) } promise={ anilistClient.searchIDS({ page: 1, perPage: 50, id: mediaRecommendation.recommendations?.edges?.map(({ node }) => node.mediaRecommendation?.id) }) } let:item let:promise title='Recommendations'>
+              <div class='small-card'>
+                {#await promise}
+                  <SkeletonCard />
+                {:then res }
+                  {#if res}
+                    <SmallCard media={anilistClient.mediaCache[item.node.mediaRecommendation.id]} type={item.node.rating} />
+                  {/if}
+                {/await}
+              </div>
+            </ToggleList>
+          {/await}
           <Following {media} />
           <div class='w-full d-flex d-lg-none flex-row align-items-center pt-20 mt-10 pointer'>
             <hr class='w-full' />

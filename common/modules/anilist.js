@@ -104,11 +104,6 @@ nextAiringEpisode {
   timeUntilAiring,
   episode
 },
-startDate {
-  year,
-  month,
-  day
-},
 trailer {
   id,
   site
@@ -135,11 +130,6 @@ mediaListEntry {
     day
   }
 },
-studios(isMain: true) {
-  nodes {
-    name
-  }
-},
 airingSchedule(page: 1, perPage: 1, notYetAired: true) {
   nodes {
     episode,
@@ -151,47 +141,12 @@ relations {
     relationType(version:2),
     node {
       id,
-      idMal,
-      title {
-        romaji,
-        english,
-        native,
-        userPreferred
-      },
-      coverImage {
-        medium,
-        extraLarge
-      },
       type,
-      status,
       format,
-      episodes,
-      synonyms,
-      season,
-      seasonYear,
-      startDate {
-        year,
-        month,
-        day
-      },
-      endDate {
-        year,
-        month,
-        day
-      }
+      seasonYear
     }
   }
-},
- recommendations {
-   edges {
-     node {
-       rating,
-       mediaRecommendation {
-         id
-       }
-     }
-   }
- }`
+}`
 
 class AnilistClient {
   limiter = new Bottleneck({
@@ -515,7 +470,7 @@ class AnilistClient {
   /** @returns {Promise<import('./al.d.ts').Query<{ MediaListCollection: import('./al.d.ts').MediaListCollection }>>} */
   async getUserLists (variables) {
     variables.id = this.userID?.viewer?.data?.Viewer.id
-    variables.sort = variables.sort?.replace('USER_SCORE_DESC', 'SCORE_DESC')
+    variables.sort = variables.sort?.replace('USER_SCORE_DESC', 'SCORE_DESC') // doesn't exist, AniList uses SCORE_DESC for both MediaSort and MediaListSort.
     const query = /* js */` 
       query($id: Int, $sort: [MediaListSort]) {
         MediaListCollection(userId: $id, type: ANIME, sort: $sort, forceSingleCompletedList: true) {
@@ -539,8 +494,7 @@ class AnilistClient {
 
   /** @returns {Promise<import('./al.d.ts').Query<{ MediaList: { status: string, progress: number, repeat: number }}>>} */
   async searchIDStatus (variables = {}) {
-    const userId = this.userID?.viewer?.data?.Viewer.id
-    variables.id = userId
+    variables.id = this.userID?.viewer?.data?.Viewer.id
     const query = /* js */` 
       query($id: Int, $mediaId: Int) {
         MediaList(userId: $id, mediaId: $mediaId) {
@@ -637,11 +591,33 @@ class AnilistClient {
           mediaList(mediaId: $id, isFollowing: true, sort: UPDATED_TIME_DESC) {
             status,
             score,
-            progress,
             user {
               name,
               avatar {
                 medium
+              }
+            }
+          }
+        }
+      }`
+
+    return this.alRequest(query, variables)
+  }
+
+  /** @returns {Promise<import('./al.d.ts').Query<{Media: import('./al.d.ts').Media}>>} */
+  async recommendations (variables) {
+    const query = /* js */` 
+      query($id: Int) {
+        Media(id: $id, type: ANIME) {
+          id,
+          idMal,
+          recommendations {
+            edges {
+              node {
+                rating,
+                mediaRecommendation {
+                  id
+                }
               }
             }
           }

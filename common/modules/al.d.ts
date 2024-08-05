@@ -41,11 +41,6 @@ export type Media = {
     episode: number
     airingAt: number
   }
-  startDate?: {
-    year: number
-    month?: number
-    day?: number
-  }
   trailer?: {
     id: string
     site: string
@@ -72,13 +67,6 @@ export type Media = {
       day: number
     }
   }
-  studios?: {
-    edges: {
-      node: {
-        name: string
-      }
-    }[]
-  }
   airingSchedule?: {
     nodes?: {
       episode: number
@@ -90,49 +78,27 @@ export type Media = {
       relationType: string
       node: {
         id: number
-        idMal: number
-        title: {
-          romaji?: string
-          english?: string
-          native?: string
-          userPreferred: string
-        }
         type: string
-        status: string
         format?: string
-        episodes?: number
-        synonyms?: string[]
-        season?: string
         seasonYear?: number
-        startDate?: {
-          year: number
-          month?: number
-          day?: number
-        }
-        endDate?: {
-          year: number
-          month: number
-          day: number
+      }
+    }[]
+  }
+  recommendations?: {
+    edges?: {
+      node: {
+        rating: number
+        mediaRecommendation: {
+          id: number
         }
       }
     }[]
   }
-   recommendations?: {
-     edges?: {
-       node: {
-         rating: number
-         mediaRecommendation: {
-           id: number
-         }
-       }
-     }[]
-   }
 }
 
 export type Following = {
   status: string
   score: number
-  progress: number
   user: {
     name: string
     avatar: {
@@ -155,6 +121,8 @@ export type MediaListMedia = {
       relationType: string
       node: {
         id: number
+        type: string
+        format?: string
       }
     }[]
   }
