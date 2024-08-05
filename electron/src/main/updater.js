@@ -12,10 +12,15 @@ ipcMain.on('update', () => {
 autoUpdater.checkForUpdatesAndNotify()
 export default class Updater {
   hasUpdate = false
+  window
+  torrentWindow
   /**
    * @param {import('electron').BrowserWindow} window
+   * @param {import('electron').BrowserWindow} torrentWindow
    */
-  constructor (window) {
+  constructor (window, torrentWindow) {
+    this.window = window
+    this.torrentWindow = torrentWindow
     autoUpdater.on('update-available', () => {
       window.webContents.send('update-available', true)
     })
@@ -23,17 +28,15 @@ export default class Updater {
       this.hasUpdate = true
       window.webContents.send('update-downloaded', true)
     })
-    ipcMain.on('quit-and-install', () => {
-      if (this.hasUpdate) {
-        autoUpdater.quitAndInstall()
-        this.hasUpdate = false
-      }
-    })
   }
 
-  install () {
+  install (forceRunAfter = false) {
     if (this.hasUpdate) {
-      autoUpdater.quitAndInstall()
+      setImmediate(() => {
+        this.window.close()
+        this.torrentWindow.close()
+        autoUpdater.quitAndInstall(true, forceRunAfter)
+      })
       this.hasUpdate = false
       return true
     }
