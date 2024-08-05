@@ -38,9 +38,9 @@
     if (state.save || state.delete) {
       await new Promise(resolve => setTimeout(resolve, 300)) // allows time for animation to play
       if (state.save) {
-        saveChanges()
+        await saveChanges()
       } else if (state.delete) {
-        deleteEntry()
+        await deleteEntry()
       }
     } else {
       score = (media.mediaListEntry?.score ? media.mediaListEntry?.score : 0)

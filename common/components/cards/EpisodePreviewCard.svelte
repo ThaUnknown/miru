@@ -8,7 +8,7 @@
   /** @type {import('@/modules/al.d.ts').Media | null} */
   const media = data.media && anilistClient.mediaCache[data.media.id]
 
-  const episodeThumbnail = ((!media?.mediaListEntry?.status || !((media.mediaListEntry.status === 'CURRENT' || media.mediaListEntry.status === 'PAUSED' || media.mediaListEntry.status === 'DROPPED') && media.mediaListEntry.progress < data.episode)) && data.episodeData?.image) || media?.bannerImage || media?.coverImage.extraLarge || ' '
+  const episodeThumbnail = ((!media?.mediaListEntry?.status || !(['CURRENT', 'PAUSED', 'DROPPED'].includes(media.mediaListEntry.status) && media.mediaListEntry.progress < data.episode)) && data.episodeData?.image) || media?.bannerImage || media?.coverImage.extraLarge || ' '
   let hide = true
 
   const progress = liveAnimeEpisodeProgress(media?.id, data?.episode)
