@@ -231,11 +231,12 @@ export default class TorrentClient extends WebTorrent {
       return
     }
     localStorage.setItem('lastFinished', 'false')
-    if (this.torrents.length) await this.remove(this.torrents[0])
+    if (this.torrents.length) {
+      await this.remove(this.torrents[0], { destroyStore: !this.settings.torrentPersist })
+    }
     const torrent = await this.add(data, {
       private: this.settings.torrentPeX,
       path: this.torrentPath || undefined,
-      destroyStoreOnDestroy: !this.settings.torrentPersist,
       skipVerify,
       announce,
       deselect: this.settings.torrentStreamedDownload
