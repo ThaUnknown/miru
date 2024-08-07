@@ -605,7 +605,7 @@ class AnilistClient {
   }
 
   /** @returns {Promise<import('./al.d.ts').Query<{Media: import('./al.d.ts').Media}>>} */
-  async recommendations (variables) {
+  recommendations (variables) {
     const query = /* js */` 
       query($id: Int) {
         Media(id: $id, type: ANIME) {
