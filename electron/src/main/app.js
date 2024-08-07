@@ -48,7 +48,7 @@ export default class App {
 
   discord = new Discord(this.mainWindow)
   protocol = new Protocol(this.mainWindow)
-  updater = new Updater(this.mainWindow)
+  updater = new Updater(this.mainWindow, this.webtorrentWindow)
   dialog = new Dialog(this.webtorrentWindow)
 
   constructor () {
@@ -134,11 +134,17 @@ export default class App {
       this.webtorrentWindow.webContents.postMessage('torrentPath', store.get('torrentPath'))
       sender.postMessage('port', null, [port2])
     })
+
+    ipcMain.on('quit-and-install', () => {
+      if (this.updater.hasUpdate) {
+        this.destroy(true)
+      }
+    })
   }
 
   destroyed = false
 
-  async destroy () {
+  async destroy (forceRunAfter = false) {
     if (this.destroyed) return
     this.webtorrentWindow.webContents.postMessage('destroy', null)
     await new Promise(resolve => {
@@ -146,6 +152,6 @@ export default class App {
       setTimeout(resolve, 5000).unref?.()
     })
     this.destroyed = true
-    if (!this.updater.install()) app.quit()
+    if (!this.updater.install(forceRunAfter)) app.quit()
   }
 }

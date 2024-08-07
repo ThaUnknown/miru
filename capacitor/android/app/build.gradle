@@ -13,7 +13,7 @@ versions.each (code) -> {
 
 android {
     namespace "watch.miru"
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "watch.miru"
         minSdkVersion rootProject.ext.minSdkVersion

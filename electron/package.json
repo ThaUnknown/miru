@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "5.2.7",
+  "version": "5.2.14",
   "private": true,
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
@@ -20,9 +20,9 @@
     "discord-rpc": "4.0.1",
     "electron": "29.1.4",
     "electron-builder": "^24.13.3",
-    "electron-log": "^5.1.5",
+    "electron-log": "^5.1.7",
     "electron-updater": "^6.2.1",
-    "webpack-merge": "^5.10.0"
+    "webpack-merge": "^6.0.1"
   },
   "dependencies": {
     "@paymoapp/electron-shutdown-handler": "^1.1.2",
@@ -61,7 +61,6 @@
         "repo": "miru"
       }
     ],
-    "afterSign": "./buildResources/notarize.js",
     "appId": "com.github.thaunknown.miru",
     "productName": "Miru",
     "files": [
@@ -73,8 +72,10 @@
       "defaultArch": "universal",
       "singleArchFiles": "node_modules/+(register-scheme|utp-native|fs-native-extensions)/**",
       "category": "public.app-category.video",
+      "darkModeSupport": true,
       "icon": "buildResources/icon.icns",
       "hardenedRuntime": true,
+      "notarize": false,
       "entitlements": "buildResources/entitlements.mac.plist",
       "target": [
         {

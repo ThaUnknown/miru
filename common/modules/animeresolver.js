@@ -25,7 +25,7 @@ export default new class AnimeResolver {
    * @returns {string[]}
    */
   alternativeTitles (title) {
-    const titles = []
+    const titles = new Set()
 
     let modified = title
     // preemptively change S2 into Season 2 or 2nd Season, otherwise this will have accuracy issues
@@ -33,31 +33,31 @@ export default new class AnimeResolver {
     if (seasonMatch) {
       if (Number(seasonMatch[1]) === 1) { // if this is S1, remove the " S1" or " S01"
         modified = title.replace(/ S(\d+)/, '')
-        titles.push(modified)
+        titles.add(modified)
       } else {
         modified = title.replace(/ S(\d+)/, ` ${Number(seasonMatch[1])}${postfix[Number(seasonMatch[1])] || 'th'} Season`)
-        titles.push(modified)
-        titles.push(title.replace(/ S(\d+)/, ` Season ${Number(seasonMatch[1])}`))
+        titles.add(modified)
+        titles.add(title.replace(/ S(\d+)/, ` Season ${Number(seasonMatch[1])}`))
       }
     } else {
-      titles.push(title)
+      titles.add(title)
     }
 
     // remove - :
     const specialMatch = modified.match(/[-:]/g)
     if (specialMatch) {
-      modified = modified.replace(/[-:]/g, '')
-      titles.push(modified)
+      modified = modified.replace(/[-:]/g, '').replace(/[ ]{2,}/, ' ')
+      titles.add(modified)
     }
 
     // remove (TV)
     const tvMatch = modified.match(/\(TV\)/)
     if (tvMatch) {
       modified = modified.replace('(TV)', '')
-      titles.push(modified)
+      titles.add(modified)
     }
 
-    return titles
+    return [...titles]
   }
 
   /**
@@ -73,8 +73,10 @@ export default new class AnimeResolver {
       return titleObjects
     }).flat()
 
-    for (const [key, media] of await anilistClient.alSearchCompound(titleObjects)) {
-      this.animeNameCache[key] = media
+    for (const chunk of chunks(titleObjects, 62)) { // single title has a complexity of 8.1, al limits complexity to 500
+      for (const [key, media] of await anilistClient.alSearchCompound(chunk)) {
+        this.animeNameCache[key] = media
+      }
     }
   }
 
@@ -97,16 +99,17 @@ export default new class AnimeResolver {
     if (!fileName) return [{}]
     const parseObjs = await anitomyscript(fileName)
 
+    const TYPE_EXCLUSIONS = ['ED', 'ENDING', 'NCED', 'NCOP', 'OP', 'OPENING', 'PREVIEW', 'PV']
+
     /** @type {Record<string, import('anitomyscript').AnitomyResult>} */
     const uniq = {}
     for (const obj of parseObjs) {
       const key = this.getCacheKeyForTitle(obj)
-      if (key in this.animeNameCache) continue
+      if (key in this.animeNameCache) continue // skip already resolved
+      if (obj.anime_type && TYPE_EXCLUSIONS.includes(obj.anime_type.toUpperCase())) continue // skip non-episode media
       uniq[key] = obj
     }
-    for (const chunk of chunks(Object.values(uniq), 50)) {
-      await this.findAnimesByTitle(chunk)
-    }
+    await this.findAnimesByTitle(Object.values(uniq))
 
     const fileAnimes = []
     for (const parseObj of parseObjs) {

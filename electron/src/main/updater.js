@@ -1,6 +1,6 @@
 import log from 'electron-log'
 import { autoUpdater } from 'electron-updater'
-import { ipcMain } from 'electron'
+import { ipcMain, shell } from 'electron'
 
 let hasUpdate = false
 
@@ -13,10 +13,15 @@ ipcMain.on('update', () => {
 
 autoUpdater.checkForUpdatesAndNotify()
 export default class Updater {
+  window
+  torrentWindow
   /**
    * @param {import('electron').BrowserWindow} window
+   * @param {import('electron').BrowserWindow} torrentWindow
    */
-  constructor (window) {
+  constructor (window, torrentWindow) {
+    this.window = window
+    this.torrentWindow = torrentWindow
     autoUpdater.on('update-available', () => {
       window.webContents.send('update-available', true)
     })
@@ -24,17 +29,16 @@ export default class Updater {
       hasUpdate = true
       window.webContents.send('update-downloaded', true)
     })
-    ipcMain.on('quit-and-install', () => {
-      if (hasUpdate) {
-        autoUpdater.quitAndInstall()
-        hasUpdate = false
-      }
-    })
   }
 
-  install () {
+  install (forceRunAfter = false) {
     if (hasUpdate) {
-      autoUpdater.quitAndInstall()
+      setImmediate(() => {
+        this.window.close()
+        this.torrentWindow.close()
+        autoUpdater.quitAndInstall(true, forceRunAfter)
+      })
+      if (process.platform === 'darwin') shell.openExternal('https://miru.watch/download')
       hasUpdate = false
       return true
     }

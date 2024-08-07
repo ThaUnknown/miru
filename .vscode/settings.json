@@ -1,3 +1,4 @@
 {
-  "npm.exclude": "**/git_modules/**"
+  "npm.exclude": "**/git_modules/**",
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

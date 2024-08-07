@@ -9,6 +9,7 @@ android/app/src/*
 !android/app/src/main
 android/app/src/main/*
 !android/app/src/main/AndroidManifest.xml
+!android/app/src/main/java
 ios/
 *.jks
 *.pepk
