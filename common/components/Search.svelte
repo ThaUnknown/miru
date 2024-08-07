@@ -1,6 +1,6 @@
 <script context='module'>
   const badgeKeys = ['title', 'search', 'genre', 'tag', 'season', 'year', 'format', 'status', 'sort', 'hideSubs', 'hideMyAnime', 'hideStatus']
-  const badgeDisplayNames = { title: 'List:', search: 'Title:', genre: 'Genre:', tag: 'Tag:', season: 'Season:', year: 'Year:', format: 'Format:', status: 'Status:', sort: 'Sort:', hideMyAnime: 'Hide My Anime', hideSubs: 'Audio: Dubbed' }
+  const badgeDisplayNames = { title: 'recent_actors', search: 'title', genre: 'theater_comedy', tag: 'tag', season: 'calendar_month', year: 'spa', format: 'monitor', status: 'live_tv', sort: 'sort', hideMyAnime: 'tune', hideSubs: 'mic' }
   const sortOptions = { START_DATE_DESC: 'Release Date', SCORE_DESC: 'Score', POPULARITY_DESC: 'Popularity', TRENDING_DESC: 'Trending', UPDATED_TIME_DESC: 'Last Updated', STARTED_ON_DESC: 'Started On', FINISHED_ON_DESC: 'Finished On', PROGRESS_DESC: 'Your Progress', USER_SCORE_DESC: 'Your Score' }
 
   export function searchCleanup (search, badge) {
@@ -346,7 +346,7 @@
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
         <div class='material-symbols-outlined mr-10 font-size-30'>title</div>
-        Title
+        <div>Title</div>
       </div>
       <div class='input-group'>
         <div class='input-group-prepend'>
@@ -366,7 +366,7 @@
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
         <div class='material-symbols-outlined mr-10 font-size-30'>theater_comedy</div>
-        Genres
+        <div>Genres</div>
       </div>
       <div class='input-group'>
         <input
@@ -393,7 +393,7 @@
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
         <div class='material-symbols-outlined mr-10 font-size-30'>tag</div>
-        Tags
+        <div>Tags</div>
       </div>
       <div class='input-group'>
         <input
@@ -417,8 +417,8 @@
     </div>
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
-        <div class='material-symbols-outlined mr-10 font-size-30'>spa</div>
-        Season
+        <div class='material-symbols-outlined mr-10 font-size-30'>calendar_month</div>
+        <div>Season</div>
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light border-right-dark' required bind:value={search.season} disabled={search.disableSearch}>
@@ -440,7 +440,7 @@
     <div class='col p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
         <div class='material-symbols-outlined mr-10 font-size-30'>monitor</div>
-        Format
+        <div>Format</div>
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.format} disabled={search.disableSearch}>
@@ -456,7 +456,7 @@
     <div class='col p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
         <div class='material-symbols-outlined mr-10 font-size-30'>live_tv</div>
-        Status
+        <div>Status</div>
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.status} disabled={search.disableSearch}>
@@ -471,7 +471,7 @@
     <div class='col p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
         <div class='material-symbols-outlined mr-10 font-size-30'>sort</div>
-        Sort
+        <div>Sort</div>
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.sort} on:change={clearTags} disabled={search.disableSearch}>
@@ -543,19 +543,24 @@
     <form>
       <div role="button" tabindex="0">
         {#if sanitisedSearch?.length}
-          <span
-            class='material-symbols-outlined font-size-24 mr-20 filled text-dark-light'
-            >sell</span>
+          {@const filteredBadges = sanitisedSearch.filter(badge => badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title'))}
+          <div class='d-flex flex-row align-items-center'>
+            {#if filteredBadges.length > 0}
+              <span class='material-symbols-outlined font-size-24 mr-20 filled text-dark-light'>sell</span>
+            {/if}
           {#each badgeKeys as key}
-            {#each sanitisedSearch as badge}
+            {@const matchingBadges = filteredBadges.filter(badge => badge.key === key)}
+            {#each matchingBadges as badge}
               {#if badge.key === key && (badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title')) }
-                <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>
-                  {badge.key === 'sort' ? 'Sort: ' : getBadgeDisplayName(badge.key)} {badge.key === 'sort' ? getSortDisplayName(badge.value) : (badge.key !== 'hideMyAnime' && badge.key !== 'hideSubs' ? ('' + badge.value).replace(/_/g, ' ').toLowerCase() : '')}
-                  <button on:click={() => removeBadge(badge)} class='pointer bg-transparent border-0 text-white font-size-12 position-relative ml-10' type='button'>x</button>
-                </span>
+                <div class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap d-flex align-items-center'>
+                  <div class='material-symbols-outlined font-size-18 mr-5'>{getBadgeDisplayName(badge.key)}</div>
+                  <div class='font-size-12'>{badge.key === 'sort' ? getSortDisplayName(badge.value) : (badge.key === 'hideMyAnime' ? 'Hide My Anime' : badge.key === 'hideSubs' ? 'Dubbed' : ('' + badge.value).replace(/_/g, ' ').toLowerCase())}</div>
+                  <button on:click={() => removeBadge(badge)} class='pointer bg-transparent border-0 text-white font-size-12 position-relative ml-10 pt-0' title='Remove Filter' type='button'>x</button>
+                </div>
               {/if}
             {/each}
           {/each}
+          </div>
         {/if}
       </div>
     </form>
