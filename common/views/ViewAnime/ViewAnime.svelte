@@ -21,15 +21,34 @@
   const view = getContext('view')
   function close (play) {
     $view = null
+    mediaList = []
     if (!play) {
       overlay = 'none'
     }
   }
+  function back () {
+    if (mediaList.length > 1) {
+      const prevMedia = mediaList[mediaList.length - 2]
+      mediaList.splice(mediaList.length - 2, 2);
+      $view = prevMedia
+    }
+  }
+  function saveMedia () {
+    if (mediaList.length > 0) {
+      const lastMedia = mediaList[mediaList.length - 1]
+      if (media !== lastMedia) {
+        mediaList.push(media)
+      }
+    } else {
+      mediaList.push(media)
+    }
+  }
   let modal
   let container = null
+  let mediaList = []
   $: media = $view
-  $: media && (modal?.focus(), overlay = 'viewanime', (container && container.dispatchEvent(new Event('scrolltop'))))
   $: mediaRecommendation = media && anilistClient.recommendations({ id: media.id })
+  $: media && (modal?.focus(), overlay = 'viewanime', saveMedia(), (container && container.dispatchEvent(new Event('scrolltop'))))
   function checkClose ({ keyCode }) {
     if (keyCode === 27) close()
   }
@@ -78,6 +97,9 @@
 <div class='modal modal-full z-50' class:show={media} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
   {#if media}
     <div class='h-full modal-content bg-very-dark p-0 overflow-y-auto position-relative' bind:this={container} use:smoothScroll>
+      {#if mediaList.length > 1}
+        <button class='close back pointer z-30 bg-dark top-20 left-0 position-fixed material-symbols-outlined filled' type='button' use:click={back}>arrow_back</button>
+      {/if}
       <button class='close pointer z-30 bg-dark top-20 right-0 position-fixed' type='button' use:click={() => close()}> &times; </button>
       <img class='w-full cover-img banner position-absolute' alt='banner' src={media.bannerImage || ' '} />
       <div class='row px-20'>
@@ -237,6 +259,11 @@
     top: 5rem !important;
     left: unset !important;
     right: 3rem !important;
+  }
+  .back {
+    top: 5rem !important;
+    left: 9rem !important;
+    right: unset !important;
   }
   .banner {
     opacity: 0.5;
