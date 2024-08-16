@@ -345,9 +345,7 @@ class AnilistClient {
     if (!lists.includes('Watched using Miru')) {
       variables.lists.push('Watched using Miru')
     }
-    const res = await this.entry(variables)
-    this.userLists.value = this.getUserLists({ sort: 'UPDATED_TIME_DESC' })
-    return res
+    return await this.entry(variables)
   }
 
   async searchName (variables = {}) {
@@ -474,8 +472,8 @@ class AnilistClient {
 
   /** @returns {Promise<import('./al.d.ts').Query<{ MediaListCollection: import('./al.d.ts').MediaListCollection }>>} */
   async getUserLists (variables) {
-    variables.id = this.userID?.viewer?.data?.Viewer.id
-    variables.sort = variables.sort?.replace('USER_SCORE_DESC', 'SCORE_DESC') // doesn't exist, AniList uses SCORE_DESC for both MediaSort and MediaListSort.
+    variables.id = !variables.userID ? this.userID?.viewer?.data?.Viewer.id : variables.userID
+    variables.sort = variables.sort?.replace('USER_SCORE_DESC', 'SCORE_DESC') || 'UPDATED_TIME_DESC' // doesn't exist, AniList uses SCORE_DESC for both MediaSort and MediaListSort.
     const query = /* js */` 
       query($id: Int, $sort: [MediaListSort]) {
         MediaListCollection(userId: $id, type: ANIME, sort: $sort, forceSingleCompletedList: true) {
