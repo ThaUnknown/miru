@@ -38,7 +38,7 @@
     if (state.save || state.delete) {
       await new Promise(resolve => setTimeout(resolve, 300)) // allows time for animation to play
       if (state.save) {
-        await saveChanges()
+        await saveEntry()
       } else if (state.delete) {
         await deleteEntry()
       }
@@ -55,29 +55,36 @@
     episode = 0
     status = 'NOT IN LIST'
     if (media.mediaListEntry) {
-      const res = await Helper.delete(media)
+      const res = await Helper.delete(Helper.isAniAuth() ? {id: media.mediaListEntry.id} : {idMal: media.idMal})
       const description = `${anilistClient.title(media)} has been deleted from your list.`
-      if (res) {
-        console.log('List Updated: ' + description)
-        toast.warning('List Updated', {
-          description,
-          duration: 6000
-        })
-        media.mediaListEntry = undefined
-      } else {
-        const error = `\n${429} - ${codes[429]}`
-        console.error('Failed to delete title from user list with: ' + description + error)
-        toast.error('Failed to Delete Title', {
-          description: description + error,
-          duration: 9000
-        })
+      printToast(res, description, false, false)
+
+      if (Helper.getUser().sync) { // handle profile syncing
+        const mediaId = media.id
+        const profiles = JSON.parse(localStorage.getItem('profiles')) || []
+        for (const profile of profiles) {
+          if (profile.viewer?.data?.Viewer.sync) {
+            const anilist = profile.viewer?.data?.Viewer?.avatar
+            const listId = (anilist ? {id: (await anilistClient.getUserLists({userID: profile.viewer.data.Viewer.id, token: profile.token}))?.data?.MediaListCollection?.lists?.flatMap(list => list.entries).find(({ media }) => media.id === mediaId)?.media?.mediaListEntry?.id} : {idMal: media.idMal})
+            if (listId?.id || listId?.idMal) {
+              const res = await Helper.delete({...listId, token: profile.token, anilist})
+              printToast(res, description, false, profile)
+            }
+          }
+        }
       }
+
+      if (res) media.mediaListEntry = undefined
     }
   }
 
-  async function saveChanges() {
+  async function saveEntry() {
     if (!status.includes('NOT IN LIST')) {
       const fuzzyDate = Helper.getFuzzyDate(media, status)
+      const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name) || []
+      if (!lists.includes('Watched using Miru')) {
+        lists.push('Watched using Miru')
+      }
       const variables = {
               id: media.id,
               idMal: media.idMal,
@@ -85,27 +92,56 @@
               episode,
               score: Helper.isAniAuth() ? (score * 10) : score, // AniList score scale is out of 100, others use a scale of 10.
               repeat: media.mediaListEntry?.repeat || 0,
-              lists: media.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || [],
+              lists,
               ...fuzzyDate
             }
       let res = await Helper.entry(media, variables)
-      const description = `Title: ${anilistClient.title(media)}\nStatus: ${Helper.statusName[media.mediaListEntry.status]}\nEpisode: ${episode} / ${totalEpisodes}${score !== 0 ? `\nYour Score: ${score}` : ''}`
-      if (res?.data?.SaveMediaListEntry) {
-        console.log('List Updated: ' + description)
-        toast.success('List Updated', {
-          description,
-          duration: 6000
-        })
-      } else {
-        const error = `\n${429} - ${codes[429]}`
-        console.error('Failed to update user list with: ' + description + error)
-        toast.error('Failed to Update List', {
-          description: description + error,
-          duration: 9000
-        })
+      const description = `Title: ${anilistClient.title(media)}\nStatus: ${Helper.statusName[status]}\nEpisode: ${episode} / ${totalEpisodes}${score !== 0 ? `\nYour Score: ${score}` : ''}`
+      printToast(res, description, true, false)
+      if (Helper.getUser().sync) { // handle profile syncing
+        const mediaId = media.id
+        const profiles = JSON.parse(localStorage.getItem('profiles')) || []
+        for (const profile of profiles) {
+          if (profile.viewer?.data?.Viewer.sync) {
+            const anilist = profile.viewer?.data?.Viewer?.avatar
+            const currentLists = (anilist ? (await anilistClient.getUserLists({userID: profile.viewer.data.Viewer.id, token: profile.token}))?.data?.MediaListCollection?.lists?.flatMap(list => list.entries).find(({ media }) => media.id === mediaId)?.media?.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || [] : lists)
+            if (!currentLists.includes('Watched using Miru')) {
+              currentLists.push('Watched using Miru')
+            }
+            const res = await Helper.entry(media, { ...variables, lists: currentLists, score: (anilist ? (score * 10) : score), token: profile.token, anilist })
+            printToast(res, description, true, profile)
+          }
+        }
       }
     } else {
        await deleteEntry()
+    }
+  }
+
+  function printToast(res, description, save, profile) {
+    const who = (profile ? ' for ' + profile.viewer.data.Viewer.name + (profile.viewer?.data?.Viewer?.avatar ? ' (AniList)' : ' (MyAnimeList)')  : '')
+    if ((save && res?.data?.SaveMediaListEntry) || (!save && res)) {
+      console.log('List Updated' + who + ':\n' + description)
+      if (!profile) {
+        if (save) {
+          toast.success('List Updated', {
+            description,
+            duration: 6000
+          })
+        } else {
+          toast.warning('List Updated', {
+            description,
+            duration: 9000
+          })
+        }
+      }
+    } else {
+      const error = `\n${429} - ${codes[429]}`
+      console.error('Failed to ' + (save ? 'update' : 'delete title from') + ' user list' + who + ' with:\n' + description + error)
+      toast.error('Failed to ' + (save ? 'Update' : 'Delete') + ' List' + who, {
+        description: description + error,
+        duration: 9000
+      })
     }
   }
 

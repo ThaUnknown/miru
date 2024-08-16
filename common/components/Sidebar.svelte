@@ -4,8 +4,7 @@
   import { settings } from '@/modules/settings.js'
   import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
-  import { login } from './Login.svelte'
-  import { logout } from './Logout.svelte'
+  import { profileView } from './Profiles.svelte'
   import Helper from '@/modules/helper.js'
   import IPC from '@/modules/ipc.js'
 
@@ -44,11 +43,7 @@
   let links = [
     {
       click: () => {
-        if (Helper.getUser()) {
-          $logout = true
-        } else {
-          $login = true
-        }
+        $profileView = true
       },
       icon: 'login',
       text: 'Login',
@@ -114,7 +109,7 @@
   ]
   if (Helper.getUser()) {
     links[0].image = Helper.getUserAvatar()
-    links[0].text = 'Logout'
+    links[0].text = 'Profiles'
   }
 </script>
 

@@ -1,7 +1,7 @@
 import { writable } from 'simple-store-svelte'
 
 import { malToken, refreshMalToken } from '@/modules/settings.js'
-import { codes } from "@/modules/anilist";
+import { codes } from "@/modules/anilist"
 import { toast } from 'svelte-sonner'
 import Helper from '@/modules/helper.js'
 
@@ -90,14 +90,14 @@ class MALClient {
         switch (res.error) {
           case 'forbidden':
           case 'invalid_token':
-            if (await refreshMalToken()) { // refresh authorization token as it typically expires every 31 days.
-              return this.handleRequest(query, options);
+            if (await refreshMalToken(query.token ? query.token : this.userID.token)) { // refresh authorization token as it typically expires every 31 days.
+              return this.handleRequest(query, options)
             }
-            throw new Error("NotAuthenticatedError: " + res.message ?? res.error);
+            throw new Error("NotAuthenticatedError: " + res.message ?? res.error)
           case 'invalid_content':
-            throw new Error(`This Entry is currently pending approval. It can't be saved to mal for now`);
+            throw new Error(`This Entry is currently pending approval. It can't be saved to mal for now`)
           default:
-            throw new Error(res.message ?? res.error);
+            throw new Error(res.message ?? res.error)
         }
       } else if (!res || res.status !== 404) {
         throw e
@@ -127,7 +127,7 @@ class MALClient {
   async malEntry (media, variables) {
     variables.idMal = media.idMal
     const res = await malClient.entry(variables)
-    media.mediaListEntry = res.data.SaveMediaListEntry
+    if (!variables.token) media.mediaListEntry = res.data.SaveMediaListEntry
     return res
   }
 
@@ -158,19 +158,19 @@ class MALClient {
         hasNextPage = false
       } else {
         offset += limit
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 1-second delay to prevent too many consecutive requests ip block.
+        await new Promise(resolve => setTimeout(resolve, 1000)) // 1-second delay to prevent too many consecutive requests ip block.
       }
     }
 
     // Custom sorting based on original variables.sort value
     if (variables.originalSort === 'list_start_date_nan') {
       allMediaList.sort((a, b) => {
-        return new Date(b.node.my_list_status.start_date) - new Date(a.node.my_list_status.start_date);
-      });
+        return new Date(b.node.my_list_status.start_date) - new Date(a.node.my_list_status.start_date)
+      })
     } else if (variables.originalSort === 'list_finish_date_nan') {
       allMediaList.sort((a, b) => {
-        return new Date(b.node.my_list_status.finish_date) - new Date(a.node.my_list_status.finish_date);
-      });
+        return new Date(b.node.my_list_status.finish_date) - new Date(a.node.my_list_status.finish_date)
+      })
     } else if (variables.originalSort === 'list_progress_nan') {
       allMediaList.sort((a, b) => {
         return b.node.my_list_status.num_episodes_watched - a.node.my_list_status.num_episodes_watched
@@ -201,9 +201,10 @@ class MALClient {
   async entry (variables) {
     const query = {
       type: 'PUT',
-      path: `anime/${variables.idMal}/my_list_status`
+      path: `anime/${variables.idMal}/my_list_status`,
+      token: variables.token
     }
-    const padNumber = (num) => num !== undefined && num !== null ? String(num).padStart(2, '0') : null;
+    const padNumber = (num) => num !== undefined && num !== null ? String(num).padStart(2, '0') : null
     const start_date = variables.startedAt?.year && variables.startedAt.month && variables.startedAt.day ? `${variables.startedAt.year}-${padNumber(variables.startedAt.month)}-${padNumber(variables.startedAt.day)}` : null
     const finish_date = variables.completedAt?.year && variables.completedAt.month && variables.completedAt.day ? `${variables.completedAt.year}-${padNumber(variables.completedAt.month)}-${padNumber(variables.completedAt.day)}` : null
     const updateData = {
@@ -219,9 +220,9 @@ class MALClient {
     if (finish_date) {
       updateData.finish_date = finish_date
     }
-    const res = await this.malRequest(query, updateData)
-    this.userLists.value = this.getUserLists({ sort: 'list_updated_at' })
 
+    const res = await this.malRequest(query, updateData)
+    if (!variables.token) this.userLists.value = this.getUserLists({ sort: 'list_updated_at' })
     return res ? {
       data: {
         SaveMediaListEntry: {
@@ -241,10 +242,11 @@ class MALClient {
   async delete (variables) {
     const query = {
       type: 'DELETE',
-      path: `anime/${variables.idMal}/my_list_status`
+      path: `anime/${variables.idMal}/my_list_status`,
+      token: variables.token
     }
     const res = await this.malRequest(query)
-    this.userLists.value = this.getUserLists({ sort: 'list_updated_at' })
+    if (!variables.token) this.userLists.value = this.getUserLists({ sort: 'list_updated_at' })
     return res
   }
 }

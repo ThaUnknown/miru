@@ -66,19 +66,18 @@ window.addEventListener('paste', ({ clipboardData }) => {
 })
 IPC.on('altoken', handleToken)
 async function handleToken (token) {
-  alToken = { token, viewer: null }
-  const { anilistClient } = await import('./anilist.js')
-  const viewer = await anilistClient.viewer({ token })
+  const { anilistClient} = await import('./anilist.js')
+  const viewer = await anilistClient.viewer({token})
   if (!viewer.data?.Viewer) {
-    toast.error('Failed to sign in with AniList. Please try again.', { description: JSON.stringify(viewer) })
+    toast.error('Failed to sign in with AniList. Please try again.', {description: JSON.stringify(viewer)})
     console.error(viewer)
     return
   }
   const lists = viewer?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
   if (!lists.includes('Watched using Miru')) {
-    await anilistClient.customList({ lists })
+    await anilistClient.customList({lists})
   }
-  localStorage.setItem('ALviewer', JSON.stringify({ token, viewer }))
+  swapProfiles({token, viewer})
   location.reload()
 }
 
@@ -108,7 +107,6 @@ async function handleMalToken (code, state) {
     return
   }
   const oauth = await response.json()
-  malToken = { token: oauth.access_token, refresh:oauth.refresh_token, viewer: null }
   const viewer = await malClient.viewer(oauth.access_token)
   if (!viewer?.data?.Viewer?.id) {
     toast.error('Failed to sign in with MyAnimeList. Please try again.', { description: JSON.stringify(viewer) })
@@ -117,11 +115,11 @@ async function handleMalToken (code, state) {
   } else if (!viewer?.data?.Viewer?.picture) {
     viewer.data.Viewer.picture = 'https://cdn.myanimelist.net/images/kaomoji_mal_white.png' // set default image if user doesn't have an image.
   }
-  localStorage.setItem('MALviewer', JSON.stringify({ token: oauth.access_token, refresh: oauth.refresh_token, viewer }))
+  swapProfiles({ token: oauth.access_token, refresh: oauth.refresh_token, viewer })
   location.reload()
 }
 
-export async function refreshMalToken () {
+export async function refreshMalToken (token) {
   const { clientID } = await import('./myanimelist.js')
   const response = await fetch('https://myanimelist.net/v1/oauth2/token', {
     method: 'POST',
@@ -137,12 +135,77 @@ export async function refreshMalToken () {
   if (!response.ok) {
     toast.error('Failed to re-authenticate with MyAnimeList. You will need to log in again.', { description: JSON.stringify(response.status) })
     console.error('Failed to refresh MyAnimeList User Token.', response)
-    malToken = null
-    localStorage.removeItem('MALviewer')
+    if (malToken.token === token) {
+      swapProfiles(null)
+    } else {
+      const profiles = JSON.parse(localStorage.getItem('profiles')) || []
+      localStorage.setItem('profiles', JSON.stringify(profiles.filter(profile => profile.token !== token)))
+    }
     return
   }
   const oauth = await response.json()
-  const viewer = malToken.viewer
-  malToken = { token: oauth.access_token, refresh:oauth.refresh_token, viewer: viewer }
-  localStorage.setItem('MALviewer', JSON.stringify({ token: oauth.access_token, refresh: oauth.refresh_token, viewer }))
+  if (malToken.token === token) {
+    const viewer = malToken.viewer
+    malToken = { token: oauth.access_token, refresh:oauth.refresh_token, viewer: viewer }
+    localStorage.setItem('MALviewer', JSON.stringify({ token: oauth.access_token, refresh: oauth.refresh_token, viewer }))
+  } else {
+    let profiles = JSON.parse(localStorage.getItem('profiles')) || []
+    profiles = profiles.map(profile => {
+      if (profile.token === token) {
+        return {...profile, token: oauth.access_token, refresh: oauth.refresh_token}
+      }
+      return profile
+    })
+    localStorage.setItem('profiles', JSON.stringify(profiles))
+  }
+}
+
+export function swapProfiles(profile) {
+  let profiles = JSON.parse(localStorage.getItem('profiles')) || []
+  const currentProfile = isAuthorized()
+  const newProfile = profile !== null && !profiles.some(p => p.viewer?.data?.Viewer?.id === currentProfile?.viewer?.data?.Viewer?.id)
+
+  if (currentProfile) {
+    const torrent = localStorage.getItem('torrent')
+    const lastFinished = localStorage.getItem('lastFinished')
+    const settings = localStorage.getItem('settings')
+    if (torrent) currentProfile.viewer.data.Viewer.torrent = torrent
+    if (lastFinished) currentProfile.viewer.data.Viewer.lastFinished = lastFinished
+    if (settings) currentProfile.viewer.data.Viewer.settings = settings
+    if (newProfile) profiles.unshift(currentProfile)
+  }
+  localStorage.removeItem(alToken ? 'ALviewer' : 'MALviewer')
+
+  if (profile === null && profiles.length > 0) {
+    const firstProfile = profiles.shift()
+    setViewer(firstProfile)
+  } else if (profile !== null) {
+    profiles = profiles.filter(p => p.viewer?.data?.Viewer?.id !== profile.viewer?.data?.Viewer?.id)
+    setViewer(profile)
+  } else {
+    alToken = null
+    malToken = null
+  }
+
+  localStorage.setItem('profiles', JSON.stringify(profiles))
+}
+
+function setViewer (profile) {
+  const { torrent, lastFinished, settings } = profile.viewer?.data?.Viewer
+  if (torrent) {
+    localStorage.setItem('torrent', torrent)
+  } else if (isAuthorized()) {
+    localStorage.removeItem('torrent')
+  }
+  if (lastFinished) {
+    localStorage.setItem('lastFinished', lastFinished)
+  } else if (isAuthorized()) {
+    localStorage.removeItem('lastFinished')
+  }
+  if (settings) {
+    localStorage.setItem('settings', settings)
+  } else if (isAuthorized()) {
+    localStorage.setItem('settings', writable({ ...defaults, ...scopedDefaults}))
+  }
+  localStorage.setItem(profile.viewer?.data?.Viewer?.avatar ? 'ALviewer' : 'MALviewer', JSON.stringify(profile))
 }

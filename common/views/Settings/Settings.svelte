@@ -34,8 +34,7 @@
   import TorrentSettings from './TorrentSettings.svelte'
   import InterfaceSettings from './InterfaceSettings.svelte'
   import AppSettings from './AppSettings.svelte'
-  import { login } from '@/components/Login.svelte'
-  import { logout } from '@/components/Logout.svelte'
+  import { profileView } from '@/components/Profiles.svelte'
   import smoothScroll from '@/modules/scroll.js'
   import Helper from '@/modules/helper.js'
 
@@ -70,11 +69,7 @@
   }
 
   function loginButton () {
-    if (Helper.getUser()) {
-      $logout = true
-    } else {
-      $login = true
-    }
+    $profileView = true
   }
   onDestroy(() => {
     IPC.off('path', pathListener)
@@ -109,7 +104,7 @@
             <span class='material-symbols-outlined rounded mr-10'>
               <img src={Helper.getUserAvatar()} class='h-30 rounded' alt='logo' />
             </span>
-            <div class='font-size-16 login-image-text'>Logout</div>
+            <div class='font-size-16 login-image-text'>Profiles</div>
           {:else}
             <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>login</span>
             <div class='font-size-16'>Login</div>

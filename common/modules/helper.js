@@ -132,13 +132,30 @@ export default class Helper {
   }
 
   static async entry(media, variables) {
-    let res = await this.getClient().entry(variables)
-    media.mediaListEntry = res.data.SaveMediaListEntry
+    let res
+    if (!variables.token) {
+      res = await this.getClient().entry(variables)
+      media.mediaListEntry = res?.data?.SaveMediaListEntry
+    } else {
+      if (variables.anilist) {
+        res = await anilistClient.entry(variables)
+      } else {
+        res = await malClient.entry(variables)
+      }
+    }
     return res
   }
 
-  static async delete(media) {
-    return await this.getClient().delete((this.isAniAuth() ? {id: media.mediaListEntry.id} : {idMal: media.idMal}))
+  static async delete(variables) {
+    if (!variables.token) {
+      return await this.getClient().delete(variables)
+    } else {
+      if (variables.anilist) {
+        return await anilistClient.delete(variables)
+      } else {
+        return await malClient.delete(variables)
+      }
+    }
   }
 
   static matchTitle(media, phrase, keys) {
@@ -230,27 +247,50 @@ export default class Helper {
       Object.assign(variables, this.getFuzzyDate(media, status))
 
       let res
+      const description = `Title: ${anilistClient.title(media)}\nStatus: ${this.statusName[variables.status]}\nEpisode: ${videoEpisode} / ${media.episodes ? media.episodes : '?'}`
       if (this.isAniAuth()) {
         res = await anilistClient.alEntry(lists, variables)
       } else if (this.isMalAuth()) {
         res = await malClient.malEntry(media, variables)
       }
+      this.listToast(res, description, false)
 
-      const description = `Title: ${anilistClient.title(media)}\nStatus: ${this.statusName[media.mediaListEntry.status]}\nEpisode: ${videoEpisode} / ${media.episodes ? media.episodes : '?'}`
-      if (res?.data?.mediaListEntry || res?.data?.SaveMediaListEntry) {
-        console.log('List Updated: ' + description)
+      if (this.getUser().sync) { // handle profile syncing
+        const mediaId = media.id
+        const profiles = JSON.parse(localStorage.getItem('profiles')) || []
+        for (const profile of profiles) {
+          if (profile.viewer?.data?.Viewer.sync) {
+            let res
+            if (profile.viewer?.data?.Viewer?.avatar) {
+              const currentLists = (await anilistClient.getUserLists({userID: profile.viewer.data.Viewer.id, token: profile.token}))?.data?.MediaListCollection?.lists?.flatMap(list => list.entries).find(({ media }) => media.id === mediaId)?.media?.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || []
+              res = await anilistClient.alEntry(currentLists, {...variables, token: profile.token})
+            } else {
+              res = await malClient.malEntry(media, {...variables, token: profile.token})
+            }
+            this.listToast(res, description, profile)
+          }
+        }
+      }
+    }
+  }
+
+  static listToast(res, description, profile){
+    const who = (profile ? ' for ' + profile.viewer.data.Viewer.name + (profile.viewer?.data?.Viewer?.avatar ? ' (AniList)' : ' (MyAnimeList)')  : '')
+    if (res?.data?.mediaListEntry || res?.data?.SaveMediaListEntry) {
+      console.log('List Updated' + who + ':\n' + description)
+      if (!profile) {
         toast.success('List Updated', {
           description,
           duration: 6000
         })
-      } else {
-        const error = `\n${429} - ${codes[429]}`
-        console.error('Failed to update user list with: ' + description + error)
-        toast.error('Failed to Update List', {
-          description: description + error,
-          duration: 9000
-        })
       }
+    } else {
+      const error = `\n${429} - ${codes[429]}`
+      console.error('Failed to update user list' + who + ' with:\n' + description + error)
+      toast.error('Failed to Update List' + who, {
+        description: description + error,
+        duration: 9000
+      })
     }
   }
 

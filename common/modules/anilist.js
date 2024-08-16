@@ -247,8 +247,8 @@ class AnilistClient {
         }
       })
     }
-    // @ts-ignore
-    if (alToken?.token) options.headers.Authorization = alToken.token
+    if (variables?.token) options.headers.Authorization = variables.token
+    else if (alToken?.token) options.headers.Authorization = alToken.token
 
     return this.handleRequest(options)
   }
@@ -486,9 +486,7 @@ class AnilistClient {
       }`
 
     const res = await this.alRequest(query, variables)
-
-    await this.updateCache(res.data.MediaListCollection.lists.flatMap(list => list.entries.map(entry => entry.media)))
-
+    if (!variables.token) await this.updateCache(res.data.MediaListCollection.lists.flatMap(list => list.entries.map(entry => entry.media)))
     return res
   }
 
@@ -627,7 +625,7 @@ class AnilistClient {
     return this.alRequest(query, variables)
   }
 
-  entry (variables) {
+  async entry (variables) {
     const query = /* js */`
       mutation($lists: [String], $id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int, $score: Int, $startedAt: FuzzyDateInput, $completedAt: FuzzyDateInput) {
         SaveMediaListEntry(mediaId: $id, status: $status, progress: $episode, repeat: $repeat, scoreRaw: $score, customLists: $lists, startedAt: $startedAt, completedAt: $completedAt) {
@@ -649,18 +647,21 @@ class AnilistClient {
         }
       }`
 
-    return this.alRequest(query, variables)
+    const res = await this.alRequest(query, variables)
+    if (!variables.token) this.userLists.value = this.getUserLists({sort: 'UPDATED_TIME_DESC'})
+    return res
   }
 
-  delete (variables) {
+  async delete (variables) {
     const query = /* js */`
       mutation($id: Int) {
         DeleteMediaListEntry(id: $id) {
           deleted
         }
       }`
-
-    return this.alRequest(query, variables)
+    const res = await this.alRequest(query, variables)
+    if (!variables.token) this.userLists.value = this.getUserLists({sort: 'UPDATED_TIME_DESC'})
+    return res
   }
 
   favourite (variables) {
