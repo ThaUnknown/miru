@@ -304,8 +304,8 @@
     const searchKey = type === 'tag' ? 'tag' : 'genre'
     const inputValue = event.target.value
     let bestMatch = list.find(item => item.toLowerCase() === inputValue.toLowerCase())
-    if (!bestMatch) {
-      bestMatch = list.find(item => item.toLowerCase().startsWith(inputValue.toLowerCase()))
+    if (!bestMatch || inputValue.endsWith('*')) {
+      bestMatch = (inputValue.endsWith('*') && inputValue.slice(0, -1)) || list.find(item => item.toLowerCase().startsWith(inputValue.toLowerCase())) || list.find(item => item.toLowerCase().endsWith(inputValue.toLowerCase()))
     }
     if (bestMatch && (!search[searchKey] || !search[searchKey].includes(bestMatch))) {
       search[searchKey] = search[searchKey] ? [...search[searchKey], bestMatch] : [bestMatch]
