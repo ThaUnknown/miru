@@ -46,7 +46,7 @@
   let modal
   let container = null
   let mediaList = []
-  $: media = $view
+  $: media = anilistClient.mediaCache[$view?.id] || $view
   $: mediaRecommendation = media && anilistClient.recommendations({ id: media.id })
   $: media && (modal?.focus(), overlay = 'viewanime', saveMedia(), (container && container.dispatchEvent(new Event('scrolltop'))))
   function checkClose ({ keyCode }) {
@@ -180,7 +180,7 @@
               </div>
             </div>
           </div>
-          <Details {media} />
+          <Details {media} alt={mediaRecommendation} />
           <div class='m-0 px-20 pb-0 pt-10 d-flex flex-row text-nowrap overflow-x-scroll text-capitalize align-items-start'>
             {#each media.tags as tag}
               <div class='bg-dark px-20 py-10 mr-10 rounded text-nowrap'>

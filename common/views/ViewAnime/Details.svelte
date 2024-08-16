@@ -1,10 +1,11 @@
 <script>
   export let media = null
+  export let alt = null
 
   const detailsMap = [
     { property: 'season', label: 'Season', icon: 'spa', custom: 'property' },
     { property: 'status', label: 'Status', icon: 'live_tv' },
-    { property: 'nodes', label: 'Studio', icon: 'business' },
+    { property: 'studios', label: 'Studio', icon: 'business', custom: 'property' },
     { property: 'source', label: 'Source', icon: 'source' },
     { property: 'countryOfOrigin', label: 'Country', icon: 'public', custom: 'property' },
     { property: 'isAdult', label: 'Adult', icon: '18_up_rating' },
@@ -12,7 +13,7 @@
     { property: 'romaji', label: 'Romaji', icon: 'translate' },
     { property: 'native', label: 'Native', icon: '語', custom: 'icon' }
   ]
-  function getCustomProperty (detail, media) {
+  async function getCustomProperty (detail, media) {
     if (detail.property === 'averageScore') {
       return media.averageScore + '%'
     } else if (detail.property === 'season') {
@@ -24,6 +25,8 @@
         US: 'United States'
       }
       return countryMap[media.countryOfOrigin] || 'Unknown'
+    } else if (detail.property === 'studios') { // has to be manually fetched as studios returned by user lists are broken.
+      return ((await alt)?.data?.Media || media)?.studios?.nodes?.map(node => node.name).filter(name => name).join(', ') || 'Unknown'
     } else {
       return media[detail.property]
     }
@@ -51,9 +54,11 @@
         <div class='d-flex flex-column justify-content-center text-nowrap'>
           <div class='font-weight-bold select-all'>
             {#if detail.custom === 'property'}
-              {getCustomProperty(detail, media)}
-            {:else if property.constructor === Array}
-              {property === 'nodes' ? property[0] && property[0].name : property.join(', ').replace(/_/g, ' ').toLowerCase()}
+              {#await getCustomProperty(detail, media)}
+                Fetching...
+              {:then res }
+                {res}
+              {/await}
             {:else}
               {property.toString().replace(/_/g, ' ').toLowerCase()}
             {/if}

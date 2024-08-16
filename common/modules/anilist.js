@@ -94,6 +94,11 @@ countryOfOrigin,
 isAdult,
 bannerImage,
 synonyms,
+studios(sort: NAME, isMain: true) {
+  nodes {
+    name
+  }
+},
 stats {
   scoreDistribution {
     score,
@@ -609,6 +614,11 @@ class AnilistClient {
         Media(id: $id, type: ANIME) {
           id,
           idMal,
+          studios(sort: NAME, isMain: true) {
+            nodes {
+              name
+            }
+          },
           recommendations {
             edges {
               node {

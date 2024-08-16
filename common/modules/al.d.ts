@@ -67,6 +67,11 @@ export type Media = {
       day: number
     }
   }
+  studios?: {
+    nodes: {
+      name: string
+    }[]
+  }
   airingSchedule?: {
     nodes?: {
       episode: number
