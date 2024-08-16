@@ -43,7 +43,7 @@
 
       // validate by air date if the anime has specials AND doesn't have matching episode count
       const needsValidation = !(!specialCount || (media.episodes && media.episodes === newEpisodeCount && episodes[Number(episode)]))
-      const { image, summary, rating, title, length, airdate } = needsValidation ? episodeByAirDate(alDate, episodes, episode) : (episodes[Number(episode)] || {})
+      const { image, summary, rating, title, length, airdate } = needsValidation ? episodeByAirDate(alDate, episodes, episode) : (episodes >= Number(episode) && episodes[Number(episode)] || {})
 
       episodeList[episode - 1] = { episode, image, summary, rating, title, length: length || duration, airdate: +alDate || airdate, airingAt: +alDate || airdate }
     }
