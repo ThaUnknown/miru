@@ -34,8 +34,10 @@ export default class Updater {
   install (forceRunAfter = false) {
     if (hasUpdate) {
       setImmediate(() => {
-        this.window.close()
-        this.torrentWindow.close()
+        try {
+          this.window.close()
+          this.torrentWindow.close()
+        } catch (e) {}
         autoUpdater.quitAndInstall(true, forceRunAfter)
       })
       if (process.platform === 'darwin') shell.openExternal('https://miru.watch/download')

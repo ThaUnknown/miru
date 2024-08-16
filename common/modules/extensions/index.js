@@ -67,7 +67,7 @@ async function updatePeerCounts (entries) {
       client.on('scrape', check)
       client.send('scrape', { id, infoHashes: entries.map(({ hash }) => hash) })
     }),
-    sleep(5000)
+    sleep(15000)
   ])
 
   for (const { hash, complete, downloaded, incomplete } of updated || []) {

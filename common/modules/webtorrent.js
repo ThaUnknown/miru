@@ -1,15 +1,23 @@
 import { spawn } from 'node:child_process'
 import WebTorrent from 'webtorrent'
+import querystring from 'querystring'
 import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
 import { hex2bin, arr2hex, text2arr } from 'uint8-util'
 import Parser from './parser.js'
-import { defaults, fontRx, subRx, videoRx } from './util.js'
+import { defaults, fontRx, sleep, subRx, videoRx } from './util.js'
 import { SUPPORTS } from '@/modules/support.js'
 
 // HACK: this is https only, but electron doesnt run in https, weirdge
 if (!globalThis.FileSystemFileHandle) globalThis.FileSystemFileHandle = false
 
-const announce = [
+const querystringStringify = obj => {
+  let ret = querystring.stringify(obj, null, null, { encodeURIComponent: escape })
+  ret = ret.replace(/[@*/+]/g, char => // `escape` doesn't encode the characters @*/+ so we do it manually
+  `%${char.charCodeAt(0).toString(16).toUpperCase()}`)
+  return ret
+}
+
+const ANNOUNCE = [
   atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
   atob('d3NzOi8vdHJhY2tlci53ZWJ0b3JyZW50LmRldg=='),
   atob('d3NzOi8vdHJhY2tlci5maWxlcy5mbTo3MDczL2Fubm91bmNl'),
@@ -104,9 +112,7 @@ export default class TorrentClient extends WebTorrent {
       createServer()
     }
 
-    this.trackers = {
-      cat: new HTTPTracker({}, atob('aHR0cDovL255YWEudHJhY2tlci53Zjo3Nzc3L2Fubm91bmNl'))
-    }
+    this.tracker = new HTTPTracker({}, atob('aHR0cDovL255YWEudHJhY2tlci53Zjo3Nzc3L2Fubm91bmNl'))
 
     process.on('uncaughtException', this.dispatchError.bind(this))
     this.on('error', this.dispatchError.bind(this))
@@ -181,20 +187,53 @@ export default class TorrentClient extends WebTorrent {
     }
   }
 
-  _scrape ({ id, infoHashes }) {
-    this.trackers.cat._request(this.trackers.cat.scrapeUrl, { info_hash: infoHashes.map(infoHash => hex2bin(infoHash)) }, (err, data) => {
-      if (err) {
-        const error = this._errorToString(err)
-        this.dispatch('warn', `Failed to update seeder counts: ${error}`)
-        return this.dispatch('scrape', { id, result: [] })
+  async _scrape ({ id, infoHashes }) {
+    // this seems to give the best speed, and lowest failure rate
+    const MAX_ANNOUNCE_LENGTH = 1300 // it's likely 2048, but lets undercut it
+    const RATE_LIMIT = 200 // ms
+
+    const ANNOUNCE_LENGTH = this.tracker.scrapeUrl.length
+
+    let batch = []
+    let currentLength = ANNOUNCE_LENGTH // fuzz the size a little so we don't always request the same amt of hashes
+
+    const results = []
+
+    const scrape = async () => {
+      if (results.length) await sleep(RATE_LIMIT)
+      const result = await new Promise(resolve => {
+        this.tracker._request(this.tracker.scrapeUrl, { info_hash: batch }, (err, data) => {
+          if (err) {
+            const error = this._errorToString(err)
+            this.dispatch('warn', `Failed to update seeder counts: ${error}`)
+            return resolve([])
+          }
+          const { files } = data
+          const result = []
+          for (const [key, data] of Object.entries(files || {})) {
+            result.push({ hash: key.length !== 40 ? arr2hex(text2arr(key)) : key, ...data })
+          }
+          resolve(result)
+        })
+      })
+
+      results.push(...result)
+      batch = []
+      currentLength = ANNOUNCE_LENGTH
+    }
+
+    for (const infoHash of infoHashes.sort(() => 0.5 - Math.random()).map(infoHash => hex2bin(infoHash))) {
+      const qsLength = querystringStringify({ info_hash: infoHash }).length + 1 // qs length + 1 for the & or ? separator
+      if (currentLength + qsLength > MAX_ANNOUNCE_LENGTH) {
+        await scrape()
       }
-      const { files } = data
-      const result = []
-      for (const [key, data] of Object.entries(files || {})) {
-        result.push({ hash: key.length !== 40 ? arr2hex(text2arr(key)) : key, ...data })
-      }
-      this.dispatch('scrape', { id, result })
-    })
+
+      batch.push(infoHash)
+      currentLength += qsLength
+    }
+    if (batch.length) await scrape()
+
+    this.dispatch('scrape', { id, result: results })
   }
 
   _errorToString (e) {
@@ -238,7 +277,7 @@ export default class TorrentClient extends WebTorrent {
       private: this.settings.torrentPeX,
       path: this.torrentPath || undefined,
       skipVerify,
-      announce,
+      announce: ANNOUNCE,
       deselect: this.settings.torrentStreamedDownload
     })
 
