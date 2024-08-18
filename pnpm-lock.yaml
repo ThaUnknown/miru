@@ -158,8 +158,8 @@ importers:
         specifier: ^4.4.1
         version: 4.4.1
       jassub:
-        specifier: latest
-        version: 1.7.16
+        specifier: ^1.7.17
+        version: 1.7.17
       js-levenshtein:
         specifier: ^1.1.6
         version: 1.1.6
@@ -6031,8 +6031,8 @@ packages:
       minimatch: 3.1.2
     dev: true
 
-  /jassub@1.7.16:
-    resolution: {integrity: sha512-JDzKtGqQeApqQtEDWM5KzuGs5HKvUOWS35HXKaka6MuHV8HxLfW/F77HDE6gsZVn+Vuhh8omzXv6THevF6z5Jg==}
+  /jassub@1.7.17:
+    resolution: {integrity: sha512-573efPTIYLh9YaauuSX2mgPrrYedqdeu6KYNNjsJXbLbBsxPijcUHrMK4zpXCeBv955VTUlMX6l0Afa8AXf33A==}
     dependencies:
       rvfc-polyfill: 1.0.7
     dev: false
