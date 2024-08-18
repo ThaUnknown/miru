@@ -3,6 +3,10 @@ import { defaults } from './util.js'
 import IPC from '@/modules/ipc.js'
 import { anilistClient } from './anilist.js'
 import { toast } from 'svelte-sonner'
+import Debug from 'debug'
+
+const debug = Debug('ui:anilist')
+
 /** @type {{viewer: import('./al').Query<{Viewer: import('./al').Viewer}>, token: string} | null} */
 export let alToken = JSON.parse(localStorage.getItem('ALviewer')) || null
 
@@ -54,7 +58,7 @@ async function handleToken (token) {
   const viewer = await anilistClient.viewer({ token })
   if (!viewer.data?.Viewer) {
     toast.error('Failed to sign in with AniList. Please try again.', { description: JSON.stringify(viewer) })
-    console.error(viewer)
+    debug(`Failed to sign in with AniList: ${JSON.stringify(viewer)}`)
     return
   }
   const lists = viewer?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []

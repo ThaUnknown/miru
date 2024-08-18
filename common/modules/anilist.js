@@ -6,6 +6,9 @@ import { alToken } from '@/modules/settings.js'
 import { toast } from 'svelte-sonner'
 import { sleep } from './util.js'
 import IPC from '@/modules/ipc.js'
+import Debug from 'debug'
+
+const debug = Debug('ui:anilist')
 
 const codes = {
   400: 'Bad Request',
@@ -34,7 +37,7 @@ const codes = {
 }
 
 function printError (error) {
-  console.warn(error)
+  debug(`Error: ${error.status || 429} - ${error.message || codes[error.status || 429]}`)
   toast.error('Search Failed', {
     description: `Failed making request to anilist!\nTry again in a minute.\n${error.status || 429} - ${error.message || codes[error.status || 429]}`,
     duration: 3000
@@ -191,6 +194,7 @@ class AnilistClient {
   lastNotificationDate = Date.now() / 1000
 
   constructor () {
+    debug('Initializing Anilist Client for ID ' + this.userID?.viewer?.data?.Viewer.id)
     this.limiter.on('failed', async (error, jobInfo) => {
       printError(error)
 
@@ -282,10 +286,12 @@ class AnilistClient {
   }
 
   async findNewNotifications () {
+    debug('Checking for new notifications')
     const res = await this.getNotifications()
     const notifications = res.data.Page.notifications
     const newNotifications = notifications.filter(({ createdAt }) => createdAt > this.lastNotificationDate)
     this.lastNotificationDate = Date.now() / 1000
+    debug(`Found ${newNotifications.length} new notifications`)
     for (const { media, episode, type } of newNotifications) {
       const options = {
         title: media.title.userPreferred,
@@ -301,6 +307,7 @@ class AnilistClient {
    * @param {{key: string, title: string, year?: string, isAdult: boolean}[]} flattenedTitles
    **/
   async alSearchCompound (flattenedTitles) {
+    debug(`Searching for ${flattenedTitles.length} titles via compound search`)
     if (!flattenedTitles.length) return []
     // isAdult doesn't need an extra variable, as the title is the same regardless of type, so we re-use the same variable for adult and non-adult requests
     /** @type {Record<`v${number}`, string>} */
@@ -361,7 +368,9 @@ class AnilistClient {
     // check if values exist
     if (filemedia.media && alToken) {
       const { media, failed } = filemedia
+      debug(`Checking entry for ${media.title.userPreferred}`)
 
+      debug(`Media viability: ${media.status}, Is from failed resolve: ${failed}`)
       if (failed) return
       if (media.status !== 'FINISHED' && media.status !== 'RELEASING') return
 
@@ -371,6 +380,7 @@ class AnilistClient {
       const videoEpisode = Number(filemedia.episode) || singleEpisode
       const mediaEpisode = media.episodes || media.nextAiringEpisode?.episode || singleEpisode
 
+      debug(`Episode viability: ${videoEpisode}, ${mediaEpisode}, ${singleEpisode}`)
       if (!videoEpisode || !mediaEpisode) return
       // check episode range, safety check if `failed` didn't catch this
       if (videoEpisode > mediaEpisode) return
@@ -380,10 +390,12 @@ class AnilistClient {
       const status = media.mediaListEntry?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
       const progress = media.mediaListEntry?.progress
 
+      debug(`User's progress: ${progress}, Media's progress: ${videoEpisode}`)
       // check user's own watch progress
       if (progress > videoEpisode) return
       if (progress === videoEpisode && videoEpisode !== mediaEpisode && !singleEpisode) return
 
+      debug(`Updating entry for ${media.title.userPreferred}`)
       const variables = {
         repeat: media.mediaListEntry?.repeat || 0,
         id: media.id,
@@ -404,6 +416,7 @@ class AnilistClient {
   }
 
   async searchName (variables = {}) {
+    debug(`Searching name for ${variables.name}`)
     const query = /* js */` 
     query($page: Int, $perPage: Int, $sort: [MediaSort], $name: String, $status: [MediaStatus], $year: Int, $isAdult: Boolean) {
       Page(page: $page, perPage: $perPage) {
@@ -427,6 +440,7 @@ class AnilistClient {
   }
 
   async searchIDSingle (variables) {
+    debug(`Searching for ID: ${variables.id}`)
     const query = /* js */` 
     query($id: Int) { 
       Media(id: $id, type: ANIME) {
@@ -443,6 +457,7 @@ class AnilistClient {
   }
 
   async searchIDS (variables) {
+    debug(`Searching for IDs: ${variables.id.length}`)
     const query = /* js */` 
     query($id: [Int], $page: Int, $perPage: Int, $status: [MediaStatus], $onList: Boolean, $sort: [MediaSort], $search: String, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) { 
       Page(page: $page, perPage: $perPage) {
@@ -465,6 +480,7 @@ class AnilistClient {
 
   /** @returns {Promise<import('./al.d.ts').PagedQuery<{ notifications: { id: number, type: string, createdAt: number, episode: number, media: import('./al.d.ts').Media}[] }>>} */
   getNotifications (variables = {}) {
+    debug('Getting notifications')
     const query = /* js */`
     query($page: Int, $perPage: Int) {
       Page(page: $page, perPage: $perPage) {
@@ -507,6 +523,7 @@ class AnilistClient {
 
   /** @returns {Promise<import('./al.d.ts').Query<{ Viewer: import('./al.d.ts').Viewer }>>} */
   viewer (variables = {}) {
+    debug('Getting viewer')
     const query = /* js */` 
     query {
       Viewer {
@@ -528,6 +545,7 @@ class AnilistClient {
 
   /** @returns {Promise<import('./al.d.ts').Query<{ MediaListCollection: import('./al.d.ts').MediaListCollection }>>} */
   async getUserLists (variables = {}) {
+    debug('Getting user lists')
     const userId = this.userID?.viewer?.data?.Viewer.id
     variables.id = userId
     const query = /* js */` 
@@ -565,6 +583,7 @@ class AnilistClient {
 
   /** @returns {Promise<import('./al.d.ts').Query<{ MediaList: { status: string, progress: number, repeat: number }}>>} */
   async searchIDStatus (variables = {}) {
+    debug(`Searching for ID status: ${variables.id}`)
     const userId = this.userID?.viewer?.data?.Viewer.id
     variables.id = userId
     const query = /* js */` 
@@ -580,6 +599,7 @@ class AnilistClient {
   }
 
   async searchAiringSchedule (variables = {}) {
+    debug('Searching for airing schedule')
     variables.to = (variables.from + 7 * 24 * 60 * 60)
     const query = /* js */` 
     query($page: Int, $perPage: Int, $from: Int, $to: Int) {
@@ -607,7 +627,8 @@ class AnilistClient {
   }
 
   /** @returns {Promise<import('./al.d.ts').PagedQuery<{ airingSchedules: { airingAt: number, episode: number }[]}>>} */
-  episodes (variables) {
+  episodes (variables = {}) {
+    debug(`Searching for episodes: ${variables.id}`)
     const query = /* js */` 
       query($id: Int) {
         Page(page: 1, perPage: 1000) {
@@ -622,6 +643,7 @@ class AnilistClient {
   }
 
   async search (variables = {}) {
+    debug(`Searching ${JSON.stringify(variables)}`)
     variables.sort ||= 'SEARCH_MATCH'
     const query = /* js */` 
     query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $onList: Boolean, $status: MediaStatus, $status_not: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
@@ -645,6 +667,7 @@ class AnilistClient {
 
   /** @returns {Promise<import('./al.d.ts').Query<{ AiringSchedule: { airingAt: number }}>>} */
   episodeDate (variables) {
+    debug(`Searching for episode date: ${variables.id}, ${variables.ep}`)
     const query = /* js */`
       query($id: Int, $ep: Int) {
         AiringSchedule(mediaId: $id, episode: $ep) {
@@ -657,6 +680,7 @@ class AnilistClient {
 
   /** @returns {Promise<import('./al.d.ts').PagedQuery<{ mediaList: import('./al.d.ts').Following[]}>>} */
   following (variables) {
+    debug('Getting following')
     const query = /* js */`
       query($id: Int) {
         Page {
@@ -678,6 +702,7 @@ class AnilistClient {
   }
 
   entry (variables) {
+    debug(`Updating entry for ${variables.id}`)
     const query = /* js */`
       mutation($lists: [String], $id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int, $score: Int) {
         SaveMediaListEntry(mediaId: $id, status: $status, progress: $episode, repeat: $repeat, scoreRaw: $score, customLists: $lists) {
@@ -692,6 +717,7 @@ class AnilistClient {
   }
 
   delete (variables) {
+    debug(`Deleting entry for ${variables.id}`)
     const query = /* js */`
       mutation($id: Int) {
         DeleteMediaListEntry(id: $id) {
@@ -703,6 +729,7 @@ class AnilistClient {
   }
 
   favourite (variables) {
+    debug(`Toggling favourite for ${variables.id}`)
     const query = /* js */`
       mutation($id: Int) {
         ToggleFavourite(animeId: $id) { anime { nodes { id } } } 
@@ -712,6 +739,7 @@ class AnilistClient {
   }
 
   customList (variables = {}) {
+    debug('Updating custom list')
     variables.lists = [...variables.lists, 'Watched using Miru']
     const query = /* js */`
       mutation($lists: [String]) {

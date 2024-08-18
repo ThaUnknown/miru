@@ -14,8 +14,6 @@
   </div>
 </div>
 
-<svelte:window on:load={console.log} />
-
 <style>
   @keyframes transition {
     0% {

@@ -49,7 +49,12 @@
   import { client } from '@/modules/torrent.js'
   import { onDestroy } from 'svelte'
 
-  const debug = persisted('debug', '')
+  const debug = persisted('debug', '', {
+    serializer: {
+      parse: e => e,
+      stringify: e => e
+    }
+  })
 
   export let version = ''
   export let settings
@@ -90,7 +95,7 @@
   <select class='form-control bg-dark w-300 mw-full' bind:value={$debug}>
     <option value='' selected>None</option>
     <option value='*'>All</option>
-    <option value='torrent:worker,webtorrent:*,simple-peer,bittorrent-protocol,bittorrent-dht,bittorrent-lsd,torrent-discovery,bittorrent-tracker:*,ut_metadata,nat-pmp,nat-api'>Torrent</option>
+    <option value='torrent:*,webtorrent:*,simple-peer,bittorrent-protocol,bittorrent-dht,bittorrent-lsd,torrent-discovery,bittorrent-tracker:*,ut_metadata,nat-pmp,nat-api'>Torrent</option>
     <option value='ui:*'>Interface</option>
   </select>
 </SettingCard>

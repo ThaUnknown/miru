@@ -11,7 +11,12 @@
     page = 'home'
   }
 
-  const debug = persisted('debug', '')
+  const debug = persisted('debug', '', {
+    serializer: {
+      parse: e => e,
+      stringify: e => e
+    }
+  })
 </script>
 
 <div class='w-full z-101 navbar bg-transparent border-0 p-0 d-flex'>

@@ -5,6 +5,9 @@
   import { tick } from 'svelte'
   import { state } from '../WatchTogether/WatchTogether.svelte'
   import IPC from '@/modules/ipc.js'
+  import Debug from 'debug'
+
+  const debug = Debug('ui:mediahandler')
 
   const episodeRx = /Episode (\d+) - (.*)/
 
@@ -108,8 +111,12 @@
     }
   }
 
+  function fileListToDebug (files) {
+    return files.map(({ name, media, url }) => `\n${name} ${media?.parseObject.anime_title} ${media?.parseObject.episode_number} ${media?.media?.title.userPreferred} ${media?.episode}`).join('')
+  }
+
   async function handleFiles (files) {
-    console.info('MediaHandler: got files', files)
+    debug(`Got ${files.length} files`, fileListToDebug(files))
     if (!files?.length) return processed.set(files)
     let videoFiles = []
     const otherFiles = []
@@ -132,34 +139,35 @@
     videoFiles = videoFiles.filter(file => !TYPE_EXCLUSIONS.includes(file.media.parseObject.anime_type?.toUpperCase()))
 
     if (nowPlaying?.verified && videoFiles.length === 1) {
-      console.info('Media was verified, skipping verification')
+      debug('Media was verified, skipping verification')
       videoFiles[0].media.media = nowPlaying.media
       if (nowPlaying.episode) videoFiles[0].media.episode = nowPlaying.episode
     }
 
-    console.info('MediaHandler: resolved video files', { videoFiles })
+    debug(`Resolved ${videoFiles.length} video files`, fileListToDebug(videoFiles))
 
     if (!nowPlaying) {
       nowPlaying = findPreferredPlaybackMedia(videoFiles)
+      debug(`Found preferred playback media: ${nowPlaying.media?.id}:${nowPlaying.media?.title.userPreferred} ${nowPlaying.episode}`)
     }
 
     const filtered = nowPlaying?.media && videoFiles.filter(file => file.media?.media?.id && file.media?.media?.id === nowPlaying.media.id)
 
-    console.info('MediaHandler: filtered files based on media', filtered)
+    debug(`Filtered ${filtered?.length} files based on media`, fileListToDebug(filtered))
 
     let result
     if (filtered?.length) {
       result = filtered
     } else {
       const max = highestOccurence(videoFiles, file => file.media.parseObject.anime_title).media.parseObject.anime_title
-      console.info('MediaHandler: filtering based on highest occurence', max)
+      debug(`Highest occurence anime title: ${max}`)
       result = videoFiles.filter(file => file.media.parseObject.anime_title === max)
     }
 
     result.sort((a, b) => a.media.episode - b.media.episode)
     result.sort((a, b) => (b.media.parseObject.anime_season ?? 1) - (a.media.parseObject.anime_season ?? 1))
 
-    console.info('MediaHandler: final resolve result', { result })
+    debug(`Sorted ${result.length} files`, fileListToDebug(result))
 
     processed.set([...result, ...otherFiles])
     await tick()

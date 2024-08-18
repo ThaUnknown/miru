@@ -9,6 +9,9 @@
   import { click } from '@/modules/click.js'
   import IPC from '@/modules/ipc.js'
   import 'browser-event-target-emitter'
+  import Debug from 'debug'
+
+  const debug = Debug('ui:w2g')
 
   export const w2gEmitter = new EventTarget()
 
@@ -19,6 +22,7 @@
   let p2pt = null
 
   function joinLobby (code = generateRandomHexCode(16)) {
+    debug('Joining lobby with code: ' + code)
     if (p2pt) cleanup()
     p2pt = new P2PT([
       atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
@@ -27,8 +31,7 @@
       atob('d3NzOi8vdHJhY2tlci5idG9ycmVudC54eXov')
     ], code)
     p2pt.on('peerconnect', peer => {
-      console.log(peer.id)
-      console.log('connect')
+      debug(`Peer connected: ${peer.id}`)
       const user = anilistClient.userID?.viewer?.data?.Viewer || {}
       p2pt.send(peer,
         JSON.stringify({
@@ -40,18 +43,16 @@
     })
     p2pt.on('peerclose', peer => {
       peers.update(object => {
-        console.log(peer.id)
-        console.log('close', object[peer.id])
+        debug(`Peer disconnected: ${peer.id}`)
         delete object[peer.id]
         return object
       })
     })
     p2pt.on('msg', (peer, data) => {
-      console.log(data)
+      debug(`Received message from ${peer.id}: ${data.type} ${data}`)
       data = typeof data === 'string' ? JSON.parse(data) : data
       switch (data.type) {
         case 'init':
-          console.log('init', data.user)
           peers.update(object => {
             object[peer.id] = {
               peer,
@@ -79,7 +80,7 @@
           break
         }
         default: {
-          console.error('Invalid message type', data)
+          debug('Invalid message type: ' + data.type)
         }
       }
     })
@@ -117,6 +118,7 @@
   })
 
   function emit (type, data) {
+    debug(`Emitting ${type} with data: ${JSON.stringify(data)}`)
     if (p2pt) {
       for (const { peer } of Object.values(peers.value)) {
         p2pt.send(peer, { type, ...data })
@@ -164,7 +166,6 @@
     if (!invite) return
     const match = invite?.match(inviteRx)?.[1]
     if (!match) return
-    console.log(match)
     page.set('watchtogether')
     joinLobby(match)
     joinText = ''
