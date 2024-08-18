@@ -91,7 +91,7 @@ async function updatePeerCounts (entries) {
     found.seeders = complete
   }
 
-  debug(`Found ${updated.length} entries: ${JSON.stringify(updated)}`)
+  debug(`Found ${(updated || []).length} entries: ${JSON.stringify(updated)}`)
   return entries
 }
 
