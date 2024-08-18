@@ -12,6 +12,7 @@
   import Debug from 'debug'
 
   const debug = Debug('ui:w2g')
+  debug.useColors = false
 
   export const w2gEmitter = new EventTarget()
 

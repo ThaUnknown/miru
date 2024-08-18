@@ -6,6 +6,7 @@
   import Debug from 'debug'
 
   const debug = Debug('ui:extensions')
+  debug.useColors = false
 
   /** @typedef {import('@/modules/al.d.ts').Media} Media */
 

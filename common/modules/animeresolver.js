@@ -4,6 +4,7 @@ import { chunks } from './util.js'
 import Debug from 'debug'
 
 const debug = Debug('ui:animeresolver')
+debug.useColors = false
 
 const postfix = {
   1: 'st', 2: 'nd', 3: 'rd'

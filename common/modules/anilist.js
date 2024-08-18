@@ -9,6 +9,7 @@ import IPC from '@/modules/ipc.js'
 import Debug from 'debug'
 
 const debug = Debug('ui:anilist')
+debug.useColors = false
 
 const codes = {
   400: 'Bad Request',
