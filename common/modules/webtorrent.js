@@ -19,7 +19,6 @@ const querystringStringify = obj => {
 }
 
 const debug = Debug('torrent:worker')
-debug.useColors = false
 
 const ANNOUNCE = [
   atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),

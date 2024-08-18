@@ -6,7 +6,6 @@ import { toast } from 'svelte-sonner'
 import Debug from 'debug'
 
 const debug = Debug('ui:anilist')
-debug.useColors = false
 
 /** @type {{viewer: import('./al').Query<{Viewer: import('./al').Viewer}>, token: string} | null} */
 export let alToken = JSON.parse(localStorage.getItem('ALviewer')) || null

@@ -8,7 +8,6 @@
   import Debug from 'debug'
 
   const debug = Debug('ui:mediahandler')
-  debug.useColors = false
 
   const episodeRx = /Episode (\d+) - (.*)/
 

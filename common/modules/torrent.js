@@ -7,7 +7,6 @@ import 'browser-event-target-emitter'
 import Debug from 'debug'
 
 const debug = Debug('ui:torrent')
-debug.useColors = false
 
 const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
 

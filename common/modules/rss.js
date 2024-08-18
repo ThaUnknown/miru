@@ -9,7 +9,6 @@ import IPC from '@/modules/ipc.js'
 import Debug from 'debug'
 
 const debug = Debug('ui:rss')
-debug.useColors = false
 
 export const exclusions = ['DTS', 'TrueHD', '[EMBER]']
 const isDev = location.hostname === 'localhost'

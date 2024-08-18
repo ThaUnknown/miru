@@ -9,7 +9,6 @@ import { toast } from 'svelte-sonner'
 import Debug from 'debug'
 
 const debug = Debug('ui:extensions')
-debug.useColors = false
 
 /** @typedef {import('@thaunknown/ani-resourced/sources/types.d.ts').Options} Options */
 /** @typedef {import('@thaunknown/ani-resourced/sources/types.d.ts').Result} Result */

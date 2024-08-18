@@ -5,7 +5,6 @@ import { fontRx } from './util.js'
 import { SUPPORTS } from '@/modules/support.js'
 
 const debug = Debug('torrent:parser')
-debug.useColors = false
 
 export default class Parser {
   parsed = false
