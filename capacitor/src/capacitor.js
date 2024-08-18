@@ -4,6 +4,7 @@ import { SafeArea } from 'capacitor-plugin-safe-area'
 import { App } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
 import { LocalNotifications } from '@capacitor/local-notifications'
+import { Device } from '@capacitor/device'
 import IPC from './ipc.js'
 
 IPC.on('open', url => Browser.open({ url }))
@@ -38,6 +39,16 @@ IPC.on('notification', noti => {
     ]
   }
   if (canShowNotifications) LocalNotifications.schedule({ notifications: [notification] })
+})
+
+IPC.on('get-device-info', async () => {
+  const deviceInfo = {
+    features: {},
+    info: await Device.getInfo(),
+    cpu: {},
+    ram: {}
+  }
+  IPC.emit('device-info', JSON.stringify(deviceInfo))
 })
 
 // schema: miru://key/value

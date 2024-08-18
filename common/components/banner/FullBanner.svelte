@@ -2,6 +2,7 @@
   import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
+  import { alToken } from '@/modules/settings.js'
   export let mediaList
 
   let current = mediaList[0]
@@ -92,10 +93,10 @@
       use:click={() => playMedia(current)}>
       Watch Now
     </button>
-    <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={current.isFavourite} use:click={toggleFavourite}>
+    <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={current.isFavourite} use:click={toggleFavourite} disabled={!alToken}>
       favorite
     </button>
-    <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={current.mediaListEntry} use:click={toggleStatus}>
+    <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={current.mediaListEntry} use:click={toggleStatus} disabled={!alToken}>
       bookmark
     </button>
   </div>

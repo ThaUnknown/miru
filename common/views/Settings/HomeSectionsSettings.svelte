@@ -75,18 +75,18 @@
 <button type='button' use:click={() => { homeSections[homeSections.length] = 'Trending Now' }} class='btn btn-primary'>Add Section</button>
 
 <style>
-    .ghost {
-      margin-bottom: 10px;
-      pointer-events: none;
-      z-index: 9999;
-      position: absolute !important;
-    }
+  .ghost {
+    margin-bottom: 10px;
+    pointer-events: none;
+    z-index: 9999;
+    position: absolute !important;
+  }
 
-    .tp {
-      opacity: 0;
-    }
+  .tp {
+    opacity: 0;
+  }
 
-    .grab{
-      cursor: grab;
-    }
+  .grab{
+    cursor: grab;
+  }
 </style>

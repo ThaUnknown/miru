@@ -2,6 +2,7 @@
   import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
+  import { alToken } from '@/modules/settings.js'
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
 
@@ -93,10 +94,10 @@
         </span>
         {playButtonText}
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
+      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite} disabled={!alToken}>
         favorite
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.mediaListEntry} use:click={toggleStatus}>
+      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.mediaListEntry} use:click={toggleStatus} disabled={!alToken}>
         bookmark
       </button>
     </div>

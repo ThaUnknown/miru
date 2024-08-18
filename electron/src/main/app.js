@@ -10,6 +10,7 @@ import Protocol from './protocol.js'
 import Updater from './updater.js'
 import Dialog from './dialog.js'
 import store from './store.js'
+import Debug from './debugger.js'
 
 export default class App {
   webtorrentWindow = new BrowserWindow({
@@ -50,6 +51,7 @@ export default class App {
   protocol = new Protocol(this.mainWindow)
   updater = new Updater(this.mainWindow, this.webtorrentWindow)
   dialog = new Dialog(this.webtorrentWindow)
+  debug = new Debug()
 
   constructor () {
     this.mainWindow.setMenuBarVisibility(false)
@@ -57,7 +59,8 @@ export default class App {
     this.mainWindow.once('ready-to-show', () => this.mainWindow.show())
     this.mainWindow.on('minimize', () => this.mainWindow.webContents.postMessage('visibilitychange', 'hidden'))
     this.mainWindow.on('restore', () => this.mainWindow.webContents.postMessage('visibilitychange', 'visible'))
-    ipcMain.on('devtools', () => this.webtorrentWindow.webContents.openDevTools())
+    ipcMain.on('torrent-devtools', () => this.webtorrentWindow.webContents.openDevTools())
+    ipcMain.on('ui-devtools', ({ sender }) => sender.openDevTools())
 
     this.mainWindow.on('closed', () => this.destroy())
     ipcMain.on('close', () => this.destroy())

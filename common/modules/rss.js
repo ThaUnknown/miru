@@ -7,7 +7,7 @@ import AnimeResolver from '@/modules/animeresolver.js'
 import { hasNextPage } from '@/modules/sections.js'
 import IPC from '@/modules/ipc.js'
 
-export const exclusions = ['DTS', '[EMBER]']
+export const exclusions = ['DTS', 'TrueHD', '[EMBER]']
 const isDev = location.hostname === 'localhost'
 
 const video = document.createElement('video')

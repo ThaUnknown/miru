@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import Debug from 'debug'
 import WebTorrent from 'webtorrent'
 import querystring from 'querystring'
 import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
@@ -332,6 +333,10 @@ export default class TorrentClient extends WebTorrent {
       case 'torrent': {
         this.addTorrent(data.data)
         break
+      }
+      case 'debug': {
+        Debug.disable()
+        if (data.data) Debug.enable(data.data)
       }
     }
   }

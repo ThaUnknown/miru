@@ -5,143 +5,56 @@
   import { platformMap } from '@/views/Settings/Settings.svelte'
   import { settings } from '@/modules/settings.js'
   import { toast } from 'svelte-sonner'
-  import { click } from '@/modules/click.js'
   import { logout } from './Logout.svelte'
   import IPC from '@/modules/ipc.js'
+  import SidebarLink from './SidebarLink.svelte'
 
-  let wasUpdated = false
-
-  globalThis.dd = IPC
+  let updateState = ''
 
   IPC.on('update-available', () => {
-    console.log('uwu')
-    if (!wasUpdated) {
-      // insert icon in 2nd to last position
-      links.splice(links.length - 1, 0, {
-        click: () => {
-          toast('Update is downloading...')
-        },
-        icon: 'download',
-        text: 'Update Downloading...'
-      })
-      links = links
-    }
-    wasUpdated = true
+    updateState = 'downloading'
   })
   IPC.on('update-downloaded', () => {
-    links[links.length - 2].css = 'update'
-    links[links.length - 2].text = 'Update Ready!'
-    links[links.length - 2].click = () => {
-      IPC.emit('quit-and-install')
-    }
-    links = links
+    updateState = 'ready'
   })
 
   const view = getContext('view')
 
   export let page
 
-  let links = [
-    {
-      click: () => {
-        if (anilistClient.userID?.viewer?.data?.Viewer) {
-          $logout = true
-        } else {
-          IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
-          if (platformMap[window.version.platform] === 'Linux') {
-            toast('Support Notification', {
-              description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
-              duration: 300000
-            })
-          }
-        }
-      },
-      icon: 'login',
-      text: 'Login With AniList',
-      css: 'mt-auto'
-    },
-    {
-      click: () => {
-        page = 'home'
-      },
-      page: 'home',
-      icon: 'home',
-      text: 'Home'
-    },
-    {
-      click: () => {
-        page = 'search'
-      },
-      page: 'search',
-      icon: 'search',
-      text: 'Search'
-    },
-    {
-      click: () => {
-        page = 'schedule'
-      },
-      page: 'schedule',
-      icon: 'schedule',
-      text: 'Schedule'
-    },
-    {
-      click: () => {
-        if ($media) $view = $media.media
-      },
-      icon: 'queue_music',
-      text: 'Now Playing'
-    },
-    {
-      click: () => {
-        page = 'watchtogether'
-      },
-      page: 'watchtogether',
-      icon: 'groups',
-      text: 'Watch Together'
-    },
-    {
-      click: () => {
-        IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')
-      },
-      icon: 'favorite',
-      text: 'Support This App',
-      css: 'mt-auto donate'
-    },
-    {
-      click: () => {
-        page = 'settings'
-      },
-      page: 'settings',
-      icon: 'settings',
-      text: 'Settings'
+  function handleAlLogin () {
+    if (anilistClient.userID?.viewer?.data?.Viewer) {
+      $logout = true
+    } else {
+      IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
+      if (platformMap[window.version.platform] === 'Linux') {
+        toast('Support Notification', {
+          description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
+          duration: 300000
+        })
+      }
     }
-  ]
-  if (anilistClient.userID?.viewer?.data?.Viewer) {
-    links[0].image = anilistClient.userID.viewer.data.Viewer.avatar.medium
-    links[0].text = 'Logout'
   }
 </script>
 
 <div class='sidebar z-30 d-md-block' class:animated={$settings.expandingSidebar}>
   <div class='sidebar-overlay pointer-events-none h-full position-absolute' />
   <div class='sidebar-menu h-full d-flex flex-column justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
-    {#each links as { click: _click, icon, text, image, css, page: _page } (_click)}
-      <div
-        class='sidebar-link sidebar-link-with-icon pointer overflow-hidden {css}'
-        use:click={_click}>
-        <span class='text-nowrap d-flex align-items-center w-full h-full'>
-          {#if image}
-            <span class='material-symbols-outlined rounded' class:filled={page === _page}>
-              <img src={image} class='h-30 rounded' alt='logo' />
-            </span>
-            <span class='text ml-20'>{text}</span>
-          {:else}
-            <span class='material-symbols-outlined rounded' class:filled={page === _page}>{icon}</span>
-            <span class='text ml-20'>{text}</span>
-          {/if}
-        </span>
-      </div>
-    {/each}
+    <SidebarLink click={handleAlLogin} icon='login' text={anilistClient.userID?.viewer?.data?.Viewer ? 'Logout' : 'Login With AniList'} css='mt-auto' {page} image={anilistClient.userID?.viewer?.data?.Viewer?.avatar.medium} />
+    <SidebarLink click={() => { page = 'home' }} _page='home' icon='home' text='Home' {page} />
+    <SidebarLink click={() => { page = 'search' }} _page='search' icon='search' text='Search' {page} />
+    <SidebarLink click={() => { page = 'schedule' }} _page='schedule' icon='schedule' text='Schedule' {page} />
+    {#if $media?.media}
+      <SidebarLink click={() => { $view = $media.media }} icon='queue_music' text='Now Playing' {page} />
+    {/if}
+    <SidebarLink click={() => { page = 'watchtogether' }} _page='watchtogether' icon='groups' text='Watch Together' {page} />
+    <SidebarLink click={() => { IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/') }} icon='favorite' text='Support This App' css='mt-auto donate' {page} />
+    {#if updateState === 'downloading'}
+      <SidebarLink click={() => { toast('Update is downloading...') }} icon='download' text='Update Downloading...' {page} />
+    {:else if updateState === 'ready'}
+      <SidebarLink click={() => { IPC.emit('quit-and-install') }} css='update' icon='download' text='Update Ready!' {page} />
+    {/if}
+    <SidebarLink click={() => { page = 'settings' }} _page='settings' icon='settings' text='Settings' {page} />
   </div>
 </div>
 

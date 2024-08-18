@@ -111,7 +111,7 @@ const DirectionKeyMap = { ArrowDown: 'down', ArrowUp: 'up', ArrowLeft: 'left', A
  * @returns {number} - The direction between the two points.
  */
 function getDirection (anchor, relative) {
-  return Math.round((Math.atan2(relative.y - anchor.y, relative.x - anchor.x) * 180 / Math.PI + 180) / 90)
+  return Math.round((Math.atan2(relative.y - anchor.y, relative.x - anchor.x) * 180 / Math.PI + 180) / 90) || 4
 }
 
 /**
