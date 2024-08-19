@@ -34,8 +34,8 @@
   <ViewAnime />
   <Logout />
   <Sidebar bind:page={$page} />
+  <Toaster visibleToasts={6} position='top-right' theme='dark' richColors duration={10000} closeButton />
   <div class='overflow-hidden content-wrapper h-full z-10'>
-    <Toaster visibleToasts={6} position='top-right' theme='dark' richColors duration={10000} closeButton />
     <TorrentModal />
     <Router bind:page={$page} />
   </div>

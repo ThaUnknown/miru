@@ -131,6 +131,10 @@ body {
   background: #000;
 }
 
+.btn:disabled {
+  opacity: 0.3 !important;
+}
+
 img {
   -webkit-user-drag: none;
 }
@@ -151,6 +155,10 @@ img[src=''], img[src=' '] {
   outline: none;
   border-radius: 5px;
   box-shadow: inset 0 0 0 1.5px #eee !important;
+}
+
+.btn-secondary:focus-visible {
+  box-shadow: inset 0 0 0 1.5px #000 !important;
 }
 
 .modal:focus-visible {
