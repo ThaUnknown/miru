@@ -480,7 +480,7 @@
           <option value='SCORE_DESC'>Score</option>
           <option value='POPULARITY_DESC'>Popularity</option>
           <option value='TRENDING_DESC'>Trending</option>
-          {#if search.userList}
+          {#if search.userList && search.title && !search.title.includes("Sequels")}
           <option value='UPDATED_TIME_DESC'>Last Updated</option>
           <option value='STARTED_ON_DESC'>Started On</option>
           {#if search.completedList}
