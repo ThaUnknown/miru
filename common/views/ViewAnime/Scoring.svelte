@@ -59,6 +59,8 @@
       const description = `${anilistClient.title(media)} has been deleted from your list.`
       printToast(res, description, false, false)
 
+      if (res) media.mediaListEntry = undefined
+
       if (Helper.getUser().sync) { // handle profile syncing
         const mediaId = media.id
         const profiles = JSON.parse(localStorage.getItem('profiles')) || []
@@ -73,15 +75,13 @@
           }
         }
       }
-
-      if (res) media.mediaListEntry = undefined
     }
   }
 
   async function saveEntry() {
     if (!status.includes('NOT IN LIST')) {
       const fuzzyDate = Helper.getFuzzyDate(media, status)
-      const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name) || []
+      const lists = media.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || []
       if (!lists.includes('Watched using Miru')) {
         lists.push('Watched using Miru')
       }
@@ -95,7 +95,10 @@
               lists,
               ...fuzzyDate
             }
-      let res = await Helper.entry(media, variables)
+      const res = await Helper.entry(media, variables)
+
+      if (res?.data?.SaveMediaListEntry) { media.mediaListEntry = res?.data?.SaveMediaListEntry }
+
       const description = `Title: ${anilistClient.title(media)}\nStatus: ${Helper.statusName[status]}\nEpisode: ${episode} / ${totalEpisodes}${score !== 0 ? `\nYour Score: ${score}` : ''}`
       printToast(res, description, true, false)
       if (Helper.getUser().sync) { // handle profile syncing
