@@ -6,6 +6,9 @@ import { anitomyscript } from '../anime.js'
 import { client } from '@/modules/torrent.js'
 import { extensionsWorker } from '@/views/Settings/TorrentSettings.svelte'
 import { toast } from 'svelte-sonner'
+import Debug from 'debug'
+
+const debug = Debug('ui:extensions')
 
 /** @typedef {import('@thaunknown/ani-resourced/sources/types.d.ts').Options} Options */
 /** @typedef {import('@thaunknown/ani-resourced/sources/types.d.ts').Result} Result */
@@ -16,11 +19,17 @@ import { toast } from 'svelte-sonner'
  * **/
 export default async function getResultsFromExtensions ({ media, episode, batch, movie, resolution }) {
   const worker = await /** @type {ReturnType<import('@/modules/extensions/worker.js').loadExtensions>} */(extensionsWorker)
-  if (!(await worker.metadata)?.length) throw new Error('No torrent sources configured. Add extensions in settings.')
+  if (!(await worker.metadata)?.length) {
+    debug('No torrent sources configured')
+    throw new Error('No torrent sources configured. Add extensions in settings.')
+  }
+
+  debug(`Fetching sources for ${media.id}:${media.title.userPreferred} ${episode} ${batch} ${movie} ${resolution}`)
 
   const aniDBMeta = await ALToAniDB(media)
   const anidbAid = aniDBMeta?.mappings?.anidb_id
   const anidbEid = anidbAid && (await ALtoAniDBEpisode({ media, episode }, aniDBMeta))?.anidbEid
+  debug(`AniDB Mapping: ${anidbAid} ${anidbEid}`)
 
   /** @type {Options} */
   const options = {
@@ -36,8 +45,10 @@ export default async function getResultsFromExtensions ({ media, episode, batch,
 
   const { results, errors } = await worker.query(options, { movie, batch }, settings.value.sources)
 
+  debug(`Found ${results.length} results`)
+
   for (const error of errors) {
-    console.error(error)
+    debug(`Source Fetch Failed: ${error}`)
     toast.error('Source Fetch Failed!', {
       description: error
     })
@@ -56,11 +67,13 @@ export default async function getResultsFromExtensions ({ media, episode, batch,
 
 async function updatePeerCounts (entries) {
   const id = Math.trunc(Math.random() * Number.MAX_SAFE_INTEGER).toString()
+  debug(`Updating peer counts for ${entries.length} entries`)
 
   const updated = await Promise.race([
     new Promise(resolve => {
       function check ({ detail }) {
         if (detail.id !== id) return
+        debug('Got scrape response')
         client.removeListener('scrape', check)
         resolve(detail.result)
       }
@@ -69,6 +82,7 @@ async function updatePeerCounts (entries) {
     }),
     sleep(15000)
   ])
+  debug('Scrape complete')
 
   for (const { hash, complete, downloaded, incomplete } of updated || []) {
     const found = entries.find(mapped => mapped.hash === hash)
@@ -76,6 +90,8 @@ async function updatePeerCounts (entries) {
     found.leechers = incomplete
     found.seeders = complete
   }
+
+  debug(`Found ${(updated || []).length} entries: ${JSON.stringify(updated)}`)
   return entries
 }
 
@@ -110,12 +126,18 @@ function getRelation (list, type) {
   * @param {{episodes: any, episodeCount: number, specialCount: number}} param1
   * */
 async function ALtoAniDBEpisode ({ media, episode }, { episodes, episodeCount, specialCount }) {
+  debug(`Fetching AniDB episode for ${media.id}:${media.title.userPreferred} ${episode}`)
   if (!episode || !Object.values(episodes).length) return
   // if media has no specials or their episode counts don't match
-  if (!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)])) return episodes[Number(episode)]
+  if (!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)])) {
+    debug('No specials found, or episode count matches between AL and AniDB')
+    return episodes[Number(episode)]
+  }
+  debug(`Episode count mismatch between AL and AniDB for ${media.id}:${media.title.userPreferred}`)
   const res = await anilistClient.episodeDate({ id: media.id, ep: episode })
   // TODO: if media only has one episode, and airdate doesn't exist use start/release/end dates
   const alDate = new Date((res.data.AiringSchedule?.airingAt || 0) * 1000)
+  debug(`AL Airdate: ${alDate}`)
 
   return episodeByAirDate(alDate, episodes, episode)
 }
@@ -126,6 +148,7 @@ async function ALtoAniDBEpisode ({ media, episode }, { episodes, episodeCount, s
  * @param {number} episode
  **/
 export function episodeByAirDate (alDate, episodes, episode) {
+  // TODO handle special cases where anilist reports that 3 episodes aired at the same time because of pre-releases
   if (!+alDate) return episodes[Number(episode)] || episodes[1] // what the fuck, are you braindead anilist?, the source episode number to play is from an array created from AL ep count, so how come it's missing?
   // 1 is key for episod 1, not index
 

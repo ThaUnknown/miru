@@ -1,4 +1,5 @@
 <script>
+  import { persisted } from 'svelte-persisted-store'
   import { getContext } from 'svelte'
   import { click } from '@/modules/click.js'
   import IPC from '@/modules/ipc.js'
@@ -9,6 +10,13 @@
     $view = null
     page = 'home'
   }
+
+  const debug = persisted('debug', '', {
+    serializer: {
+      parse: e => e,
+      stringify: e => e
+    }
+  })
 </script>
 
 <div class='w-full z-101 navbar bg-transparent border-0 p-0 d-flex'>
@@ -27,8 +35,21 @@
     {/if}
   </div>
 </div>
+{#if $debug}
+  <div class='ribbon right z-101 text-center position-fixed font-size-16 font-weight-bold'>Debug Mode!</div>
+{/if}
 
 <style>
+  .ribbon {
+    background: #f63220;
+    box-shadow: 0 0 0 999px #f63220;
+    clip-path: inset(0 -100%);
+    pointer-events: none;
+    min-width: 120px;
+    inset: 0 auto auto 0;
+    transform-origin: 100% 0;
+    transform: translate(-29.3%) rotate(-45deg);
+  }
   .navbar {
     --navbar-height: 28px !important;
   }

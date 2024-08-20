@@ -4,6 +4,9 @@
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
   import getResultsFromExtensions from '@/modules/extensions/index.js'
+  import Debug from 'debug'
+
+  const debug = Debug('ui:extensions')
 
   /** @typedef {import('@/modules/al.d.ts').Media} Media */
 
@@ -84,7 +87,7 @@
   $: autoPlay(best, $settings.rssAutoplay)
 
   $: lookup.catch(err => {
-    console.error(err)
+    debug(`Error fetching torrents for ${search.media.title.userPreferred} Episode ${search.episode}, ${err.stack}`)
     toast.error(`No torrent found for ${anilistClient.title(search.media)} Episode ${search.episode}!`, { description: err.message })
   })
 

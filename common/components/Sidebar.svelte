@@ -3,136 +3,43 @@
   import { media } from '@/views/Player/MediaHandler.svelte'
   import { settings } from '@/modules/settings.js'
   import { toast } from 'svelte-sonner'
-  import { click } from '@/modules/click.js'
   import { profileView } from './Profiles.svelte'
   import Helper from '@/modules/helper.js'
   import IPC from '@/modules/ipc.js'
+  import SidebarLink from './SidebarLink.svelte'
 
-  let wasUpdated = false
-
-  globalThis.dd = IPC
+  let updateState = ''
 
   IPC.on('update-available', () => {
-    console.log('uwu')
-    if (!wasUpdated) {
-      // insert icon in 2nd to last position
-      links.splice(links.length - 1, 0, {
-        click: () => {
-          toast('Update is downloading...')
-        },
-        icon: 'download',
-        text: 'Update Downloading...'
-      })
-      links = links
-    }
-    wasUpdated = true
+    updateState = 'downloading'
   })
   IPC.on('update-downloaded', () => {
-    links[links.length - 2].css = 'update'
-    links[links.length - 2].text = 'Update Ready!'
-    links[links.length - 2].click = () => {
-      IPC.emit('quit-and-install')
-    }
-    links = links
+    updateState = 'ready'
   })
 
   const view = getContext('view')
 
   export let page
-
-  let links = [
-    {
-      click: () => {
-        $profileView = true
-      },
-      icon: 'login',
-      text: 'Login',
-      css: 'mt-auto'
-    },
-    {
-      click: () => {
-        page = 'home'
-        if ($view) $view = null
-      },
-      page: 'home',
-      icon: 'home',
-      text: 'Home'
-    },
-    {
-      click: () => {
-        page = 'search'
-        if ($view) $view = null
-      },
-      page: 'search',
-      icon: 'search',
-      text: 'Search'
-    },
-    {
-      click: () => {
-        page = 'schedule'
-      },
-      page: 'schedule',
-      icon: 'schedule',
-      text: 'Schedule'
-    },
-    {
-      click: () => {
-        if ($media) $view = $media.media
-      },
-      icon: 'queue_music',
-      text: 'Now Playing'
-    },
-    {
-      click: () => {
-        page = 'watchtogether'
-      },
-      page: 'watchtogether',
-      icon: 'groups',
-      text: 'Watch Together'
-    },
-    {
-      click: () => {
-        IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')
-      },
-      icon: 'favorite',
-      text: 'Support This App',
-      css: 'mt-auto donate'
-    },
-    {
-      click: () => {
-        page = 'settings'
-      },
-      page: 'settings',
-      icon: 'settings',
-      text: 'Settings'
-    }
-  ]
-  if (Helper.getUser()) {
-    links[0].image = Helper.getUserAvatar()
-    links[0].text = 'Profiles'
-  }
 </script>
 
 <div class='sidebar z-30 d-md-block' class:animated={$settings.expandingSidebar}>
   <div class='sidebar-overlay pointer-events-none h-full position-absolute' />
   <div class='sidebar-menu h-full d-flex flex-column justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
-    {#each links as { click: _click, icon, text, image, css, page: _page } (_click)}
-      <div
-        class='sidebar-link sidebar-link-with-icon pointer overflow-hidden {css}'
-        use:click={() => { _click(); if (!icon.includes("login") && !icon.includes("favorite")) { window.dispatchEvent(new Event('overlay-check')) } } }>
-        <span class='text-nowrap d-flex align-items-center w-full h-full'>
-          {#if image}
-            <span class='material-symbols-outlined rounded' class:filled={page === _page}>
-              <img src={image} class='h-30 rounded' alt='logo' />
-            </span>
-            <span class='text ml-20'>{text}</span>
-          {:else}
-            <span class='material-symbols-outlined rounded' class:filled={page === _page}>{icon}</span>
-            <span class='text ml-20'>{text}</span>
-          {/if}
-        </span>
-      </div>
-    {/each}
+    <SidebarLink click={() => { $profileView = true }} icon='login' text={Helper.getUser() ? 'Profiles' : 'Login'} css='mt-auto' {page} image={Helper.getUserAvatar()} />
+    <SidebarLink click={() => { page = 'home'; if ($view) $view = null }} _page='home' icon='home' text='Home' {page} />
+    <SidebarLink click={() => { page = 'search'; if ($view) $view = null }} _page='search' icon='search' text='Search' {page} />
+    <SidebarLink click={() => { page = 'schedule' }} _page='schedule' icon='schedule' text='Schedule' {page} />
+    {#if $media?.media}
+      <SidebarLink click={() => { $view = $media.media }} icon='queue_music' text='Now Playing' {page} />
+    {/if}
+    <SidebarLink click={() => { page = 'watchtogether' }} _page='watchtogether' icon='groups' text='Watch Together' {page} />
+    <SidebarLink click={() => { IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/') }} icon='favorite' text='Support This App' css='mt-auto donate' {page} />
+    {#if updateState === 'downloading'}
+      <SidebarLink click={() => { toast('Update is downloading...') }} icon='download' text='Update Downloading...' {page} />
+    {:else if updateState === 'ready'}
+      <SidebarLink click={() => { IPC.emit('quit-and-install') }} css='update' icon='download' text='Update Ready!' {page} />
+    {/if}
+    <SidebarLink click={() => { page = 'settings' }} _page='settings' icon='settings' text='Settings' {page} />
   </div>
 </div>
 

@@ -124,7 +124,7 @@ const DirectionKeyMap = { ArrowDown: 'down', ArrowUp: 'up', ArrowLeft: 'left', A
  * @returns {number} - The direction between the two points.
  */
 function getDirection (anchor, relative) {
-  return Math.round((Math.atan2(relative.y - anchor.y, relative.x - anchor.x) * 180 / Math.PI + 180) / 90)
+  return Math.round((Math.atan2(relative.y - anchor.y, relative.x - anchor.x) * 180 / Math.PI + 180) / 90) || 4
 }
 
 /**
@@ -143,7 +143,7 @@ function getDistance (anchor, relative) {
  * @returns {Element[]} - An array of keyboard-focusable elements.
  */
 function getKeyboardFocusableElements (element = document.body) {
-  return [...element.querySelectorAll('a[href], button:not([disabled]), fieldset:not([disabled]), input:not([disabled]), optgroup:not([disabled]), option:not([disabled]), select:not([disabled]), textarea:not([disabled]), details, [tabindex]:not([tabindex="-1"]), [contenteditable], [controls]')].filter(
+  return [...element.querySelectorAll('a[href], button:not([disabled]), fieldset:not([disabled]), input:not([disabled]), optgroup:not([disabled]), option:not([disabled]), select:not([disabled]), textarea:not([disabled]), details, [tabindex]:not([tabindex="-1"], [disabled]), [contenteditable], [controls]')].filter(
     el => !el.getAttribute('aria-hidden')
   )
 }

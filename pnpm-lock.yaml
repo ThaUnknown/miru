@@ -78,6 +78,9 @@ importers:
       '@capacitor/core':
         specifier: ^6.1.1
         version: 6.1.1
+      '@capacitor/device':
+        specifier: ^6.0.1
+        version: 6.0.1(@capacitor/core@6.1.1)
       '@capacitor/ios':
         specifier: ^6.1.1
         version: 6.1.1(@capacitor/core@6.1.1)
@@ -158,8 +161,8 @@ importers:
         specifier: ^4.4.1
         version: 4.4.1
       jassub:
-        specifier: latest
-        version: 1.7.15
+        specifier: ^1.7.17
+        version: 1.7.17
       js-levenshtein:
         specifier: ^1.1.6
         version: 1.1.6
@@ -190,6 +193,9 @@ importers:
       svelte-miniplayer:
         specifier: ^1.0.5
         version: 1.0.5
+      svelte-persisted-store:
+        specifier: ^0.11.0
+        version: 0.11.0(svelte@4.2.12)
       svelte-sonner:
         specifier: ^0.3.19
         version: 0.3.19(svelte@4.2.12)
@@ -401,6 +407,14 @@ packages:
     resolution: {integrity: sha512-b1s4WDMy3Y1/owTG2/XNGCI6G5SDpF2NT1JMAgcShue13fiAuHA+Ans7Wfei6McvR0KdopAE6tMHmDAfL5PM8Q==}
     dependencies:
       tslib: 2.6.3
+    dev: false
+
+  /@capacitor/device@6.0.1(@capacitor/core@6.1.1):
+    resolution: {integrity: sha512-Tlz67DAO5GKb5YAfupXiENZxDww6mHnG9iKI+8D5SVF82VLpEv5r9qwKtiounuQB2y2HWiHV8tlOk7DqnLVUqQ==}
+    peerDependencies:
+      '@capacitor/core': ^6.0.0
+    dependencies:
+      '@capacitor/core': 6.1.1
     dev: false
 
   /@capacitor/ios@6.1.1(@capacitor/core@6.1.1):
@@ -1386,7 +1400,7 @@ packages:
       vite: ^5.0.0
     dependencies:
       '@sveltejs/vite-plugin-svelte': 3.0.2(svelte@4.2.12)(vite@5.1.5)
-      debug: 4.3.4
+      debug: 4.3.6
       svelte: 4.2.12
       vite: 5.1.5
     transitivePeerDependencies:
@@ -6024,8 +6038,8 @@ packages:
       minimatch: 3.1.2
     dev: true
 
-  /jassub@1.7.15:
-    resolution: {integrity: sha512-8yKAJc++Y1gNfATOPRo3APk0JUhshKl5l7bRkT6WkJ8XP4RvYfVPb6ieH6WDxsMq523exwGzNvjjPEEWT+Z1nQ==}
+  /jassub@1.7.17:
+    resolution: {integrity: sha512-573efPTIYLh9YaauuSX2mgPrrYedqdeu6KYNNjsJXbLbBsxPijcUHrMK4zpXCeBv955VTUlMX6l0Afa8AXf33A==}
     dependencies:
       rvfc-polyfill: 1.0.7
     dev: false
@@ -8710,6 +8724,15 @@ packages:
 
   /svelte-miniplayer@1.0.5:
     resolution: {integrity: sha512-jzYqqBuXcSH5KzoPDlYQL6CQVbpY2LQB4/wBPG4T5R75wE8Dqu4auMU6NnJxHBRhgNCGlH+XBQvxy9G6yX/XQw==}
+    dev: false
+
+  /svelte-persisted-store@0.11.0(svelte@4.2.12):
+    resolution: {integrity: sha512-9RgJ5DrawGyyfK22A80cfu8Jose3CV8YjEZKz9Tn94rQ0tWyEmYr+XI+wrVF6wjRbW99JMDSVcFRiM3XzVJj/w==}
+    engines: {node: '>=0.14'}
+    peerDependencies:
+      svelte: ^3.48.0 || ^4.0.0 || ^5.0.0-next.0
+    dependencies:
+      svelte: 4.2.12
     dev: false
 
   /svelte-preprocess@5.1.4(postcss@8.4.38)(svelte@4.2.12)(typescript@5.3.3):

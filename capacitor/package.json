@@ -30,6 +30,7 @@
     "@capacitor/app": "^6.0.0",
     "@capacitor/browser": "^6.0.1",
     "@capacitor/core": "^6.1.1",
+    "@capacitor/device": "^6.0.1",
     "@capacitor/ios": "^6.1.1",
     "@capacitor/local-notifications": "^6.0.0",
     "@capacitor/status-bar": "^6.0.0",

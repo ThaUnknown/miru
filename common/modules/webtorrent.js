@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import Debug from 'debug'
 import WebTorrent from 'webtorrent'
 import querystring from 'querystring'
 import HTTPTracker from 'bittorrent-tracker/lib/client/http-tracker.js'
@@ -16,6 +17,8 @@ const querystringStringify = obj => {
   `%${char.charCodeAt(0).toString(16).toUpperCase()}`)
   return ret
 }
+
+const debug = Debug('torrent:worker')
 
 const ANNOUNCE = [
   atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
@@ -52,6 +55,7 @@ export default class TorrentClient extends WebTorrent {
 
   constructor (ipc, storageQuota, serverMode, torrentPath, controller) {
     const settings = { ...defaults, ...storedSettings }
+    debug('Initializing TorrentClient with settings: ' + JSON.stringify(settings))
     super({
       dht: !settings.torrentDHT,
       maxConns: settings.maxConns,
@@ -67,6 +71,7 @@ export default class TorrentClient extends WebTorrent {
       ipc.on('port', ({ ports }) => {
         this.message = ports[0].postMessage.bind(ports[0])
         ports[0].onmessage = ({ data }) => {
+          debug(`Received IPC message ${data.type}: ${data.data}`)
           if (data.type === 'load') this.loadLastTorrent(data.data)
           if (data.type === 'destroy') this.destroy()
           this.handleMessage({ data })
@@ -119,6 +124,7 @@ export default class TorrentClient extends WebTorrent {
   }
 
   loadLastTorrent (t) {
+    debug('Loading last torrent: ' + t)
     if (!t) return
     let torrent
     // this can be a magnet string, or a stringified array, lazy way of makign sure it works
@@ -136,6 +142,7 @@ export default class TorrentClient extends WebTorrent {
   }
 
   async handleTorrent (torrent) {
+    debug('Got torrent metadata: ' + torrent.name)
     const files = torrent.files.map(file => {
       return {
         infoHash: torrent.infoHash,
@@ -165,6 +172,8 @@ export default class TorrentClient extends WebTorrent {
       map[file.name] = file
     }
 
+    debug(`Found ${Object.keys(map).length} font files`)
+
     for (const file of Object.values(map)) {
       const data = await file.arrayBuffer()
       if (targetFile !== this.current) return
@@ -180,6 +189,7 @@ export default class TorrentClient extends WebTorrent {
     const subfiles = files.filter(file => {
       return subRx.test(file.name) && (videoFiles.length === 1 ? true : file.name.includes(videoName))
     })
+    debug(`Found ${subfiles.length} subtitle files`)
     for (const file of subfiles) {
       const data = await file.arrayBuffer()
       if (targetFile !== this.current) return
@@ -188,6 +198,7 @@ export default class TorrentClient extends WebTorrent {
   }
 
   async _scrape ({ id, infoHashes }) {
+    debug(`Scraping ${infoHashes.length} hashes, id: ${id}`)
     // this seems to give the best speed, and lowest failure rate
     const MAX_ANNOUNCE_LENGTH = 1300 // it's likely 2048, but lets undercut it
     const RATE_LIMIT = 200 // ms
@@ -205,11 +216,13 @@ export default class TorrentClient extends WebTorrent {
         this.tracker._request(this.tracker.scrapeUrl, { info_hash: batch }, (err, data) => {
           if (err) {
             const error = this._errorToString(err)
+            debug('Failed to scrape: ' + error)
             this.dispatch('warn', `Failed to update seeder counts: ${error}`)
             return resolve([])
           }
           const { files } = data
           const result = []
+          debug(`Scraped ${Object.keys(files || {}).length} hashes, id: ${id}`)
           for (const [key, data] of Object.entries(files || {})) {
             result.push({ hash: key.length !== 40 ? arr2hex(text2arr(key)) : key, ...data })
           }
@@ -232,6 +245,8 @@ export default class TorrentClient extends WebTorrent {
       currentLength += qsLength
     }
     if (batch.length) await scrape()
+
+    debug(`Scraped ${results.length} hashes, id: ${id}`)
 
     this.dispatch('scrape', { id, result: results })
   }
@@ -259,11 +274,12 @@ export default class TorrentClient extends WebTorrent {
     for (const exclude of TorrentClient.excludedErrorMessages) {
       if (error.startsWith(exclude)) return
     }
-    console.error(error)
+    debug('Error: ' + error)
     this.dispatch('error', error)
   }
 
   async addTorrent (data, skipVerify = false) {
+    debug('Adding torrent: ' + data)
     const existing = await this.get(data)
     if (existing) {
       if (existing.ready) this.handleTorrent(existing)
@@ -333,6 +349,10 @@ export default class TorrentClient extends WebTorrent {
         this.addTorrent(data.data)
         break
       }
+      case 'debug': {
+        Debug.disable()
+        if (data.data) Debug.enable(data.data)
+      }
     }
   }
 
@@ -342,6 +362,7 @@ export default class TorrentClient extends WebTorrent {
   }
 
   destroy () {
+    debug('Destroying TorrentClient')
     if (this.destroyed) return
     this.parser?.destroy()
     this.server.close()

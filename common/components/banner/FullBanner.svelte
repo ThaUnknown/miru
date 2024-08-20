@@ -92,11 +92,9 @@
       use:click={() => playMedia(current)}>
       Watch Now
     </button>
-    {#if Helper.isAniAuth()}
-      <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={current.isFavourite} use:click={toggleFavourite}>
-        favorite
-      </button>
-    {/if}
+    <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={current.isFavourite} use:click={toggleFavourite} disabled={!Helper.isAniAuth()}>
+      favorite
+    </button>
     <Scoring media={current} />
   </div>
   <div class='d-flex'>

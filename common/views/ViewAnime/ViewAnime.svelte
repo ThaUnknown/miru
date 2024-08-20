@@ -164,11 +164,9 @@
                   {playButtonText}
                 </button>
                 <div class='mt-20'>
-                  {#if Helper.isAniAuth()}
-                    <button class='btn bg-dark btn-lg btn-square material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite}>
-                      favorite
-                    </button>
-                  {/if}
+                  <button class='btn bg-dark btn-lg btn-square material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite} disabled={!Helper.isAniAuth()}>
+                    favorite
+                  </button>
                   <Scoring {media} viewAnime={true} />
                   <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => copyToClipboard(`https://miru.watch/anime/${media.id}`)}>
                     share
@@ -246,7 +244,7 @@
             <div class='ml-auto pl-20 font-size-12 more text-muted text-nowrap' use:click={() => { episodeOrder = !episodeOrder }}>Reverse</div>
           </div>
         </div>
-        <div class='col-lg-5 col-12 d-flex flex-column pl-lg-20'>
+        <div class='col-lg-5 col-12 d-flex flex-column pl-lg-20 overflow-x-hidden'>
           <EpisodeList {media} {episodeOrder} userProgress={['CURRENT', 'PAUSED', 'DROPPED'].includes(media.mediaListEntry?.status) && media.mediaListEntry.progress} watched={media.mediaListEntry?.status === 'COMPLETED'} episodeCount={getMediaMaxEp(media)} {play} />
         </div>
       </div>
@@ -291,7 +289,7 @@
     width: 23rem !important;
   }
 
-  button.bg-dark:hover {
+  button.bg-dark:not([disabled]):hover {
     background: #292d33 !important;
   }
 </style>
