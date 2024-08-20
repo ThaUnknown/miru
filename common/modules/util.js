@@ -1,5 +1,4 @@
 import { SUPPORTS } from '@/modules/support.js'
-import { enable } from './debug.js'
 
 export function countdown (s) {
   const d = Math.floor(s / (3600 * 24))
