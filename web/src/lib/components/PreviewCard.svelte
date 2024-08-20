@@ -1,7 +1,6 @@
 <script>
   import { formatMap } from './anime.js'
   import { click } from '@/modules/click.js'
-  import { alToken } from '@/modules/settings.js'
   export let media
 
   let hide = true
@@ -83,10 +82,10 @@
         </span>
         {playButtonText}
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={noop} disabled={!alToken}>
+      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={noop}>
         favorite
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.mediaListEntry} use:click={noop} disabled={!alToken}>
+      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.mediaListEntry} use:click={noop}>
         bookmark
       </button>
     </div>
