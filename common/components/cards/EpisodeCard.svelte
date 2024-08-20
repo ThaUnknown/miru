@@ -25,7 +25,7 @@
   const progress = liveAnimeEpisodeProgress(media?.id, data?.episode)
 </script>
 
-<div class='d-flex p-20 pb-10 position-relative episode-card' use:hoverClick={[data.onclick || viewMedia, setHoverState]}>
+<div class='d-flex p-20 pb-10 position-relative episode-card' use:hoverClick={[data.onclick || viewMedia, setHoverState]} on:contextmenu|preventDefault={viewMedia} role='none'>
   {#if preview}
     <EpisodePreviewCard {data} />
   {/if}
