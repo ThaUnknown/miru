@@ -347,10 +347,10 @@
     video.currentTime = targetTime
   }
   function forward () {
-    seek(2)
+    seek(settings.value.playerSeek)
   }
   function rewind () {
-    seek(-2)
+    seek(-settings.value.playerSeek)
   }
   function selectAudio (id) {
     if (id !== undefined) {
@@ -553,8 +553,9 @@
         e.preventDefault()
         rewind()
       },
-      id: '-2',
-      desc: 'Rewind 2s'
+      id: 'fast_rewind',
+      type: 'icon',
+      desc: 'Rewind'
     },
     ArrowRight: {
       fn: e => {
@@ -562,8 +563,9 @@
         e.preventDefault()
         forward()
       },
-      id: '+2',
-      desc: 'Seek 2s'
+      id: 'fast_forward',
+      type: 'icon',
+      desc: 'Seek'
     },
     ArrowUp: {
       fn: e => {

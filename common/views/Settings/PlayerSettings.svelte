@@ -146,6 +146,14 @@
     <label for='player-deband'>{settings.playerDeband ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
+<SettingCard title='Seek Duration' description='Seconds to skip forward or backward when using the seek buttons or keyboard shortcuts. Higher values might negatively impact buffering speeds.'>
+  <div class='input-group w-100 mw-full'>
+    <input type='number' inputmode='numeric' pattern={'[0-9]*'} bind:value={settings.playerSeek} min='1' max='50' class='form-control text-right bg-dark' />
+    <div class='input-group-append'>
+      <span class='input-group-text bg-dark'>sec</span>
+    </div>
+  </div>
+</SettingCard>
 
 {#if SUPPORTS.externalPlayer}
   <h4 class='mb-10 font-weight-bold'>External Player Settings</h4>

@@ -156,7 +156,8 @@ export const defaults = {
   extensions: SUPPORTS.extensions ? ['@thaunknown/ani-resourced'] : [],
   sources: {},
   enableExternal: false,
-  playerPath: ''
+  playerPath: '',
+  playerSeek: 2
 }
 
 export const subtitleExtensions = ['srt', 'vtt', 'ass', 'ssa', 'sub', 'txt']
