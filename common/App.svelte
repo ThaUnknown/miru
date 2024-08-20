@@ -21,7 +21,7 @@
       ignoreNext = false
       return
     }
-    history.pushState({ type, value }, '', './?id=' + Math.trunc(Math.random() * Number.MAX_SAFE_INTEGER).toString())
+    history.pushState({ type, value }, '', location.origin + location.pathname + '?id=' + Math.trunc(Math.random() * Number.MAX_SAFE_INTEGER).toString())
   }
   page.subscribe((value) => {
     addPage(value, 'page')
