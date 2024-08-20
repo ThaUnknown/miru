@@ -785,6 +785,7 @@
   }
 
   let currentSkippable = null
+  $: currentSkippable && settings.value.playerAutoSkip && skip()
   function checkSkippableChapters () {
     const current = findChapter(currentTime)
     if (current) {

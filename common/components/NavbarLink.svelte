@@ -34,7 +34,7 @@
   .animate .donate .material-symbols-outlined {
     animation: glow 1s ease-in-out infinite alternate;
   }
-  .donate:hover .material-symbols-outlined {
+  .donate:active .material-symbols-outlined {
     background: #fff;
     color: #fa68b6 !important;
   }
@@ -64,7 +64,7 @@
     transition: background .8s cubic-bezier(0.25, 0.8, 0.25, 1), color .8s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
-  .navbar-link:hover > span {
+  .navbar-link:active > span {
     background: #fff;
     color: var(--dark-color);
   }

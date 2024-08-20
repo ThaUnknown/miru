@@ -92,6 +92,7 @@
     <option value='slo'>Slovak</option>
     <option value='swe'>Swedish</option>
     <option value='ara'>Arabic</option>
+    <option value='idn'>Indonesian</option>
   </select>
 </SettingCard>
 <SettingCard title='Preferred Audio Language' description="What audio language to automatically select when a video is loaded if it exists. This won't find torrents with this language automatically. If not found defaults to Japanese.">
@@ -118,6 +119,7 @@
     <option value='slo'>Slovak</option>
     <option value='swe'>Swedish</option>
     <option value='ara'>Arabic</option>
+    <option value='idn'>Indonesian</option>
   </select>
 </SettingCard>
 
@@ -152,6 +154,12 @@
     <div class='input-group-append'>
       <span class='input-group-text bg-dark'>sec</span>
     </div>
+  </div>
+</SettingCard>
+<SettingCard title='Auto-Skip Intro/Outro' description='Attempt to automatically skip intro and outro. This WILL sometimes skip incorrect chapters, as some of the chapter data is community sourced.'>
+  <div class='custom-switch'>
+    <input type='checkbox' id='player-skip' bind:checked={settings.playerSkip} />
+    <label for='player-skip'>{settings.playerSkip ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
 

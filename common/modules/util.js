@@ -157,7 +157,8 @@ export const defaults = {
   sources: {},
   enableExternal: false,
   playerPath: '',
-  playerSeek: 2
+  playerSeek: 2,
+  playerSkip: false
 }
 
 export const subtitleExtensions = ['srt', 'vtt', 'ass', 'ssa', 'sub', 'txt']
