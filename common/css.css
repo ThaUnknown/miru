@@ -205,7 +205,7 @@ img[src=''], img[src=' '] {
 .skeloader .skeleloader-swipe {
   height: 100%;
   width: 100%;
-  background: linear-gradient(to right, transparent 0%, #17191c 50%, transparent 100%);
+  background: linear-gradient(to right, transparent 0%, hsl(var(--dark-color-hsl)) 50%, transparent 100%);
   background-repeat: no-repeat;
   background-size: 200% 100%;
   animation: skeleloader 1s infinite cubic-bezier(0.4, 0, 0.2, 1);
