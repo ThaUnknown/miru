@@ -12,7 +12,7 @@
 
 <div
   class='navbar-link navbar-link-with-icon pointer overflow-hidden {css}'
-  use:click={_click}>
+  use:click={() => { _click(); if (!icon.includes("favorite")) { window.dispatchEvent(new Event('overlay-check')) } } }>
   {#if image}
     <span class='material-symbols-outlined rounded' class:filled={page === _page}>
       <img src={image} class='h-30 rounded' alt='logo' />

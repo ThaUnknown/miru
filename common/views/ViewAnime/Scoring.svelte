@@ -4,6 +4,9 @@
   import { writable } from 'svelte/store'
   import { toast } from 'svelte-sonner'
   import Helper from '@/modules/helper.js'
+  import Debug from 'debug'
+
+  const debug = Debug('ui:scoring')
 
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
@@ -56,7 +59,7 @@
     status = 'NOT IN LIST'
     if (media.mediaListEntry) {
       const res = await Helper.delete(Helper.isAniAuth() ? {id: media.mediaListEntry.id} : {idMal: media.idMal})
-      const description = `${anilistClient.title(media)} has been deleted from your list.`
+      const description = `${anilistClient.title(media)} has been deleted from your list`
       printToast(res, description, false, false)
 
       if (res) media.mediaListEntry = undefined
@@ -124,7 +127,7 @@
   function printToast(res, description, save, profile) {
     const who = (profile ? ' for ' + profile.viewer.data.Viewer.name + (profile.viewer?.data?.Viewer?.avatar ? ' (AniList)' : ' (MyAnimeList)')  : '')
     if ((save && res?.data?.SaveMediaListEntry) || (!save && res)) {
-      console.log('List Updated' + who + ':\n' + description)
+      debug(`List Updated${who}: ${description.replace(/\n/g, ', ')}`)
       if (!profile) {
         if (save) {
           toast.success('List Updated', {
@@ -140,7 +143,7 @@
       }
     } else {
       const error = `\n${429} - ${codes[429]}`
-      console.error('Failed to ' + (save ? 'update' : 'delete title from') + ' user list' + who + ' with:\n' + description + error)
+      debug(`Error: Failed to ${(save ? 'update' : 'delete title from')} user list${who} with: ${description.replace(/\n/g, ', ')} ${error}`)
       toast.error('Failed to ' + (save ? 'Update' : 'Delete') + ' List' + who, {
         description: description + error,
         duration: 9000
@@ -181,10 +184,11 @@
   }
 </script>
 
+
+<button type='button' id='list-btn' class='btn { viewAnime ? "bg-dark btn-lg font-size-20" : (previewAnime ? "btn-square" : "bg-dark-light") + " font-size-16" } btn-square ml-10 material-symbols-outlined shadow-none border-0' use:click={toggleModal} disabled={!Helper.isAuthorized()}>
+  { media.mediaListEntry ? 'border_color' : 'bookmark' }
+</button>
 {#if Helper.isAuthorized()}
-  <button type='button' id='list-btn' class='btn { viewAnime ? "bg-dark btn-lg font-size-20" : (previewAnime ? "btn-square" : "bg-dark-light") + " font-size-16" } btn-square ml-10 material-symbols-outlined shadow-none border-0' use:click={toggleModal}>
-    { media.mediaListEntry ? 'border_color' : 'bookmark' }
-  </button>
   <div bind:this={modal} class='modal scoring position-absolute bg-dark shadow-lg rounded-3 p-20 z-30 {$showModal ? "visible" : "invisible"} {!previewAnime && !viewAnime ? "banner w-auto h-auto" : (!previewAnime ? "viewAnime w-auto h-auto" : "previewAnime")}' use:click={() => {}}>
     <div class='d-flex justify-content-between align-items-center mb-2'>
       <h5 class='font-weight-bold'>List Editor</h5>

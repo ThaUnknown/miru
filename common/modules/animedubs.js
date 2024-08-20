@@ -1,6 +1,9 @@
 import { toast } from 'svelte-sonner'
 import { writable } from 'simple-store-svelte'
 import { codes } from '@/modules/anilist.js'
+import Debug from 'debug'
+
+const debug = Debug('ui:animedubs')
 
 /*
  * MAL (MyAnimeList) Dubs (Mal-Dubs)
@@ -19,6 +22,7 @@ class MALDubs {
     }
 
     async getMALDubs() {
+        debug('Getting myanimelist dubs')
         let res = {}
         try {
             res = await fetch('https://raw.githubusercontent.com/MAL-Dubs/MAL-Dubs/main/data/dubInfo.json')
@@ -48,7 +52,7 @@ class MALDubs {
     }
 
     printError(error) {
-        console.warn(error)
+        debug(`Error: ${error.status || 429} - ${error.message || codes[error.status || 429]}`)
         toast.error('Dub Caching Failed', {
             description: `Failed to load dub information!\nTry again in a minute.\n${error.status || 429} - ${error.message || codes[error.status || 429]}`,
             duration: 3000

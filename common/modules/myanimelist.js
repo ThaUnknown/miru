@@ -4,11 +4,14 @@ import { malToken, refreshMalToken } from '@/modules/settings.js'
 import { codes } from "@/modules/anilist"
 import { toast } from 'svelte-sonner'
 import Helper from '@/modules/helper.js'
+import Debug from 'debug'
+
+const debug = Debug('ui:myanimelist')
 
 export const clientID = '4c2c172971b9164f924fd5925b443ac3' // app type MUST be set to other, do not generate a seed.
 
 function printError (error) {
-  console.warn(error)
+  debug(`Error: ${error.status || 429} - ${error.message || codes[error.status || 429]}`)
   toast.error('Search Failed', {
     description: `Failed making request to MyAnimeList!\nTry again in a minute.\n${error.status || 429} - ${error.message || codes[error.status || 429]}`,
     duration: 3000
@@ -47,6 +50,7 @@ class MALClient {
   userID = malToken
 
   constructor () {
+    debug('Initializing Anilist Client for ID ' + this.userID?.viewer?.data?.Viewer.id)
     if (this.userID?.viewer?.data?.Viewer) {
       this.userLists.value = this.getUserLists({ sort: 'list_updated_at' })
       //  update userLists every 15 mins
@@ -133,6 +137,7 @@ class MALClient {
 
   /** @returns {Promise<import('./mal').Query<{ MediaList: import('./mal').MediaList }>>} */
   async getUserLists (variables) {
+    debug('Getting user lists')
     const limit = 1000 // max possible you can fetch
     let offset = 0
     let allMediaList = []
@@ -186,6 +191,7 @@ class MALClient {
 
   /** @returns {Promise<import('./mal').Query<{ Viewer: import('./mal').Viewer }>>} */
   async viewer (token) {
+    debug('Getting viewer')
     const query = {
       type: 'GET',
       path: 'users/@me',
@@ -199,6 +205,7 @@ class MALClient {
   }
 
   async entry (variables) {
+    debug(`Updating entry for ${variables.idMal}`)
     const query = {
       type: 'PUT',
       path: `anime/${variables.idMal}/my_list_status`,
@@ -240,6 +247,7 @@ class MALClient {
   }
 
   async delete (variables) {
+    debug(`Deleting entry for ${variables.idMal}`)
     const query = {
       type: 'DELETE',
       path: `anime/${variables.idMal}/my_list_status`,

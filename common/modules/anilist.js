@@ -396,7 +396,7 @@ class AnilistClient {
   }
 
   async searchIDS (variables) {
-    debug(`Searching for IDs: ${variables.id.length}`)
+    debug(`Searching for IDs: ${variables?.id?.length || variables?.idMal?.length}`)
     const query = /* js */` 
     query($id: [Int], $idMal: [Int], $id_not: [Int], $page: Int, $perPage: Int, $status: [MediaStatus], $onList: Boolean, $sort: [MediaSort], $search: String, $season: MediaSeason, $year: Int, $genre: [String], $tag: [String], $format: MediaFormat) { 
       Page(page: $page, perPage: $perPage) {

@@ -4,6 +4,9 @@ import { malClient } from '@/modules/myanimelist.js'
 import { malDubs } from "@/modules/animedubs.js"
 import { toast } from 'svelte-sonner'
 import Fuse from 'fuse.js'
+import Debug from 'debug'
+
+const debug = Debug('ui:helper')
 
 export default class Helper {
 
@@ -175,6 +178,7 @@ export default class Helper {
    */
   static async fillEntry(media) {
     if (this.isMalAuth()) {
+      debug(`Filling myanimelist entry data for ${media.id}`)
       const userLists = await malClient.userLists.value
       const malEntry = userLists.data.MediaList.find(({ node }) => node.id === media.idMal)
       if (malEntry) {
@@ -208,7 +212,9 @@ export default class Helper {
     // check if values exist
     if (filemedia.media && this.isAuthorized()) {
       const { media, failed } = filemedia
+      debug(`Checking entry for ${media.title.userPreferred}`)
 
+      debug(`Media viability: ${media.status}, Is from failed resolve: ${failed}`)
       if (failed) return
       if (media.status !== 'FINISHED' && media.status !== 'RELEASING') return
 
@@ -218,6 +224,7 @@ export default class Helper {
       const videoEpisode = Number(filemedia.episode) || singleEpisode
       const mediaEpisode = media.episodes || media.nextAiringEpisode?.episode || singleEpisode
 
+      debug(`Episode viability: ${videoEpisode}, ${mediaEpisode}, ${singleEpisode}`)
       if (!videoEpisode || !mediaEpisode) return
       // check episode range, safety check if `failed` didn't catch this
       if (videoEpisode > mediaEpisode) return
@@ -227,10 +234,12 @@ export default class Helper {
       const status = media.mediaListEntry?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
       const progress = media.mediaListEntry?.progress
 
+      debug(`User's progress: ${progress}, Media's progress: ${videoEpisode}`)
       // check user's own watch progress
       if (progress > videoEpisode) return
       if (progress === videoEpisode && videoEpisode !== mediaEpisode && !singleEpisode) return
 
+      debug(`Updating entry for ${media.title.userPreferred}`)
       const variables = {
         repeat: media.mediaListEntry?.repeat || 0,
         id: media.id,
@@ -277,7 +286,7 @@ export default class Helper {
   static listToast(res, description, profile){
     const who = (profile ? ' for ' + profile.viewer.data.Viewer.name + (profile.viewer?.data?.Viewer?.avatar ? ' (AniList)' : ' (MyAnimeList)')  : '')
     if (res?.data?.mediaListEntry || res?.data?.SaveMediaListEntry) {
-      console.log('List Updated' + who + ':\n' + description)
+      debug(`List Updated ${who}: ${description.replace(/\n/g, ', ')}`)
       if (!profile) {
         toast.success('List Updated', {
           description,
@@ -286,7 +295,7 @@ export default class Helper {
       }
     } else {
       const error = `\n${429} - ${codes[429]}`
-      console.error('Failed to update user list' + who + ' with:\n' + description + error)
+      debug(`Error: Failed to update user list${who} with: ${description.replace(/\n/g, ', ')} ${error}`)
       toast.error('Failed to Update List' + who, {
         description: description + error,
         duration: 9000
@@ -295,6 +304,7 @@ export default class Helper {
   }
 
   static getPaginatedMediaList(page, perPage, variables, mediaList) {
+    debug('Getting custom paged media list')
     const ids = this.isAniAuth() ? mediaList.filter(({ media }) => {
         if ((!variables.hideSubs || malDubs.dubLists.value.dubbed.includes(media.idMal)) &&
           this.matchTitle(media, variables.search, ['title.userPreferred', 'title.english', 'title.romaji', 'title.native']) &&
@@ -320,6 +330,7 @@ export default class Helper {
       }).map(({ node }) => node.id)
     if (!ids.length) return {}
     if (this.isUserSort(variables)) {
+      debug(`Handling page media list with user specific sorting ${variables.sort}`)
       const updatedVariables = { ...variables }
       delete updatedVariables.sort // delete user sort as you can't sort by user specific sorting on AniList when logged into MyAnimeList.
       const startIndex = (perPage * (page - 1))
@@ -342,6 +353,7 @@ export default class Helper {
         return res
       })
     } else {
+      debug(`Handling page media list with non-specific sorting ${variables.sort}`)
       return anilistClient.searchIDS({ page, perPage, ...({[this.isAniAuth() ? 'id' : 'idMal']: ids}), ...this.sanitiseObject(variables) }).then(res => {
         return res
       })

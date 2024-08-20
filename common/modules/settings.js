@@ -90,7 +90,7 @@ async function handleMalToken (code, state) {
   const { clientID, malClient } = await import('./myanimelist.js')
   if (!state || !code) {
     toast.error('Failed to sign in with MyAnimeList. Please try again.')
-    console.error('Failed to get the state and code from MyAnimeList.')
+    debug(`Failed to get the state and code from MyAnimeList.`)
     return
   }
   const response = await fetch('https://myanimelist.net/v1/oauth2/token', {
@@ -107,14 +107,14 @@ async function handleMalToken (code, state) {
   })
   if (!response.ok) {
     toast.error('Failed to sign in with MyAnimeList. Please try again.', { description: JSON.stringify(response.status) })
-    console.error('Failed to get MyAnimeList User Token.', response)
+    debug(`Failed to get MyAnimeList User Token: ${JSON.stringify(response)}`)
     return
   }
   const oauth = await response.json()
   const viewer = await malClient.viewer(oauth.access_token)
   if (!viewer?.data?.Viewer?.id) {
     toast.error('Failed to sign in with MyAnimeList. Please try again.', { description: JSON.stringify(viewer) })
-    console.error(viewer)
+    debug(`Failed to sign in with MyAnimeList: ${JSON.stringify(viewer)}`)
     return
   } else if (!viewer?.data?.Viewer?.picture) {
     viewer.data.Viewer.picture = 'https://cdn.myanimelist.net/images/kaomoji_mal_white.png' // set default image if user doesn't have an image.
@@ -138,7 +138,7 @@ export async function refreshMalToken (token) {
   })
   if (!response.ok) {
     toast.error('Failed to re-authenticate with MyAnimeList. You will need to log in again.', { description: JSON.stringify(response.status) })
-    console.error('Failed to refresh MyAnimeList User Token.', response)
+    debug(`Failed to refresh MyAnimeList User Token: ${JSON.stringify(response)}`)
     if (malToken.token === token) {
       swapProfiles(null)
     } else {
