@@ -14,6 +14,35 @@
   IPC.on('schedule', () => {
     page.set('schedule')
   })
+
+  let ignoreNext = false
+  function addPage (value, type) {
+    if (ignoreNext) {
+      ignoreNext = false
+      return
+    }
+    history.pushState({ type, value }, '', './?id=' + Math.trunc(Math.random() * Number.MAX_SAFE_INTEGER).toString())
+  }
+  page.subscribe((value) => {
+    addPage(value, 'page')
+  })
+  view.subscribe((value) => {
+    addPage(value, 'view')
+  })
+
+  addPage('home', 'page')
+
+  window.addEventListener('popstate', e => {
+    const { state } = e
+    if (!state) return
+    ignoreNext = true
+    view.set(null)
+    if (state.type === 'page') {
+      page.set(state.value)
+    } else {
+      view.set(state.value)
+    }
+  })
 </script>
 
 <script>
