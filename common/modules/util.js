@@ -1,4 +1,5 @@
 import { SUPPORTS } from '@/modules/support.js'
+import { enable } from './debug.js'
 
 export function countdown (s) {
   const d = Math.floor(s / (3600 * 24))
@@ -153,7 +154,9 @@ export const defaults = {
   angle: 'default',
   toshoURL: SUPPORTS.extensions ? decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnLw==')) : '',
   extensions: SUPPORTS.extensions ? ['@thaunknown/ani-resourced'] : [],
-  sources: {}
+  sources: {},
+  enableExternal: false,
+  playerPath: ''
 }
 
 export const subtitleExtensions = ['srt', 'vtt', 'ass', 'ssa', 'sub', 'txt']

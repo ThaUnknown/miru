@@ -10,22 +10,6 @@ import Debug from 'debug'
 
 const debug = Debug('ui:rss')
 
-export const exclusions = ['DTS', 'TrueHD', '[EMBER]']
-const isDev = location.hostname === 'localhost'
-
-const video = document.createElement('video')
-
-if (!isDev && !video.canPlayType('video/mp4; codecs="hev1.1.6.L93.B0"')) {
-  exclusions.push('HEVC', 'x265', 'H.265')
-}
-if (!isDev && !video.canPlayType('audio/mp4; codecs="ac-3"')) {
-  exclusions.push('AC3', 'AC-3')
-}
-if (!('audioTracks' in HTMLVideoElement.prototype)) {
-  exclusions.push('DUAL')
-}
-video.remove()
-
 export function parseRSSNodes (nodes) {
   return nodes.map(item => {
     const pubDate = item.querySelector('pubDate')?.textContent
