@@ -84,7 +84,7 @@ function createSections () {
     {
       title: 'Continue Watching',
       load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
+        const res = anilistClient.userLists.value.then(async res => {
           const mediaList = res.data.MediaListCollection.lists.reduce((filtered, { status, entries }) => {
             return (status === 'CURRENT' || status === 'REPEATING') ? filtered.concat(entries) : filtered
           }, [])
@@ -93,7 +93,15 @@ function createSections () {
             return media.mediaListEntry?.progress < media.nextAiringEpisode?.episode - 1
           }).map(({ media }) => media.id)
           if (!ids.length) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+          // if custom search is used, respect it, otherwise sort by last updated
+          if (Object.values(variables).length !== 0) {
+            return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+          }
+
+          const index = (page - 1) * perPage
+          const idsRes = await anilistClient.searchIDS({ page, perPage, id: ids.slice(index, index + perPage), ...SectionsManager.sanitiseObject(variables) })
+          idsRes.data.Page.media.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id))
+          return idsRes
         })
         return SectionsManager.wrapResponse(res, perPage)
       },

@@ -264,7 +264,6 @@ class AnilistClient {
       body: JSON.stringify({
         query: query.replace(/\s/g, '').replaceAll('&nbsp;', ' '),
         variables: {
-          sort: 'TRENDING_DESC',
           page: 1,
           perPage: 30,
           status_in: '[CURRENT,PLANNING]',
@@ -550,7 +549,7 @@ class AnilistClient {
     variables.id = userId
     const query = /* js */` 
       query($id: Int) {
-        MediaListCollection(userId: $id, type: ANIME, forceSingleCompletedList: true) {
+        MediaListCollection(userId: $id, type: ANIME, forceSingleCompletedList: true, sort: UPDATED_TIME_DESC) {
           lists {
             status,
             entries {
