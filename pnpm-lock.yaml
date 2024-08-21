@@ -182,8 +182,8 @@ importers:
         specifier: ^4.2.12
         version: 4.2.12
       svelte-keybinds:
-        specifier: ^1.0.7
-        version: 1.0.7
+        specifier: ^1.0.8
+        version: 1.0.8
       svelte-loader:
         specifier: ^3.1.9
         version: 3.1.9(svelte@4.2.12)
@@ -8700,8 +8700,8 @@ packages:
       svelte: 4.2.12
     dev: true
 
-  /svelte-keybinds@1.0.7:
-    resolution: {integrity: sha512-2r01BSyfsQ02uEUh3mj7iH90nDmrJQLcGyTQ32MJj8xnQFGa2fmXYbWiUqHdXMQsT0Xpwieu8Yafh9obiw4BnQ==}
+  /svelte-keybinds@1.0.8:
+    resolution: {integrity: sha512-clP0/5XgMWXNlImQALBQYyrfN06fgWKWufoMumeGOABOsewScPsv1jRFZzks9f3Xh2e53XgZIx57Fb/a6d/ptw==}
     dev: false
 
   /svelte-loader@3.1.9(svelte@4.2.12):
