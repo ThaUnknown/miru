@@ -69,6 +69,7 @@ export default class TorrentClient extends WebTorrent {
     this.torrentPath = torrentPath
     this._ready = new Promise(resolve => {
       ipc.on('port', ({ ports }) => {
+        if (this.message) return
         this.message = ports[0].postMessage.bind(ports[0])
         ports[0].onmessage = ({ data }) => {
           debug(`Received IPC message ${data.type}: ${data.data}`)
@@ -324,20 +325,26 @@ export default class TorrentClient extends WebTorrent {
             this.dispatchError('File Too Big! This File Exceeds The Selected Drive\'s Available Space. Change Download Location In Torrent Settings To A Drive With More Space And Restart The App!')
           }
           this.current = found
-          if (data.data.external && this.player) {
-            this.playerProcess = spawn(this.player, ['' + new URL('http://localhost:' + this.server.address().port + found.streamURL)])
-            this.playerProcess.stdout.on('data', () => {})
-            const startTime = Date.now()
-            this.playerProcess.once('close', () => {
-              this.playerProcess = null
-              const seconds = (Date.now() - startTime) / 1000
-              this.dispatch('externalWatched', seconds)
-            })
-          } else {
-            this.parser = new Parser(this, found)
-            this.findSubtitleFiles(found)
-            this.findFontFiles(found)
+          if (data.data.external) {
+            if (this.player) {
+              this.playerProcess = spawn(this.player, ['' + new URL('http://localhost:' + this.server.address().port + found.streamURL)])
+              this.playerProcess.stdout.on('data', () => {})
+              const startTime = Date.now()
+              this.playerProcess.once('close', () => {
+                this.playerProcess = null
+                const seconds = (Date.now() - startTime) / 1000
+                this.dispatch('externalWatched', seconds)
+              })
+              return
+            }
+            if (SUPPORTS.isAndroid) {
+              this.dispatch('open', `intent://localhost:${this.server.address().port}${found.streamURL}#Intent;type=video/any;scheme=http;end;`)
+              return
+            }
           }
+          this.parser = new Parser(this, found)
+          this.findSubtitleFiles(found)
+          this.findFontFiles(found)
         }
         break
       }

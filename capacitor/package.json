@@ -28,6 +28,7 @@
   "dependencies": {
     "@capacitor/android": "^6.1.2",
     "@capacitor/app": "^6.0.1",
+    "@capacitor/app-launcher": "^6.0.2",
     "@capacitor/browser": "^6.0.2",
     "@capacitor/core": "^6.1.2",
     "@capacitor/device": "^6.0.1",
@@ -35,6 +36,7 @@
     "@capacitor/local-notifications": "^6.1.0",
     "@capacitor/status-bar": "^6.0.1",
     "capacitor-folder-picker": "^0.0.2",
+    "capacitor-intent-uri": "^0.0.1",
     "capacitor-nodejs": "https://github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz",
     "capacitor-plugin-safe-area": "^3.0.3",
     "common": "workspace:*",

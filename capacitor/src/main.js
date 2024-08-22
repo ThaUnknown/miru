@@ -16,6 +16,8 @@ if (typeof localStorage === 'undefined') {
   }
 }
 
+let client
+
 channel.on('port-init', data => {
   localStorage.setItem('settings', data)
   const port = {
@@ -30,10 +32,12 @@ channel.on('port-init', data => {
     storedSettings = JSON.parse(localStorage.getItem('settings')) || {}
   } catch (error) {}
 
-  if (!globalThis.client) globalThis.client = new TorrentClient(channel, storageQuota, 'node', storedSettings.torrentPathNew || env.TMPDIR)
-
   channel.on('ipc', a => port.onmessage(a))
-  channel.emit('port', {
-    ports: [port]
-  })
+  if (!client) {
+    client = new TorrentClient(channel, storageQuota, 'node', storedSettings.torrentPathNew || env.TMPDIR)
+
+    channel.emit('port', {
+      ports: [port]
+    })
+  }
 })

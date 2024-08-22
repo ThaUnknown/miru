@@ -69,6 +69,9 @@ importers:
       '@capacitor/app':
         specifier: ^6.0.1
         version: 6.0.1(@capacitor/core@6.1.2)
+      '@capacitor/app-launcher':
+        specifier: ^6.0.2
+        version: 6.0.2(@capacitor/core@6.1.2)
       '@capacitor/browser':
         specifier: ^6.0.2
         version: 6.0.2(@capacitor/core@6.1.2)
@@ -90,6 +93,9 @@ importers:
       capacitor-folder-picker:
         specifier: ^0.0.2
         version: 0.0.2(@capacitor/core@6.1.2)
+      capacitor-intent-uri:
+        specifier: ^0.0.1
+        version: 0.0.1(@capacitor/core@6.1.2)
       capacitor-nodejs:
         specifier: https://github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz
         version: '@github.com/funniray/Capacitor-NodeJS/releases/download/nodejs-18/capacitor-nodejs-1.0.0-beta.6.tgz(@capacitor/core@6.1.2)'
@@ -334,6 +340,14 @@ packages:
       '@capacitor/core': 6.1.2
     dev: false
 
+  /@capacitor/app-launcher@6.0.2(@capacitor/core@6.1.2):
+    resolution: {integrity: sha512-g1hLHTnb7240HYcM28TBN3HbCkc6HV4242sj5/xxQyQ4N4R61DfJLpZDLtp0Wq9WkLlFCJ2B2svHU7ZvA3Tvgg==}
+    peerDependencies:
+      '@capacitor/core': ^6.0.0
+    dependencies:
+      '@capacitor/core': 6.1.2
+    dev: false
+
   /@capacitor/app@6.0.1(@capacitor/core@6.1.2):
     resolution: {integrity: sha512-0kXbOl7LPPMFVcAii3u/7Ps0DvXlr7dtHT97r9J1faDlgdQLQUvtGp48tjvFm48gqHI0aOPRJnTBr5JXW4ETYg==}
     peerDependencies:
@@ -360,7 +374,7 @@ packages:
       '@ionic/utils-subprocess': 2.1.14
       '@ionic/utils-terminal': 2.3.5
       commander: 9.5.0
-      debug: 4.3.4
+      debug: 4.3.6
       env-paths: 2.2.1
       kleur: 4.1.5
       native-run: 2.0.1
@@ -370,7 +384,7 @@ packages:
       rimraf: 4.4.1
       semver: 7.6.3
       tar: 6.2.1
-      tslib: 2.6.2
+      tslib: 2.6.3
       xml2js: 0.5.0
     transitivePeerDependencies:
       - supports-color
@@ -924,10 +938,10 @@ packages:
     dependencies:
       '@ionic/utils-object': 2.1.6
       '@ionic/utils-terminal': 2.3.4
-      debug: 4.3.4
+      debug: 4.3.6
       signal-exit: 3.0.7
       tree-kill: 1.2.2
-      tslib: 2.6.2
+      tslib: 2.6.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -960,8 +974,8 @@ packages:
     resolution: {integrity: sha512-4+Kitey1lTA1yGtnigeYNhV/0tggI3lWBMjC7tBs1K9GXa/q7q4CtOISppdh8QgtOhrhAXS2Igp8rbko/Cj+lA==}
     engines: {node: '>=16.0.0'}
     dependencies:
-      debug: 4.3.4
-      tslib: 2.6.2
+      debug: 4.3.6
+      tslib: 2.6.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -992,8 +1006,8 @@ packages:
       '@ionic/utils-stream': 3.1.6
       '@ionic/utils-terminal': 2.3.4
       cross-spawn: 7.0.3
-      debug: 4.3.4
-      tslib: 2.6.2
+      debug: 4.3.6
+      tslib: 2.6.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1020,12 +1034,12 @@ packages:
     engines: {node: '>=16.0.0'}
     dependencies:
       '@types/slice-ansi': 4.0.0
-      debug: 4.3.4
+      debug: 4.3.6
       signal-exit: 3.0.7
       slice-ansi: 4.0.0
       string-width: 4.2.3
       strip-ansi: 6.0.1
-      tslib: 2.6.2
+      tslib: 2.6.3
       untildify: 4.0.0
       wrap-ansi: 7.0.0
     transitivePeerDependencies:
@@ -1349,7 +1363,7 @@ packages:
     dependencies:
       chrome-dgram: 3.0.6
       cross-fetch-ponyfill: 1.0.3
-      debug: 4.3.5
+      debug: 4.3.6
       default-gateway: 6.0.3
       unordered-array-remove: 1.0.2
       xml2js: 0.6.2
@@ -1468,7 +1482,7 @@ packages:
   /@thaunknown/simple-peer@10.0.9:
     resolution: {integrity: sha512-oS+iZWrMp/kd0pygyCAoZYYWoZCshKbjFLRuyRH58zYJ/Yyjzksgwj1g+m6wHY7pznl2+cKXttuLDD9Td4QXWA==}
     dependencies:
-      debug: 4.3.5
+      debug: 4.3.6
       err-code: 3.0.1
       streamx: 2.18.0
       uint8-util: 2.2.5
@@ -1493,7 +1507,7 @@ packages:
   /@thaunknown/simple-websocket@9.1.3(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-pf/FCJsgWtLJiJmIpiSI7acOZVq3bIQCpnNo222UFc8Ph1lOUOTpe6LoYhhiOSKB9GUaWJEVUtZ+sK1/aBgU5Q==}
     dependencies:
-      debug: 4.3.5
+      debug: 4.3.6
       queue-microtask: 1.2.3
       streamx: 2.18.0
       uint8-util: 2.2.5
@@ -1507,7 +1521,7 @@ packages:
   /@thaunknown/simple-websocket@9.1.3(bufferutil@4.0.8)(utf-8-validate@6.0.4):
     resolution: {integrity: sha512-pf/FCJsgWtLJiJmIpiSI7acOZVq3bIQCpnNo222UFc8Ph1lOUOTpe6LoYhhiOSKB9GUaWJEVUtZ+sK1/aBgU5Q==}
     dependencies:
-      debug: 4.3.5
+      debug: 4.3.6
       queue-microtask: 1.2.3
       streamx: 2.18.0
       uint8-util: 2.2.5
@@ -1593,7 +1607,7 @@ packages:
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
 
   /@types/bonjour@3.5.13:
     resolution: {integrity: sha512-z9fJ5Im06zvUL548KvYNecEVlA7cVDkGUi6kZusb04mpyEFKCIZJvloCcmpmLaIahDpOQGHaHmG6imtPMmPXGQ==}
@@ -1605,7 +1619,7 @@ packages:
     dependencies:
       '@types/http-cache-semantics': 4.0.4
       '@types/keyv': 3.1.4
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
       '@types/responselike': 1.0.3
     dev: true
 
@@ -1618,7 +1632,7 @@ packages:
   /@types/connect@3.4.38:
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
     dependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
 
   /@types/cookie@0.6.0:
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
@@ -1648,7 +1662,7 @@ packages:
   /@types/express-serve-static-core@4.19.1:
     resolution: {integrity: sha512-ej0phymbFLoCB26dbbq5PGScsf2JAJ4IJHjG10LalgUV36XKTmA4GdA+PVllKvRk0sEKt64X8975qFnkSi0hqA==}
     dependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
       '@types/qs': 6.9.15
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
@@ -1670,7 +1684,7 @@ packages:
   /@types/fs-extra@9.0.13:
     resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
     dependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
     dev: true
 
   /@types/html-minifier-terser@6.1.0:
@@ -1687,7 +1701,7 @@ packages:
   /@types/http-proxy@1.17.14:
     resolution: {integrity: sha512-SSrD0c1OQzlFX7pGu1eXxSEjemej64aaNPRhhVYUGqXh0BtldAAx37MG8btcumvpgKyZp1F5Gn3JkktdxiFv6w==}
     dependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
 
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -1699,7 +1713,7 @@ packages:
   /@types/keyv@3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
     dev: true
 
   /@types/mime@1.3.5:
@@ -1716,7 +1730,7 @@ packages:
   /@types/node-forge@1.3.11:
     resolution: {integrity: sha512-FQx220y22OKNTqaByeBGqHWYz4cl94tpcxeFdvBo3wjG6XPBuZ0BNgNZRV5J5TFmmcsJ4IzsLkmGRiQbnYsBEQ==}
     dependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
 
   /@types/node@20.14.14:
     resolution: {integrity: sha512-d64f00982fS9YoOgJkAMolK7MN8Iq3TDdVjchbYHdEmjth/DHowx82GnoA+tVUAN+7vxfYUgAzi+JXbKNd2SDQ==}
@@ -1733,7 +1747,6 @@ packages:
     resolution: {integrity: sha512-DkFrJOe+rfdHTqqMg0bSNlGlQ85hSoh2TPzZyhHsXnMtligRWpxUySiyw8FY14ITt24HVCiQPWxS3KO/QlGmWg==}
     dependencies:
       undici-types: 6.19.8
-    dev: true
 
   /@types/normalize-package-data@2.4.4:
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -1761,7 +1774,7 @@ packages:
   /@types/responselike@1.0.3:
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==}
     dependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
     dev: true
 
   /@types/retry@0.12.2:
@@ -1771,7 +1784,7 @@ packages:
     resolution: {integrity: sha512-x2EM6TJOybec7c52BX0ZspPodMsQUd5L6PRwOunVyVUhXiBSKf3AezDL8Dgvgt5o0UfKNfuA0eMLr2wLT4AiBA==}
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
 
   /@types/serve-index@1.9.4:
     resolution: {integrity: sha512-qLpGZ/c2fhSs5gnYsQxtDEq3Oy8SXPClIXkW5ghvAvsNuVSA8k+gCONcUCS/UjLEYvYps+e8uBtfgXgvhwfNug==}
@@ -1809,7 +1822,7 @@ packages:
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
     requiresBuild: true
     dependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
     dev: true
     optional: true
 
@@ -2575,7 +2588,7 @@ packages:
     engines: {node: '>=12.20.0'}
     dependencies:
       bencode: 4.0.0
-      debug: 4.3.5
+      debug: 4.3.6
       k-bucket: 5.1.0
       k-rpc: 5.1.0
       last-one-wins: 1.0.4
@@ -2591,7 +2604,7 @@ packages:
     engines: {node: '>=12.20.0'}
     dependencies:
       chrome-dgram: 3.0.6
-      debug: 4.3.5
+      debug: 4.3.6
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -2606,7 +2619,7 @@ packages:
     dependencies:
       bencode: 4.0.0
       bitfield: 4.2.0
-      debug: 4.3.5
+      debug: 4.3.6
       rc4: 0.1.5
       streamx: 2.18.0
       throughput: 1.0.1
@@ -2662,7 +2675,7 @@ packages:
       chrome-dgram: 3.0.6
       compact2string: 1.4.1
       cross-fetch-ponyfill: 1.0.3
-      debug: 4.3.5
+      debug: 4.3.6
       ip: 2.0.1
       lru: 3.1.0
       minimist: 1.2.8
@@ -2976,6 +2989,14 @@ packages:
     resolution: {integrity: sha512-mlRCh3+1DMf9yd8UIOQI3WJD+0bSI2rguJ+6I0D9ipTfPe/T/ogYbLzVOpxq1EV0QJ3V6aLxom5Wt3VFwsZ3pw==}
     peerDependencies:
       '@capacitor/core': ^5.0.0
+    dependencies:
+      '@capacitor/core': 6.1.2
+    dev: false
+
+  /capacitor-intent-uri@0.0.1(@capacitor/core@6.1.2):
+    resolution: {integrity: sha512-5Yx1VOoCkHFCz7OrHgYpY5lUt6H+9sv7HU7bwQtW81c8cZJgX9kMnMsfGeTOly+RmTkv69+G5q3DZDlAgi0s0w==}
+    peerDependencies:
+      '@capacitor/core': ^6.0.0
     dependencies:
       '@capacitor/core': 6.1.2
     dev: false
@@ -6005,7 +6026,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.5.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -6308,7 +6329,7 @@ packages:
     resolution: {integrity: sha512-GhiKG7CGTXzOQq56tIx40Ae26EbrgBq1owuuPqgCTaJDQYO1qW5G+YGaurOLx7s+Aaeta8MputrVFDr0kuiogg==}
     engines: {node: '>=12.20.0'}
     dependencies:
-      debug: 4.3.5
+      debug: 4.3.6
       unordered-array-remove: 1.0.2
     transitivePeerDependencies:
       - supports-color
@@ -8928,7 +8949,7 @@ packages:
       bittorrent-dht: 11.0.6
       bittorrent-lsd: 2.0.0
       bittorrent-tracker: 11.1.2
-      debug: 4.3.5
+      debug: 4.3.6
       run-parallel: 1.2.0
     transitivePeerDependencies:
       - supports-color
@@ -9170,7 +9191,6 @@ packages:
 
   /undici-types@6.19.8:
     resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
-    dev: true
 
   /unicorn-magic@0.1.0:
     resolution: {integrity: sha512-lRfVq8fE8gz6QMBuDM6a+LO3IAzTi05H6gCVaUpir2E1Rwpo4ZUog45KpNXKC/Mn3Yb9UDuHumeFTo9iV/D9FQ==}
@@ -9257,7 +9277,7 @@ packages:
     dependencies:
       bencode: 4.0.0
       bitfield: 4.2.0
-      debug: 4.3.5
+      debug: 4.3.6
       uint8-util: 2.2.5
     transitivePeerDependencies:
       - supports-color
