@@ -24,11 +24,16 @@ channel.on('port-init', data => {
       channel.send('ipc', { data })
     }
   }
+  let storedSettings = {}
+
+  try {
+    storedSettings = JSON.parse(localStorage.getItem('settings')) || {}
+  } catch (error) {}
+
+  if (!globalThis.client) globalThis.client = new TorrentClient(channel, storageQuota, 'node', storedSettings.torrentPathNew || env.TMPDIR)
 
   channel.on('ipc', a => port.onmessage(a))
   channel.emit('port', {
     ports: [port]
   })
 })
-
-globalThis.client = new TorrentClient(channel, storageQuota, 'node', env.TMPDIR)

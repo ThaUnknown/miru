@@ -140,25 +140,25 @@
 {/if}
 
 <h4 class='mb-10 font-weight-bold'>Client Settings</h4>
-{#if SUPPORTS.torrentPath}
-  <SettingCard title='Torrent Download Location' description='Path to the folder used to store torrents. By default this is the TMP folder, which might lose data when your OS tries to reclaim storage.'>
-    <div
-      class='input-group w-300 mw-full'>
-      <div class='input-group-prepend'>
-        <button type='button' use:click={handleFolder} class='btn btn-primary input-group-append'>Select Folder</button>
-      </div>
-      <input type='url' class='form-control bg-dark' readonly value={settings.torrentPathNew} placeholder='/tmp' />
+<SettingCard title='Torrent Download Location' description='Path to the folder used to store torrents. By default this is the TMP folder, which might lose data when your OS tries to reclaim storage.  {SUPPORTS.isAndroid ? 'RESTART IS REQUIRED. /sdcard/ is internal storage, not external SD Cards. /storage/AB12-34CD/ is external storage, not internal. Thank you Android!' : ''}'>
+  <div
+    class='input-group w-300 mw-full'>
+    <div class='input-group-prepend'>
+      <button type='button' use:click={handleFolder} class='btn btn-primary input-group-append'>Select Folder</button>
     </div>
-  </SettingCard>
-{/if}
-{#if SUPPORTS.torrentPersist}
-  <SettingCard title='Persist Files' description="Keeps torrents files instead of deleting them after a new torrent is played. This doesn't seed the files, only keeps them on your drive. This will quickly fill up your storage.">
-    <div class='custom-switch'>
-      <input type='checkbox' id='torrent-persist' bind:checked={settings.torrentPersist} />
-      <label for='torrent-persist'>{settings.torrentPersist ? 'On' : 'Off'}</label>
-    </div>
-  </SettingCard>
-{/if}
+    {#if !SUPPORTS.isAndroid}
+      <input type='url' class='form-control bg-dark' readonly bind:value={settings.torrentPathNew} placeholder='/tmp' />
+    {:else}
+      <input type='text' class='form-control bg-dark' bind:value={settings.torrentPathNew} placeholder='/tmp' />
+    {/if}
+  </div>
+</SettingCard>
+<SettingCard title='Persist Files' description="Keeps torrents files instead of deleting them after a new torrent is played. This doesn't seed the files, only keeps them on your drive. This will quickly fill up your storage.">
+  <div class='custom-switch'>
+    <input type='checkbox' id='torrent-persist' bind:checked={settings.torrentPersist} />
+    <label for='torrent-persist'>{settings.torrentPersist ? 'On' : 'Off'}</label>
+  </div>
+</SettingCard>
 <SettingCard title='Streamed Download' description="Only downloads the single file that's currently being watched, instead of downloading an entire batch of episodes. Saves bandwidth and reduces strain on the peer swarm.">
   <div class='custom-switch'>
     <input type='checkbox' id='torrent-streamed-download' bind:checked={settings.torrentStreamedDownload} />
@@ -176,22 +176,18 @@
 <SettingCard title='Max Number of Connections' description='Number of peers per torrent. Higher values will increase download speeds but might quickly fill up available ports if your ISP limits the maximum allowed number of open connections.'>
   <input type='number' inputmode='numeric' pattern='[0-9]*' bind:value={settings.maxConns} min='1' max='512' class='form-control text-right bg-dark w-100 mw-full' />
 </SettingCard>
-{#if SUPPORTS.torrentPort}
-  <SettingCard title='Torrent Port' description='Port used for Torrent connections. 0 is automatic.'>
-    <input type='number' inputmode='numeric' pattern='[0-9]*' bind:value={settings.torrentPort} min='0' max='65536' class='form-control text-right bg-dark w-150 mw-full' />
-  </SettingCard>
-{/if}
-{#if SUPPORTS.dht}
-  <SettingCard title='DHT Port' description='Port used for DHT connections. 0 is automatic.'>
-    <input type='number' inputmode='numeric' pattern='[0-9]*' bind:value={settings.dhtPort} min='0' max='65536' class='form-control text-right bg-dark w-150 mw-full' />
-  </SettingCard>
-  <SettingCard title='Disable DHT' description='Disables Distributed Hash Tables for use in private trackers to improve privacy. Might greatly reduce the amount of discovered peers.'>
-    <div class='custom-switch'>
-      <input type='checkbox' id='torrent-dht' bind:checked={settings.torrentDHT} />
-      <label for='torrent-dht'>{settings.torrentDHT ? 'On' : 'Off'}</label>
-    </div>
-  </SettingCard>
-{/if}
+<SettingCard title='Torrent Port' description='Port used for Torrent connections. 0 is automatic.'>
+  <input type='number' inputmode='numeric' pattern='[0-9]*' bind:value={settings.torrentPort} min='0' max='65536' class='form-control text-right bg-dark w-150 mw-full' />
+</SettingCard>
+<SettingCard title='DHT Port' description='Port used for DHT connections. 0 is automatic.'>
+  <input type='number' inputmode='numeric' pattern='[0-9]*' bind:value={settings.dhtPort} min='0' max='65536' class='form-control text-right bg-dark w-150 mw-full' />
+</SettingCard>
+<SettingCard title='Disable DHT' description='Disables Distributed Hash Tables for use in private trackers to improve privacy. Might greatly reduce the amount of discovered peers.'>
+  <div class='custom-switch'>
+    <input type='checkbox' id='torrent-dht' bind:checked={settings.torrentDHT} />
+    <label for='torrent-dht'>{settings.torrentDHT ? 'On' : 'Off'}</label>
+  </div>
+</SettingCard>
 <SettingCard title='Disable PeX' description='Disables Peer Exchange for use in private trackers to improve privacy. Might greatly reduce the amount of discovered peers.'>
   <div class='custom-switch'>
     <input type='checkbox' id='torrent-pex' bind:checked={settings.torrentPeX} />

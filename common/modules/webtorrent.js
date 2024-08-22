@@ -37,12 +37,6 @@ const ANNOUNCE = [
   atob('aHR0cDovL3RyYWNrZXIuYW5pcmVuYS5jb206ODAvYW5ub3VuY2U=')
 ]
 
-let storedSettings = {}
-
-try {
-  storedSettings = JSON.parse(localStorage.getItem('settings')) || {}
-} catch (error) {}
-
 export default class TorrentClient extends WebTorrent {
   static excludedErrorMessages = ['WebSocket', 'User-Initiated Abort, reason=', 'Connection failed.']
 
@@ -54,6 +48,12 @@ export default class TorrentClient extends WebTorrent {
   ipc
 
   constructor (ipc, storageQuota, serverMode, torrentPath, controller) {
+    let storedSettings = {}
+
+    try {
+      storedSettings = JSON.parse(localStorage.getItem('settings')) || {}
+    } catch (error) {}
+
     const settings = { ...defaults, ...storedSettings }
     debug('Initializing TorrentClient with settings: ' + JSON.stringify(settings))
     super({
