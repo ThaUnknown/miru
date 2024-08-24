@@ -1126,7 +1126,7 @@
       </div>
     </div>
     <div class='d-flex col-4 justify-content-center'>
-      <span class='icon'><Users size='3rem' class='pt-5' /> </span>
+      <span class='icon'><Users size='3rem' class='pt-5' strokeWidth={3} /> </span>
       <span class='stats'>{torrent.peers || 0}</span>
       <span class='icon'><ArrowDown size='3rem' /></span>
       <span class='stats'>{fastPrettyBytes(torrent.down)}/s</span>
@@ -1216,13 +1216,13 @@
       {#if playbackRate !== 1}
         <div class='ts mr-auto'>x{playbackRate.toFixed(1)}</div>
       {/if}
-      <span class='icon ctrl m-5 keybinds' title='Keybinds [`]' use:click={() => (showKeybinds = true)}>
-        <Keyboard size='2rem' />
+      <span class='icon ctrl mr-5 d-flex align-items-center keybinds' title='Keybinds [`]' use:click={() => (showKeybinds = true)}>
+        <Keyboard size='2.5rem' strokeWidth={2.5} />
       </span>
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
         <div class='dropdown dropup with-arrow' use:click={toggleDropdown}>
-          <span class='icon ctrl m-5' title='Audio Tracks'>
-            <ListMusic size='2rem' />
+          <span class='icon ctrl mr-5 d-flex align-items-center' title='Audio Tracks'>
+            <ListMusic size='2.5rem' strokeWidth={2.5} />
           </span>
           <div class='dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize'>
             {#each video.audioTracks as track}
@@ -1236,8 +1236,8 @@
       {/if}
       {#if 'videoTracks' in HTMLVideoElement.prototype && video?.videoTracks?.length > 1}
         <div class='dropdown dropup with-arrow'>
-          <span class='icon ctrl m-5' title='Video Tracks'>
-            <ListVideo size='2rem' />
+          <span class='icon ctrl mr-5 d-flex align-items-center' title='Video Tracks'>
+            <ListVideo size='2.5rem' strokeWidth={2.5} />
           </span>
           <div class='dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize'>
             {#each video.videoTracks as track}
@@ -1251,8 +1251,8 @@
       {/if}
       {#if subHeaders?.length}
         <div class='subtitles dropdown dropup with-arrow' use:click={toggleDropdown}>
-          <span class='icon ctrl m-5' title='Subtitles [C]'>
-            <Captions size='2rem' />
+          <span class='icon ctrl mr-5 d-flex align-items-center' title='Subtitles [C]'>
+            <Captions size='2.5rem'strokeWidth={2.5} />
           </span>
           <div class='dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize'>
             <input name='subtitle-radio-set' type='radio' id='subtitle-off-radio' value='off' checked={subHeaders && subs?.current === -1} />
@@ -1270,28 +1270,28 @@
         </div>
       {/if}
       {#if 'PresentationRequest' in window && canCast && current}
-        <span class='icon ctrl m-5' title='Cast Video [D]' data-name='toggleCast' use:click={toggleCast}>
+        <span class='icon ctrl mr-5 d-flex align-items-center' title='Cast Video [D]' data-name='toggleCast' use:click={toggleCast}>
           {#if presentationConnection}
-            <Cast size='2rem' fill='white' strokeWidth={0} />
+            <Cast size='2.5rem' fill='white' strokeWidth={0} />
           {:else}
-            <Cast size='2rem' />
+            <Cast size='2.5rem'strokeWidth={2.5} />
           {/if}
         </span>
       {/if}
       {#if 'pictureInPictureEnabled' in document}
-        <span class='icon ctrl m-5' title='Popout Window [P]' data-name='togglePopout' use:click={togglePopout}>
+        <span class='icon ctrl mr-5 d-flex align-items-center' title='Popout Window [P]' data-name='togglePopout' use:click={togglePopout}>
           {#if pip}
-            <PictureInPicture size='2rem' />
+            <PictureInPicture size='2.5rem' strokeWidth={2.5} />
           {:else}
-            <PictureInPicture2 size='2rem' />
+            <PictureInPicture2 size='2.5rem'strokeWidth={2.5} />
           {/if}
         </span>
       {/if}
-      <span class='icon ctrl m-5' title='Fullscreen [F]' data-name='toggleFullscreen' use:click={toggleFullscreen}>
+      <span class='icon ctrl mr-5 d-flex align-items-center' title='Fullscreen [F]' data-name='toggleFullscreen' use:click={toggleFullscreen}>
         {#if isFullscreen}
-          <Minimize size='2rem' />
+          <Minimize size='2.5rem' strokeWidth={2.5} />
         {:else}
-          <Maximize size='2rem' />
+          <Maximize size='2.5rem' strokeWidth={2.5} />
         {/if}
       </span>
     </div>
