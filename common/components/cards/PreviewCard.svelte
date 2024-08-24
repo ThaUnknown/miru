@@ -3,6 +3,7 @@
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
   import { alToken } from '@/modules/settings.js'
+  import { Bookmark, Heart, Play, VolumeX, Volume2 } from 'lucide-svelte'
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
 
@@ -55,7 +56,14 @@
   <div class='banner position-relative bg-black overflow-hidden'>
     <img src={media.bannerImage || `https://i.ytimg.com/vi/${media.trailer?.id}/hqdefault.jpg` || ' '} alt='banner' class='img-cover w-full h-full' />
     {#if media.trailer?.id}
-      <div class='material-symbols-outlined filled position-absolute z-10 top-0 right-0 p-15 font-size-22' class:d-none={hide} use:click={toggleMute}>{muted ? 'volume_off' : 'volume_up'}</div>
+      <div class='position-absolute z-10 top-0 right-0 p-15' use:click={toggleMute}>
+        {#if muted}
+          <VolumeX size='2.2rem' fill='currentColor' />
+        {:else}
+          <Volume2 size='2.2rem' fill='currentColor' />
+        {/if}
+      </div>
+
       <!-- indivious is nice because its faster, but not reliable -->
       <!-- <video src={`https://inv.tux.pizza/latest_version?id=${media.trailer.id}&itag=18`}
         class='w-full h-full position-absolute left-0'
@@ -85,16 +93,14 @@
       <button class='btn btn-secondary flex-grow-1 text-dark font-weight-bold shadow-none border-0 d-flex align-items-center justify-content-center'
         use:click={play}
         disabled={media.status === 'NOT_YET_RELEASED'}>
-        <span class='material-symbols-outlined font-size-20 filled pr-10'>
-          play_arrow
-        </span>
+        <Play class='pr-10 z-10' fill='currentColor' size='2.2rem' />
         {playButtonText}
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite} disabled={!alToken}>
-        favorite
+      <button class='btn btn-square ml-10 d-flex align-items-center justify-content-center shadow-none border-0' use:click={toggleFavourite} disabled={!alToken}>
+        <Heart fill={media.isFavourite ? 'currentColor' : 'transparent'} size='1.5rem' />
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.mediaListEntry} use:click={toggleStatus} disabled={!alToken}>
-        bookmark
+      <button class='btn btn-square ml-10 d-flex align-items-center justify-content-center shadow-none border-0' use:click={toggleStatus} disabled={!alToken}>
+        <Bookmark fill={media.mediaListEntry ? 'currentColor' : 'transparent'} size='1.5rem' />
       </button>
     </div>
     <div class='details text-white text-capitalize pt-15 pb-10 d-flex'>

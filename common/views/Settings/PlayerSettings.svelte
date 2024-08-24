@@ -5,6 +5,7 @@
   import { SUPPORTS } from '@/modules/support.js'
   import { click } from '@/modules/click.js'
   import IPC from '@/modules/ipc.js'
+  import { Trash2 } from 'lucide-svelte'
   export let settings
 
   async function changeFont ({ detail }) {
@@ -39,7 +40,7 @@
     <div class='input-group w-400 mw-full'>
       <FontSelect class='form-control bg-dark w-300 mw-full' on:change={changeFont} value={settings.font?.name} />
       <div class='input-group-append'>
-        <button type='button' class='btn btn-danger btn-square px-5 material-symbols-outlined font-size-20' use:click={() => removeFont()}>delete</button>
+        <button type='button' use:click={() => removeFont()} class='btn btn-danger btn-square input-group-append px-5 d-flex align-items-center'><Trash2 size='1.8rem' /></button>
       </div>
     </div>
   </SettingCard>

@@ -38,27 +38,28 @@
   import { anilistClient } from '@/modules/anilist.js'
   import { logout } from '@/components/Logout.svelte'
   import smoothScroll from '@/modules/scroll.js'
+  import { AppWindow, Heart, LogIn, Logs, Play, Rss, Settings } from 'lucide-svelte'
 
   const groups = {
     player: {
       name: 'Player',
-      icon: 'play_arrow'
+      icon: Play
     },
     torrent: {
       name: 'Torrent',
-      icon: 'rss_feed'
+      icon: Rss
     },
     interface: {
       name: 'Interface',
-      icon: 'settings'
+      icon: AppWindow
     },
     app: {
       name: 'App',
-      icon: 'info'
+      icon: Settings
     },
     changelog: {
       name: 'Changelog',
-      icon: 'description'
+      icon: Logs
     }
   }
   function pathListener (data) {
@@ -97,28 +98,28 @@
       <div class='px-20 py-15 font-size-24 font-weight-semi-bold'>Settings</div>
       {#each Object.values(groups) as group}
         <TabLabel>
-          <div class='px-20 py-10 d-flex'>
-            <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>{group.icon}</span>
-            <div class='font-size-16'>{group.name}</div>
+          <div class='px-20 py-10 d-flex align-items-center'>
+            <svelte:component this={group.icon} class='pr-10 d-inline-flex' size='3.1rem' fill={group.icon === Play ? 'currentColor' : 'transparent'} />
+            <div class='font-size-16 line-height-normal'>{group.name}</div>
           </div>
         </TabLabel>
       {/each}
       <div class='pointer my-5 rounded' tabindex='0' role='button' use:click={() => IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')}>
-        <div class='px-20 py-10 d-flex'>
-          <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>favorite</span>
-          <div class='font-size-16'>Donate</div>
+        <div class='px-20 py-10 d-flex align-items-center'>
+          <Heart class='pr-10 d-inline-flex' size='3.1rem' />
+          <div class='font-size-16 line-height-normal'>Donate</div>
         </div>
       </div>
       <div class='pointer my-5 rounded' use:click={loginButton}>
-        <div class='px-20 py-10 d-flex'>
+        <div class='px-20 py-10 d-flex align-items-center'>
           {#if anilistClient.userID?.viewer?.data?.Viewer}
-            <span class='material-symbols-outlined rounded mr-10'>
+            <span class='rounded mr-10'>
               <img src={anilistClient.userID.viewer.data.Viewer.avatar.medium} class='h-30 rounded' alt='logo' />
             </span>
             <div class='font-size-16 login-image-text'>Logout</div>
           {:else}
-            <span class='material-symbols-outlined font-size-24 pr-10 d-inline-flex justify-content-center align-items-center'>login</span>
-            <div class='font-size-16'>Login With AniList</div>
+            <LogIn class='pr-10 d-inline-flex' size='3.1rem' />
+            <div class='font-size-16 line-height-normal'>Login With AniList</div>
           {/if}
         </div>
       </div>
@@ -232,10 +233,6 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-  }
-  .h-30 {
-    width: 3rem;
-    height: 3rem;
   }
   .settings :global(input:not(:focus):invalid) {
     box-shadow: 0 0 0 0.2rem var(--danger-color) !important;

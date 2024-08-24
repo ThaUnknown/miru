@@ -1,3 +1,11 @@
+<script context='module'>
+  let fillerEpisodes = {}
+
+  fetch('https://raw.githubusercontent.com/ThaUnknown/filler-scrape/master/filler.json').then(async res => {
+    fillerEpisodes = await res.json()
+  })
+</script>
+
 <script>
   import { since } from '@/modules/util'
   import { click } from '@/modules/click.js'
@@ -22,12 +30,12 @@
   export let play
 
   const episodeList = Array.from({ length: episodeCount }, (_, i) => ({
-    episode: i + 1, image: null, summary: null, rating: null, title: null, length: null, airdate: null, airingAt: null
+    episode: i + 1, image: null, summary: null, rating: null, title: null, length: null, airdate: null, airingAt: null, filler: fillerEpisodes[id]?.includes(i)
   }))
   async function load () {
     const res = await fetch('https://api.ani.zip/mappings?anilist_id=' + id)
     const { episodes, specialCount, episodeCount } = await res.json()
-    /** @type {{ airingAt: number; episode: number; }[]} */
+    /** @type {{ airingAt: number; episode: number; filler?: boolean }[]} */
     let alEpisodes = episodeList
 
     // fallback: pull episodes from airing schedule if anime doesn't have expected episode count
@@ -35,14 +43,14 @@
       const settled = (await anilistClient.episodes({ id })).data.Page?.airingSchedules
       if (settled?.length) alEpisodes = settled
     }
-    for (const { episode, airingAt } of alEpisodes) {
+    for (const { episode, airingAt, filler } of alEpisodes) {
       const alDate = new Date((airingAt || 0) * 1000)
 
       // validate by air date if the anime has specials AND doesn't have matching episode count
       const needsValidation = !(!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)]))
       const { image, summary, rating, title, length, airdate } = needsValidation ? episodeByAirDate(alDate, episodes, episode) : (episodes[Number(episode)] || {})
 
-      episodeList[episode - 1] = { episode, image, summary, rating, title, length: length || duration, airdate: +alDate || airdate, airingAt: +alDate || airdate }
+      episodeList[episode - 1] = { episode, image, summary, rating, title, length: length || duration, airdate: +alDate || airdate, airingAt: +alDate || airdate, filler }
     }
   }
   load()
@@ -50,15 +58,20 @@
   const animeProgress = liveAnimeProgress(id)
 </script>
 
-{#each episodeOrder ? episodeList : [...episodeList].reverse() as { episode, image, summary, rating, title, length, airdate }}
+{#each episodeOrder ? episodeList : [...episodeList].reverse() as { episode, image, summary, rating, title, length, airdate, filler }}
   {@const completed = !watched && userProgress >= episode}
   {@const target = userProgress + 1 === episode}
   {@const progress = !watched && ($animeProgress?.[episode] ?? 0)}
   <div class='w-full my-20 content-visibility-auto scale' class:opacity-half={completed} class:px-20={!target} class:h-150={image || summary}>
-    <div class='rounded w-full h-full overflow-hidden d-flex flex-xsm-column flex-row pointer' class:border={target} class:bg-black={completed} class:bg-dark={!completed} use:click={() => play(episode)}>
+    <div class='rounded w-full h-full overflow-hidden d-flex flex-xsm-column flex-row pointer position-relative' class:border={target || filler} class:bg-black={completed} class:border-secondary={filler} class:bg-dark={!completed} use:click={() => play(episode)}>
       {#if image}
         <div class='h-full'>
           <img alt='thumbnail' src={image} class='img-cover h-full' />
+        </div>
+      {/if}
+      {#if filler}
+        <div class='position-absolute bottom-0 right-0 bg-secondary py-5 px-10 text-dark rounded-top rounded-left font-weight-bold'>
+          Filler
         </div>
       {/if}
       <div class='h-full w-full px-20 py-15 d-flex flex-column'>

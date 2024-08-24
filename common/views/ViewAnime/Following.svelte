@@ -2,6 +2,7 @@
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
   import IPC from '@/modules/ipc.js'
+  import { ExternalLink } from 'lucide-svelte'
 
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
@@ -22,7 +23,9 @@
           <img src={friend.user.avatar.medium} alt='avatar' class='w-50 h-50 img-fluid rounded cover-img' />
           <span class='my-0 pl-20 mr-auto text-truncate'>{friend.user.name}</span>
           <span class='my-0 px-10 text-capitalize'>{friend.status.toLowerCase()}</span>
-          <span class='material-symbols-outlined pointer text-primary font-size-18' use:click={() => IPC.emit('open', 'https://anilist.co/user/' + friend.user.name)}> open_in_new </span>
+          <span class='pointer text-primary d-flex align-items-center' use:click={() => IPC.emit('open', 'https://anilist.co/user/' + friend.user.name)}>
+            <ExternalLink size='1.8rem' />
+          </span>
         </div>
       {/each}
     </div>

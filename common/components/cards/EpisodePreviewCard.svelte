@@ -2,6 +2,7 @@
   import { statusColorMap, formatMap } from '@/modules/anime.js'
   import { since } from '@/modules/util'
   import { liveAnimeEpisodeProgress } from '@/modules/animeprogress.js'
+  import { CalendarDays, Play, Tv } from 'lucide-svelte'
   export let data
   /** @type {import('@/modules/al.d.ts').Media | null} */
   const media = data.media
@@ -26,12 +27,7 @@
         on:loadeddata={() => { hide = false }}
         autoplay />
     {/if}
-    {#if data.failed}
-      <div class='material-symbols-outlined pl-10 pt-10 position-absolute top-0 left-0 text-danger filled font-weight-medium z-10' title='Failed to resolve media'>
-        sync_problem
-      </div>
-    {/if}
-    <div class='pl-15 pb-10 material-symbols-outlined filled z-10'>play_arrow</div>
+    <Play class='mb-5 ml-5 pl-10 pb-10 z-10' fill='currentColor' size='3rem' />
     <div class='pr-20 pb-10 font-size-16 font-weight-medium z-10'>
       {#if media?.duration}
         {media.duration}m
@@ -78,13 +74,13 @@
     </div>
     {#if media}
       <div class='d-flex flex-row pt-15 font-weight-medium justify-content-between w-full text-muted'>
-        <div class='d-flex align-items-center' style='margin-left: -3px'>
-          <span class='material-symbols-outlined font-size-24 pr-5'>calendar_month</span>
-          {media.seasonYear || 'N/A'}
+        <div class='d-flex align-items-center' style='margin-left: -2px'>
+          <CalendarDays class='pr-5' size='2.6rem' />
+          <span class='line-height-1'>{media.seasonYear || 'N/A'}</span>
         </div>
         <div class='d-flex align-items-center'>
-          {formatMap[media.format]}
-          <span class='material-symbols-outlined font-size-24 pl-5'>monitor</span>
+          <span class='line-height-1'>{formatMap[media.format]}</span>
+          <Tv class='pl-5' size='2.6rem' />
         </div>
       </div>
     {/if}
@@ -92,9 +88,6 @@
 </div>
 
 <style>
-  .material-symbols-outlined {
-    font-size: 3rem;
-  }
   .description {
     display: -webkit-box !important;
     -webkit-line-clamp: 3;

@@ -1,6 +1,7 @@
 <script>
   import { click } from '@/modules/click.js'
   import IPC from '@/modules/ipc.js'
+  import { ExternalLink, User } from 'lucide-svelte'
   export let peers
   export let invite
   export let cleanup
@@ -17,15 +18,12 @@
       {#if peer.user?.avatar?.medium}
         <img src={peer.user?.avatar?.medium} alt='avatar' class='w-50 h-50 img-fluid rounded' />
       {:else}
-        <span class='material-symbols-outlined w-50 h-50 anon'> person </span>
+        <span class='w-50 h-50 anon d-flex align-items-center'><User size='4rem' /></span>
       {/if}
-      <h4 class='my-0 pl-20 mr-auto'>{peer.user?.name || 'Anonymous'}</h4>
+      <h4 class='my-0 pl-20 mr-auto line-height-normal'>{peer.user?.name || 'Anonymous'}</h4>
       {#if peer.user?.name}
-        <span class='material-symbols-outlined pointer text-primary' use:click={() => IPC.emit('open', 'https://anilist.co/user/' + peer.user?.name)}> open_in_new </span>
+        <span class='pointer text-primary d-flex align-items-center' use:click={() => IPC.emit('open', 'https://anilist.co/user/' + peer.user?.name)}><ExternalLink size='2.5rem' /></span>
       {/if}
-      <!-- {#if state === 'host'}
-        <span class='material-symbols-outlined ml-15 pointer text-danger' use:click={() => peer.peer.pc.close()}> logout </span>
-      {/if} -->
     </div>
   {/each}
 </div>

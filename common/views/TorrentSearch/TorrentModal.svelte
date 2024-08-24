@@ -2,7 +2,7 @@
   import { findInCurrent } from '../Player/MediaHandler.svelte'
   import { writable } from 'simple-store-svelte'
 
-  const rss = writable(null)
+  export const rss = writable(null)
 
   export function playAnime (media, episode = 1, force) {
     episode = Number(episode)

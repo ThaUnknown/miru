@@ -35,6 +35,7 @@
   import IPC from '@/modules/ipc.js'
   import SettingCard from './SettingCard.svelte'
   import { SUPPORTS } from '@/modules/support.js'
+  import { Trash2 } from 'lucide-svelte'
   export let settings
 
   function handleFolder () {
@@ -74,7 +75,7 @@
           <div class='input-group-prepend overflow-hidden w-full'>
             <span class='input-group-text bg-dark w-full'>{extension}</span>
           </div>
-          <button type='button' class='btn btn-danger btn-square px-5 material-symbols-outlined font-size-20' use:click={() => removeExtension(i)}>delete</button>
+          <button type='button' use:click={() => removeExtension(i)} class='btn btn-danger btn-square input-group-append px-5 d-flex align-items-center'><Trash2 size='1.8rem' /></button>
         </div>
       {/each}
     </div>

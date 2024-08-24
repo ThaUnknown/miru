@@ -1,13 +1,15 @@
 <script>
+  import { Building2, FolderKanban, Languages, Leaf, MonitorPlay, Type } from 'lucide-svelte'
+
   export let media = null
 
   const detailsMap = [
-    { property: 'season', label: 'Season', icon: 'spa', custom: 'property' },
-    { property: 'status', label: 'Status', icon: 'live_tv' },
-    { property: 'nodes', label: 'Studio', icon: 'business' },
-    { property: 'source', label: 'Source', icon: 'source' },
-    { property: 'english', label: 'English', icon: 'title' },
-    { property: 'romaji', label: 'Romaji', icon: 'translate' },
+    { property: 'season', label: 'Season', icon: Leaf, custom: 'property' },
+    { property: 'status', label: 'Status', icon: MonitorPlay },
+    { property: 'nodes', label: 'Studio', icon: Building2 },
+    { property: 'source', label: 'Source', icon: FolderKanban },
+    { property: 'english', label: 'English', icon: Type },
+    { property: 'romaji', label: 'Romaji', icon: Languages },
     { property: 'native', label: 'Native', icon: '語', custom: 'icon' }
   ]
   function getCustomProperty (detail, media) {
@@ -33,12 +35,16 @@
   {#each detailsMap as detail}
     {@const property = getProperty(detail.property, media)}
     {#if property}
-      <div class='d-flex flex-row mx-10 py-5'>
-        <div class={'mr-10 ' + (detail.custom === 'icon' ? 'd-flex align-items-center text-nowrap font-size-20 font-weight-bold' : 'material-symbols-outlined font-size-24')}>
-          {detail.icon}
-        </div>
+      <div class='d-flex flex-row mx-10 py-5 justify-content-center'>
+        {#if detail.custom !== 'icon'}
+          <svelte:component size='2rem' this={detail.icon} class='mr-10' />
+        {:else}
+          <div class='mr-10 d-flex align-items-center text-nowrap font-size-12 font-weight-bold line-height-normal'>
+            {detail.icon}
+          </div>
+        {/if}
         <div class='d-flex flex-column justify-content-center text-nowrap'>
-          <div class='font-weight-bold select-all'>
+          <div class='font-weight-bold select-all line-height-normal'>
             {#if detail.custom === 'property'}
               {getCustomProperty(detail, media)}
             {:else if property.constructor === Array}

@@ -33,8 +33,35 @@
   --section-end-gradient: linear-gradient(270deg, #17191cff 0%, #17191c00 100%);
   color-scheme: dark;
 }
+
+@font-face {
+  font-family: "Roboto";
+  src: /* webpackIgnore: true */ url(Roboto.ttf) format("truetype");
+  unicode-range: U+0000, U+0002, U+0009, U+000D, U+0020-007E, U+00A0-0377,
+      U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03E1,
+      U+03F0-052F, U+1AB0-1ABE, U+1D00-1DF5, U+1DFC-1F15, U+1F18-1F1D,
+      U+1F20-1F45, U+1F48-1F4D, U+1F50-1F57, U+1F59, U+1F5B, U+1F5D,
+      U+1F5F-1F7D, U+1F80-1FB4, U+1FB6-1FC4, U+1FC6-1FD3, U+1FD6-1FDB,
+      U+1FDD-1FEF, U+1FF2-1FF4, U+1FF6-1FFE, U+2000-2027, U+202F-205F,
+      U+2070-2071, U+2074-208E, U+2090-209C, U+20A0-20BE, U+20DB-20DC,
+      U+20E3, U+20E8, U+20F0, U+2100-2101, U+2103, U+2105-2106, U+2109,
+      U+2113, U+2116-2117, U+211E-2123, U+2125-2126, U+212A-212B, U+212E,
+      U+2132, U+213B, U+214D, U+214F-2189, U+2191, U+2193, U+2202, U+2206,
+      U+220F, U+2211-2212, U+221A, U+221E, U+222B, U+2248, U+2260,
+      U+2264-2265, U+2423, U+25CA, U+2669-266F, U+27E6-27EF, U+2B4E-2B4F,
+      U+2B5A-2B5F, U+2C60-2C7F, U+2DE0-2E42, U+A640-A69D, U+A69F,
+      U+A700-A7AD, U+A7B0-A7B1, U+A7F7-A7FF, U+A92E, U+AB30-AB5F,
+      U+AB64-AB65, U+EE01-EE02, U+F6C3, U+FB00-FB06, U+FE20-FE2D, U+FEFF,
+      U+FFFC-FFFD, U+1F16A-1F16B;
+}
+
 .dark-mode {
   background-color: var(--dark-color) !important;
+}
+
+.h-30 {
+  width: 3rem;
+  height: 3rem;
 }
 
 @media (min-width: 769px) {
@@ -43,6 +70,14 @@
     --sidebar-width: 7rem;
     --navbar-height: 0px;
   }
+}
+
+.line-height-1 {
+  line-height: 1;
+}
+
+.line-height-normal {
+  line-height: normal;
 }
 
 * {
@@ -82,27 +117,8 @@ a[href]:active, button:not([disabled]):active, fieldset:not([disabled]):active, 
   z-index: 100;
 }
 
-.material-symbols-outlined {
-  font-family: "Material Symbols Outlined Variable";
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  font-feature-settings: "liga";
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 64;
-}
-
-.filled {
-  font-variation-settings: 'FILL' 1;
+.text-dark-light {
+  color: var(--gray-color-light);
 }
 
 .pointer {

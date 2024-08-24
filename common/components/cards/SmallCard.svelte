@@ -6,6 +6,7 @@
   import { countdown } from '@/modules/util.js'
 
   import { page } from '@/App.svelte'
+  import { CalendarDays, Tv } from 'lucide-svelte'
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
   let preview = false
@@ -45,13 +46,13 @@
       {media.title.userPreferred}
     </div>
     <div class='d-flex flex-row mt-auto pt-10 font-weight-medium justify-content-between w-full text-muted'>
-      <div class='d-flex align-items-center pr-5' style='margin-left: -2px'>
-        <span class='material-symbols-outlined font-size-24 pr-5'>calendar_month</span>
-        {media.seasonYear || 'N/A'}
+      <div class='d-flex align-items-center pr-5' style='margin-left: -1px'>
+        <CalendarDays class='pr-5' size='2.6rem' />
+        <span class='line-height-1'>{media.seasonYear || 'N/A'}</span>
       </div>
       <div class='d-flex align-items-center text-nowrap text-right'>
-        {formatMap[media.format]}
-        <span class='material-symbols-outlined font-size-24 pl-5'>monitor</span>
+        <span class='line-height-1'>{formatMap[media.format]}</span>
+        <Tv class='pl-5' size='2.6rem' />
       </div>
     </div>
   </div>
