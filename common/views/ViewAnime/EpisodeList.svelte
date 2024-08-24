@@ -30,7 +30,7 @@
   export let play
 
   const episodeList = Array.from({ length: episodeCount }, (_, i) => ({
-    episode: i + 1, image: null, summary: null, rating: null, title: null, length: null, airdate: null, airingAt: null, filler: fillerEpisodes[id]?.includes(i)
+    episode: i + 1, image: null, summary: null, rating: null, title: null, length: null, airdate: null, airingAt: null, filler: fillerEpisodes[id]?.includes(i + 1)
   }))
   async function load () {
     const res = await fetch('https://api.ani.zip/mappings?anilist_id=' + id)
