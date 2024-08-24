@@ -1,5 +1,28 @@
 @import '@fontsource-variable/material-symbols-outlined/full.css';
 
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined Variable";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "liga";
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 64;
+}
+
+.filled {
+  font-variation-settings: 'FILL' 1;
+}
+
 .dark-mode {
   background-color: #101113 !important;
 }
