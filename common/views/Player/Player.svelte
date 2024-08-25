@@ -1222,7 +1222,7 @@
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
         <div class='dropdown dropup with-arrow' use:click={toggleDropdown}>
           <span class='icon ctrl mr-5 d-flex align-items-center' title='Audio Tracks'>
-            <ListMusic size='2.5rem' strokeWidth={2.5} />
+            <ListMusic size='2.5rem' strokeWidth={2.5} class='h-full' />
           </span>
           <div class='dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize'>
             {#each video.audioTracks as track}
@@ -1237,7 +1237,7 @@
       {#if 'videoTracks' in HTMLVideoElement.prototype && video?.videoTracks?.length > 1}
         <div class='dropdown dropup with-arrow'>
           <span class='icon ctrl mr-5 d-flex align-items-center' title='Video Tracks'>
-            <ListVideo size='2.5rem' strokeWidth={2.5} />
+            <ListVideo size='2.5rem' strokeWidth={2.5} class='h-full' />
           </span>
           <div class='dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize'>
             {#each video.videoTracks as track}
@@ -1252,7 +1252,7 @@
       {#if subHeaders?.length}
         <div class='subtitles dropdown dropup with-arrow' use:click={toggleDropdown}>
           <span class='icon ctrl mr-5 d-flex align-items-center' title='Subtitles [C]'>
-            <Captions size='2.5rem'strokeWidth={2.5} />
+            <Captions size='2.5rem'strokeWidth={2.5} class='h-full' />
           </span>
           <div class='dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize'>
             <input name='subtitle-radio-set' type='radio' id='subtitle-off-radio' value='off' checked={subHeaders && subs?.current === -1} />
