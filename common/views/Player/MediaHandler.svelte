@@ -211,7 +211,7 @@
   }
 
   function setDiscordRPC (np = nowPlaying.value) {
-    const w2g = state.value
+    const w2g = state.value?.code
     const details = [np.title, np.episodeTitle].filter(i => i).join(' - ') || undefined
     const activity = {
       details,

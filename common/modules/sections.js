@@ -190,7 +190,6 @@ function createSections () {
     { title: 'Romance', variables: { sort: 'TRENDING_DESC', genre: 'Romance' } },
     { title: 'Action', variables: { sort: 'TRENDING_DESC', genre: 'Action' } },
     { title: 'Adventure', variables: { sort: 'TRENDING_DESC', genre: 'Adventure' } },
-    { title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: 'Fantasy' } },
-    { title: 'Comedy', variables: { sort: 'TRENDING_DESC', genre: 'Comedy' } }
+    { title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: 'Fantasy' } }
   ]
 }
