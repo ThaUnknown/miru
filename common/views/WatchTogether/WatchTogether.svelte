@@ -18,17 +18,17 @@
   function joinLobby (code) {
     debug('Joining lobby with code: ' + code)
     if (state.value) state.value.destroy()
-    const client = new W2GClient(code)
-    state.value = client
-    client.on('index', i => w2gEmitter.emit('setindex', i))
-    client.on('player', state => w2gEmitter.emit('playerupdate', { time: state.time, paused: state.paused }))
+    const w2g = new W2GClient(code)
+    state.value = w2g
+    w2g.on('index', i => w2gEmitter.emit('setindex', i))
+    w2g.on('player', state => w2gEmitter.emit('playerupdate', { time: state.time, paused: state.paused }))
 
     if (!code) invite()
   }
+  client.on('magnet', ({ detail }) => state.value?.magnetLink(detail))
 
   w2gEmitter.on('player', data => state.value?.playerStateChanged(data))
   w2gEmitter.on('index', index => state.value?.mediaIndexChanged(index))
-  client.on('magnet', data => state.value?.magnetLink(data))
 
   IPC.on('w2glink', (link) => {
     joinLobby(link)
