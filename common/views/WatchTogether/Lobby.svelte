@@ -82,7 +82,7 @@
         <div class='font-size-20 font-weight-bold pl-5 pb-10'>
           {Object.values($peers).length} Member(s)
         </div>
-        {#each Object.values($peers) as user}
+        {#each Object.values($peers) as { user }}
           <User {user} />
         {/each}
       {/if}

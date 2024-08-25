@@ -217,8 +217,7 @@ export class W2GClient extends EventEmitter {
   /** @param {import('./events.js').default} event */
   #sendToPeers (event) {
     if (!this.#p2pt) return
-
-    for (const { peer } of Object.values(this.peers)) {
+    for (const { peer } of Object.values(this.peers.value)) {
       if (peer) this.#sendEvent(peer, event)
     }
   }
@@ -226,6 +225,7 @@ export class W2GClient extends EventEmitter {
   destroy () {
     debug('destroy')
     this.#p2pt.destroy()
+    this.removeAllListeners()
     this.#p2pt = null
     this.isHost = false
     this.peers.value = {}
