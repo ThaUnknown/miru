@@ -6,6 +6,7 @@
   import { clientID } from "@/modules/myanimelist.js"
   import { click } from '@/modules/click.js'
   import { toast } from 'svelte-sonner'
+  import { LogOut, Plus } from 'lucide-svelte'
   import IPC from "@/modules/ipc"
 
   export const profileView = writable(false)
@@ -118,8 +119,8 @@
                   <input type='checkbox' id='sync-{profile.viewer.data.Viewer.id}' bind:checked={profile.viewer.data.Viewer.sync} on:click={() => toggleSync(profile)} />
                   <label for='sync-{profile.viewer.data.Viewer.id}'><br/></label>
                 </button>
-                <button type='button' class='button logout pt-5 pb-5 pl-5 pr-5 material-symbols-outlined rounded bg-transparent border-0' title='Logout' on:click|stopPropagation={() => dropProfile(profile)}>
-                  logout
+                <button type='button' class='button logout pt-5 pb-5 pl-5 pr-5 bg-transparent border-0 d-flex align-items-center justify-content-center' title='Logout' on:click|stopPropagation={() => dropProfile(profile)}>
+                  <LogOut size='2.2rem' />
                 </button>
               </div>
             </button>
@@ -140,9 +141,7 @@
             </div>
           {:else if $profiles.length < 5}
             <button type='button' class='box pointer border-0 pt-10 pb-10 d-flex align-items-center justify-content-center text-center {$profiles.length > 0 && $currentProfile ? "" : !$currentProfile ? "rounded-bottom-10" : "rounded-top-10"}' on:click={() => { $profileAdd = true }}>
-              <div class='material-symbols-outlined rounded mr-10'>
-                add
-              </div>
+              <Plus class='mr-10' size='2.2rem' />
               <div class='mt-2'>
                 Add Profile
               </div>
@@ -158,9 +157,7 @@
               </div>
             {/if}
             <button type='button' class='box pointer border-0 rounded-bottom-10 pt-10 pb-10 d-flex align-items-center justify-content-center text-center' on:click={currentLogout}>
-              <div class='material-symbols-outlined bg-transparent mr-10'>
-                logout
-              </div>
+              <LogOut class='mr-10' size='2.2rem' />
               <div class='mt-2'>
                 Sign Out
               </div>

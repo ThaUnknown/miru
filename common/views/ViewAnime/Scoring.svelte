@@ -3,6 +3,7 @@
   import { click } from '@/modules/click.js'
   import { writable } from 'svelte/store'
   import { toast } from 'svelte-sonner'
+  import { Bookmark, PencilLine } from 'lucide-svelte'
   import Helper from '@/modules/helper.js'
   import Debug from 'debug'
 
@@ -185,8 +186,12 @@
 </script>
 
 
-<button type='button' id='list-btn' class='btn { viewAnime ? "bg-dark btn-lg font-size-20" : (previewAnime ? "btn-square" : "bg-dark-light") + " font-size-16" } btn-square ml-10 material-symbols-outlined shadow-none border-0' use:click={toggleModal} disabled={!Helper.isAuthorized()}>
-  { media.mediaListEntry ? 'border_color' : 'bookmark' }
+<button type='button' id='list-btn' class='btn { viewAnime ? "bg-dark btn-lg font-size-20" : (previewAnime ? "btn-square" : "bg-dark-light") + " font-size-16" } btn-square ml-10 shadow-none border-0 d-flex align-items-center justify-content-center' use:click={toggleModal} disabled={!Helper.isAuthorized()}>
+  {#if media.mediaListEntry}
+    <PencilLine size='1.7rem' />
+  {:else}
+    <Bookmark size='1.7rem' />
+  {/if}
 </button>
 {#if Helper.isAuthorized()}
   <div bind:this={modal} class='modal scoring position-absolute bg-dark shadow-lg rounded-3 p-20 z-30 {$showModal ? "visible" : "invisible"} {!previewAnime && !viewAnime ? "banner w-auto h-auto" : (!previewAnime ? "viewAnime w-auto h-auto" : "previewAnime")}' use:click={() => {}}>

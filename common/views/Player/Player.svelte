@@ -1403,10 +1403,6 @@
     align-items: center;
     height: 100%;
   }
-  .bind.material-symbols-outlined {
-    font-size: 2.2rem !important;
-    font-weight: unset !important;
-  }
   .stats {
     font-size: 2.3rem !important;
     padding-top: 1.5rem;
