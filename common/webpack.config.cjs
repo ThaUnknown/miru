@@ -60,6 +60,7 @@ module.exports = (parentDir, alias = {}, aliasFields = 'browser', filename = 'ap
       module: false,
       url: false,
       debug: resolve(__dirname, './modules/debug.js'),
+      'svelte-radix': resolve(__dirname, '../node_modules/svelte-radix/dist/index.js'),
       'bittorrent-tracker/lib/client/websocket-tracker.js': resolve('../node_modules/bittorrent-tracker/lib/client/websocket-tracker.js')
     },
     extensions: ['.mjs', '.js', '.svelte']

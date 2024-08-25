@@ -1,5 +1,4 @@
 import { settings } from '@/modules/settings.js'
-import { exclusions } from '../rss.js'
 import { sleep } from '../util.js'
 import { anilistClient } from '../anilist.js'
 import { anitomyscript } from '../anime.js'
@@ -9,6 +8,22 @@ import { toast } from 'svelte-sonner'
 import Debug from 'debug'
 
 const debug = Debug('ui:extensions')
+
+const exclusions = ['DTS', 'TrueHD', '[EMBER]']
+const isDev = location.hostname === 'localhost'
+
+const video = document.createElement('video')
+
+if (!isDev && !video.canPlayType('video/mp4; codecs="hev1.1.6.L93.B0"')) {
+  exclusions.push('HEVC', 'x265', 'H.265')
+}
+if (!isDev && !video.canPlayType('audio/mp4; codecs="ac-3"')) {
+  exclusions.push('AC3', 'AC-3')
+}
+if (!('audioTracks' in HTMLVideoElement.prototype)) {
+  exclusions.push('DUAL')
+}
+video.remove()
 
 /** @typedef {import('@thaunknown/ani-resourced/sources/types.d.ts').Options} Options */
 /** @typedef {import('@thaunknown/ani-resourced/sources/types.d.ts').Result} Result */
@@ -40,7 +55,7 @@ export default async function getResultsFromExtensions ({ media, episode, batch,
     anidbEid,
     titles: createTitles(media),
     resolution,
-    exclusions
+    exclusions: settings.value.enableExternal ? [] : exclusions
   }
 
   const { results, errors } = await worker.query(options, { movie, batch }, settings.value.sources)

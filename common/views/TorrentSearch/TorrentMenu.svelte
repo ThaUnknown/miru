@@ -45,6 +45,7 @@
   import { add } from '@/modules/torrent.js'
   import TorrentSkeletonCard from './TorrentSkeletonCard.svelte'
   import { onDestroy } from 'svelte'
+  import { MagnifyingGlass } from 'svelte-radix'
 
   /** @type {{ media: Media, episode?: number }} */
   export let search
@@ -131,7 +132,7 @@
   {/await}
   <div class='input-group mt-20'>
     <div class='input-group-prepend'>
-      <span class='input-group-text d-flex material-symbols-outlined bg-dark pr-0 font-size-18'>search</span>
+      <MagnifyingGlass size='2.75rem' class='input-group-text bg-dark pr-0' />
     </div>
     <input
       type='search'

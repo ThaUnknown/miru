@@ -1,7 +1,6 @@
 <script>
   import { formatMap } from './anime.js'
   import { click } from '@/modules/click.js'
-  import { alToken } from '@/modules/settings.js'
   export let media
 
   let hide = true
@@ -21,9 +20,6 @@
   }
   const playButtonText = getPlayButtonText(media)
 
-  function volume (video) {
-    video.volume = 0.1
-  }
   let muted = true
   function toggleMute () {
     muted = !muted
@@ -32,19 +28,19 @@
   function play () {
     open('miru://anime/' + media.id)
   }
-  function lazyload (video) {
+  function lazyload (iframe) {
     if ('IntersectionObserver' in window) {
       const lazyVideoObserver = new IntersectionObserver(entries => {
         for (const { target, isIntersecting } of entries) {
           if (isIntersecting) {
-            video.src = video.dataset.src
+            iframe.src = iframe.dataset.src
             lazyVideoObserver.unobserve(target)
           }
         }
       })
-      lazyVideoObserver.observe(video.parentNode)
+      lazyVideoObserver.observe(iframe.parentNode)
     } else {
-      video.src = video.dataset.src
+      iframe.src = iframe.dataset.src
     }
   }
 </script>
@@ -56,18 +52,15 @@
       <div class='material-symbols-outlined filled position-absolute z-10 top-0 right-0 p-15 font-size-22' class:d-none={hide} use:click={toggleMute}>{muted ? 'volume_off' : 'volume_up'}</div>
       <!-- for now we use some invidious instance, would be nice to somehow get these links outselves, this redirects straight to some google endpoint -->
       <!-- eslint-disable-next-line svelte/valid-compile -->
-      <video data-src={`https://inv.tux.pizza/latest_version?id=${media.trailer.id}&itag=18`}
-        class='w-full h-full position-absolute left-0'
+      <iframe
+        class='w-full border-0 position-absolute left-0'
         class:d-none={hide}
-        playsinline
-        preload='none'
-        loading='lazy'
+        title={media.title.userPreferred}
+        allow='autoplay'
         use:lazyload
-        loop
-        use:volume
-        bind:muted
-        on:loadeddata={() => { hide = false }}
-        autoplay />
+        on:load={() => { hide = false }}
+        data-src={`https://www.youtube-nocookie.com/embed/${media.trailer?.id}?autoplay=1&controls=0&mute=${muted ? 1 : 0}&disablekb=1&loop=1&vq=medium&playlist=${media.trailer?.id}&cc_lang_pref=ja`}
+      />
     {/if}
   </div>
   <div class='w-full px-20'>
@@ -83,10 +76,10 @@
         </span>
         {playButtonText}
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={noop} disabled={!alToken}>
+      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.isFavourite} use:click={noop}>
         favorite
       </button>
-      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.mediaListEntry} use:click={noop} disabled={!alToken}>
+      <button class='btn btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={media.mediaListEntry} use:click={noop}>
         bookmark
       </button>
     </div>

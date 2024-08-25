@@ -5,6 +5,7 @@
   import { SUPPORTS } from '@/modules/support.js'
   import { click } from '@/modules/click.js'
   import IPC from '@/modules/ipc.js'
+  import { Trash2 } from 'lucide-svelte'
   export let settings
 
   async function changeFont ({ detail }) {
@@ -39,7 +40,7 @@
     <div class='input-group w-400 mw-full'>
       <FontSelect class='form-control bg-dark w-300 mw-full' on:change={changeFont} value={settings.font?.name} />
       <div class='input-group-append'>
-        <button type='button' class='btn btn-danger btn-square px-5 material-symbols-outlined font-size-20' use:click={() => removeFont()}>delete</button>
+        <button type='button' use:click={() => removeFont()} class='btn btn-danger btn-square input-group-append px-5 d-flex align-items-center'><Trash2 size='1.8rem' /></button>
       </div>
     </div>
   </SettingCard>
@@ -92,6 +93,7 @@
     <option value='slo'>Slovak</option>
     <option value='swe'>Swedish</option>
     <option value='ara'>Arabic</option>
+    <option value='idn'>Indonesian</option>
   </select>
 </SettingCard>
 <SettingCard title='Preferred Audio Language' description="What audio language to automatically select when a video is loaded if it exists. This won't find torrents with this language automatically. If not found defaults to Japanese.">
@@ -118,6 +120,7 @@
     <option value='slo'>Slovak</option>
     <option value='swe'>Swedish</option>
     <option value='ara'>Arabic</option>
+    <option value='idn'>Indonesian</option>
   </select>
 </SettingCard>
 
@@ -146,15 +149,29 @@
     <label for='player-deband'>{settings.playerDeband ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
-
-{#if SUPPORTS.externalPlayer}
-  <h4 class='mb-10 font-weight-bold'>External Player Settings</h4>
-  <SettingCard title='Enable External Player' description='Tells Miru to open a custom user-defined video player to play video, instead of using the built-in one.'>
-    <div class='custom-switch'>
-      <input type='checkbox' id='player-external-enabled' bind:checked={settings.enableExternal} />
-      <label for='player-external-enabled'>{settings.enableExternal ? 'On' : 'Off'}</label>
+<SettingCard title='Seek Duration' description='Seconds to skip forward or backward when using the seek buttons or keyboard shortcuts. Higher values might negatively impact buffering speeds.'>
+  <div class='input-group w-100 mw-full'>
+    <input type='number' inputmode='numeric' pattern={'[0-9]*'} bind:value={settings.playerSeek} min='1' max='50' class='form-control text-right bg-dark' />
+    <div class='input-group-append'>
+      <span class='input-group-text bg-dark'>sec</span>
     </div>
-  </SettingCard>
+  </div>
+</SettingCard>
+<SettingCard title='Auto-Skip Intro/Outro' description='Attempt to automatically skip intro and outro. This WILL sometimes skip incorrect chapters, as some of the chapter data is community sourced.'>
+  <div class='custom-switch'>
+    <input type='checkbox' id='player-skip' bind:checked={settings.playerSkip} />
+    <label for='player-skip'>{settings.playerSkip ? 'On' : 'Off'}</label>
+  </div>
+</SettingCard>
+
+<h4 class='mb-10 font-weight-bold'>External Player Settings</h4>
+<SettingCard title='Enable External Player' description='Tells Miru to open a custom user-picked external video player to play video, instead of using the built-in one.'>
+  <div class='custom-switch'>
+    <input type='checkbox' id='player-external-enabled' bind:checked={settings.enableExternal} />
+    <label for='player-external-enabled'>{settings.enableExternal ? 'On' : 'Off'}</label>
+  </div>
+</SettingCard>
+{#if SUPPORTS.externalPlayer}
   <SettingCard title='External Video Player' description='Executable for an external video player. Make sure the player supports HTTP sources.'>
     <div
       class='input-group w-300 mw-full'>

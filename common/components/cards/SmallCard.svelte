@@ -9,6 +9,8 @@
   import { page } from '@/App.svelte'
   import { anilistClient } from "@/modules/anilist"
   import Helper from "@/modules/helper.js"
+  import { CalendarDays, Tv, ThumbsUp, ThumbsDown } from 'lucide-svelte'
+
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
   export let type = null
@@ -48,13 +50,9 @@
     {#if type || type === 0}
       <div class='context-type d-flex align-items-center'>
         {#if Number.isInteger(type) && type >= 0}
-          <span class='material-symbols-outlined filled font-size-18 pr-5 {type === 0 ? "text-muted" : "text-success"}'>
-            thumb_up
-          </span>
+          <ThumbsUp fill='currentColor' class='pr-5 pb-5 {type === 0 ? "text-muted" : "text-success"}' size='2rem' />
         {:else if Number.isInteger(type) && type < 0}
-          <span class='material-symbols-outlined text-danger filled font-size-18 pr-5'>
-            thumb_down
-          </span>
+          <ThumbsDown fill='currentColor' class='text-danger pr-5 pb-5' size='2rem' />
         {/if}
         {(Number.isInteger(type) ? Math.abs(type).toLocaleString() + (type >= 0 ? ' likes' : ' dislikes') : type)}
       </div>
@@ -66,13 +64,13 @@
       {anilistClient.title(media)}
     </div>
     <div class='d-flex flex-row mt-auto pt-10 font-weight-medium justify-content-between w-full text-muted'>
-      <div class='d-flex align-items-center pr-5' style='margin-left: -2px'>
-        <span class='material-symbols-outlined font-size-24 pr-5'>calendar_month</span>
-        {media.seasonYear || 'N/A'}
+      <div class='d-flex align-items-center pr-5' style='margin-left: -1px'>
+        <CalendarDays class='pr-5' size='2.6rem' />
+        <span class='line-height-1'>{media.seasonYear || 'N/A'}</span>
       </div>
       <div class='d-flex align-items-center text-nowrap text-right'>
-        {formatMap[media.format]}
-        <span class='material-symbols-outlined font-size-24 pl-5'>monitor</span>
+        <span class='line-height-1'>{formatMap[media.format]}</span>
+        <Tv class='pl-5' size='2.6rem' />
       </div>
     </div>
   </div>

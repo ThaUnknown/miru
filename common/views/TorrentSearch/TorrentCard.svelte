@@ -1,6 +1,7 @@
 <script context='module'>
   import { click } from '@/modules/click.js'
   import { fastPrettyBytes, since } from '@/modules/util.js'
+  import { Database, BadgeCheck } from 'lucide-svelte'
 
   /** @typedef {import('@thaunknown/ani-resourced/sources/types.d.ts').Result} Result */
   /** @typedef {import('anitomyscript').AnitomyResult} AnitomyResult */
@@ -86,13 +87,9 @@
     <div class='d-flex w-full'>
       <div class='font-size-22 font-weight-bold text-nowrap'>{result.parseObject?.release_group && result.parseObject.release_group.length < 20 ? result.parseObject.release_group : 'No Group'}</div>
       {#if result.type === 'batch'}
-        <div class='material-symbols-outlined card-title symbol-bold ml-auto' title='Batch'>
-          database
-        </div>
+        <Database size='2.6rem' class='ml-auto' />
       {:else if result.verified}
-        <div class='material-symbols-outlined card-title symbol-bold ml-auto' style='color: #53da33' title='Verified'>
-          verified
-        </div>
+        <BadgeCheck size='2.8rem' class='ml-auto' style='color: #53da33' />
       {/if}
     </div>
     <div class='font-size-14 text-muted text-truncate overflow-hidden'>{simplifyFilename(result.parseObject)}</div>

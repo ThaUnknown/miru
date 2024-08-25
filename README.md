@@ -113,7 +113,7 @@ apt install linux-Miru-*.deb
 
 ## **Building and Development**
 
-*dont*
+*good luck*
 
 Dependencies:
  - Node 16 or above

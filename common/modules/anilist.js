@@ -248,7 +248,6 @@ class AnilistClient {
       body: JSON.stringify({
         query: query.replace(/\s/g, '').replaceAll('&nbsp;', ' '),
         variables: {
-          sort: 'TRENDING_DESC',
           page: 1,
           perPage: 50,
           status_in: '[CURRENT,PLANNING,COMPLETED,DROPPED,PAUSED,REPEATING]',

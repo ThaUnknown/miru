@@ -1,6 +1,6 @@
 <script context='module'>
   const badgeKeys = ['title', 'search', 'genre', 'tag', 'season', 'year', 'format', 'status', 'sort', 'hideSubs', 'hideMyAnime', 'hideStatus']
-  const badgeDisplayNames = { title: 'recent_actors', search: 'title', genre: 'theater_comedy', tag: 'tag', season: 'calendar_month', year: 'spa', format: 'monitor', status: 'live_tv', sort: 'sort', hideMyAnime: 'tune', hideSubs: 'mic' }
+  const badgeDisplayNames = { title: BookUser, search: Type, genre: Drama, tag: Hash, season: CalendarRange, year: Leaf, format: Tv, status: MonitorPlay, sort: ArrowDownWideNarrow, hideMyAnime: SlidersHorizontal, hideSubs: Mic }
   const sortOptions = { START_DATE_DESC: 'Release Date', SCORE_DESC: 'Score', POPULARITY_DESC: 'Popularity', TRENDING_DESC: 'Trending', UPDATED_TIME_DESC: 'Last Updated', STARTED_ON_DESC: 'Started On', FINISHED_ON_DESC: 'Finished On', PROGRESS_DESC: 'Your Progress', USER_SCORE_DESC: 'Your Score' }
 
   export function searchCleanup (search, badge) {
@@ -17,6 +17,8 @@
   import { page } from '@/App.svelte'
   import { toast } from 'svelte-sonner'
   import Helper from '@/modules/helper.js'
+  import { MagnifyingGlass, Image } from 'svelte-radix'
+  import { BookUser, Type, Drama, Leaf, CalendarRange, MonitorPlay, Tv, ArrowDownWideNarrow, Filter, FilterX, Tags, Hash, SlidersHorizontal, Mic, Grid3X3, Grid2X2 } from 'lucide-svelte'
 
   export let search
   let searchTextInput = {
@@ -256,10 +258,6 @@
     return sortOptions[value] || value
   }
 
-  function getBadgeDisplayName(key) {
-    return badgeDisplayNames[key] || ''
-  }
-
   function removeBadge(badge) {
     if (badge.key === 'title') {
       delete search.load
@@ -341,16 +339,16 @@
   }
 </script>
 
-<form class='container-fluid py-20 px-md-50 px-20 bg-dark pb-0 position-sticky top-0 search-container z-40' on:input bind:this={form}>
+<form class='container-fluid py-20 px-md-50 bg-dark pb-0 position-sticky top-0 search-container z-40' on:input bind:this={form}>
   <div class='row'>
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
-        <div class='material-symbols-outlined mr-10 font-size-30'>title</div>
+        <Type class='mr-10' size='3rem' />
         <div>Title</div>
       </div>
       <div class='input-group'>
         <div class='input-group-prepend'>
-          <span class='input-group-text d-flex material-symbols-outlined bg-dark-light pr-0 font-size-18'>search</span>
+          <MagnifyingGlass size='2.75rem' class='input-group-text bg-dark-light pr-0' />
         </div>
         <input
           bind:this={searchTextInput.title}
@@ -365,7 +363,7 @@
     </div>
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
-        <div class='material-symbols-outlined mr-10 font-size-30'>theater_comedy</div>
+        <Drama class='mr-10' size='3rem' />
         <div>Genres</div>
       </div>
       <div class='input-group'>
@@ -392,7 +390,7 @@
     </div>
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
-        <div class='material-symbols-outlined mr-10 font-size-30'>tag</div>
+        <Hash class='mr-10' size='3rem' />
         <div>Tags</div>
       </div>
       <div class='input-group'>
@@ -417,7 +415,7 @@
     </div>
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
-        <div class='material-symbols-outlined mr-10 font-size-30'>calendar_month</div>
+        <CalendarRange class='mr-10' size='3rem' />
         <div>Season</div>
       </div>
       <div class='input-group'>
@@ -439,7 +437,7 @@
     </div>
     <div class='col p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
-        <div class='material-symbols-outlined mr-10 font-size-30'>monitor</div>
+        <Tv class='mr-10' size='3rem' />
         <div>Format</div>
       </div>
       <div class='input-group'>
@@ -455,7 +453,7 @@
     </div>
     <div class='col p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
-        <div class='material-symbols-outlined mr-10 font-size-30'>live_tv</div>
+        <MonitorPlay class='mr-10' size='3rem' />
         <div>Status</div>
       </div>
       <div class='input-group'>
@@ -470,7 +468,7 @@
     </div>
     <div class='col p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
-        <div class='material-symbols-outlined mr-10 font-size-30'>sort</div>
+        <ArrowDownWideNarrow class='mr-10' size='3rem' />
         <div>Sort</div>
       </div>
       <div class='input-group'>
@@ -497,13 +495,15 @@
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
         <button
-          class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0'
+          class='btn btn-square bg-dark-light px-5 align-self-end border-0'
           type='button'
           title='Hide My Anime'
           use:click={toggleHideMyAnime}
           disabled={search.disableHide || search.disableSearch}
           class:text-primary={search.hideMyAnime}>
-          <label for='hide-my-anime' class='pointer mb-0'> tune </label>
+          <label for='hide-my-anime' class='pointer mb-0 d-flex align-items-center justify-content-center'>
+            <SlidersHorizontal size='1.625rem' />
+          </label>
         </button>
       </div>
     </div>
@@ -511,30 +511,36 @@
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
         <button
-          class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0'
+          class='btn btn-square bg-dark-light px-5 align-self-end border-0'
           type='button'
           title='Dubbed Audio'
           use:click={toggleSubs}
           disabled={search.disableSearch}
           class:text-primary={search.hideSubs}>
-          <label for='hide-subs' class='pointer mb-0'> mic </label>
+          <label for='hide-subs' class='pointer mb-0 d-flex align-items-center justify-content-center'>
+            <Mic size='1.625rem' />
+          </label>
         </button>
       </div>
     </div>
     <input type='file' class='d-none' id='search-image' accept='image/*' on:input|preventDefault|stopPropagation={handleFile} />
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
-        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button' title='Image Search'>
-          <label for='search-image' class='pointer mb-0'>
-            image
+        <button class='btn btn-square bg-dark-light px-5 align-self-end border-0' type='button' title='Image Search'>
+          <label for='search-image' class='pointer mb-0 d-flex align-items-center justify-content-center'>
+            <Image size='1.625rem' />
           </label>
         </button>
       </div>
     </div>
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
-        <button class='btn btn-square bg-dark-light material-symbols-outlined font-size-18 px-5 align-self-end border-0' type='button' title='Clear Search' use:click={searchClear} disabled={sanitisedSearch.length <= 0} class:text-danger={!!sanitisedSearch?.length || search.disableSearch || search.clearNext}>
-          {!!sanitisedSearch?.length || search.disableSearch || search.clearNext ? 'filter_alt_off' : 'filter_alt'}
+        <button class='btn btn-square bg-dark-light d-flex align-items-center justify-content-center px-5 align-self-end border-0' type='button' use:click={searchClear} disabled={sanitisedSearch.length <= 0} class:text-danger={!!sanitisedSearch?.length || search.disableSearch || search.clearNext}>
+          {#if !!sanitisedSearch?.length || search.disableSearch || search.clearNext}
+            <FilterX size='1.625rem' />
+          {:else}
+            <Filter size='1.625rem' />
+          {/if}
         </button>
       </div>
     </div>
@@ -546,14 +552,14 @@
           {@const filteredBadges = sanitisedSearch.filter(badge => badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title'))}
           <div class='d-flex flex-row align-items-center'>
             {#if filteredBadges.length > 0}
-              <span class='material-symbols-outlined font-size-24 mr-20 filled text-dark-light'>sell</span>
+              <Tags class='text-dark-light mr-20' size='3rem' />
             {/if}
           {#each badgeKeys as key}
             {@const matchingBadges = filteredBadges.filter(badge => badge.key === key)}
             {#each matchingBadges as badge}
               {#if badge.key === key && (badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title')) }
                 <div class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap d-flex align-items-center'>
-                  <div class='material-symbols-outlined font-size-18 mr-5'>{getBadgeDisplayName(badge.key)}</div>
+                  <svelte:component this={badgeDisplayNames[badge.key]} class='mr-5' size='1.8rem' />
                   <div class='font-size-12'>{badge.key === 'sort' ? getSortDisplayName(badge.value) : (badge.key === 'hideMyAnime' ? 'Hide My Anime' : badge.key === 'hideSubs' ? 'Dubbed' : ('' + badge.value).replace(/_/g, ' ').toLowerCase())}</div>
                   <button on:click={() => removeBadge(badge)} class='pointer bg-transparent border-0 text-white font-size-12 position-relative ml-10 pt-0' title='Remove Filter' type='button'>x</button>
                 </div>
@@ -564,15 +570,12 @@
         {/if}
       </div>
     </form>
-    <span class='material-symbols-outlined font-size-24 mr-10 filled ml-auto text-dark-light pointer' class:text-muted={$settings.cards === 'small'} use:click={() => changeCardMode('small')}>grid_on</span>
-    <span class='material-symbols-outlined font-size-24 filled text-dark-light pointer' class:text-muted={$settings.cards === 'full'} use:click={() => changeCardMode('full')}>grid_view</span>
+    <span class='mr-10 filled ml-auto text-dark-light pointer' class:text-muted={$settings.cards === 'small'} use:click={() => changeCardMode('small')}><Grid3X3 size='2.25rem' /></span>
+    <span class='text-dark-light pointer' class:text-muted={$settings.cards === 'full'} use:click={() => changeCardMode('full')}><Grid2X2 size='2.25rem' /></span>
   </div>
 </form>
 
 <style>
-  .text-dark-light {
-    color: var(--gray-color-light);
-  }
   .input-group,
   .container-fluid button, .pointer {
     transition: scale 0.2s ease;

@@ -3,6 +3,7 @@
   import { writable } from 'simple-store-svelte'
   import { anilistClient } from '@/modules/anilist.js'
   import IPC from '@/modules/ipc.js'
+  import { rss } from './views/TorrentSearch/TorrentModal.svelte'
 
   export const page = writable('home')
   export const overlay = writable('none')
@@ -14,6 +15,37 @@
   IPC.on('open-anime', handleAnime)
   IPC.on('schedule', () => {
     page.set('schedule')
+  })
+
+  let ignoreNext = false
+  function addPage (value, type) {
+    if (ignoreNext) {
+      ignoreNext = false
+      return
+    }
+    history.pushState({ type, value }, '', location.origin + location.pathname + '?id=' + Math.trunc(Math.random() * Number.MAX_SAFE_INTEGER).toString())
+  }
+  page.subscribe((value) => {
+    addPage(value, 'page')
+  })
+  view.subscribe((value) => {
+    addPage(value, 'view')
+  })
+
+  addPage('home', 'page')
+
+  window.addEventListener('popstate', e => {
+    const { state } = e
+    if (!state) return
+    ignoreNext = true
+    view.set(null)
+    rss.set(null)
+    if (document.fullscreenElement) document.exitFullscreen()
+    if (state.type === 'page') {
+      page.set(state.value)
+    } else {
+      view.set(state.value)
+    }
   })
 </script>
 

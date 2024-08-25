@@ -5,6 +5,8 @@
   import Scoring from '@/views/ViewAnime/Scoring.svelte'
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   import Helper from "@/modules/helper.js"
+  import { Heart } from 'lucide-svelte'
+
   export let mediaList
 
   let current = mediaList[0]
@@ -92,8 +94,8 @@
       use:click={() => playMedia(current)}>
       Watch Now
     </button>
-    <button class='btn bg-dark-light btn-square ml-10 material-symbols-outlined font-size-16 shadow-none border-0' class:filled={current.isFavourite} use:click={toggleFavourite} disabled={!Helper.isAniAuth()}>
-      favorite
+    <button class='btn bg-dark-light btn-square ml-10 d-flex align-items-center justify-content-center shadow-none border-0' use:click={toggleFavourite} disabled={!Helper.isAniAuth()}>
+      <Heart fill={current.isFavourite ? 'currentColor' : 'transparent'} size='1.5rem' />
     </button>
     <Scoring media={current} />
   </div>

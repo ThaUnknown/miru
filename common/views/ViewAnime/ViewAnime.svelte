@@ -16,6 +16,7 @@
   import SmallCard from "@/components/cards/SmallCard.svelte"
   import SkeletonCard from "@/components/cards/SkeletonCard.svelte"
   import Helper from "@/modules/helper.js"
+  import { ArrowLeft, Clapperboard, ExternalLink, Users, Heart, Play, Share2, Timer, TrendingUp, Tv } from 'lucide-svelte'
 
   export let overlay
   const view = getContext('view')
@@ -92,13 +93,24 @@
       close()
     }
   })
+
+// async function score (media, score) {
+    //   const variables = {
+    //     id: media.id,
+    //     score: score * 10
+    //   }
+    //   await anilistClient.entry(variables)
+    //   media = (await anilistClient.searchIDSingle({ id: media.id })).data.Media
+    // }
 </script>
 
 <div class='modal modal-full z-50' class:show={media} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
   {#if media}
     <div class='h-full modal-content bg-very-dark p-0 overflow-y-auto position-relative' bind:this={container} use:smoothScroll>
       {#if mediaList.length > 1}
-        <button class='close back pointer z-30 bg-dark top-20 left-0 position-fixed material-symbols-outlined filled' type='button' use:click={back}>arrow_back</button>
+        <button class='close back pointer z-30 bg-dark top-20 left-0 position-fixed' use:click={back}>
+          <ArrowLeft size='1.8rem' />
+        </button>
       {/if}
       <button class='close pointer z-30 bg-dark top-20 right-0 position-fixed' type='button' use:click={() => close()}> &times; </button>
       <img class='w-full cover-img banner position-absolute' alt='banner' src={media.bannerImage || ' '} />
@@ -113,7 +125,7 @@
               <div class='d-flex flex-row font-size-18 flex-wrap mt-5'>
                 {#if media.averageScore}
                   <div class='d-flex flex-row mt-10' title='{media.averageScore / 10} by {anilistClient.reviews(media)} reviews'>
-                    <span class='material-symbols-outlined mx-10 font-size-24'> trending_up </span>
+                    <TrendingUp class='mx-10' size='2.2rem' />
                     <span class='mr-20'>
                       Rating: {media.averageScore + '%'}
                     </span>
@@ -121,7 +133,7 @@
                 {/if}
                 {#if media.format}
                   <div class='d-flex flex-row mt-10'>
-                    <span class='material-symbols-outlined mx-10 font-size-24'> monitor </span>
+                    <Tv class='mx-10' size='2.2rem' />
                     <span class='mr-20 text-capitalize'>
                       Format: {formatMap[media.format]}
                     </span>
@@ -129,14 +141,14 @@
                 {/if}
                 {#if media.episodes !== 1 && getMediaMaxEp(media)}
                   <div class='d-flex flex-row mt-10'>
-                    <span class='material-symbols-outlined mx-10 font-size-24'> theaters </span>
+                    <Clapperboard class='mx-10' size='2.2rem' />
                     <span class='mr-20'>
                       Episodes: {getMediaMaxEp(media)}
                     </span>
                   </div>
                 {:else if media.duration}
                   <div class='d-flex flex-row mt-10'>
-                    <span class='material-symbols-outlined mx-10 font-size-24'> timer </span>
+                    <Timer class='mx-10' size='2.2rem' />
                     <span class='mr-20'>
                       Length: {media.duration + ' min'}
                     </span>
@@ -144,7 +156,7 @@
                 {/if}
                 {#if media.stats?.scoreDistribution}
                   <div class='d-flex flex-row mt-10'>
-                    <span class='material-symbols-outlined mx-10 font-size-24'> group </span>
+                    <Users class='mx-10' size='2.2rem' />
                     <span class='mr-20' title='{media.averageScore / 10} by {anilistClient.reviews(media)} reviews'>
                       Reviews: {anilistClient.reviews(media)}
                     </span>
@@ -158,22 +170,38 @@
                 <button class='btn btn-lg btn-secondary w-250 text-dark font-weight-bold shadow-none border-0 d-flex align-items-center justify-content-center mr-10 mt-20'
                   use:click={() => play()}
                   disabled={media.status === 'NOT_YET_RELEASED'}>
-                  <span class='material-symbols-outlined font-size-24 filled pr-10'>
-                    play_arrow
-                  </span>
+                  <Play class='mr-10' fill='currentColor' size='1.6rem' />
                   {playButtonText}
                 </button>
-                <div class='mt-20'>
-                  <button class='btn bg-dark btn-lg btn-square material-symbols-outlined font-size-20 shadow-none border-0' class:filled={media.isFavourite} use:click={toggleFavourite} disabled={!Helper.isAniAuth()}>
-                    favorite
+                <div class='mt-20 d-flex'>
+                  <button class='btn bg-dark btn-lg btn-square d-flex align-items-center justify-content-center shadow-none border-0' use:click={toggleFavourite} disabled={!Helper.isAniAuth()}>
+                    <Heart fill={media.isFavourite ? 'currentColor' : 'transparent'} size='1.7rem' />
                   </button>
                   <Scoring {media} viewAnime={true} />
-                  <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => copyToClipboard(`https://miru.watch/anime/${media.id}`)}>
-                    share
+                  <button class='btn bg-dark btn-lg btn-square d-flex align-items-center justify-content-center shadow-none border-0 ml-10' use:click={() => copyToClipboard(`https://miru.watch/anime/${media.id}`)}>
+                    <Share2 size='1.7rem' />
                   </button>
-                  <button class='btn bg-dark btn-lg btn-square ml-10 material-symbols-outlined font-size-20 shadow-none border-0' use:click={() => openInBrowser(`https://anilist.co/anime/${media.id}`)}>
-                    open_in_new
+                  <button class='btn bg-dark btn-lg btn-square d-flex align-items-center justify-content-center shadow-none border-0 ml-10' use:click={() => openInBrowser(`https://anilist.co/anime/${media.id}`)}>
+                    <ExternalLink size='1.7rem' />
                   </button>
+                  <!-- <div class='input-group shadow-lg mb-5 font-size-16'>
+                    <div class='input-group-prepend'>
+                      <span class='input-group-text bg-tp pl-15 d-flex font-size-18'>hotel_class</span> stars
+                    </div>
+                    <select class='form-control' required value={(media.mediaListEntry?.score || '').toString()} on:change={({ target }) => { score(media, Number(target.value)) }}>
+                      <option value selected disabled hidden>Score</option>
+                      <option>1</option>
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                      <option>5</option>
+                      <option>6</option>
+                      <option>7</option>
+                      <option>8</option>
+                      <option>9</option>
+                      <option>10</option>
+                    </select>
+                  </div> -->
                 </div>
               </div>
             </div>

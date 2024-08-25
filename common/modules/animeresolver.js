@@ -78,7 +78,8 @@ export default new class AnimeResolver {
 
     debug(`Finding ${titleObjects.length} titles: ${titleObjects.map(obj => obj.title).join(', ')}`)
 
-    for (const chunk of chunks(titleObjects, 62)) { // single title has a complexity of 8.1, al limits complexity to 500
+    for (const chunk of chunks(titleObjects, 60)) {
+      // single title has a complexity of 8.1, al limits complexity to 500, so this can be at most 62, undercut it to 60, al pagination is 50, but at most we'll do 30 titles since isAduld duplicates each title
       for (const [key, media] of await anilistClient.alSearchCompound(chunk)) {
         debug(`Found ${key} as ${media.id}: ${media.title.userPreferred}`)
         this.animeNameCache[key] = media

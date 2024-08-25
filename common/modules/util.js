@@ -183,7 +183,11 @@ export const defaults = {
   angle: 'default',
   toshoURL: SUPPORTS.extensions ? decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnLw==')) : '',
   extensions: SUPPORTS.extensions ? ['@thaunknown/ani-resourced'] : [],
-  sources: {}
+  sources: {},
+  enableExternal: false,
+  playerPath: '',
+  playerSeek: 2,
+  playerSkip: false
 }
 
 export const subtitleExtensions = ['srt', 'vtt', 'ass', 'ssa', 'sub', 'txt']

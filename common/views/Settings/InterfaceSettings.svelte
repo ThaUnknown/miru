@@ -5,6 +5,7 @@
   import IPC from '@/modules/ipc.js'
   import SettingCard from './SettingCard.svelte'
   import { SUPPORTS } from '@/modules/support.js'
+  import { Trash2 } from 'lucide-svelte'
   import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
   import Helper from "@/modules/helper.js"
   function updateAngle () {
@@ -99,7 +100,7 @@
           <option value='Judas [Small Size]'>{settings.toshoURL + 'rss2?qx=1&q="[Judas] "'}</option>
         </datalist>
         <div class='input-group-append'>
-          <button type='button' use:click={() => { settings.rssFeedsNew.splice(i, 1); settings.rssFeedsNew = settings.rssFeedsNew }} class='btn btn-danger input-group-append px-5 material-symbols-outlined font-size-20'>delete</button>
+          <button type='button' use:click={() => { settings.rssFeedsNew.splice(i, 1); settings.rssFeedsNew = settings.rssFeedsNew }} class='btn btn-danger btn-square input-group-append px-5 d-flex align-items-center'><Trash2 size='1.8rem' /></button>
         </div>
       </div>
     {/each}
