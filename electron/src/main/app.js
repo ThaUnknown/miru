@@ -63,6 +63,7 @@ export default class App {
     ipcMain.on('ui-devtools', ({ sender }) => sender.openDevTools())
 
     this.mainWindow.on('closed', () => this.destroy())
+    this.webtorrentWindow.on('closed', () => this.destroy())
     ipcMain.on('close', () => this.destroy())
     app.on('before-quit', e => {
       if (this.destroyed) return

@@ -105,7 +105,7 @@ export default class TorrentClient extends WebTorrent {
     setInterval(() => {
       if (this.torrents[0]?.pieces) this.dispatch('progress', this.current?.progress)
     }, 2000)
-    this.on('torrent', this.handleTorrent.bind(this))
+    this.on('torrent', this.torrentReady.bind(this))
 
     const createServer = controller => {
       this.server = this.createServer({ controller }, serverMode)
@@ -142,7 +142,7 @@ export default class TorrentClient extends WebTorrent {
     if (torrent) this.addTorrent(torrent, JSON.parse(localStorage.getItem('lastFinished')))
   }
 
-  async handleTorrent (torrent) {
+  async torrentReady (torrent) {
     debug('Got torrent metadata: ' + torrent.name)
     const files = torrent.files.map(file => {
       return {
@@ -156,6 +156,12 @@ export default class TorrentClient extends WebTorrent {
     })
     this.dispatch('files', files)
     this.dispatch('magnet', { magnet: torrent.magnetURI, hash: torrent.infoHash })
+    setTimeout(() => {
+      if (torrent.destroyed) return
+      if (torrent.progress !== 1) {
+        if (torrent.numPeers === 0) this.dispatchError('No peers found for torrent, try using a different torrent.')
+      }
+    }, 10000).unref?.()
     localStorage.setItem('torrent', JSON.stringify([...torrent.torrentFile])) // this won't work on mobile, but really it only speeds stuff up by ~1-2 seconds since magnet data doesn't need to be resolved
   }
 
@@ -283,7 +289,7 @@ export default class TorrentClient extends WebTorrent {
     debug('Adding torrent: ' + data)
     const existing = await this.get(data)
     if (existing) {
-      if (existing.ready) this.handleTorrent(existing)
+      if (existing.ready) this.torrentReady(existing)
       return
     }
     localStorage.setItem('lastFinished', 'false')
@@ -298,8 +304,19 @@ export default class TorrentClient extends WebTorrent {
       deselect: this.settings.torrentStreamedDownload
     })
 
+    torrent.once('verified', () => {
+      if (!torrent.ready && !skipVerify) this.dispatch('info', 'Detected already downloaded files. Verifying file integrity. This might take a minute...')
+    })
+
+    setTimeout(() => {
+      if (torrent.destroyed || skipVerify) return
+      if (!torrent.progress || !torrent.ready) {
+        if (torrent.numPeers === 0) this.dispatchError('No peers found for torrent, try using a different torrent.')
+      }
+    }, 10000).unref?.()
+
     torrent.once('done', () => {
-      if (SUPPORTS.torrentPersist && this.settings.torrentPath) localStorage.setItem('lastFinished', 'true')
+      if (this.settings.torrentPathNew) localStorage.setItem('lastFinished', 'true')
     })
   }
 
