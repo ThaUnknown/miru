@@ -35,7 +35,7 @@
   let rows = 1
 
   function sendMessage () {
-    if (message) {
+    if (message.trim()) {
       state.value.message(message.trim())
       message = ''
       rows = 1
@@ -43,8 +43,9 @@
   }
 
   function checkInput (e) {
-    if (e.key === 'Enter' && e.shiftKey === false && message) {
+    if (e.key === 'Enter' && e.shiftKey === false && message.trim()) {
       sendMessage()
+      e.preventDefault()
     } else {
       rows = message.split('\n').length || 1
     }
@@ -71,7 +72,7 @@
           style='resize: none; min-height: 0 !important'
           autocomplete='off'
           maxlength='2048'
-          placeholder='Message' on:keyup={checkInput} />
+          placeholder='Message' on:keydown={checkInput} />
         <button class='btn d-flex mt-auto align-items-center justify-content-center ml-20 border-0 px-0 shadow-none' type='button' use:click={sendMessage} style='height: 3.75rem !important; width: 3.75rem !important;'>
           <SendHorizontal size='1.8rem' strokeWidth={2.5} />
         </button>
