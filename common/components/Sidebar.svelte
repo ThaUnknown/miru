@@ -8,7 +8,7 @@
   import { logout } from './Logout.svelte'
   import IPC from '@/modules/ipc.js'
   import SidebarLink from './SidebarLink.svelte'
-  import { Clock, Download, Heart, Home, ListMusic, LogIn, Settings, Users } from 'lucide-svelte'
+  import { Clock, Download, Heart, Home, ListVideo, LogIn, Settings, Users } from 'lucide-svelte'
   import { MagnifyingGlass } from 'svelte-radix'
 
   let updateState = ''
@@ -56,7 +56,7 @@
     </SidebarLink>
     {#if $media?.media}
       <SidebarLink click={() => { $view = $media.media }} icon='queue_music' text='Now Playing' {page} let:active>
-        <ListMusic size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded' strokeWidth={active ? '3.5' : '2'} />
+        <ListVideo size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded' strokeWidth={active ? '3.5' : '2'} />
       </SidebarLink>
     {/if}
     <SidebarLink click={() => { page = 'watchtogether' }} _page='watchtogether' icon='groups' text='Watch Together' {page} let:active>

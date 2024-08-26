@@ -5,7 +5,7 @@
   import IPC from '@/modules/ipc.js'
   import NavbarLink from './NavbarLink.svelte'
   import { MagnifyingGlass } from 'svelte-radix'
-  import { Users, Clock, ListMusic, Settings, Heart } from 'lucide-svelte'
+  import { Users, Clock, Settings, Heart, ListVideo } from 'lucide-svelte'
   const view = getContext('view')
   export let page
   function close () {
@@ -25,7 +25,7 @@
     </NavbarLink>
     {#if $media?.media}
       <NavbarLink click={() => { $view = $media.media }} icon='queue_music' {page} let:active>
-        <ListMusic size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded' strokeWidth={active ? '3.5' : '2'} />
+        <ListVideo size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded' strokeWidth={active ? '3.5' : '2'} />
       </NavbarLink>
     {/if}
     <NavbarLink click={() => { page = 'watchtogether' }} _page='watchtogether' icon='groups' {page} let:active>
