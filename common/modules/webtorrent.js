@@ -310,7 +310,7 @@ export default class TorrentClient extends WebTorrent {
 
     setTimeout(() => {
       if (torrent.destroyed || skipVerify) return
-      if (!torrent.progress || !torrent.ready) {
+      if (!torrent.progress && !torrent.ready) {
         if (torrent.numPeers === 0) this.dispatchError('No peers found for torrent, try using a different torrent.')
       }
     }, 10000).unref?.()
