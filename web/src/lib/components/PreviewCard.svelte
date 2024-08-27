@@ -46,7 +46,7 @@
 </script>
 
 <div class='position-absolute w-350 h-400 absolute-container z-10 top-0 bottom-0 m-auto bg-dark-light rounded overflow-hidden pointer'>
-  <div class='banner position-relative bg-black'>
+  <div class='banner position-relative bg-black overflow-hidden'>
     <img src={media.bannerImage || ' '} alt='banner' class='img-cover w-full h-full' loading='lazy' />
     {#if media.trailer?.id}
       <div class='material-symbols-outlined filled position-absolute z-10 top-0 right-0 p-15 font-size-22' class:d-none={hide} use:click={toggleMute}>{muted ? 'volume_off' : 'volume_up'}</div>
@@ -131,16 +131,16 @@
   .banner {
     height: 45%
   }
-  video {
+  /* video {
     object-fit: cover;
-  }
+  } */
   .banner::after {
     content: '';
     position: absolute;
     left: 0 ; bottom: 0;
     margin-bottom: -1px;
     width: 100%; height: 100% ;
-    background: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292fe3 95%, #25292f 100%);
+    background: var(--preview-card-gradient);
   }
   @keyframes load-in {
     from {
@@ -159,5 +159,18 @@
     animation: 0.3s ease 0s 1 load-in;
     left: -100%;
     right: -100%;
+  }
+  @keyframes delayedShow {
+    to {
+      visibility: visible;
+    }
+  }
+
+   iframe {
+    height: 200%;
+    top: 50%;
+    transform: translate(0, -50%);
+    visibility: hidden;
+    animation: 0s linear 0.5s forwards delayedShow;
   }
 </style>
