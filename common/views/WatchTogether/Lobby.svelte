@@ -4,6 +4,8 @@
   import Message from './Message.svelte'
   import { SendHorizontal, DoorOpen, UserPlus } from 'lucide-svelte'
   export let invite
+
+  /** @type {import('simple-store-svelte').Writable<import('./w2g.js').W2GClient | null>} */
   export let state
 
   function cleanup () {

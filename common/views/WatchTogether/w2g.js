@@ -103,7 +103,8 @@ export class W2GClient extends EventEmitter {
   }
 
   _playerStateChanged (state) {
-    debug(`_playerStateChanged: ${this.player.paused} ${state.paused} ${this.player.time} ${state.time}`)
+    debug(`_playerStateChanged: ${this.player?.paused} ${state?.paused} ${this.player?.time} ${state?.time}`)
+    if (!state) return false
     if (this.player.paused !== state.paused || this.player.time !== state.time) {
       this.player = state
       return true
@@ -177,6 +178,7 @@ export class W2GClient extends EventEmitter {
         })
         break
       case EventTypes.MagnetLinkEvent: {
+        if (data.payload?.magnet === undefined) break
         const { hash, magnet } = data.payload
         if (hash !== this.magnet?.hash) {
           this.isHost = false
@@ -187,6 +189,7 @@ export class W2GClient extends EventEmitter {
         break
       }
       case EventTypes.MediaIndexEvent: {
+        if (data.payload?.index === undefined) break
         if (this.index !== data.payload.index) {
           this.index = data.payload.index
           this.emit('index', data.payload.index)
@@ -194,6 +197,7 @@ export class W2GClient extends EventEmitter {
         break
       }
       case EventTypes.PlayerStateEvent: {
+        if (data.payload?.time === undefined) break
         if (this._playerStateChanged(data.payload)) this.emit('player', data.payload)
         break
       }
