@@ -133,9 +133,9 @@ export default class App {
     ipcMain.on('portRequest', async ({ sender }) => {
       const { port1, port2 } = new MessageChannelMain()
       await torrentLoad
-      this.webtorrentWindow.webContents.postMessage('port', null, [port1])
       this.webtorrentWindow.webContents.postMessage('player', store.get('player'))
       this.webtorrentWindow.webContents.postMessage('torrentPath', store.get('torrentPath'))
+      this.webtorrentWindow.webContents.postMessage('port', null, [port1])
       sender.postMessage('port', null, [port2])
     })
 
