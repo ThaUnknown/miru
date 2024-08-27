@@ -85,7 +85,7 @@
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.genre} disabled={search.disableSearch}>
-          <option value selected disabled hidden>Any</option>
+          <option value selected>Any</option>
           <option value='Action'>Action</option>
           <option value='Adventure'>Adventure</option>
           <option value='Comedy'>Comedy</option>
@@ -114,7 +114,7 @@
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light border-right-dark' required bind:value={search.season} disabled={search.disableSearch}>
-          <option value selected disabled hidden>Any</option>
+          <option value selected>Any</option>
           <option value='WINTER'>Winter</option>
           <option value='SPRING'>Spring</option>
           <option value='SUMMER'>Summer</option>
@@ -136,7 +136,7 @@
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.format} disabled={search.disableSearch}>
-          <option value selected disabled hidden>Any</option>
+          <option value selected>Any</option>
           <option value='TV'>TV Show</option>
           <option value='MOVIE'>Movie</option>
           <option value='TV_SHORT'>TV Short</option>
@@ -152,7 +152,7 @@
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.status} disabled={search.disableSearch}>
-          <option value selected disabled hidden>Any</option>
+          <option value selected>Any</option>
           <option value='RELEASING'>Airing</option>
           <option value='FINISHED'>Finished</option>
           <option value='NOT_YET_RELEASED'>Not Yet Aired</option>
@@ -167,12 +167,12 @@
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.sort} disabled={search.disableSearch}>
-          <option value selected disabled hidden>Name</option>
+          <option value selected>Name</option>
           <option value='START_DATE_DESC'>Release Date</option>
           <option value='SCORE_DESC'>Score</option>
           <option value='POPULARITY_DESC'>Popularity</option>
           <option value='TRENDING_DESC'>Trending</option>
-          <option value='UPDATED_TIME_DESC' disabled hidden>Updated Date</option>
+          <option value='UPDATED_AT_DESC'>Updated Date</option>
         </select>
       </div>
     </div>
