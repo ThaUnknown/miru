@@ -8,7 +8,7 @@
 </script>
 
 <div class='d-flex align-items-center pb-10'>
-  <img src={user?.avatar?.medium || 'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png'} alt='ProfilePicture' class='w-50 h-50 rounded-circle p-5 mt-auto' />
+  <img src={user?.avatar?.medium || user?.picture || 'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png'} alt='ProfilePicture' class='w-50 h-50 rounded-circle p-5 mt-auto' />
   <div class='font-size-18 line-height-normal pl-5'>
     {user?.name || 'Anonymous'}
   </div>
