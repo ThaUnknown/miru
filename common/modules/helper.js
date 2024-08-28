@@ -2,7 +2,9 @@ import { alToken, malToken, isAuthorized } from '@/modules/settings.js'
 import { anilistClient, codes } from '@/modules/anilist.js'
 import { malClient } from '@/modules/myanimelist.js'
 import { malDubs } from "@/modules/animedubs.js"
+import { profiles } from '@/modules/settings.js'
 import { toast } from 'svelte-sonner'
+import { get } from 'svelte/store'
 import Fuse from 'fuse.js'
 import Debug from 'debug'
 
@@ -178,7 +180,7 @@ export default class Helper {
    */
   static async fillEntry(media) {
     if (this.isMalAuth()) {
-      debug(`Filling myanimelist entry data for ${media.id}`)
+      debug(`Filling MyAnimeList entry data for ${media?.id} (AniList)`)
       const userLists = await malClient.userLists.value
       const malEntry = userLists.data.MediaList.find(({ node }) => node.id === media.idMal)
       if (malEntry) {
@@ -212,9 +214,9 @@ export default class Helper {
     // check if values exist
     if (filemedia.media && this.isAuthorized()) {
       const { media, failed } = filemedia
-      debug(`Checking entry for ${media.title.userPreferred}`)
+      debug(`Checking entry for ${media?.title?.userPreferred}`)
 
-      debug(`Media viability: ${media.status}, Is from failed resolve: ${failed}`)
+      debug(`Media viability: ${media?.status}, Is from failed resolve: ${failed}`)
       if (failed) return
       if (media.status !== 'FINISHED' && media.status !== 'RELEASING') return
 
@@ -264,10 +266,9 @@ export default class Helper {
       }
       this.listToast(res, description, false)
 
-      if (this.getUser().sync) { // handle profile syncing
+      if (this.getUser().sync) { // handle profile entry syncing
         const mediaId = media.id
-        const profiles = JSON.parse(localStorage.getItem('profiles')) || []
-        for (const profile of profiles) {
+        for (const profile of get(profiles)) {
           if (profile.viewer?.data?.Viewer.sync) {
             let res
             if (profile.viewer?.data?.Viewer?.avatar) {

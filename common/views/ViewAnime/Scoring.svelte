@@ -1,7 +1,8 @@
 <script>
   import { anilistClient, codes } from '@/modules/anilist.js'
+  import { profiles } from '@/modules/settings.js'
   import { click } from '@/modules/click.js'
-  import { writable } from 'svelte/store'
+  import { get, writable } from 'svelte/store'
   import { toast } from 'svelte-sonner'
   import { Bookmark, PencilLine } from 'lucide-svelte'
   import Helper from '@/modules/helper.js'
@@ -67,8 +68,7 @@
 
       if (Helper.getUser().sync) { // handle profile syncing
         const mediaId = media.id
-        const profiles = JSON.parse(localStorage.getItem('profiles')) || []
-        for (const profile of profiles) {
+        for (const profile of get(profiles)) {
           if (profile.viewer?.data?.Viewer.sync) {
             const anilist = profile.viewer?.data?.Viewer?.avatar
             const listId = (anilist ? {id: (await anilistClient.getUserLists({userID: profile.viewer.data.Viewer.id, token: profile.token}))?.data?.MediaListCollection?.lists?.flatMap(list => list.entries).find(({ media }) => media.id === mediaId)?.media?.mediaListEntry?.id} : {idMal: media.idMal})
@@ -107,8 +107,7 @@
       printToast(res, description, true, false)
       if (Helper.getUser().sync) { // handle profile syncing
         const mediaId = media.id
-        const profiles = JSON.parse(localStorage.getItem('profiles')) || []
-        for (const profile of profiles) {
+        for (const profile of get(profiles)) {
           if (profile.viewer?.data?.Viewer.sync) {
             const anilist = profile.viewer?.data?.Viewer?.avatar
             const currentLists = (anilist ? (await anilistClient.getUserLists({userID: profile.viewer.data.Viewer.id, token: profile.token}))?.data?.MediaListCollection?.lists?.flatMap(list => list.entries).find(({ media }) => media.id === mediaId)?.media?.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || [] : lists)

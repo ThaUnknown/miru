@@ -1,7 +1,7 @@
 <script context='module'>
   import { generateRandomString } from "@/modules/util.js"
   import { get, writable } from 'simple-store-svelte'
-  import { swapProfiles, alToken, malToken } from '@/modules/settings.js'
+  import { swapProfiles, alToken, malToken, profiles } from '@/modules/settings.js'
   import { platformMap } from '@/views/Settings/Settings.svelte'
   import { clientID } from "@/modules/myanimelist.js"
   import { click } from '@/modules/click.js'
@@ -12,7 +12,10 @@
   export const profileView = writable(false)
   const profileAdd = writable(false)
   const currentProfile = writable(alToken || malToken)
-  const profiles = writable(JSON.parse(localStorage.getItem('profiles')) || [])
+
+  profiles.subscribe(() => {
+      currentProfile.set(alToken || malToken)
+  })
 
   function isAniProfile (profile) {
     return profile.viewer?.data?.Viewer?.avatar
@@ -25,9 +28,7 @@
 
   function dropProfile (profile) {
     profiles.update(profiles => {
-      const updatedProfiles = profiles.filter(p => p.viewer.data.Viewer.id !== profile.viewer?.data?.Viewer.id)
-      localStorage.setItem('profiles', JSON.stringify(updatedProfiles))
-      return updatedProfiles
+      return profiles.filter(p => p.viewer.data.Viewer.id !== profile.viewer?.data?.Viewer.id)
     })
   }
 
@@ -43,14 +44,12 @@
       localStorage.setItem(isAniProfile(mainProfile) ? 'ALviewer' : 'MALviewer', JSON.stringify(mainProfile))
     } else {
       profiles.update(profiles => {
-        const updatedProfiles = profiles.map(p => {
+        return profiles.map(p => {
           if (p.viewer.data.Viewer.id === profile.viewer.data.Viewer.id) {
             p.viewer.data.Viewer.sync = !p.viewer.data.Viewer.sync
           }
           return p
         })
-        localStorage.setItem('profiles', JSON.stringify(updatedProfiles))
-        return updatedProfiles
       })
     }
   }

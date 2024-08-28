@@ -1,4 +1,4 @@
-import { writable } from 'simple-store-svelte'
+import { get, writable } from 'simple-store-svelte'
 import { defaults } from './util.js'
 import IPC from '@/modules/ipc.js'
 import { toast } from 'svelte-sonner'
@@ -6,6 +6,7 @@ import Debug from 'debug'
 
 const debug = Debug('ui:anilist')
 
+export let profiles = writable(JSON.parse(localStorage.getItem('profiles')) || [])
 /** @type {{viewer: import('./al').Query<{Viewer: import('./al').Viewer}>, token: string} | null} */
 export let alToken = JSON.parse(localStorage.getItem('ALviewer')) || null
 /** @type {{viewer: import('./mal').Query<{Viewer: import('./mal').Viewer}>, token: string} | null} */
@@ -34,6 +35,10 @@ export const settings = writable({ ...defaults, ...scopedDefaults, ...storedSett
 
 settings.subscribe(value => {
   localStorage.setItem('settings', JSON.stringify(value))
+})
+
+profiles.subscribe(value => {
+  localStorage.setItem('profiles', JSON.stringify(value))
 })
 
 export function resetSettings () {
@@ -125,49 +130,55 @@ async function handleMalToken (code, state) {
 
 export async function refreshMalToken (token) {
   const { clientID } = await import('./myanimelist.js')
-  const response = await fetch('https://myanimelist.net/v1/oauth2/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      client_id: clientID,
-      grant_type: 'refresh_token',
-      refresh_token: malToken.refresh
+  const refresh = malToken?.token === token ? malToken.refresh : get(profiles).find(profile => profile.token === token)?.refresh
+  let response
+  if (!refresh || !(refresh.length > 0)) {
+    response = await fetch('https://myanimelist.net/v1/oauth2/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: clientID,
+        grant_type: 'refresh_token',
+        refresh_token: refresh
+      })
     })
-  })
-  if (!response.ok) {
+  }
+  if (!refresh || !(refresh.length > 0) || !response.ok) {
     toast.error('Failed to re-authenticate with MyAnimeList. You will need to log in again.', { description: JSON.stringify(response.status) })
-    debug(`Failed to refresh MyAnimeList User Token: ${JSON.stringify(response)}`)
-    if (malToken.token === token) {
+    debug(`Failed to refresh MyAnimeList User Token ${ !refresh || !(refresh.length > 0) ? 'as the refresh token could not be fetched!' : ': ' + JSON.stringify(response)}`)
+    if (malToken?.token === token) {
       swapProfiles(null)
+      location.reload()
     } else {
-      const profiles = JSON.parse(localStorage.getItem('profiles')) || []
-      localStorage.setItem('profiles', JSON.stringify(profiles.filter(profile => profile.token !== token)))
+      profiles.update(profiles =>
+          profiles.filter(profile => profile.token !== token)
+      )
     }
     return
   }
   const oauth = await response.json()
-  if (malToken.token === token) {
+  if (malToken?.token === token) {
     const viewer = malToken.viewer
-    malToken = { token: oauth.access_token, refresh:oauth.refresh_token, viewer: viewer }
+    malToken = { token: oauth.access_token, refresh: oauth.refresh_token, viewer: viewer }
     localStorage.setItem('MALviewer', JSON.stringify({ token: oauth.access_token, refresh: oauth.refresh_token, viewer }))
   } else {
-    let profiles = JSON.parse(localStorage.getItem('profiles')) || []
-    profiles = profiles.map(profile => {
-      if (profile.token === token) {
-        return {...profile, token: oauth.access_token, refresh: oauth.refresh_token}
-      }
-      return profile
-    })
-    localStorage.setItem('profiles', JSON.stringify(profiles))
+    profiles.update(profiles =>
+        profiles.map(profile => {
+          if (profile.token === token) {
+            return { ...profile, token: oauth.access_token, refresh: oauth.refresh_token }
+          }
+          return profile
+        })
+    )
   }
+  return oauth
 }
 
 export function swapProfiles(profile) {
-  let profiles = JSON.parse(localStorage.getItem('profiles')) || []
   const currentProfile = isAuthorized()
-  const newProfile = profile !== null && !profiles.some(p => p.viewer?.data?.Viewer?.id === currentProfile?.viewer?.data?.Viewer?.id)
+  const newProfile = profile !== null && !get(profiles).some(p => p.viewer?.data?.Viewer?.id === currentProfile?.viewer?.data?.Viewer?.id)
 
   if (currentProfile) {
     const torrent = localStorage.getItem('torrent')
@@ -176,26 +187,30 @@ export function swapProfiles(profile) {
     if (torrent) currentProfile.viewer.data.Viewer.torrent = torrent
     if (lastFinished) currentProfile.viewer.data.Viewer.lastFinished = lastFinished
     if (settings) currentProfile.viewer.data.Viewer.settings = settings
-    if (newProfile) profiles.unshift(currentProfile)
+    if (newProfile) profiles.update(currentProfiles => [currentProfile, ...currentProfiles])
   }
   localStorage.removeItem(alToken ? 'ALviewer' : 'MALviewer')
 
-  if (profile === null && profiles.length > 0) {
-    const firstProfile = profiles.shift()
-    setViewer(firstProfile)
+  if (profile === null && get(profiles).length > 0) {
+    let firstProfile
+    profiles.update(profiles => {
+        firstProfile = profiles[0]
+        setViewer(firstProfile)
+        return profiles.slice(1)
+    })
   } else if (profile !== null) {
-    profiles = profiles.filter(p => p.viewer?.data?.Viewer?.id !== profile.viewer?.data?.Viewer?.id)
     setViewer(profile)
+    profiles.update(profiles =>
+        profiles.filter(p => p.viewer?.data?.Viewer?.id !== profile.viewer?.data?.Viewer?.id)
+    )
   } else {
     alToken = null
     malToken = null
   }
-
-  localStorage.setItem('profiles', JSON.stringify(profiles))
 }
 
 function setViewer (profile) {
-  const { torrent, lastFinished, settings } = profile.viewer?.data?.Viewer
+  const { torrent, lastFinished, settings } = profile?.viewer?.data?.Viewer
   if (torrent) {
     localStorage.setItem('torrent', torrent)
   } else if (isAuthorized()) {
@@ -210,6 +225,13 @@ function setViewer (profile) {
     localStorage.setItem('settings', settings)
   } else if (isAuthorized()) {
     localStorage.setItem('settings', writable({ ...defaults, ...scopedDefaults}))
+  }
+  if (profile?.viewer?.data?.Viewer?.avatar) {
+    alToken = profile
+    malToken = null
+  } else {
+    malToken = profile
+    alToken = null
   }
   localStorage.setItem(profile.viewer?.data?.Viewer?.avatar ? 'ALviewer' : 'MALviewer', JSON.stringify(profile))
 }
