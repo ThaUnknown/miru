@@ -1,8 +1,10 @@
 import { writable } from 'simple-store-svelte'
+import Bottleneck from 'bottleneck'
 
 import { malToken, refreshMalToken } from '@/modules/settings.js'
 import { codes } from "@/modules/anilist.js"
 import { toast } from 'svelte-sonner'
+import { sleep } from "@/modules/util.js";
 import Helper from '@/modules/helper.js'
 import Debug from 'debug'
 
@@ -44,6 +46,16 @@ const queryFields =  [
 ]
 
 class MALClient {
+  limiter = new Bottleneck({
+    reservoir: 20,
+    reservoirRefreshAmount: 20,
+    reservoirRefreshInterval: 4 * 1000,
+    maxConcurrent: 2,
+    minTime: 1000
+  })
+
+  rateLimitPromise = null
+
   /** @type {import('simple-store-svelte').Writable<ReturnType<MALClient['getUserLists']>>} */
   userLists = writable()
 
@@ -51,6 +63,20 @@ class MALClient {
 
   constructor () {
     debug('Initializing MyAnimeList Client for ID ' + this.userID?.viewer?.data?.Viewer?.id)
+    this.limiter.on('failed', async (error, jobInfo) => {
+      printError(error)
+
+      if (error.status === 500) return 1
+
+      if (!error.statusText) {
+        if (!this.rateLimitPromise) this.rateLimitPromise = sleep(5 * 1000).then(() => { this.rateLimitPromise = null })
+        return 5 * 1000
+      }
+      const time = ((error.headers.get('retry-after') || 5) + 1) * 1000
+      if (!this.rateLimitPromise) this.rateLimitPromise = sleep(time).then(() => { this.rateLimitPromise = null })
+      return time
+    })
+
     if (this.userID?.viewer?.data?.Viewer) {
       this.userLists.value = this.getUserLists({ sort: 'list_updated_at' })
       //  update userLists every 15 mins
@@ -85,7 +111,8 @@ class MALClient {
    * @param {Record<string, any>} options
    * @returns {Promise<import('./mal').Query<any>>}
    */
-  async handleRequest (query, options) {
+  handleRequest = this.limiter.wrap(async (query, options) => {
+    await this.rateLimitPromise
     let res = {}
     try {
       res = await fetch(`https://api.myanimelist.net/v2/${query.path}`, options)
@@ -173,7 +200,6 @@ class MALClient {
         hasNextPage = false
       } else {
         offset += limit
-        await new Promise(resolve => setTimeout(resolve, 1000)) // 1-second delay to prevent too many consecutive requests ip block.
       }
     }
 
