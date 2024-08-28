@@ -49,7 +49,7 @@
   <div class='banner position-relative bg-black overflow-hidden'>
     <img src={media.bannerImage || (media.trailer?.id ? `https://i.ytimg.com/vi/${media.trailer?.id}/hqdefault.jpg` : media.coverImage?.extraLarge || ' ')} alt='banner' class='img-cover w-full h-full' />
     {#if media.trailer?.id}
-      <div class='position-absolute z-10 top-0 right-0 p-15' use:click={toggleMute}>
+      <div class='position-absolute z-10 top-0 right-0 p-15 sound' use:click={toggleMute}>
         {#if muted}
           <VolumeX size='2.2rem' fill='currentColor' />
         {:else}
@@ -169,6 +169,9 @@
   }
   .banner {
     height: 45%
+  }
+  .sound {
+   filter: drop-shadow(0 0 .4rem rgba(0, 0, 0, 1))
   }
   /* video {
     object-fit: cover;
