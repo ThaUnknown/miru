@@ -23,6 +23,7 @@ export const codes = {
   410: 'Gone',
   412: 'Precondition Failed',
   413: 'Request Entity Too Large',
+  422: 'Unprocessable Entity',
   429: 'Too Many Requests',
   500: 'Internal Server Error',
   501: 'Not Implemented',
