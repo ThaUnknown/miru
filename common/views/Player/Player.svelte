@@ -1217,6 +1217,11 @@
       {#if playbackRate !== 1}
         <div class='ts mr-auto'>x{playbackRate.toFixed(1)}</div>
       {/if}
+      {#if video}
+        <span class='icon ctrl mr-5 d-flex align-items-center reload-video' title='Reload Video' use:click={() => video.load()}>
+          <RefreshCw size='2.5rem' strokeWidth={2.5} />
+        </span>
+      {/if}
       <span class='icon ctrl mr-5 d-flex align-items-center keybinds' title='Keybinds [`]' use:click={() => (showKeybinds = true)}>
         <Keyboard size='2.5rem' strokeWidth={2.5} />
       </span>
