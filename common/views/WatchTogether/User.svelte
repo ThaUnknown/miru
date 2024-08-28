@@ -13,7 +13,7 @@
     {user?.name || 'Anonymous'}
   </div>
   {#if user?.name}
-    <span class='pointer text-primary d-flex align-items-center ml-auto' use:click={() => IPC.emit('open', 'https://anilist.co/user/' + user.name)}>
+    <span class='pointer text-primary d-flex align-items-center ml-auto' use:click={() => IPC.emit('open', (user?.avatar?.medium ? 'https://anilist.co/user/' : 'https://myanimelist.net/profile/') + user.name)}>
       <ExternalLink size='2rem' />
     </span>
   {/if}

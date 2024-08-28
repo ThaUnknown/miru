@@ -3,7 +3,7 @@ import { EventEmitter } from 'events'
 import P2PT from 'p2pt'
 
 import Event, { EventTypes } from './events.js'
-import { anilistClient } from '@/modules/anilist.js'
+import Helper from '@/modules/helper.js'
 import { add } from '@/modules/torrent.js'
 import { generateRandomHexCode } from '@/modules/util.js'
 import { writable } from 'simple-store-svelte'
@@ -37,7 +37,7 @@ export class W2GClient extends EventEmitter {
   /** @type {import('simple-store-svelte').Writable<{message: string, user: import('@/modules/al.d.ts').Viewer | {id: string }, type: 'incoming' | 'outgoing', date: Date}[]>} */
   messages = writable([])
 
-  self = anilistClient.userID?.viewer.data.Viewer || { id: generateRandomHexCode(16) }
+  self = Helper.getUser() || { id: generateRandomHexCode(16) }
   /** @type {import('simple-store-svelte').Writable<PeerList>} */
   peers = writable({ [this.self.id]: { user: this.self } })
 
