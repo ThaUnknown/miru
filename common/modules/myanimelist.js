@@ -1,7 +1,7 @@
 import { writable } from 'simple-store-svelte'
 
 import { malToken, refreshMalToken } from '@/modules/settings.js'
-import { codes } from "@/modules/anilist"
+import { codes } from "@/modules/anilist.js"
 import { toast } from 'svelte-sonner'
 import Helper from '@/modules/helper.js'
 import Debug from 'debug'
@@ -11,9 +11,9 @@ const debug = Debug('ui:myanimelist')
 export const clientID = '4c2c172971b9164f924fd5925b443ac3' // app type MUST be set to other, do not generate a seed.
 
 function printError (error) {
-  debug(`Error: ${error.status || 429} - ${error.message || codes[error.status || 429]}`)
+  debug(`Error: ${error.status || error || 429} - ${error.message || codes[error.status || error || 429]}`)
   toast.error('Search Failed', {
-    description: `Failed making request to MyAnimeList!\nTry again in a minute.\n${error.status || 429} - ${error.message || codes[error.status || 429]}`,
+    description: `Failed making request to MyAnimeList!\nTry again in a minute.\n${error.status || error || 429} - ${error.message || codes[error.status || error || 429]}`,
     duration: 3000
   })
 }
@@ -50,7 +50,7 @@ class MALClient {
   userID = malToken
 
   constructor () {
-    debug('Initializing Anilist Client for ID ' + this.userID?.viewer?.data?.Viewer.id)
+    debug('Initializing MyAnimeList Client for ID ' + this.userID?.viewer?.data?.Viewer?.id)
     if (this.userID?.viewer?.data?.Viewer) {
       this.userLists.value = this.getUserLists({ sort: 'list_updated_at' })
       //  update userLists every 15 mins
@@ -90,22 +90,7 @@ class MALClient {
     try {
       res = await fetch(`https://api.myanimelist.net/v2/${query.path}`, options)
     } catch (e) {
-      if (res && res && res.status !== 404) {
-        switch (res.error) {
-          case 'forbidden':
-          case 'invalid_token':
-            if (await refreshMalToken(query.token ? query.token : this.userID.token)) { // refresh authorization token as it typically expires every 31 days.
-              return this.handleRequest(query, options)
-            }
-            throw new Error("NotAuthenticatedError: " + res.message ?? res.error)
-          case 'invalid_content':
-            throw new Error(`This Entry is currently pending approval. It can't be saved to mal for now`)
-          default:
-            throw new Error(res.message ?? res.error)
-        }
-      } else if (!res || res.status !== 404) {
-        throw e
-      }
+      if (!res || res.status !== 404) throw e
     }
     if (!res.ok && (res.status === 429 || res.status === 500)) {
       throw res
@@ -118,20 +103,45 @@ class MALClient {
     }
     if (!res.ok && res.status !== 404) {
       if (json) {
-        for (const error of json?.errors || []) {
-          printError(error)
+        for (const error of json?.errors || [json?.error] || []) {
+          let code = error
+          switch (error) {
+            case 'forbidden':
+              code = 403
+              break
+            case 'invalid_token':
+              code = 401
+              const oauth = await refreshMalToken(query.token ? query.token : this.userID.token) // refresh authorization token as it typically expires every 31 days.
+              if (oauth) {
+                if (!query.token) {
+                  this.userID = malToken
+                }
+                options.headers = {
+                  'Authorization': `Bearer ${oauth.access_token}`,
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                }
+                return this.handleRequest(query, options)
+              }
+              break
+            case 'invalid_content':
+              code = 422
+              break
+            default:
+              code = res.status
+          }
+          printError(code)
         }
       } else {
         printError(res)
       }
     }
     return json
-  }
+  })
 
   async malEntry (media, variables) {
     variables.idMal = media.idMal
     const res = await malClient.entry(variables)
-    if (!variables.token) media.mediaListEntry = res.data.SaveMediaListEntry
+    if (!variables.token) media.mediaListEntry = res?.data?.SaveMediaListEntry
     return res
   }
 
@@ -157,9 +167,9 @@ class MALClient {
       }
 
       const res = await this.malRequest(query)
-      allMediaList = allMediaList.concat(res.data)
+      allMediaList = allMediaList.concat(res?.data)
 
-      if (res.data.length < limit) {
+      if (res?.data?.length < limit) {
         hasNextPage = false
       } else {
         offset += limit
