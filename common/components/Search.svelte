@@ -420,7 +420,7 @@
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light border-right-dark' required bind:value={search.season} disabled={search.disableSearch}>
-          <option value selected disabled hidden>Any</option>
+          <option value selected>Any</option>
           <option value='WINTER'>Winter</option>
           <option value='SPRING'>Spring</option>
           <option value='SUMMER'>Summer</option>
@@ -442,7 +442,7 @@
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.format} disabled={search.disableSearch}>
-          <option value selected disabled hidden>Any</option>
+          <option value selected>Any</option>
           <option value='TV'>TV Show</option>
           <option value='MOVIE'>Movie</option>
           <option value='TV_SHORT'>TV Short</option>
@@ -458,7 +458,7 @@
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.status} disabled={search.disableSearch}>
-          <option value selected disabled hidden>Any</option>
+          <option value selected>Any</option>
           <option value='RELEASING'>Releasing</option>
           <option value='FINISHED'>Finished</option>
           <option value='NOT_YET_RELEASED'>Not Yet Released</option>
@@ -473,11 +473,12 @@
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.sort} on:change={clearTags} disabled={search.disableSearch}>
-          <option value selected disabled hidden>Any</option>
+          <option value selected>Name</option>
           <option value='START_DATE_DESC'>Release Date</option>
           <option value='SCORE_DESC'>Score</option>
           <option value='POPULARITY_DESC'>Popularity</option>
           <option value='TRENDING_DESC'>Trending</option>
+          <option value='UPDATED_AT_DESC'>Updated Date</option>
           {#if search.userList && search.title && !search.title.includes("Sequels")}
           <option value='UPDATED_TIME_DESC'>Last Updated</option>
           <option value='STARTED_ON_DESC'>Started On</option>

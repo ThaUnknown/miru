@@ -68,6 +68,11 @@ client.on('warn', ({ detail }) => {
   toast.warning('Torrent Warning', { description: '' + (detail.message || detail) })
 })
 
+client.on('info', ({ detail }) => {
+  debug(`Info: ${detail.message || detail}`)
+  toast('Torrent Info', { description: '' + (detail.message || detail) })
+})
+
 export async function add (torrentID, hide) {
   if (torrentID) {
     debug('Adding torrent', { torrentID })

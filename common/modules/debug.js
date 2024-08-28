@@ -25,84 +25,7 @@ exports.destroy = (() => {
  * Colors.
  */
 
-exports.colors = [
-  '#0000CC',
-  '#0000FF',
-  '#0033CC',
-  '#0033FF',
-  '#0066CC',
-  '#0066FF',
-  '#0099CC',
-  '#0099FF',
-  '#00CC00',
-  '#00CC33',
-  '#00CC66',
-  '#00CC99',
-  '#00CCCC',
-  '#00CCFF',
-  '#3300CC',
-  '#3300FF',
-  '#3333CC',
-  '#3333FF',
-  '#3366CC',
-  '#3366FF',
-  '#3399CC',
-  '#3399FF',
-  '#33CC00',
-  '#33CC33',
-  '#33CC66',
-  '#33CC99',
-  '#33CCCC',
-  '#33CCFF',
-  '#6600CC',
-  '#6600FF',
-  '#6633CC',
-  '#6633FF',
-  '#66CC00',
-  '#66CC33',
-  '#9900CC',
-  '#9900FF',
-  '#9933CC',
-  '#9933FF',
-  '#99CC00',
-  '#99CC33',
-  '#CC0000',
-  '#CC0033',
-  '#CC0066',
-  '#CC0099',
-  '#CC00CC',
-  '#CC00FF',
-  '#CC3300',
-  '#CC3333',
-  '#CC3366',
-  '#CC3399',
-  '#CC33CC',
-  '#CC33FF',
-  '#CC6600',
-  '#CC6633',
-  '#CC9900',
-  '#CC9933',
-  '#CCCC00',
-  '#CCCC33',
-  '#FF0000',
-  '#FF0033',
-  '#FF0066',
-  '#FF0099',
-  '#FF00CC',
-  '#FF00FF',
-  '#FF3300',
-  '#FF3333',
-  '#FF3366',
-  '#FF3399',
-  '#FF33CC',
-  '#FF33FF',
-  '#FF6600',
-  '#FF6633',
-  '#FF9900',
-  '#FF9933',
-  '#FFCC00',
-  '#FFCC33'
-]
+exports.colors = [6, 2, 3, 4, 5, 1]
 
 const { formatters = {} } = module.exports
 
@@ -116,31 +39,7 @@ const { formatters = {} } = module.exports
 
 // eslint-disable-next-line complexity
 function useColors () {
-  return false
-  // NB: In an Electron preload script, document will be defined but not fully
-  // initialized. Since we know we're in Chrome, we'll just detect this case
-  // explicitly
-  if (typeof window !== 'undefined' && window.process && (window.process.type === 'renderer' || window.process.__nwjs)) {
-    return true
-  }
-
-  // Internet Explorer and Edge do not support colors.
-  if (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
-    return false
-  }
-
-  let m
-
-  // Is webkit? http://stackoverflow.com/a/16459606/376773
-  // document is undefined in react-native: https://github.com/facebook/react-native/pull/1632
-  return (typeof document !== 'undefined' && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance) ||
-    // Is firebug? http://stackoverflow.com/a/398120/376773
-    (typeof window !== 'undefined' && window.console && (window.console.firebug || (window.console.exception && window.console.table))) ||
-    // Is firefox >= v31?
-    // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
-    (typeof navigator !== 'undefined' && navigator.userAgent && (m = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m[1], 10) >= 31) ||
-    // Double check webkit in userAgent just in case we are in a worker
-    (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/))
+  return true
 }
 
 /**
@@ -150,38 +49,17 @@ function useColors () {
  */
 
 function formatArgs (args) {
-  args[0] = (this.useColors ? '%c' : '') +
-    this.namespace +
-    (this.useColors ? ' %c' : ' ') +
-    args[0] +
-    (this.useColors ? '%c ' : ' ') +
-    '+' + module.exports.humanize(this.diff)
+  const { namespace: name, useColors } = this
 
-  if (!this.useColors) {
-    return
+  if (useColors) {
+    const c = this.color
+    const colorCode = '\u001B[3' + (c < 8 ? c : '8;5;' + c)
+    const prefix = `  ${colorCode};1m${name} \u001B[0m`
+
+    args[0] = prefix + args[0].split('\n').join('\n' + prefix) + ' ' + colorCode + ';1m+' + module.exports.humanize(this.diff) + ' \u001B[0m'
+  } else {
+    args[0] = new Date().toISOString() + ' ' + name + ' ' + args[0]
   }
-
-  const c = 'color: ' + this.color
-  args.splice(1, 0, c, 'color: inherit')
-
-  // The final "%c" is somewhat tricky, because there could be other
-  // arguments passed either before or after the %c, so we need to
-  // figure out the correct index to insert the CSS into
-  let index = 0
-  let lastC = 0
-  args[0].replace(/%[a-zA-Z%]/g, match => {
-    if (match === '%%') {
-      return
-    }
-    index++
-    if (match === '%c') {
-      // We only are interested in the *last* %c
-      // (the user may have provided their own)
-      lastC = index
-    }
-  })
-
-  args.splice(lastC, 0, c)
 }
 
 /**

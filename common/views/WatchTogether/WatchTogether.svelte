@@ -1,164 +1,54 @@
 <script context='module'>
+  import { EventEmitter } from 'events'
   import { writable } from 'simple-store-svelte'
-  import { add, client } from '@/modules/torrent.js'
-  import { generateRandomHexCode } from '@/modules/util.js'
+  import { client } from '@/modules/torrent.js'
   import { toast } from 'svelte-sonner'
   import { page } from '@/App.svelte'
-  import P2PT from 'p2pt'
-  import { click } from '@/modules/click.js'
-  import Helper from '@/modules/helper.js'
   import IPC from '@/modules/ipc.js'
   import 'browser-event-target-emitter'
   import Debug from 'debug'
 
   const debug = Debug('ui:w2g')
 
-  export const w2gEmitter = new EventTarget()
+  export const w2gEmitter = new EventEmitter()
 
-  const peers = writable({})
+  /** @type {import('simple-store-svelte').Writable<W2GClient | null>} */
+  export const state = writable(null)
 
-  export const state = writable(false)
-
-  let p2pt = null
-
-  function joinLobby (code = generateRandomHexCode(16)) {
+  function joinLobby (code) {
     debug('Joining lobby with code: ' + code)
-    if (p2pt) cleanup()
-    p2pt = new P2PT([
-      atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
-      atob('d3NzOi8vdHJhY2tlci53ZWJ0b3JyZW50LmRldg=='),
-      atob('d3NzOi8vdHJhY2tlci5maWxlcy5mbTo3MDczL2Fubm91bmNl'),
-      atob('d3NzOi8vdHJhY2tlci5idG9ycmVudC54eXov')
-    ], code)
-    p2pt.on('peerconnect', peer => {
-      debug(`Peer connected: ${peer.id}`)
-      const user = Helper.getUser() || {}
-      p2pt.send(peer,
-        JSON.stringify({
-          type: 'init',
-          id: user.id || generateRandomHexCode(16),
-          user
-        })
-      )
-    })
-    p2pt.on('peerclose', peer => {
-      peers.update(object => {
-        debug(`Peer disconnected: ${peer.id}`)
-        delete object[peer.id]
-        return object
-      })
-    })
-    p2pt.on('msg', (peer, data) => {
-      debug(`Received message from ${peer.id}: ${data.type} ${data}`)
-      data = typeof data === 'string' ? JSON.parse(data) : data
-      switch (data.type) {
-        case 'init':
-          peers.update(object => {
-            object[peer.id] = {
-              peer,
-              user: data.user
-            }
-            return object
-          })
-          break
-        case 'player': {
-          if (setPlayerState(data)) w2gEmitter.emit('playerupdate', data)
-          break
-        }
-        case 'torrent': {
-          if (data.hash !== playerState.hash) {
-            playerState.hash = data.hash
-            add(data.magnet)
-          }
-          break
-        }
-        case 'index': {
-          if (playerState.index !== data.index) {
-            playerState.index = data.index
-            w2gEmitter.emit('setindex', data.index)
-          }
-          break
-        }
-        default: {
-          debug('Invalid message type: ' + data.type)
-        }
-      }
-    })
-    p2pt.start()
-    state.set(code)
-    console.log(p2pt)
+    if (state.value) state.value.destroy()
+    const w2g = new W2GClient(code)
+    state.value = w2g
+    w2g.on('index', i => w2gEmitter.emit('setindex', i))
+    w2g.on('player', state => w2gEmitter.emit('playerupdate', { time: state.time, paused: state.paused }))
+
+    if (!code) invite()
   }
+  client.on('magnet', ({ detail }) => state.value?.magnetLink(detail))
 
-  function setPlayerState (detail) {
-    let emit = false
-    for (const key of ['paused', 'time']) {
-      emit = emit || detail[key] !== playerState[key]
-      playerState[key] = detail[key]
-    }
-    return emit
-  }
+  w2gEmitter.on('player', data => state.value?.playerStateChanged(data))
+  w2gEmitter.on('index', index => state.value?.mediaIndexChanged(index))
 
-  w2gEmitter.on('player', ({ detail }) => {
-    if (setPlayerState(detail)) emit('player', detail)
-  })
-
-  w2gEmitter.on('index', ({ detail }) => {
-    if (playerState.index !== detail.index) {
-      emit('index', detail)
-      playerState.index = detail.index
-    }
-  })
-
-  client.on('magnet', ({ detail }) => {
-    if (detail.hash !== playerState.hash) {
-      playerState.hash = detail.hash
-      playerState.index = 0
-      emit('torrent', detail)
-    }
-  })
-
-  function emit (type, data) {
-    debug(`Emitting ${type} with data: ${JSON.stringify(data)}`)
-    if (p2pt) {
-      for (const { peer } of Object.values(peers.value)) {
-        p2pt.send(peer, { type, ...data })
-      }
-    }
-  }
-
-  const playerState = {
-    paused: null,
-    time: null,
-    hash: null,
-    index: 0
-  }
-
-  IPC.on('w2glink', link => {
+  IPC.on('w2glink', (link) => {
     joinLobby(link)
     page.set('watchtogether')
   })
 
-  function cleanup () {
-    state.set(false)
-    peers.set({})
-    p2pt.destroy()
-    p2pt = null
-  }
-
   function invite () {
-    if (p2pt) {
-      navigator.clipboard.writeText(`https://miru.watch/w2g/${p2pt.identifierString}`)
-      toast('Copied to clipboard', {
-        description: 'Copied invite URL to clipboard',
-        duration: 5000
-      })
-    }
+    navigator.clipboard.writeText(state.value.inviteLink)
+    toast.success('Copied to clipboard', {
+      description: 'Copied invite URL to clipboard',
+      duration: 5000
+    })
   }
 </script>
 
 <script>
   import Lobby from './Lobby.svelte'
   import { Plus, UserPlus } from 'lucide-svelte'
+  import { W2GClient } from './w2g.js'
+  import { click } from '@/modules/click.js'
 
   let joinText
 
@@ -175,10 +65,10 @@
   $: checkInvite(joinText)
 </script>
 
-<div class='d-flex h-full align-items-center flex-column content'>
-  <div class='font-size-50 font-weight-bold pt-20 mt-20 root'>Watch Together</div>
+<div class='d-flex h-full align-items-center flex-column px-md-20'>
   {#if !$state}
-    <div class='d-flex flex-row flex-wrap justify-content-center align-items-center h-full mb-20 pb-20 root'>
+    <div class='font-size-50 font-weight-bold pt-20 mt-20 root'>Watch Together</div>
+    <div class='d-flex flex-row flex-wrap justify-content-center align-items-center h-full mb-20 pb-20 root position-relative w-full'>
       <div class='card d-flex flex-column align-items-center w-300 h-300 justify-content-end'>
         <Plus size='6rem' class='d-flex align-items-center h-full' />
         <button class='btn btn-primary btn-lg mt-10 btn-block' type='button' use:click={() => joinLobby()}>Create Lobby</button>
@@ -196,7 +86,7 @@
       </div>
     </div>
   {:else}
-    <Lobby peers={$peers} {cleanup} {invite} />
+    <Lobby {state} {invite} />
   {/if}
 </div>
 

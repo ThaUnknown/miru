@@ -190,7 +190,6 @@ function createSections () {
     { title: 'Romance', variables: { sort: 'TRENDING_DESC', genre: ['Romance'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } },
     { title: 'Action', variables: { sort: 'TRENDING_DESC', genre: ['Action'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } },
     { title: 'Adventure', variables: { sort: 'TRENDING_DESC', genre: ['Adventure'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } },
-    { title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: ['Fantasy'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } },
-    { title: 'Comedy', variables: { sort: 'TRENDING_DESC', genre: ['Comedy'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } }
+    { title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: ['Fantasy'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['COMPLETED', 'DROPPED'] } }
   ]
 }

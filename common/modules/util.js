@@ -182,7 +182,7 @@ export const defaults = {
   font: undefined,
   angle: 'default',
   toshoURL: SUPPORTS.extensions ? decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnLw==')) : '',
-  extensions: SUPPORTS.extensions ? ['@thaunknown/ani-resourced'] : [],
+  extensions: SUPPORTS.extensions ? ['anisearch'] : [],
   sources: {},
   enableExternal: false,
   playerPath: '',

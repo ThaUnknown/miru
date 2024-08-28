@@ -22,12 +22,12 @@
 
   const emit = createEventDispatcher()
 
-  w2gEmitter.on('playerupdate', ({ detail }) => {
+  w2gEmitter.on('playerupdate', detail => {
     currentTime = detail.time
     paused = detail.paused
   })
 
-  w2gEmitter.on('setindex', ({ detail }) => {
+  w2gEmitter.on('setindex', detail => {
     playFile(detail)
   })
 
@@ -1222,7 +1222,7 @@
       </span>
       {#if 'audioTracks' in HTMLVideoElement.prototype && video?.audioTracks?.length > 1}
         <div class='dropdown dropup with-arrow' use:click={toggleDropdown}>
-          <span class='icon ctrl mr-5 d-flex align-items-center' title='Audio Tracks'>
+          <span class='icon ctrl mr-5 d-flex align-items-center h-full' title='Audio Tracks'>
             <ListMusic size='2.5rem' strokeWidth={2.5} />
           </span>
           <div class='dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize'>
@@ -1237,7 +1237,7 @@
       {/if}
       {#if 'videoTracks' in HTMLVideoElement.prototype && video?.videoTracks?.length > 1}
         <div class='dropdown dropup with-arrow'>
-          <span class='icon ctrl mr-5 d-flex align-items-center' title='Video Tracks'>
+          <span class='icon ctrl mr-5 d-flex align-items-center h-full' title='Video Tracks'>
             <ListVideo size='2.5rem' strokeWidth={2.5} />
           </span>
           <div class='dropdown-menu dropdown-menu-left ctrl custom-radio p-10 pb-5 text-capitalize'>
@@ -1252,7 +1252,7 @@
       {/if}
       {#if subHeaders?.length}
         <div class='subtitles dropdown dropup with-arrow' use:click={toggleDropdown}>
-          <span class='icon ctrl mr-5 d-flex align-items-center' title='Subtitles [C]'>
+          <span class='icon ctrl mr-5 d-flex align-items-center h-full' title='Subtitles [C]'>
             <Captions size='2.5rem'strokeWidth={2.5} />
           </span>
           <div class='dropdown-menu dropdown-menu-right ctrl custom-radio p-10 pb-5 text-capitalize'>
