@@ -22,7 +22,7 @@ class MALDubs {
     }
 
     async getMALDubs() {
-        debug('Getting myanimelist dubs')
+        debug('Getting MyAnimeList Dubs IDs')
         let res = {}
         try {
             res = await fetch('https://raw.githubusercontent.com/MAL-Dubs/MAL-Dubs/main/data/dubInfo.json')

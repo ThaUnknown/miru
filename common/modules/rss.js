@@ -106,7 +106,7 @@ class RSSMediaManager {
 
     const res = await Promise.all(await results)
     const newReleases = res.filter(({ date }) => date > oldDate)
-    debug(`Found ${newReleases.length} new releases, notifying...`)
+    debug(`Found ${newReleases?.length} new releases, notifying...`)
 
     for (const { media, parseObject, episode } of newReleases) {
       const options = {
@@ -132,7 +132,7 @@ class RSSMediaManager {
         try {
           res.episodeData = (await getEpisodeMetadataForMedia(res.media))?.[res.episode]
         } catch (e) {
-          debug(`Warn: failed fetching episode metadata for ${res.media.title.userPreferred} episode ${res.episode}: ${e.stack}`)
+          debug(`Warn: failed fetching episode metadata for ${res.media.title?.userPreferred} episode ${res.episode}: ${e.stack}`)
         }
       }
       res.date = items[i].date

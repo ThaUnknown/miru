@@ -178,7 +178,7 @@ class AnilistClient {
   lastNotificationDate = Date.now() / 1000
 
   constructor () {
-    debug('Initializing Anilist Client for ID ' + this.userID?.viewer?.data?.Viewer.id)
+    debug('Initializing Anilist Client for ID ' + this.userID?.viewer?.data?.Viewer?.id)
     this.limiter.on('failed', async (error, jobInfo) => {
       printError(error)
 
@@ -274,7 +274,7 @@ class AnilistClient {
     const notifications = res.data.Page.notifications
     const newNotifications = notifications.filter(({ createdAt }) => createdAt > this.lastNotificationDate)
     this.lastNotificationDate = Date.now() / 1000
-    debug(`Found ${newNotifications.length} new notifications`)
+    debug(`Found ${newNotifications?.length} new notifications`)
     for (const { media, episode, type } of newNotifications) {
       const options = {
         title: media.title.userPreferred,
@@ -290,7 +290,7 @@ class AnilistClient {
    * @param {{key: string, title: string, year?: string, isAdult: boolean}[]} flattenedTitles
    **/
   async alSearchCompound (flattenedTitles) {
-    debug(`Searching for ${flattenedTitles.length} titles via compound search`)
+    debug(`Searching for ${flattenedTitles?.length} titles via compound search`)
     if (!flattenedTitles.length) return []
     // isAdult doesn't need an extra variable, as the title is the same regardless of type, so we re-use the same variable for adult and non-adult requests
     /** @type {Record<`v${number}`, string>} */
@@ -355,7 +355,7 @@ class AnilistClient {
   }
 
   async searchName (variables = {}) {
-    debug(`Searching name for ${variables.name}`)
+    debug(`Searching name for ${variables?.name}`)
     const query = /* js */` 
     query($page: Int, $perPage: Int, $sort: [MediaSort], $name: String, $status: [MediaStatus], $year: Int, $isAdult: Boolean) {
       Page(page: $page, perPage: $perPage) {
@@ -378,7 +378,7 @@ class AnilistClient {
   }
 
   async searchIDSingle (variables) {
-    debug(`Searching for ID: ${variables.id}`)
+    debug(`Searching for ID: ${variables?.id}`)
     const query = /* js */` 
     query($id: Int) { 
       Media(id: $id, type: ANIME) {

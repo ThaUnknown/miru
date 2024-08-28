@@ -117,7 +117,7 @@
   }
 
   async function handleFiles (files) {
-    debug(`Got ${files.length} files`, fileListToDebug(files))
+    debug(`Got ${files?.length} files`, fileListToDebug(files))
     if (!files?.length) return processed.set(files)
     let videoFiles = []
     const otherFiles = []
@@ -145,7 +145,7 @@
       if (nowPlaying.episode) videoFiles[0].media.episode = nowPlaying.episode
     }
 
-    debug(`Resolved ${videoFiles.length} video files`, fileListToDebug(videoFiles))
+    debug(`Resolved ${videoFiles?.length} video files`, fileListToDebug(videoFiles))
 
     if (!nowPlaying) {
       nowPlaying = findPreferredPlaybackMedia(videoFiles)

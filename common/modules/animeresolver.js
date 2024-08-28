@@ -76,12 +76,12 @@ export default new class AnimeResolver {
       return titleObjects
     }).flat()
 
-    debug(`Finding ${titleObjects.length} titles: ${titleObjects.map(obj => obj.title).join(', ')}`)
+    debug(`Finding ${titleObjects?.length} titles: ${titleObjects?.map(obj => obj.title).join(', ')}`)
 
     for (const chunk of chunks(titleObjects, 60)) {
       // single title has a complexity of 8.1, al limits complexity to 500, so this can be at most 62, undercut it to 60, al pagination is 50, but at most we'll do 30 titles since isAduld duplicates each title
       for (const [key, media] of await anilistClient.alSearchCompound(chunk)) {
-        debug(`Found ${key} as ${media.id}: ${media.title.userPreferred}`)
+        debug(`Found ${key} as ${media?.id}: ${media?.title?.userPreferred}`)
         this.animeNameCache[key] = media
       }
     }
@@ -125,7 +125,7 @@ export default new class AnimeResolver {
       let media = this.animeNameCache[this.getCacheKeyForTitle(parseObj)]
       // resolve episode, if movie, dont.
       const maxep = media?.nextAiringEpisode?.episode || media?.episodes
-      debug(`Resolving ${parseObj.anime_title} ${parseObj.episode_number} ${maxep} ${media?.title.userPreferred} ${media?.format}`)
+      debug(`Resolving ${parseObj?.anime_title} ${parseObj?.episode_number} ${maxep} ${media?.title?.userPreferred} ${media?.format}`)
       if ((media?.format !== 'MOVIE' || maxep) && parseObj.episode_number) {
         if (Array.isArray(parseObj.episode_number)) {
           // is an episode range
@@ -141,9 +141,9 @@ export default new class AnimeResolver {
               // parent check is to break out of those incorrectly resolved OVA's
               // if we used anime season to resolve anime name, then there's no need to march into prequel!
               const prequel = !parseObj.anime_season && (this.findEdge(media, 'PREQUEL')?.node || ((media.format === 'OVA' || media.format === 'ONA') && this.findEdge(media, 'PARENT')?.node))
-              debug(`Prequel ${prequel && prequel.id}:${prequel && prequel.title.userPreferred}`)
+              debug(`Prequel ${prequel?.id}:${prequel?.title?.userPreferred}`)
               const root = prequel && (await this.resolveSeason({ media: await this.getAnimeById(prequel.id), force: true })).media
-              debug(`Root ${root && root.id}:${root && root.title.userPreferred}`)
+              debug(`Root ${root?.id}:${root?.title?.userPreferred}`)
 
               // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
               let result = await this.resolveSeason({ media: root || media, episode: parseObj.episode_number[1], increment: !parseObj.anime_season ? null : true })
@@ -153,12 +153,12 @@ export default new class AnimeResolver {
                 result = await this.resolveSeason({ media: root || media, episode: parseObj.episode_number[1] })
               }
 
-              debug(`Found rootMedia for ${parseObj.anime_title}: ${result.rootMedia.id}:${result.rootMedia.title.userPreferred} from ${media.id}:${media.title.userPreferred}`)
+              debug(`Found rootMedia for ${parseObj?.anime_title}: ${result?.rootMedia?.id}:${result?.rootMedia?.title?.userPreferred} from ${media?.id}:${media?.title?.userPreferred}`)
               media = result.rootMedia
               const diff = parseObj.episode_number[1] - result.episode
               episode = `${parseObj.episode_number[0] - diff} ~ ${result.episode}`
               failed = result.failed
-              if (failed) debug(`Failed to resolve ${parseObj.anime_title} ${parseObj.episode_number} ${media?.title.userPreferred}`)
+              if (failed) debug(`Failed to resolve ${parseObj?.anime_title} ${parseObj?.episode_number} ${media?.title?.userPreferred}`)
             } else {
               // cant find ep count or range seems fine
               episode = `${Number(parseObj.episode_number[0])} ~ ${Number(parseObj.episode_number[1])}`
@@ -168,9 +168,9 @@ export default new class AnimeResolver {
           if (maxep && parseInt(parseObj.episode_number) > maxep) {
             // see big comment above
             const prequel = !parseObj.anime_season && (this.findEdge(media, 'PREQUEL')?.node || ((media.format === 'OVA' || media.format === 'ONA') && this.findEdge(media, 'PARENT')?.node))
-            debug(`Prequel ${prequel && prequel.id}:${prequel && prequel.title.userPreferred}`)
+            debug(`Prequel ${prequel?.id}:${prequel?.title?.userPreferred}`)
             const root = prequel && (await this.resolveSeason({ media: await this.getAnimeById(prequel.id), force: true })).media
-            debug(`Root ${root && root.id}:${root && root.title.userPreferred}`)
+            debug(`Root ${root?.id}:${root?.title?.userPreferred}`)
 
             // value bigger than episode count
             let result = await this.resolveSeason({ media: root || media, episode: parseInt(parseObj.episode_number), increment: !parseObj.anime_season ? null : true })
@@ -180,18 +180,18 @@ export default new class AnimeResolver {
               result = await this.resolveSeason({ media: root || media, episode: parseInt(parseObj.episode_number) })
             }
 
-            debug(`Found rootMedia for ${parseObj.anime_title}: ${result.rootMedia.id}:${result.rootMedia.title.userPreferred} from ${media.id}:${media.title.userPreferred}`)
+            debug(`Found rootMedia for ${parseObj.anime_title}: ${result.rootMedia?.id}:${result.rootMedia?.title?.userPreferred} from ${media.id}:${media.title?.userPreferred}`)
             media = result.rootMedia
             episode = result.episode
             failed = result.failed
-            if (failed) debug(`Failed to resolve ${parseObj.anime_title} ${parseObj.episode_number} ${media?.title.userPreferred}`)
+            if (failed) debug(`Failed to resolve ${parseObj.anime_title} ${parseObj.episode_number} ${media?.title?.userPreferred}`)
           } else {
             // cant find ep count or episode seems fine
             episode = Number(parseObj.episode_number)
           }
         }
       }
-      debug(`Resolved ${parseObj.anime_title} ${parseObj.episode_number} ${episode} ${media?.id}:${media?.title.userPreferred}`)
+      debug(`Resolved ${parseObj.anime_title} ${parseObj.episode_number} ${episode} ${media?.id}:${media?.title?.userPreferred}`)
       fileAnimes.push({
         episode: episode || parseObj.episode_number,
         parseObject: parseObj,

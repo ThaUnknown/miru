@@ -39,7 +39,7 @@ export default async function getResultsFromExtensions ({ media, episode, batch,
     throw new Error('No torrent sources configured. Add extensions in settings.')
   }
 
-  debug(`Fetching sources for ${media.id}:${media.title.userPreferred} ${episode} ${batch} ${movie} ${resolution}`)
+  debug(`Fetching sources for ${media?.id}:${media?.title?.userPreferred} ${episode} ${batch} ${movie} ${resolution}`)
 
   const aniDBMeta = await ALToAniDB(media)
   const anidbAid = aniDBMeta?.mappings?.anidb_id
@@ -60,7 +60,7 @@ export default async function getResultsFromExtensions ({ media, episode, batch,
 
   const { results, errors } = await worker.query(options, { movie, batch }, settings.value.sources)
 
-  debug(`Found ${results.length} results`)
+  debug(`Found ${results?.length} results`)
 
   for (const error of errors) {
     debug(`Source Fetch Failed: ${error}`)
@@ -82,7 +82,7 @@ export default async function getResultsFromExtensions ({ media, episode, batch,
 
 async function updatePeerCounts (entries) {
   const id = Math.trunc(Math.random() * Number.MAX_SAFE_INTEGER).toString()
-  debug(`Updating peer counts for ${entries.length} entries`)
+  debug(`Updating peer counts for ${entries?.length} entries`)
 
   const updated = await Promise.race([
     new Promise(resolve => {
@@ -141,14 +141,14 @@ function getRelation (list, type) {
   * @param {{episodes: any, episodeCount: number, specialCount: number}} param1
   * */
 async function ALtoAniDBEpisode ({ media, episode }, { episodes, episodeCount, specialCount }) {
-  debug(`Fetching AniDB episode for ${media.id}:${media.title.userPreferred} ${episode}`)
+  debug(`Fetching AniDB episode for ${media?.id}:${media?.title?.userPreferred} ${episode}`)
   if (!episode || !Object.values(episodes).length) return
   // if media has no specials or their episode counts don't match
   if (!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)])) {
     debug('No specials found, or episode count matches between AL and AniDB')
     return episodes[Number(episode)]
   }
-  debug(`Episode count mismatch between AL and AniDB for ${media.id}:${media.title.userPreferred}`)
+  debug(`Episode count mismatch between AL and AniDB for ${media?.id}:${media?.title?.userPreferred}`)
   const res = await anilistClient.episodeDate({ id: media.id, ep: episode })
   // TODO: if media only has one episode, and airdate doesn't exist use start/release/end dates
   const alDate = new Date((res.data.AiringSchedule?.airingAt || 0) * 1000)

@@ -88,7 +88,7 @@
   $: autoPlay(best, $settings.rssAutoplay)
 
   $: lookup.catch(err => {
-    debug(`Error fetching torrents for ${search.media.title.userPreferred} Episode ${search.episode}, ${err.stack}`)
+    debug(`Error fetching torrents for ${search.media?.title?.userPreferred} Episode ${search.episode}, ${err.stack}`)
     toast.error(`No torrent found for ${anilistClient.title(search.media)} Episode ${search.episode}!`, { description: err.message })
   })
 
