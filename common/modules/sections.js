@@ -28,7 +28,7 @@ export default class SectionsManager {
     return (page = 1, perPage = 50, search = variables) => {
       const hideSubs = search.hideSubs ? { idMal: malDubs.dubLists.value.dubbed } : {}
       const res = (search.hideMyAnime && Helper.isAuthorized()) ? Helper.userLists(search).then(res => {
-        const hideMyAnime = Helper.isAniAuth() ? { id_not: Array.from(new Set(res.data.MediaListCollection.lists.filter(({ status }) => search.hideStatus.includes(status)).flatMap(list => list.entries.map(({ media }) => media.id)))) }
+        const hideMyAnime = Helper.isAniAuth() ? { [Object.keys(hideSubs).length > 0 ? 'idMal_not' : 'id_not']: Array.from(new Set(res.data.MediaListCollection.lists.filter(({ status }) => search.hideStatus.includes(status)).flatMap(list => list.entries.map(({ media }) => (Object.keys(hideSubs).length > 0 ? media.idMal : media.id))))) }
               : {idMal_not: res.data.MediaList.filter(({ node }) => search.hideStatus.includes(Helper.statusMap(node.my_list_status.status))).map(({ node }) => node.id)}
         return anilistClient.search({ page, perPage, ...hideSubs, ...hideMyAnime, ...SectionsManager.sanitiseObject(search) })
       }) : anilistClient.search({ page, perPage, ...hideSubs, ...SectionsManager.sanitiseObject(search) })
