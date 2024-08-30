@@ -3,9 +3,14 @@
   import { writable } from 'simple-store-svelte'
 
   export const logout = writable(false)
+  export const isMal = writable(false)
 
   function confirm () {
-    localStorage.removeItem('ALviewer')
+    if (isMal) {
+      localStorage.removeItem('MALviewer')
+    } else {
+      localStorage.removeItem('ALviewer')
+    }
     location.hash = ''
     location.reload()
   }

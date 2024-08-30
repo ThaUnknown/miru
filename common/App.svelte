@@ -2,6 +2,7 @@
   import { setContext } from 'svelte'
   import { writable } from 'simple-store-svelte'
   import { anilistClient } from '@/modules/anilist.js'
+  import { myAnimeListClient} from "@/modules/myanimelist";
   import IPC from '@/modules/ipc.js'
   import { rss } from './views/TorrentSearch/TorrentModal.svelte'
 
@@ -9,8 +10,13 @@
   export const view = writable(null)
   export async function handleAnime (anime) {
     view.set(null)
-    view.set((await anilistClient.searchIDSingle({ id: anime })).data.Media)
+    let media = (await anilistClient.searchIDSingle({ id: anime })).data.Media
+    view.set(media)
+    myAnimeListClient.addMalId(media).catch(e => {
+      console.error(e)
+    })
   }
+  
   IPC.on('open-anime', handleAnime)
   IPC.on('schedule', () => {
     page.set('schedule')

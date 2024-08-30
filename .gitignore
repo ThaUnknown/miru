@@ -14,4 +14,7 @@ node_modules
 **/node_modules
 **/git_modules/
 
+# IntelliJ
+.idea/
+
 package-lock.json

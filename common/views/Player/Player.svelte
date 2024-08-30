@@ -19,6 +19,7 @@
   import 'rvfc-polyfill'
   import IPC from '@/modules/ipc.js'
   import { ArrowDown, ArrowUp, Captions, Cast, CircleHelp, Contrast, FastForward, Keyboard, List, ListMusic, ListVideo, Maximize, Minimize, Pause, PictureInPicture, PictureInPicture2, Play, Proportions, RefreshCcw, Rewind, RotateCcw, RotateCw, ScreenShare, SkipBack, SkipForward, Users, Volume1, Volume2, VolumeX } from 'lucide-svelte'
+  import {myAnimeListClient} from "@/modules/myanimelist";
 
   const emit = createEventDispatcher()
 
@@ -195,7 +196,7 @@
   }
 
   export let media
-
+  
   $: checkAvail(current)
   let hasNext = false
   let hasLast = false
@@ -964,6 +965,7 @@
         if (media.media.episodes || media.media.nextAiringEpisode?.episode > media.episode) {
           completed = true
           anilistClient.alEntry(media)
+          myAnimeListClient.malEntry(media)
         }
       }
     }

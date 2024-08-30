@@ -14,6 +14,7 @@ export default class Protocol {
   // schema: miru://key/value
   protocolMap = {
     auth: token => this.sendToken(token),
+    authMal: token => this.sendMalToken(token),
     anime: id => this.window.webContents.send('open-anime', id),
     w2g: link => this.window.webContents.send('w2glink', link),
     schedule: () => this.window.webContents.send('schedule'),
@@ -69,6 +70,16 @@ export default class Protocol {
       if (token.endsWith('/')) token = token.slice(0, -1)
       this.window.webContents.send('altoken', token)
     }
+  }
+  
+  /**
+   * @param {string} line
+   */
+  sendMalToken (line) {
+    const urlParams = new URLSearchParams(line)
+    const state = urlParams.get('state')
+    let code = urlParams.get('code')
+    this.window.webContents.send('maloauth2', code, state)
   }
 
   /**

@@ -1,5 +1,6 @@
 export type Media = {
   id: number
+  malId: boolean
   title: {
     romaji?: string
     english?: string

@@ -1,7 +1,8 @@
-import { anilistClient } from './anilist.js'
-import { anitomyscript } from './anime.js'
-import { chunks } from './util.js'
+import {anilistClient} from './anilist.js'
+import {anitomyscript} from './anime.js'
+import {chunks} from './util.js'
 import Debug from 'debug'
+import {myAnimeListClient} from "@/modules/myanimelist";
 
 const debug = Debug('ui:animeresolver')
 
@@ -232,6 +233,14 @@ export default new class AnimeResolver {
       return obj
     }
     media = await this.getAnimeById(edge.id)
+    
+    // Asynchronously resolve the MAL ID for the media
+    // TODO: figure out if this is the correct place to do this
+    if (!media.malId) {
+      myAnimeListClient.addMalId(media).catch(e => {
+        debug(`Error adding MAL ID for ${media.title.userPreferred}: ${e}`)
+      })
+    }
 
     const highest = media.nextAiringEpisode?.episode || media.episodes
 

@@ -1,0 +1,316 @@
+import pkceChallenge from "pkce-challenge"
+import lavenshtein from 'js-levenshtein'
+import {writable} from 'simple-store-svelte'
+import Bottleneck from 'bottleneck'
+
+import { malToken } from '@/modules/settings.js'
+import {toast} from 'svelte-sonner'
+import {sleep} from './util.js'
+import IPC from '@/modules/ipc.js'
+import Debug from 'debug'
+
+const debug = Debug('ui:myanimelist')
+
+const codes = {
+  400: 'Bad Request',
+  401: 'Unauthorized',
+  402: 'Payment Required',
+  403: 'Forbidden',
+  404: 'Not Found',
+  406: 'Not Acceptable',
+  408: 'Request Time-out',
+  409: 'Conflict',
+  410: 'Gone',
+  412: 'Precondition Failed',
+  413: 'Request Entity Too Large',
+  429: 'Too Many Requests',
+  500: 'Internal Server Error',
+  501: 'Not Implemented',
+  502: 'Bad Gateway',
+  503: 'Service Unavailable',
+  504: 'Gateway Time-out',
+  505: 'HTTP Version Not Supported',
+  506: 'Variant Also Negotiates',
+  507: 'Insufficient Storage',
+  509: 'Bandwidth Limit Exceeded',
+  510: 'Not Extended',
+  511: 'Network Authentication Required'
+}
+
+function printError (error) {
+  debug(`Error: ${error.status || 429} - ${error.message || codes[error.status || 429]}`)
+  toast.error('Search Failed', {
+    description: `Failed making request to MyAnimeList!\nTry again in a minute.\n${error.status || 429} - ${error.message || codes[error.status || 429]}`,
+    duration: 3000
+  })
+}
+class MyAnimeListClient {
+  limiter = new Bottleneck({
+    reservoir: 90,
+    reservoirRefreshAmount: 90,
+    reservoirRefreshInterval: 60 * 1000,
+    maxConcurrent: 10,
+    minTime: 100
+  })
+
+  rateLimitPromise = null
+
+  /** @type {import('simple-store-svelte').Writable<ReturnType<MyAnimeListClient['getUserLists']>>} */
+  userLists = writable()
+
+  // TODO: This is a hack to get around the fact that the token is not initialized
+  // TODO: figure out why malToken is accessed before being initialized
+  userID = JSON.parse(localStorage.getItem('MALviewer')) || null 
+
+  /** @type {Record<number, import('./al.d.ts').Media>} */
+  mediaCache = {}
+
+  lastNotificationDate = Date.now() / 1000
+
+  /** @type {{code_verifier: string; code_challenge: string}} */
+  challenge = {}
+
+  /** @type {string} */
+  oauth2_state = ''
+  
+  anilistStatusToMal = {
+    CURRENT: 'watching',
+    PLANNING: 'plan_to_watch',
+    COMPLETED: 'completed',
+    PAUSED: 'on_hold',
+    DROPPED: 'dropped'
+  }
+
+  constructor () {
+    debug('Initializing MyAnimeList Client for ID ' + this.userID?.viewer)
+    this.limiter.on('failed', async (error, jobInfo) => {
+      printError(error)
+
+      if (error.status === 500) return 1
+
+      if (!error.statusText) {
+        if (!this.rateLimitPromise) this.rateLimitPromise = sleep(61 * 1000).then(() => { this.rateLimitPromise = null })
+        return 61 * 1000
+      }
+      const time = ((error.headers.get('retry-after') || 60) + 1) * 1000
+      if (!this.rateLimitPromise) this.rateLimitPromise = sleep(time).then(() => { this.rateLimitPromise = null })
+      return time
+    })
+  }
+
+  viewer (variables = {}) {
+    debug('Getting viewer')
+    
+    const params = new URLSearchParams()
+    params.set('fields', 'id,name,picture')
+    const options = {
+      url: `https://api.myanimelist.net/v2/users/@me?${params}`,
+      method: 'GET'
+    }
+    return this.handleRequest(options)
+  }
+
+  /** @type {(options: RequestInit) => Promise<any>} */
+  handleRequest = this.limiter.wrap(async opts => {
+    opts.headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+      Authorization: `Bearer ${malToken.token}`
+    }
+    await this.rateLimitPromise
+    let res = {}
+    const url = opts.url
+    // if no url is set generate an error
+    if (!url) throw new Error('No URL set for request')
+    try {
+      delete opts.url
+      res = await fetch(url, opts)
+    } catch (e) {
+      if (!res || (res.status !== 404 && res.status !== 401)) throw e
+    }
+    // invalid token
+    if (!res.ok && res.status === 401) {
+      // refresh token
+      await myAnimeListClient.refreshToken()
+      opts.url = url
+      return this.handleRequest(opts)
+    }
+    if (!res.ok && (res.status === 429 || res.status === 500)) {
+      throw res
+    }
+    let json = null
+    try {
+      json = await res.json()
+    } catch (error) {
+      if (res.ok) printError(error)
+    }
+    if (!res.ok && res.status !== 404) {
+      if (json) {
+        for (const error of json?.errors || []) {
+          printError(error)
+        }
+      } else {
+        printError(res)
+      }
+    }
+    return json
+  })
+
+
+  async malEntry (filemedia) {
+    // check if values exist
+    console.log(filemedia)
+    console.log(malToken)
+    if (filemedia.media && malToken) {
+      const {media, failed} = filemedia
+      debug(`Checking entry for ${media.title.userPreferred}`)
+      debug(`Media viability: ${media.status}, Is from failed resolve: ${failed}`)
+
+      console.log(media)
+      
+      if (failed) return
+      if (media.status !== 'FINISHED' && media.status !== 'RELEASING') return
+
+      // check if media can even be watched, ex: it was resolved incorrectly
+      // some anime/OVA's can have a single episode, or some movies can have multiple episodes
+      const singleEpisode = ((!media.episodes && (Number(filemedia.episode) === 1 || isNaN(Number(filemedia.episode)))) || (media.format === 'MOVIE' && media.episodes === 1)) && 1 // movie check
+      const videoEpisode = Number(filemedia.episode) || singleEpisode
+      const mediaEpisode = media.episodes || media.nextAiringEpisode?.episode || singleEpisode
+
+      debug(`Episode viability: ${videoEpisode}, ${mediaEpisode}, ${singleEpisode}`)
+      if (!videoEpisode || !mediaEpisode) return
+      // check episode range, safety check if `failed` didn't catch this
+      if (videoEpisode > mediaEpisode) return
+
+      const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name) || []
+
+      const status = media.mediaListEntry?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
+      const progress = media.mediaListEntry?.progress
+
+      debug(`User's progress: ${progress}, Media's progress: ${videoEpisode}`)
+      // check user's own watch progress
+      if (progress > videoEpisode) return
+      if (progress === videoEpisode && videoEpisode !== mediaEpisode && !singleEpisode) return
+
+      debug(`Updating entry for ${media.title.userPreferred}`)
+      const variables = {
+        repeat: media.mediaListEntry?.repeat || 0,
+        id: media.id,
+        status,
+        episode: videoEpisode,
+        title: media.title,
+        lists
+      }
+      if (videoEpisode === mediaEpisode) {
+        variables.status = 'COMPLETED'
+        if (media.mediaListEntry?.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
+      }
+      if (!lists.includes('Watched using Miru')) {
+        variables.lists.push('Watched using Miru')
+      }
+      if (media.malId) {
+        variables.malId = media.malId
+      }
+      await this.entry(variables)
+    }
+  }
+
+  async entry (variables) {
+    debug(`Updating entry for ${variables.id}`)
+    console.log(`Updating entry for ${variables.id}`)
+    
+    console.log(variables)
+
+    if (!variables.malId) {
+      // Add the MAL ID if it doesn't exist
+      await this.addMalId(variables)
+    }
+    
+    // const params = new URLSearchParams()
+    // params.set('status', this.anilistStatusToMal[variables.status])
+    // params.set('num_watched_episodes', variables.episode)
+    
+    const options = {
+      url: 'https://api.myanimelist.net/v2/anime/' + variables.malId + '/my_list_status',
+      method: 'PATCH',
+      body: new URLSearchParams({
+        status: this.anilistStatusToMal[variables.status],
+        num_watched_episodes: variables.episode
+      }).toString()
+    }
+
+    console.log("Options: ")
+    console.log(options)
+    return this.handleRequest(options)
+  }
+
+  /** generates a PKCE challenge */
+  async generateChallenge() {
+    this.challenge = await pkceChallenge(128)
+  }
+
+  async refreshToken() {
+    if (malToken?.refresh_token) {
+      const res = await fetch('https://myanimelist.net/v1/oauth2/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `client_id=4e775f7b91ab35a806321856bad911ca&grant_type=refresh_token&refresh_token=${malToken.refresh_token}`
+      })
+      if (res.ok) {
+        const token = await res.json()
+        localStorage.setItem('MALtoken', JSON.stringify(token))
+      }
+    }
+  }
+
+  // TODO: add a way for a user to manually correct this
+  /** @param {import('./al.d.ts').Media} media */
+  async addMalId(media) {
+    if (!this.userID) return media
+    
+    const params = new URLSearchParams()
+    // MAL prefers the romaji title, but if it doesn't exist for some odd reason, we can use the native or english title
+    params.set('q', media.title.romaji || media.title.native || media.title.english)
+    
+    const options = {
+        url: `https://api.myanimelist.net/v2/anime?${params}`,
+        method: 'GET',
+    }
+    
+    let res = await this.handleRequest(options)
+
+    if (res.data) {
+      // Go over the data to see if we have an exact match
+      let node = null
+      let bestMatch = 0
+      // TODO: if there are discrepancies with 2nd vs second, we should probably replace the numbers with their word equivalent
+      // TODO: or vice versa. This is a very edge case, but it's worth considering, but I cbf to do it right now
+      for (const data of res.data) {
+        if (data.node.title.toLowerCase() === media.title.romaji.toLowerCase()) {
+          node = data.node
+          bestMatch = 0
+          break
+        } else { // use lavenshtein distance to find the best match
+          const distance = lavenshtein(data.node.title.toLowerCase(), media.title.romaji.toLowerCase())
+          if (distance < bestMatch) {
+            node = data.node
+            bestMatch = distance
+          }
+        }
+      }
+
+      if (!node) {
+        console.log(`Could not find a match for '${media.title.romaji}'`)
+        return media
+      }
+      media.malId = node.id
+      console.log(`Added MAL ID ${media.malId} (${node.title}) to '${media.title.romaji}' with ID ${media.id} and distance ${bestMatch}`)
+    }
+    
+    return media
+  }
+}
+
+export const myAnimeListClient = new MyAnimeListClient()

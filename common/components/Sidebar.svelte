@@ -1,11 +1,12 @@
 <script>
   import { getContext } from 'svelte'
   import { anilistClient } from '@/modules/anilist.js'
+  import { myAnimeListClient } from '@/modules/myanimelist.js'
   import { media } from '../views/Player/MediaHandler.svelte'
   import { platformMap } from '@/views/Settings/Settings.svelte'
   import { settings } from '@/modules/settings.js'
   import { toast } from 'svelte-sonner'
-  import { logout } from './Logout.svelte'
+  import { logout, isMal } from './Logout.svelte'
   import IPC from '@/modules/ipc.js'
   import SidebarLink from './SidebarLink.svelte'
   import { Clock, Download, Heart, Home, ListVideo, LogIn, Settings, Users } from 'lucide-svelte'
@@ -27,6 +28,7 @@
   function handleAlLogin () {
     if (anilistClient.userID?.viewer?.data?.Viewer) {
       $logout = true
+      $isMal = false
     } else {
       IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
       if (platformMap[window.version.platform] === 'Linux') {
@@ -37,12 +39,44 @@
       }
     }
   }
+
+  function handleMalLogin () {
+    if (myAnimeListClient.userID?.viewer) {
+      $logout = true
+      $isMal = true
+    } else {
+      // TODO: maybe change ownership of Client?
+      // Generate a challenge for PKCE
+      myAnimeListClient.generateChallenge().then(() => {
+        // Open the MAL OAuth2 page
+        myAnimeListClient.oauth2_state = generateStateParameter();
+        IPC.emit('open', `https://myanimelist.net/v1/oauth2/authorize?client_id=4e775f7b91ab35a806321856bad911ca&response_type=code&code_challenge=${myAnimeListClient.challenge.code_challenge}&state=${myAnimeListClient.oauth2_state}`) // Change redirect_url to miru://auth
+        // TODO: test this  
+        if (platformMap[window.version.platform] === 'Linux') {
+          toast('Support Notification', {
+            description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
+            duration: 300000
+          })
+        }
+      })
+    }
+  }
+  
+  function generateStateParameter() {
+    const array = new Uint32Array(10);
+    window.crypto.getRandomValues(array);
+    return Array.from(array, dec => ('0' + dec.toString(16)).slice(-2)).join('');
+  }
 </script>
 
 <div class='sidebar z-30 d-md-block' class:animated={$settings.expandingSidebar}>
   <div class='sidebar-overlay pointer-events-none h-full position-absolute' />
   <div class='sidebar-menu h-full d-flex flex-column justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
-    <SidebarLink click={handleAlLogin} icon='login' text={anilistClient.userID?.viewer?.data?.Viewer ? 'Logout' : 'Login With AniList'} css='mt-auto' {page} image={anilistClient.userID?.viewer?.data?.Viewer?.avatar.medium}>
+      <!-- TODO: fix the css on this thing (god I hate frontend) -->
+    <SidebarLink click={handleMalLogin} icon='login' text={myAnimeListClient.userID?.viewer ? 'MAL Logout' : 'Login With MAL'} css='mt-auto' {page} image={myAnimeListClient.userID?.viewer?.picture}>
+      <LogIn size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded' />
+    </SidebarLink>
+    <SidebarLink click={handleAlLogin} icon='login' text={anilistClient.userID?.viewer?.data?.Viewer ? 'Anilist Logout' : 'Login With AniList'} css='mt-auto' {page} image={anilistClient.userID?.viewer?.data?.Viewer?.avatar.medium}>
       <LogIn size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded' />
     </SidebarLink>
     <SidebarLink click={() => { page = 'home' }} _page='home' text='Home' {page} let:active>
