@@ -29,4 +29,9 @@ ipcRenderer.once('port', ({ ports }) => {
       ports[0].postMessage(a, b)
     }
   })
-})
+}) 
+
+contextBridge.exposeInMainWorld('ipcRenderer', {
+  send: (channel, data) => ipcRenderer.send(channel, data),
+  on: (channel, callback) => ipcRenderer.on(channel, (event, ...args) => callback(...args)),
+});

@@ -29,11 +29,6 @@ export default class App {
     height: 900,
     frame: process.platform === 'darwin', // Only keep the native frame on Mac
     titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#17191c',
-      symbolColor: '#eee',
-      height: 28
-    },
     backgroundColor: '#17191c',
     autoHideMenuBar: true,
     webPreferences: {
@@ -41,7 +36,9 @@ export default class App {
       allowRunningInsecureContent: false,
       enableBlinkFeatures: 'FontAccess, AudioVideoTracks',
       backgroundThrottling: false,
-      preload: join(__dirname, '/preload.js')
+      preload: join(__dirname, '/preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false
     },
     icon: join(__dirname, '/logo_filled.png'),
     show: false
@@ -159,3 +156,28 @@ export default class App {
     if (!this.updater.install(forceRunAfter)) app.quit()
   }
 }
+
+ipcMain.on('minimize', (event) => {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (focusedWindow) {
+    focusedWindow.minimize();
+  }
+});
+
+ipcMain.on('maximize', (event) => {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (focusedWindow) {
+    if (focusedWindow.isMaximized()) {
+      focusedWindow.unmaximize();
+    } else {
+      focusedWindow.maximize();
+    }
+  }
+});
+
+ipcMain.on('closeapp', (event) => {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (focusedWindow) {
+    focusedWindow.close();
+  }
+});
