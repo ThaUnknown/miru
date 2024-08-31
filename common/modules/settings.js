@@ -47,6 +47,16 @@ window.addEventListener('paste', ({ clipboardData }) => {
   if (clipboardData.items?.[0]) {
     if (clipboardData.items[0].type === 'text/plain' && clipboardData.items[0].kind === 'string') {
       clipboardData.items[0].getAsString(text => {
+        // Handle MyAnimeList OAuth2 1st stage (where we get the code)
+        if (text.startsWith('miru://authmal/')) {
+          const code = text.split('code=')?.[1]?.split('&state')?.[0]
+          let state = text.split('state=')?.[1]
+          // strip the state of possible trailing newlines (funny bug where it said the state was invalid, took a while to figure out)
+          if (state?.endsWith('\n')) state = state.slice(0, -1)
+          handleOAuth2(code, state)
+          return
+        }
+        // AniList
         let token = text.split('access_token=')?.[1]?.split('&token_type')?.[0]
         if (token) {
           if (token.endsWith('/')) token = token.slice(0, -1)
@@ -76,8 +86,12 @@ async function handleToken (token) {
 // Handle MyAnimeList OAuth2 2nd stage (where we exchange the code for a token)
 IPC.on('maloauth2', handleOAuth2)
 async function handleOAuth2(code, state) {
-  if (state !== myAnimeListClient.oauth2_state) {
+  // Sometimes the oauth2_state is empty, because we already completed the auth and there is a weird bug
+  // where it will do the request multiple times if you fail (i guess). It seems that the proto/clipboard handlers are
+  // made every time you press the login button, so it will do the request multiple times if you fail.
+  if (state !== myAnimeListClient.oauth2_state && myAnimeListClient.oauth2_state) {
     toast.error('Invalid state parameter returned from MyAnimeList')
+    console.error(`Invalid state parameter returned from MyAnimeList: '${state}' should be '${myAnimeListClient.oauth2_state}'`)
     return
   }
 
