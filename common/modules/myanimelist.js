@@ -1,12 +1,9 @@
-import pkceChallenge from "pkce-challenge"
 import lavenshtein from 'js-levenshtein'
-import {writable} from 'simple-store-svelte'
 import Bottleneck from 'bottleneck'
 
 import { malToken } from '@/modules/settings.js'
 import {toast} from 'svelte-sonner'
 import {sleep} from './util.js'
-import IPC from '@/modules/ipc.js'
 import Debug from 'debug'
 
 const debug = Debug('ui:myanimelist')
@@ -55,19 +52,11 @@ class MyAnimeListClient {
 
   rateLimitPromise = null
 
-  /** @type {import('simple-store-svelte').Writable<ReturnType<MyAnimeListClient['getUserLists']>>} */
-  userLists = writable()
-
   // TODO: This is a hack to get around the fact that the token is not initialized
   // TODO: figure out why malToken is accessed before being initialized
-  userID = JSON.parse(localStorage.getItem('MALviewer')) || null 
+  userID = JSON.parse(localStorage.getItem('MALviewer')) || null
 
-  /** @type {Record<number, import('./al.d.ts').Media>} */
-  mediaCache = {}
-
-  lastNotificationDate = Date.now() / 1000
-
-  /** @type {{code_verifier: string; code_challenge: string}} */
+  /** @type {{code_challenge: string, code_verifier: string}} */
   challenge = {}
 
   /** @type {string} */
@@ -98,7 +87,7 @@ class MyAnimeListClient {
     })
   }
 
-  viewer (variables = {}) {
+  viewer () {
     debug('Getting viewer')
     
     const params = new URLSearchParams()
@@ -246,9 +235,33 @@ class MyAnimeListClient {
 
   /** generates a PKCE challenge */
   async generateChallenge() {
-    this.challenge = await pkceChallenge(128)
+    const code_verifier = this.random(128)
+    const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(code_verifier))
+    const code_challenge = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+    this.challenge = { code_challenge, code_verifier }
   }
 
+  random(size) {
+    const mask =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~";
+    let result = "";
+    const randomUints = this.getRandomValues(size);
+    for (let i = 0; i < size; i++) {
+      // cap the value of the randomIndex to mask.length - 1
+      const randomIndex = randomUints[i] % mask.length;
+      result += mask[randomIndex];
+    }
+    return result;
+  }
+
+  getRandomValues(size) {
+    return crypto.getRandomValues(new Uint8Array(size));
+  }
+
+  // TODO: untested but should work
   async refreshToken() {
     if (malToken?.refresh_token) {
       const res = await fetch('https://myanimelist.net/v1/oauth2/token', {
@@ -259,12 +272,26 @@ class MyAnimeListClient {
         body: `client_id=4e775f7b91ab35a806321856bad911ca&grant_type=refresh_token&refresh_token=${malToken.refresh_token}`
       })
       if (res.ok) {
-        const token = await res.json()
-        localStorage.setItem('MALtoken', JSON.stringify(token))
+        const json = await res.json()
+        malToken.token = json.access_token
+        malToken.refresh_token = json.refresh_token
+        localStorage.setItem('MALviewer', JSON.stringify(malToken))
       }
     }
   }
 
+  // TODO: this might need a lot of improving to go around edge cases
+  // TODO: let's hope users will report errors so we can fix them :)
+  normalizeTitle(title) {
+    return title
+      .toLowerCase()
+      .replace(/\b1st\b/g, '')
+      .replace(/\b2nd\b/g, '2')
+      .replace(/\b3rd\b/g, '3')
+      .replace(/\b(\d)th\b/g, '$1')
+      .replace(/\b(\d+)\s+season\b/g, '$1');
+  }
+  
   // TODO: add a way for a user to manually correct this
   /** @param {import('./al.d.ts').Media} media */
   async addMalId(media) {
@@ -272,7 +299,8 @@ class MyAnimeListClient {
     
     const params = new URLSearchParams()
     // MAL prefers the romaji title, but if it doesn't exist for some odd reason, we can use the native or english title
-    params.set('q', media.title.romaji || media.title.native || media.title.english)
+    const normalizedRomajiTitle = this.normalizeTitle(media.title.romaji || media.title.native || media.title.english);
+    params.set('q', normalizedRomajiTitle);
     
     const options = {
         url: `https://api.myanimelist.net/v2/anime?${params}`,
@@ -284,16 +312,19 @@ class MyAnimeListClient {
     if (res.data) {
       // Go over the data to see if we have an exact match
       let node = null
-      let bestMatch = 0
+      let bestMatch = 10 // we don't want to set this too high, as we want to discard any matches that are too far off
       // TODO: if there are discrepancies with 2nd vs second, we should probably replace the numbers with their word equivalent
       // TODO: or vice versa. This is a very edge case, but it's worth considering, but I cbf to do it right now
       for (const data of res.data) {
-        if (data.node.title.toLowerCase() === media.title.romaji.toLowerCase()) {
+        const normalizedTitle = this.normalizeTitle(data.node.title);
+        
+        if (normalizedTitle === normalizedRomajiTitle) {
           node = data.node
           bestMatch = 0
           break
-        } else { // use lavenshtein distance to find the best match
-          const distance = lavenshtein(data.node.title.toLowerCase(), media.title.romaji.toLowerCase())
+        }
+        else {
+          const distance = lavenshtein(normalizedTitle, normalizedRomajiTitle);
           if (distance < bestMatch) {
             node = data.node
             bestMatch = distance
@@ -306,7 +337,7 @@ class MyAnimeListClient {
         return media
       }
       media.malId = node.id
-      console.log(`Added MAL ID ${media.malId} (${node.title}) to '${media.title.romaji}' with ID ${media.id} and distance ${bestMatch}`)
+      console.log(`Added MAL ID ${media.malId} (${node.title}) to '${media.title.romaji}' with AL ID ${media.id} and distance ${bestMatch}`)
     }
     
     return media

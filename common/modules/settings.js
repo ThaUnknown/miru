@@ -101,19 +101,21 @@ async function handleOAuth2(code, state) {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
-    // Because MAL is outdated af we need to use the code_challenge here instead of the code_verifier
+    // MAL only supports plain PKCE (where code_verifier = code_challenge), so we will just pass the code_challenge as the code_verifier here
+    // If MAL ever supports S256, we can simply change this to the actual code_verifier
+    // Source: https://datatracker.ietf.org/doc/html/rfc7636#section-4.2
     body: `client_id=4e775f7b91ab35a806321856bad911ca&grant_type=authorization_code&code=${code}&code_verifier=${myAnimeListClient.challenge.code_challenge}`
   }).then(response => response.json())
     .then(async data => {
       malToken = {token: data.access_token, refresh_token: data.refresh_token, viewer: null}
-      const viewer = await myAnimeListClient.viewer({token: data.access_token})
+      const viewer = await myAnimeListClient.viewer()
       
       if (!viewer) {
         toast.error('Failed to sign in with MyAnimeList. Please try again.', {description: JSON.stringify(viewer)})
         debug(`Failed to sign in with MyAnimeList: ${JSON.stringify(viewer)}`)
         return
       }
-      if (!viewer.picture) {
+      if (!viewer.picture) { // add a default picture if MAL doesn't have one
         viewer.picture = 'https://cdn.myanimelist.net/images/kaomoji_mal_white.png'
       }
       // const lists = viewer?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
