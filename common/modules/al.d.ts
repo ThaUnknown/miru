@@ -145,6 +145,7 @@ export type MediaListCollection = {
 export type Viewer = {
   avatar: {
     medium: string
+    large: string
   }
   name: string
   id: number

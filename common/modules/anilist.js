@@ -467,7 +467,8 @@ class AnilistClient {
     query {
       Viewer {
         avatar {
-          medium
+          medium,
+          large
         },
         name,
         id,

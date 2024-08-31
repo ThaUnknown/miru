@@ -120,7 +120,7 @@ export default class Helper {
 
   static getUserAvatar() {
     if (anilistClient.userID?.viewer?.data?.Viewer) {
-      return anilistClient.userID.viewer.data.Viewer.avatar.medium
+      return anilistClient.userID.viewer.data.Viewer.avatar.large || anilistClient.userID.viewer.data.Viewer.avatar.medium
     } else if (malClient.userID?.viewer?.data?.Viewer) {
       return malClient.userID.viewer.data.Viewer.picture
     }

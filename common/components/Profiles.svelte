@@ -95,7 +95,7 @@
         <button class='close pointer z-30 top-20 right-0 position-absolute' type='button' use:click={close}> &times; </button>
         <div class='d-flex flex-column align-items-center'>
           {#if $currentProfile}
-            <img class='h-150 rounded-circle' src={$currentProfile.viewer.data.Viewer.avatar?.medium || $currentProfile.viewer.data.Viewer.picture} alt='Current Profile' title='Current Profile'>
+            <img class='h-150 rounded-circle' src={$currentProfile.viewer.data.Viewer.avatar?.large || $currentProfile.viewer.data.Viewer.avatar?.medium || $currentProfile.viewer.data.Viewer.picture} alt='Current Profile' title='Current Profile'>
             <img class='h-3 auth-icon rounded-circle' src={isAniProfile($currentProfile) ? './anilist_icon.png' : './myanimelist_icon.png'} alt={isAniProfile($currentProfile) ? 'Logged in with AniList' : 'Logged in with MyAnimeList'} title={isAniProfile($currentProfile) ? 'Logged in with AniList' : 'Logged in with MyAnimeList'}>
             <p class='font-size-18 font-weight-bold'>{$currentProfile.viewer.data.Viewer.name}</p>
           {/if}
@@ -109,7 +109,7 @@
           {#each $profiles as profile}
             <button type='button' class='profile-item box text-left pointer border-0 d-flex align-items-center justify-content-between position-relative flex-wrap' on:click={() => switchProfile(profile)}>
               <div class='d-flex align-items-center flex-wrap'>
-                <img class='h-50 ml-10 mt-5 mb-5 mr-10 rounded-circle bg-transparent' src={profile.viewer.data.Viewer.avatar?.medium || profile.viewer.data.Viewer.picture} alt={profile.viewer.data.Viewer.name}>
+                <img class='h-50 ml-10 mt-5 mb-5 mr-10 rounded-circle bg-transparent' src={profile.viewer.data.Viewer.avatar?.large || profile.viewer.data.Viewer.avatar?.medium || profile.viewer.data.Viewer.picture} alt={profile.viewer.data.Viewer.name}>
                 <img class='ml-5 auth-icon rounded-circle' src={isAniProfile(profile) ? './anilist_icon.png' : './myanimelist_icon.png'} alt={isAniProfile(profile) ? 'Logged in with AniList' : 'Logged in with MyAnimeList'} title={isAniProfile(profile) ? 'Logged in with AniList' : 'Logged in with MyAnimeList'}>
                 <p class='text-wrap'>{profile.viewer.data.Viewer.name}</p>
               </div>
