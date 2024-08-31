@@ -1,113 +1,59 @@
 <script>
-  import { persisted } from "svelte-persisted-store";
-  import { getContext } from "svelte";
-  import { click } from "@/modules/click.js";
-  import IPC from "@/modules/ipc.js";
+  import { persisted } from 'svelte-persisted-store'
+  import { getContext } from 'svelte'
+  import { click } from '@/modules/click.js'
+  import IPC from '@/modules/ipc.js'
 
-  export let page;
-  const view = getContext("view");
-  function close() {
-    $view = null;
-    page = "home";
+  export let page
+  const view = getContext('view')
+  function close () {
+    $view = null
+    page = 'home'
   }
 
-  const debug = persisted("debug", "", {
+  const debug = persisted('debug', '', {
     serializer: {
       parse: (e) => e,
-      stringify: (e) => e,
-    },
-  });
+      stringify: (e) => e
+    }
+  })
 
-  function minimize() {
-    window.ipcRenderer.send("minimize");
+  function minimize () {
+    window.ipcRenderer.send('minimize')
   }
 
-  function maximize() {
-    window.ipcRenderer.send("maximize");
+  function maximize () {
+    window.ipcRenderer.send('maximize')
   }
 
-  function closeapp() {
-    window.ipcRenderer.send("closeapp");
+  function closeapp () {
+    window.ipcRenderer.send('closeapp')
   }
 </script>
 
-<div class="w-full z-101 navbar bg-transparent border-0 p-0 d-flex">
-  <div class="d-flex h-full draggable align-items-center text-center">
-    {#if window.version?.platform !== "darwin"}
-      <img
-        src="./logo_filled.png"
-        class="position-absolute w-50 h-50 m-10 pointer d-md-block d-none p-5"
-        alt="ico"
-        use:click={close}
-      />
+<div class='w-full z-101 navbar bg-transparent border-0 p-0 d-flex'>
+  <div class='d-flex h-full draggable align-items-center text-center'>
+    {#if window.version?.platform !== 'darwin'}
+      <img src='./logo_filled.png' class='position-absolute w-50 h-50 m-10 pointer d-md-block d-none p-5' alt='ico' use:click={close} />
     {/if}
   </div>
-  <div id="window-controls">
-    <button class="button" id="max-button" on:click={minimize}>
-      <svg
-        class="svg-controls"
-        role="img"
-        width="12"
-        height="12"
-        viewBox="0 0 12 12"
-        ><rect fill="currentColor" width="10" height="1" x="1" y="6"
-        ></rect></svg
-      ></button
-    >
-    <button class="button" id="restore-button" on:click={maximize}
-      ><svg
-        class="svg-controls"
-        role="img"
-        width="12"
-        height="12"
-        viewBox="0 0 12 12"
-        ><rect
-          width="9"
-          height="9"
-          x="1.5"
-          y="1.5"
-          fill="none"
-          stroke="currentColor"
-        ></rect></svg
-      ></button
-    >
-    <button class="button" id="close-button" on:click={closeapp}>
-      <svg
-        class="svg-controls"
-        role="img"
-        width="12"
-        height="12"
-        viewBox="0 0 12 12"
-      >
-        <polygon
-          fill="currentColor"
-          fill-rule="evenodd"
-          points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1"
-        ></polygon></svg
-      ></button
-    >
+  <div id='window-controls'>
+    <button class='button' id='max-button' on:click={minimize}><svg class='svg-controls' height='12' role='img' viewBox='0 0 12 12'width='12'><rect fill='currentColor' height='1' width='10' x='1' y='6' /></svg></button>
+    <button class='button' id='restore-button' on:click={maximize}><svg class='svg-controls' height='12' role='img' viewBox='0 0 12 12'width='12'><rect fill='none' height='9' stroke='currentColor' width='9' x='1.5' y='1.5' /></svg></button>
+    <button class='button' id='close-button' on:click={closeapp}><svg class='svg-controls' height='12' role='img' viewBox='0 0 12 12'width='12'><polygon fill='currentColor' fill-rule='evenodd' points='11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1' /></svg></button>
   </div>
-  <div class="h-full bg-dark flex-grow-1">
-    {#if window.version?.platform === "linux"}
-      <div
-        class="d-flex align-items-center close h-full"
-        use:click={() => IPC.emit("close")}
-      >
-        <svg viewBox="0 0 24 24">
-          <path
-            d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"
-          />
+  <div class='h-full bg-dark flex-grow-1'>
+    {#if window.version?.platform === 'linux'}
+      <div class='d-flex align-items-center close h-full' use:click={() => IPC.emit('close')}>
+        <svg viewBox='0 0 24 24'>
+          <path d='M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z' />
         </svg>
       </div>
     {/if}
   </div>
 </div>
 {#if $debug}
-  <div
-    class="ribbon right z-101 text-center position-fixed font-size-16 font-weight-bold"
-  >
-    Debug Mode!
-  </div>
+  <div class='ribbon right z-101 text-center position-fixed font-size-16 font-weight-bold'>Debug Mode!</div>
 {/if}
 
 <style>

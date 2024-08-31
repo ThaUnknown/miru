@@ -158,26 +158,26 @@ export default class App {
 }
 
 ipcMain.on('minimize', (event) => {
-  const focusedWindow = BrowserWindow.getFocusedWindow();
+  const focusedWindow = BrowserWindow.getFocusedWindow()
   if (focusedWindow) {
-    focusedWindow.minimize();
+    focusedWindow.minimize()
   }
-});
+})
 
 ipcMain.on('maximize', (event) => {
-  const focusedWindow = BrowserWindow.getFocusedWindow();
+  const focusedWindow = BrowserWindow.getFocusedWindow()
   if (focusedWindow) {
     if (focusedWindow.isMaximized()) {
-      focusedWindow.unmaximize();
+      focusedWindow.unmaximize()
     } else {
-      focusedWindow.maximize();
+      focusedWindow.maximize()
     }
   }
-});
+})
 
 ipcMain.on('closeapp', (event) => {
-  const focusedWindow = BrowserWindow.getFocusedWindow();
+  const focusedWindow = BrowserWindow.getFocusedWindow()
   if (focusedWindow) {
-    focusedWindow.close();
+    focusedWindow.close()
   }
-});
+})
