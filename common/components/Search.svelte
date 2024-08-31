@@ -492,7 +492,6 @@
         </select>
       </div>
     </div>
-    {#if Helper.isAuthorized()}
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
         <button
@@ -500,7 +499,7 @@
           type='button'
           title='Hide My Anime'
           use:click={toggleHideMyAnime}
-          disabled={search.disableHide || search.disableSearch}
+          disabled={search.disableHide || search.disableSearch || !Helper.isAuthorized()}
           class:text-primary={search.hideMyAnime}>
           <label for='hide-my-anime' class='pointer mb-0 d-flex align-items-center justify-content-center'>
             <SlidersHorizontal size='1.625rem' />
@@ -508,7 +507,6 @@
         </button>
       </div>
     </div>
-    {/if}
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
         <button
