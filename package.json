@@ -27,7 +27,6 @@
     "html-webpack-plugin": "^5.6.0",
     "matroska-metadata": "^1.0.6",
     "mini-css-extract-plugin": "^2.8.1",
-    "pkce-challenge": "^4.1.0",
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.2",
