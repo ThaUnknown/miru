@@ -113,7 +113,7 @@
   }
 
   function fileListToDebug (files) {
-    return files.map(({ name, media, url }) => `\n${name} ${media?.parseObject.anime_title} ${media?.parseObject.episode_number} ${media?.media?.title.userPreferred} ${media?.episode}`).join('')
+    return files?.map(({ name, media, url }) => `\n${name} ${media?.parseObject?.anime_title} ${media?.parseObject?.episode_number} ${media?.media?.title?.userPreferred} ${media?.episode}`).join('')
   }
 
   async function handleFiles (files) {
@@ -149,7 +149,7 @@
 
     if (!nowPlaying) {
       nowPlaying = findPreferredPlaybackMedia(videoFiles)
-      debug(`Found preferred playback media: ${nowPlaying.media?.id}:${nowPlaying.media?.title.userPreferred} ${nowPlaying.episode}`)
+      debug(`Found preferred playback media: ${nowPlaying?.media?.id}:${nowPlaying?.media?.title?.userPreferred} ${nowPlaying?.episode}`)
     }
 
     const filtered = nowPlaying?.media && videoFiles.filter(file => file.media?.media?.id && file.media?.media?.id === nowPlaying.media.id)
@@ -161,7 +161,7 @@
       result = filtered
     } else {
       const max = highestOccurence(videoFiles, file => file.media.parseObject.anime_title).media.parseObject.anime_title
-      debug(`Highest occurence anime title: ${max}`)
+      debug(`Highest occurrence anime title: ${max}`)
       result = videoFiles.filter(file => file.media.parseObject.anime_title === max)
     }
 
