@@ -69,7 +69,6 @@ export default class TorrentClient extends WebTorrent {
     this.torrentPath = torrentPath
     this._ready = new Promise(resolve => {
       ipc.on('port', ({ ports }) => {
-        if (this.message) return
         this.message = ports[0].postMessage.bind(ports[0])
         ports[0].onmessage = ({ data }) => {
           debug(`Received IPC message ${data.type}: ${data.data}`)
