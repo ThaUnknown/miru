@@ -197,8 +197,8 @@ class MyAnimeListClient {
       if (!lists.includes('Watched using Miru')) {
         variables.lists.push('Watched using Miru')
       }
-      if (media.malId) {
-        variables.malId = media.malId
+      if (media.idMal) {
+        variables.idMal = media.idMal
       }
       await this.entry(variables)
     }
@@ -209,18 +209,12 @@ class MyAnimeListClient {
     console.log(`Updating entry for ${variables.id}`)
     
     console.log(variables)
-
-    if (!variables.malId) {
-      // Add the MAL ID if it doesn't exist
-      await this.addMalId(variables)
-    }
     
-    // const params = new URLSearchParams()
-    // params.set('status', this.anilistStatusToMal[variables.status])
-    // params.set('num_watched_episodes', variables.episode)
+    // if we don't have a MAL ID, we need to get it
+    await this.addMalId(variables)
     
     const options = {
-      url: 'https://api.myanimelist.net/v2/anime/' + variables.malId + '/my_list_status',
+      url: 'https://api.myanimelist.net/v2/anime/' + variables.idMal + '/my_list_status',
       method: 'PATCH',
       body: new URLSearchParams({
         status: this.anilistStatusToMal[variables.status],
@@ -295,7 +289,7 @@ class MyAnimeListClient {
   // TODO: add a way for a user to manually correct this
   /** @param {import('./al.d.ts').Media} media */
   async addMalId(media) {
-    if (!this.userID) return media
+    if (!this.userID || media.idMal) return media
     
     const params = new URLSearchParams()
     // MAL prefers the romaji title, but if it doesn't exist for some odd reason, we can use the native or english title
@@ -336,8 +330,8 @@ class MyAnimeListClient {
         console.log(`Could not find a match for '${media.title.romaji}'`)
         return media
       }
-      media.malId = node.id
-      console.log(`Added MAL ID ${media.malId} (${node.title}) to '${media.title.romaji}' with AL ID ${media.id} and distance ${bestMatch}`)
+      media.idMal = node.id
+      console.log(`Added MAL ID ${media.idMal} (${node.title}) to '${media.title.romaji}' with AL ID ${media.id} and distance ${bestMatch}`)
     }
     
     return media
