@@ -84,11 +84,12 @@ async function handleToken (token) {
 }
 
 // Handle MyAnimeList OAuth2 2nd stage (where we exchange the code for a token)
+// https://myanimelist.net/apiconfig/references/authorization
 IPC.on('maloauth2', handleOAuth2)
 async function handleOAuth2(code, state) {
   // Sometimes the oauth2_state is empty, because we already completed the auth and there is a weird bug
   // where it will do the request multiple times if you fail (i guess). It seems that the proto/clipboard handlers are
-  // made every time you press the login button, so it will do the request multiple times if you fail.
+  // made every time you press the login button (maybe?), so it will do the request multiple times if you fail.
   if (state !== myAnimeListClient.oauth2_state && myAnimeListClient.oauth2_state) {
     toast.error('Invalid state parameter returned from MyAnimeList')
     console.error(`Invalid state parameter returned from MyAnimeList: '${state}' should be '${myAnimeListClient.oauth2_state}'`)
@@ -104,7 +105,7 @@ async function handleOAuth2(code, state) {
     // MAL only supports plain PKCE (where code_verifier = code_challenge), so we will just pass the code_challenge as the code_verifier here
     // If MAL ever supports S256, we can simply change this to the actual code_verifier
     // Source: https://datatracker.ietf.org/doc/html/rfc7636#section-4.2
-    body: `client_id=4e775f7b91ab35a806321856bad911ca&grant_type=authorization_code&code=${code}&code_verifier=${myAnimeListClient.challenge.code_challenge}`
+    body: `client_id=4e775f7b91ab35a806321856bad911ca&grant_type=authorization_code&code=${code}&code_verifier=${myAnimeListClient.PKCEchallenge.code_challenge}`
   }).then(response => response.json())
     .then(async data => {
       malToken = {token: data.access_token, refresh_token: data.refresh_token, viewer: null}
@@ -118,10 +119,8 @@ async function handleOAuth2(code, state) {
       if (!viewer.picture) { // add a default picture if MAL doesn't have one
         viewer.picture = 'https://cdn.myanimelist.net/images/kaomoji_mal_white.png'
       }
-      // const lists = viewer?.data?.Viewer?.mediaListOptions?.animeList?.customLists || []
-      // if (!lists.includes('Watched using Miru')) {
-      //   myAnimeListClient.customList({lists})
-      // }
+      
+      // save the token and viewer to localStorage
       localStorage.setItem('MALviewer', JSON.stringify({
         token: data.access_token,
         refresh_token: data.refresh_token,

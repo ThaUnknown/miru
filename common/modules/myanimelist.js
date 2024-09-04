@@ -57,7 +57,7 @@ class MyAnimeListClient {
   userID = JSON.parse(localStorage.getItem('MALviewer')) || null
 
   /** @type {{code_challenge: string, code_verifier: string}} */
-  challenge = {}
+  PKCEchallenge = {}
 
   /** @type {string} */
   oauth2_state = ''
@@ -145,7 +145,6 @@ class MyAnimeListClient {
     return json
   })
 
-
   async malEntry (filemedia) {
     // check if values exist
     console.log(filemedia)
@@ -154,8 +153,6 @@ class MyAnimeListClient {
       const {media, failed} = filemedia
       debug(`Checking entry for ${media.title.userPreferred}`)
       debug(`Media viability: ${media.status}, Is from failed resolve: ${failed}`)
-
-      console.log(media)
       
       if (failed) return
       if (media.status !== 'FINISHED' && media.status !== 'RELEASING') return
@@ -227,32 +224,72 @@ class MyAnimeListClient {
     return this.handleRequest(options)
   }
 
-  /** generates a PKCE challenge */
+  /**
+   * Generates a PKCE challenge for the OAuth2 flow
+   * Sets the challenge and verifier for later use
+   * Source: https://datatracker.ietf.org/doc/html/rfc7636#section-4
+   */
   async generateChallenge() {
-    const code_verifier = this.random(128)
-    const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(code_verifier))
-    const code_challenge = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    // generate a random code verifier
+    const code_verifier = this.randomPKCEString(128)
+    
+    // generate a random state parameter
+    this.oauth2_state = this.generateStateParameter()
+    
+    // generate the code challenge (for S256 PKCE, currently MAL only supports plain, so we use the code_verifier as the code_challenge)
+    // code_challenge = BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))
+    // since code_verifier is already in ASCII, we can skip the encoding step
+    const sha256encoded_verifier = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(code_verifier))
+    
+    // convert the SHA256 hash to a base64url encoded string and remove any padding
+    // also replace the '+' and '/' characters with '-' and '_', respectively, to make it URL safe
+    const code_challenge = btoa(String.fromCharCode(...new Uint8Array(sha256encoded_verifier)))
         .replace(/=/g, '')
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
-    this.challenge = { code_challenge, code_verifier }
+    this.PKCEchallenge = { code_challenge, code_verifier }
   }
 
-  random(size) {
-    const mask =
+  /**
+   * Generates a random string of a given length
+   * @param size {number} the length of the string
+   * @returns {string} a random string of the given length
+   */
+  randomPKCEString(size) {
+    const mask = // the characters that are allowed in the string (URL safe)
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~";
     let result = "";
     const randomUints = this.getRandomValues(size);
+    // generate a random string of the given size
     for (let i = 0; i < size; i++) {
       // cap the value of the randomIndex to mask.length - 1
       const randomIndex = randomUints[i] % mask.length;
+      // add the character at the random index to the result
       result += mask[randomIndex];
     }
     return result;
   }
 
+  /**
+   * Generates a random array of a given size
+   * @param size {number} the size of the array
+   * @returns {Uint8Array} a random array of the given size
+   */
   getRandomValues(size) {
+    // use the crypto API to generate a random array of positive 8-bit numbers to be used as an index for the mask
     return crypto.getRandomValues(new Uint8Array(size));
+  }
+
+  /**
+   * Generates a random state parameter for the OAuth2 flow, which is used to prevent CSRF attacks
+   * @returns {string} a random state parameter
+   */
+  generateStateParameter() {
+    // use the crypto API to fill a Uint32Array with random values
+    const array = new Uint32Array(10);
+    crypto.getRandomValues(array);
+    // convert the Uint32Array to a hexadecimal string
+    return Array.from(array, dec => ('0' + dec.toString(16)).slice(-2)).join('');
   }
 
   // TODO: untested but should work
@@ -287,6 +324,7 @@ class MyAnimeListClient {
   }
   
   // TODO: add a way for a user to manually correct this
+  // TODO: maybe completely delete this because of AL's idMal
   /** @param {import('./al.d.ts').Media} media */
   async addMalId(media) {
     if (!this.userID || media.idMal) return media

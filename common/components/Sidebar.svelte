@@ -46,12 +46,15 @@
       $isMal = true
     } else {
       // TODO: maybe change ownership of Client?
-      // Generate a challenge for PKCE
+      // Generate a challenge for PKCE and then request an OAuth2 code, which can then be exchanged for an access token
+      const params = new URLSearchParams()
+      params.append('client_id', '4e775f7b91ab35a806321856bad911ca')
+      params.append('response_type', 'code')
+      params.append('code_challenge', myAnimeListClient.PKCEchallenge.code_challenge)
+      params.append('state', myAnimeListClient.oauth2_state)
+      // Open the OAuth2 authorization page
       myAnimeListClient.generateChallenge().then(() => {
-        // Open the MAL OAuth2 page
-        myAnimeListClient.oauth2_state = generateStateParameter();
-        IPC.emit('open', `https://myanimelist.net/v1/oauth2/authorize?client_id=4e775f7b91ab35a806321856bad911ca&response_type=code&code_challenge=${myAnimeListClient.challenge.code_challenge}&state=${myAnimeListClient.oauth2_state}`) // Change redirect_url to miru://auth
-        // TODO: test this  
+        IPC.emit('open', `https://myanimelist.net/v1/oauth2/authorize?${params.toString()}`)
         if (platformMap[window.version.platform] === 'Linux') {
           toast('Support Notification', {
             description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
@@ -60,12 +63,6 @@
         }
       })
     }
-  }
-  
-  function generateStateParameter() {
-    const array = new Uint32Array(10);
-    window.crypto.getRandomValues(array);
-    return Array.from(array, dec => ('0' + dec.toString(16)).slice(-2)).join('');
   }
 </script>
 
