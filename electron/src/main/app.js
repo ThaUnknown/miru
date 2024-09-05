@@ -36,9 +36,7 @@ export default class App {
       allowRunningInsecureContent: false,
       enableBlinkFeatures: 'FontAccess, AudioVideoTracks',
       backgroundThrottling: false,
-      preload: join(__dirname, '/preload.js'),
-      contextIsolation: true,
-      nodeIntegration: false
+      preload: join(__dirname, '/preload.js')
     },
     icon: join(__dirname, '/logo_filled.png'),
     show: false
@@ -62,6 +60,11 @@ export default class App {
     this.mainWindow.on('closed', () => this.destroy())
     this.webtorrentWindow.on('closed', () => this.destroy())
     ipcMain.on('close', () => this.destroy())
+    ipcMain.on('minimize', () => BrowserWindow.getFocusedWindow()?.minimize())
+    ipcMain.on('maximize', () => {
+      const focusedWindow = BrowserWindow.getFocusedWindow()
+      focusedWindow?.isMaximized() ? focusedWindow.unmaximize() : focusedWindow.maximize()
+});
     app.on('before-quit', e => {
       if (this.destroyed) return
       e.preventDefault()
@@ -156,28 +159,3 @@ export default class App {
     if (!this.updater.install(forceRunAfter)) app.quit()
   }
 }
-
-ipcMain.on('minimize', (event) => {
-  const focusedWindow = BrowserWindow.getFocusedWindow()
-  if (focusedWindow) {
-    focusedWindow.minimize()
-  }
-})
-
-ipcMain.on('maximize', (event) => {
-  const focusedWindow = BrowserWindow.getFocusedWindow()
-  if (focusedWindow) {
-    if (focusedWindow.isMaximized()) {
-      focusedWindow.unmaximize()
-    } else {
-      focusedWindow.maximize()
-    }
-  }
-})
-
-ipcMain.on('closeapp', (event) => {
-  const focusedWindow = BrowserWindow.getFocusedWindow()
-  if (focusedWindow) {
-    focusedWindow.close()
-  }
-})
