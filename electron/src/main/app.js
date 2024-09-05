@@ -60,9 +60,9 @@ export default class App {
     this.mainWindow.on('closed', () => this.destroy())
     this.webtorrentWindow.on('closed', () => this.destroy())
     ipcMain.on('close', () => this.destroy())
-    ipcMain.on('minimize', () => BrowserWindow.getFocusedWindow()?.minimize())
+    ipcMain.on('minimize', () => this.mainWindow?.minimize())
     ipcMain.on('maximize', () => {
-      const focusedWindow = BrowserWindow.getFocusedWindow()
+      const focusedWindow = this.mainWindow
       focusedWindow?.isMaximized() ? focusedWindow.unmaximize() : focusedWindow.maximize()
 });
     app.on('before-quit', e => {

@@ -79,8 +79,7 @@
     }
   }
   .window-controls {
-    display: grid;
-    grid-template-columns: repeat(3, 46px);
+    display: flex;
     position: absolute;
     top: 0;
     right: 0;
@@ -104,10 +103,10 @@
     user-select: none;
   }
   .window-controls .button:hover {
-    background: rgba(24, 24, 28, 0.2);
+    background: rgba(128, 128, 128, 0.2);
   }
   .window-controls .button:active {
-    background: rgba(24, 24, 28, 0.4);
+    background: rgba(128, 128, 128, 0.4);
   }
   .close-button:hover {
     background: #e81123 !important;
