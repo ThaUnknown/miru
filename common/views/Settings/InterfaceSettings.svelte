@@ -15,13 +15,21 @@
 </script>
 
 {#if SUPPORTS.discord}
-  <h4 class='mb-10 font-weight-bold'>Rich Pressence Settings</h4>
-  <SettingCard title='Show Details in Discord Rich Presence' description='Shows currently played anime and episode in Discord rich presence.'>
+  <h4 class='mb-10 font-weight-bold'>Rich Presence Settings</h4>
+  <SettingCard title='Discord Rich Presence' description='Enables the use of Discord rich presence to display app activity.'>
     <div class='custom-switch'>
-      <input type='checkbox' id='rpc-details' bind:checked={settings.showDetailsInRPC} />
-      <label for='rpc-details'>{settings.showDetailsInRPC ? 'On' : 'Off'}</label>
+      <input type='checkbox' id='rpc-enabled' bind:checked={settings.enableRPC} />
+      <label for='rpc-enabled'>{settings.enableRPC ? 'On' : 'Off'}</label>
     </div>
   </SettingCard>
+  {#if settings.enableRPC}
+    <SettingCard title='Show Details in Discord Rich Presence' description='Shows currently played anime and episode in Discord rich presence.'>
+      <div class='custom-switch'>
+        <input type='checkbox' id='rpc-details' bind:checked={settings.showDetailsInRPC} />
+        <label for='rpc-details'>{settings.showDetailsInRPC ? 'On' : 'Off'}</label>
+      </div>
+    </SettingCard>
+  {/if}
 {/if}
 
 <h4 class='mb-10 font-weight-bold'>Interface Settings</h4>

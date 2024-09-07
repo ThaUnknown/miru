@@ -171,6 +171,7 @@ export const defaults = {
   enableDoH: false,
   doHURL: 'https://cloudflare-dns.com/dns-query',
   disableSubtitleBlur: SUPPORTS.isAndroid,
+  enableRPC: true,
   showDetailsInRPC: true,
   smoothScroll: !SUPPORTS.isAndroid,
   cards: 'small',

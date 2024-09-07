@@ -25,6 +25,7 @@
     return json.map(({ body, tag_name: version, published_at: date, assets }) => ({ body, version, date, assets }))
   })()
   IPC.emit('show-discord-status', settings.value.showDetailsInRPC)
+  IPC.emit('discord-rpc', settings.value.enableRPC)
 </script>
 
 <script>
@@ -76,6 +77,7 @@
     IPC.off('path', pathListener)
     IPC.off('player', playerListener)
   })
+  $: IPC.emit('discord-rpc', $settings.enableRPC)
   $: IPC.emit('show-discord-status', $settings.showDetailsInRPC)
   IPC.on('path', pathListener)
   IPC.on('player', playerListener)
