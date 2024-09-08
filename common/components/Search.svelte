@@ -297,18 +297,22 @@
     form.dispatchEvent(new Event('input', { bubbles: true }))
   }
 
-  function filterTags(event, type) {
+  function filterTags(event, type, trigger) {
     const list = type === 'tag' ? tagList : genreList
     const searchKey = type === 'tag' ? 'tag' : 'genre'
     const inputValue = event.target.value
     let bestMatch = list.find(item => item.toLowerCase() === inputValue.toLowerCase())
-    if (!bestMatch || inputValue.endsWith('*')) {
-      bestMatch = (inputValue.endsWith('*') && inputValue.slice(0, -1)) || list.find(item => item.toLowerCase().startsWith(inputValue.toLowerCase())) || list.find(item => item.toLowerCase().endsWith(inputValue.toLowerCase()))
-    }
-    if (bestMatch && (!search[searchKey] || !search[searchKey].includes(bestMatch))) {
-      search[searchKey] = search[searchKey] ? [...search[searchKey], bestMatch] : [bestMatch]
-      searchTextInput[searchKey] = null
-      form.dispatchEvent(new Event('input', { bubbles: true }))
+    if ((trigger === 'keydown' && (event.key === 'Enter' || event.code === 'Enter')) || (trigger === 'input' && bestMatch)) {
+      if (!bestMatch || inputValue.endsWith('*')) {
+        bestMatch = (inputValue.endsWith('*') && inputValue.slice(0, -1)) || list.find(item => item.toLowerCase().startsWith(inputValue.toLowerCase())) || list.find(item => item.toLowerCase().endsWith(inputValue.toLowerCase()))
+      }
+      if (bestMatch && (!search[searchKey] || !search[searchKey].includes(bestMatch))) {
+        search[searchKey] = search[searchKey] ? [...search[searchKey], bestMatch] : [bestMatch]
+        searchTextInput[searchKey] = null
+        setTimeout(() => {
+          form.dispatchEvent(new Event('input', {bubbles: true}))
+        }, 0);
+      }
     }
   }
 
@@ -374,7 +378,8 @@
           class='form-control bg-dark-light border-left-0 text-capitalize'
           autocomplete='off'
           bind:value={searchTextInput.genre}
-          on:change={(event) => filterTags(event, 'genre')}
+          on:keydown={(event) => filterTags(event, 'genre', 'keydown')}
+          on:input={(event) => filterTags(event, 'genre', 'input')}
           data-option='search'
           disabled={search.disableSearch || (!Helper.isAniAuth() && Helper.isUserSort(search))}
           placeholder='Any'
@@ -401,7 +406,8 @@
           class='form-control bg-dark-light border-left-0 text-capitalize'
           autocomplete='off'
           bind:value={searchTextInput.tag}
-          on:change={(event) => filterTags(event, 'tag')}
+          on:keydown={(event) => filterTags(event, 'tag', 'keydown')}
+          on:input={(event) => filterTags(event, 'tag', 'input')}
           data-option='search'
           disabled={search.disableSearch || (!Helper.isAniAuth() && Helper.isUserSort(search))}
           placeholder='Any'
