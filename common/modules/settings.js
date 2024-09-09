@@ -55,13 +55,13 @@ window.addEventListener('paste', ({ clipboardData }) => {
       clipboardData.items[0].getAsString(text => {
         if (text.includes("access_token=")) { // is an AniList token
           let token = text.split('access_token=')?.[1]?.split('&token_type')?.[0]
-          if (token) {
+          if (token) {state
             if (token.endsWith('/')) token = token.slice(0, -1)
             handleToken(token)
           }
         } else if (text.includes("code=") && text.includes("&state")) { // is a MyAnimeList authorization
-          let code = line.split('code=')[1].split('&state')[0]
-          let state = line.split('&state=')[1]
+          let code = text.split('code=')[1].split('&state')[0]
+          let state = text.split('&state=')[1]
           if (code && state) {
             if (code.endsWith('/')) code = code.slice(0, -1)
             if (state.endsWith('/')) state = state.slice(0, -1)
@@ -98,6 +98,8 @@ async function handleMalToken (code, state) {
     debug(`Failed to get the state and code from MyAnimeList.`)
     return
   }
+  // remove linefeed characters from the state
+  state = state.replace(/(\r\n|\n|\r)/gm, '')
   const response = await fetch('https://myanimelist.net/v1/oauth2/token', {
     method: 'POST',
     headers: {
