@@ -55,7 +55,7 @@ window.addEventListener('paste', ({ clipboardData }) => {
       clipboardData.items[0].getAsString(text => {
         if (text.includes("access_token=")) { // is an AniList token
           let token = text.split('access_token=')?.[1]?.split('&token_type')?.[0]
-          if (token) {state
+          if (token) {
             if (token.endsWith('/')) token = token.slice(0, -1)
             handleToken(token)
           }
