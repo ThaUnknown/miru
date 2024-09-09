@@ -66,6 +66,8 @@ window.addEventListener('paste', ({ clipboardData }) => {
             if (code.endsWith('/')) code = code.slice(0, -1)
             if (state.endsWith('/')) state = state.slice(0, -1)
             if (state.includes('%')) state = decodeURIComponent(state)
+            // remove linefeed characters from the state
+            state = state.replace(/(\r\n|\n|\r)/gm, '')
             handleMalToken(code, state)
           }
         }
@@ -98,8 +100,6 @@ async function handleMalToken (code, state) {
     debug(`Failed to get the state and code from MyAnimeList.`)
     return
   }
-  // remove linefeed characters from the state
-  state = state.replace(/(\r\n|\n|\r)/gm, '')
   const response = await fetch('https://myanimelist.net/v1/oauth2/token', {
     method: 'POST',
     headers: {
