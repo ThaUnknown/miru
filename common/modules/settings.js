@@ -4,7 +4,7 @@ import IPC from '@/modules/ipc.js'
 import { toast } from 'svelte-sonner'
 import Debug from 'debug'
 
-const debug = Debug('ui:anilist')
+const debug = Debug('ui:settings')
 
 export let profiles = writable(JSON.parse(localStorage.getItem('profiles')) || [])
 /** @type {{viewer: import('./al').Query<{Viewer: import('./al').Viewer}>, token: string} | null} */
@@ -60,12 +60,15 @@ window.addEventListener('paste', ({ clipboardData }) => {
             handleToken(token)
           }
         } else if (text.includes("code=") && text.includes("&state")) { // is a MyAnimeList authorization
-          let code = line.split('code=')[1].split('&state')[0]
-          let state = line.split('&state=')[1]
+          let code = text.split('code=')[1].split('&state')[0]
+          let state = text.split('&state=')[1]
           if (code && state) {
             if (code.endsWith('/')) code = code.slice(0, -1)
             if (state.endsWith('/')) state = state.slice(0, -1)
             if (state.includes('%')) state = decodeURIComponent(state)
+            // remove linefeed characters from the state
+            code = code.replace(/(\r\n|\n|\r)/gm, '')
+            state = state.replace(/(\r\n|\n|\r)/gm, '')
             handleMalToken(code, state)
           }
         }
