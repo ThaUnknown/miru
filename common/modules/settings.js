@@ -148,8 +148,8 @@ export async function refreshMalToken (token) {
       })
     })
   }
-  if (!refresh || !(refresh.length > 0) || !response.ok) {
-    toast.error('Failed to re-authenticate with MyAnimeList. You will need to log in again.', { description: JSON.stringify(response.status) })
+  if (!refresh || !(refresh.length > 0) || !response?.ok) {
+    toast.error('Failed to re-authenticate with MyAnimeList. You will need to log in again.', { description: JSON.stringify(response?.status || response) })
     debug(`Failed to refresh MyAnimeList User Token ${ !refresh || !(refresh.length > 0) ? 'as the refresh token could not be fetched!' : ': ' + JSON.stringify(response)}`)
     if (malToken?.token === token) {
       swapProfiles(null)

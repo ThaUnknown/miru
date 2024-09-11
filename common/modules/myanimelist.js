@@ -119,16 +119,16 @@ class MALClient {
     } catch (e) {
       if (!res || res.status !== 404) throw e
     }
-    if (!res.ok && (res.status === 429 || res.status === 500)) {
+    if (!res?.ok && (res?.status === 429 || res?.status === 500)) {
       throw res
     }
     let json = null
     try {
       json = await res.json()
     } catch (error) {
-      if (res.ok) printError(error)
+      if (res?.ok) printError(error)
     }
-    if (!res.ok && res.status !== 404) {
+    if (!res?.ok && res?.status !== 404) {
       if (json) {
         for (const error of json?.errors || [json?.error] || []) {
           let code = error
@@ -154,7 +154,7 @@ class MALClient {
               code = 422
               break
             default:
-              code = res.status
+              code = res?.status
           }
           printError(code)
         }
