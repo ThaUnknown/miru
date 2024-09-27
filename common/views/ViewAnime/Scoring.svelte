@@ -61,7 +61,7 @@
     status = 'NOT IN LIST'
     if (media.mediaListEntry) {
       const res = await Helper.delete(Helper.isAniAuth() ? {id: media.mediaListEntry.id} : {idMal: media.idMal})
-      const description = `${anilistClient.title(media)} has been deleted from your list`
+      const description = `${anilistClient.title(media)} has been deleted from your list.`
       printToast(res, description, false, false)
 
       if (res) media.mediaListEntry = undefined
@@ -99,25 +99,43 @@
               lists,
               ...fuzzyDate
             }
-      const res = await Helper.entry(media, variables)
+      if (media?.mediaListEntry?.status !== variables.status || media?.mediaListEntry?.progress !== variables.episode || media?.mediaListEntry?.score !== variables.score || media?.mediaListEntry?.repeat !== variables.repeat) {
+        const res = await Helper.entry(media, variables)
 
-      if (res?.data?.SaveMediaListEntry) { media.mediaListEntry = res?.data?.SaveMediaListEntry }
+        if (res?.data?.SaveMediaListEntry) {
+          media.mediaListEntry = res?.data?.SaveMediaListEntry
+        }
 
-      const description = `Title: ${anilistClient.title(media)}\nStatus: ${Helper.statusName[status]}\nEpisode: ${episode} / ${totalEpisodes}${score !== 0 ? `\nYour Score: ${score}` : ''}`
-      printToast(res, description, true, false)
-      if (Helper.getUser().sync) { // handle profile syncing
-        const mediaId = media.id
-        for (const profile of get(profiles)) {
-          if (profile.viewer?.data?.Viewer.sync) {
-            const anilist = profile.viewer?.data?.Viewer?.avatar
-            const currentLists = (anilist ? (await anilistClient.getUserLists({userID: profile.viewer.data.Viewer.id, token: profile.token}))?.data?.MediaListCollection?.lists?.flatMap(list => list.entries).find(({ media }) => media.id === mediaId)?.media?.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || [] : lists)
-            if (!currentLists.includes('Watched using Miru')) {
-              currentLists.push('Watched using Miru')
+        const description = `Title: ${anilistClient.title(media)}\nStatus: ${Helper.statusName[status]}\nEpisode: ${episode} / ${totalEpisodes}${score !== 0 ? `\nYour Score: ${score}` : ''}`
+        printToast(res, description, true, false)
+        if (Helper.getUser().sync) { // handle profile syncing
+          const mediaId = media.id
+          for (const profile of get(profiles)) {
+            if (profile.viewer?.data?.Viewer.sync) {
+              const anilist = profile.viewer?.data?.Viewer?.avatar
+              const currentLists = (anilist ? (await anilistClient.getUserLists({
+                userID: profile.viewer.data.Viewer.id,
+                token: profile.token
+              }))?.data?.MediaListCollection?.lists?.flatMap(list => list.entries).find(({media}) => media.id === mediaId)?.media?.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || [] : lists)
+              if (!currentLists.includes('Watched using Miru')) {
+                currentLists.push('Watched using Miru')
+              }
+              const res = await Helper.entry(media, {
+                ...variables,
+                lists: currentLists,
+                score: (anilist ? (score * 10) : score),
+                token: profile.token,
+                anilist
+              })
+              printToast(res, description, true, profile)
             }
-            const res = await Helper.entry(media, { ...variables, lists: currentLists, score: (anilist ? (score * 10) : score), token: profile.token, anilist })
-            printToast(res, description, true, profile)
           }
         }
+      } else {
+        toast.warning('No Changes to List', {
+          description: `Title: ${anilistClient.title(media)}\nStatus: ${Helper.statusName[status]}\nEpisode: ${episode} / ${totalEpisodes}${score !== 0 ? `\nYour Score: ${score}` : ''}`,
+          duration: 6000
+        })
       }
     } else {
        await deleteEntry()

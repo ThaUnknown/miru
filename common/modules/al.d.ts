@@ -149,6 +149,7 @@ export type Viewer = {
   }
   name: string
   id: number
+  sync: boolean
   mediaListOptions?: {
     animeList?: {
       customLists?: string[]

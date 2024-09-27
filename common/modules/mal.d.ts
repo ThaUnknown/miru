@@ -40,6 +40,7 @@ export type Viewer = {
   id: number
   name: string
   picture: string
+  sync: boolean
 }
 
 export type MediaList = {

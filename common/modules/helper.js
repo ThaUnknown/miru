@@ -256,30 +256,36 @@ export default class Helper {
       }
 
       Object.assign(variables, this.getFuzzyDate(media, status))
+      if (media.mediaListEntry?.status !== variables.status || media.mediaListEntry?.progress !== variables.episode || media.mediaListEntry?.score !== variables.score || media.mediaListEntry?.repeat !== variables.repeat) {
+        let res
+        const description = `Title: ${anilistClient.title(media)}\nStatus: ${this.statusName[variables.status]}\nEpisode: ${videoEpisode} / ${media.episodes ? media.episodes : '?'}`
+        if (this.isAniAuth()) {
+          res = await anilistClient.alEntry(lists, variables)
+        } else if (this.isMalAuth()) {
+          res = await malClient.malEntry(media, variables)
+        }
+        this.listToast(res, description, false)
 
-      let res
-      const description = `Title: ${anilistClient.title(media)}\nStatus: ${this.statusName[variables.status]}\nEpisode: ${videoEpisode} / ${media.episodes ? media.episodes : '?'}`
-      if (this.isAniAuth()) {
-        res = await anilistClient.alEntry(lists, variables)
-      } else if (this.isMalAuth()) {
-        res = await malClient.malEntry(media, variables)
-      }
-      this.listToast(res, description, false)
-
-      if (this.getUser().sync) { // handle profile entry syncing
-        const mediaId = media.id
-        for (const profile of get(profiles)) {
-          if (profile.viewer?.data?.Viewer.sync) {
-            let res
-            if (profile.viewer?.data?.Viewer?.avatar) {
-              const currentLists = (await anilistClient.getUserLists({userID: profile.viewer.data.Viewer.id, token: profile.token}))?.data?.MediaListCollection?.lists?.flatMap(list => list.entries).find(({ media }) => media.id === mediaId)?.media?.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || []
-              res = await anilistClient.alEntry(currentLists, {...variables, token: profile.token})
-            } else {
-              res = await malClient.malEntry(media, {...variables, token: profile.token})
+        if (this.getUser().sync) { // handle profile entry syncing
+          const mediaId = media.id
+          for (const profile of get(profiles)) {
+            if (profile.viewer?.data?.Viewer.sync) {
+              let res
+              if (profile.viewer?.data?.Viewer?.avatar) {
+                const currentLists = (await anilistClient.getUserLists({
+                  userID: profile.viewer.data.Viewer.id,
+                  token: profile.token
+                }))?.data?.MediaListCollection?.lists?.flatMap(list => list.entries).find(({media}) => media.id === mediaId)?.media?.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || []
+                res = await anilistClient.alEntry(currentLists, {...variables, token: profile.token})
+              } else {
+                res = await malClient.malEntry(media, {...variables, token: profile.token})
+              }
+              this.listToast(res, description, profile)
             }
-            this.listToast(res, description, profile)
           }
         }
+      } else {
+        debug(`No entry changes detected for ${media.title.userPreferred}`)
       }
     }
   }
