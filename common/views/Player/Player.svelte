@@ -74,6 +74,13 @@
   let playbackRate = 1
   $: localStorage.setItem('volume', (volume || 0).toString())
   $: safeduration = (isFinite(duration) ? duration : currentTime) || 0
+  $: {
+    if (hidden) {
+      setDiscordRPC(media, video?.currentTime)
+    } else {
+      setDiscordRPC(media, (paused && miniplayer))
+    }
+  }
 
   function checkAudio () {
     if ('audioTracks' in HTMLVideoElement.prototype) {
@@ -282,7 +289,8 @@
   }
   const handleVisibility = visibility => {
     if (!video?.ended && $settings.playerPause && !pip) {
-      if (visibility === 'hidden') {
+      hidden = (visibility === 'hidden')
+      if (hidden) {
         visibilityPaused = paused
         paused = true
       } else {
@@ -290,6 +298,7 @@
       }
     }
   }
+  let hidden = false
   let visibilityPaused = true
   document.addEventListener('visibilitychange', () => handleVisibility(document.visibilityState))
   IPC.on('visibilitychange', handleVisibility)
@@ -359,7 +368,7 @@
       for (const track of video.audioTracks) {
         track.enabled = track.id === id
       }
-      seek(-0.2) // stupid fix because video freezes up when chaging tracks
+      seek(-0.2) // stupid fix because video freezes up when changing tracks
     }
   }
   function selectVideo (id) {
@@ -1030,6 +1039,77 @@
       e.preventDefault()
       document.querySelector('[data-name=\'toggleFullscreen\']')?.focus()
     }
+  }
+
+  function setDiscordRPC (np = media, browsing) {
+    if ((!np || Object.keys(np).length === 0) && !browsing) return
+    if (hidden) {
+      IPC.emit('discord-hidden')
+      return
+    }
+    let activity
+    if (!browsing) {
+      const w2g = state.value?.code
+      const details = np.title || undefined
+      const timeLeft = safeduration - targetTime;
+      const timestamps = !paused ? {
+        start: Date.now() - (targetTime > 0 ? targetTime * 1000 : 0),
+        end: Date.now() + timeLeft * 1000
+      } : undefined
+       activity = {
+        details,
+        state: (details && (np.media?.format === 'MOVIE' ? 'The Movie' : (np.episode ? 'Episode: ' + np.episode + (np.media?.episodes ? ' of ' + np.media.episodes : '') : 'Streaming the Universe'))),
+        timestamps,
+        assets: {
+          large_text: np.title,
+          large_image: np.thumbnail,
+          small_image: !paused ? 'logo' : 'https://i.imgur.com/3RuaavC.png', // probably should upload the 'paused' image to the discord assets for the bot.
+          small_text: (!paused ? '(Playing)' : '(Paused)') + ' https://github.com/ThaUnknown/miru'
+        },
+        instance: true,
+        type: 3
+      }
+      // cannot have buttons and secrets at once
+      if (w2g) {
+        activity.secrets = {
+          join: w2g,
+          match: w2g + 'm'
+        }
+        activity.party.id = w2g + 'p'
+      } else {
+        activity.buttons = [
+          {
+            label: 'Download app',
+            url: 'https://github.com/ThaUnknown/miru/releases/latest'
+          },
+          {
+            label: 'Watch on Miru',
+            url: `miru://anime/${np.media?.id}`
+          }
+        ]
+      }
+    } else {
+      activity = {
+        timestamps: { start: Date.now() },
+        details: 'Stream anime torrents',
+        state: 'Browsing for anime',
+        assets: {
+          large_image: 'logo',
+          large_text: 'https://github.com/ThaUnknown/miru',
+          small_image: 'https://i.imgur.com/GiDlvVA.png', // probably should upload the 'search' image to the discord assets for the bot.
+          small_text: 'Browsing for anime',
+        },
+        buttons: [
+          {
+            label: 'Download app',
+            url: 'https://github.com/ThaUnknown/miru/releases/latest'
+          }
+        ],
+        instance: true,
+        type: 3
+      }
+    }
+    IPC.emit('discord', { activity })
   }
 </script>
 

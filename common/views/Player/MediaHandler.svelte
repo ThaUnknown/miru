@@ -3,8 +3,6 @@
   import AnimeResolver from '@/modules/animeresolver.js'
   import { videoRx } from '@/modules/util.js'
   import { tick } from 'svelte'
-  import { state } from '../WatchTogether/WatchTogether.svelte'
-  import IPC from '@/modules/ipc.js'
   import { anilistClient } from "@/modules/anilist.js"
   import Debug from 'debug'
 
@@ -69,7 +67,6 @@
         episodeTitle: streamingEpisode && episodeRx.exec(streamingEpisode.title)[2],
         thumbnail: streamingEpisode?.thumbnail || media?.coverImage.extraLarge
       }
-      setDiscordRPC(np)
       setMediaSession(np)
       nowPlaying.set(np)
     }
@@ -210,53 +207,6 @@
         : new MediaMetadata({ title: name })
     navigator.mediaSession.metadata = metadata
   }
-
-  function setDiscordRPC (np = nowPlaying.value) {
-    const w2g = state.value?.code
-    const details = [np.title, np.episodeTitle].filter(i => i).join(' - ') || undefined
-    const activity = {
-      details,
-      state: details && 'Watching Episode ' + ((!np.media?.episodes && np.episode) || ''),
-      timestamps: {
-        start: Date.now()
-      },
-      party: {
-        size: (np.episode && np.media?.episodes && [np.episode, np.media.episodes]) || undefined
-      },
-      assets: {
-        large_text: np.title,
-        large_image: np.thumbnail,
-        small_image: 'logo',
-        small_text: 'https://github.com/ThaUnknown/miru'
-      },
-      instance: true,
-      type: 3
-    }
-    // cannot have buttons and secrets at once
-    if (w2g) {
-      activity.secrets = {
-        join: w2g,
-        match: w2g + 'm'
-      }
-      activity.party.id = w2g + 'p'
-    } else {
-      activity.buttons = [
-        {
-          label: 'Download app',
-          url: 'https://github.com/ThaUnknown/miru/releases/latest'
-        },
-        {
-          label: 'Watch on Miru',
-          url: `miru://anime/${np.media?.id}`
-        }
-      ]
-    }
-    IPC.emit('discord', { activity })
-  }
-  state.subscribe(() => {
-    setDiscordRPC()
-    return noop
-  })
 </script>
 
 <script>

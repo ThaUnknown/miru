@@ -6,7 +6,7 @@ export default class Discord {
   defaultStatus = {
     activity: {
       timestamps: { start: Date.now() },
-      details: 'Stream anime torrents, real-time.',
+      details: 'Stream anime torrents',
       state: 'Watching anime',
       assets: {
         small_image: 'logo',
@@ -55,6 +55,10 @@ export default class Discord {
       }
     })
 
+    ipcMain.on('discord-hidden', () => {
+      this.debouncedDiscordRPC(undefined, true)
+    })
+
     this.discord.on('ready', async () => {
       this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
       this.discord.subscribe('ACTIVITY_JOIN_REQUEST')
@@ -66,7 +70,7 @@ export default class Discord {
       window.webContents.send('w2glink', secret)
     })
 
-    this.debouncedDiscordRPC = debounce(status => this.setDiscordRPC(status), 4500)
+    this.debouncedDiscordRPC = debounce((status, logout) => logout ? this.logoutRPC() : this.setDiscordRPC(status), 4500)
   }
 
   loginRPC () {
