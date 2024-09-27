@@ -83,7 +83,7 @@ function createSections () {
     }),
     // user specific sections
     {
-      title: 'Sequels You Missed', variables : { sort: 'POPULARITY_DESC', userList: true, disableHide: true },
+      title: 'Sequels You Missed', variables : { sort: 'POPULARITY_DESC', userList: true, missedList: true, disableHide: true },
       load: (page = 1, perPage = 50, variables = {}) => {
         if (Helper.isMalAuth()) return {} // not going to bother handling this, see below.
         const res = Helper.userLists(variables).then(res => {
@@ -143,7 +143,7 @@ function createSections () {
       hide: !Helper.isAuthorized()
     },
     {
-      title: 'Planning List', variables : { test: 'Planning', sort: 'POPULARITY_DESC', userList: true, disableHide: true },
+      title: 'Planning List', variables : { test: 'Planning', sort: 'POPULARITY_DESC', planningList: true, userList: true, disableHide: true },
       load: (page = 1, perPage = 50, variables = {}) => {
         const res = Helper.userLists(variables).then(res => {
           const mediaList = Helper.isAniAuth()
