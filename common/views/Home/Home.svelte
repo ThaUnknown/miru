@@ -17,7 +17,7 @@
   for (const sectionTitle of settings.value.homeSections) manager.add(mappedSections[sectionTitle])
 
   if (Helper.getUser()) {
-    const userSections = ['Continue Watching', 'Sequels You Missed', 'Planning List', 'Completed List', 'Paused List', 'Dropped List', 'Watching List']
+    const userSections = ['Continue Watching', 'Sequels You Missed', 'Stories You Missed', 'Planning List', 'Completed List', 'Paused List', 'Dropped List', 'Watching List']
     Helper.getClient().userLists.subscribe(value => {
       if (!value) return
       for (const section of manager.sections) {
