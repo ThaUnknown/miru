@@ -64,10 +64,10 @@
 
 <div class='page-wrapper with-transitions bg-dark position-relative' data-sidebar-type='overlayed-all'>
   <Menubar bind:page={$page} />
-  <Profiles />
   <Sidebar bind:page={$page} />
   <div class='overflow-hidden content-wrapper h-full'>
     <Toaster visibleToasts={6} position='top-right' theme='dark' richColors duration={10000} closeButton />
+    <Profiles />
     <ViewAnime bind:overlay={$overlay} />
     <TorrentModal bind:overlay={$overlay} />
     <Router bind:page={$page} bind:overlay={$overlay} />

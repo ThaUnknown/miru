@@ -86,9 +86,15 @@
     if (keyCode === 27) close()
   }
   $: $profileView && modal?.focus()
+
+  window.addEventListener('overlay-check', () => {
+    if ($profileView) {
+      close()
+    }
+  })
 </script>
 
-<div class='modal z-101' class:show={$profileView}>
+<div class='modal z-55' class:show={$profileView}>
   {#if $profileView}
     <div class='modal-dialog' on:pointerup|self={close} on:keydown={checkClose} tabindex='-1' role='button' bind:this={modal}>
       <div class='modal-content w-auto mw-400 d-flex justify-content-center flex-column'>
@@ -182,6 +188,9 @@
   }
   .mt-2 {
     margin-top: .4rem;
+  }
+  .z-55 {
+    z-index: 55;
   }
   .mw-400 {
     min-width: 35rem;

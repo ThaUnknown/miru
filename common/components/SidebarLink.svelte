@@ -9,21 +9,24 @@
   export let css = ''
   export let text = ''
   export let icon = ''
+  export let nowPlaying = false
+  export let overlay = ''
 </script>
 
 <div class='sidebar-link sidebar-link-with-icon pointer overflow-hidden {css}'
-  use:click={() => { _click(); if (!icon.includes("login") && !icon.includes("favorite")) { window.dispatchEvent(new Event('overlay-check')) } } }>
+  use:click={() => { if (!icon.includes("login") && !icon.includes("favorite")) { window.dispatchEvent(new Event('overlay-check')) } _click() } }>
   <span class='text-nowrap d-flex align-items-center w-full h-full'>
     {#if image}
       <span class='rounded d-flex'>
         <img src={image} class='h-30 rounded' alt='logo' />
       </span>
-      <span class='text ml-20'>{text}</span>
+      <span class='text ml-20 {overlay === "profile" ? "font-weight-bolder font-size-18" : ""}'>{text}</span>
     {:else}
+      {@const active = (page === _page && overlay !== 'active') || (overlay === 'active' && nowPlaying)}
       <span class='rounded d-flex'>
-        <slot active={page === _page}>{icon}</slot>
+        <slot active={active}>{icon}</slot>
       </span>
-      <span class='text ml-20'>{text}</span>
+      <span class='text ml-20 {active ? "font-weight-bolder font-size-18" : ""}'>{text}</span>
     {/if}
   </span>
 </div>
