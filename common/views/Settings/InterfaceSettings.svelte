@@ -88,7 +88,7 @@
 
 <h4 class='mb-10 font-weight-bold'>Home Screen Settings</h4>
 {#if Helper.isAuthorized()}
-  <SettingCard title='Hide My Anime' description={'The anime on your Completed or Dropped list will automatically be hidden from the default sections, this excludes manually added RSS feeds and user specific feeds.'}>
+  <SettingCard title='Hide My Anime' description={'The anime on your Watching, Rewatching, Completed, and Dropped list will automatically be hidden from the default sections, this excludes manually added RSS feeds and user specific feeds.'}>
     <div class='custom-switch'>
       <input type='checkbox' id='hide-my-anime' bind:checked={settings.hideMyAnime} />
       <label for='hide-my-anime'>{settings.hideMyAnime ? 'On' : 'Off'}</label>
