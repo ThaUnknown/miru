@@ -134,8 +134,9 @@ async function handleMalToken (code, state) {
 export async function refreshMalToken (token) {
   const { clientID } = await import('./myanimelist.js')
   const refresh = malToken?.token === token ? malToken.refresh : get(profiles).find(profile => profile.token === token)?.refresh
+  debug(`Attempting to refresh authorization token ${token} with the refresh token ${refresh}`)
   let response
-  if (!refresh || !(refresh.length > 0)) {
+  if (refresh && refresh.length > 0) {
     response = await fetch('https://myanimelist.net/v1/oauth2/token', {
       method: 'POST',
       headers: {
@@ -148,9 +149,9 @@ export async function refreshMalToken (token) {
       })
     })
   }
-  if (!refresh || !(refresh.length > 0) || !response?.ok) {
+  if (!refresh || refresh.length <= 0 || !response?.ok) {
     toast.error('Failed to re-authenticate with MyAnimeList. You will need to log in again.', { description: JSON.stringify(response?.status || response) })
-    debug(`Failed to refresh MyAnimeList User Token ${ !refresh || !(refresh.length > 0) ? 'as the refresh token could not be fetched!' : ': ' + JSON.stringify(response)}`)
+    debug(`Failed to refresh MyAnimeList User Token ${ !refresh || refresh.length <= 0 ? 'as the refresh token could not be fetched!' : ': ' + JSON.stringify(response)}`)
     if (malToken?.token === token) {
       swapProfiles(null)
       location.reload()
