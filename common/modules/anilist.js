@@ -251,6 +251,7 @@ class AnilistClient {
         variables: {
           page: 1,
           perPage: 50,
+          sort: 'TRENDING_DESC',
           status_in: '[CURRENT,PLANNING,COMPLETED,DROPPED,PAUSED,REPEATING]',
           ...variables
         }
@@ -569,7 +570,6 @@ class AnilistClient {
 
   async search (variables = {}) {
     debug(`Searching ${JSON.stringify(variables)}`)
-    variables.sort ||= 'SEARCH_MATCH'
     const query = /* js */` 
     query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $onList: Boolean, $status: MediaStatus, $status_not: MediaStatus, $season: MediaSeason, $year: Int, $genre: [String], $tag: [String], $format: MediaFormat, $id_not: [Int], $idMal_not: [Int], $idMal: [Int]) {
       Page(page: $page, perPage: $perPage) {

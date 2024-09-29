@@ -1,7 +1,7 @@
 <script context='module'>
   const badgeKeys = ['title', 'search', 'genre', 'tag', 'season', 'year', 'format', 'status', 'sort', 'hideSubs', 'hideMyAnime', 'hideStatus']
   const badgeDisplayNames = { title: BookUser, search: Type, genre: Drama, tag: Hash, season: CalendarRange, year: Leaf, format: Tv, status: MonitorPlay, sort: ArrowDownWideNarrow, hideMyAnime: SlidersHorizontal, hideSubs: Mic }
-  const sortOptions = { START_DATE_DESC: 'Release Date', SCORE_DESC: 'Score', POPULARITY_DESC: 'Popularity', TRENDING_DESC: 'Trending', UPDATED_AT_DESC: 'Updated Date', UPDATED_TIME_DESC: 'Last Updated', STARTED_ON_DESC: 'Started On', FINISHED_ON_DESC: 'Finished On', PROGRESS_DESC: 'Your Progress', USER_SCORE_DESC: 'Your Score' }
+  const sortOptions = { TITLE_ROMAJI: 'Title', START_DATE_DESC: 'Release Date', SCORE_DESC: 'Score', POPULARITY_DESC: 'Popularity', UPDATED_AT_DESC: 'Date Updated', UPDATED_TIME_DESC: 'Last Updated', STARTED_ON_DESC: 'Start Date', FINISHED_ON_DESC: 'Completed Date', PROGRESS_DESC: 'Your Progress', USER_SCORE_DESC: 'Your Score' }
 
   export function searchCleanup (search, badge) {
     return Object.fromEntries(Object.entries(search).map((entry) => {
@@ -479,24 +479,27 @@
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.sort} on:change={clearTags} disabled={search.disableSearch}>
-          <option value selected>Name</option>
-          <option value='SCORE_DESC'>Score</option>
+          <option value selected>Trending</option>
           <option value='POPULARITY_DESC'>Popularity</option>
-          <option value='TRENDING_DESC'>Trending</option>
+          <option value='TITLE_ROMAJI'>Title</option>
+          <option value='SCORE_DESC'>Score</option>
           <option value='START_DATE_DESC'>Release Date</option>
-          <option value='UPDATED_AT_DESC'>Recently Updated</option>
+          <option value='UPDATED_AT_DESC'>Updated Date</option>
           {#if search.userList && search.title && !search.missedList}
-            <option value='UPDATED_TIME_DESC'>Last Updated</option>
-            {#if !search.planningList}
-              <option value='STARTED_ON_DESC'>Started On</option>
+            {#if search.completedList}
+              <option value='FINISHED_ON_DESC'>Completed Date</option>
             {/if}
-          {#if search.completedList}
-            <option value='FINISHED_ON_DESC'>Finished On</option>
-            <option value='USER_SCORE_DESC'>Your Score</option>
-          {:else if !search.planningList}
-            <option value='PROGRESS_DESC'>Your Progress</option>
+            {#if !search.planningList}
+              <option value='STARTED_ON_DESC'>Start Date</option>
+            {/if}
+            <option value='UPDATED_TIME_DESC'>Last Updated</option>
+            {#if !search.completedList && !search.planningList}
+              <option value='PROGRESS_DESC'>Your Progress</option>
+            {/if}
+            {#if search.completedList || search.droppedList}
+              <option value='USER_SCORE_DESC'>Your Score</option>
+            {/if}
           {/if}
-        {/if}
         </select>
       </div>
     </div>
