@@ -18,7 +18,7 @@
   import { SUPPORTS } from '@/modules/support.js'
   import 'rvfc-polyfill'
   import IPC from '@/modules/ipc.js'
-  import { ArrowDown, ArrowUp, Captions, Cast, CircleHelp, Contrast, FastForward, RefreshCw, Keyboard, List, ListMusic, ListVideo, Maximize, Minimize, Pause, PictureInPicture, PictureInPicture2, Play, Proportions, RefreshCcw, Rewind, RotateCcw, RotateCw, ScreenShare, SkipBack, SkipForward, Users, Volume1, Volume2, VolumeX } from 'lucide-svelte'
+  import { ArrowDown, ArrowUp, Captions, Cast, CircleHelp, Contrast, FastForward, Keyboard, List, ListMusic, ListVideo, Maximize, Minimize, Pause, PictureInPicture, PictureInPicture2, Play, Proportions, RefreshCcw, Rewind, RotateCcw, RotateCw, ScreenShare, SkipBack, SkipForward, Users, Volume1, Volume2, VolumeX } from 'lucide-svelte'
 
   const emit = createEventDispatcher()
 
@@ -995,7 +995,7 @@
         console.warn('A network error caused the video download to fail part-way.', target.error)
         toast.error('Video Network Error', {
           description: 'A network error caused the video download to fail part-way. Dismiss this toast to reload the video.',
-          duration: 10000,
+          duration: Infinity,
           onDismiss: () => target.load()
         })
         break
@@ -1003,7 +1003,7 @@
         console.warn('The video playback was aborted due to a corruption problem or because the video used features your browser did not support.', target.error)
         toast.error('Video Decode Error', {
           description: 'The video playback was aborted due to a corruption problem. Dismiss this toast to reload the video.',
-          duration: 10000,
+          duration: Infinity,
           onDismiss: () => target.load()
         })
         break
@@ -1296,11 +1296,6 @@
       <div class='ts' class:mr-auto={playbackRate === 1}>{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
       {#if playbackRate !== 1}
         <div class='ts mr-auto'>x{playbackRate.toFixed(1)}</div>
-      {/if}
-      {#if video}
-        <span class='icon ctrl mr-5 d-flex align-items-center reload-video' title='Reload Video' use:click={() => video.load()}>
-          <RefreshCw size='2.5rem' strokeWidth={2.5} />
-        </span>
       {/if}
       <span class='icon ctrl mr-5 d-flex align-items-center keybinds' title='Keybinds [`]' use:click={() => (showKeybinds = true)}>
         <Keyboard size='2.5rem' strokeWidth={2.5} />
