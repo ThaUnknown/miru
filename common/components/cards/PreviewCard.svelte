@@ -140,9 +140,9 @@
       {/if}
       {#if media.averageScore}
         <span class='text-nowrap d-flex align-items-center'>{media.averageScore + '%'} Rating</span>
-      {/if}
-      {#if media.stats?.scoreDistribution}
-        <span class='text-nowrap d-flex align-items-center'>{anilistClient.reviews(media)} Reviews</span>
+        {#if media.stats?.scoreDistribution}
+          <span class='text-nowrap d-flex align-items-center'>{anilistClient.reviews(media)} Reviews</span>
+        {/if}
       {/if}
     </div>
     {#if media.description}

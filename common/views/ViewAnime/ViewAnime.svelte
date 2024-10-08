@@ -154,7 +154,7 @@
                     </span>
                   </div>
                 {/if}
-                {#if media.stats?.scoreDistribution}
+                {#if media.averageScore && media.stats?.scoreDistribution}
                   <div class='d-flex flex-row mt-10'>
                     <Users class='mx-10' size='2.2rem' />
                     <span class='mr-20' title='{media.averageScore / 10} by {anilistClient.reviews(media)} reviews'>
