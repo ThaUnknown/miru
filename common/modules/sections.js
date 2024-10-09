@@ -161,7 +161,7 @@ function createSections () {
       hide: !Helper.isAuthorized()
     },
     {
-      title: 'Planning List', variables : { test: 'Planning', sort: 'POPULARITY_DESC', planningList: true, userList: true, disableHide: true },
+      title: 'Planning List', variables : { sort: 'POPULARITY_DESC', userList: true, planningList: true, disableHide: true },
       load: (page = 1, perPage = 50, variables = {}) => {
         const res = Helper.userLists(variables).then(res => {
           const mediaList = Helper.isAniAuth()
@@ -189,7 +189,7 @@ function createSections () {
       hide: !Helper.isAuthorized()
     },
     {
-      title: 'Dropped List', variables : { sort: 'UPDATED_TIME_DESC', droppedList: true, userList: true, disableHide: true },
+      title: 'Dropped List', variables : { sort: 'UPDATED_TIME_DESC', userList: true, droppedList: true, disableHide: true },
       load: (page = 1, perPage = 50, variables = {}) => {
         const res = Helper.userLists(variables).then(res => {
           const mediaList = Helper.isAniAuth()
