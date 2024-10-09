@@ -1,7 +1,9 @@
 import { anilistClient, currentSeason, currentYear } from '@/modules/anilist.js'
+import { malDubs } from "@/modules/animedubs.js"
 import { writable } from 'simple-store-svelte'
-import { settings, alToken } from '@/modules/settings.js'
+import { settings } from '@/modules/settings.js'
 import { RSSManager } from '@/modules/rss.js'
+import Helper from '@/modules/helper.js'
 
 export const hasNextPage = writable(true)
 
@@ -24,8 +26,13 @@ export default class SectionsManager {
 
   static createFallbackLoad (variables, type) {
     return (page = 1, perPage = 50, search = variables) => {
-      const options = { page, perPage, ...SectionsManager.sanitiseObject(search) }
-      const res = anilistClient.search(options)
+      const hideSubs = search.hideSubs ? { idMal: malDubs.dubLists.value.dubbed } : {}
+      const res = (search.hideMyAnime && Helper.isAuthorized()) ? Helper.userLists(search).then(res => {
+        // anilist queries do not support mix and match, you have to use the same id includes as excludes, id_not_in cannot be used with idMal_in.
+        const hideMyAnime = Helper.isAniAuth() ? { [Object.keys(hideSubs).length > 0 ? 'idMal_not' : 'id_not']: Array.from(new Set(res.data.MediaListCollection.lists.filter(({ status }) => search.hideStatus.includes(status)).flatMap(list => list.entries.map(({ media }) => (Object.keys(hideSubs).length > 0 ? media.idMal : media.id))))) }
+              : {idMal_not: res.data.MediaList.filter(({ node }) => search.hideStatus.includes(Helper.statusMap(node.my_list_status.status))).map(({ node }) => node.id)}
+        return anilistClient.search({ page, perPage, ...hideSubs, ...hideMyAnime, ...SectionsManager.sanitiseObject(search) })
+      }) : anilistClient.search({ page, perPage, ...hideSubs, ...SectionsManager.sanitiseObject(search) })
       return SectionsManager.wrapResponse(res, perPage, type)
     }
   }
@@ -37,18 +44,12 @@ export default class SectionsManager {
     return Array.from({ length }, (_, i) => ({ type, data: SectionsManager.fromPending(res, i) }))
   }
 
-  static sanitiseObject (object = {}) {
-    const safe = {}
-    for (const [key, value] of Object.entries(object)) {
-      if (value) safe[key] = value
-    }
-    return safe
-  }
-
   static async fromPending (arr, i) {
     const { data } = await arr
     return data?.Page.media[i]
   }
+
+  static sanitiseObject = Helper.sanitiseObject
 }
 
 // list of all possible home screen sections
@@ -82,114 +83,133 @@ function createSections () {
     }),
     // user specific sections
     {
-      title: 'Continue Watching',
+      title: 'Sequels You Missed', variables : { sort: 'POPULARITY_DESC', userList: true, missedList: true, disableHide: true },
       load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(async res => {
-          const mediaList = res.data.MediaListCollection.lists.reduce((filtered, { status, entries }) => {
-            return (status === 'CURRENT' || status === 'REPEATING') ? filtered.concat(entries) : filtered
-          }, [])
-          const ids = mediaList.filter(({ media }) => {
-            if (media.status === 'FINISHED') return true
-            return media.mediaListEntry?.progress < media.nextAiringEpisode?.episode - 1
-          }).map(({ media }) => media.id)
-          if (!ids.length) return {}
-          // if custom search is used, respect it, otherwise sort by last updated
-          if (Object.values(variables).length !== 0) {
-            return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
-          }
-
-          const index = (page - 1) * perPage
-          const idsRes = await anilistClient.searchIDS({ page, perPage, id: ids.slice(index, index + perPage), ...SectionsManager.sanitiseObject(variables) })
-          idsRes.data.Page.media.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id))
-          return idsRes
-        })
-        return SectionsManager.wrapResponse(res, perPage)
-      },
-      hide: !alToken
-    },
-    {
-      title: 'Sequels You Missed',
-      load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
+        if (Helper.isMalAuth()) return {} // not going to bother handling this, see below.
+        const res = Helper.userLists(variables).then(res => {
           const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED')?.entries
+          const excludeIds = res.data.MediaListCollection.lists.reduce((filtered, { status, entries }) => { return (['CURRENT', 'REPEATING', 'COMPLETED', 'DROPPED', 'PAUSED'].includes(status)) ? filtered.concat(entries) : filtered}, []).map(({ media }) => media.id) || []
           if (!mediaList) return {}
           const ids = mediaList.flatMap(({ media }) => {
             return media.relations.edges.filter(edge => edge.relationType === 'SEQUEL')
           }).map(({ node }) => node.id)
           if (!ids.length) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables), status: ['FINISHED', 'RELEASING'], onList: false })
+          return anilistClient.searchIDS({ page, perPage, id: ids, id_not: excludeIds, ...SectionsManager.sanitiseObject(variables), status: ['FINISHED', 'RELEASING'] })
         })
         return SectionsManager.wrapResponse(res, perPage)
       },
-      hide: !alToken
+      hide: !Helper.isAuthorized() || Helper.isMalAuth() // disable this section when authenticated with MyAnimeList. API for userLists fail to return relations and likely will never be fixed on their end.
     },
     {
-      title: 'Your List',
+      title: 'Stories You Missed', variables : { sort: 'POPULARITY_DESC', userList: true, missedList: true, disableHide: true },
       load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PLANNING')?.entries.map(({ media }) => media.id)
-          if (!ids) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+        if (Helper.isMalAuth()) return {} // same as Sequels You Missed
+        const res = Helper.userLists(variables).then(res => {
+          const mediaList = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED')?.entries
+          const excludeIds = res.data.MediaListCollection.lists.reduce((filtered, { status, entries }) => { return (['CURRENT', 'REPEATING', 'COMPLETED', 'DROPPED', 'PAUSED'].includes(status)) ? filtered.concat(entries) : filtered}, []).map(({ media }) => media.id) || []
+          if (!mediaList) return {}
+          const ids = mediaList.flatMap(({ media }) => {
+            return media.relations.edges.filter(edge => !['SEQUEL', 'CHARACTER', 'OTHER'].includes(edge.relationType))
+          }).map(({ node }) => node.id)
+          if (!ids.length) return {}
+          return anilistClient.searchIDS({ page, perPage, id: ids, id_not: excludeIds, ...SectionsManager.sanitiseObject(variables), status: ['FINISHED', 'RELEASING'] })
         })
         return SectionsManager.wrapResponse(res, perPage)
       },
-      hide: !alToken
+      hide: !Helper.isAuthorized() || Helper.isMalAuth()
     },
     {
-      title: 'Completed List',
+      title: 'Continue Watching', variables: { sort: 'UPDATED_TIME_DESC', userList: true, continueWatching: true, disableHide: true },
       load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED')?.entries.map(({ media }) => media.id)
-          if (!ids) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+        const res = Helper.userLists(variables).then(res => {
+          const mediaList = Helper.isAniAuth() ? res.data.MediaListCollection.lists.reduce((filtered, { status, entries }) => {
+            return (status === 'CURRENT' || status === 'REPEATING') ? filtered.concat(entries) : filtered
+          }, []) : res.data.MediaList.filter(({ node }) => (node.my_list_status.status === Helper.statusMap('CURRENT') || node.my_list_status.is_rewatching))
+          if (!mediaList) return {}
+          return Helper.getPaginatedMediaList(page, perPage, variables, mediaList)
         })
         return SectionsManager.wrapResponse(res, perPage)
       },
-      hide: !alToken
+      hide: !Helper.isAuthorized()
     },
     {
-      title: 'Paused List',
+      title: 'Watching List', variables : { sort: 'UPDATED_TIME_DESC', userList: true, disableHide: true },
       load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'PAUSED')?.entries.map(({ media }) => media.id)
-          if (!ids) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+        const res = Helper.userLists(variables).then(res => {
+          const mediaList = Helper.isAniAuth()
+            ? res.data.MediaListCollection.lists.find(({ status }) => status === 'CURRENT')?.entries
+            : res.data.MediaList.filter(({ node }) => node.my_list_status.status === Helper.statusMap('CURRENT'))
+          if (!mediaList) return {}
+          return Helper.getPaginatedMediaList(page, perPage, variables, mediaList)
         })
         return SectionsManager.wrapResponse(res, perPage)
       },
-      hide: !alToken
+      hide: !Helper.isAuthorized()
     },
     {
-      title: 'Dropped List',
+      title: 'Completed List', variables : { sort: 'UPDATED_TIME_DESC', userList: true, completedList: true, disableHide: true },
       load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'DROPPED')?.entries.map(({ media }) => media.id)
-          if (!ids) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+        const res = Helper.userLists(variables).then(res => {
+          const mediaList = Helper.isAniAuth()
+            ? res.data.MediaListCollection.lists.find(({ status }) => status === 'COMPLETED')?.entries
+            : res.data.MediaList.filter(({ node }) => node.my_list_status.status === Helper.statusMap('COMPLETED'))
+          if (!mediaList) return {}
+          return Helper.getPaginatedMediaList(page, perPage, variables, mediaList)
         })
         return SectionsManager.wrapResponse(res, perPage)
       },
-      hide: !alToken
+      hide: !Helper.isAuthorized()
     },
     {
-      title: 'Currently Watching List',
+      title: 'Planning List', variables : { sort: 'POPULARITY_DESC', userList: true, planningList: true, disableHide: true },
       load: (page = 1, perPage = 50, variables = {}) => {
-        const res = anilistClient.userLists.value.then(res => {
-          const ids = res.data.MediaListCollection.lists.find(({ status }) => status === 'CURRENT')?.entries.map(({ media }) => media.id)
-          if (!ids) return {}
-          return anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) })
+        const res = Helper.userLists(variables).then(res => {
+          const mediaList = Helper.isAniAuth()
+            ? res.data.MediaListCollection.lists.find(({ status }) => status === 'PLANNING')?.entries
+            : res.data.MediaList.filter(({ node }) => node.my_list_status.status === Helper.statusMap('PLANNING'))
+          if (!mediaList) return {}
+          return Helper.getPaginatedMediaList(page, perPage, variables, mediaList)
         })
         return SectionsManager.wrapResponse(res, perPage)
       },
-      hide: !alToken
+      hide: !Helper.isAuthorized()
+    },
+    {
+      title: 'Paused List', variables : { sort: 'UPDATED_TIME_DESC', userList: true, disableHide: true },
+      load: (page = 1, perPage = 50, variables = {}) => {
+        const res = Helper.userLists(variables).then(res => {
+          const mediaList = Helper.isAniAuth()
+            ? res.data.MediaListCollection.lists.find(({ status }) => status === 'PAUSED')?.entries
+            : res.data.MediaList.filter(({ node }) => node.my_list_status.status === Helper.statusMap('PAUSED'))
+          if (!mediaList) return {}
+          return Helper.getPaginatedMediaList(page, perPage, variables, mediaList)
+        })
+        return SectionsManager.wrapResponse(res, perPage)
+      },
+      hide: !Helper.isAuthorized()
+    },
+    {
+      title: 'Dropped List', variables : { sort: 'UPDATED_TIME_DESC', userList: true, droppedList: true, disableHide: true },
+      load: (page = 1, perPage = 50, variables = {}) => {
+        const res = Helper.userLists(variables).then(res => {
+          const mediaList = Helper.isAniAuth()
+            ? res.data.MediaListCollection.lists.find(({ status }) => status === 'DROPPED')?.entries
+            : res.data.MediaList.filter(({ node }) => node.my_list_status.status === Helper.statusMap('DROPPED'))
+          if (!mediaList) return {}
+          return Helper.getPaginatedMediaList(page, perPage, variables, mediaList)
+        })
+        return SectionsManager.wrapResponse(res, perPage)
+      },
+      hide: !Helper.isAuthorized()
     },
     // common, non-user specific sections
-    { title: 'Popular This Season', variables: { sort: 'POPULARITY_DESC', season: currentSeason, year: currentYear } },
-    { title: 'Trending Now', variables: { sort: 'TRENDING_DESC' } },
-    { title: 'All Time Popular', variables: { sort: 'POPULARITY_DESC' } },
-    { title: 'Romance', variables: { sort: 'TRENDING_DESC', genre: 'Romance' } },
-    { title: 'Action', variables: { sort: 'TRENDING_DESC', genre: 'Action' } },
-    { title: 'Adventure', variables: { sort: 'TRENDING_DESC', genre: 'Adventure' } },
-    { title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: 'Fantasy' } }
+    { title: 'Popular This Season', variables: { sort: 'POPULARITY_DESC', season: currentSeason, year: currentYear, hideMyAnime: settings.value.hideMyAnime, hideStatus: ['CURRENT', 'REPEATING', 'COMPLETED', 'DROPPED'] } },
+    { title: 'Trending Now', variables: { sort: 'TRENDING_DESC', hideMyAnime: settings.value.hideMyAnime, hideStatus: ['CURRENT', 'REPEATING', 'COMPLETED', 'DROPPED'] } },
+    { title: 'All Time Popular', variables: { sort: 'POPULARITY_DESC', hideMyAnime: settings.value.hideMyAnime, hideStatus: ['CURRENT', 'REPEATING', 'COMPLETED', 'DROPPED'] } },
+    { title: 'Romance', variables: { sort: 'TRENDING_DESC', genre: ['Romance'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['CURRENT', 'REPEATING', 'COMPLETED', 'DROPPED'] } },
+    { title: 'Action', variables: { sort: 'TRENDING_DESC', genre: ['Action'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['CURRENT', 'REPEATING', 'COMPLETED', 'DROPPED'] } },
+    { title: 'Adventure', variables: { sort: 'TRENDING_DESC', genre: ['Adventure'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['CURRENT', 'REPEATING', 'COMPLETED', 'DROPPED'] } },
+    { title: 'Fantasy', variables: { sort: 'TRENDING_DESC', genre: ['Fantasy'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['CURRENT', 'REPEATING', 'COMPLETED', 'DROPPED'] } },
+    { title: 'Comedy', variables: { sort: 'TRENDING_DESC', genre: ['Comedy'], hideMyAnime: settings.value.hideMyAnime, hideStatus: ['CURRENT', 'REPEATING', 'COMPLETED', 'DROPPED'] } }
   ]
 }

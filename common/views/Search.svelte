@@ -27,8 +27,10 @@
     $items = [...$items, ...nextData]
     return nextData[nextData.length - 1].data
   }
-  const update = debounce(() => {
-    $key = {}
+  const update = debounce((event) => {
+    if (event.target.id !== 'genre' && event.target.id !== 'tag') {
+      $key = {}
+    }
   }, 300)
 
   $: loadTillFull($key)
@@ -69,7 +71,7 @@
   <div class='w-full d-grid d-md-flex flex-wrap flex-row px-md-50 justify-content-center align-content-start'>
     {#key $key}
       {#each $items as card}
-        <Card {card} />
+        <Card {card} variables={{...$search}} />
       {/each}
       {#if $items?.length}
         <ErrorCard promise={$items[0].data} />

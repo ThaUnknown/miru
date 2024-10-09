@@ -1,5 +1,4 @@
 <script context='module'>
-  import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
   import { settings } from '@/modules/settings.js'
   import IPC from '@/modules/ipc.js'
@@ -26,6 +25,7 @@
     return json.map(({ body, tag_name: version, published_at: date, assets }) => ({ body, version, date, assets }))
   })()
   IPC.emit('show-discord-status', settings.value.showDetailsInRPC)
+  IPC.emit('discord-rpc', settings.value.enableRPC)
 </script>
 
 <script>
@@ -35,9 +35,9 @@
   import TorrentSettings from './TorrentSettings.svelte'
   import InterfaceSettings from './InterfaceSettings.svelte'
   import AppSettings from './AppSettings.svelte'
-  import { anilistClient } from '@/modules/anilist.js'
-  import { logout } from '@/components/Logout.svelte'
+  import { profileView } from '@/components/Profiles.svelte'
   import smoothScroll from '@/modules/scroll.js'
+  import Helper from '@/modules/helper.js'
   import { AppWindow, Heart, LogIn, Logs, Play, Rss, Settings } from 'lucide-svelte'
 
   const groups = {
@@ -71,22 +71,13 @@
   }
 
   function loginButton () {
-    if (anilistClient.userID?.viewer?.data?.Viewer) {
-      $logout = true
-    } else {
-      IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
-      if (platformMap[window.version.platform] === 'Linux') {
-        toast('Support Notification', {
-          description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
-          duration: 300000
-        })
-      }
-    }
+    $profileView = true
   }
   onDestroy(() => {
     IPC.off('path', pathListener)
     IPC.off('player', playerListener)
   })
+  $: IPC.emit('discord-rpc', $settings.enableRPC)
   $: IPC.emit('show-discord-status', $settings.showDetailsInRPC)
   IPC.on('path', pathListener)
   IPC.on('player', playerListener)
@@ -112,14 +103,14 @@
       </div>
       <div class='pointer my-5 rounded' use:click={loginButton}>
         <div class='px-20 py-10 d-flex align-items-center'>
-          {#if anilistClient.userID?.viewer?.data?.Viewer}
+          {#if Helper.getUser()}
             <span class='rounded mr-10'>
-              <img src={anilistClient.userID.viewer.data.Viewer.avatar.medium} class='h-30 rounded' alt='logo' />
+              <img src={Helper.getUserAvatar()} class='h-30 rounded' alt='logo' />
             </span>
-            <div class='font-size-16 login-image-text'>Logout</div>
+            <div class='font-size-16 login-image-text'>Profiles</div>
           {:else}
             <LogIn class='pr-10 d-inline-flex' size='3.1rem' />
-            <div class='font-size-16 line-height-normal'>Login With AniList</div>
+            <div class='font-size-16 line-height-normal'>Login</div>
           {/if}
         </div>
       </div>

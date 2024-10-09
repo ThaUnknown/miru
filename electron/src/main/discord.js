@@ -6,7 +6,7 @@ export default class Discord {
   defaultStatus = {
     activity: {
       timestamps: { start: Date.now() },
-      details: 'Stream anime torrents, real-time.',
+      details: 'Stream anime torrents',
       state: 'Watching anime',
       assets: {
         small_image: 'logo',
@@ -26,6 +26,8 @@ export default class Discord {
   discord = new Client({ transport: 'ipc' })
 
   /** @type {Discord['defaultStatus'] | undefined} */
+  enableRPC
+  /** @type {Discord['defaultStatus'] | undefined} */
   allowDiscordDetails
   /** @type {Discord['defaultStatus'] | undefined} */
   cachedPresence
@@ -42,6 +44,21 @@ export default class Discord {
       this.debouncedDiscordRPC(this.allowDiscordDetails ? this.cachedPresence : undefined)
     })
 
+    ipcMain.on('discord-rpc', (event, data) => {
+      if (this.enableRPC !== data) {
+        this.enableRPC = data
+        if (data && !this.discord?.user) {
+          this.loginRPC()
+        } else {
+          this.logoutRPC()
+        }
+      }
+    })
+
+    ipcMain.on('discord-hidden', () => {
+      this.debouncedDiscordRPC(undefined, true)
+    })
+
     this.discord.on('ready', async () => {
       this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
       this.discord.subscribe('ACTIVITY_JOIN_REQUEST')
@@ -53,9 +70,7 @@ export default class Discord {
       window.webContents.send('w2glink', secret)
     })
 
-    this.loginRPC()
-
-    this.debouncedDiscordRPC = debounce(status => this.setDiscordRPC(status), 4500)
+    this.debouncedDiscordRPC = debounce((status, logout) => logout ? this.logoutRPC() : this.setDiscordRPC(status), 4500)
   }
 
   loginRPC () {
@@ -64,8 +79,14 @@ export default class Discord {
     })
   }
 
+  logoutRPC () {
+    if (this.discord?.user) {
+      this.discord.clearActivity(process.pid)
+    }
+  }
+
   setDiscordRPC (data = this.defaultStatus) {
-    if (this.discord.user && data) {
+    if (this.discord.user && data && this.enableRPC) {
       data.pid = process.pid
       this.discord.request('SET_ACTIVITY', data)
     }

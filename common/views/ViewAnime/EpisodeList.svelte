@@ -7,10 +7,10 @@
 </script>
 
 <script>
-  import { since } from '@/modules/util'
+  import { since } from '@/modules/util.js'
   import { click } from '@/modules/click.js'
   import { episodeByAirDate } from '@/modules/extensions/index.js'
-  import { anilistClient } from '@/modules/anilist'
+  import { anilistClient } from '@/modules/anilist.js'
   import { liveAnimeProgress } from '@/modules/animeprogress.js'
 
   export let media
@@ -19,27 +19,30 @@
 
   export let watched = false
 
-  const id = media.id
-
-  const duration = media.duration
-
   export let episodeCount
 
   export let userProgress = 0
 
   export let play
 
-  const episodeList = Array.from({ length: episodeCount }, (_, i) => ({
-    episode: i + 1, image: null, summary: null, rating: null, title: null, length: null, airdate: null, airingAt: null, filler: fillerEpisodes[id]?.includes(i + 1)
-  }))
+  $: id = media.id
+
+  $: duration = media.duration
+
+  let episodeList = []
   async function load () {
+    // updates episodeList when clicking through relations / recommendations
+    episodeList = Array.from({ length: episodeCount }, (_, i) => ({
+      episode: i + 1, image: null, summary: null, rating: null, title: null, length: null, airdate: null, airingAt: null, filler: fillerEpisodes[id]?.includes(i + 1)
+    }))
+
     const res = await fetch('https://api.ani.zip/mappings?anilist_id=' + id)
-    const { episodes, specialCount, episodeCount } = await res.json()
+    const { episodes, specialCount, episodeCount: newEpisodeCount } = await res.json()
     /** @type {{ airingAt: number; episode: number; filler?: boolean }[]} */
     let alEpisodes = episodeList
 
     // fallback: pull episodes from airing schedule if anime doesn't have expected episode count
-    if (!(media.episodes && media.episodes === episodeCount && media.status === 'FINISHED')) {
+    if (!(media.episodes && media.episodes === newEpisodeCount && media.status === 'FINISHED')) {
       const settled = (await anilistClient.episodes({ id })).data.Page?.airingSchedules
       if (settled?.length) alEpisodes = settled
     }
@@ -47,13 +50,13 @@
       const alDate = new Date((airingAt || 0) * 1000)
 
       // validate by air date if the anime has specials AND doesn't have matching episode count
-      const needsValidation = !(!specialCount || (media.episodes && media.episodes === episodeCount && episodes[Number(episode)]))
-      const { image, summary, rating, title, length, airdate } = needsValidation ? episodeByAirDate(alDate, episodes, episode) : (episodes[Number(episode)] || {})
+      const needsValidation = !(!specialCount || (media.episodes && media.episodes === newEpisodeCount && episodes && episodes[Number(episode)]))
+      const { image, summary, rating, title, length, airdate } = needsValidation ? episodeByAirDate(alDate, episodes, episode) : ((episodes && episodes[Number(episode)]) || {})
 
       episodeList[episode - 1] = { episode, image, summary, rating, title, length: length || duration, airdate: +alDate || airdate, airingAt: +alDate || airdate, filler }
     }
   }
-  load()
+  $: if (media) load()
 
   const animeProgress = liveAnimeProgress(id)
 </script>

@@ -2,6 +2,7 @@
   import SectionsManager, { sections } from '@/modules/sections.js'
   import { settings } from '@/modules/settings.js'
   import { anilistClient, currentSeason, currentYear } from '@/modules/anilist.js'
+  import Helper from '@/modules/helper.js'
 
   const bannerData = anilistClient.search({ method: 'Search', sort: 'POPULARITY_DESC', perPage: 15, onList: false, season: currentSeason, year: currentYear, status_not: 'NOT_YET_RELEASED' })
 
@@ -15,14 +16,13 @@
 
   for (const sectionTitle of settings.value.homeSections) manager.add(mappedSections[sectionTitle])
 
-  if (anilistClient.userID?.viewer?.data?.Viewer) {
-    const userSections = ['Continue Watching', 'Sequels You Missed', 'Your List', 'Completed List', 'Paused List', 'Dropped List', 'Currently Watching List']
-
-    anilistClient.userLists.subscribe(value => {
+  if (Helper.getUser()) {
+    const userSections = ['Continue Watching', 'Sequels You Missed', 'Stories You Missed', 'Planning List', 'Completed List', 'Paused List', 'Dropped List', 'Watching List']
+    Helper.getClient().userLists.subscribe(value => {
       if (!value) return
       for (const section of manager.sections) {
         // remove preview value, to force UI to re-request data, which updates it once in viewport
-        if (userSections.includes(section.title)) section.preview.value = section.load(1, 15)
+        if (userSections.includes(section.title)) section.preview.value = section.load(1, 15, section.variables)
       }
     })
   }

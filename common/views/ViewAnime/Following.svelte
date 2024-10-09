@@ -10,7 +10,7 @@
 </script>
 
 {#await following then res}
-  {@const following = res?.data?.Page?.mediaList}
+  {@const following = [...new Map(res?.data?.Page?.mediaList.map(item => [item.user.name, item])).values()]}
   {#if following?.length}
     <div class='w-full d-flex flex-row align-items-center pt-20 mt-10'>
       <hr class='w-full' />

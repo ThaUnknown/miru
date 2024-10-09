@@ -1,22 +1,34 @@
 <script>
-  import { Building2, FolderKanban, Languages, Leaf, MonitorPlay, Type } from 'lucide-svelte'
+  import { Building2, Earth, TriangleAlert, FolderKanban, Languages, CalendarRange, MonitorPlay, Type } from 'lucide-svelte'
 
   export let media = null
+  export let alt = null
 
   const detailsMap = [
-    { property: 'season', label: 'Season', icon: Leaf, custom: 'property' },
+    { property: 'season', label: 'Season', icon: CalendarRange, custom: 'property' },
     { property: 'status', label: 'Status', icon: MonitorPlay },
-    { property: 'nodes', label: 'Studio', icon: Building2 },
+    { property: 'studios', label: 'Studio', icon: Building2, custom: 'property' },
     { property: 'source', label: 'Source', icon: FolderKanban },
+    { property: 'countryOfOrigin', label: 'Country', icon: Earth, custom: 'property' },
+    { property: 'isAdult', label: 'Adult', icon: TriangleAlert },
     { property: 'english', label: 'English', icon: Type },
     { property: 'romaji', label: 'Romaji', icon: Languages },
     { property: 'native', label: 'Native', icon: '語', custom: 'icon' }
   ]
-  function getCustomProperty (detail, media) {
+  async function getCustomProperty (detail, media) {
     if (detail.property === 'averageScore') {
       return media.averageScore + '%'
     } else if (detail.property === 'season') {
       return [media.season?.toLowerCase(), media.seasonYear].filter(f => f).join(' ')
+    } else if (detail.property === 'countryOfOrigin') {
+      const countryMap = {
+        JP: 'Japan',
+        CN: 'China',
+        US: 'United States'
+      }
+      return countryMap[media.countryOfOrigin] || 'Unknown'
+    } else if (detail.property === 'studios') { // has to be manually fetched as studios returned by user lists are broken.
+      return ((await alt)?.data?.Media || media)?.studios?.nodes?.map(node => node.name).filter(name => name).join(', ') || 'Unknown'
     } else {
       return media[detail.property]
     }
@@ -26,6 +38,8 @@
       return media.nextAiringEpisode?.episode
     } else if (property === 'english' || property === 'romaji' || property === 'native') {
       return media.title[property]
+    } else if (property === 'isAdult') {
+      return (media.isAdult === true ? 'Rated 18+' : false)
     }
     return media[property]
   }
@@ -46,9 +60,11 @@
         <div class='d-flex flex-column justify-content-center text-nowrap'>
           <div class='font-weight-bold select-all line-height-normal'>
             {#if detail.custom === 'property'}
-              {getCustomProperty(detail, media)}
-            {:else if property.constructor === Array}
-              {property === 'nodes' ? property[0] && property[0].name : property.join(', ').replace(/_/g, ' ').toLowerCase()}
+              {#await getCustomProperty(detail, media)}
+                Fetching...
+              {:then res }
+                {res}
+              {/await}
             {:else}
               {property.toString().replace(/_/g, ' ').toLowerCase()}
             {/if}

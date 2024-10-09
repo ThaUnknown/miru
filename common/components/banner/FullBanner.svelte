@@ -1,24 +1,16 @@
 <script>
-  import { formatMap, setStatus, playMedia } from '@/modules/anime.js'
+  import { formatMap, playMedia } from '@/modules/anime.js'
   import { anilistClient } from '@/modules/anilist.js'
   import { click } from '@/modules/click.js'
-  import { alToken } from '@/modules/settings.js'
-  import { Bookmark, Heart } from 'lucide-svelte'
+  import Scoring from '@/views/ViewAnime/Scoring.svelte'
+  import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
+  import Helper from "@/modules/helper.js"
+  import { Heart } from 'lucide-svelte'
+
   export let mediaList
 
   let current = mediaList[0]
 
-  async function toggleStatus () {
-    if (!current.mediaListEntry) {
-      // add
-      const res = await setStatus('PLANNING', {}, current)
-      current.mediaListEntry = res.data.SaveMediaListEntry
-    } else {
-      // delete
-      anilistClient.delete({ id: current.mediaListEntry.id })
-      current.mediaListEntry = undefined
-    }
-  }
   function toggleFavourite () {
     anilistClient.favourite({ id: current.id })
     current.isFavourite = !current.isFavourite
@@ -46,13 +38,13 @@
 </script>
 
 {#key current}
-  <img src={current.bannerImage || `https://i.ytimg.com/vi/${current.trailer?.id}/maxresdefault.jpg` || ''} alt='banner' class='img-cover w-full h-full position-absolute' />
+  <img src={current.bannerImage || (current.trailer?.id ? `https://i.ytimg.com/vi/${current.trailer?.id}/maxresdefault.jpg` : current.coverImage?.extraLarge || ' ')} alt='banner' class='img-cover w-full h-full position-absolute' />
 {/key}
 <div class='gradient-bottom h-full position-absolute top-0 w-full' />
 <div class='gradient-left h-full position-absolute top-0 w-800' />
 <div class='pl-20 pb-20 justify-content-end d-flex flex-column h-full banner mw-full'>
   <div class='text-white font-weight-bold font-size-40 title w-800 mw-full overflow-hidden'>
-    {current.title.userPreferred}
+    {anilistClient.title(current)}
   </div>
   <div class='details text-white text-capitalize pt-15 pb-10 d-flex w-600 mw-full'>
     <span class='text-nowrap d-flex align-items-center'>
@@ -71,6 +63,14 @@
     {:else if current.duration}
       <span class='text-nowrap d-flex align-items-center'>
         {current.duration + ' Minutes'}
+      </span>
+    {/if}
+    <span class='text-nowrap d-flex align-items-center'>
+      <AudioLabel media={current} banner={true}/>
+    </span>
+    {#if current.isAdult}
+      <span class='text-nowrap d-flex align-items-center'>
+        Rated 18+
       </span>
     {/if}
     {#if current.season || current.seasonYear}
@@ -94,12 +94,10 @@
       use:click={() => playMedia(current)}>
       Watch Now
     </button>
-    <button class='btn bg-dark-light btn-square ml-10 d-flex align-items-center justify-content-center shadow-none border-0' use:click={toggleFavourite} disabled={!alToken}>
+    <button class='btn bg-dark-light btn-square ml-10 d-flex align-items-center justify-content-center shadow-none border-0' use:click={toggleFavourite} disabled={!Helper.isAniAuth()}>
       <Heart fill={current.isFavourite ? 'currentColor' : 'transparent'} size='1.5rem' />
     </button>
-    <button class='btn bg-dark-light btn-square ml-10 d-flex align-items-center justify-content-center shadow-none border-0' use:click={toggleStatus} disabled={!alToken}>
-      <Bookmark fill={current.mediaListEntry ? 'currentColor' : 'transparent'} size='1.5rem' />
-    </button>
+    <Scoring media={current} />
   </div>
   <div class='d-flex'>
     {#each mediaList as media}

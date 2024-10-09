@@ -15,7 +15,7 @@ export default class Parser {
   destroyed = false
 
   constructor (client, file) {
-    debug('Initializing parser for file: ' + file.name)
+    debug('Initializing parser for file: ' + file?.name)
     this.client = client
     this.file = file
     this.metadata = new Metadata(file)
@@ -33,18 +33,18 @@ export default class Parser {
 
     this.metadata.getChapters().then(chapters => {
       if (this.destroyed) return
-      debug(`Found ${chapters.length} chapters`)
+      debug(`Found ${chapters?.length} chapters`)
       this.client.dispatch('chapters', chapters)
     })
 
     this.metadata.getAttachments().then(files => {
       if (this.destroyed) return
-      debug(`Found ${files.length} attachments`)
+      debug(`Found ${files?.length} attachments`)
       for (const file of files) {
         if (fontRx.test(file.filename) || file.mimetype?.toLowerCase().includes('font')) {
           const data = hex2bin(arr2hex(file.data))
           if (SUPPORTS.isAndroid && data.length > 15_000_000) {
-            debug('Skipping large font file on Android: ' + file.filename)
+            debug('Skipping large font file on Android: ' + file?.filename)
             continue
           }
           this.client.dispatch('file', data)
@@ -64,7 +64,7 @@ export default class Parser {
         cb(this.metadata.parseStream(iterator))
       })
     } else {
-      debug('Unsupported file format: ' + this.file.name)
+      debug('Unsupported file format: ' + this.file?.name)
     }
   }
 

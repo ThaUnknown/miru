@@ -45,6 +45,19 @@ export function click (node, cb = noop) {
   }
 }
 
+/**
+ * Adds hover event listener to the specified node.
+ * @param {HTMLElement} node - The node to attach the click event listener to.
+ * @param {Function} [hoverUpdate=noop] - The callback function to be executed on hover.
+ */
+export function hoverChange (node, hoverUpdate = noop) {
+  node.tabIndex = 0
+  node.role = 'button'
+  node.addEventListener('pointerleave', e => {
+    hoverUpdate()
+  })
+}
+
 // TODO: this needs to be re-written.... again... it should detect pointer type and have separate functionality for mouse and touch and none for dpad
 /**
  * Adds hover and click event listeners to the specified node.

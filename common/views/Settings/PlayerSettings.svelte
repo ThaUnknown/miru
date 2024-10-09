@@ -137,7 +137,7 @@
     <label for='player-pause'>{settings.playerPause ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
-<SettingCard title='Auto-Complete Episodes' description='Automatically marks episodes as complete on AniList when you finish watching them. Requires AniList login.'>
+<SettingCard title='Auto-Complete Episodes' description='Automatically marks episodes as complete on AniList or MyAnimeList when you finish watching them. You must be logged in.'>
   <div class='custom-switch'>
     <input type='checkbox' id='player-autocomplete' bind:checked={settings.playerAutocomplete} />
     <label for='player-autocomplete'>{settings.playerAutocomplete ? 'On' : 'Off'}</label>

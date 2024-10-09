@@ -4,8 +4,12 @@
   import { click } from '@/modules/click.js'
   import { countdown } from '@/modules/util.js'
   import { page } from '@/App.svelte'
+  import AudioLabel from '@/views/ViewAnime/AudioLabel.svelte'
+  import { anilistClient } from "@/modules/anilist"
+  import Helper from "@/modules/helper.js"
   /** @type {import('@/modules/al.d.ts').Media} */
   export let media
+  export let variables = null
 
   const view = getContext('view')
   function viewMedia () {
@@ -14,11 +18,12 @@
 </script>
 
 <div class='d-flex px-20 py-10 position-relative justify-content-center' use:click={viewMedia}>
-  <div class='card m-0 p-0 overflow-hidden pointer content-visibility-auto full-card'
+  <div class='card m-0 p-0 overflow-hidden pointer content-visibility-auto full-card' class:opacity-half={variables?.continueWatching && Helper.isMalAuth() && media?.status !== 'FINISHED' && media?.mediaListEntry?.progress >= media?.nextAiringEpisode?.episode - 1}
     style:--color={media.coverImage.color || '#1890ff'}>
     <div class='row h-full'>
-      <div class='col-4 img-col'>
+      <div class='col-4 img-col d-inline-block position-relative'>
         <img loading='lazy' src={media.coverImage.extraLarge || ''} alt='cover' class='cover-img w-full h-full' />
+        <AudioLabel {media} />
       </div>
       <div class='col h-full card-grid'>
         <div class='px-15 py-10 bg-very-dark'>
@@ -26,7 +31,7 @@
             {#if media.mediaListEntry?.status}
               <div style:--statusColor={statusColorMap[media.mediaListEntry.status]} class='list-status-circle d-inline-flex overflow-hidden mr-5' title={media.mediaListEntry.status} />
             {/if}
-            {media.title.userPreferred}
+            {anilistClient.title(media)}
           </h5>
           {#if $page === 'schedule'}
             <div class='py-5'>
@@ -40,8 +45,8 @@
               {/if}
             </div>
           {/if}
-          <p class='text-muted m-0 text-capitalize details'>
-            <span class='text-nowrap'>
+          <p class='details text-muted m-0 text-capitalize d-flex flex-wrap'>
+            <span class='text-nowrap d-flex align-items-center'>
               {#if media.format === 'TV'}
                 TV Show
               {:else if media.format}
@@ -49,7 +54,7 @@
               {/if}
             </span>
             {#if media.episodes && media.episodes !== 1}
-              <span class='text-nowrap'>
+              <span class='text-nowrap d-flex align-items-center'>
                 {#if media.mediaListEntry?.status === 'CURRENT' && media.mediaListEntry?.progress }
                   {media.mediaListEntry.progress} / {media.episodes} Episodes
                 {:else}
@@ -57,21 +62,39 @@
                 {/if}
               </span>
             {:else if media.duration}
-              <span class='text-nowrap'>{media.duration + ' Minutes'}</span>
+              <span class='text-nowrap d-flex align-items-center'>{media.duration + ' Minutes'}</span>
+            {/if}
+            <span class='text-nowrap d-flex align-items-center'>
+              <AudioLabel {media} banner={true}/>
+            </span>
+            {#if media.isAdult}
+              <span class='text-nowrap d-flex align-items-center'>
+                Rated 18+
+              </span>
             {/if}
             {#if media.status}
-              <span class='text-nowrap'>{media.status?.toLowerCase().replace(/_/g, ' ')}</span>
+              <span class='text-nowrap d-flex align-items-center'>{media.status?.toLowerCase().replace(/_/g, ' ')}</span>
             {/if}
+          </p>
+          <p class='details text-muted m-0 text-capitalize d-flex flex-wrap'>
             {#if media.season || media.seasonYear}
-              <span class='text-nowrap'>
+              <span class='text-nowrap d-flex align-items-center'>
                 {[media.season?.toLowerCase(), media.seasonYear].filter(s => s).join(' ')}
               </span>
             {/if}
+            {#if media.averageScore}
+              <span class='text-nowrap d-flex align-items-center'>{media.averageScore + '%'} Rating</span>
+              {#if media.stats?.scoreDistribution}
+                <span class='text-nowrap d-flex align-items-center'>{anilistClient.reviews(media)} Reviews</span>
+              {/if}
+            {/if}
           </p>
         </div>
-        <div class='overflow-y-auto px-15 pb-5 bg-very-dark card-desc pre-wrap'>
-          {media.description?.replace(/<[^>]*>/g, '') || ''}
-        </div>
+        {#if media.description}
+          <div class='overflow-y-auto px-15 pb-5 bg-very-dark card-desc pre-wrap'>
+            {media.description?.replace(/<[^>]*>/g, '') || ''}
+          </div>
+        {/if}
         {#if media.genres.length}
           <div class='px-15 pb-10 pt-5 genres'>
             {#each media.genres.slice(0, 3) as genre}
@@ -88,8 +111,17 @@
 .pre-wrap {
   white-space: pre-wrap
 }
-.details span + span::before {
-  content: ' • ';
+.opacity-half {
+  opacity: 30%;
+}
+.details {
+  font-size: 1.3rem;
+}
+.details > span:not(:last-child)::after {
+  content: '•';
+  padding: .5rem;
+  font-size: .6rem;
+  align-self: center;
   white-space: normal;
 }
 .card {

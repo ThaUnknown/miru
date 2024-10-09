@@ -1,9 +1,11 @@
 <script context='module'>
-  const badgeKeys = ['search', 'genre', 'season', 'year', 'format', 'status', 'sort']
+  const badgeKeys = ['title', 'search', 'genre', 'tag', 'season', 'year', 'format', 'status', 'sort', 'hideSubs', 'hideMyAnime', 'hideStatus']
+  const badgeDisplayNames = { title: BookUser, search: Type, genre: Drama, tag: Hash, season: CalendarRange, year: Leaf, format: Tv, status: MonitorPlay, sort: ArrowDownWideNarrow, hideMyAnime: SlidersHorizontal, hideSubs: Mic }
+  const sortOptions = { TITLE_ROMAJI: 'Title', START_DATE_DESC: 'Release Date', SCORE_DESC: 'Score', POPULARITY_DESC: 'Popularity', UPDATED_AT_DESC: 'Date Updated', UPDATED_TIME_DESC: 'Last Updated', STARTED_ON_DESC: 'Start Date', FINISHED_ON_DESC: 'Completed Date', PROGRESS_DESC: 'Your Progress', USER_SCORE_DESC: 'Your Score' }
 
-  export function searchCleanup (search) {
+  export function searchCleanup (search, badge) {
     return Object.fromEntries(Object.entries(search).map((entry) => {
-      return badgeKeys.includes(entry[0]) && entry
+      return (!badge || badgeKeys.includes(entry[0])) && entry
     }).filter(a => a?.[1]))
   }
 </script>
@@ -14,43 +16,328 @@
   import { click } from '@/modules/click.js'
   import { page } from '@/App.svelte'
   import { toast } from 'svelte-sonner'
+  import Helper from '@/modules/helper.js'
   import { MagnifyingGlass, Image } from 'svelte-radix'
-  import { Type, Drama, Leaf, MonitorPlay, Tv, ArrowDownWideNarrow, Trash2, Tags, Grid3X3, Grid2X2 } from 'lucide-svelte'
+  import { BookUser, Type, Drama, Leaf, CalendarRange, MonitorPlay, Tv, ArrowDownWideNarrow, Filter, FilterX, Tags, Hash, SlidersHorizontal, Mic, Grid3X3, Grid2X2 } from 'lucide-svelte'
 
   export let search
-  let searchTextInput
+  let searchTextInput = {
+    title: null,
+    genre: null,
+    tag: null
+  }
   let form
 
-  $: sanitisedSearch = Object.values(searchCleanup(search))
+  const genreList = [
+    'Action',
+    'Adventure',
+    'Comedy',
+    'Drama',
+    'Ecchi',
+    'Fantasy',
+    'Horror',
+    'Mahou Shoujo',
+    'Mecha',
+    'Music',
+    'Mystery',
+    'Psychological',
+    'Romance',
+    'Sci-Fi',
+    'Slice of Life',
+    'Sports',
+    'Supernatural',
+    'Thriller'
+  ]
 
-  function searchClear () {
+  const tagList = [
+    'Chuunibyou',
+    'Demons',
+    'Food',
+    'Heterosexual',
+    'Isekai',
+    'Iyashikei',
+    'Josei',
+    'Magic',
+    'Yuri',
+    'Love Triangle',
+    'Female Harem',
+    'Male Harem',
+    'Mixed Gender Harem',
+    'Arranged Marriage',
+    'Marriage',
+    'Martial Arts',
+    'Military',
+    'Nudity',
+    'Parody',
+    'Reincarnation',
+    'Satire',
+    'School',
+    'Seinen',
+    'Shoujo',
+    'Shounen',
+    'Slavery',
+    'Space',
+    'Super Power',
+    'Superhero',
+    'Teens\' Love',
+    'Unrequited Love',
+    'Vampire',
+    'Kids',
+    'Gender Bending',
+    'Body Swapping',
+    'Boys\' Love',
+    'Cute Boys Doing Cute Things',
+    'Cute Girls Doing Cute Things',
+    'Acting',
+    'Afterlife',
+    'Age Gap',
+    'Age Regression',
+    'Aliens',
+    'Alternate Universe',
+    'Amnesia',
+    'Angels',
+    'Anti-Hero',
+    'Archery',
+    'Artificial Intelligence',
+    'Assassins',
+    'Asexual',
+    'Augmented Reality',
+    'Band',
+    'Bar',
+    'Battle Royale',
+    'Board Game',
+    'Boarding School',
+    'Bullying',
+    'Calligraphy',
+    'CGI',
+    'Classic Literature',
+    'College',
+    'Cosplay',
+    'Crime',
+    'Crossdressing',
+    'Cult',
+    'Dancing',
+    'Death Game',
+    'Desert',
+    'Disability',
+    'Drawing',
+    'Dragons',
+    'Dungeon',
+    'Elf',
+    'Espionage',
+    'Fairy',
+    'Femboy',
+    'Female Protagonist',
+    'Fashion',
+    'Foreign',
+    'Full CGI',
+    'Fugitive',
+    'Gambling',
+    'Ghost',
+    'Gods',
+    'Goblin',
+    'Guns',
+    'Gyaru',
+    'Hikikomori',
+    'Historical',
+    'Homeless',
+    'Idol',
+    'Inn',
+    'Kaiju',
+    'Konbini',
+    'Kuudere',
+    'Language Barrier',
+    'Makeup',
+    'Maids',
+    'Male Protagonist',
+    'Matriarchy',
+    'Matchmaking',
+    'Mermaid',
+    'Monster Boy',
+    'Monster Girl',
+    'Natural Disaster',
+    'Necromancy',
+    'Ninja',
+    'Nun',
+    'Office',
+    'Office Lady',
+    'Omegaverse',
+    'Orphan',
+    'Outdoor',
+    'Photography',
+    'Pirates',
+    'Polyamorous',
+    'Post-Apocalyptic',
+    'Primarily Adult Cast',
+    'Primarily Female Cast',
+    'Primarily Male Cast',
+    'Primarily Teen Cast',
+    'Prison',
+    'Rakugo',
+    'Restaurant',
+    'Robots',
+    'Rural',
+    'Samurai',
+    'School Club',
+    'Shapeshifting',
+    'Shrine Maiden',
+    'Skeleton',
+    'Slapstick',
+    'Snowscape',
+    'Space',
+    'Spearplay',
+    'Succubus',
+    'Surreal Comedy',
+    'Survival',
+    'Swordplay',
+    'Teacher',
+    'Time Loop',
+    'Time Manipulation',
+    'Time Skip',
+    'Transgender',
+    'Tsundere',
+    'Twins',
+    'Urban',
+    'Urban Fantasy',
+    'Video Games',
+    'Villainess',
+    'Virtual World',
+    'VTuber',
+    'War',
+    'Werewolf',
+    'Witch',
+    'Work',
+    'Writing',
+    'Wuxia',
+    'Yakuza',
+    'Yandere',
+    'Youkai',
+    'Zombie'
+  ]
+  let filteredTags = []
+
+  $: {
+    const searchInput = (searchTextInput.tag ? searchTextInput.tag.toLowerCase() : null)
+    filteredTags = tagList.filter(tag =>
+            (!search.tag || !search.tag.includes(tag)) && (!searchInput ||
+            tag.toLowerCase().includes(searchInput))
+    ).slice(0, 20)
+  }
+
+  $: sanitisedSearch = Object.entries(searchCleanup(search, true)).flatMap(
+    ([key, value]) => {
+      if (Array.isArray(value)) {
+        return value.map((item) => ({ key, value: item }))
+      } else {
+        return [{ key, value }]
+      }
+    }
+  )
+
+  function searchClear() {
     search = {
+      title: '',
       search: '',
       genre: '',
+      tag: '',
       season: '',
       year: null,
       format: '',
       status: '',
-      sort: ''
+      sort: '',
+      hideSubs: false,
+      hideMyAnime: false,
+      hideStatus: ''
     }
-    searchTextInput.focus()
+    searchTextInput.title.focus()
     form.dispatchEvent(new Event('input', { bubbles: true }))
     $page = 'search'
   }
 
-  function handleFile ({ target }) {
+  function getSortDisplayName(value) {
+    return sortOptions[value] || value
+  }
+
+  function removeBadge(badge) {
+    if (badge.key === 'title') {
+      delete search.load
+      delete search.disableHide
+      delete search.userList
+      delete search.continueWatching
+      delete search.completedList
+      if (Helper.isUserSort(search)) {
+        search.sort = ''
+      }
+    } else if ((badge.key === 'genre' || badge.key === 'tag') && !search.userList) {
+      delete search.title
+    } else if (badge.key === 'hideMyAnime') {
+      delete search.hideStatus
+    } 
+    if (Array.isArray(search[badge.key])) {
+      search[badge.key] = search[badge.key].filter(
+        (item) => item !== badge.value
+      )
+      if (search[badge.key].length === 0) {
+        search[badge.key] = ''
+      }
+    } else {
+      search[badge.key] = ''
+    }
+    form.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+
+  function toggleHideMyAnime() {
+    search.hideMyAnime = !search.hideMyAnime
+    search.hideStatus = search.hideMyAnime ? ['CURRENT', 'COMPLETED', 'DROPPED', 'PAUSED', 'REPEATING'] : ''
+    form.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+
+  function toggleSubs() {
+    search.hideSubs = !search.hideSubs
+    form.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+
+  function filterTags(event, type, trigger) {
+    const list = type === 'tag' ? tagList : genreList
+    const searchKey = type === 'tag' ? 'tag' : 'genre'
+    const inputValue = event.target.value
+    let bestMatch = list.find(item => item.toLowerCase() === inputValue.toLowerCase())
+    if ((trigger === 'keydown' && (event.key === 'Enter' || event.code === 'Enter')) || (trigger === 'input' && bestMatch)) {
+      if (!bestMatch || inputValue.endsWith('*')) {
+        bestMatch = (inputValue.endsWith('*') && inputValue.slice(0, -1)) || list.find(item => item.toLowerCase().startsWith(inputValue.toLowerCase())) || list.find(item => item.toLowerCase().endsWith(inputValue.toLowerCase()))
+      }
+      if (bestMatch && (!search[searchKey] || !search[searchKey].includes(bestMatch))) {
+        search[searchKey] = search[searchKey] ? [...search[searchKey], bestMatch] : [bestMatch]
+        searchTextInput[searchKey] = null
+        setTimeout(() => {
+          form.dispatchEvent(new Event('input', {bubbles: true}))
+        }, 0);
+      }
+    }
+  }
+
+  function clearTags() { // cannot specify genre and tag filtering with user specific sorting options when using alternative authentication.
+    if (!Helper.isAniAuth() && Helper.isUserSort(search)) {
+      search.genre = ''
+      search.tag = ''
+    }
+  }
+
+  function handleFile({ target }) {
     const { files } = target
     if (files?.[0]) {
       toast.promise(traceAnime(files[0]), {
         description: 'You can also paste an URL to an image.',
         loading: 'Looking up anime for image...',
         success: 'Found anime for image!',
-        error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
+        error:
+          'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
       })
       target.value = null
     }
   }
-  function changeCardMode (type) {
+
+  function changeCardMode(type) {
     $settings.cards = type
     form.dispatchEvent(new Event('input', { bubbles: true }))
   }
@@ -61,56 +348,81 @@
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
         <Type class='mr-10' size='3rem' />
-        Title
+        <div>Title</div>
       </div>
       <div class='input-group'>
         <div class='input-group-prepend'>
           <MagnifyingGlass size='2.75rem' class='input-group-text bg-dark-light pr-0' />
         </div>
         <input
-          bind:this={searchTextInput}
+          bind:this={searchTextInput.title}
           type='search'
           class='form-control bg-dark-light border-left-0 text-capitalize'
           autocomplete='off'
           bind:value={search.search}
           data-option='search'
           disabled={search.disableSearch}
-          placeholder='Any' />
+          placeholder='Any'/>
       </div>
     </div>
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
         <Drama class='mr-10' size='3rem' />
-        Genre
+        <div>Genres</div>
       </div>
       <div class='input-group'>
-        <select class='form-control bg-dark-light' required bind:value={search.genre} disabled={search.disableSearch}>
-          <option value selected>Any</option>
-          <option value='Action'>Action</option>
-          <option value='Adventure'>Adventure</option>
-          <option value='Comedy'>Comedy</option>
-          <option value='Drama'>Drama</option>
-          <option value='Ecchi'>Ecchi</option>
-          <option value='Fantasy'>Fantasy</option>
-          <option value='Horror'>Horror</option>
-          <option value='Mahou Shoujo'>Mahou Shoujo</option>
-          <option value='Mecha'>Mecha</option>
-          <option value='Music'>Music</option>
-          <option value='Mystery'>Mystery</option>
-          <option value='Psychological'>Psychological</option>
-          <option value='Romance'>Romance</option>
-          <option value='Sci-Fi'>Sci-Fi</option>
-          <option value='Slice of Life'>Slice of Life</option>
-          <option value='Sports'>Sports</option>
-          <option value='Supernatural'>Supernatural</option>
-          <option value='Thriller'>Thriller</option>
-        </select>
+        <input
+          id='genre'
+          type='search'
+          title={(!Helper.isAniAuth() && Helper.isUserSort(search)) ? 'Cannot use with sort: ' + sortOptions[search.sort] : ''}
+          class='form-control bg-dark-light border-left-0 text-capitalize'
+          autocomplete='off'
+          bind:value={searchTextInput.genre}
+          on:keydown={(event) => filterTags(event, 'genre', 'keydown')}
+          on:input={(event) => filterTags(event, 'genre', 'input')}
+          data-option='search'
+          disabled={search.disableSearch || (!Helper.isAniAuth() && Helper.isUserSort(search))}
+          placeholder='Any'
+          list='search-genre'/>
       </div>
+      <datalist id='search-genre'>
+        {#each genreList as genre}
+          {#if !search.genre || !search.genre.includes(genre) }
+            <option>{genre}</option>
+          {/if}
+        {/each}
+      </datalist>
     </div>
     <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
-        <Leaf class='mr-10' size='3rem' />
-        Season
+        <Hash class='mr-10' size='3rem' />
+        <div>Tags</div>
+      </div>
+      <div class='input-group'>
+        <input
+          id='tag'
+          type='search'
+          title={(!Helper.isAniAuth() && Helper.isUserSort(search)) ? 'Cannot use with sort: ' + sortOptions[search.sort] : ''}
+          class='form-control bg-dark-light border-left-0 text-capitalize'
+          autocomplete='off'
+          bind:value={searchTextInput.tag}
+          on:keydown={(event) => filterTags(event, 'tag', 'keydown')}
+          on:input={(event) => filterTags(event, 'tag', 'input')}
+          data-option='search'
+          disabled={search.disableSearch || (!Helper.isAniAuth() && Helper.isUserSort(search))}
+          placeholder='Any'
+          list='search-tag'/>
+      </div>
+      <datalist id='search-tag'>
+        {#each filteredTags as tag}
+          <option>{tag}</option>
+        {/each}
+      </datalist>
+    </div>
+    <div class='col-lg col-4 p-10 d-flex flex-column justify-content-end'>
+      <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
+        <CalendarRange class='mr-10' size='3rem' />
+        <div>Season</div>
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light border-right-dark' required bind:value={search.season} disabled={search.disableSearch}>
@@ -132,7 +444,7 @@
     <div class='col p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
         <Tv class='mr-10' size='3rem' />
-        Format
+        <div>Format</div>
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.format} disabled={search.disableSearch}>
@@ -148,14 +460,14 @@
     <div class='col p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
         <MonitorPlay class='mr-10' size='3rem' />
-        Status
+        <div>Status</div>
       </div>
       <div class='input-group'>
         <select class='form-control bg-dark-light' required bind:value={search.status} disabled={search.disableSearch}>
           <option value selected>Any</option>
-          <option value='RELEASING'>Airing</option>
+          <option value='RELEASING'>Releasing</option>
           <option value='FINISHED'>Finished</option>
-          <option value='NOT_YET_RELEASED'>Not Yet Aired</option>
+          <option value='NOT_YET_RELEASED'>Not Yet Released</option>
           <option value='CANCELLED'>Cancelled</option>
         </select>
       </div>
@@ -163,23 +475,68 @@
     <div class='col p-10 d-flex flex-column justify-content-end'>
       <div class='pb-10 font-size-24 font-weight-semi-bold d-flex'>
         <ArrowDownWideNarrow class='mr-10' size='3rem' />
-        Sort
+        <div>Sort</div>
       </div>
       <div class='input-group'>
-        <select class='form-control bg-dark-light' required bind:value={search.sort} disabled={search.disableSearch}>
-          <option value selected>Name</option>
-          <option value='START_DATE_DESC'>Release Date</option>
-          <option value='SCORE_DESC'>Score</option>
+        <select class='form-control bg-dark-light' required bind:value={search.sort} on:change={clearTags} disabled={search.disableSearch}>
+          <option value selected>Trending</option>
           <option value='POPULARITY_DESC'>Popularity</option>
-          <option value='TRENDING_DESC'>Trending</option>
+          <option value='TITLE_ROMAJI'>Title</option>
+          <option value='SCORE_DESC'>Score</option>
+          <option value='START_DATE_DESC'>Release Date</option>
           <option value='UPDATED_AT_DESC'>Updated Date</option>
+          {#if search.userList && search.title && !search.missedList}
+            {#if search.completedList}
+              <option value='FINISHED_ON_DESC'>Completed Date</option>
+            {/if}
+            {#if !search.planningList}
+              <option value='STARTED_ON_DESC'>Start Date</option>
+            {/if}
+            <option value='UPDATED_TIME_DESC'>Last Updated</option>
+            {#if !search.completedList && !search.planningList}
+              <option value='PROGRESS_DESC'>Your Progress</option>
+            {/if}
+            {#if search.completedList || search.droppedList}
+              <option value='USER_SCORE_DESC'>Your Score</option>
+            {/if}
+          {/if}
         </select>
+      </div>
+    </div>
+    <div class='col-auto p-10 d-flex'>
+      <div class='align-self-end'>
+        <button
+          class='btn btn-square bg-dark-light px-5 align-self-end border-0'
+          type='button'
+          title='Hide My Anime'
+          use:click={toggleHideMyAnime}
+          disabled={search.disableHide || search.disableSearch || !Helper.isAuthorized()}
+          class:text-primary={search.hideMyAnime}>
+          <label for='hide-my-anime' class='pointer mb-0 d-flex align-items-center justify-content-center'>
+            <SlidersHorizontal size='1.625rem' />
+          </label>
+        </button>
+      </div>
+    </div>
+    <div class='col-auto p-10 d-flex'>
+      <div class='align-self-end'>
+        <button
+          class='btn btn-square bg-dark-light px-5 align-self-end border-0'
+          type='button'
+          title='Dubbed Audio'
+          use:click={toggleSubs}
+          disabled={search.disableSearch}
+          class:text-primary={search.hideSubs}>
+          <label for='hide-subs' class='pointer mb-0 d-flex align-items-center justify-content-center'>
+            <Mic size='1.625rem' />
+          </label>
+        </button>
       </div>
     </div>
     <input type='file' class='d-none' id='search-image' accept='image/*' on:input|preventDefault|stopPropagation={handleFile} />
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
-        <button class='btn btn-square bg-dark-light px-5 align-self-end border-0' type='button'>
+        <button class='btn btn-square bg-dark-light px-5 align-self-end border-0' type='button' title='Image Search'>
           <label for='search-image' class='pointer mb-0 d-flex align-items-center justify-content-center'>
             <Image size='1.625rem' />
           </label>
@@ -188,19 +545,41 @@
     </div>
     <div class='col-auto p-10 d-flex'>
       <div class='align-self-end'>
-        <button class='btn btn-square bg-dark-light d-flex align-items-center justify-content-center px-5 align-self-end border-0' type='button' use:click={searchClear} class:text-primary={!!sanitisedSearch?.length || search.disableSearch || search.clearNext}>
-          <Trash2 size='1.625rem' />
+        <button class='btn btn-square bg-dark-light d-flex align-items-center justify-content-center px-5 align-self-end border-0' type='button' use:click={searchClear} disabled={sanitisedSearch.length <= 0} class:text-danger={!!sanitisedSearch?.length || search.disableSearch || search.clearNext}>
+          {#if !!sanitisedSearch?.length || search.disableSearch || search.clearNext}
+            <FilterX size='1.625rem' />
+          {:else}
+            <Filter size='1.625rem' />
+          {/if}
         </button>
       </div>
     </div>
   </div>
   <div class='w-full px-10 pt-10 h-50 d-flex flex-colum align-items-center'>
-    {#if sanitisedSearch?.length}
-      <Tags class='text-dark-light mr-20' size='3rem' />
-      {#each sanitisedSearch as badge}
-        <span class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap'>{('' + badge).replace(/_/g, ' ').toLowerCase()}</span>
-      {/each}
-    {/if}
+    <form>
+      <div role="button" tabindex="0">
+        {#if sanitisedSearch?.length}
+          {@const filteredBadges = sanitisedSearch.filter(badge => badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title'))}
+          <div class='d-flex flex-row align-items-center'>
+            {#if filteredBadges.length > 0}
+              <Tags class='text-dark-light mr-20' size='3rem' />
+            {/if}
+          {#each badgeKeys as key}
+            {@const matchingBadges = filteredBadges.filter(badge => badge.key === key)}
+            {#each matchingBadges as badge}
+              {#if badge.key === key && (badge.key !== 'hideStatus' && (search.userList || badge.key !== 'title')) }
+                <div class='badge bg-light border-0 py-5 px-10 text-capitalize mr-20 text-white text-nowrap d-flex align-items-center'>
+                  <svelte:component this={badgeDisplayNames[badge.key]} class='mr-5' size='1.8rem' />
+                  <div class='font-size-12'>{badge.key === 'sort' ? getSortDisplayName(badge.value) : (badge.key === 'hideMyAnime' ? 'Hide My Anime' : badge.key === 'hideSubs' ? 'Dubbed' : ('' + badge.value).replace(/_/g, ' ').toLowerCase())}</div>
+                  <button on:click={() => removeBadge(badge)} class='pointer bg-transparent border-0 text-white font-size-12 position-relative ml-10 pt-0' title='Remove Filter' type='button'>x</button>
+                </div>
+              {/if}
+            {/each}
+          {/each}
+          </div>
+        {/if}
+      </div>
+    </form>
     <span class='mr-10 filled ml-auto text-dark-light pointer' class:text-muted={$settings.cards === 'small'} use:click={() => changeCardMode('small')}><Grid3X3 size='2.25rem' /></span>
     <span class='text-dark-light pointer' class:text-muted={$settings.cards === 'full'} use:click={() => changeCardMode('full')}><Grid2X2 size='2.25rem' /></span>
   </div>

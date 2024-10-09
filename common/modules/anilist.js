@@ -2,15 +2,16 @@ import lavenshtein from 'js-levenshtein'
 import { writable } from 'simple-store-svelte'
 import Bottleneck from 'bottleneck'
 
-import { alToken } from '@/modules/settings.js'
+import { alToken, settings } from '@/modules/settings.js'
 import { toast } from 'svelte-sonner'
 import { sleep } from './util.js'
+import Helper from '@/modules/helper.js'
 import IPC from '@/modules/ipc.js'
 import Debug from 'debug'
 
 const debug = Debug('ui:anilist')
 
-const codes = {
+export const codes = {
   400: 'Bad Request',
   401: 'Unauthorized',
   402: 'Payment Required',
@@ -22,6 +23,7 @@ const codes = {
   410: 'Gone',
   412: 'Precondition Failed',
   413: 'Request Entity Too Large',
+  422: 'Unprocessable Entity',
   429: 'Too Many Requests',
   500: 'Internal Server Error',
   501: 'Not Implemented',
@@ -81,6 +83,10 @@ episodes,
 duration,
 averageScore,
 genres,
+tags {
+  name,
+  rank
+},
 isFavourite,
 coverImage {
   extraLarge,
@@ -92,14 +98,20 @@ countryOfOrigin,
 isAdult,
 bannerImage,
 synonyms,
+studios(sort: NAME, isMain: true) {
+  nodes {
+    name
+  }
+},
+stats {
+  scoreDistribution {
+    score,
+    amount
+    }
+},
 nextAiringEpisode {
   timeUntilAiring,
   episode
-},
-startDate {
-  year,
-  month,
-  day
 },
 trailer {
   id,
@@ -115,11 +127,16 @@ mediaListEntry {
   repeat,
   status,
   customLists(asArray: true),
-  score(format: POINT_10)
-},
-studios(isMain: true) {
-  nodes {
-    name
+  score(format: POINT_10),
+  startedAt {
+    year,
+    month,
+    day
+  },
+  completedAt {
+    year,
+    month,
+    day
   }
 },
 airingSchedule(page: 1, perPage: 1, notYetAired: true) {
@@ -133,44 +150,12 @@ relations {
     relationType(version:2),
     node {
       id,
-      title {userPreferred},
-      coverImage {medium},
       type,
-      status,
       format,
-      episodes,
-      synonyms,
-      season,
-      seasonYear,
-      startDate {
-        year,
-        month,
-        day
-      },
-      endDate {
-        year,
-        month,
-        day
-      }
+      seasonYear
     }
   }
 }`
-
-// recommendations {
-//   edges {
-//     node {
-//       mediaRecommendation {
-//         id,
-//         title {
-//           userPreferred
-//         },
-//         coverImage {
-//           medium
-//         }
-//       }
-//     }
-//   }
-// }
 
 class AnilistClient {
   limiter = new Bottleneck({
@@ -194,7 +179,7 @@ class AnilistClient {
   lastNotificationDate = Date.now() / 1000
 
   constructor () {
-    debug('Initializing Anilist Client for ID ' + this.userID?.viewer?.data?.Viewer.id)
+    debug('Initializing Anilist Client for ID ' + this.userID?.viewer?.data?.Viewer?.id)
     this.limiter.on('failed', async (error, jobInfo) => {
       printError(error)
 
@@ -210,9 +195,9 @@ class AnilistClient {
     })
 
     if (this.userID?.viewer?.data?.Viewer) {
-      this.userLists.value = this.getUserLists()
+      this.userLists.value = this.getUserLists({ sort: 'UPDATED_TIME_DESC' })
       // update userLists every 15 mins
-      setInterval(() => { this.userLists.value = this.getUserLists() }, 1000 * 60 * 15)
+      setInterval(() => this.userLists.value = this.getUserLists({ sort: 'UPDATED_TIME_DESC' }), 1000 * 60 * 15)
       // check notifications every 5 mins
       setInterval(() => { this.findNewNotifications() }, 1000 * 60 * 5)
     }
@@ -265,14 +250,15 @@ class AnilistClient {
         query: query.replace(/\s/g, '').replaceAll('&nbsp;', ' '),
         variables: {
           page: 1,
-          perPage: 30,
-          status_in: '[CURRENT,PLANNING]',
+          perPage: 50,
+          sort: 'TRENDING_DESC',
+          status_in: '[CURRENT,PLANNING,COMPLETED,DROPPED,PAUSED,REPEATING]',
           ...variables
         }
       })
     }
-    // @ts-ignore
-    if (alToken?.token) options.headers.Authorization = alToken.token
+    if (variables?.token) options.headers.Authorization = variables.token
+    else if (alToken?.token) options.headers.Authorization = alToken.token
 
     return this.handleRequest(options)
   }
@@ -290,7 +276,7 @@ class AnilistClient {
     const notifications = res.data.Page.notifications
     const newNotifications = notifications.filter(({ createdAt }) => createdAt > this.lastNotificationDate)
     this.lastNotificationDate = Date.now() / 1000
-    debug(`Found ${newNotifications.length} new notifications`)
+    debug(`Found ${newNotifications?.length} new notifications`)
     for (const { media, episode, type } of newNotifications) {
       const options = {
         title: media.title.userPreferred,
@@ -306,7 +292,7 @@ class AnilistClient {
    * @param {{key: string, title: string, year?: string, isAdult: boolean}[]} flattenedTitles
    **/
   async alSearchCompound (flattenedTitles) {
-    debug(`Searching for ${flattenedTitles.length} titles via compound search`)
+    debug(`Searching for ${flattenedTitles?.length} titles via compound search`)
     if (!flattenedTitles.length) return []
     // isAdult doesn't need an extra variable, as the title is the same regardless of type, so we re-use the same variable for adult and non-adult requests
     /** @type {Record<`v${number}`, string>} */
@@ -363,59 +349,15 @@ class AnilistClient {
     return Object.entries(searchResults).map(([filename, id]) => [filename, search.data.Page.media.find(media => media.id === id)])
   }
 
-  async alEntry (filemedia) {
-    // check if values exist
-    if (filemedia.media && alToken) {
-      const { media, failed } = filemedia
-      debug(`Checking entry for ${media.title.userPreferred}`)
-
-      debug(`Media viability: ${media.status}, Is from failed resolve: ${failed}`)
-      if (failed) return
-      if (media.status !== 'FINISHED' && media.status !== 'RELEASING') return
-
-      // check if media can even be watched, ex: it was resolved incorrectly
-      // some anime/OVA's can have a single episode, or some movies can have multiple episodes
-      const singleEpisode = ((!media.episodes && (Number(filemedia.episode) === 1 || isNaN(Number(filemedia.episode)))) || (media.format === 'MOVIE' && media.episodes === 1)) && 1 // movie check
-      const videoEpisode = Number(filemedia.episode) || singleEpisode
-      const mediaEpisode = media.episodes || media.nextAiringEpisode?.episode || singleEpisode
-
-      debug(`Episode viability: ${videoEpisode}, ${mediaEpisode}, ${singleEpisode}`)
-      if (!videoEpisode || !mediaEpisode) return
-      // check episode range, safety check if `failed` didn't catch this
-      if (videoEpisode > mediaEpisode) return
-
-      const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name) || []
-
-      const status = media.mediaListEntry?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
-      const progress = media.mediaListEntry?.progress
-
-      debug(`User's progress: ${progress}, Media's progress: ${videoEpisode}`)
-      // check user's own watch progress
-      if (progress > videoEpisode) return
-      if (progress === videoEpisode && videoEpisode !== mediaEpisode && !singleEpisode) return
-
-      debug(`Updating entry for ${media.title.userPreferred}`)
-      const variables = {
-        repeat: media.mediaListEntry?.repeat || 0,
-        id: media.id,
-        status,
-        episode: videoEpisode,
-        lists
-      }
-      if (videoEpisode === mediaEpisode) {
-        variables.status = 'COMPLETED'
-        if (media.mediaListEntry?.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
-      }
-      if (!lists.includes('Watched using Miru')) {
-        variables.lists.push('Watched using Miru')
-      }
-      await this.entry(variables)
-      this.userLists.value = this.getUserLists()
+  async alEntry (lists, variables) {
+    if (!lists.includes('Watched using Miru')) {
+      variables.lists.push('Watched using Miru')
     }
+    return await this.entry(variables)
   }
 
   async searchName (variables = {}) {
-    debug(`Searching name for ${variables.name}`)
+    debug(`Searching name for ${variables?.name}`)
     const query = /* js */` 
     query($page: Int, $perPage: Int, $sort: [MediaSort], $name: String, $status: [MediaStatus], $year: Int, $isAdult: Boolean) {
       Page(page: $page, perPage: $perPage) {
@@ -432,14 +374,13 @@ class AnilistClient {
 
     /** @type {import('./al.d.ts').PagedQuery<{media: import('./al.d.ts').Media[]}>} */
     const res = await this.alRequest(query, variables)
-
-    this.updateCache(res.data.Page.media)
+    await this.updateCache(res.data.Page.media)
 
     return res
   }
 
   async searchIDSingle (variables) {
-    debug(`Searching for ID: ${variables.id}`)
+    debug(`Searching for ID: ${variables?.id}`)
     const query = /* js */` 
     query($id: Int) { 
       Media(id: $id, type: ANIME) {
@@ -450,20 +391,20 @@ class AnilistClient {
     /** @type {import('./al.d.ts').Query<{Media: import('./al.d.ts').Media}>} */
     const res = await this.alRequest(query, variables)
 
-    this.updateCache([res.data.Media])
+    await this.updateCache([res.data.Media])
 
     return res
   }
 
   async searchIDS (variables) {
-    debug(`Searching for IDs: ${variables.id.length}`)
+    debug(`Searching for IDs: ${variables?.id?.length || variables?.idMal?.length}`)
     const query = /* js */` 
-    query($id: [Int], $page: Int, $perPage: Int, $status: [MediaStatus], $onList: Boolean, $sort: [MediaSort], $search: String, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) { 
+    query($id: [Int], $idMal: [Int], $id_not: [Int], $page: Int, $perPage: Int, $status: [MediaStatus], $onList: Boolean, $sort: [MediaSort], $search: String, $season: MediaSeason, $year: Int, $genre: [String], $tag: [String], $format: MediaFormat) { 
       Page(page: $page, perPage: $perPage) {
         pageInfo {
           hasNextPage
         },
-        media(id_in: $id, type: ANIME, status_in: $status, onList: $onList, search: $search, sort: $sort, season: $season, seasonYear: $year, genre: $genre, format: $format) {
+        media(id_in: $id, idMal_in: $idMal, id_not_in: $id_not, type: ANIME, status_in: $status, onList: $onList, search: $search, sort: $sort, season: $season, seasonYear: $year, genre_in: $genre, tag_in: $tag, format: $format) {
           ${queryObjects}
         }
       }
@@ -472,7 +413,7 @@ class AnilistClient {
     /** @type {import('./al.d.ts').PagedQuery<{media: import('./al.d.ts').Media[]}>} */
     const res = await this.alRequest(query, variables)
 
-    this.updateCache(res.data.Page.media)
+    await this.updateCache(res.data.Page.media)
 
     return res
   }
@@ -527,7 +468,8 @@ class AnilistClient {
     query {
       Viewer {
         avatar {
-          medium
+          medium,
+          large
         },
         name,
         id,
@@ -545,46 +487,31 @@ class AnilistClient {
   /** @returns {Promise<import('./al.d.ts').Query<{ MediaListCollection: import('./al.d.ts').MediaListCollection }>>} */
   async getUserLists (variables = {}) {
     debug('Getting user lists')
-    const userId = this.userID?.viewer?.data?.Viewer.id
-    variables.id = userId
+    variables.id = !variables.userID ? this.userID?.viewer?.data?.Viewer.id : variables.userID
+    variables.sort = variables.sort?.replace('USER_SCORE_DESC', 'SCORE_DESC') || 'UPDATED_TIME_DESC' // doesn't exist, AniList uses SCORE_DESC for both MediaSort and MediaListSort.
     const query = /* js */` 
-      query($id: Int) {
-        MediaListCollection(userId: $id, type: ANIME, forceSingleCompletedList: true, sort: UPDATED_TIME_DESC) {
+      query($id: Int, $sort: [MediaListSort]) {
+        MediaListCollection(userId: $id, type: ANIME, sort: $sort, forceSingleCompletedList: true) {
           lists {
             status,
             entries {
               media {
-                id,
-                status,
-                mediaListEntry {
-                  progress
-                },
-                nextAiringEpisode {
-                  episode
-                },
-                relations {
-                  edges {
-                    relationType(version:2)
-                    node {
-                      id
-                    }
-                  }
-                }
+                ${queryObjects}
               }
             }
           }
         }
       }`
 
-    // this doesn't need to be cached, as SearchIDStatus is already cached, which is the only thing that uses this
-    return await this.alRequest(query, variables)
+    const res = await this.alRequest(query, variables)
+    if (!variables.token) await this.updateCache(res.data.MediaListCollection.lists.flatMap(list => list.entries.map(entry => entry.media)))
+    return res
   }
 
   /** @returns {Promise<import('./al.d.ts').Query<{ MediaList: { status: string, progress: number, repeat: number }}>>} */
   async searchIDStatus (variables = {}) {
+    variables.id = this.userID?.viewer?.data?.Viewer.id
     debug(`Searching for ID status: ${variables.id}`)
-    const userId = this.userID?.viewer?.data?.Viewer.id
-    variables.id = userId
     const query = /* js */` 
       query($id: Int, $mediaId: Int) {
         MediaList(userId: $id, mediaId: $mediaId) {
@@ -620,7 +547,7 @@ class AnilistClient {
     /** @type {import('./al.d.ts').PagedQuery<{ airingSchedules: { timeUntilAiring: number, airingAt: number, episode: number, media: import('./al.d.ts').Media}[]}>} */
     const res = await this.alRequest(query, variables)
 
-    this.updateCache(res.data.Page.airingSchedules?.map(({ media }) => media))
+    await this.updateCache(res.data.Page.airingSchedules?.map(({media}) => media))
 
     return res
   }
@@ -643,14 +570,13 @@ class AnilistClient {
 
   async search (variables = {}) {
     debug(`Searching ${JSON.stringify(variables)}`)
-    variables.sort ||= 'SEARCH_MATCH'
     const query = /* js */` 
-    query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $onList: Boolean, $status: MediaStatus, $status_not: MediaStatus, $season: MediaSeason, $year: Int, $genre: String, $format: MediaFormat) {
+    query($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $onList: Boolean, $status: MediaStatus, $status_not: MediaStatus, $season: MediaSeason, $year: Int, $genre: [String], $tag: [String], $format: MediaFormat, $id_not: [Int], $idMal_not: [Int], $idMal: [Int]) {
       Page(page: $page, perPage: $perPage) {
         pageInfo {
           hasNextPage
         },
-        media(type: ANIME, search: $search, sort: $sort, onList: $onList, status: $status, status_not: $status_not, season: $season, seasonYear: $year, genre: $genre, format: $format, format_not: MUSIC) {
+        media(id_not_in: $id_not, idMal_not_in: $idMal_not, idMal_in: $idMal, type: ANIME, search: $search, sort: $sort, onList: $onList, status: $status, status_not: $status_not, season: $season, seasonYear: $year, genre_in: $genre, tag_in: $tag, format: $format, format_not: MUSIC) {
           ${queryObjects}
         }
       }
@@ -659,7 +585,7 @@ class AnilistClient {
     /** @type {import('./al.d.ts').PagedQuery<{media: import('./al.d.ts').Media[]}>} */
     const res = await this.alRequest(query, variables)
 
-    this.updateCache(res.data.Page.media)
+    await this.updateCache(res.data.Page.media)
 
     return res
   }
@@ -686,7 +612,6 @@ class AnilistClient {
           mediaList(mediaId: $id, isFollowing: true, sort: UPDATED_TIME_DESC) {
             status,
             score,
-            progress,
             user {
               name,
               avatar {
@@ -700,22 +625,64 @@ class AnilistClient {
     return this.alRequest(query, variables)
   }
 
-  entry (variables) {
-    debug(`Updating entry for ${variables.id}`)
-    const query = /* js */`
-      mutation($lists: [String], $id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int, $score: Int) {
-        SaveMediaListEntry(mediaId: $id, status: $status, progress: $episode, repeat: $repeat, scoreRaw: $score, customLists: $lists) {
+  /** @returns {Promise<import('./al.d.ts').Query<{Media: import('./al.d.ts').Media}>>} */
+  recommendations (variables) {
+    debug(`Getting recommendations for ${variables.id}`)
+    const query = /* js */` 
+      query($id: Int) {
+        Media(id: $id, type: ANIME) {
           id,
-          status,
-          progress,
-          repeat
+          idMal,
+          studios(sort: NAME, isMain: true) {
+            nodes {
+              name
+            }
+          },
+          recommendations {
+            edges {
+              node {
+                rating,
+                mediaRecommendation {
+                  id
+                }
+              }
+            }
+          }
         }
       }`
 
     return this.alRequest(query, variables)
   }
 
-  delete (variables) {
+  async entry (variables) {
+    debug(`Updating entry for ${variables.id}`)
+    const query = /* js */`
+      mutation($lists: [String], $id: Int, $status: MediaListStatus, $episode: Int, $repeat: Int, $score: Int, $startedAt: FuzzyDateInput, $completedAt: FuzzyDateInput) {
+        SaveMediaListEntry(mediaId: $id, status: $status, progress: $episode, repeat: $repeat, scoreRaw: $score, customLists: $lists, startedAt: $startedAt, completedAt: $completedAt) {
+          id,
+          status,
+          progress,
+          score,
+          repeat,
+          startedAt {
+            year,
+            month,
+            day
+          },
+          completedAt {
+            year,
+            month,
+            day
+          }
+        }
+      }`
+
+    const res = await this.alRequest(query, variables)
+    if (!variables.token) this.userLists.value = this.getUserLists({sort: 'UPDATED_TIME_DESC'})
+    return res
+  }
+
+  async delete (variables) {
     debug(`Deleting entry for ${variables.id}`)
     const query = /* js */`
       mutation($id: Int) {
@@ -723,8 +690,9 @@ class AnilistClient {
           deleted
         }
       }`
-
-    return this.alRequest(query, variables)
+    const res = await this.alRequest(query, variables)
+    if (!variables.token) this.userLists.value = this.getUserLists({sort: 'UPDATED_TIME_DESC'})
+    return res
   }
 
   favourite (variables) {
@@ -750,9 +718,36 @@ class AnilistClient {
     return this.alRequest(query, variables)
   }
 
+  /** @param {import('./al.d.ts').Media} media */
+  title(media) {
+    const preferredTitle = media?.title.userPreferred
+    if (alToken) {
+      return preferredTitle
+    }
+
+    if (settings.value.titleLang === 'romaji') {
+      return media?.title.romaji || preferredTitle
+    } else {
+      return media?.title.english || preferredTitle
+    }
+  }
+
+  /** @param {import('./al.d.ts').Media} media */
+  reviews(media) {
+    const totalReviewers = media.stats?.scoreDistribution?.reduce((total, score) => total + score.amount, 0)
+    return media.averageScore && totalReviewers ? totalReviewers.toLocaleString() : '?'
+  }
+
   /** @param {import('./al.d.ts').Media[]} medias */
-  updateCache (medias) {
-    this.mediaCache = { ...this.mediaCache, ...Object.fromEntries(medias.map(media => [media.id, media])) }
+  async updateCache (medias) {
+    for (const media of medias) {
+      if (!alToken) {
+        // attach any alternative authorization userList information
+        await Helper.fillEntry(media)
+      }
+      // Update the cache
+      this.mediaCache[media.id] = media
+    }
   }
 }
 

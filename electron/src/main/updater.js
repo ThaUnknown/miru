@@ -1,8 +1,13 @@
 import { autoUpdater } from 'electron-updater'
 import { ipcMain, shell } from 'electron'
 
+let notified = false
 ipcMain.on('update', () => {
-  autoUpdater.checkForUpdatesAndNotify()
+  if (!notified) {
+    autoUpdater.checkForUpdatesAndNotify()
+  } else {
+    autoUpdater.checkForUpdates()
+  }
 })
 
 autoUpdater.checkForUpdatesAndNotify()
@@ -18,10 +23,12 @@ export default class Updater {
     this.window = window
     this.torrentWindow = torrentWindow
     autoUpdater.on('update-available', () => {
+      notified = true
       window.webContents.send('update-available', true)
     })
     autoUpdater.on('update-downloaded', () => {
       this.hasUpdate = true
+      notified = true
       window.webContents.send('update-downloaded', true)
     })
   }

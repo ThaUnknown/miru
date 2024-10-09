@@ -9,6 +9,7 @@ import clipboard from './clipboard.js'
 import { search, key } from '@/views/Search.svelte'
 
 import { playAnime } from '@/views/TorrentSearch/TorrentModal.svelte'
+import Helper from "@/modules/helper.js"
 
 const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 
@@ -175,6 +176,8 @@ export async function anitomyscript (...args) {
       obj.anime_season = seasonMatch[1]
       obj.episode_number = seasonMatch[2]
       obj.anime_title = obj.anime_title.replace(/S(\d{2})E(\d{2})/, '')
+    } else if (Array.isArray(obj.anime_season)) {
+      obj.anime_season = obj.anime_season[0]
     }
     const yearMatch = obj.anime_title.match(/ (19[5-9]\d|20\d{2})/)
     if (yearMatch && Number(yearMatch[1]) <= (new Date().getUTCFullYear() + 1)) {
@@ -225,12 +228,17 @@ export async function playMedia (media) {
 }
 
 export function setStatus (status, other = {}, media) {
+  const fuzzyDate = Helper.getFuzzyDate(media, status)
   const variables = {
     id: media.id,
+    idMal: media.idMal,
     status,
+    score: media.mediaListEntry?.score || 0,
+    repeat: media.mediaListEntry?.repeat || 0,
+    ...fuzzyDate,
     ...other
   }
-  return anilistClient.entry(variables)
+  return Helper.entry(media, variables)
 }
 
 const episodeMetadataMap = {}

@@ -1,5 +1,6 @@
 export type Media = {
   id: number
+  idMal: number
   title: {
     romaji?: string
     english?: string
@@ -15,6 +16,10 @@ export type Media = {
   duration?: number
   averageScore?: number
   genres?: string[]
+  tags?: {
+    name: string
+    rank: integer
+  }[]
   isFavourite: boolean
   coverImage?: {
     extraLarge: string
@@ -26,14 +31,15 @@ export type Media = {
   isAdult?: boolean
   bannerImage?: string
   synonyms?: string[]
+  stats: {
+    scoreDistribution: {
+      score: number
+      amount: number
+    }[]
+  }
   nextAiringEpisode?: {
     episode: number
     airingAt: number
-  }
-  startDate?: {
-    year: number
-    month?: number
-    day?: number
   }
   trailer?: {
     id: string
@@ -50,12 +56,20 @@ export type Media = {
     status?: string
     customLists?: string[]
     score?: number
+    startedAt?: {
+      year: number
+      month: number
+      day: number
+    }
+    completedAt?: {
+      year: number
+      month: number
+      day: number
+    }
   }
   studios?: {
-    edges: {
-      node: {
-        name: string
-      }
+    nodes: {
+      name: string
     }[]
   }
   airingSchedule?: {
@@ -69,50 +83,27 @@ export type Media = {
       relationType: string
       node: {
         id: number
-        title: {
-          userPreferred: string
-        }
         type: string
-        status: string
         format?: string
-        episodes?: number
-        synonyms?: string[]
-        season?: string
         seasonYear?: number
-        startDate?: {
-          year: number
-          month?: number
-          day?: number
-        }
-        endDate?: {
-          year: number
-          month: number
-          day: number
+      }
+    }[]
+  }
+  recommendations?: {
+    edges?: {
+      node: {
+        rating: number
+        mediaRecommendation: {
+          id: number
         }
       }
     }[]
   }
-  // recommendations?: {
-  //   edges?: {
-  //     node: {
-  //       media: {
-  //         id: number
-  //         title: {
-  //           userPreferred: string
-  //         }
-  //         coverImage?: {
-  //           medium: string
-  //         }
-  //       }
-  //     }
-  //   }[]
-  // }
 }
 
 export type Following = {
   status: string
   score: number
-  progress: number
   user: {
     name: string
     avatar: {
@@ -135,6 +126,8 @@ export type MediaListMedia = {
       relationType: string
       node: {
         id: number
+        type: string
+        format?: string
       }
     }[]
   }
@@ -144,7 +137,7 @@ export type MediaListCollection = {
   lists: {
     status: string
     entries: {
-      media: MediaListMedia
+      media: Media
     }[]
   }[]
 }
@@ -152,9 +145,11 @@ export type MediaListCollection = {
 export type Viewer = {
   avatar: {
     medium: string
+    large: string
   }
   name: string
   id: number
+  sync: boolean
   mediaListOptions?: {
     animeList?: {
       customLists?: string[]

@@ -85,6 +85,7 @@ IPC.on('dialog', async () => {
 // schema: miru://key/value
 const protocolMap = {
   auth: token => sendToken(token),
+  malauth: token => sendMalToken(token),
   anime: id => IPC.emit('open-anime', id),
   w2g: link => IPC.emit('w2glink', link),
   schedule: () => IPC.emit('schedule'),
@@ -104,6 +105,17 @@ function sendToken (line) {
     if (token.endsWith('/')) token = token.slice(0, -1)
     IPC.emit('altoken', token)
   }
+}
+
+function sendMalToken (line) {
+  let code = line.split('code=')[1].split('&state')[0]
+  let state = line.split('&state=')[1]
+  if (code && state) {
+    if (code.endsWith('/')) code = code.slice(0, -1)
+    if (state.endsWith('/')) state = state.slice(0, -1)
+    if (state.includes('%')) state = decodeURIComponent(state)
+    IPC.emit('maltoken', code, state)
+  } 
 }
 
 App.getLaunchUrl().then(res => {

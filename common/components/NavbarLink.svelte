@@ -7,14 +7,16 @@
   export let _page = ''
   export let css = ''
   export let icon = ''
+  export let nowPlaying = false
+  export let overlay = ''
 </script>
 
 <div
   class='navbar-link navbar-link-with-icon pointer overflow-hidden {css}'
-  use:click={_click}>
+  use:click={() => { if (!icon.includes("favorite")) { window.dispatchEvent(new Event('overlay-check')) }  _click() } }>
 
   <span class='rounded d-flex'>
-    <slot active={page === _page}>{icon}</slot>
+    <slot active={(page === _page && overlay !== 'active') || (overlay === 'active' && nowPlaying)}>{icon}</slot>
   </span>
 </div>
 
