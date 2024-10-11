@@ -26,8 +26,8 @@
     {/if}
   </div>
   <div class='window-controls d-flex position-absolute top-0 right-0 height-full'>
-    <button class='button max-button d-flex border-0 color-white align-items-center justify-content-center'  on:click={() => IPC.emit('minimize')}><svg class='svg-controls' height='12' role='img' viewBox='0 0 12 12'width='12'><rect fill='currentColor' height='1' width='10' x='1' y='6' /></svg></button>
-    <button class='button restore-button d-flex border-0 color-white align-items-center justify-content-center'  on:click={() => IPC.emit('maximize')}><svg class='svg-controls' height='12' role='img' viewBox='0 0 12 12'width='12'><rect fill='none' height='9' stroke='currentColor' width='9' x='1.5' y='1.5' /></svg></button>
+    <button class='button max-button d-flex border-0 color-white align-items-center justify-content-center' on:click={() => IPC.emit('minimize')}><svg class='svg-controls' height='12' role='img' viewBox='0 0 12 12'width='12'><rect fill='currentColor' height='1' width='10' x='1' y='6' /></svg></button>
+    <button class='button restore-button d-flex border-0 color-white align-items-center justify-content-center' on:click={() => IPC.emit('maximize')}><svg class='svg-controls' height='12' role='img' viewBox='0 0 12 12'width='12'><rect fill='none' height='9' stroke='currentColor' width='9' x='1.5' y='1.5' /></svg></button>
     <button class='button close-button d-flex border-0 color-white align-items-center justify-content-center' on:click={() => IPC.emit('close')}><svg class='svg-controls' height='12' role='img' viewBox='0 0 12 12'width='12'><polygon fill='currentColor' fill-rule='evenodd' points='11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1' /></svg></button>
   </div>
 </div>
@@ -78,6 +78,8 @@
   }
   .window-controls {
     -webkit-app-region: no-drag;
+    backdrop-filter: blur(8px);
+    background: rgba(24, 24, 24, 0.1);
   }
   .window-controls .button {
     background: transparent;
