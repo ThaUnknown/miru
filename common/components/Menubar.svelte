@@ -25,14 +25,10 @@
       <img src='./logo_filled.png' class='position-absolute w-50 h-50 m-10 pointer d-md-block d-none p-5' alt='ico' use:click={close} />
     {/if}
   </div>
-  <div class='h-full bg-dark flex-grow-1'>
-    {#if window.version?.platform === 'linux'}
-      <div class='d-flex align-items-center close h-full' use:click={() => IPC.emit('close')}>
-        <svg viewBox='0 0 24 24'>
-          <path d='M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z' />
-        </svg>
-      </div>
-    {/if}
+  <div class='window-controls d-flex position-absolute top-0 right-0 height-full'>
+    <button class='button max-button d-flex border-0 color-white align-items-center justify-content-center' on:click={() => IPC.emit('minimize')}><svg class='svg-controls' height='12' role='img' viewBox='0 0 12 12'width='12'><rect fill='currentColor' height='1' width='10' x='1' y='6' /></svg></button>
+    <button class='button restore-button d-flex border-0 color-white align-items-center justify-content-center' on:click={() => IPC.emit('maximize')}><svg class='svg-controls' height='12' role='img' viewBox='0 0 12 12'width='12'><rect fill='none' height='9' stroke='currentColor' width='9' x='1.5' y='1.5' /></svg></button>
+    <button class='button close-button d-flex border-0 color-white align-items-center justify-content-center' on:click={() => IPC.emit('close')}><svg class='svg-controls' height='12' role='img' viewBox='0 0 12 12'width='12'><polygon fill='currentColor' fill-rule='evenodd' points='11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1' /></svg></button>
   </div>
 </div>
 {#if $debug}
@@ -51,7 +47,7 @@
     transform: translate(-29.3%) rotate(-45deg);
   }
   .navbar {
-    --navbar-height: 28px !important;
+    --navbar-height: 32px !important;
   }
   .z-101 {
     z-index: 101 !important
@@ -66,27 +62,45 @@
     top: 0;
     -webkit-app-region: no-drag
   }
-  .close {
-    width: 40px;
-  }
-  .close:hover {
-    background-color: #e81123 !important;
-  }
   svg {
     width: 18px;
     height: 18px;
     width: 100%;
   }
-  path {
-    fill: currentColor;
-  }
   .navbar {
-    left: unset !important
+    left: unset !important;
   }
   @media (pointer: none), (pointer: coarse) {
     .navbar {
       display: none !important;
       height: 0;
     }
+  }
+  .window-controls {
+    -webkit-app-region: no-drag;
+    backdrop-filter: blur(8px);
+    background: rgba(24, 24, 24, 0.1);
+  }
+  .window-controls .button {
+    background: transparent;
+    width: 46px;
+    height: 32px;
+    user-select: none;
+  }
+  .window-controls .button:hover {
+    background: rgba(128, 128, 128, 0.2);
+  }
+  .window-controls .button:active {
+    background: rgba(128, 128, 128, 0.4);
+  }
+  .close-button:hover {
+    background: #e81123 !important;
+  }
+  .close-button:active {
+    background: #f1707a !important;
+  }
+  .svg-controls {
+    width: 12px;
+    height: 12px;
   }
 </style>
