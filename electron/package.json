@@ -42,8 +42,8 @@
     "directories": {
       "buildResources": "buildResources"
     },
+    "electronDist": "electron-dist",
     "asarUnpack": "**/*.node",
-    "electronDist": "./electron-dist",
     "protocols": {
       "name": "miru",
       "schemes": [
@@ -58,6 +58,9 @@
       }
     ],
     "appId": "com.github.thaunknown.miru",
+    "electronLanguages": [
+      "en-US"
+    ],
     "productName": "Miru",
     "files": [
       "build/**/*",
@@ -115,6 +118,7 @@
     "nsis": {
       "allowToChangeInstallationDirectory": true,
       "oneClick": false,
+      "perMachine": true,
       "artifactName": "${os}-${name}-${version}-installer.${ext}"
     }
   }

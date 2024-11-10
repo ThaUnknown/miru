@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import process from 'node:process'
 
-import { BrowserWindow, MessageChannelMain, Notification, app, dialog, ipcMain, nativeImage, powerMonitor, shell } from 'electron'
+import { BrowserWindow, MessageChannelMain, Notification, app, dialog, ipcMain, nativeImage, powerMonitor, session, shell } from 'electron'
 import electronShutdownHandler from '@paymoapp/electron-shutdown-handler'
 
 import { development } from './util.js'
@@ -64,7 +64,7 @@ export default class App {
     ipcMain.on('maximize', () => {
       const focusedWindow = this.mainWindow
       focusedWindow?.isMaximized() ? focusedWindow.unmaximize() : focusedWindow.maximize()
-});
+    })
     app.on('before-quit', e => {
       if (this.destroyed) return
       e.preventDefault()
@@ -116,6 +116,13 @@ export default class App {
       this.webtorrentWindow.webContents.openDevTools()
       this.mainWindow.webContents.openDevTools()
     }
+
+    session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+      if (details.url.startsWith('https://graphql.anilist.co')) {
+        details.requestHeaders.Referer = 'https://anilist.co'
+      }
+      callback({ cancel: false, requestHeaders: details.requestHeaders })
+    })
 
     let crashcount = 0
     this.mainWindow.webContents.on('render-process-gone', async (e, { reason }) => {
