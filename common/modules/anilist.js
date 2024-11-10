@@ -259,7 +259,8 @@ class AnilistClient {
       credentials: 'omit',
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json'
+        Accept: 'application/json',
+        Referer: 'https://anilist.co'
       },
       body: JSON.stringify({
         query: query.replace(/\s/g, '').replaceAll('&nbsp;', ' '),

@@ -1,6 +1,6 @@
 {
   "name": "Miru",
-  "version": "5.5.6",
+  "version": "5.5.7",
   "private": true,
   "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
@@ -18,7 +18,7 @@
     "@electron/notarize": "^2.3.2",
     "common": "workspace:*",
     "discord-rpc": "4.0.1",
-    "electron": "29.1.4",
+    "electron": "32.1.1",
     "electron-builder": "^24.13.3",
     "electron-log": "^5.1.7",
     "electron-updater": "^6.2.1",
@@ -43,11 +43,7 @@
       "buildResources": "buildResources"
     },
     "asarUnpack": "**/*.node",
-    "electronDownload": {
-      "mirror": "https://github.com/aa910d571134/feb7c2e1a10f/releases/download/",
-      "version": "29.1.4",
-      "customDir": "2ffc48f0b43f"
-    },
+    "electronDist": "./electron-dist",
     "protocols": {
       "name": "miru",
       "schemes": [
