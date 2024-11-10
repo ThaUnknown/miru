@@ -27,7 +27,7 @@ export default class App {
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 900,
-    frame: process.platform === 'darwin', // Only keep the native frame on Mac
+    frame: process.platform === 'darwin',
     titleBarStyle: 'hidden',
     backgroundColor: '#17191c',
     autoHideMenuBar: true,
