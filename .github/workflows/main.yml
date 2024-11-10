@@ -21,7 +21,10 @@ jobs:
 
       - name: Check out Git repository
         uses: actions/checkout@v3
-
+        with:
+          submodules: 'true'
+          token: ${{ secrets.MIRU_SUBMODULES_PAT }}
+    
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
         with:
