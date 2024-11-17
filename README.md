@@ -110,6 +110,15 @@ yay -S miru-bin
 ```bash
 apt install linux-Miru-*.deb
 ```
+### Flatpak (flathub) (GNU/Linux)
+
+Miru is available as a Flatpak app [here](https://flathub.org/apps/io.github.thaunknown.miru) and the build repo is [here](https://github.com/flathub/io.github.thaunknown.miru).
+If your distribution has support for [flatpak](https://flathub.org), and you have enabled the [flathub repo](https://flatpak.org/setup/):
+
+```bash
+flatpak install flathub io.github.thaunknown.miru
+flatpak run io.github.thaunknown.miru
+```
 
 ## **Building and Development**
 
