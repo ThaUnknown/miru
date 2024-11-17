@@ -30,7 +30,7 @@
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.2",
-    "webtorrent": "^2.4.11"
+    "webtorrent": "^2.5.6"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240222.0",

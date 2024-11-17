@@ -12,10 +12,14 @@ const flags = [
   // safe performance stuff
   ['enable-features', 'PlatformEncryptedDolbyVision,CanvasOopRasterization,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
   ['disable-renderer-backgrounding'],
-  // disabling shit, vulkan rendering, widget layering aka right click context menus [I think] for macOS [I think]
-  ['disable-features', 'Vulkan,WidgetLayering'],
+  // disabling shit, vulkan rendering, widget layering aka right click context menus [I think] for macOS [I think], rest is for chromium detecting how much video it should buffer, hopefully it makes it buffer more
+  ['disable-features', 'Vulkan,WidgetLayering,MediaEngagementBypassAutoplayPolicies,PreloadMediaEngagementData,RecordMediaEngagementScores'],
   // utility stuff, aka website security that's useless for a native app:
-  ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'], ['bypasscsp-schemes']
+  ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'], ['bypasscsp-schemes'],
+  // chromium throttles stuff if it detects slow network, nono, this is native, dont do that
+  ['force-effective-connection-type', '4G'],
+  // image video etc cache, hopefully lets video buffer more and remembers more images, might be bad to touch this?
+  ['disk-cache-size', '500000000']
 ]
 for (const [flag, value] of flags) {
   app.commandLine.appendSwitch(flag, value)
