@@ -47,4 +47,4 @@ jobs:
           # APPLE_API_KEY: apple.p8
           # APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           # APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
-        run: cd electron && npm run publish
+        run: cd electron && npm run build
