@@ -608,14 +608,14 @@
       desc: 'Volume Down'
     },
     BracketLeft: {
-      fn: () => { playbackRate = video.defaultPlaybackRate -= 0.1 },
+      fn: () => { playbackRate = video.defaultPlaybackRate = Math.max(0.1, (video.defaultPlaybackRate - 0.2)) },
       id: 'history',
       icon: RotateCcw,
       type: 'icon',
       desc: 'Decrease Playback Rate'
     },
     BracketRight: {
-      fn: () => { playbackRate = video.defaultPlaybackRate += 0.1 },
+      fn: () => { playbackRate = video.defaultPlaybackRate = Math.min(16, (video.defaultPlaybackRate + 0.2)) },
       id: 'update',
       icon: RotateCw,
       type: 'icon',
