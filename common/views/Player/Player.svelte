@@ -608,7 +608,7 @@
       desc: 'Volume Down'
     },
     BracketLeft: {
-      fn: () => { playbackRate = video.defaultPlaybackRate = Math.max(0.1, (video.defaultPlaybackRate - 0.2)) },
+      fn: () => { playbackRate = video.defaultPlaybackRate = Math.max(0.2, (video.defaultPlaybackRate - 0.2)) },
       id: 'history',
       icon: RotateCcw,
       type: 'icon',
