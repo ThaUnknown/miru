@@ -1,0 +1,55 @@
+<script lang='ts'>
+  import { CalendarDays, Tv } from 'lucide-svelte'
+  import PreviewCard from './preview.svelte'
+  import { cover, format, title } from '$lib/modules/anilist/util'
+  import type { Media } from '$lib/modules/anilist/types'
+  import { hover } from '$lib/modules/navigate'
+  import { goto } from '$app/navigation'
+  import StatusDot from '../../StatusDot.svelte'
+  import { Load } from '../img'
+
+  export let media: Media
+
+  let hidden = true
+
+  function onclick () {
+    goto(`/anime/${media.id}`)
+  }
+  function onhover (state: boolean) {
+    hidden = !state
+  }
+</script>
+
+<div class='text-white p-4 cursor-pointer shrink-0 relative pointer-events-auto' class:z-40={!hidden} use:hover={[onclick, onhover]}>
+  {#if !hidden}
+    <PreviewCard {media} />
+  {/if}
+  <div class='item w-[9.5rem] flex flex-col'>
+    <div class='h-[13.5rem]'>
+      <Load src={cover(media)} alt='cover' class='object-cover w-full h-full rounded' color={media.coverImage?.color} />
+    </div>
+    <div class='pt-3 font-black text-[.8rem] line-clamp-2'>
+      {#if media.mediaListEntry?.status}
+        <StatusDot variant={media.mediaListEntry.status} />
+      {/if}
+      {title(media)}
+    </div>
+    <div class='flex text-neutral-500 mt-auto pt-2 justify-between'>
+      <div class='flex text-xs font-medium'>
+        <CalendarDays class='w-[1rem] h-[1rem] mr-1 -ml-0.5' />
+        {media.seasonYear ?? 'TBA'}
+      </div>
+      <div class='flex text-xs font-medium'>
+        {format(media)}
+        <Tv class='w-[1rem] h-[1rem] ml-1 -mr-0.5' />
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .item {
+    animation: 0.3s ease 0s 1 load-in;
+    aspect-ratio: 152/290;
+  }
+</style>

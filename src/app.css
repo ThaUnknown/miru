@@ -1,0 +1,338 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* opt out of auto-dark-mode plugins, which break discord css, such as force-dark, dark-reader etc */
+  color-scheme: only light;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 72.2% 50.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --ring: 240 10% 3.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --ring: 240 4.9% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@font-face {
+  font-family: 'molotregular';
+  src: url('/Molot-webfont.woff') format('woff');
+}
+
+
+html,
+body {
+  height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+  user-select: none;
+  font-family: 'Nunito Variable'
+}
+
+img {
+  -webkit-user-drag: none;
+}
+
+@keyframes load-in {
+  from {
+    transform: translateY(1.2rem) scale(0.95);
+  }
+
+  to {
+    transform: none
+  }
+}
+
+.custom-bg {
+  /* this is very hacky, but removes jagged edges */
+  background: repeating-linear-gradient(40deg, #1114 0, #5554 1px, #5554 5px, #1114 6px, #1114 10px);
+  /* repeating-linear-gradient(40deg, #5554 0 5px, #1114 0 10px); */
+}
+
+*:focus-visible {
+  outline: none;
+  border-image: fill 0 linear-gradient(#8883, #8883);
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+.details span+span::before {
+  content: '•';
+  padding: 0 .3rem;
+  font-size: .4rem;
+  align-self: center;
+  white-space: normal;
+  color: #737373 !important;
+}
+
+a[href]:active,
+button:not([disabled], .no-scale):active,
+.scale-parent:has(.no-scale:active),
+fieldset:not([disabled]):active,
+input:not([disabled], [type='range'], .no-scale):active,
+optgroup:not([disabled]):active,
+option:not([disabled]):active,
+select:not([disabled]):active,
+textarea:not([disabled]):active,
+details:active,
+[tabindex]:not([tabindex="-1"]):active,
+[contenteditable]:active,
+[controls]:active {
+  transition: all 0.1s ease-in-out;
+  transform: scale(0.98) !important;
+}
+
+/* should contain:strict be used here?*/
+.overflow-y-scroll,
+.overflow-y-auto,
+.overflow-x-scroll,
+.overflow-x-auto,
+.overflow-auto,
+.overflow-scroll {
+  will-change: scroll-position;
+}
+
+.bg-url {
+  background-image: var(--bg);
+}
+
+.border-gradient-to-t {
+  border-image: fill 0 linear-gradient(#0008, #000);
+}
+
+.border-gradient-to-l {
+  border-image: fill 0 linear-gradient(90deg, hsl(var(--background) / 1) 32%, hsl(var(--background) / 0.9) 100%);
+}
+
+@keyframes spin3d {
+  from {
+    transform: rotateY(0deg) translateZ(-5000px);
+  }
+
+  to {
+    transform: rotateY(360deg) translateZ(-5000px);
+  }
+}
+
+body {
+  perspective: 3000px;
+}
+
+.spin>div {
+  animation: idle-spin 120s linear infinite;
+}
+
+.spin>.backplate {
+  animation: idle-spin-y-flip 120s linear infinite;
+  display: flex !important;
+}
+
+.fly>.root {
+  animation: idle-fly 0.8s forwards cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.show-backplate>.backplate {
+  display: flex !important;
+}
+
+
+body.spin>.root,
+body.show-backplate>.root {
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+  transform: perspective(100vw) translateZ(0vw) rotateY(0deg) rotateX(0deg);
+}
+
+body>div.backplate {
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+  transform: perspective(100vw) translateZ(0vw) rotateY(180deg) rotateX(0deg);
+}
+
+@keyframes idle-fly {
+  0% {
+    transform: perspective(100vw) translateZ(0vw) rotateY(0deg) rotateX(0deg);
+  }
+
+  100% {
+    transform: perspective(100vw) translateZ(-66vw) rotateY(0deg) rotateX(-15deg);
+  }
+}
+
+@keyframes idle-spin {
+  0% {
+    transform: perspective(100vw) translateZ(-66vw) rotateY(0deg) rotateX(-15deg);
+  }
+
+  50% {
+    transform: perspective(100vw) translateZ(-66vw) rotateY(180deg) rotateX(15deg);
+  }
+
+  100% {
+    transform: perspective(100vw) translateZ(-66vw) rotateY(360deg) rotateX(-15deg);
+  }
+}
+
+@keyframes idle-spin-y-flip {
+  0% {
+    transform: perspective(100vw) translateZ(-66vw) rotateY(-180deg) rotateX(15deg);
+  }
+
+  50% {
+    transform: perspective(100vw) translateZ(-66vw) rotateY(0deg) rotateX(-15deg);
+  }
+
+  100% {
+    transform: perspective(100vw) translateZ(-66vw) rotateY(180deg) rotateX(15deg);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes marquee-bg {
+  from {
+    background-position: -2111.74px 0;
+  }
+
+  to {
+    background-position: 0 0;
+  }
+}
+
+.animate-marquee {
+  animation: marquee 80s infinite linear;
+}
+
+.animate-marquee-bg {
+  animation: marquee-bg 80s infinite linear;
+}
+
+.bg-striped {
+  background: repeating-linear-gradient(45deg,
+      #202020,
+      #202020 6px,
+      #2a2a2a 6px,
+      #2a2a2a 12px);
+  background-attachment: fixed;
+  background-size: 119px;
+}
+
+.bg-striped-muted {
+  background: repeating-linear-gradient(45deg,
+      #1e1e1e,
+      #1e1e1e 6px,
+      #161616 6px,
+      #161616 12px);
+  background-attachment: fixed;
+  background-size: 119px;
+}
+
+.font-molot {
+  font-family: 'molotregular';
+}
+
+.backface-visible {
+  backface-visibility: visible;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.sr-only {
+  display: none !important;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-contrast {
+  filter: invert(1) grayscale(1) contrast(100)
+}

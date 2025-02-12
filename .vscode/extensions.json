@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "usernamehw.errorlens",
+    "dbaeumer.vscode-eslint",
+    "GraphQL.vscode-graphql-syntax",
+    "YoavBls.pretty-ts-errors",
+    "svelte.svelte-vscode",
+    "ardenivanov.svelte-intellisense",
+    "Gruntfuggly.todo-tree"
+  ]
+}

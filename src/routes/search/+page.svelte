@@ -1,0 +1,224 @@
+<script lang='ts'>
+  import { ComboBox } from '$lib/components/ui/combobox'
+  import { Input, type FormInputEvent } from '$lib/components/ui/input'
+  import { MagnifyingGlass } from 'svelte-radix'
+  import { genres, years, seasons, formats, status, sort } from './values'
+  import { Button } from '$lib/components/ui/button'
+  import { FileImage, Trash, X } from 'lucide-svelte'
+  import { cn, debounce } from '$lib/utils'
+  import { badgeVariants } from '$lib/components/ui/badge'
+  import { click, dragScroll } from '$lib/modules/navigate'
+  import { client } from '$lib/modules/anilist'
+  import { BannerImage, hideBanner } from '$lib/components/ui/banner'
+  import { onMount, tick } from 'svelte'
+  import { QueryCard } from '$lib/components/ui/cards'
+  import { page } from '$app/stores'
+  import type { VariablesOf } from 'gql.tada'
+  import type { Search } from '$lib/modules/anilist/queries'
+
+  // util
+
+  interface format {
+    value: string
+    label: string
+  }
+
+  function empty (obj: typeof search) {
+    return !Object.values(obj).reduce((acc, val) => acc + (val?.length ?? 0), 0)
+  }
+
+  function list (obj: typeof search): string[] {
+    return Object.values(obj).flatMap(val => {
+      if (Array.isArray(val)) {
+        if (typeof val[0] === 'number') return 'IDs'
+        return val.map(v => (v as format).label)
+      }
+      return val
+    }).filter(a => a) as string[]
+  }
+
+  function remove (label: string) {
+    Object.entries(search).forEach(([key, value]) => {
+      const nk = key as keyof typeof search
+      if (Array.isArray(value)) {
+        if (typeof value[0] === 'number') {
+          search.ids = undefined
+        } else {
+          search[nk] = value.filter(v => (v as format).label !== label) as format[] & string & Array<number | null>
+        }
+      } else {
+        if (value === label) search[nk] = '' as format[] & string & Array<number | null>
+      }
+    })
+  }
+
+  function filterEmpty (obj: typeof search): Partial<typeof search> {
+    return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v?.length))
+  }
+
+  function variablesToSearch (variables?: VariablesOf<typeof Search>) {
+    if (!variables) return
+    return {
+      ids: variables.ids,
+      name: variables.search ?? '',
+      genres: genres.filter(g => (variables.genre ?? []).includes(g.value)) as format[],
+      years: years.filter(y => y.value === ('' + (variables.seasonYear ?? ''))) as format[],
+      seasons: seasons.filter(s => s.value === (variables.season ?? '')) as format[],
+      // @ts-expect-error fuck you
+      formats: formats.filter(f => (variables.format ?? []).includes(f.value)) as format[],
+      // @ts-expect-error fuck you
+      status: status.filter(s => (variables.status ?? '').includes(s.value)) as format[],
+      sort: sort.filter(s => s.value === (variables.sort?.[0] ?? '')) as format[]
+    }
+  }
+
+  // state
+  let search = variablesToSearch($page.state.search) ?? {
+    name: '',
+    genres: [] as format[],
+    years: [] as format[],
+    seasons: [] as format[],
+    formats: [] as format[],
+    status: [] as format[],
+    sort: [] as format[],
+    ids: undefined
+  }
+
+  let pageNumber = 1
+  let inputText = ''
+
+  function clear () {
+    search = {
+      name: '',
+      genres: [],
+      years: [],
+      seasons: [],
+      formats: [],
+      status: [],
+      sort: [],
+      ids: undefined
+    }
+    inputText = ''
+    pageNumber = 1
+  }
+
+  let media: Array<ReturnType<typeof client.search>> = []
+
+  // handlers
+
+  function searchChanged (s: typeof search) {
+    const filter = filterEmpty(s)
+
+    media = [searchQuery(filter, pageNumber)]
+  }
+
+  function searchQuery (filter: Partial<typeof search>, page: number) {
+    return client.search({
+      page,
+      ids: filter.ids,
+      search: filter.name,
+      genre: filter.genres?.map(g => g.value),
+      seasonYear: filter.years ? parseInt(filter.years[0].value) : undefined,
+      season: filter.seasons?.[0].value as 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL' | undefined,
+      format: filter.formats?.map(f => f.value) as Array<'MUSIC' | 'MANGA' | 'TV' | 'TV_SHORT' | 'MOVIE' | 'SPECIAL' | 'OVA' | 'ONA' | 'NOVEL' | 'ONE_SHOT'>,
+      status: filter.status?.map(s => s.value) as Array<'FINISHED' | 'RELEASING' | 'NOT_YET_RELEASED' | 'CANCELLED' | 'HIATUS' | null>,
+      sort: [filter.sort?.[0]?.value ?? 'SEARCH_MATCH'] as Array<'TITLE_ROMAJI_DESC' | 'ID' | 'START_DATE_DESC' | 'SCORE_DESC' | 'POPULARITY_DESC' | 'TRENDING_DESC' | 'UPDATED_AT_DESC' | 'ID_DESC' | 'TITLE_ROMAJI' | 'TITLE_ENGLISH' | 'TITLE_ENGLISH_DESC' | null>
+    })
+  }
+
+  const updateText = debounce((e: FormInputEvent) => {
+    inputText = (e.target as HTMLInputElement).value
+    search.name = inputText
+  }, 200)
+
+  $: searchChanged(search)
+
+  // function nextPage () {
+  //   page = page + 1
+  //   media = [...media, searchQuery(filterEmpty(search), page)]
+  // }
+  // TODO: selects should turn into modals on mobile!
+  // TODO: infinite scroll
+  onMount(async () => {
+    await tick()
+    hideBanner.value = true
+  })
+</script>
+
+<div class='flex flex-col h-full overflow-y-auto overflow-x-hidden -ml-14 pl-14 z-20 min-w-0 grow pointer-events-none' use:dragScroll>
+  <div class='sticky top-0 z-20 px-10 pointer-events-auto shrink-0 overflow-hidden'>
+    <BannerImage class='-z-10 -left-14' />
+    <div class='flex flex-wrap pt-5'>
+      <div class='grid items-center w-1/4 p-2'>
+        <div class='text-xl font-bold mb-1 ml-1'>
+          Title
+        </div>
+        <div class='flex items-center relative scale-parent'>
+          <Input
+            class='pl-9 border-0 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50 capitalize'
+            placeholder='Any'
+            on:input={updateText}
+            bind:value={inputText} />
+          <MagnifyingGlass class='h-4 w-4 shrink-0 opacity-50 absolute left-3 text-muted-foreground z-10 pointer-events-none' />
+        </div>
+      </div>
+      <div class='grid items-center w-1/4 p-2'>
+        <div class='text-xl font-bold mb-1 ml-1'>
+          Genre
+        </div>
+        <ComboBox items={genres} multiple={true} bind:value={search.genres} class='w-full' />
+      </div>
+      <div class='grid items-center w-1/4 p-2'>
+        <div class='text-xl font-bold mb-1 ml-1'>
+          Year
+        </div>
+        <ComboBox items={years} bind:value={search.years} class='w-full' />
+      </div>
+      <div class='grid items-center w-1/4 p-2'>
+        <div class='text-xl font-bold mb-1 ml-1'>
+          Season
+        </div>
+        <ComboBox items={seasons} bind:value={search.seasons} class='w-full' />
+      </div>
+      <div class='grid items-center flex-1 p-2'>
+        <div class='text-xl font-bold mb-1 ml-1'>
+          Format
+        </div>
+        <ComboBox items={formats} multiple={true} bind:value={search.formats} class='w-full' />
+      </div>
+      <div class='grid items-center flex-1 p-2'>
+        <div class='text-xl font-bold mb-1 ml-1'>
+          Status
+        </div>
+        <ComboBox items={status} multiple={true} bind:value={search.status} class='w-full' />
+      </div>
+      <div class='grid items-center flex-1 p-2'>
+        <div class='text-xl font-bold mb-1 ml-1'>
+          Sort
+        </div>
+        <ComboBox items={sort} bind:value={search.sort} class='w-full' placeholder='Accuracy' />
+      </div>
+      <div class='flex-0 w-auto p-2 gap-4 grid grid-cols-2 items-end'>
+        <Button variant='outline' size='icon' on:click={clear} class='border-0'>
+          <Trash class={cn('h-4 w-4', empty(search) && 'text-muted-foreground opacity-50')} />
+        </Button>
+        <Button variant='outline' size='icon' class='border-0'>
+          <FileImage class='h-4 w-4' />
+        </Button>
+      </div>
+    </div>
+    <div class='flex flex-row flex-wrap mt-2 min-h-11 pb-3 px-1'>
+      {#each list(search) as item (item)}
+        <button class={cn(badgeVariants(), 'mx-1.5 my-1 group capitalize text-nowrap')} use:click={() => remove(item)}>
+          {item}
+          <X class='hidden group-select:block group-focus-visible:block ml-2' size={12} />
+        </button>
+      {/each}
+    </div>
+  </div>
+  <div class='flex flex-wrap px-7 justify-center pointer-events-auto'>
+    {#each media as query, i (i)}
+      <QueryCard {query} />
+    {/each}
+  </div>
+</div>
