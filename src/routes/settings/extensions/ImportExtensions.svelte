@@ -11,7 +11,7 @@
       open = false
     } catch (error) {
       toast.error('Failed to import extensions', {
-        description: error.message,
+        description: (error as Error).message,
         duration: 5000
       })
     }
