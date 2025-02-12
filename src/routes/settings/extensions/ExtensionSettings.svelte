@@ -13,9 +13,11 @@
   function deleteExtension () {
     storage.delete(config.id)
   }
+
+  $: opts = $exopts[config.id]!
 </script>
 
-<div class='flex justify-between flex-col items-end'>
+<div class='flex justify-between flex-col items-end pb-1.5'>
   <Dialog.Root>
     <Dialog.Trigger let:builder asChild>
       <Button builders={[builder]} variant='ghost' size='icon-sm'><Settings size={18} /></Button>
@@ -28,17 +30,17 @@
             {#if options.type === 'string'}
               <div class='space-y-2'>
                 <Label for={id} class='leading-[unset] grow font-bold'>{options.description}</Label>
-                <Input type='text' {id} placeholder={options.default} bind:value={$exopts[config.id].options[id]} />
+                <Input type='text' {id} placeholder={options.default} bind:value={opts.options[id]} />
               </div>
             {:else if options.type === 'number'}
               <div class='space-y-2'>
                 <Label for={id} class='leading-[unset] grow font-bold'>{options.description}</Label>
-                <Input type='number' {id} placeholder={options.default} bind:value={$exopts[config.id].options[id]} />
+                <Input type='number' {id} placeholder={options.default} bind:value={opts.options[id]} />
               </div>
             {:else if options.type === 'boolean'}
               <div class='flex items-center space-x-2'>
                 <Label for={id} class='leading-[unset] grow font-bold'>{options.description}</Label>
-                <Switch {id} bind:checked={$exopts[config.id].options[id]} />
+                <Switch {id} bind:checked={opts.options[id]} />
               </div>
             {/if}
           {/each}
@@ -52,5 +54,5 @@
       </Dialog.Header>
     </Dialog.Content>
   </Dialog.Root>
-  <Switch bind:checked={$exopts[config.id].enabled} hideState={true} />
+  <Switch bind:checked={opts.enabled} hideState={true} />
 </div>
