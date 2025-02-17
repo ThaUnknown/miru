@@ -21,7 +21,7 @@
 {#await src then src}
   <div class={cn('object-cover w-screen absolute top-0 left-0 h-full overflow-hidden pointer-events-none bg-black', className)}>
     {#if src}
-      <div class='min-w-[100vw] w-screen h-[30rem] bg-url bg-center bg-cover opacity-90 transition-opacity duration-500 border-gradient-to-t' style:--bg='url({src})' class:!opacity-15={$hideBanner} />
+      <div class='min-w-[100vw] w-screen h-[30rem] bg-url bg-center bg-cover opacity-100 transition-opacity duration-500 border-gradient-to-t' style:--bg='url({src})' class:!opacity-45={$hideBanner} />
     {/if}
   </div>
 {/await}

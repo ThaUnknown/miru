@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // See https://kit.svelte.dev/docs/types#app
 
+import type { SessionMetadata } from '$lib/components/ui/player/util'
 import type { Search } from '$lib/modules/anilist/queries'
 import type { VariablesOf } from 'gql.tada'
 
@@ -9,6 +9,15 @@ export interface AuthResponse {
   access_token: string
   expires_in: string // seconds
   token_type: 'Bearer'
+}
+
+export interface Track {
+  selected: boolean
+  enabled: boolean
+  id: string
+  kind: string
+  label: string
+  language: string
 }
 
 export interface Native {
@@ -23,11 +32,15 @@ export interface Native {
   selectDownload: () => Promise<string>
   setAngle: (angle: string) => Promise<void>
   getLogs: () => Promise<string>
-  getDeviceInfo: () => Promise<any>
+  getDeviceInfo: () => Promise<unknown>
   openUIDevtools: () => Promise<void>
   openTorrentDevtools: () => Promise<void>
   checkUpdate: () => Promise<void>
   toggleDiscordDetails: (enabled: boolean) => Promise<void>
+  setMediaSession: (metadata: SessionMetadata) => Promise<void>
+  setPositionState: (state?: MediaPositionState) => Promise<void>
+  setPlayBackState: (paused: 'none' | 'paused' | 'playing') => Promise<void>
+  setActionHandler: Navigator['mediaSession']['setActionHandler']
 }
 
 declare global {
@@ -51,13 +64,26 @@ declare global {
   function selectDownload (): Promise<string>
   function setAngle (angle: string): Promise<void>
   function getLogs (): Promise<string>
-  function getDeviceInfo (): Promise<any>
+  function getDeviceInfo (): Promise<unknown>
   function openUIDevtools (): Promise<void>
   function openTorrentDevtools (): Promise<void>
   function checkUpdate (): Promise<void>
   function toggleDiscordDetails (enabled: boolean): Promise<void>
+  function setMediaSession (metadata: SessionMetadata): Promise<void>
+  function setPositionState (state?: MediaPositionState): Promise<void>
+  function setPlayBackState (paused: 'none' | 'paused' | 'playing'): Promise<void>
+  function setActionHandler (...args: Parameters<Navigator['mediaSession']['setActionHandler']>): ReturnType<Navigator['mediaSession']['setActionHandler']>
 
   function setTimeout (handler: TimerHandler, timeout?: number): number & { unref?: () => void }
+
+  interface HTMLMediaElement {
+    videoTracks?: Track[]
+    audioTracks?: Track[]
+  }
+
+  interface ScreenOrientation {
+    lock: (orientation: 'any' | 'natural' | 'landscape' | 'portrait' | 'portrait-primary' | 'portrait-secondary' | 'landscape-primary' | 'landscape-secondary') => Promise<void>
+  }
 }
 
 export {}

@@ -11,7 +11,7 @@ export default expose({
   async load (code: string): Promise<TorrentSource> {
     // WARN: unsafe eval
     const url = URL.createObjectURL(new Blob([code], { type: 'application/javascript' }))
-    const module = await import(url)
+    const module = await import(/* @vite-ignore */url)
     URL.revokeObjectURL(url)
     return module.default
   },

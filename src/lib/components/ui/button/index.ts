@@ -13,7 +13,7 @@ const buttonVariants = tv({
       destructive: 'bg-destructive text-destructive-foreground select:bg-destructive/90 shadow-sm',
       outline: 'border-input bg-background select:bg-accent select:text-accent-foreground border shadow-sm',
       secondary: 'bg-secondary text-secondary-foreground select:bg-secondary/80 shadow-sm',
-      ghost: 'select:bg-accent select:text-accent-foreground',
+      ghost: 'select:bg-secondary-foreground/10 select:text-accent-foreground',
       link: 'text-primary underline-offset-4 select:underline'
     },
     size: {

@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { cubicOut } from 'svelte/easing'
 import type { TransitionConfig } from 'svelte/transition'
-import { readable } from 'simple-store-svelte'
+import { readable, type Writable } from 'simple-store-svelte'
 
 export function cn (...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -121,4 +121,36 @@ export function fastPrettyBytes (num: number) {
   if (num < 1) return num + ' B'
   const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1)
   return Number((num / Math.pow(1000, exponent)).toFixed(2)) + units[exponent]!
+}
+
+export function toTS (sec: number, full?: number) {
+  if (isNaN(sec) || sec < 0) {
+    switch (full) {
+      case 1:
+        return '0:00:00.00'
+      case 2:
+        return '0:00:00'
+      case 3:
+        return '00:00'
+      default:
+        return '0:00'
+    }
+  }
+  const hours = Math.floor(sec / 3600)
+  let minutes: string | number = Math.floor(sec / 60) - hours * 60
+  let seconds: string | number = full === 1 ? (sec % 60).toFixed(2) : Math.floor(sec % 60)
+  if (minutes < 10 && (hours > 0 || full)) minutes = '0' + minutes
+  if (Number(seconds) < 10) seconds = '0' + seconds
+  return (hours > 0 || full === 1 || full === 2) ? hours + ':' + minutes + ':' + seconds : minutes + ':' + seconds
+}
+
+export function bindPiP (doc: Document, store: Writable<HTMLVideoElement | null>) {
+  const signal = new AbortController()
+  doc.addEventListener('enterpictureinpicture', (e) => {
+    store.set(e.target as HTMLVideoElement)
+  }, { signal: signal.signal })
+  doc.addEventListener('leavepictureinpicture', () => {
+    store.set(null)
+  }, { signal: signal.signal })
+  return { destroy: () => signal.abort() }
 }

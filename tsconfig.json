@@ -24,7 +24,6 @@
     ]
   },
   "include": [
-    "tailwind.config.ts",
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.svelte"

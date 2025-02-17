@@ -4,9 +4,32 @@ import plugin from 'tailwindcss/plugin'
 
 const config: Config = {
   plugins: [
-    plugin (({ addVariant }) => {
+    plugin(({ addVariant, matchVariant }) => {
       addVariant('select', ['&:hover', '&:focus-visible', '&:active'])
       addVariant('group-select', [':merge(.group):hover &', ':merge(.group):focus-visible &', ':merge(.group):active &'])
+      addVariant('fullscreen', '&:fullscreen')
+      addVariant('group-fullscreen', ':merge(.group):fullscreen &')
+      matchVariant(
+        'group-fullscreen',
+        (value, { modifier }) => [
+          ':merge(.group):fullscreen &',
+          `:merge(.group\\/${modifier}):fullscreen &`
+        ],
+        { values: { DEFAULT: undefined } }
+      )
+      matchVariant(
+        'group-select',
+        (value, { modifier }) => [
+          ':merge(.group):hover &',
+          `:merge(.group\\/${modifier}):hover &`,
+          ':merge(.group):focus-visible &',
+          `:merge(.group\\/${modifier}):focus-visible &`,
+          ':merge(.group):active &',
+          `:merge(.group\\/${modifier}):active &`
+        ],
+        { values: { DEFAULT: undefined } }
+      )
+      addVariant('mobile', '@media (pointer: none), (pointer: coarse)')
     })
   ],
   darkMode: ['class'],
