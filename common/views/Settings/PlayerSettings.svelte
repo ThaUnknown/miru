@@ -66,6 +66,12 @@
     <option value='480'>480p</option>
   </select>
 </SettingCard>
+<SettingCard title='Modern WASM Support' description='Forcefully override device WASM support. This can fix potential crash issues on some devices that incorrectly report WASM support. Turning this off will reduce performance when rendering complex subtitles.'>
+  <div class='custom-switch'>
+    <input type='checkbox' id='player-modernWasm' bind:checked={settings.modernWasm} />
+    <label for='player-modernWasm'>{settings.modernWasm ? 'On' : 'Off'}</label>
+  </div>
+</SettingCard>
 
 <h4 class='mb-10 font-weight-bold'>Language Settings</h4>
 <SettingCard title='Preferred Subtitle Language' description="What subtitle language to automatically select when a video is loaded if it exists. This won't find torrents with this language automatically. If not found defaults to English.">
