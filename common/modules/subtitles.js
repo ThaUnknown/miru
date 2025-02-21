@@ -172,10 +172,12 @@ export default class Subtitles {
         workerUrl: new URL('jassub/dist/jassub-worker.js', import.meta.url).toString(),
         wasmUrl: new URL('jassub/dist/jassub-worker.wasm', import.meta.url).toString(),
         legacyWasmUrl: new URL('jassub/dist/jassub-worker.wasm.js', import.meta.url).toString(),
-        modernWasmUrl: settings.value.modernWasm ? new URL('jassub/dist/jassub-worker-modern.wasm', import.meta.url).toString() : undefined,
+        modernWasmUrl: new URL('jassub/dist/jassub-worker-modern.wasm', import.meta.url).toString(),
         useLocalFonts: settings.value.missingFont,
         dropAllBlur: settings.value.disableSubtitleBlur
       }
+      // @ts-expect-error yeah, patching the library
+      if (SUPPORTS.isAndroid) JASSUB._hasBitmapBug = true
       this.renderer = new JASSUB(options)
     }
   }

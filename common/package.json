@@ -8,7 +8,7 @@
     "bottleneck": "^2.19.5",
     "browser-event-target-emitter": "^1.0.1",
     "comlink": "^4.4.1",
-    "jassub": "^1.7.17",
+    "jassub": "^1.7.18",
     "js-levenshtein": "^1.1.6",
     "lucide-svelte": "^0.429.0",
     "p2pt": "github:ThaUnknown/p2pt#modernise",
