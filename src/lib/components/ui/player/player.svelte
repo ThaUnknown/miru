@@ -1,26 +1,28 @@
 <script lang='ts'>
-  import * as Dialog from '$lib/components/ui/dialog'
   import PictureInPictureExit from '$lib/components/icons/PictureInPictureExit.svelte'
+  import * as Sheet from '$lib/components/ui/sheet'
   import PictureInPicture from '$lib/components/icons/PictureInPicture.svelte'
   import Subtitles from '$lib/components/icons/Subtitles.svelte'
   import Play from '$lib/components/icons/Play.svelte'
   import { Button } from '$lib/components/ui/button'
   import { settings } from '$lib/modules/settings'
   import { bindPiP, toTS } from '$lib/utils'
-  import { Cast, EllipsisVertical, FastForward, Maximize, Minimize, Pause, Rewind, SkipBack, SkipForward } from 'lucide-svelte'
+  import { Cast, FastForward, Maximize, Minimize, Pause, Rewind, SkipBack, SkipForward } from 'lucide-svelte'
   import { writable, type Writable } from 'simple-store-svelte'
   import { persisted } from 'svelte-persisted-store'
   import { toast } from 'svelte-sonner'
   import Seekbar from './seekbar.svelte'
   import type { SvelteMediaTimeRange } from 'svelte/elements'
   import { fade } from 'svelte/transition'
-  import { getChapterTitle, normalizeTracks, sanitizeChapters, type MediaInfo } from './util'
+  import { getChapterTitle, sanitizeChapters, type MediaInfo } from './util'
   import Thumbnailer from './thumbnailer'
-  import { onMount, tick } from 'svelte'
+  import { onMount } from 'svelte'
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
   import { goto } from '$app/navigation'
-  import * as Tree from '$lib/components/ui/tree'
+  import Options from './options.svelte'
+  import EpisodesList from '$lib/components/EpisodesList.svelte'
+  import { episodes } from '$lib/modules/anizip'
 
   export let mediaInfo: MediaInfo
   // bindings
@@ -42,6 +44,9 @@
   let ended = false
   let paused = true
   const cast = false
+
+  $: buffering = readyState < 3
+  $: immersed = !buffering && !seeking && !paused && !ended
 
   // elements
   let fullscreenElement: HTMLElement | null = null
@@ -86,7 +91,6 @@
       }
       seek(-0.2) // stupid fix because video freezes up when chaging tracks
     }
-    open = false
   }
   function selectVideo (id: string) {
     if (id) {
@@ -94,7 +98,6 @@
         track.selected = track.id === id
       }
     }
-    open = false
   }
   function prev () {
   // TODO
@@ -169,23 +172,29 @@
   native.setActionHandler('previoustrack', prev)
   native.setActionHandler('nexttrack', next)
 
-  let open = false
-  let treeState: Writable<string[]>
+  let openSubs: () => Promise<void>
 
-  async function openSubs () {
-    open = true
-    await tick()
-    treeState.set(['subs'])
+  function seekBarKey (event: KeyboardEvent) {
+    // left right up down return preventdefault
+    if (['ArrowLeft', 'ArrowRight'].includes(event.key)) event.stopPropagation()
+    switch (event.key) {
+      case 'ArrowLeft':
+        seek(-5)
+        break
+      case 'ArrowRight':
+        seek(5)
+        break
+      case 'Enter':
+        playPause()
+        break
+    }
   }
 </script>
 
 <svelte:document bind:fullscreenElement use:bindPiP={pictureInPictureElement} />
 
-<div style:aspect-ratio='{videoWidth} / {videoHeight}' class='max-w-full max-h-full min-w-[clamp(0%,700px,100%)] relative content-center fullscreen:bg-black fullscreen:rounded-none rounded-xl overflow-clip' bind:this={wrapper}>
-  <video
-    class='w-full max-h-full grow bg-black'
-    preload='auto'
-    loop
+<div style:aspect-ratio='{videoWidth} / {videoHeight}' class='max-w-full max-h-full min-w-[clamp(0%,700px,100%)] relative content-center fullscreen:bg-black fullscreen:rounded-none rounded-xl overflow-clip text-left' bind:this={wrapper}>
+  <video class='w-full max-h-full grow bg-black' preload='auto' class:cursor-none={immersed}
     src={mediaInfo.url}
     bind:videoHeight
     bind:videoWidth
@@ -199,6 +208,7 @@
     bind:volume={$volume}
     bind:this={video}
     on:click={playPause}
+    on:dblclick={fullscreen}
     on:loadeddata={checkAudio}
   />
   <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
@@ -207,10 +217,8 @@
         <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0' />
       {/await}
     {/if}
-    <Button class='mobile:inline-flex hidden p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto' variant='ghost'>
-      <EllipsisVertical size='24px' class='p-[1px]' />
-    </Button>
-    <div class='mobile:flex hidden gap-4 absolute items-center'>
+    <Options {wrapper} bind:openSubs {video} {selectAudio} {selectVideo} class='mobile:inline-flex hidden p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />
+    <div class='mobile:flex hidden gap-4 absolute items-center select:opacity-100 cursor-default' class:opacity-0={immersed}>
       <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost'>
         <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
       </Button>
@@ -244,21 +252,28 @@
       </div>
     {/each}
   </div>
-  <div class='absolute w-full bottom-0 flex flex-col gradient px-10 py-4'>
+  <div class='absolute w-full bottom-0 flex flex-col gradient px-10 py-4 transition-opacity select:opacity-100 cursor-default' class:opacity-0={immersed}>
     <div class='flex justify-between gap-12'>
-      <div class='flex flex-col gap-2 text-left group/mediainfo cursor-pointer' use:click={() => goto(`/anime/${mediaInfo.media.id}`)}>
-        <div class='text-white text-lg font-normal leading-none line-clamp-1 group-hover/mediainfo:text-neutral-200'>{mediaInfo.session.title}</div>
-        <div class='text-[rgba(217,217,217,0.6)] group-hover/mediainfo:text-neutral-400 text-sm leading-none font-light line-clamp-1'>{mediaInfo.session.description}</div>
+      <div class='flex flex-col gap-2 text-left cursor-pointer'>
+        <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
+        <Sheet.Root portal={wrapper}>
+          <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo.session.description}</Sheet.Trigger>
+          <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0'>
+            {#await episodes(Number(mediaInfo.media.id)) then eps}
+              <EpisodesList {eps} media={mediaInfo.media} />
+            {/await}
+          </Sheet.Content>
+        </Sheet.Root>
       </div>
       <div class='flex flex-col gap-2 grow-0 items-end self-end'>
         <div class='text-[rgba(217,217,217,0.6)] text-sm leading-none font-light line-clamp-1'>{getChapterTitle(seeking ? seekPercent * safeduration / 100 : currentTime, chapters) || ''}</div>
         <div class='ml-auto self-end text-sm leading-none font-light text-nowrap'>{toTS(seeking ? seekPercent * safeduration / 100 : currentTime)} / {toTS(safeduration)}</div>
       </div>
     </div>
-    <Seekbar {duration} {currentTime} buffer={buffer / duration * 100} {chapters} bind:seeking bind:seek={seekPercent} on:seeked={finishSeek} on:seeking={startSeek} {thumbnailer} />
+    <Seekbar {duration} {currentTime} buffer={buffer / duration * 100} {chapters} bind:seeking bind:seek={seekPercent} on:seeked={finishSeek} on:seeking={startSeek} {thumbnailer} on:keydown={seekBarKey} />
     <div class='flex justify-between gap-2 mobile:hidden'>
       <div class='flex text-white gap-2'>
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={playPause}>
+        <Button class='p-3 w-12 h-12' variant='ghost' on:click={playPause} id='play-pause-button'>
           {#if paused}
             <Play size='24px' fill='currentColor' class='p-0.5' />
           {:else}
@@ -273,65 +288,7 @@
         </Button>
       </div>
       <div class='flex gap-2'>
-        <Dialog.Root portal={wrapper} bind:open>
-          <Dialog.Trigger asChild let:builder>
-            <Button class='p-3 w-12 h-12' variant='ghost' builders={[builder]}>
-              <EllipsisVertical size='24px' class='p-[1px]' />
-            </Button>
-          </Dialog.Trigger>
-          <Dialog.Content class='absolute bg-transparent border-none p-0 shadow-none h-full w-full overflow-hidden'>
-            <div on:pointerdown|self={() => { open = false }} class='h-full flex w-full justify-center items-center overflow-y-scroll'>
-              <Tree.Root bind:state={treeState}>
-                <Tree.Item>
-                  <span slot='trigger'>Audio</span>
-                  <Tree.Sub>
-                    {#each Object.entries(normalizeTracks(video.audioTracks ?? [])) as [lang, tracks] (lang)}
-                      <Tree.Item>
-                        <span slot='trigger' class='capitalize'>{lang}</span>
-                        <Tree.Sub>
-                          {#each tracks as track (track.id)}
-                            <Tree.Item active={track.enabled} on:click={() => selectAudio(track.id)}>
-                              <span>{track.label}</span>
-                            </Tree.Item>
-                          {/each}
-                        </Tree.Sub>
-                      </Tree.Item>
-                    {/each}
-                  </Tree.Sub>
-                </Tree.Item>
-                <Tree.Item>
-                  <span slot='trigger'>Video</span>
-                  <Tree.Sub>
-                    {#each Object.entries(normalizeTracks(video.videoTracks ?? [])) as [lang, tracks] (lang)}
-                      <Tree.Item>
-                        <span slot='trigger' class='capitalize'>{lang}</span>
-                        <Tree.Sub>
-                          {#each tracks as track (track.id)}
-                            <Tree.Item active={track.enabled} on:click={() => selectVideo(track.id)}>
-                              <span>{track.label}</span>
-                            </Tree.Item>
-                          {/each}
-                        </Tree.Sub>
-                      </Tree.Item>
-                    {/each}
-                  </Tree.Sub>
-                </Tree.Item>
-                <Tree.Item id='subs'>
-                  <span slot='trigger'>Subtitles</span>
-                  <Tree.Sub>
-                    <Tree.Item>
-                      <span>Consulting</span>
-                    </Tree.Item>
-                    <Tree.Item>
-                      <span>Support</span>
-                    </Tree.Item>
-                  </Tree.Sub>
-                </Tree.Item>
-              </Tree.Root>\
-            </div>
-          </Dialog.Content>
-        </Dialog.Root>
-
+        <Options {wrapper} bind:openSubs {video} {selectAudio} {selectVideo} />
         <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs}>
           <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
         </Button>

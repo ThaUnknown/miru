@@ -211,6 +211,10 @@ function navigateDPad (direction = 'up') {
   const keyboardFocusable = getFocusableElementPositions()
   const currentElement = !document.activeElement || document.activeElement === document.body ? keyboardFocusable[0]! : getElementPosition(document.activeElement as HTMLElement)
 
+  // allow overrides via data attributes ex: <div data-up="#id"?>
+  // this is safe, queryselector accepts undefined
+  if (focusElement(document.querySelector<HTMLElement>(currentElement.element.dataset[direction]!))) return
+
   const elementsInDesiredDirection = getElementsInDesiredDirection(keyboardFocusable, currentElement, direction)
 
   // if there are elements in desired direction
@@ -221,18 +225,7 @@ function navigateDPad (direction = 'up') {
       return reducer
     }, { distance: Infinity })
 
-    if (!closestElement.element) return
-
-    const { element } = closestElement
-
-    const isInput = element.matches('input[type=text], input[type=url], input[type=number], textarea')
-    if (isInput) {
-      const input = element as HTMLInputElement
-      input.readOnly = true
-    }
-    element.focus()
-    if (isInput) setTimeout(() => { (element as HTMLInputElement).readOnly = false })
-    element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' })
+    focusElement(closestElement.element)
     // return
   }
 
@@ -247,6 +240,20 @@ function navigateDPad (direction = 'up') {
 
   //   furthestElement.element.focus()
   // }
+}
+
+function focusElement (element?: HTMLElement | null) {
+  if (!element) return false
+  const isInput = element.matches('input[type=text], input[type=url], input[type=number], textarea')
+  if (isInput) {
+    const input = element as HTMLInputElement
+    input.readOnly = true
+  }
+  element.focus()
+  if (isInput) setTimeout(() => { (element as HTMLInputElement).readOnly = false })
+  element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' })
+
+  return true
 }
 
 // hacky, but make sure keybinds system loads first so it can prevent this from running

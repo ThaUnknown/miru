@@ -16,7 +16,7 @@
     bannerSrc.value = media
 
     return {
-      url: '/video.mkv',
+      url: '/Ameku.webm',
       episode: 6,
       media,
       forced: false,
@@ -30,13 +30,12 @@
 
 </script>
 
-<div class='px-3 w-full h-full py-12 gap-4 content-center text-webkit-center'>
+<div class='px-3 w-full h-full py-10 gap-4 flex justify-center items-center'>
   {#await mediaInfo then mediaInfo}
-    <Player {mediaInfo} />
+    <div class='w-full h-full content-center text-webkit-center'>
+      <Player {mediaInfo} />
+    </div>
   {/await}
-  <!-- <div class='w-60 shrink-0'>
-    Episode list
-  </div> -->
 </div>
 
 <style>

@@ -8,8 +8,6 @@
   import client from '$lib/modules/auth/client'
   import * as Avatar from '$lib/components/ui/avatar'
 
-  // TODO: crossfade
-
   const auth = client.hasAuth
 
   $: hasAuth = $auth

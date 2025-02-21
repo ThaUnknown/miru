@@ -23,6 +23,9 @@ importers:
       '@urql/exchange-graphcache':
         specifier: ^7.2.1
         version: 7.2.1(@urql/core@5.1.0(graphql@16.10.0))(graphql@16.10.0)
+      '@urql/exchange-refocus':
+        specifier: ^1.1.0
+        version: 1.1.0(@urql/core@5.1.0(graphql@16.10.0))
       '@urql/exchange-request-policy':
         specifier: ^1.2.0
         version: 1.2.0(@urql/core@5.1.0(graphql@16.10.0))
@@ -119,7 +122,7 @@ importers:
         version: 0.0.18(svelte@4.2.19)
       eslint-config-standard-universal:
         specifier: github:thaunknown/eslint-config-standard-universal
-        version: https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/d50760bd09eb47a2082cb7ec0310e0104ff4e799(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6)
+        version: https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/aaadeca51abe2a5080f2af318236f29a81fa776b(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6)
       globals:
         specifier: ^15.11.0
         version: 15.11.0
@@ -688,6 +691,11 @@ packages:
     peerDependencies:
       '@urql/core': ^5.0.0
 
+  '@urql/exchange-refocus@1.1.0':
+    resolution: {integrity: sha512-tMgIqXUGIuNBeEoXDNOZ48Kut2m85etNIorwBG89tQZHDLxJM52N6A0eLm0Mv9BJFb0U94i3drwlD55He+9Uvw==}
+    peerDependencies:
+      '@urql/core': ^5.0.0
+
   '@urql/exchange-request-policy@1.2.0':
     resolution: {integrity: sha512-30CwS5/YzX0YWVATg19rrDhruDCRIu96xUz6HGlhJPUw22M7njRldl44fmoU11ZbIemg01t8ysq6+0rdktYBgg==}
     peerDependencies:
@@ -717,10 +725,10 @@ packages:
     peerDependencies:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
 
-  acorn@8.12.1:
-    resolution: {integrity: sha512-tcpGyI9zbizT9JbV6oYE477V6mTlXvvi0T0G3SNIYE2apm/G5huBa1+K89VGeovbg+jycCrfhl3ADxErOuO6Jg==}
-    engines: {node: '>=0.4.0'}
-    hasBin: true
+  acorn-typescript@1.4.13:
+    resolution: {integrity: sha512-xsc9Xv0xlVfwp2o7sQ+GCQ1PgbkdcpWdTzrwXxO3xDMTAywVS3oXVOcOHuRjAPkS4P9b+yc/qNF15460v+jp4Q==}
+    peerDependencies:
+      acorn: '>=8.9.0'
 
   acorn@8.14.0:
     resolution: {integrity: sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA==}
@@ -1099,8 +1107,8 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-config-standard-universal@https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/d50760bd09eb47a2082cb7ec0310e0104ff4e799:
-    resolution: {tarball: https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/d50760bd09eb47a2082cb7ec0310e0104ff4e799}
+  eslint-config-standard-universal@https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/aaadeca51abe2a5080f2af318236f29a81fa776b:
+    resolution: {tarball: https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/aaadeca51abe2a5080f2af318236f29a81fa776b}
     version: 1.0.4
 
   eslint-import-resolver-node@0.3.9:
@@ -1194,6 +1202,9 @@ packages:
   esm-env@1.1.4:
     resolution: {integrity: sha512-oO82nKPHKkzIj/hbtuDYy/JHqBHFlMIW36SDiPCVsj87ntDLcWN+sJ1erdVryd4NxODacFTsdrIE3b7IamqbOg==}
 
+  esm-env@1.2.2:
+    resolution: {integrity: sha512-Epxrv+Nr/CaL4ZcFGPJIYLWFom+YeV1DqMLHJoEd9SYRxNbaFruBwfEX/kkHUJf55j2+TUbmDcmuilbP1TmXHA==}
+
   espree@10.3.0:
     resolution: {integrity: sha512-0QYC8b24HWY8zjRnDTL6RiHfDbAWn63qb4LMj1Z4b076A4une81+z03Kg7l7mn/48PUTqoLptSXez8oknU8Clg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -1205,6 +1216,9 @@ packages:
   esquery@1.6.0:
     resolution: {integrity: sha512-ca9pw9fomFcKPvFLXhBKUK90ZvGibiGOvRJNbjljY7s7uq/5YO4BOzcYtJqExdx99rF6aAcnRxHmcUHcz6sQsg==}
     engines: {node: '>=0.10'}
+
+  esrap@1.4.5:
+    resolution: {integrity: sha512-CjNMjkBWWZeHn+VX+gS8YvFwJ5+NDhg8aWZBSFJPR8qQduDNjbJodA2WcwCm7uQa5Rjqj+nZvVmceg1RbHFB9g==}
 
   esrecurse@4.3.0:
     resolution: {integrity: sha512-KmfKL3b6G+RXvP8N1vr3Tq1kL/oCFgn2NYXEtqP8/L3pKapUA4G8cFVaoF3SU323CD4XypR/ffioHmkti6/Tag==}
@@ -1495,6 +1509,9 @@ packages:
 
   is-reference@3.0.2:
     resolution: {integrity: sha512-v3rht/LgVcsdZa3O2Nqs+NMowLOxeOm7Ay9+/ARQ2F+qEoANRcqrjAZKGN0v8ymUetZGgkp26LTnGT7H0Qo9Pg==}
+
+  is-reference@3.0.3:
+    resolution: {integrity: sha512-ixkJoqQvAP88E6wLydLGGqCJsrFUnqoH6HnaczB8XmDH1oaWU+xxdptvikTgaEhtZ53Ky6YXiBuUI2WXLMCwjw==}
 
   is-regex@1.1.4:
     resolution: {integrity: sha512-kvRdxDsxZjhzUX07ZnLydzS1TU/TJlTUHHY4YLL87e37oUA49DfkLqgy+VjFocowy29cKvcSiu+kIv728jTTVg==}
@@ -2122,6 +2139,10 @@ packages:
     resolution: {integrity: sha512-IY1rnGr6izd10B0A8LqsBfmlT5OILVuZ7XsI0vdGPEvuonFV7NYEUK4dAkm9Zg2q0Um92kYjTpS1CAP3Nh/KWw==}
     engines: {node: '>=16'}
 
+  svelte@5.20.1:
+    resolution: {integrity: sha512-aCARru2WTdzJl55Ws8SK27+kvQwd8tijl4kY7NoDUXUHtTHhxMa8Lf6QNZKmU7cuPu3jjFloDO1j5HgYJNIIWg==}
+    engines: {node: '>=18'}
+
   tabbable@6.2.0:
     resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
 
@@ -2352,6 +2373,9 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  zimmerframe@1.1.2:
+    resolution: {integrity: sha512-rAbqEGa8ovJy4pyBxZM70hg4pE6gDgaQ0Sl9M3enG3I0d6H4XSAM3GeNGLKnsBpuijUow064sf7ww1nutC5/3w==}
 
 snapshots:
 
@@ -2839,6 +2863,11 @@ snapshots:
     transitivePeerDependencies:
       - graphql
 
+  '@urql/exchange-refocus@1.1.0(@urql/core@5.1.0(graphql@16.10.0))':
+    dependencies:
+      '@urql/core': 5.1.0(graphql@16.10.0)
+      wonka: 6.3.4
+
   '@urql/exchange-request-policy@1.2.0(@urql/core@5.1.0(graphql@16.10.0))':
     dependencies:
       '@urql/core': 5.1.0(graphql@16.10.0)
@@ -2861,15 +2890,13 @@ snapshots:
 
   abslink@1.0.9: {}
 
-  acorn-jsx@5.3.2(acorn@8.12.1):
-    dependencies:
-      acorn: 8.12.1
-
   acorn-jsx@5.3.2(acorn@8.14.0):
     dependencies:
       acorn: 8.14.0
 
-  acorn@8.12.1: {}
+  acorn-typescript@1.4.13(acorn@8.14.0):
+    dependencies:
+      acorn: 8.14.0
 
   acorn@8.14.0: {}
 
@@ -3350,7 +3377,7 @@ snapshots:
       eslint: 9.17.0(jiti@1.21.6)
       semver: 7.6.3
 
-  eslint-config-standard-universal@https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/d50760bd09eb47a2082cb7ec0310e0104ff4e799(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6):
+  eslint-config-standard-universal@https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/aaadeca51abe2a5080f2af318236f29a81fa776b(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6):
     dependencies:
       '@stylistic/eslint-plugin': 3.1.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2)
       eslint: 9.17.0(jiti@1.21.6)
@@ -3358,9 +3385,9 @@ snapshots:
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(eslint@9.17.0(jiti@1.21.6))
       eslint-plugin-n: 17.15.0(eslint@9.17.0(jiti@1.21.6))
       eslint-plugin-promise: 7.2.1(eslint@9.17.0(jiti@1.21.6))
-      eslint-plugin-svelte: 2.46.1(eslint@9.17.0(jiti@1.21.6))(svelte@4.2.19)
+      eslint-plugin-svelte: 2.46.1(eslint@9.17.0(jiti@1.21.6))(svelte@5.20.1)
       globals: 15.13.0
-      svelte: 4.2.19
+      svelte: 5.20.1
       typescript: 5.7.2
       typescript-eslint: 8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2)
     transitivePeerDependencies:
@@ -3442,7 +3469,7 @@ snapshots:
       '@eslint-community/eslint-utils': 4.4.1(eslint@9.17.0(jiti@1.21.6))
       eslint: 9.17.0(jiti@1.21.6)
 
-  eslint-plugin-svelte@2.46.1(eslint@9.17.0(jiti@1.21.6))(svelte@4.2.19):
+  eslint-plugin-svelte@2.46.1(eslint@9.17.0(jiti@1.21.6))(svelte@5.20.1):
     dependencies:
       '@eslint-community/eslint-utils': 4.4.1(eslint@9.17.0(jiti@1.21.6))
       '@jridgewell/sourcemap-codec': 1.5.0
@@ -3455,9 +3482,9 @@ snapshots:
       postcss-safe-parser: 6.0.0(postcss@8.4.49)
       postcss-selector-parser: 6.1.2
       semver: 7.6.3
-      svelte-eslint-parser: 0.43.0(svelte@4.2.19)
+      svelte-eslint-parser: 0.43.0(svelte@5.20.1)
     optionalDependencies:
-      svelte: 4.2.19
+      svelte: 5.20.1
     transitivePeerDependencies:
       - ts-node
 
@@ -3518,6 +3545,8 @@ snapshots:
 
   esm-env@1.1.4: {}
 
+  esm-env@1.2.2: {}
+
   espree@10.3.0:
     dependencies:
       acorn: 8.14.0
@@ -3526,13 +3555,17 @@ snapshots:
 
   espree@9.6.1:
     dependencies:
-      acorn: 8.12.1
-      acorn-jsx: 5.3.2(acorn@8.12.1)
+      acorn: 8.14.0
+      acorn-jsx: 5.3.2(acorn@8.14.0)
       eslint-visitor-keys: 3.4.3
 
   esquery@1.6.0:
     dependencies:
       estraverse: 5.3.0
+
+  esrap@1.4.5:
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.5.0
 
   esrecurse@4.3.0:
     dependencies:
@@ -3800,6 +3833,10 @@ snapshots:
   is-number@7.0.0: {}
 
   is-reference@3.0.2:
+    dependencies:
+      '@types/estree': 1.0.6
+
+  is-reference@3.0.3:
     dependencies:
       '@types/estree': 1.0.6
 
@@ -4406,7 +4443,7 @@ snapshots:
     transitivePeerDependencies:
       - picomatch
 
-  svelte-eslint-parser@0.43.0(svelte@4.2.19):
+  svelte-eslint-parser@0.43.0(svelte@5.20.1):
     dependencies:
       eslint-scope: 7.2.2
       eslint-visitor-keys: 3.4.3
@@ -4414,7 +4451,7 @@ snapshots:
       postcss: 8.4.49
       postcss-scss: 4.0.9(postcss@8.4.49)
     optionalDependencies:
-      svelte: 4.2.19
+      svelte: 5.20.1
 
   svelte-hmr@0.16.0(svelte@4.2.19):
     dependencies:
@@ -4455,6 +4492,23 @@ snapshots:
       locate-character: 3.0.0
       magic-string: 0.30.12
       periscopic: 3.1.0
+
+  svelte@5.20.1:
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@jridgewell/sourcemap-codec': 1.5.0
+      '@types/estree': 1.0.6
+      acorn: 8.14.0
+      acorn-typescript: 1.4.13(acorn@8.14.0)
+      aria-query: 5.3.2
+      axobject-query: 4.1.0
+      clsx: 2.1.1
+      esm-env: 1.2.2
+      esrap: 1.4.5
+      is-reference: 3.0.3
+      locate-character: 3.0.0
+      magic-string: 0.30.12
+      zimmerframe: 1.1.2
 
   tabbable@6.2.0: {}
 
@@ -4689,3 +4743,5 @@ snapshots:
   yaml@2.6.0: {}
 
   yocto-queue@0.1.0: {}
+
+  zimmerframe@1.1.2: {}

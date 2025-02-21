@@ -117,6 +117,10 @@
 </script>
 
 <div class='w-full flex cursor-pointer relative group/seekbar touch-none' class:!cursor-grab={seeking}
+  tabindex='0' role='slider' aria-valuenow='0'
+  data-down='#play-pause-button'
+  data-up='#episode-list-button'
+  on:keydown
   bind:this={seekbar}
   on:pointerdown={startSeeking}
   on:pointerup={endSeeking}
@@ -134,7 +138,7 @@
       </div>
     </div>
   {/each}
-  {#if !seeking}
+  {#if !seeking && seek}
     <div class='absolute w-full transform-gpu flex pointer-events-none group-hover/seekbar:opacity-100 opacity-0 bottom-9' style:--tw-translate-x='clamp(64px, {clamp(seek)}%, calc(100% - 64px))'>
       <div class='-translate-x-1/2 text-sm leading-none text-nowrap flex flex-col justify-center items-center gap-1 rounded-lg bg-neutral-200 border-white border py-2 px-3 has-[img]:p-0 text-zinc-900 shadow-lg'>
         {#await thumbnailer.getThumbnail(seekIndex)}

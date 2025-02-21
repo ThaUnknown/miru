@@ -156,7 +156,7 @@ export function normalizeTracks (_tracks: Track[]) {
       enabled: enabled ?? selected,
       id,
       language: language || !hasEng ? 'eng' : 'unk',
-      label
+      label: label || 'Default'
     }
   })
   return lang.reduce<Record<string, typeof lang>>((acc, track) => {

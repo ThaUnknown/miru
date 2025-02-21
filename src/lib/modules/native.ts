@@ -34,7 +34,6 @@ globalThis.maximise ??= async () => undefined
 globalThis.close ??= async () => undefined
 globalThis.checkUpdate ??= async () => undefined
 globalThis.toggleDiscordDetails ??= async () => undefined
-// TODO: chapter info?
 globalThis.setMediaSession ??= async (metadata) => { navigator.mediaSession.metadata = new MediaMetadata({ title: metadata.title, artist: metadata.description, artwork: [{ src: metadata.image }] }) }
 globalThis.setPositionState ??= async e => navigator.mediaSession.setPositionState(e)
 globalThis.setPlayBackState ??= async e => { navigator.mediaSession.playbackState = e }

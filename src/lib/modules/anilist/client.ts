@@ -2,6 +2,7 @@ import { Client, fetchExchange, queryStore, type OperationResultState } from '@u
 import { offlineExchange } from '@urql/exchange-graphcache'
 import { makeDefaultStorage } from '@urql/exchange-graphcache/default-storage'
 import { authExchange } from '@urql/exchange-auth'
+import { refocusExchange } from '@urql/exchange-refocus'
 import type { ResultOf, VariablesOf } from 'gql.tada'
 import type { AnyVariables, TypedDocumentNode } from 'urql'
 
@@ -52,6 +53,7 @@ class AnilistClient {
     url: 'https://graphql.anilist.co', // TODO: uncoment fetch, its annoying for debugging stack tracess
     // fetch: (req: RequestInfo | URL, opts?: RequestInit) => this.handleRequest(req, opts),
     exchanges: [
+      refocusExchange(),
       offlineExchange({
         schema: schema as Parameters<typeof offlineExchange>[0]['schema'],
         logger: (...args) => console.log(...args),
