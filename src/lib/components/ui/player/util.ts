@@ -1,4 +1,6 @@
 import type { Media } from '$lib/modules/anilist'
+import { settings } from '$lib/modules/settings'
+import { get } from 'svelte/store'
 import type { Track } from '../../../../app'
 
 export interface Chapter {
@@ -164,4 +166,16 @@ export function normalizeTracks (_tracks: Track[]) {
     acc[track.language]!.push(track)
     return acc
   }, {})
+}
+
+export function autoPiP (video: HTMLVideoElement, pipfn: (enable: boolean) => void) {
+  const signal = new AbortController()
+
+  window.addEventListener('visibilitychange', () => {
+    if (get(settings).playerAutoPiP) pipfn(document.visibilityState !== 'visible')
+  }, { signal: signal.signal })
+
+  return {
+    destroy: () => signal.abort()
+  }
 }

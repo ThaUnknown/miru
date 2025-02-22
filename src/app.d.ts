@@ -40,7 +40,7 @@ export interface Native {
   setMediaSession: (metadata: SessionMetadata) => Promise<void>
   setPositionState: (state?: MediaPositionState) => Promise<void>
   setPlayBackState: (paused: 'none' | 'paused' | 'playing') => Promise<void>
-  setActionHandler: Navigator['mediaSession']['setActionHandler']
+  setActionHandler: (action: MediaSessionAction | 'enterpictureinpicture', handler: MediaSessionActionHandler | null) => void
 }
 
 declare global {
@@ -75,6 +75,11 @@ declare global {
   function setActionHandler (...args: Parameters<Navigator['mediaSession']['setActionHandler']>): ReturnType<Navigator['mediaSession']['setActionHandler']>
 
   function setTimeout (handler: TimerHandler, timeout?: number): number & { unref?: () => void }
+
+  interface MediaSession {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MediaSession/setActionHandler) */
+    setActionHandler: (action: MediaSessionAction | 'enterpictureinpicture', handler: MediaSessionActionHandler | null) => void
+  }
 
   interface HTMLMediaElement {
     videoTracks?: Track[]

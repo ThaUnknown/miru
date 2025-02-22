@@ -3,6 +3,7 @@ import SUPPORTS from './supports'
 export default {
   volume: 1,
   playerAutoplay: true,
+  playerAutoPiP: false,
   playerPause: true,
   playerAutocomplete: true,
   playerDeband: false,

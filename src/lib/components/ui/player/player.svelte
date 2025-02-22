@@ -14,7 +14,7 @@
   import Seekbar from './seekbar.svelte'
   import type { SvelteMediaTimeRange } from 'svelte/elements'
   import { fade } from 'svelte/transition'
-  import { getChapterTitle, sanitizeChapters, type MediaInfo } from './util'
+  import { autoPiP, getChapterTitle, sanitizeChapters, type MediaInfo } from './util'
   import Thumbnailer from './thumbnailer'
   import { onMount } from 'svelte'
   import native from '$lib/modules/native'
@@ -39,6 +39,12 @@
   $: safeduration = isFinite(duration) ? duration : currentTime
   const volume = persisted('volume', 0)
 
+  // elements
+  let fullscreenElement: HTMLElement | null = null
+  const pictureInPictureElement: Writable<HTMLVideoElement | null> = writable(null)
+  let video: HTMLVideoElement
+  let wrapper: HTMLDivElement
+
   // state
   let seeking = false
   let ended = false
@@ -46,13 +52,7 @@
   const cast = false
 
   $: buffering = readyState < 3
-  $: immersed = !buffering && !seeking && !paused && !ended
-
-  // elements
-  let fullscreenElement: HTMLElement | null = null
-  const pictureInPictureElement: Writable<HTMLVideoElement | null> = writable(null)
-  let video: HTMLVideoElement
-  let wrapper: HTMLDivElement
+  $: immersed = !buffering && !seeking && !paused && !ended && !$pictureInPictureElement
 
   // functions
   function playPause () {
@@ -63,8 +63,8 @@
     return fullscreenElement ? document.exitFullscreen() : wrapper.requestFullscreen()
   }
 
-  function pip () {
-    return $pictureInPictureElement ? document.exitPictureInPicture() : video.requestPictureInPicture()
+  function pip (enable = !$pictureInPictureElement) {
+    return enable ? video.requestPictureInPicture() : document.exitPictureInPicture()
   }
 
   $: fullscreenElement ? screen.orientation.lock('landscape') : screen.orientation.unlock()
@@ -171,6 +171,8 @@
   native.setActionHandler('seekforward', () => seek(2))
   native.setActionHandler('previoustrack', prev)
   native.setActionHandler('nexttrack', next)
+  // about://flags/#auto-picture-in-picture-for-video-playback
+  native.setActionHandler('enterpictureinpicture', () => pip(true))
 
   let openSubs: () => Promise<void>
 
@@ -210,6 +212,7 @@
     on:click={playPause}
     on:dblclick={fullscreen}
     on:loadeddata={checkAudio}
+    use:autoPiP={pip}
   />
   <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
     {#if seeking}
@@ -258,7 +261,7 @@
         <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
         <Sheet.Root portal={wrapper}>
           <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo.session.description}</Sheet.Trigger>
-          <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0'>
+          <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0'>
             {#await episodes(Number(mediaInfo.media.id)) then eps}
               <EpisodesList {eps} media={mediaInfo.media} />
             {/await}
@@ -270,7 +273,7 @@
         <div class='ml-auto self-end text-sm leading-none font-light text-nowrap'>{toTS(seeking ? seekPercent * safeduration / 100 : currentTime)} / {toTS(safeduration)}</div>
       </div>
     </div>
-    <Seekbar {duration} {currentTime} buffer={buffer / duration * 100} {chapters} bind:seeking bind:seek={seekPercent} on:seeked={finishSeek} on:seeking={startSeek} {thumbnailer} on:keydown={seekBarKey} />
+    <Seekbar {duration} {currentTime} buffer={buffer / duration * 100} {chapters} bind:seeking bind:seek={seekPercent} on:seeked={finishSeek} on:seeking={startSeek} {thumbnailer} on:keydown={seekBarKey} on:dblclick={fullscreen} />
     <div class='flex justify-between gap-2 mobile:hidden'>
       <div class='flex text-white gap-2'>
         <Button class='p-3 w-12 h-12' variant='ghost' on:click={playPause} id='play-pause-button'>
@@ -292,7 +295,7 @@
         <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs}>
           <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
         </Button>
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={pip}>
+        <Button class='p-3 w-12 h-12' variant='ghost' on:click={() => pip()}>
           {#if $pictureInPictureElement}
             <PictureInPictureExit size='24px' strokeWidth='2' />
           {:else}

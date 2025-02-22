@@ -120,6 +120,7 @@
   tabindex='0' role='slider' aria-valuenow='0'
   data-down='#play-pause-button'
   data-up='#episode-list-button'
+  on:dblclick
   on:keydown
   bind:this={seekbar}
   on:pointerdown={startSeeking}
