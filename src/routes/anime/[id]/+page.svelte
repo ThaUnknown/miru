@@ -65,7 +65,7 @@
 <div class='w-full items-center flex flex-col h-full overflow-y-auto overflow-x-hidden' use:dragScroll on:scroll={handleScroll}>
   <div class='gap-6 w-full pt-4 md:pt-48 flex flex-col items-center justify-center max-w-[1600px] px-3 xl:px-14'>
     <div class='flex flex-col md:flex-row w-full items-center md:items-end gap-5 pt-12'>
-      <Dialog.Root portal='html'>
+      <Dialog.Root portal='#root'>
         <Dialog.Trigger class='shrink-0 w-[180px] h-[256px] rounded overflow-hidden relative group focus-visible:ring-1 focus-visible:ring-ring select:scale-[1.02] transition-transform duration-200'>
           <div class='absolute flex-center w-full h-full bg-black group-select:bg-opacity-50 bg-opacity-0 duration-300 text-white transition-all ease-out'>
             <Maximize2 class='size-10 scale-75 opacity-0 group-select:opacity-100 group-select:scale-100 duration-300 transition-all ease-out' />
@@ -134,7 +134,7 @@
         </Button>
       {/if}
       {#if media.trailer?.id}
-        <Dialog.Root portal='html'>
+        <Dialog.Root portal='#root'>
           <Dialog.Trigger let:builder asChild>
             <Button size='icon' variant='secondary' class='hidden md:flex' builders={[builder]}>
               <Clapperboard class='size-4' />

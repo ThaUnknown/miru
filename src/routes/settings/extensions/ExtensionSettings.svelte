@@ -18,7 +18,7 @@
 </script>
 
 <div class='flex justify-between flex-col items-end pb-1.5'>
-  <Dialog.Root>
+  <Dialog.Root portal='#root'>
     <Dialog.Trigger let:builder asChild>
       <Button builders={[builder]} variant='ghost' size='icon-sm'><Settings size={18} /></Button>
     </Dialog.Trigger>

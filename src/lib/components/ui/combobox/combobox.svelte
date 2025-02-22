@@ -63,7 +63,7 @@
   export { className as class }
 </script>
 
-<Popover.Root bind:open let:ids>
+<Popover.Root bind:open let:ids portal='#root'>
   <Popover.Trigger asChild let:builder>
     <Button
       builders={[builder]}

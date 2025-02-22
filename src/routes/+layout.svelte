@@ -13,7 +13,7 @@
   import SearchModal from '$lib/components/SearchModal.svelte'
 </script>
 
-<div class='root w-full h-full backface-hidden bg-black relative overflow-clip'>
+<div class='root w-full h-full backface-hidden bg-black relative overflow-clip border-l-2 border-white' id='root'>
   <ProgressBar zIndex={100} />
   <Toaster />
 

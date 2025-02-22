@@ -22,7 +22,7 @@
   let open = false
 </script>
 
-<Dialog.Root bind:open>
+<Dialog.Root bind:open portal='#root'>
   <Dialog.Trigger let:builder asChild>
     <Button builders={[builder]} size='sm'>Import Extensions</Button>
   </Dialog.Trigger>

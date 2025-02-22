@@ -38,7 +38,7 @@
   }
 </script>
 
-<Dialog.Root portal='html'>
+<Dialog.Root portal='#root'>
   <Dialog.Trigger let:builder asChild>
     <Button size='icon' class='rounded-l-none bg-primary/85 select:bg-primary/75 shrink-0' builders={[builder]}>
       <PencilLine class='size-4' />
