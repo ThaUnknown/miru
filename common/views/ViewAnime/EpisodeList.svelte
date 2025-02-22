@@ -58,7 +58,7 @@
   const animeProgress = liveAnimeProgress(id)
 </script>
 
-{#each episodeOrder ? episodeList : [...episodeList].reverse() as { episode, image, summary, rating, title, length, airdate, filler }}
+{#each episodeOrder ? episodeList.filter(e => e) : [...episodeList].reverse().filter(e => e) as { episode, image, summary, rating, title, length, airdate, filler }}
   {@const completed = !watched && userProgress >= episode}
   {@const target = userProgress + 1 === episode}
   {@const progress = !watched && ($animeProgress?.[episode] ?? 0)}
