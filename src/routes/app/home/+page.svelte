@@ -71,7 +71,7 @@
   hideBanner.value = false
 
   function search (variables: VariablesOf<typeof Search>) {
-    goto('/search', { state: { search: variables } })
+    goto('/app/search', { state: { search: variables } })
   }
 </script>
 

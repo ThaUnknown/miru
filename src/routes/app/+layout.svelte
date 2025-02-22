@@ -4,7 +4,7 @@
   import Menubar from '$lib/components/ui/menubar/menubar.svelte'
   import { Sidebar } from '$lib/components/ui/sidebar'
   import { ProgressBar } from '@prgm/sveltekit-progress-bar'
-  import '../app.css'
+  import '../../app.css'
   import '@fontsource-variable/nunito'
   import '$lib/modules/navigate'
   import { BannerImage } from '$lib/components/ui/banner'

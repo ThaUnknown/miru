@@ -179,7 +179,7 @@
           {#each showRelations ? relations : relations.slice(0, 3) as rel (rel?.node?.id)}
             {@const media = rel?.node}
             {#if media}
-              <a class='select:scale-[1.02] select:shadow-lg scale-100 transition-all duration-200 shrink-0 ease-out focus-visible:ring-ring focus-visible:ring-1 rounded-md w-96 md:w-full h-[126px] bg-neutral-950 text-secondary-foreground select:bg-neutral-900 flex' style:-webkit-user-drag='none' href='/anime/{media.id}'>
+              <a class='select:scale-[1.02] select:shadow-lg scale-100 transition-all duration-200 shrink-0 ease-out focus-visible:ring-ring focus-visible:ring-1 rounded-md w-96 md:w-full h-[126px] bg-neutral-950 text-secondary-foreground select:bg-neutral-900 flex' style:-webkit-user-drag='none' href='/app/anime/{media.id}'>
                 <div class='w-[90px] bg-image rounded-l-md shrink-0'>
                   <Load src={media.coverImage?.medium} class='object-cover h-full w-full shrink-0 rounded-l-md' />
                 </div>

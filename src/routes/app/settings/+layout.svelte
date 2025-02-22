@@ -5,31 +5,31 @@
   const items = [
     {
       title: 'Player',
-      href: '/settings/'
+      href: '/app/settings/'
     },
     {
       title: 'Torrent',
-      href: '/settings/torrent/'
+      href: '/app/settings/torrent/'
     },
     {
       title: 'Interface',
-      href: '/settings/interface/'
+      href: '/app/settings/interface/'
     },
     {
       title: 'Extensions',
-      href: '/settings/extensions/'
+      href: '/app/settings/extensions/'
     },
     {
       title: 'Accounts',
-      href: '/settings/accounts/'
+      href: '/app/settings/accounts/'
     },
     {
       title: 'App',
-      href: '/settings/app/'
+      href: '/app/settings/app/'
     },
     {
       title: 'Changelog',
-      href: '/settings/changelog/'
+      href: '/app/settings/changelog/'
     }
   ]
 </script>

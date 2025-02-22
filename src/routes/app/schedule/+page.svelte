@@ -140,7 +140,7 @@
                   </Drawer.Header>
                   <Drawer.Footer>
                     {#each episodes as episode, i (i)}
-                      <ButtonPrimitive.Root class={cn('flex items-center h-4 w-full group mt-1.5 px-3', +episode.airTime < Date.now() && 'opacity-30')} href='/anime/{episode.id}' data-sveltekit-preload-data='tap'>
+                      <ButtonPrimitive.Root class={cn('flex items-center h-4 w-full group mt-1.5 px-3', +episode.airTime < Date.now() && 'opacity-30')} href='/app/anime/{episode.id}' data-sveltekit-preload-data='tap'>
                         <div class='font-medium text-nowrap text-ellipsis overflow-hidden pr-2' title={episode.title?.userPreferred}>
                           {#if episode.mediaListEntry?.status}
                             <StatusDot variant={episode.mediaListEntry.status} class='hidden' />
@@ -162,7 +162,7 @@
             {#if !$isMobile}
               <div class='mt-auto'>
                 {#each episodes.length > 6 ? episodes.slice(0, 5) : episodes as episode, i (i)}
-                  <ButtonPrimitive.Root class={cn('flex items-center h-4 w-full group mt-1.5 px-3', +episode.airTime < Date.now() && 'opacity-30')} href='/anime/{episode.id}' data-sveltekit-preload-data='tap'>
+                  <ButtonPrimitive.Root class={cn('flex items-center h-4 w-full group mt-1.5 px-3', +episode.airTime < Date.now() && 'opacity-30')} href='/app/anime/{episode.id}' data-sveltekit-preload-data='tap'>
                     <div class='font-medium text-nowrap text-ellipsis overflow-hidden pr-2' title={episode.title?.userPreferred}>
                       {#if episode.mediaListEntry?.status}
                         <StatusDot variant={episode.mediaListEntry.status} class='hidden lg:inline-flex' />
@@ -180,7 +180,7 @@
                     </Tooltip.Trigger>
                     <Tooltip.Content sameWidth={true} class='text-center gap-1.5'>
                       {#each episodes.slice(5) as episode, i (i)}
-                        <ButtonPrimitive.Root class={cn('flex items-center h-4 w-full group', +episode.airTime < Date.now() && 'text-neutral-300')} href='/anime/{episode.id}'data-sveltekit-preload-data='tap'>
+                        <ButtonPrimitive.Root class={cn('flex items-center h-4 w-full group', +episode.airTime < Date.now() && 'text-neutral-300')} href='/app/anime/{episode.id}'data-sveltekit-preload-data='tap'>
                           <div class='font-medium text-nowrap text-ellipsis overflow-hidden pr-2' title={episode.title?.userPreferred}>
                             {#if episode.mediaListEntry?.status}
                               <StatusDot variant={episode.mediaListEntry.status} class='hidden lg:inline-flex' />

@@ -29,7 +29,7 @@
         Be wary of impersonation.<br /> Staff will <span class='font-bold text-neutral-500'>NEVER</span> show up on this chat.
       </div>
       <div class='mt-7 gap-3 flex justify-center'>
-        <Button variant='secondary' href='/' size='lg'>Nope</Button>
+        <Button variant='secondary' href='/app/' size='lg'>Nope</Button>
         <Button variant='destructive' size='lg' on:click={agree}>Continue</Button>
       </div>
     </div>

@@ -258,7 +258,7 @@
   <div class='absolute w-full bottom-0 flex flex-col gradient px-10 py-4 transition-opacity select:opacity-100 cursor-default' class:opacity-0={immersed}>
     <div class='flex justify-between gap-12'>
       <div class='flex flex-col gap-2 text-left cursor-pointer'>
-        <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
+        <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
         <Sheet.Root portal={wrapper}>
           <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo.session.description}</Sheet.Trigger>
           <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0'>

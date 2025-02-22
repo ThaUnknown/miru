@@ -1,7 +1,7 @@
 <script lang='ts'>
   import 'tailwindcss/tailwind.css'
   import { page } from '$app/stores'
-  import Separator from '$lib/components/ui/separator/separator.svelte'
+  import { Separator } from '$lib/components/ui/separator'
 </script>
 
 <div class='overflow-x-hidden overflow-y-scroll relative flex justify-center items-center text-white px-15 w-full font-light'>

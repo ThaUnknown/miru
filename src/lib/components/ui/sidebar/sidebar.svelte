@@ -16,31 +16,31 @@
 <div class='w-14 p-2 flex flex-col z-10 shrink-0 bg-black'>
   <BannerImage class='absolute top-0 left-0 w-14 -z-10' />
   <img src='/logo_cropped.png' alt='logo' class='mb-3 cursor-pointer h-10 object-contain px-1' decoding='async' />
-  <SidebarButton class='mb-2' href='/home/'>
+  <SidebarButton class='mb-2' href='/app/home/'>
     <Home size={18} />
   </SidebarButton>
-  <SidebarButton class='mb-2' href='/search/'>
+  <SidebarButton class='mb-2' href='/app/search/'>
     <Search size={18} />
   </SidebarButton>
-  <SidebarButton class='mb-2' href='/schedule/'>
+  <SidebarButton class='mb-2' href='/app/schedule/'>
     <Calendar size={18} />
   </SidebarButton>
-  <SidebarButton class='mb-2' href='/w2g/'>
+  <SidebarButton class='mb-2' href='/app/w2g/'>
     <Users size={18} />
   </SidebarButton>
-  <SidebarButton class='mb-2' href='/chat/'>
+  <SidebarButton class='mb-2' href='/app/chat/'>
     <MessagesSquare size={18} />
   </SidebarButton>
-  <SidebarButton class='mb-2' href='/client/'>
+  <SidebarButton class='mb-2' href='/app/client/'>
     <Hub size={18} fill='currentColor' />
   </SidebarButton>
   <Button variant='ghost' on:click={() => native.openURL('https://github.com/sponsors/ThaUnknown/')} class='px-2 w-full relative mb-2 mt-auto donate text-[#fa68b6] select:text-[#fa68b6] select:!bg-transparent'>
     <Heart size={18} fill='currentColor' />
   </Button>
-  <SidebarButton class='mb-2' href='/settings/'>
+  <SidebarButton class='mb-2' href='/app/settings/'>
     <Settings size={18} />
   </SidebarButton>
-  <SidebarButton href='/profile/'>
+  <SidebarButton href='/app/profile/'>
     {#if hasAuth}
       {@const viewer = client.profile()}
       <Avatar.Root class='size-6 rounded-md'>
