@@ -14,7 +14,7 @@
   }
 </script>
 
-<div class='!absolute w-[17.5rem] h-80 top-0 bottom-0 m-auto bg-neutral-950 z-30 rounded cursor-pointer absolute-container -left-full -right-full'>
+<div class='!absolute w-[17.5rem] h-80 top-0 bottom-0 bg-neutral-950 z-30 rounded cursor-pointer absolute-container -left-full -right-full'>
   <div class='h-[45%] banner relative bg-black rounded-t'>
     <Banner {media} class={cn('object-cover w-full h-full blur-2xl saturate-200 absolute -z-10', hideFrame === false && 'hidden')} />
     <Banner {media} class='object-cover w-full h-full rounded-t' />
@@ -42,7 +42,7 @@
         {season(media)}
       </span>
     </div>
-    <div class='w-full h-full overflow-hidden text-[.7rem] text-muted-foreground line-clamp-4'>
+    <div class='w-full h-full overflow-clip text-[.7rem] text-muted-foreground line-clamp-4'>
       {desc(media)}
     </div>
   </div>
@@ -60,19 +60,13 @@
   }
   .absolute-container {
     animation: 0.3s ease 0s 1 load-in;
-    transform: translate3d(0,0,0);
+    transform: translate3d(50%, 0, 0) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(1) scaleY(1);
+    opacity: 1;
   }
   @keyframes load-in {
     from {
-      bottom: -1.2rem;
       opacity: 0;
-      transform: scale(0.95);
-    }
-
-    to {
-      bottom: 0;
-      opacity: 1;
-      transform: scale(1);
+      transform: translate3d(50%, 1.2rem, 0) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(0.95) scaleY(0.95);
     }
   }
 </style>

@@ -145,8 +145,8 @@
   })
 </script>
 
-<div class='flex flex-col h-full overflow-y-auto overflow-x-hidden -ml-14 pl-14 z-20 min-w-0 grow pointer-events-none' use:dragScroll>
-  <div class='sticky top-0 z-20 px-10 pointer-events-auto shrink-0 overflow-hidden'>
+<div class='flex flex-col h-full overflow-y-auto overflow-x-clip -ml-14 pl-14 z-20 min-w-0 grow pointer-events-none' use:dragScroll>
+  <div class='sticky top-0 z-20 px-10 pointer-events-auto shrink-0 overflow-clip'>
     <BannerImage class='-z-10 -left-14' />
     <div class='flex flex-wrap pt-5'>
       <div class='grid items-center w-1/4 p-2'>

@@ -26,7 +26,8 @@
 
   const shuffled = shuffleAndFilter(mediaList)
 
-  let current = shuffled[0]
+  // TODO: this assertion is incorrect!
+  let current = shuffled[0]!
 
   const initial = bannerSrc.value
 
@@ -93,8 +94,8 @@
     {#each shuffled as media (media.id)}
       {@const active = current === media}
       <div class='pt-2 pb-1' class:cursor-pointer={!active} use:click={() => setCurrent(media)}>
-        <div class='bg-neutral-800 mr-2 progress-badge overflow-hidden rounded' class:active style='height: 4px;' style:width={active ? '3rem' : '1.5rem'}>
-          <div class='progress-content h-full' class:bg-white={active} />
+        <div class='bg-neutral-800 mr-2 progress-badge overflow-clip rounded' class:active style='height: 4px;' style:width={active ? '3rem' : '1.5rem'}>
+          <div class='progress-content h-full transform-gpu w-full' class:bg-white={active} />
         </div>
       </div>
     {/each}
@@ -111,10 +112,10 @@
 
   @keyframes fill {
     from {
-      width: 0;
+      transform: translate3d(-100%, var(--tw-translate-y), 0);
     }
     to {
-      width: 100%;
+      transform: translate3d(0%, var(--tw-translate-y), 0);
     }
   }
   .details span + span::before {

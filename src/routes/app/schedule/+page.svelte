@@ -170,7 +170,7 @@
                       {episode.title?.userPreferred}
                     </div>
                     <div class='ml-auto mr-1 text-nowrap hidden lg:inline-flex'>#{episode.episode}</div>
-                    <div class='text-neutral-400 group-select:text-neutral-200'>{format(episode.airTime, 'HH:mm')}</div>
+                    <div class='text-neutral-400 group-select:text-neutral-200 ml-auto lg:ml-0'>{format(episode.airTime, 'HH:mm')}</div>
                   </ButtonPrimitive.Root>
                 {/each}
                 {#if episodes.length > 6}
@@ -188,7 +188,7 @@
                             {episode.title?.userPreferred}
                           </div>
                           <div class='ml-auto mr-1 text-nowrap hidden lg:inline-flex'>#{episode.episode}</div>
-                          <div class='text-neutral-400 group-select:text-neutral-900'>{format(episode.airTime, 'HH:mm')}</div>
+                          <div class='text-neutral-400 group-select:text-neutral-900 ml-auto lg:ml-0'>{format(episode.airTime, 'HH:mm')}</div>
                         </ButtonPrimitive.Root>
                       {/each}
                     </Tooltip.Content>

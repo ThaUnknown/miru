@@ -41,6 +41,7 @@ export interface Native {
   setPositionState: (state?: MediaPositionState) => Promise<void>
   setPlayBackState: (paused: 'none' | 'paused' | 'playing') => Promise<void>
   setActionHandler: (action: MediaSessionAction | 'enterpictureinpicture', handler: MediaSessionActionHandler | null) => void
+  isApp: boolean
 }
 
 declare global {
@@ -53,33 +54,7 @@ declare global {
     }
     // interface Platform {}
   }
-  function authAL (url: string): Promise<AuthResponse>
-  function restart (): Promise<void>
-  function openURL (url: string): Promise<void>
-  function share (...args: Parameters<Navigator['share']>): ReturnType<Navigator['share']>
-  function minimise (): Promise<void>
-  function maximise (): Promise<void>
-  function close (): Promise<void>
-  function selectPlayer (): Promise<string>
-  function selectDownload (): Promise<string>
-  function setAngle (angle: string): Promise<void>
-  function getLogs (): Promise<string>
-  function getDeviceInfo (): Promise<unknown>
-  function openUIDevtools (): Promise<void>
-  function openTorrentDevtools (): Promise<void>
-  function checkUpdate (): Promise<void>
-  function toggleDiscordDetails (enabled: boolean): Promise<void>
-  function setMediaSession (metadata: SessionMetadata): Promise<void>
-  function setPositionState (state?: MediaPositionState): Promise<void>
-  function setPlayBackState (paused: 'none' | 'paused' | 'playing'): Promise<void>
-  function setActionHandler (...args: Parameters<Navigator['mediaSession']['setActionHandler']>): ReturnType<Navigator['mediaSession']['setActionHandler']>
-
-  function setTimeout (handler: TimerHandler, timeout?: number): number & { unref?: () => void }
-
-  interface MediaSession {
-    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MediaSession/setActionHandler) */
-    setActionHandler: (action: MediaSessionAction | 'enterpictureinpicture', handler: MediaSessionActionHandler | null) => void
-  }
+  var native: Native
 
   interface HTMLMediaElement {
     videoTracks?: Track[]

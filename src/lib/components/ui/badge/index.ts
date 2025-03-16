@@ -5,13 +5,13 @@ export const badgeVariants = tv({
   base: 'focus:ring-ring inline-flex select-none items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
   variants: {
     variant: {
-      default:
-				'bg-primary text-primary-foreground select:bg-primary/80 border-transparent shadow',
-      secondary:
-				'bg-secondary text-secondary-foreground select:bg-secondary/80 border-transparent',
-      destructive:
-				'bg-destructive text-destructive-foreground select:bg-destructive/80 border-transparent shadow',
-      outline: 'text-foreground'
+      default: 'bg-primary text-primary-foreground select:bg-primary/80 border-transparent shadow',
+      secondary: 'bg-secondary text-secondary-foreground select:bg-secondary/80 border-transparent',
+      destructive: 'bg-destructive text-destructive-foreground select:bg-destructive/80 border-transparent shadow',
+      outline: 'text-foreground',
+      success: 'bg-[#21b959] text-primary-foreground select:bg-[#21b959]/80 border-transparent shadow',
+      warning: 'bg-[#eab308] text-primary-foreground select:bg-[#eab308]/80 border-transparent shadow',
+      error: 'bg-[#bf2c2c] text-primary-foreground select:bg-[#bf2c2c]/80 border-transparent shadow'
     }
   },
   defaultVariants: {

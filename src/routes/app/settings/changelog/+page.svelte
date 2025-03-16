@@ -1,8 +1,9 @@
 <script lang='ts' context='module'>
+  import { CHANGELOG_URL } from '$lib'
   import { Separator } from '$lib/components/ui/separator'
 
   const changeLog = (async () => {
-    const res = await fetch('https://api.github.com/repos/ThaUnknown/miru/releases') // TODO: update URL
+    const res = await fetch(CHANGELOG_URL)
     const json = await res.json() as Array<{ body: string, tag_name: string, published_at: string }>
     return json.map(({ body, tag_name: version, published_at: date }) => ({ body, version, date }))
   })()

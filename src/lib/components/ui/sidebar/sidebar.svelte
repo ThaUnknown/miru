@@ -34,8 +34,9 @@
   <SidebarButton class='mb-2' href='/app/client/'>
     <Hub size={18} fill='currentColor' />
   </SidebarButton>
-  <Button variant='ghost' on:click={() => native.openURL('https://github.com/sponsors/ThaUnknown/')} class='px-2 w-full relative mb-2 mt-auto donate text-[#fa68b6] select:text-[#fa68b6] select:!bg-transparent'>
-    <Heart size={18} fill='currentColor' />
+  <Button variant='ghost' on:click={() => native.openURL('https://github.com/sponsors/ThaUnknown/')} class='px-2 w-full relative mb-2 mt-auto select:!bg-transparent text-[#fa68b6] select:text-[#fa68b6]'>
+    <Heart size={18} fill='currentColor' class='absolute' />
+    <Heart size={18} fill='currentColor' class='donate' />
   </Button>
   <SidebarButton class='mb-2' href='/app/settings/'>
     <Settings size={18} />
@@ -55,15 +56,16 @@
 
 <style>
   :global(.donate) {
+    filter: drop-shadow(0 0 1rem #fa68b6);
     animation: glow 1s ease-in-out infinite alternate;
   }
 
   @keyframes glow {
     from {
-      filter: drop-shadow(0 0 1rem #fa68b6);
+      transform: translate3d(var(--tw-translate-x), var(--tw-translate-y), 0) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(1) scaleY(1);
     }
     to {
-      filter: drop-shadow(0 0 0.5rem #fa68b6);
+      transform: translate3d(var(--tw-translate-x), var(--tw-translate-y), 0) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(0.5) scaleY(0.5);
     }
   }
 </style>

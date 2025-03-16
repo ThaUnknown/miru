@@ -38,6 +38,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@cloudflare/speedtest": "^1.4.1",
 		"@fontsource-variable/nunito": "^5.1.0",
 		"@prgm/sveltekit-progress-bar": "2.0.0",
 		"@thaunknown/web-irc": "^1.0.1",

@@ -41,9 +41,9 @@
   <SettingCard let:id title='Torrent Download Location' description='Path to the folder used to store torrents. By default this is the TMP folder, which might lose data when your OS tries to reclaim storage.  {SUPPORTS.isAndroid ? 'RESTART IS REQUIRED. /sdcard/ is internal storage, not external SD Cards. /storage/AB12-34CD/ is external storage, not internal. Thank you Android!' : ''}'>
     <div class='flex'>
       {#if !SUPPORTS.isAndroid}
-        <Input type='url' bind:value={$settings.torrentPath} readonly {id} placeholder='/tmp' class='w-60 shrink-0 bg-background rounded-r-none pointer-events-none' />
+        <Input type='url' bind:value={$settings.torrentPath} readonly {id} placeholder='/tmp' class='sm:w-60 bg-background rounded-r-none pointer-events-none' />
       {:else}
-        <Input type='text' bind:value={$settings.torrentPath} {id} placeholder='/tmp' class='w-60 shrink-0 bg-background rounded-r-none' />
+        <Input type='text' bind:value={$settings.torrentPath} {id} placeholder='/tmp' class='sm:w-60 bg-background rounded-r-none' />
       {/if}
       <Button class='rounded-l-none font-bold' on:click={selectDownloadFolder} variant='secondary'>Select Folder</Button>
     </div>

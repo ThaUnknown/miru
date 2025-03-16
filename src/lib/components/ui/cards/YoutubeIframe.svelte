@@ -68,7 +68,7 @@
     on:loadeddata={() => { hide = false }}
     autoplay /> -->
 
-<div class='h-full w-full overflow-hidden absolute top-0 rounded-t'>
+<div class='h-full w-full overflow-clip absolute top-0 rounded-t'>
   <div class='absolute z-10 top-0 right-0 p-3' class:hide use:click={toggleMute}>
     {#if muted}
       <VolumeX size='1rem' fill='currentColor' class='pointer-events-none' />
@@ -87,7 +87,7 @@
     src='https://www.youtube-nocookie.com/embed/{id}?enablejsapi=1&autoplay=1&controls=0&mute=1&disablekb=1&loop=1&playlist={id}&cc_lang_pref=ja'
   />
 </div>
-<div class='h-full w-full overflow-hidden absolute top-0 rounded-t blur-2xl saturate-200 -z-10 pointer-events-none'>
+<div class='h-full w-full overflow-clip absolute top-0 rounded-t blur-2xl saturate-200 -z-10 pointer-events-none'>
   <iframe
     class='w-full border-0 absolute left-0 h-[200%] top-1/2 transform -translate-y-1/2'
     class:hide

@@ -2,8 +2,8 @@
   import { type Variant, badgeVariants } from './index.js'
   import { cn } from '$lib/utils.js'
 
-  let className: string | undefined | null
-  export let href: string | undefined
+  let className: string | undefined | null = ''
+  export let href: string | undefined = ''
   export let variant: Variant = 'default'
   export { className as class }
 </script>

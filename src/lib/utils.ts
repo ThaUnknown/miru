@@ -62,7 +62,7 @@ export const flyAndScale = (
   }
 }
 
-export const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t).unref?.())
+export const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
 export function safeLocalStorage<T> (key: string): T | undefined {
   try {
@@ -83,7 +83,6 @@ export const debounce = <T extends (...args: any[]) => unknown>(
     timeout = setTimeout(() => {
       callback(...args)
     }, waitFor)
-    timeout.unref?.()
   }
 }
 

@@ -23,6 +23,7 @@
   import Options from './options.svelte'
   import EpisodesList from '$lib/components/EpisodesList.svelte'
   import { episodes } from '$lib/modules/anizip'
+  import Volume from './volume.svelte'
 
   export let mediaInfo: MediaInfo
   // bindings
@@ -37,7 +38,9 @@
   $: buffer = Math.max(...buffered.map(({ end }) => end))
   let readyState = 0
   $: safeduration = isFinite(duration) ? duration : currentTime
-  const volume = persisted('volume', 0)
+  const volume = persisted('volume', 1)
+  $: exponentialVolume = $volume ** 3
+  let muted = false
 
   // elements
   let fullscreenElement: HTMLElement | null = null
@@ -204,10 +207,11 @@
     bind:duration
     bind:ended
     bind:paused
+    bind:muted
     bind:readyState
     bind:buffered
     bind:playbackRate
-    bind:volume={$volume}
+    bind:volume={exponentialVolume}
     bind:this={video}
     on:click={playPause}
     on:dblclick={fullscreen}
@@ -261,7 +265,7 @@
         <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
         <Sheet.Root portal={wrapper}>
           <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo.session.description}</Sheet.Trigger>
-          <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0'>
+          <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black'>
             {#await episodes(Number(mediaInfo.media.id)) then eps}
               <EpisodesList {eps} media={mediaInfo.media} />
             {/await}
@@ -289,6 +293,7 @@
         <Button class='p-3 w-12 h-12' variant='ghost' on:click={next}>
           <SkipForward size='24px' fill='currentColor' strokeWidth='1' />
         </Button>
+        <Volume bind:volume={$volume} bind:muted />
       </div>
       <div class='flex gap-2'>
         <Options {wrapper} bind:openSubs {video} {selectAudio} {selectVideo} />

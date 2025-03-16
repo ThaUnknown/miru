@@ -31,6 +31,7 @@
     html.classList.remove('show-backplate')
   }
 // TODO: finish :^)
+// TODO: marqquee animation might not be performant
 </script>
 
 <div class='absolute w-full h-full overflow-hidden flip backface-hidden backplate bg-black flex-col justify-center pointer-events-none hidden'>

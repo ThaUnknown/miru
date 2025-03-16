@@ -131,7 +131,7 @@
   $: searchResult && searchResult.then(startAnimation)
 </script>
 
-<Dialog.Root bind:open onOpenChange={close} portal='#root'>
+<Dialog.Root bind:open onOpenChange={close}>
   <Dialog.Content class='bg-black h-full lg:border-x-4 border-b-0 max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex lg:rounded-t-xl overflow-hidden'>
     <div class='absolute top-0 left-0 w-full h-full max-h-28 overflow-hidden'>
       <Banner media={$searchStore.media} class='object-cover w-full h-full absolute bottom-[0.5px] left-0 -z-10' />
@@ -166,18 +166,9 @@
           Auto Select Torrent
         </ProgressButton>
       </div>
-      <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation}>
+      <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:pointerenter={stopAnimation}>
         {#await searchResult}
-          {#each Array.from({ length: 10 }) as _, i (i)}
-            <div class='w-full h-[106px] mb-2 px-3 py-4 rounded-md border border-border flex flex-col justify-between'>
-              <div class='bg-primary/5 animate-pulse rounded h-5 w-80 max-w-full' />
-              <div class='bg-primary/5 animate-pulse rounded h-3 w-28 max-w-full' />
-              <div class='flex justify-between max-w-full'>
-                <div class='bg-primary/5 animate-pulse rounded h-3 w-36 max-w-full' />
-                <div class='bg-primary/5 animate-pulse rounded h-3 w-28 max-w-full' />
-              </div>
-            </div>
-          {/each}
+          Loading...
         {:then search}
           {@const media = $searchStore.media}
           {#if search && media}
@@ -241,6 +232,6 @@
     background: linear-gradient(90deg, #000 32%, rgba(0, 0, 0, 0.9) 100%);
   }
   .banner-2 {
-    background: linear-gradient(#0005 0%, #000d 90%, #000 100%);
+    background: linear-gradient(#000d 0%, #000d 90%, #000 100%);
   }
 </style>
