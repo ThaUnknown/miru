@@ -5,15 +5,26 @@
   import { Switch } from '$lib/components/ui/switch'
   import { SUPPORTS, settings } from '$lib/modules/settings'
   import native from '$lib/modules/native'
-  import Footer from '../Footer.svelte'
+  import Footer, { type Checks } from '../Footer.svelte'
   import Progress from '../Progress.svelte'
+  import { fastPrettyBytes } from '$lib/utils'
 
   async function selectDownloadFolder () {
     $settings.torrentPath = await native.selectDownload()
   }
+
+  async function checkSpaceRequirements (_path: string): Checks['promise'] {
+    const space = await native.checkAvailableSpace()
+    if (space < 1e9) return { status: 'error', text: `${fastPrettyBytes(space)} available, 1GB is the recommended minimum.` }
+    if (space < 5e9) return { status: 'warning', text: `${fastPrettyBytes(space)} available, 5GB is the recommended amount.` }
+    return { status: 'success', text: `${fastPrettyBytes(space)} available.` }
+  }
+  let space: Checks
+  $: space = { promise: checkSpaceRequirements($settings.torrentPath), title: 'Storage Space', pending: 'Checking available storage space...' }
 </script>
 
 <Progress />
+
 <div class='space-y-3 lg:max-w-4xl pt-5 h-full overflow-y-auto'>
   <SettingCard class='bg-transparent' let:id title='Torrent Download Location' description='Path to the folder used to store torrents. By default this is the TMP folder, which might lose data when your OS tries to reclaim storage.  {SUPPORTS.isAndroid ? 'RESTART IS REQUIRED. /sdcard/ is internal storage, not external SD Cards. /storage/AB12-34CD/ is external storage, not internal. Thank you Android!' : ''}'>
     <div class='flex'>
@@ -30,4 +41,4 @@
   </SettingCard>
 </div>
 
-<Footer prev='' next='network' />
+<Footer checks={[space]} />

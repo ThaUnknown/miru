@@ -10,6 +10,9 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
         svelteConfig
       }
+    },
+    rules: {
+      'svelte/html-self-closing': 'off'
     }
   }
 )

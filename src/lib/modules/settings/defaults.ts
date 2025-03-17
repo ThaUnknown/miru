@@ -11,7 +11,7 @@ export default {
   rssFeedsNew: SUPPORTS.isAndroid ? [['New Releases', 'SubsPlease']] : [],
   searchAutoSelect: true,
   searchBatch: true,
-  torrentSpeed: 5,
+  torrentSpeed: 40,
   torrentPersist: false,
   torrentDHT: false,
   torrentPeX: false,

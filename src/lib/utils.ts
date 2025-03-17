@@ -114,12 +114,20 @@ export function since (date: Date) {
     }
   }
 }
-const units = [' B', ' kB', ' MB', ' GB', ' TB']
+const bytes = [' B', ' kB', ' MB', ' GB', ' TB']
 export function fastPrettyBytes (num: number) {
   if (isNaN(num)) return '0 B'
   if (num < 1) return num + ' B'
-  const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1)
-  return Number((num / Math.pow(1000, exponent)).toFixed(2)) + units[exponent]!
+  const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), bytes.length - 1)
+  return Number((num / Math.pow(1000, exponent)).toFixed(2)) + bytes[exponent]!
+}
+
+const bits = [' b', ' kb', ' Mb', ' Gb', ' Tb']
+export function fastPrettyBits (num: number) {
+  if (isNaN(num)) return '0 b'
+  if (num < 1) return num + ' b'
+  const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), bits.length - 1)
+  return Number((num / Math.pow(1000, exponent)).toFixed(2)) + bits[exponent]!
 }
 
 export function toTS (sec: number, full?: number) {

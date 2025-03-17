@@ -12,16 +12,20 @@
 <script lang='ts'>
   import { Badge } from '$lib/components/ui/badge'
   import { Button } from '$lib/components/ui/button'
+  import * as Tooltip from '$lib/components/ui/tooltip'
   import { Check, X } from 'lucide-svelte'
-  export let prev = ''
-  export let next = ''
+  export let step = 0
+  export let checks: Checks[] = []
 
-  export const checks: Checks[] = [
-    { promise: Promise.resolve({ status: 'success', text: '250GB Available' }), title: 'Storage Space', pending: 'Checking available storage space...' },
-    { promise: Promise.resolve({ status: 'warning', text: '5GB Available' }), title: 'Storage Space', pending: 'Checking available storage space...' },
-    { promise: Promise.resolve({ status: 'error', text: '1GB Available' }), title: 'Storage Space', pending: 'Checking available storage space...' },
-    { promise: new Promise(_ => _), title: 'Storage Space', pending: 'Checking available storage space...' }
-  ]
+  const NEXT = ['network', 'extensions', '../app/home']
+  const PREV = ['', 'storage', 'network']
+
+  $: settled = Promise.allSettled(checks.map(({ promise }) => promise))
+
+  function checkNext () {
+    if (step !== 2) return
+    localStorage.setItem('setup-finished', 'true')
+  }
 </script>
 
 <div class='px-6 mt-auto w-full lg:max-w-4xl'>
@@ -30,7 +34,7 @@
       <div class='flex items-center leading-none text-sm'>
         {#await promise}
           <div class='w-4 h-4 relative animate-spin mr-2.5'>
-            <div class='w-4 h-4 border-2 rounded-[50%] border-neutral-700 border-b-border' />
+            <div class='w-4 h-4 border-2 rounded-[50%] border-neutral-700 border-b-border'></div>
           </div>
           {title} -&nbsp;<span class='text-muted-foreground text-xs'>{pending}</span>
         {:then { status, text }}
@@ -50,10 +54,20 @@
         {/await}
       </div>
     {/each}
-
   </div>
 </div>
 <div class='flex flex-row items-center justify-between w-full bg-neutral-950 border-t border-border py-4 px-8'>
-  <Button variant='secondary' class='w-24' href='../{prev}'>Prev</Button>
-  <Button class='font-semibold w-24' href='../{next}'>Next</Button>
+  <Button variant='secondary' class='w-24' href='../{PREV[step]}'>Prev</Button>
+  {#await settled}
+    <Tooltip.Root>
+      <Tooltip.Trigger let:builder>
+        <Button builders={[builder]} class='font-semibold w-24 !pointer-events-auto cursor-wait' disabled>Next</Button>
+      </Tooltip.Trigger>
+      <Tooltip.Content>
+        <p>Wait for all checks to settle</p>
+      </Tooltip.Content>
+    </Tooltip.Root>
+  {:then _}
+    <Button class='font-semibold w-24' href='../{NEXT[step]}' on:click={checkNext}>Next</Button>
+  {/await}
 </div>

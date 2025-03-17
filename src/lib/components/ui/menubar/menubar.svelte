@@ -5,7 +5,7 @@
   const debug = false // TODO
 </script>
 
-<div class='w-[calc(100%-3.5rem)] left-[3.5rem] z-[2000] flex navbar absolute h-8'>
+<div class='w-[calc(100%-3.5rem)] left-[3.5rem] top-0 z-[2000] flex navbar absolute h-8'>
   <div class='draggable w-full' />
   <div class='window-controls flex text-white backdrop-blur'>
     <button class='max-button flex items-center justify-center h-8 w-[46px]' use:click={native.minimise}>

@@ -82,7 +82,7 @@ export const storage = new class Storage {
   }
 
   async delete (id: string) {
-    if (id in this.workers) this.workers[id][releaseProxy]()
+    if (id in this.workers) this.workers[id]![releaseProxy]()
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.workers[id]
     await del(id)
@@ -95,9 +95,11 @@ export const storage = new class Storage {
 
   async import (url: string) {
     const config = await safejson<ExtensionConfig[]>(url)
-    if (!config) throw new Error('Invalid config')
+    if (!config) throw new Error('Make sure the link you provided is a valid JSON config for Hayase.', { cause: 'Invalid extension URI.' })
     for (const c of config) {
-      if (!this._validateConfig(c)) throw new Error('Invalid config')
+      if (!this._validateConfig(c)) throw new Error('Make sure the link you provided is a valid extension config for Hayase.', { cause: 'Invalid extension config.' })
+    }
+    for (const c of config) {
       saved.update(value => {
         value[c.id] = c
         return value
@@ -107,7 +109,7 @@ export const storage = new class Storage {
 
   async load (config: Record<string, ExtensionConfig>) {
     const ids = Object.keys(config)
-    const values = await getMany(ids)
+    const values = await getMany<string>(ids)
 
     const modules: Record<string, string> = {}
 
@@ -122,12 +124,12 @@ export const storage = new class Storage {
 
     for (let i = 0; i < ids.length; i++) {
       const module = values[i]
-      const id = ids[i]
+      const id = ids[i]!
 
       if (module) {
         modules[id] = module
       } else {
-        const module = await safejs(config[id].code)
+        const module = await safejs(config[id]!.code)
         if (!module) continue
         modules[id] = module
         set(id, module)
@@ -136,11 +138,11 @@ export const storage = new class Storage {
         const worker = new Worker({ name: id })
         const Loader = wrap<typeof extensionLoader>(worker)
         try {
-          await Loader.construct(module)
-          await Loader.test()
+          await Loader.construct(modules[id])
           this.workers[id] = Loader as unknown as Remote<typeof extensionLoader>
+          await Loader.test()
         } catch (e) {
-          worker.terminate()
+          // worker.terminate()
           console.error(e, id)
           // TODO: what now?
         }
@@ -163,7 +165,7 @@ export const storage = new class Storage {
       await delMany(toDelete)
       for (const id of toDelete) {
         if (id in this.workers) {
-          this.workers[id][releaseProxy]()
+          this.workers[id]![releaseProxy]()
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete this.workers[id]
         }

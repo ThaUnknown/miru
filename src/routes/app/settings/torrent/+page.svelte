@@ -57,13 +57,13 @@
   <SettingCard let:id title='Transfer Speed Limit' description='Download/Upload speed limit for torrents, higher values increase CPU usage, and values higher than your storage write speeds will quickly fill up RAM.'>
     <div class='flex items-center relative scale-parent border border-input rounded-md'>
       <Input type='number' inputmode='numeric' pattern='[0-9]*.?[0-9]*' min='1' max='50' step='0.1' bind:value={$settings.torrentSpeed} {id} class='w-32 shrink-0 bg-background pr-12 border-0 no-scale' />
-      <div class='shrink-0 absolute right-3 z-10 pointer-events-none text-sm leading-5'>MB/s</div>
+      <div class='shrink-0 absolute right-3 z-10 pointer-events-none text-sm leading-5'>Mb/s</div>
     </div>
   </SettingCard>
   <SettingCard let:id title='Max Number of Connections' description='Number of peers per torrent. Higher values will increase download speeds but might quickly fill up available ports if your ISP limits the maximum allowed number of open connections.'>
     <Input type='number' inputmode='numeric' pattern='[0-9]*' min='1' max='512' bind:value={$settings.maxConns} {id} class='w-32 shrink-0 bg-background' />
   </SettingCard>
-  <SettingCard let:id title='Torrent Port' description='Port used for Torrent connections. 0 is automatic.'>
+  <SettingCard let:id title='Torrent Port' description='Port used for Torrent connections. 0 is automatic. Change this to a specific port if your VPN exposes a specific port only.'>
     <Input type='number' inputmode='numeric' pattern='[0-9]*' min='0' max='65536' bind:value={$settings.torrentPort} {id} class='w-32 shrink-0 bg-background' />
   </SettingCard>
   <SettingCard let:id title='DHT Port' description='Port used for DHT connections. 0 is automatic.'>

@@ -37,9 +37,12 @@ const native: Native = {
   setPositionState: async e => navigator.mediaSession.setPositionState(e),
   setPlayBackState: async e => { navigator.mediaSession.playbackState = e },
   setActionHandler: async (...args) => navigator.mediaSession.setActionHandler(...args as [action: MediaSessionAction, handler: MediaSessionActionHandler | null]),
+  checkAvailableSpace: () => new Promise(resolve => setTimeout(() => resolve(Math.floor(Math.random() * (1e10 - 1e8 + 1) + 1e8)), 1000)),
+  checkIncomingConnections: () => new Promise(resolve => setTimeout(() => resolve(Math.random() > 0.5), 5000)),
   isApp: false
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 globalThis.native ??= native
 
 export default globalThis.native
