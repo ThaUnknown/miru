@@ -14,7 +14,7 @@
   export let media: Media
   export let size: NonNullable<$$Props['size']> = 'xs'
   function play () {
-    const episode = progress(media) ?? 1
+    const episode = (progress(media) ?? 0) + 1
     // TODO: set rewatch state
     searchStore.set({ media, episode })
   }

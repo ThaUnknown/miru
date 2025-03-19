@@ -5,7 +5,7 @@
   import { genres, years, seasons, formats, status, sort } from './values'
   import { Button } from '$lib/components/ui/button'
   import { FileImage, Trash, X } from 'lucide-svelte'
-  import { cn, debounce } from '$lib/utils'
+  import { cn, debounce, traceAnime } from '$lib/utils'
   import { badgeVariants } from '$lib/components/ui/badge'
   import { click, dragScroll } from '$lib/modules/navigate'
   import { client } from '$lib/modules/anilist'
@@ -15,6 +15,7 @@
   import { page } from '$app/stores'
   import type { VariablesOf } from 'gql.tada'
   import type { Search } from '$lib/modules/anilist/queries'
+  import { toast } from 'svelte-sonner'
 
   // util
 
@@ -118,8 +119,8 @@
       ids: filter.ids,
       search: filter.name,
       genre: filter.genres?.map(g => g.value),
-      seasonYear: filter.years ? parseInt(filter.years[0].value) : undefined,
-      season: filter.seasons?.[0].value as 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL' | undefined,
+      seasonYear: filter.years ? parseInt(filter.years[0]!.value) : undefined,
+      season: filter.seasons?.[0]!.value as 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL' | undefined,
       format: filter.formats?.map(f => f.value) as Array<'MUSIC' | 'MANGA' | 'TV' | 'TV_SHORT' | 'MOVIE' | 'SPECIAL' | 'OVA' | 'ONA' | 'NOVEL' | 'ONE_SHOT'>,
       status: filter.status?.map(s => s.value) as Array<'FINISHED' | 'RELEASING' | 'NOT_YET_RELEASED' | 'CANCELLED' | 'HIATUS' | null>,
       sort: [filter.sort?.[0]?.value ?? 'SEARCH_MATCH'] as Array<'TITLE_ROMAJI_DESC' | 'ID' | 'START_DATE_DESC' | 'SCORE_DESC' | 'POPULARITY_DESC' | 'TRENDING_DESC' | 'UPDATED_AT_DESC' | 'ID_DESC' | 'TITLE_ROMAJI' | 'TITLE_ENGLISH' | 'TITLE_ENGLISH_DESC' | null>
@@ -137,12 +138,37 @@
   //   page = page + 1
   //   media = [...media, searchQuery(filterEmpty(search), page)]
   // }
-  // TODO: selects should turn into modals on mobile!
+  // TODO: selects should turn into modals on mobile! like anilist
   // TODO: infinite scroll
   onMount(async () => {
     await tick()
     hideBanner.value = true
   })
+
+  async function imagePicker (e: Event) {
+    const target = e.target as HTMLInputElement
+    const { files } = target
+    if (files?.[0]) {
+      const promise = traceAnime(files[0])
+      toast.promise(promise, {
+        description: 'You can also paste an URL to an image.',
+        loading: 'Looking up anime for image...',
+        success: 'Found anime for image!',
+        error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
+      })
+      target.value = ''
+
+      try {
+        const res = await promise
+
+        clear()
+        search.ids = [...new Set(res.map(r => r.anilist))]
+      // TODO: sort by similarity
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }
 </script>
 
 <div class='flex flex-col h-full overflow-y-auto overflow-x-clip -ml-14 pl-14 z-20 min-w-0 grow pointer-events-none' use:dragScroll>
@@ -199,11 +225,14 @@
         <ComboBox items={sort} bind:value={search.sort} class='w-full' placeholder='Accuracy' />
       </div>
       <div class='flex-0 w-auto p-2 gap-4 grid grid-cols-2 items-end'>
+        <Button variant='outline' size='icon' class='border-0'>
+          <label for='search-image' class='contents'>
+            <FileImage class='h-4 w-full cursor-pointer' />
+          </label>
+          <input type='file' class='hidden' id='search-image' accept='image/*' on:input|preventDefault|stopPropagation={imagePicker} />
+        </Button>
         <Button variant='outline' size='icon' on:click={clear} class='border-0'>
           <Trash class={cn('h-4 w-4', empty(search) && 'text-muted-foreground opacity-50')} />
-        </Button>
-        <Button variant='outline' size='icon' class='border-0'>
-          <FileImage class='h-4 w-4' />
         </Button>
       </div>
     </div>

@@ -79,7 +79,7 @@
       <CaretSort class='ml-2 h-4 w-4 shrink-0 opacity-50' />
     </Button>
   </Popover.Trigger>
-  <Popover.Content class={cn('p-0 border-0')} sameWidth={true}>
+  <Popover.Content class={cn('p-0 border-0 z-[1000]')} sameWidth={true}>
     <Command.Root>
       <Command.Input {placeholder} class='h-9 placeholder:opacity-50' />
       <Command.Empty>No results found.</Command.Empty>

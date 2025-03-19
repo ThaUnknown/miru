@@ -6,15 +6,8 @@
   import { Switch } from '$lib/components/ui/switch'
 
   import native from '$lib/modules/native'
-  import { settings, languageCodes } from '$lib/modules/settings'
+  import { settings, languageCodes, subtitleResolutions } from '$lib/modules/settings'
 
-  const resolutions = {
-    0: 'None',
-    1440: '1440p',
-    1080: '1080p',
-    720: '720p',
-    480: '480p'
-  }
   async function selectPlayer () {
     $settings.playerPath = await native.selectPlayer()
   }
@@ -32,7 +25,7 @@
     <Switch {id} bind:checked={$settings.disableSubtitleBlur} />
   </SettingCard>
   <SettingCard title='Subtitle Render Resolution Limit' description="Max resolution to render subtitles at. If your resolution is higher than this setting the subtitles will be upscaled lineary. This will GREATLY improve rendering speeds for complex typesetting for slower devices. It's best to lower this on mobile devices which often have high pixel density where their effective resolution might be ~1440p while having small screens and slow processors.">
-    <SingleCombo bind:value={$settings.subtitleRenderHeight} items={resolutions} class='w-32 shrink-0 border-input border' />
+    <SingleCombo bind:value={$settings.subtitleRenderHeight} items={subtitleResolutions} class='w-32 shrink-0 border-input border' />
   </SettingCard>
 
   <div class='font-weight-bold text-xl font-bold'>Language Settings</div>

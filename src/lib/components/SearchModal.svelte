@@ -4,7 +4,7 @@
   import * as Dialog from '$lib/components/ui/dialog'
   import { Input } from './ui/input'
   import { MagnifyingGlass } from 'svelte-radix'
-  import { settings } from '$lib/modules/settings'
+  import { settings, videoResolutions } from '$lib/modules/settings'
   import { SingleCombo } from './ui/combobox'
   import { title, type Media } from '$lib/modules/anilist'
   import type { AnitomyResult } from 'anitomyscript'
@@ -12,13 +12,6 @@
   import { fastPrettyBytes, since } from '$lib/utils'
   import { BadgeCheck, Database } from 'lucide-svelte'
   import type { TorrentResult } from 'hayase-extensions'
-
-  const resolutions = {
-    1080: '1080p',
-    720: '720p',
-    480: '480p',
-    '': 'Any'
-  }
 
   const termMapping: Record<string, {text: string, color: string}> = {}
   termMapping['5.1'] = termMapping['5.1CH'] = { text: '5.1', color: '#f67255' }
@@ -68,10 +61,11 @@
 <script lang='ts'>
   import ProgressButton from './ui/button/progress-button.svelte'
   import { Banner } from './ui/img'
+  import { saved } from '$lib/modules/extensions'
 
   $: open = !!$searchStore.media
 
-  $: searchResult = !!$searchStore.media && extensions.getResultsFromExtensions({ media: $searchStore.media, episode: $searchStore.episode, batch: $settings.searchBatch, resolution: $settings.searchQuality as '' | '1080' | '720' | '2160' | '540' | '480' })
+  $: searchResult = !!$searchStore.media && extensions.getResultsFromExtensions({ media: $searchStore.media, episode: $searchStore.episode, batch: $settings.searchBatch, resolution: $settings.searchQuality })
 
   function close (state: boolean) {
     if (!state) searchStore.set({})
@@ -79,7 +73,7 @@
 
   let inputText = ''
 
-  function play (result: TorrentResult & { parseObject: AnitomyResult, extension: string[] }) {
+  function play (result: TorrentResult & { parseObject: AnitomyResult, extension: Set<string> }) {
     close(false)
   // TODO
   }
@@ -91,17 +85,20 @@
     if (best) play(best)
   }
 
-  function filterAndSortResults (results: Array<TorrentResult & { parseObject: AnitomyResult, extension: string[] }>, searchText: string) {
-    // TODO: sort preference such as size, quality, seeders, etc.
+  function filterAndSortResults (results: Array<TorrentResult & { parseObject: AnitomyResult, extension: Set<string> }>, searchText: string) {
+    const preference = $settings.lookupPreference
     return results
       .filter(({ title }) => title.toLowerCase().includes(searchText.toLowerCase()))
       .sort((a, b) => {
+        // pre-emtively sort by deal breaker conditions
+        // the higher the rank the worse the result... don't ask
         function getRank (res: typeof results[0]) {
           if (res.accuracy === 'low') return 3
-          if ((res.type === 'best' || res.type === 'alt') && res.seeders > 15) return 0
-          if (res.seeders > 15) return 1
-          return 2
+          if (res.seeders <= 15) return 2
+          if ((res.type === 'best' || res.type === 'alt') && preference === 'quality') return 0
+          return 1
         }
+
         const rankA = getRank(a)
         const rankB = getRank(b)
         if (rankA !== rankB) return rankA - rankB
@@ -110,7 +107,9 @@
           const scoreB = b.accuracy === 'high' ? 1 : 0
           const diff = scoreB - scoreA
           if (diff !== 0) return diff
-          // sort by seeders
+
+          // sort by preference, quality is sorted in rank, so quality and seeders is both as seeders here.
+          if (preference === 'size') return a.size - b.size
           return b.seeders - a.seeders
         }
         return 0
@@ -119,18 +118,21 @@
 
   let animating = false
 
-  function startAnimation () {
+  async function startAnimation (searchRes: typeof searchResult) {
     if (!$settings.searchAutoSelect) return
-    animating = true
+    animating = false
+    await searchRes
+    if (searchRes === searchResult) animating = true
   }
 
   function stopAnimation () {
     animating = false
   }
 
-  $: searchResult && searchResult.then(startAnimation)
+  $: searchResult && startAnimation(searchResult)
 </script>
 
+<!-- eslint-disable-next-line svelte/no-reactive-reassign -->
 <Dialog.Root bind:open onOpenChange={close}>
   <Dialog.Content class='bg-black h-full lg:border-x-4 border-b-0 max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex lg:rounded-t-xl overflow-hidden'>
     <div class='absolute top-0 left-0 w-full h-full max-h-28 overflow-hidden'>
@@ -155,7 +157,7 @@
           </div>
           <div class='flex items-center space-x-2 grow'>
             <span>Resolution</span>
-            <SingleCombo bind:value={$settings.searchQuality} items={resolutions} class='w-32 shrink-0 grow border-border border' />
+            <SingleCombo bind:value={$settings.searchQuality} items={videoResolutions} class='w-32 shrink-0 grow border-border border' />
           </div>
         </div>
         <ProgressButton
@@ -166,15 +168,27 @@
           Auto Select Torrent
         </ProgressButton>
       </div>
-      <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:pointerenter={stopAnimation}>
+      <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation}>
         {#await searchResult}
-          Loading...
+          {#each Array.from({ length: 12 }) as _, i (i)}
+            <div class='p-3 h-[104px] flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border flex-col justify-between'>
+              <div class='h-4 w-40 bg-primary/5 animate-pulse rounded mt-2' />
+              <div class='bg-primary/5 animate-pulse rounded h-2 w-28 mt-1' />
+              <div class='flex justify-between mb-1'>
+                <div class='flex gap-2'>
+                  <div class='mt-2 bg-primary/5 animate-pulse rounded h-2 w-20' />
+                  <div class='mt-2 bg-primary/5 animate-pulse rounded h-2 w-20' />
+                </div>
+                <div class='mt-2 bg-primary/5 animate-pulse rounded h-2 w-20' />
+              </div>
+            </div>
+          {/each}
         {:then search}
           {@const media = $searchStore.media}
           {#if search && media}
             {@const { results, errors } = search}
             {#each filterAndSortResults(results, inputText) as result (result.hash)}
-              <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border select:ring-1 select:ring-ring select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all' use:click={() => play(result)} title={result.parseObject.file_name}>
+              <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border select:ring-1 select:ring-ring select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name}>
                 {#if result.accuracy === 'high'}
                   <div class='absolute top-0 left-0 w-full h-full -z-10'>
                     <Banner {media} class='object-cover w-full h-full' />
@@ -182,13 +196,18 @@
                   </div>
                 {/if}
                 <div class='flex pl-2 flex-col justify-between w-full h-20 relative min-w-0 text-[.7rem]'>
-                  <div class='flex w-full'>
-                    <div class='text-xl font-bold text-nowrap'>{result.parseObject.release_group && result.parseObject.release_group.length < 20 ? result.parseObject.release_group : 'No Group'}</div>
+                  <div class='flex w-full items-center'>
                     {#if result.type === 'batch'}
-                      <Database size='1.2rem' class='ml-auto' />
+                      <Database class='mr-2' size='1.2rem' />
                     {:else if result.accuracy === 'high'}
-                      <BadgeCheck size='1.2rem' class='ml-auto' style='color: #53da33' />
+                      <BadgeCheck size='1.2rem' class='mr-2' style='color: #53da33' />
                     {/if}
+                    <div class='text-xl font-bold text-nowrap'>{result.parseObject.release_group && result.parseObject.release_group.length < 20 ? result.parseObject.release_group : 'No Group'}</div>
+                    <div class='ml-auto flex gap-2 self-start'>
+                      {#each result.extension as id (id)}
+                        <img src={$saved[id].icon} alt={id} class='size-4' title='Provided by {id}' />
+                      {/each}
+                    </div>
                   </div>
                   <div class='text-muted-foreground text-ellipsis text-nowrap overflow-hidden'>{simplifyFilename(result.parseObject)}</div>
                   <div class='flex flex-row leading-none'>
@@ -219,8 +238,30 @@
                 </div>
               </div>
             {/each}
+            {#each errors as error, i (i)}
+              <div class='p-5 flex items-center justify-center w-full h-80'>
+                <div>
+                  <div class='mb-1 font-bold text-2xl text-center '>
+                    Extensions {error.extension} encountered an error
+                  </div>
+                  <div class='text-md text-center text-muted-foreground whitespace-pre-wrap'>
+                    {error.error.stack}
+                  </div>
+                </div>
+              </div>
+            {/each}
           {/if}
-
+        {:catch error}
+          <div class='p-5 flex items-center justify-center w-full h-80'>
+            <div>
+              <div class='mb-1 font-bold text-4xl text-center '>
+                Ooops!
+              </div>
+              <div class='text-lg text-center text-muted-foreground whitespace-pre-wrap'>
+                {error.message}
+              </div>
+            </div>
+          </div>
         {/await}
       </div>
     </div>

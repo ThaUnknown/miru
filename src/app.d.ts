@@ -43,6 +43,7 @@ export interface Native {
   setActionHandler: (action: MediaSessionAction | 'enterpictureinpicture', handler: MediaSessionActionHandler | null) => void
   checkAvailableSpace: (_?: unknown) => Promise<number>
   checkIncomingConnections: (_?: unknown) => Promise<boolean>
+  updatePeerCounts: (hashes: string[]) => Promise<Array<{ hash, complete, downloaded, incomplete }>>
   isApp: boolean
 }
 

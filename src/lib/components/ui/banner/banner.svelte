@@ -26,7 +26,7 @@
           Ooops!
         </div>
         <div class='text-lg text-center text-muted-foreground'>
-          Looks like something went wrong!.
+          Looks like something went wrong!
         </div>
         <div class='text-lg text-center text-muted-foreground'>
           {$query.error.message}

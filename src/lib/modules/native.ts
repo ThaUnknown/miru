@@ -1,13 +1,10 @@
 import type { AuthResponse, Native } from '../../app'
 
-const native: Native = {
+export default Object.assign<Native, Partial<Native>>({
   authAL: (url: string) => {
     return new Promise<AuthResponse>((resolve, reject) => {
       const popup = open(url, 'authframe', 'popup')
-      if (!popup) {
-        reject(new Error('Failed to open popup'))
-        return
-      }
+      if (!popup) return reject(new Error('Failed to open popup'))
 
       popup.onload = () => {
         if (popup.location.hash.startsWith('#access_token=')) {
@@ -39,10 +36,6 @@ const native: Native = {
   setActionHandler: async (...args) => navigator.mediaSession.setActionHandler(...args as [action: MediaSessionAction, handler: MediaSessionActionHandler | null]),
   checkAvailableSpace: () => new Promise(resolve => setTimeout(() => resolve(Math.floor(Math.random() * (1e10 - 1e8 + 1) + 1e8)), 1000)),
   checkIncomingConnections: () => new Promise(resolve => setTimeout(() => resolve(Math.random() > 0.5), 5000)),
+  updatePeerCounts: async () => [],
   isApp: false
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-globalThis.native ??= native
-
-export default globalThis.native
+}, globalThis.native)

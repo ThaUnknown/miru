@@ -1,5 +1,6 @@
 <script lang='ts' context='module'>
   // @ts-expect-error internal methods
+  // eslint-disable-next-line svelte/no-svelte-internal
   import { append, element } from 'svelte/internal'
   import { persisted } from 'svelte-persisted-store'
 

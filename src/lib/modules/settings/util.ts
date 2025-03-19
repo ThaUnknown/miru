@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 export const languageCodes = {
   eng: 'English',
   jpn: 'Japanese',
@@ -31,4 +32,26 @@ export const languageCodes = {
   per: 'Persian',
   mal: 'Malayalam',
   '': 'None'
+}
+
+export const subtitleResolutions = {
+  '0': 'None',
+  '1440': '1440p',
+  '1080': '1080p',
+  '720': '720p',
+  '480': '480p'
+}
+
+export const videoResolutions = {
+  '2160': '2160p',
+  '1080': '1080p',
+  '720': '720p',
+  '480': '480p',
+  '': 'Any'
+}
+
+export const lookupPreferences = {
+  quality: 'Quality',
+  size: 'Size',
+  seeders: 'Availability'
 }

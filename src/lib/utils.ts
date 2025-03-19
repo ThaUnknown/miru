@@ -161,3 +161,56 @@ export function bindPiP (doc: Document, store: Writable<HTMLVideoElement | null>
   }, { signal: signal.signal })
   return { destroy: () => signal.abort() }
 }
+
+interface TraceAnime {
+  'anilist': number
+  'filename': string
+  'episode': number
+  'from': number
+  'to': number
+  'similarity': number
+  'video': string
+  'image': string
+}
+
+export async function traceAnime (image: File) { // WAIT lookup logic
+  const options = {
+    method: 'POST',
+    body: image,
+    headers: { 'Content-type': image.type }
+  }
+  const url = 'https://api.trace.moe/search'
+  // let url = `https://api.trace.moe/search?cutBorders&url=${image}`
+
+  const res = await fetch(url, options)
+  const { result } = await res.json() as { result: TraceAnime[] }
+
+  if (result.length) {
+    return result
+    // search.value = {
+    //   clearNext: true,
+    //   load: (page = 1, perPage = 50, variables = {}) => {
+    //     const res = anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) }).then(res => {
+    //       for (const index in res.data?.Page?.media) {
+    //         const media = res.data.Page.media[index]
+    //         const counterpart = result.find(({ anilist }) => anilist === media.id)
+    //         res.data.Page.media[index] = {
+    //           media,
+    //           episode: counterpart.episode,
+    //           similarity: counterpart.similarity,
+    //           episodeData: {
+    //             image: counterpart.image,
+    //             video: counterpart.video
+    //           }
+    //         }
+    //       }
+    //       res.data?.Page?.media.sort((a, b) => b.similarity - a.similarity)
+    //       return res
+    //     })
+    //     return SectionsManager.wrapResponse(res, result.length, 'episode')
+    //   }
+    // }
+  } else {
+    throw new Error('Search Failed \n Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.')
+  }
+}

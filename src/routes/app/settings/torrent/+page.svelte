@@ -1,19 +1,11 @@
 <script lang='ts'>
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { Button } from '$lib/components/ui/button'
-  import { SingleCombo } from '$lib/components/ui/combobox'
   import { Input } from '$lib/components/ui/input'
   import { Switch } from '$lib/components/ui/switch'
 
   import native from '$lib/modules/native'
   import { settings, SUPPORTS } from '$lib/modules/settings'
-
-  const resolutions = {
-    1080: '1080p',
-    720: '720p',
-    480: '480p',
-    '': 'Any'
-  }
 
   async function selectDownloadFolder () {
     $settings.torrentPath = await native.selectDownload()
@@ -21,14 +13,8 @@
 </script>
 
 <div class='space-y-3 pb-10 lg:max-w-4xl'>
-  <div class='font-weight-bold text-xl font-bold'>Lookup Settings</div>
-  <SettingCard title='Torrent Quality' description="What quality to use when trying to find torrents. None might rarely find less results than specific qualities. This doesn't exclude other qualities from being found like 4K or weird DVD resolutions.">
-    <SingleCombo bind:value={$settings.searchQuality} items={resolutions} class='w-32 shrink-0 border-input border' />
-  </SettingCard>
-  <SettingCard let:id title='Auto-Select Torrents' description='Automatically selects torrents based on quality and amount of seeders. Disable this to have more precise control over played torrents.'>
-    <Switch {id} bind:checked={$settings.searchAutoSelect} />
-  </SettingCard>
   {#if !SUPPORTS.isAndroid}
+    <div class='font-weight-bold text-xl font-bold'>Security Settings</div>
     <SettingCard let:id title='Use DNS Over HTTPS' description='Enables DNS Over HTTPS, useful if your ISP blocks certain domains.'>
       <Switch {id} bind:checked={$settings.enableDoH} />
     </SettingCard>

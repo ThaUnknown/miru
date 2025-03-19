@@ -3,9 +3,7 @@ import type { Episode, Episodes } from '../anizip/types'
 import type { Media } from './types'
 import type { ScheduleMedia } from './queries'
 
-// TODO: use Pick<> for these
-
-export function banner (media: Media): string | undefined {
+export function banner (media: Pick<Media, 'trailer' | 'bannerImage' | 'coverImage'>): string | undefined {
   if (media.bannerImage) return media.bannerImage
   if (media.trailer?.id) return `https://i.ytimg.com/vi/${media.trailer.id}/maxresdefault.jpg`
   return media.coverImage?.extraLarge as string | undefined
@@ -13,7 +11,7 @@ export function banner (media: Media): string | undefined {
 
 const sizes = ['hq720', 'sddefault', 'hqdefault', 'mqdefault', 'default']
 
-export async function safeBanner (media: Media): Promise<string | undefined> { // TODO: this needs to be a component
+export async function safeBanner (media: Pick<Media, 'trailer' | 'bannerImage' | 'coverImage'>): Promise<string | undefined> { // TODO: this needs to be a component
   const src = banner(media)
   if (!src?.startsWith('https://i.ytimg.com/')) return src
 
@@ -42,12 +40,12 @@ export const STATUS_LABELS = {
   REPEATING: 'Re-Watching'
 }
 
-export function cover (media: Media): string | undefined {
+export function cover (media: Pick<Media, 'trailer' | 'bannerImage' | 'coverImage'>): string | undefined {
   if (media.coverImage?.extraLarge) return media.coverImage.extraLarge
   return banner(media)
 }
 
-export function title (media: Media): string {
+export function title (media: Pick<Media, 'title'>): string {
   return media.title?.userPreferred ?? 'TBA'
 }
 
@@ -59,7 +57,7 @@ const STATUS_MAP = {
   HIATUS: 'Hiatus'
 }
 
-export function status (media: Media): string {
+export function status (media: Pick<Media, 'status'>): string {
   if (media.status != null) return STATUS_MAP[media.status]
 
   return 'N/A'
@@ -99,13 +97,13 @@ const FORMAT_MAP = {
   ONE_SHOT: 'One Shot'
 }
 
-export function format (media: { format: Media['format'] }): string {
+export function format (media: Pick<Media, 'format'>): string {
   if (media.format != null) return FORMAT_MAP[media.format]
 
   return 'N/A'
 }
 
-export function episodes (media: Media): number | undefined {
+export function episodes (media: Pick<Media, 'aired' | 'notaired' | 'episodes' | 'mediaListEntry'>): number | undefined {
   if (media.episodes) return media.episodes
 
   const upcoming = media.aired?.n?.[media.aired.n.length - 1]?.e ?? 0
@@ -115,16 +113,16 @@ export function episodes (media: Media): number | undefined {
   return Math.max(upcoming, past, progress)
 }
 
-export function season (media: Media) {
+export function season (media: Pick<Media, 'season' | 'seasonYear'>) {
   return [media.season?.toLowerCase(), media.seasonYear].filter(s => s).join(' ')
 }
 
-export function duration (media: Media) {
+export function duration (media: Pick<Media, 'duration'>) {
   if (!media.duration) return
   return `${media.duration} Minute${media.duration > 1 ? 's' : ''}`
 }
 
-export function desc (media: Media) {
+export function desc (media: Pick<Media, 'description'>) {
   return notes(media.description?.replace(/<[^>]+>/g, '').replace(/\n+/g, '\n') ?? 'No description available.')
 }
 
@@ -132,7 +130,7 @@ export function notes (string: string) {
   return string.replace(/\n?\(?Source: [^)]+\)?\n?/m, '').replace(/\n?Notes?:[ |\n][^\n]+\n?/m, '')
 }
 
-export function isMovie (media: Media) {
+export function isMovie (media: Pick<Media, 'format' | 'title' | 'synonyms' | 'duration' | 'episodes'>) {
   if (media.format === 'MOVIE') return true
   if ([...Object.values(media.title ?? {}), ...media.synonyms ?? []].some(title => title?.toLowerCase().includes('movie'))) return true
   // if (!getParentForSpecial(media)) return true // this is good for checking movies, but false positives with normal TV shows

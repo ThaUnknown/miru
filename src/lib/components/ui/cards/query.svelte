@@ -17,16 +17,6 @@
 
     return { destroy () { observer.unobserve(element) } }
   }
-
-// TODO: each block sometimes errors with duplicate keys, why?
-  // function dedupe (media: Array<Media|null|undefined>) {
-  //   const seen = new Set()
-  //   return media.filter((m) => {
-  //     if (seen.has(m?.id)) return false
-  //     seen.add(m?.id)
-  //     return true
-  //   })
-  // }
 </script>
 
 {#if $paused}
@@ -43,7 +33,7 @@
         Ooops!
       </div>
       <div class='text-lg text-center text-muted-foreground'>
-        Looks like something went wrong!.
+        Looks like something went wrong!
       </div>
       <div class='text-lg text-center text-muted-foreground'>
         {$query.error.message}

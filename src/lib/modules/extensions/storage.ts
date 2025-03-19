@@ -6,6 +6,7 @@ import { releaseProxy, type Remote } from 'abslink'
 import { persisted } from 'svelte-persisted-store'
 import { wrap } from 'abslink/worker'
 import { get } from 'svelte/store'
+import { toast } from 'svelte-sonner'
 
 export const saved = persisted<Record<string, ExtensionConfig>>('extensions', {})
 export const options = persisted<Record<string, {options: Record<string, string | number | boolean | undefined>, enabled: boolean}>>('extensionoptions', {})
@@ -95,9 +96,9 @@ export const storage = new class Storage {
 
   async import (url: string) {
     const config = await safejson<ExtensionConfig[]>(url)
-    if (!config) throw new Error('Make sure the link you provided is a valid JSON config for Hayase.', { cause: 'Invalid extension URI.' })
+    if (!config) throw new Error('Make sure the link you provided is a valid JSON config for Hayase', { cause: 'Invalid extension URI' })
     for (const c of config) {
-      if (!this._validateConfig(c)) throw new Error('Make sure the link you provided is a valid extension config for Hayase.', { cause: 'Invalid extension config.' })
+      if (!this._validateConfig(c)) throw new Error('Make sure the link you provided is a valid extension config for Hayase', { cause: 'Invalid extension config' })
     }
     for (const c of config) {
       saved.update(value => {
@@ -144,7 +145,7 @@ export const storage = new class Storage {
         } catch (e) {
           // worker.terminate()
           console.error(e, id)
-          // TODO: what now?
+          toast.error(`Failed to load extension ${config[id]!.name}`, { description: (e as Error).message })
         }
       }
     }
@@ -160,7 +161,7 @@ export const storage = new class Storage {
     const values = await Promise.all([...updateURLs].map(url => safejson<ExtensionConfig[]>(url)))
     const newconfig: Record<string, ExtensionConfig> = Object.fromEntries((values.flat().filter(f => this._validateConfig(f) && ids.includes(f!.id)) as ExtensionConfig[]).map((config) => [config.id, config]))
 
-    const toDelete = ids.filter(id => newconfig[id].version !== config[id].version)
+    const toDelete = ids.filter(id => newconfig[id]?.version !== config[id]!.version)
     if (toDelete.length) {
       await delMany(toDelete)
       for (const id of toDelete) {

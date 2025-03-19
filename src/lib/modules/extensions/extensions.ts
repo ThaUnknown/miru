@@ -1,11 +1,12 @@
 import { dedupeAiring, episodeByAirDate, isMovie, type Media, type MediaEdge } from '../anilist'
 import type { TorrentResult } from 'hayase-extensions'
 import { storage } from './storage'
-import { settings } from '../settings'
+import { settings, type videoResolutions } from '../settings'
 import { get } from 'svelte/store'
 import anitomyscript, { type AnitomyResult } from 'anitomyscript'
 import type { EpisodesResponse } from '../anizip/types'
 import { options as extensionOptions, saved } from '$lib/modules/extensions'
+import native from '../native'
 
 const exclusions = ['DTS', 'TrueHD', '[EMBER]']
 const isDev = location.hostname === 'localhost'
@@ -57,7 +58,7 @@ export const extensions = new class Extensions {
     return titles
   }
 
-  async getResultsFromExtensions ({ media, episode, batch, resolution }: { media: Media, episode?: number, batch: boolean, resolution: '' | '1080' | '720' | '2160' | '540' | '480' }) {
+  async getResultsFromExtensions ({ media, episode, batch, resolution }: { media: Media, episode?: number, batch: boolean, resolution: keyof typeof videoResolutions }) {
     await storage.modules
     const workers = storage.workers
     if (!Object.values(workers).length) {
@@ -85,7 +86,7 @@ export const extensions = new class Extensions {
       exclusions: get(settings).enableExternal ? [] : exclusions
     }
 
-    const results: Array<TorrentResult & { parseObject: AnitomyResult, extension: string[] }> = []
+    const results: Array<TorrentResult & { parseObject: AnitomyResult, extension: Set<string> }> = []
     const errors: Array<{ error: Error, extension: string }> = []
 
     const extopts = get(extensionOptions)
@@ -102,7 +103,7 @@ export const extensions = new class Extensions {
 
         for (const result of await Promise.allSettled(promises)) {
           if (result.status === 'fulfilled') {
-            results.push(...result.value.map(v => ({ ...v, extension: [id], parseObject: {} as unknown as AnitomyResult })))
+            results.push(...result.value.map(v => ({ ...v, extension: new Set([id]), parseObject: {} as unknown as AnitomyResult })))
           } else {
             console.error(result.reason, id)
             errors.push({ error: result.reason as unknown as Error, extension: id })
@@ -117,45 +118,35 @@ export const extensions = new class Extensions {
 
     const deduped = this.dedupe(results)
 
-    if (!deduped.length) throw new Error('No results found. Try specifying a torrent manually.')
+    if (!deduped.length) throw new Error('No results found.\nTry specifying a torrent manually by pasting a magnet link or torrent file.')
 
     const parseObjects = await anitomyscript(deduped.map(({ title }) => title))
     parseObjects.forEach((parseObject, index) => {
-      deduped[index].parseObject = parseObject
+      deduped[index]!.parseObject = parseObject
     })
 
-    console.log({ deduped })
-
-    return { results: deduped, errors }
-    // return await this.updatePeerCounts(deduped) // TODO: re-enable
+    return { results: await this.updatePeerCounts(deduped), errors }
   }
 
-  async updatePeerCounts (entries: TorrentResult[]) {
-    // const id = Math.trunc(Math.random() * Number.MAX_SAFE_INTEGER).toString()
+  async updatePeerCounts <T extends TorrentResult[]> (entries: T): Promise<T> {
     debug(`Updating peer counts for ${entries.length} entries`)
 
-    const updated = await new Promise<[] | null>(resolve => {
-      resolve([])
-      // function check ({ detail }) {
-      //   if (detail.id !== id) return
-      //   debug('Got scrape response')
-      //   client.removeListener('scrape', check)
-      //   resolve(detail.result)
-      // }
-      // client.on('scrape', check)
-      // client.send('scrape', { id, infoHashes: entries.map(({ hash }) => hash) })
-    })
-    debug('Scrape complete')
+    try {
+      const updated = await native.updatePeerCounts(entries.map(({ hash }) => hash))
+      debug('Scrape complete')
+      for (const { hash, complete, downloaded, incomplete } of updated) {
+        const found = entries.find(mapped => mapped.hash === hash)
+        if (!found) continue
+        found.downloads = downloaded
+        found.leechers = incomplete
+        found.seeders = complete
+      }
 
-    for (const { hash, complete, downloaded, incomplete } of updated ?? []) {
-      const found = entries.find(mapped => mapped.hash === hash)
-      if (!found) continue
-      found.downloads = downloaded
-      found.leechers = incomplete
-      found.seeders = complete
+      debug(`Found ${updated.length} entries: ${JSON.stringify(updated)}`)
+    } catch (err) {
+      const error = err as Error
+      debug('Failed to scrape\n' + error.stack)
     }
-
-    debug(`Found ${(updated ?? []).length} entries: ${JSON.stringify(updated)}`)
     return entries
   }
 
@@ -200,12 +191,12 @@ export const extensions = new class Extensions {
     return episodeByAirDate(alDate, episodes!, episode)
   }
 
-  dedupe <T extends TorrentResult & { extension: string[] }> (entries: T[]): T[] {
+  dedupe <T extends TorrentResult & { extension: Set<string> }> (entries: T[]): T[] {
     const deduped: Record<string, T> = {}
     for (const entry of entries) {
       if (entry.hash in deduped) {
-        const dupe = deduped[entry.hash]
-        dupe.extension.push(...entry.extension)
+        const dupe = deduped[entry.hash]!
+        for (const ext of entry.extension) dupe.extension.add(ext)
         dupe.accuracy = (['high', 'medium', 'low'].indexOf(entry.accuracy) <= ['high', 'medium', 'low'].indexOf(dupe.accuracy)
           ? entry.accuracy
           : dupe.accuracy)

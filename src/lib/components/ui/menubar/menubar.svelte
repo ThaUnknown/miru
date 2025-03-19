@@ -1,8 +1,9 @@
 <script lang='ts'>
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
+  import { persisted } from 'svelte-persisted-store'
 
-  const debug = false // TODO
+  const debug = persisted('debug', '')
 </script>
 
 <div class='w-[calc(100%-3.5rem)] left-[3.5rem] top-0 z-[2000] flex navbar absolute h-8'>
@@ -19,8 +20,8 @@
     </button>
   </div>
 </div>
-{#if debug}
-  <div class='ribbon z-10 text-center fixed font-bold pointer-events-none'>Debug Mode!</div>
+{#if $debug}
+  <div class='ribbon z-[1000] text-center fixed font-bold pointer-events-none'>Debug Mode!</div>
 {/if}
 
 <style>
