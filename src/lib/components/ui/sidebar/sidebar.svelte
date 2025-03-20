@@ -15,7 +15,7 @@
 
 <div class='w-14 p-2 flex flex-col z-10 shrink-0 bg-black'>
   <BannerImage class='absolute top-0 left-0 w-14 -z-10' />
-  <img src='/logo_cropped.png' alt='logo' class='mb-3 cursor-pointer h-10 object-contain px-1' decoding='async' />
+  <img src='/logo_cropped.png' alt='logo' class='mb-3 cursor-pointer h-10 object-contain px-1' loading='lazy' decoding='async' />
   <SidebarButton class='mb-2' href='/app/home/'>
     <Home size={18} />
   </SidebarButton>

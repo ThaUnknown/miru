@@ -9,7 +9,7 @@
   let checked = false
 </script>
 
-<img src='/logo_cropped.png' class='w-52 h-52 object-contain' alt='logo' />
+<img src='/logo_cropped.png' class='w-52 h-52 object-contain' alt='logo' loading='lazy' decoding='async' />
 <div class='font-bold text-5xl'>Welcome to Hayase</div>
 <div class='text-muted-foreground pt-6'>Let's set up your perfect streaming enviorment.</div>
 <div class='flex items-center space-x-2 pt-12'>

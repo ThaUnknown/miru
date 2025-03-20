@@ -41,8 +41,11 @@ export const STATUS_LABELS = {
 }
 
 export function cover (media: Pick<Media, 'trailer' | 'bannerImage' | 'coverImage'>): string | undefined {
-  if (media.coverImage?.extraLarge) return media.coverImage.extraLarge
-  return banner(media)
+  return media.coverImage?.extraLarge ?? banner(media)
+}
+
+export function coverMedium (media: Pick<Media, 'trailer' | 'bannerImage' | 'coverImage'>): string | undefined {
+  return media.coverImage?.medium?.replace('/small/', '/medium/') ?? banner(media)
 }
 
 export function title (media: Pick<Media, 'title'>): string {

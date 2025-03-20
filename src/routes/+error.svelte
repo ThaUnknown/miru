@@ -18,5 +18,5 @@
       <div class='text-xl text-wrap max-w-full'>{$page.error?.message ?? 'Error'}</div>
     </div>
   </div>
-  <img src='/confused.webp' alt='huh' class='w-96 max-w-full' />
+  <img src='/confused.webp' alt='huh' class='w-96 max-w-full' loading='lazy' decoding='async' />
 </div>

@@ -221,7 +221,7 @@
   <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
     {#if seeking}
       {#await thumbnailer.getThumbnail(seekIndex) then src}
-        <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0' />
+        <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0' loading='lazy' decoding='async' />
       {/await}
     {/if}
     <Options {wrapper} bind:openSubs {video} {selectAudio} {selectVideo} class='mobile:inline-flex hidden p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />

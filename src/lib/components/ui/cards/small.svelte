@@ -1,7 +1,7 @@
 <script lang='ts'>
   import { CalendarDays, Tv } from 'lucide-svelte'
   import PreviewCard from './preview.svelte'
-  import { cover, format, title } from '$lib/modules/anilist/util'
+  import { coverMedium, format, title } from '$lib/modules/anilist/util'
   import type { Media } from '$lib/modules/anilist/types'
   import { hover } from '$lib/modules/navigate'
   import { goto } from '$app/navigation'
@@ -26,7 +26,7 @@
   {/if}
   <div class='item w-[9.5rem] flex flex-col'>
     <div class='h-[13.5rem]'>
-      <Load src={cover(media)} alt='cover' class='object-cover w-full h-full rounded' color={media.coverImage?.color} />
+      <Load src={coverMedium(media)} alt='cover' class='object-cover w-full h-full rounded' color={media.coverImage?.color} />
     </div>
     <div class='pt-3 font-black text-[.8rem] line-clamp-2'>
       {#if media.mediaListEntry?.status}

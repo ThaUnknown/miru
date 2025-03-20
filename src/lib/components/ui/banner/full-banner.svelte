@@ -43,7 +43,7 @@
 
   function schedule (index: number) {
     return setTimeout(() => {
-      current = shuffled[index % shuffled.length]
+      current = shuffled[index % shuffled.length]!
       timeout = schedule(index + 1)
     }, 15000)
   }

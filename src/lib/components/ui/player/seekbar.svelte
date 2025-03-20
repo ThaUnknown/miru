@@ -14,7 +14,7 @@
     text: string
   }
 
-  function clamp (value: percent) {
+  function clamp (value: percent): percent {
     return Math.min(Math.max(value, 0), 100)
   }
 
@@ -45,6 +45,7 @@
 
   $: progress = clamp(currentTime / duration * 100)
   export let seek = 0
+  let initialSeekPercent = 0
 
   $: segments = makeSegments(chapters, duration)
 
@@ -74,13 +75,17 @@
 
   export let seeking = false
 
-  function calculatePositionProgress ({ pageX, currentTarget }: PointerEvent) {
+  function percentPosition ({ pageX, currentTarget }: PointerEvent) {
     const target = currentTarget as HTMLDivElement
-    const percent = clamp((pageX - target.getBoundingClientRect().left) / target.clientWidth * 100)
+    return clamp((pageX - target.getBoundingClientRect().left) / target.clientWidth * 100)
+  }
+
+  function calculatePositionProgress (e: PointerEvent) {
+    const target = clamp(percentPosition(e) - initialSeekPercent)
     if (seeking) {
-      progress = percent
+      progress = target
     }
-    seek = percent
+    seek = target
   }
 
   function endHover () {
@@ -89,6 +94,7 @@
 
   function startSeeking (e: PointerEvent) {
     seeking = true
+    initialSeekPercent = e.pointerType === 'touch' ? percentPosition(e) - progress : 0
     calculatePositionProgress(e)
 
     if (e.pointerId) seekbar.setPointerCapture(e.pointerId)
@@ -96,6 +102,7 @@
   }
   function endSeeking ({ pointerId }: PointerEvent) {
     seeking = false
+    initialSeekPercent = 0
     if (pointerId) seekbar.releasePointerCapture(pointerId)
     dispatch('seeked')
   }
@@ -116,7 +123,7 @@
   $: seekIndex = Math.max(0, Math.floor(seekTime / thumbnailer.interval))
 </script>
 
-<div class='w-full flex cursor-pointer relative group/seekbar touch-none' class:!cursor-grab={seeking}
+<div class='w-full flex cursor-pointer relative group/seekbar touch-none !transform-none' class:!cursor-grab={seeking}
   tabindex='0' role='slider' aria-valuenow='0'
   data-down='#play-pause-button'
   data-up='#episode-list-button'
@@ -148,7 +155,7 @@
           {/if}
           <div>{toTS(seekTime)}</div>
         {:then src}
-          <img {src} alt='thumbnail' class='w-40 rounded-lg min-h-10' />
+          <img {src} alt='thumbnail' class='w-40 rounded-lg min-h-10' loading='lazy' decoding='async' />
           {#if title}
             <div class='max-w-24 text-ellipsis overflow-hidden absolute top-0 bg-white py-1 px-2 rounded-b-lg'>{title}</div>
           {/if}

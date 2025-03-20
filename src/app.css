@@ -108,7 +108,7 @@ img {
 
 @keyframes load-in {
   from {
-    transform: translateY(1.2rem) scale(0.95);
+    transform: translate3d(0, 1.2rem, 0) scale(0.95);
   }
 
   to {
@@ -154,7 +154,7 @@ details:active,
 [contenteditable]:active,
 [controls]:active {
   transition: all 0.1s ease-in-out;
-  transform: scale(0.98) !important;
+  transform: scale(0.98);
 }
 
 /* should contain:strict be used here?*/
@@ -179,101 +179,106 @@ details:active,
   border-image: fill 0 linear-gradient(90deg, hsl(var(--background) / 1) 32%, hsl(var(--background) / 0.9) 100%);
 }
 
-@keyframes spin3d {
-  from {
-    transform: rotateY(0deg) translateZ(-5000px);
-  }
-
-  to {
-    transform: rotateY(360deg) translateZ(-5000px);
-  }
+.sr-only {
+  display: none !important;
 }
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-contrast {
+  filter: invert(1) grayscale(1) contrast(100)
+}
+
+/* Backplate related things */
 
 body {
   perspective: 3000px;
 }
 
-.spin>div {
+#root:has(+ .backplate-spin) {
   animation: idle-spin 120s linear infinite;
 }
 
-.spin>.backplate {
+.backplate-spin {
   animation: idle-spin-y-flip 120s linear infinite;
-  display: flex !important;
 }
 
-.fly>.root {
+
+#root:has(+ .backplate-fly) {
   animation: idle-fly 0.8s forwards cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.show-backplate>.backplate {
-  display: flex !important;
-}
-
-
-body.spin>.root,
-body.show-backplate>.root {
+#root {
   transition: transform 0.5s;
-  transform-style: preserve-3d;
-  transform: perspective(100vw) translateZ(0vw) rotateY(0deg) rotateX(0deg);
+  transform: perspective(100vw) translate3d(0, 0, 0vw) rotateY(0deg) rotateX(0deg);
 }
 
-body>div.backplate {
-  transition: transform 0.5s;
-  transform-style: preserve-3d;
-  transform: perspective(100vw) translateZ(0vw) rotateY(180deg) rotateX(0deg);
+@keyframes spin3d {
+  from {
+    transform: rotateY(0deg) translate3d(0, 0, -5000px);
+  }
+
+  to {
+    transform: rotateY(360deg) translate3d(0, 0, -5000px);
+  }
 }
+
 
 @keyframes idle-fly {
   0% {
-    transform: perspective(100vw) translateZ(0vw) rotateY(0deg) rotateX(0deg);
+    transform: perspective(100vw) translate3d(0, 0, 0vw) rotateY(0deg) rotateX(0deg);
   }
 
   100% {
-    transform: perspective(100vw) translateZ(-66vw) rotateY(0deg) rotateX(-15deg);
+    transform: perspective(100vw) translate3d(0, 0, -66vw) rotateY(0deg) rotateX(-15deg);
   }
 }
 
 @keyframes idle-spin {
   0% {
-    transform: perspective(100vw) translateZ(-66vw) rotateY(0deg) rotateX(-15deg);
+    transform: perspective(100vw) translate3d(0, 0, -66vw) rotateY(0deg) rotateX(-15deg);
   }
 
   50% {
-    transform: perspective(100vw) translateZ(-66vw) rotateY(180deg) rotateX(15deg);
+    transform: perspective(100vw) translate3d(0, 0, -66vw) rotateY(180deg) rotateX(15deg);
   }
 
   100% {
-    transform: perspective(100vw) translateZ(-66vw) rotateY(360deg) rotateX(-15deg);
+    transform: perspective(100vw) translate3d(0, 0, -66vw) rotateY(360deg) rotateX(-15deg);
   }
 }
 
 @keyframes idle-spin-y-flip {
   0% {
-    transform: perspective(100vw) translateZ(-66vw) rotateY(-180deg) rotateX(15deg);
+    transform: perspective(100vw) translate3d(0, 0, -66vw) rotateY(-180deg) rotateX(15deg);
   }
 
   50% {
-    transform: perspective(100vw) translateZ(-66vw) rotateY(0deg) rotateX(-15deg);
+    transform: perspective(100vw) translate3d(0, 0, -66vw) rotateY(0deg) rotateX(-15deg);
   }
 
   100% {
-    transform: perspective(100vw) translateZ(-66vw) rotateY(180deg) rotateX(15deg);
+    transform: perspective(100vw) translate3d(0, 0, -66vw) rotateY(180deg) rotateX(15deg);
   }
 }
 
 @keyframes marquee {
   from {
-    transform: translateX(0);
+    transform: translateX(-30%);
   }
 
   to {
-    transform: translateX(-100%);
+    transform: translateX(-130%);
   }
 }
 
 @keyframes marquee-bg {
   from {
+    /* this is the exact size of the backplate single div, this animation isn't very performant! */
     background-position: -2111.74px 0;
   }
 
@@ -284,6 +289,7 @@ body>div.backplate {
 
 .animate-marquee {
   animation: marquee 80s infinite linear;
+  will-change: background-position;
 }
 
 .animate-marquee-bg {
@@ -322,16 +328,6 @@ body>div.backplate {
   backface-visibility: hidden;
 }
 
-.sr-only {
-  display: none !important;
-}
-
-.flex-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.text-contrast {
-  filter: invert(1) grayscale(1) contrast(100)
+.preserve-3d {
+  transform-style: preserve-3d;
 }

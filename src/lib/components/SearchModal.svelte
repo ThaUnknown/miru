@@ -133,7 +133,7 @@
 </script>
 
 <!-- eslint-disable-next-line svelte/no-reactive-reassign -->
-<Dialog.Root bind:open onOpenChange={close}>
+<Dialog.Root bind:open onOpenChange={close} portal='#root'>
   <Dialog.Content class='bg-black h-full lg:border-x-4 border-b-0 max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex lg:rounded-t-xl overflow-hidden'>
     <div class='absolute top-0 left-0 w-full h-full max-h-28 overflow-hidden'>
       <Banner media={$searchStore.media} class='object-cover w-full h-full absolute bottom-[0.5px] left-0 -z-10' />
@@ -205,7 +205,7 @@
                     <div class='text-xl font-bold text-nowrap'>{result.parseObject.release_group && result.parseObject.release_group.length < 20 ? result.parseObject.release_group : 'No Group'}</div>
                     <div class='ml-auto flex gap-2 self-start'>
                       {#each result.extension as id (id)}
-                        <img src={$saved[id].icon} alt={id} class='size-4' title='Provided by {id}' />
+                        <img src={$saved[id].icon} alt={id} class='size-4' title='Provided by {id}' decoding='async' loading='lazy' />
                       {/each}
                     </div>
                   </div>

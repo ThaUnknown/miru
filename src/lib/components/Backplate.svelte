@@ -1,40 +1,72 @@
-<script lang='ts' context='module'>
+<script lang='ts'>
+  import { page } from '$app/stores'
   import { sleep } from '$lib/utils'
 
+  let plate: HTMLDivElement
+  export let root: HTMLDivElement
+
+  let visibilityState: DocumentVisibilityState
+  let idleState = 'idle' as 'active' | 'idle'
+  let lockedState = 'unlocked' as 'unlocked' | 'locked'
+  let activityState = document.hasFocus() ? 'active' : 'inactive' as 'active' | 'inactive'
+
+  let isAnimating = false
   let isSpinning = false
-  const html = document.body
+  let isFlying = false
+  let timeout: number
 
-  globalThis.start = () => {
-    if (!isSpinning) {
-      isSpinning = true
-      html.classList.add('fly')
-      setTimeout(() => {
-        html.classList.remove('fly')
-        html.classList.add('spin')
-      }, 800)
-    }
+  async function start () {
+    if (isAnimating) return
+    isAnimating = true
+    isFlying = true
+    await sleep(800)
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!isFlying) return
+    isSpinning = true
+    isFlying = false
   }
 
-  globalThis.reset = async () => {
-    for (const child of html.children) {
-      const computedStyle = getComputedStyle(child).transform
-      child.style.transform = computedStyle
-    }
-    html.classList.remove('spin')
-    html.classList.add('show-backplate')
+  async function reset () {
+    if (!isAnimating) return clearTimeout(timeout)
+    root.style.transform = getComputedStyle(root).transform
+    plate.style.transform = getComputedStyle(plate).transform
+    isSpinning = isFlying = false
     await sleep(10)
-    for (const child of html.children) {
-      child.style.transform = ''
-    }
-    isSpinning = false
+    root.style.transform = plate.style.transform = ''
     await sleep(790)
-    html.classList.remove('show-backplate')
+    isAnimating = isSpinning = isFlying = false
   }
-// TODO: finish :^)
-// TODO: marqquee animation might not be performant
+  // TODO: finish :^)
+  // @ts-expect-error non-standard API
+  const idleDetector = new IdleDetector()
+  idleDetector.addEventListener('change', () => {
+    idleState = idleDetector.userState
+    lockedState = idleDetector.screenState
+  })
+  idleDetector.start({
+    threshold: 60_000
+  })
+
+  function checkIdleState (idleState: 'active' | 'idle', lockedState: 'unlocked' | 'locked', activityState: 'active' | 'inactive', visibilityState: DocumentVisibilityState) {
+    // don't waste resources
+    if (lockedState === 'locked' || visibilityState === 'hidden') return reset()
+    if (idleState === 'active' && activityState === 'active') return reset()
+    if ($page.url.pathname === '/app/player/') return reset()
+    timeout = setTimeout(start, 20_000)
+  }
+
+  $: checkIdleState(idleState, lockedState, activityState, visibilityState)
 </script>
 
-<div class='absolute w-full h-full overflow-hidden flip backface-hidden backplate bg-black flex-col justify-center pointer-events-none hidden'>
+<svelte:document bind:visibilityState on:mouseleave={() => { if (!document.hasFocus()) activityState = 'inactive' }} on:mouseenter={() => { console.log('uwu'); activityState = 'active' }} />
+<svelte:window on:focus={() => { activityState = 'active' }} on:blur={() => { activityState = 'inactive' }}
+  on:pointermove={() => { idleState = 'active'; activityState = 'active' }} />
+
+<div class='preserve-3d absolute w-full h-full overflow-hidden flip backface-hidden backplate bg-black flex-col justify-center pointer-events-none hidden'
+  bind:this={plate}
+  class:!flex={isAnimating}
+  class:backplate-fly={isFlying}
+  class:backplate-spin={isSpinning}>
   {#each Array.from({ length: 5 }) as _, i (i)}
     <div class='flex flex-row w-full font-molot font-bold -rotate-12' style:padding-left='{(4 - i) * 600 - 1000}px'>
       {#each Array.from({ length: 3 }) as _, i (i)}
@@ -55,3 +87,10 @@
     </div>
   {/each}
 </div>
+
+<style>
+  .backplate {
+    transition: transform 0.5s;
+    transform: perspective(100vw) translate3d(0, 0, 0vw) rotateY(180deg) rotateX(0deg);
+  }
+</style>

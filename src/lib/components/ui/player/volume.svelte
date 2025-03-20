@@ -50,7 +50,7 @@
       <Volume2 size='24px' fill='currentColor' />
     {/if}
   </Button>
-  <div class='h-full w-24 flex items-center overflow-clip'
+  <div class='h-full w-24 flex items-center overflow-clip cursor-pointer'
     bind:this={seekbar}
     on:pointerdown={startSeeking}
     on:pointerup={endSeeking}

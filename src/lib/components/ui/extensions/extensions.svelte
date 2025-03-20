@@ -59,7 +59,7 @@
         <div class='bg-neutral-950 px-4 py-3 rounded-md flex flex-row space-x-3 justify-between w-full border border-border'>
           <div class='flex flex-col space-y-3'>
             <div class='flex flex-row space-x-3'>
-              <img src={config.icon} alt='ico' class='size-10 rounded-md bg-neutral-900' />
+              <img src={config.icon} alt='ico' class='size-10 rounded-md bg-neutral-900' loading='lazy' decoding='async' />
               <div class='flex flex-col'>
                 <div class='text-md font-bold'>
                   {config.name}
