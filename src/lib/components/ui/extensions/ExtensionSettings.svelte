@@ -52,5 +52,7 @@
       </Dialog.Header>
     </Dialog.Content>
   </Dialog.Root>
-  <Switch bind:checked={$exopts[config.id].enabled} hideState={true} />
+  {#if $exopts[config.id]}
+    <Switch bind:checked={$exopts[config.id].enabled} hideState={true} />
+  {/if}
 </div>

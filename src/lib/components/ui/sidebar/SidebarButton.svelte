@@ -28,7 +28,7 @@
   $: isActive = matchPath(href, $page)
 </script>
 
-<Button variant='ghost' {href} class={cn(className, 'px-2 w-full relative')} {...$$restProps}>
+<Button variant='ghost' {href} class={cn(className, 'px-2 w-10 relative')} {...$$restProps}>
   {#if isActive}
     <div class='bg-white absolute inset-0 rounded-md' in:send={{ key }} out:receive={{ key }} />
   {/if}

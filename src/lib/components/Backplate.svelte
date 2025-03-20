@@ -15,6 +15,8 @@
   let isFlying = false
   let timeout: number
 
+  // WE LOVE RACE CONDITIONS WOOOO YEAAH MY SANITY
+
   async function start () {
     if (isAnimating) return
     isAnimating = true
@@ -52,13 +54,14 @@
     if (lockedState === 'locked' || visibilityState === 'hidden') return reset()
     if (idleState === 'active' && activityState === 'active') return reset()
     if ($page.url.pathname === '/app/player/') return reset()
+    clearTimeout(timeout)
     timeout = setTimeout(start, 20_000)
   }
 
   $: checkIdleState(idleState, lockedState, activityState, visibilityState)
 </script>
 
-<svelte:document bind:visibilityState on:mouseleave={() => { if (!document.hasFocus()) activityState = 'inactive' }} on:mouseenter={() => { console.log('uwu'); activityState = 'active' }} />
+<svelte:document bind:visibilityState on:mouseleave={() => { if (!document.hasFocus()) activityState = 'inactive' }} on:mouseenter={() => { activityState = 'active' }} />
 <svelte:window on:focus={() => { activityState = 'active' }} on:blur={() => { activityState = 'inactive' }}
   on:pointermove={() => { idleState = 'active'; activityState = 'active' }} />
 

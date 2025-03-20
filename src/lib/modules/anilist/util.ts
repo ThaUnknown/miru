@@ -48,6 +48,10 @@ export function coverMedium (media: Pick<Media, 'trailer' | 'bannerImage' | 'cov
   return media.coverImage?.medium?.replace('/small/', '/medium/') ?? banner(media)
 }
 
+export function coverSmall (media: Pick<Media, 'trailer' | 'bannerImage' | 'coverImage'>): string | undefined {
+  return media.coverImage?.medium ?? banner(media)
+}
+
 export function title (media: Pick<Media, 'title'>): string {
   return media.title?.userPreferred ?? 'TBA'
 }
