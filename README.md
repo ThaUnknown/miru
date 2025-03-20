@@ -1,92 +1,90 @@
 <p align="center">
-	<a href="https://github.com/ThaUnknown/miru">
+	<a href="https://github.com/OMetaVR/voya">
 		<img src="./web/static/logo_filled.svg" width="200">
 	</a>
 </p>
-<h1 align="center"><b>Miru</b></h1>
+<h1 align="center"><b>Voya</b></h1>
 
-<h4 align="center"><b>Stream anime torrents, real-time with no waiting for downloads</b></h4>
+<h4 align="center"><b>Stream media torrents, real-time with no waiting for downloads</b></h4>
 
 <p align="center">
-  <a href="https://miru.watch/#about">About</a> •
-  <a href="https://miru.watch/features/">Features</a> •
-  <a href="https://miru.watch/faq/">Frequently Asked Questions</a> •
+  <a href="#about">About</a> •
+  <a href="#features">Features</a> •
   <a href="#building-and-development">Building and Development</a> •
-  <a href="https://miru.watch/download/">Download</a>
+  <a href="https://github.com/OMetaVR/voya/releases">Download</a>
 </p>
 <p align="center">
   <img src="./docs/out.gif" alt="showcase"><br>
   <a href="https://discord.gg/Z87Nh7c4Ac">
     <img src="https://img.shields.io/discord/953341991134064651?style=flat-square" alt="chat">
   </a>
-  <a href="https://miru.watch/download/">
-    <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/ThaUnknown/miru/total?style=flat-square">
+  <a href="https://github.com/OMetaVR/voya/releases">
+    <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/OMetaVR/voya/total?style=flat-square">
   </a>
 </p>
 
 ## **About**
-A pure JS BitTorrent streaming environment, with a built-in list manager. Imagine qBit + Taiga + MPV, all in a single package, but streamed real-time. Completly ad free with no tracking/data collection.
+Voya is a real-time BitTorrent streaming application designed to provide a seamless media consumption experience, combining the benefits of torrents with the convenience of streaming. Think of it as a hybrid between qBitTorrent, a media player, and a streaming service—but with a twist. There’s no waiting for downloads to finish before you start watching!
 
-This app is meant to feel look, work and perform like a streaming website/app, while providing all the advantages of torrenting, like file downloads, higher download speeds, better video quality and quicker releases.
+This app is entirely ad-free and doesn’t collect any personal data, focusing solely on delivering a smooth, high-quality viewing experience.
 
-Unlike qBit's sequential, seeking into undownloaded data will prioritise downloading that data, instead of flat out closing MPV.
+Unlike other torrent clients that stop playback when seeking into undownloaded data, Voya will prioritize downloading the required data so you can keep watching without interruptions.
+
 ## **Features**
-### **Anime:**
-- full AniList integration
-  - filter anime by name, genre, season, year, format, status
-  - view anime on your planning and watching list
-  - add and remove anime from your planning list
-  - automatically mark episodes as complete as you watch them
-  - view trailers/previews for anime
-  - score anime
-  - view anime relations
-- automatically find torrents for desired episodes
-- automatically detect what anime a torrent is
-- view latest releases on any custom RSS
-- airing schedule
-- find anime by image [just paste an image into the app]
-### **Video:**
-- full subtitle support
-  - support for softcoded subtitles
-  - support for external subtitle files
-  - support for VTT, SSA, ASS, SUB, TXT subtitles
-  - subtitle display in PiP
-- keybinds for all functions:
-  - **S** - seek forwards 90 seconds [skip opening]
-  - **R** - seek backwards 90 seconds
-  - **→** - seek forwards 2 seconds
-  - **←** - seek backwards 2 seconds
-  - **↑** - increase volume
-  - **↓** - decrease volume
-  - **M** - mute volume
-  - **C** - cycle through subtitle tracks
-  - **N** - play next episode [if available]
-  - **B** - play last episode [if available]
-  - **F** - toggle fullscreen
-  - **P** - toggle picture in picture
-  - **[** - increase playback speed
-  - **]** - decrease playback speed
-  - **\\** - reset playback speed to 1
-  - **I** - view video stats for nerds
-  - **`** - open keybinds UI
-- editable keybinds **`** allows drag dropping any key
-- miniplayer
-- media session display
-- media keys support
-- Discord rich pressence
-- preview thumbnails
-- pause on lost focus
-- autoplay next episode
-- multi-audio support
-- torrent download progress on the seek bar
-### **Torrent:**
-- select downloads folder
-- specify download/upload speeds
-- support for most popular BEP's
-- support for custom torrent RSS feeds for latest releases
-- change what resolution to find torrents in
-- stream real-time with no waiting for downloads
-- support for custom extensions for custom sources and trackers
+### **General Media Support**:
+- Fully customizable torrent streaming with **no waiting** for downloads
+- Automatic detection of media type (anime, movies, TV shows, etc.)
+- Support for streaming from a variety of torrent sources
+
+### **Anime Features**:
+- Full **AniList** integration for managing your anime library
+  - Filter anime by name, genre, season, year, format, and status
+  - View and manage your planning and watching list
+  - Automatically mark episodes as complete as you watch them
+  - Watch trailers and previews for anime
+  - Score and rate anime
+  - View anime relations
+- Automatically find torrents for episodes
+- Find anime by image (just paste an image into the app)
+- View the latest releases via custom RSS feeds
+- Airing schedule support for anime
+
+### **Video Features**:
+- Full subtitle support, including:
+  - Softcoded subtitles
+  - External subtitle files (VTT, SSA, ASS, SUB, TXT, etc.)
+  - Subtitle display in picture-in-picture mode
+- Keybinds for all functions:
+  - **S** - Skip forward 90 seconds (great for skipping intros)
+  - **R** - Seek backwards 90 seconds
+  - **→** / **←** - Fine-tune seek by 2 seconds
+  - **↑** / **↓** - Adjust volume
+  - **M** - Mute/unmute
+  - **C** - Cycle through available subtitles
+  - **N** - Play the next episode (if available)
+  - **B** - Play the previous episode (if available)
+  - **F** - Toggle fullscreen
+  - **P** - Toggle picture-in-picture
+  - **[** / **]** - Increase/decrease playback speed
+  - **\\** - Reset playback speed to normal
+  - **I** - View video stats
+  - **`** - Open keybind settings UI
+- Editable keybinds with drag-and-drop customization
+- Miniplayer mode
+- Media session display with rich notifications
+- Support for media keys and Discord rich presence
+- Preview thumbnails and auto-pause on lost focus
+- Autoplay next episode
+- Multi-audio track support
+- Torrent download progress shown in the seek bar
+
+### **Torrent Features**:
+- Select your desired download folder
+- Control download/upload speed limits
+- Full support for popular BitTorrent protocol extensions
+- Custom torrent RSS feed support
+- Change resolution settings for torrent searches
+- Seamlessly stream torrents in real-time with no waiting for downloads
 
 ## **Linux Installation**
 
@@ -94,31 +92,34 @@ Unlike qBit's sequential, seeking into undownloaded data will prioritise downloa
 
 If you use paru:
 ```bash
-paru -S miru-bin
+paru -S voyabin
 ```
 
 If you use yay:
-
 ```bash
-yay -S miru-bin
+yay -S voyabin
 ```
 
 ### Debian/Ubuntu
 
-- Download the `linux-Miru-version.deb` from the [releases](https://github.com/ThaUnknown/miru/releases/latest) page.
-- Install the deb file with package manager.
+- Download the `.deb` file from the [releases](https://github.com/OMetaVR/voya/releases/latest) page.
+- Install the `.deb` file using the package manager:
 ```bash
-apt install linux-Miru-*.deb
+apt install linux-Voya-*.deb
 ```
 
 ## **Building and Development**
 
-*good luck*
+To build and develop Voya locally, you'll need the following dependencies:
+- Node.js 16 or above
+- PNPM (Package manager)
+- Docker
+- Android Debug Bridge (ADB)
+- Java 18 or above (possibly required)
+- Other dependencies may also be required—good luck!
 
-Dependencies:
- - Node 16 or above
- - PNPM
- - Docker
- - Android Debug Bridge
- - Java 18 or above [probably?]
- - maybe others... have fun.
+For full development instructions, refer to the [official repository](https://github.com/OMetaVR/voya).
+
+---
+
+**Note**: While Voya is based on [Miru](https://github.com/ThaUnknown/miru), it’s a **distinct fork** with additional features and customizations to better serve a broader range of media types. The **Miru community** is still where the original product is developed and supported, but Voya adds new functionalities and provides a personalized experience.
