@@ -82,7 +82,7 @@
       <div class='font-semibold text-lg leading-none' use:click={() => search(variables)}>{title}</div>
       <div class='ml-auto text-xs' use:click={() => search(variables)}>View More</div>
     </div>
-    <div class='flex overflow-x-scroll select:-ml-14 select:pl-14 -mt-40 pt-40 relative group pointer-events-none' use:dragScroll>
+    <div class='flex overflow-x-scroll select:-ml-14 select:pl-14 -mt-40 pt-40 -mb-5 pb-5 relative group pointer-events-none' use:dragScroll>
       <QueryCard {query} />
     </div>
   {/each}

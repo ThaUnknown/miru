@@ -36,6 +36,12 @@
     metal: 'Metal'
   }
 
+  const idle = {
+    off: 'Off',
+    fast: 'Fast',
+    fancy: 'Fancy'
+  }
+
   function changeAngle (value: string) {
     native.setAngle(value)
   }
@@ -57,6 +63,11 @@
     <div class='font-weight-bold text-xl font-bold'>Rendering Settings</div>
     <SettingCard title='ANGLE Backend' description="What ANGLE backend to use for rendering. DON'T CHANGE WITHOUT REASON! On some Windows machines D3D9 might help with flicker. Changing this setting to something your device doesn't support might prevent Miru from opening which will require a full reinstall. While Vulkan is an available option it might not be fully supported on Linux.">
       <SingleCombo bind:value={$settings.angle} items={angle} class='w-40 shrink-0 border-input border' onSelected={changeAngle} />
+    </SettingCard>
+
+    <div class='font-weight-bold text-xl font-bold'>UI Settings</div>
+    <SettingCard title='Idle Animation' description='Idle 3d animation settings. Fast turns off some heavy details. Fancy can cause performance issues on very low end devices.'>
+      <SingleCombo bind:value={$settings.idleAnimation} items={idle} class='w-40 shrink-0 border-input border' onSelected={changeAngle} />
     </SettingCard>
   {/if}
 </div>

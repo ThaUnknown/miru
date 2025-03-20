@@ -1,5 +1,6 @@
 <script lang='ts'>
   import { page } from '$app/stores'
+  import { settings } from '$lib/modules/settings'
   import { sleep } from '$lib/utils'
 
   let plate: HTMLDivElement
@@ -50,6 +51,7 @@
   })
 
   function checkIdleState (idleState: 'active' | 'idle', lockedState: 'unlocked' | 'locked', activityState: 'active' | 'inactive', visibilityState: DocumentVisibilityState) {
+    if ($settings.idleAnimation === 'off') return reset()
     // don't waste resources
     if (lockedState === 'locked' || visibilityState === 'hidden') return reset()
     if (idleState === 'active' && activityState === 'active') return reset()
@@ -74,14 +76,14 @@
     <div class='flex flex-row w-full font-molot font-bold -rotate-12' style:padding-left='{(4 - i) * 600 - 1000}px'>
       {#each Array.from({ length: 3 }) as _, i (i)}
         <div class='animate-marquee mt-32 leading-[0.8]'>
-          <div class='text-[24rem] bg-striped !bg-clip-text text-transparent animate-marquee-bg tracking-wide'>
+          <div class='text-[24rem] bg-striped !bg-clip-text text-transparent tracking-wide' class:animate-marquee-bg={$settings.idleAnimation === 'fancy'}>
             HAYASE.06&nbsp;
           </div>
           <div class='flex pl-1'>
-            <div class='bg-striped-muted rounded py-2 px-3 mt-1 mb-[2.5px] mr-2 ml-1 text-black animate-marquee-bg flex items-center leading-[0.9]'>
+            <div class='bg-striped-muted rounded py-2 px-3 mt-1 mb-[2.5px] mr-2 ml-1 text-black flex items-center leading-[0.9]' class:animate-marquee-bg={$settings.idleAnimation === 'fancy'}>
               TORRENTING<br />MADE<br />SIMPLE
             </div>
-            <div class='text-[5.44rem] bg-striped-muted !bg-clip-text text-transparent animate-marquee-bg tracking-wider'>
+            <div class='text-[5.44rem] bg-striped-muted !bg-clip-text text-transparent tracking-wider' class:animate-marquee-bg={$settings.idleAnimation === 'fancy'}>
               MAGNET://SIMPLICITY TOPS EVERYTHING
             </div>
           </div>
