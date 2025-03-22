@@ -60,6 +60,7 @@
 		"lucide-svelte": "^0.452.0",
 		"p2pt": "^1.5.1",
 		"simple-store-svelte": "^1.0.6",
+		"svelte-keybinds": "^1.0.9",
 		"svelte-persisted-store": "^0.12.0",
 		"tailwind-merge": "^2.5.4",
 		"tailwind-variants": "^0.2.1",

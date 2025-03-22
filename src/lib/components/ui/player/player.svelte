@@ -7,14 +7,14 @@
   import { Button } from '$lib/components/ui/button'
   import { settings } from '$lib/modules/settings'
   import { bindPiP, toTS } from '$lib/utils'
-  import { Cast, FastForward, Maximize, Minimize, Pause, Rewind, SkipBack, SkipForward } from 'lucide-svelte'
+  import { Cast, FastForward, Maximize, Minimize, Pause, Rewind, SkipBack, SkipForward, Captions, Contrast, List, PictureInPicture2, Proportions, RefreshCcw, RotateCcw, RotateCw, ScreenShare, Volume1, Volume2, VolumeX } from 'lucide-svelte'
   import { writable, type Writable } from 'simple-store-svelte'
   import { persisted } from 'svelte-persisted-store'
   import { toast } from 'svelte-sonner'
   import Seekbar from './seekbar.svelte'
   import type { SvelteMediaTimeRange } from 'svelte/elements'
   import { fade } from 'svelte/transition'
-  import { autoPiP, getChapterTitle, sanitizeChapters, type MediaInfo } from './util'
+  import { autoPiP, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
   import Thumbnailer from './thumbnailer'
   import { onMount } from 'svelte'
   import native from '$lib/modules/native'
@@ -24,6 +24,7 @@
   import EpisodesList from '$lib/components/EpisodesList.svelte'
   import { episodes } from '$lib/modules/anizip'
   import Volume from './volume.svelte'
+  import { loadWithDefaults } from 'svelte-keybinds'
 
   export let mediaInfo: MediaInfo
   // bindings
@@ -68,6 +69,10 @@
 
   function pip (enable = !$pictureInPictureElement) {
     return enable ? video.requestPictureInPicture() : document.exitPictureInPicture()
+  }
+
+  function toggleCast () {
+  // TODO
   }
 
   $: fullscreenElement ? screen.orientation.lock('landscape') : screen.orientation.unlock()
@@ -127,6 +132,10 @@
     if (!wasPaused) video.play()
   }
 
+  function screenshot () {
+  // TODO
+  }
+
   // animations
 
   function playAnimation (type: 'play' | 'pause' | 'seekforw' | 'seekback') {
@@ -157,10 +166,96 @@
   // other
 
   $: chapters = sanitizeChapters([
-    { start: 5, end: 15, text: 'Chapter 0' },
+    { start: 5, end: 15, text: 'OP' },
     { start: 1.0 * 60, end: 1.2 * 60, text: 'Chapter 1' },
     { start: 1.4 * 60, end: 88, text: 'Chapter 2 ' }
   ], safeduration)
+
+  let currentSkippable: string | null = null
+  function checkSkippableChapters () {
+    const current = findChapter(currentTime)
+    if (current) {
+      currentSkippable = isChapterSkippable(current)
+    }
+  }
+  const skippableChaptersRx: Array<[string, RegExp]> = [
+    ['Opening', /^op$|opening$|^ncop/mi],
+    ['Ending', /^ed$|ending$|^nced/mi],
+    ['Recap', /recap/mi]
+  ]
+  function isChapterSkippable (chapter: Chapter) {
+    for (const [name, regex] of skippableChaptersRx) {
+      if (regex.test(chapter.text)) {
+        return name
+      }
+    }
+    return null
+  }
+
+  function findChapter (time: number) {
+    return chapters.find(({ start, end }) => time >= start && time <= end)
+  }
+
+  function skip () {
+    const current = findChapter(currentTime)
+    if (current) {
+      if (!isChapterSkippable(current) && (current.end - current.start) > 100) {
+        currentTime = currentTime + 85
+      } else {
+        const endtime = current.end
+        if ((safeduration - endtime | 0) === 0) return next()
+        currentTime = endtime
+        currentSkippable = null
+      }
+    } else if (currentTime < 10) {
+      currentTime = 90
+    } else if (safeduration - currentTime < 90) {
+      currentTime = safeduration
+    } else {
+      currentTime = currentTime + 85
+    }
+    video.currentTime = currentTime
+  }
+
+  let stats: any | null = null
+  let requestCallback: number | null = null
+  function toggleStats () {
+    if (requestCallback) {
+      stats = null
+      video.cancelVideoFrameCallback(requestCallback)
+      requestCallback = null
+    } else {
+      requestCallback = video.requestVideoFrameCallback((a, b) => {
+        stats = {}
+        handleStats(a, b, b)
+      })
+    }
+  }
+  async function handleStats (now: number, metadata: VideoFrameCallbackMetadata, lastmeta: VideoFrameCallbackMetadata) {
+    if (stats) {
+      const msbf = (metadata.mediaTime - lastmeta.mediaTime) / (metadata.presentedFrames - lastmeta.presentedFrames)
+      const fps = (1 / msbf).toFixed(3)
+      stats = {
+        fps,
+        presented: metadata.presentedFrames,
+        dropped: video.getVideoPlaybackQuality().droppedVideoFrames,
+        processing: metadata.processingDuration + ' ms',
+        viewport: video.clientWidth + 'x' + video.clientHeight,
+        resolution: videoWidth + 'x' + videoHeight,
+        buffer: getBufferHealth(metadata.mediaTime) + ' s',
+        speed: video.playbackRate || 1
+      }
+      setTimeout(() => video.requestVideoFrameCallback((n, m) => handleStats(n, m, metadata)), 200)
+    }
+  }
+  function getBufferHealth (time: number) {
+    for (let index = video.buffered.length; index--;) {
+      if (time < video.buffered.end(index) && time >= video.buffered.start(index)) {
+        return (video.buffered.end(index) - time) | 0
+      }
+    }
+    return 0
+  }
 
   $: seekIndex = Math.max(0, Math.floor(seekPercent * safeduration / 100 / thumbnailer.interval))
 
@@ -184,22 +279,173 @@
     if (['ArrowLeft', 'ArrowRight'].includes(event.key)) event.stopPropagation()
     switch (event.key) {
       case 'ArrowLeft':
-        seek(-5)
+        seek(-$settings.playerSeek)
         break
       case 'ArrowRight':
-        seek(5)
+        seek($settings.playerSeek)
         break
       case 'Enter':
         playPause()
         break
     }
   }
+  let fitWidth = false
+  loadWithDefaults({
+    KeyX: {
+      fn: () => screenshot(),
+      id: 'screenshot_monitor',
+      icon: ScreenShare,
+      type: 'icon',
+      desc: 'Save Screenshot to Clipboard'
+    },
+    KeyI: {
+      fn: () => toggleStats(),
+      icon: List,
+      id: 'list',
+      type: 'icon',
+      desc: 'Toggle Stats'
+    },
+    Space: {
+      fn: () => playPause(),
+      id: 'play_arrow',
+      icon: Play,
+      type: 'icon',
+      desc: 'Play/Pause'
+    },
+    KeyN: {
+      fn: () => next(),
+      id: 'skip_next',
+      icon: SkipForward,
+      type: 'icon',
+      desc: 'Next Episode'
+    },
+    KeyB: {
+      fn: () => prev(),
+      id: 'skip_previous',
+      icon: SkipBack,
+      type: 'icon',
+      desc: 'Previous Episode'
+    },
+    KeyA: {
+      fn: () => {
+        $settings.playerDeband = !$settings.playerDeband
+      },
+      id: 'deblur',
+      icon: Contrast,
+      type: 'icon',
+      desc: 'Toggle Video Debanding'
+    },
+    KeyM: {
+      fn: () => (muted = !muted),
+      id: 'volume_off',
+      icon: VolumeX,
+      type: 'icon',
+      desc: 'Toggle Mute'
+    },
+    KeyP: {
+      fn: () => pip(),
+      id: 'picture_in_picture',
+      icon: PictureInPicture2,
+      type: 'icon',
+      desc: 'Toggle Picture in Picture'
+    },
+    KeyF: {
+      fn: () => fullscreen(),
+      id: 'fullscreen',
+      icon: Maximize,
+      type: 'icon',
+      desc: 'Toggle Fullscreen'
+    },
+    KeyS: {
+      fn: () => skip(),
+      id: '+90',
+      desc: 'Skip Intro/90s'
+    },
+    KeyW: {
+      fn: () => { fitWidth = !fitWidth },
+      id: 'fit_width',
+      icon: Proportions,
+      type: 'icon',
+      desc: 'Toggle Video Cover'
+    },
+    KeyD: {
+      fn: () => toggleCast(),
+      id: 'cast',
+      icon: Cast,
+      type: 'icon',
+      desc: 'Toggle Cast [broken]'
+    },
+    KeyC: {
+      fn: () => cycleSubtitles(),
+      id: 'subtitles',
+      icon: Captions,
+      type: 'icon',
+      desc: 'Cycle Subtitles'
+    },
+    ArrowLeft: {
+      fn: () => {
+        seek(-$settings.playerSeek)
+      },
+      id: 'fast_rewind',
+      icon: Rewind,
+      type: 'icon',
+      desc: 'Rewind'
+    },
+    ArrowRight: {
+      fn: () => {
+        seek($settings.playerSeek)
+      },
+      id: 'fast_forward',
+      icon: FastForward,
+      type: 'icon',
+      desc: 'Seek'
+    },
+    ArrowUp: {
+      fn: () => {
+        $volume = Math.min(1, $volume + 0.05)
+      },
+      id: 'volume_up',
+      icon: Volume2,
+      type: 'icon',
+      desc: 'Volume Up'
+    },
+    ArrowDown: {
+      fn: () => {
+        $volume = Math.max(0, $volume - 0.05)
+      },
+      id: 'volume_down',
+      icon: Volume1,
+      type: 'icon',
+      desc: 'Volume Down'
+    },
+    BracketLeft: {
+      fn: () => { playbackRate = video.defaultPlaybackRate -= 0.1 },
+      id: 'history',
+      icon: RotateCcw,
+      type: 'icon',
+      desc: 'Decrease Playback Rate'
+    },
+    BracketRight: {
+      fn: () => { playbackRate = video.defaultPlaybackRate += 0.1 },
+      id: 'update',
+      icon: RotateCw,
+      type: 'icon',
+      desc: 'Increase Playback Rate'
+    },
+    Backslash: {
+      fn: () => { playbackRate = video.defaultPlaybackRate = 1 },
+      icon: RefreshCcw,
+      id: 'schedule',
+      type: 'icon',
+      desc: 'Reset Playback Rate'
+    }
+  })
 </script>
 
 <svelte:document bind:fullscreenElement use:bindPiP={pictureInPictureElement} />
 
 <div style:aspect-ratio='{videoWidth} / {videoHeight}' class='max-w-full max-h-full min-w-[clamp(0%,700px,100%)] relative content-center fullscreen:bg-black fullscreen:rounded-none rounded-xl overflow-clip text-left' bind:this={wrapper}>
-  <video class='w-full max-h-full grow bg-black' preload='auto' class:cursor-none={immersed}
+  <video class='w-full max-h-full grow bg-black' preload='auto' class:cursor-none={immersed} class:object-cover={fitWidth}
     src={mediaInfo.url}
     bind:videoHeight
     bind:videoWidth
@@ -216,6 +462,7 @@
     on:click={playPause}
     on:dblclick={fullscreen}
     on:loadeddata={checkAudio}
+    on:timeupdate={checkSkippableChapters}
     use:autoPiP={pip}
   />
   <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
@@ -224,7 +471,7 @@
         <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0' loading='lazy' decoding='async' />
       {/await}
     {/if}
-    <Options {wrapper} bind:openSubs {video} {selectAudio} {selectVideo} class='mobile:inline-flex hidden p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />
+    <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} bind:playbackRate class='mobile:inline-flex hidden p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />
     <div class='mobile:flex hidden gap-4 absolute items-center select:opacity-100 cursor-default' class:opacity-0={immersed}>
       <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost'>
         <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
@@ -260,7 +507,7 @@
     {/each}
   </div>
   <div class='absolute w-full bottom-0 flex flex-col gradient px-10 py-4 transition-opacity select:opacity-100 cursor-default' class:opacity-0={immersed}>
-    <div class='flex justify-between gap-12'>
+    <div class='flex justify-between gap-12 items-end'>
       <div class='flex flex-col gap-2 text-left cursor-pointer'>
         <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
         <Sheet.Root portal={wrapper}>
@@ -273,6 +520,11 @@
         </Sheet.Root>
       </div>
       <div class='flex flex-col gap-2 grow-0 items-end self-end'>
+        {#if currentSkippable}
+          <Button on:click={skip} class='font-bold mb-2'>
+            Skip {currentSkippable}
+          </Button>
+        {/if}
         <div class='text-[rgba(217,217,217,0.6)] text-sm leading-none font-light line-clamp-1'>{getChapterTitle(seeking ? seekPercent * safeduration / 100 : currentTime, chapters) || ''}</div>
         <div class='ml-auto self-end text-sm leading-none font-light text-nowrap'>{toTS(seeking ? seekPercent * safeduration / 100 : currentTime)} / {toTS(safeduration)}</div>
       </div>
@@ -296,7 +548,7 @@
         <Volume bind:volume={$volume} bind:muted />
       </div>
       <div class='flex gap-2'>
-        <Options {wrapper} bind:openSubs {video} {selectAudio} {selectVideo} />
+        <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} bind:playbackRate />
         <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs}>
           <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
         </Button>

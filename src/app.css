@@ -193,6 +193,10 @@ details:active,
   filter: invert(1) grayscale(1) contrast(100)
 }
 
+.svelte-keybinds {
+  background: black !important;
+}
+
 /* Backplate related things */
 
 body {
