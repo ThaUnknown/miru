@@ -1,7 +1,9 @@
 <script lang='ts'>
-  import { banner, type Media } from '$lib/modules/anilist'
-  import type { HTMLAttributes } from 'svelte/elements'
   import { Load } from '.'
+
+  import type { HTMLAttributes } from 'svelte/elements'
+
+  import { banner, type Media } from '$lib/modules/anilist'
 
   export let media: Media
 

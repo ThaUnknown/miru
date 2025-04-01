@@ -1,9 +1,11 @@
 <script lang='ts'>
   import Footer, { type Checks } from '../Footer.svelte'
   import Progress from '../Progress.svelte'
+
+  import type { ExtensionConfig } from 'hayase-extensions'
+
   import { Extensions } from '$lib/components/ui/extensions'
   import { saved, options } from '$lib/modules/extensions'
-  import type { ExtensionConfig } from 'hayase-extensions'
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { SingleCombo } from '$lib/components/ui/combobox'
   import { lookupPreferences, settings } from '$lib/modules/settings'

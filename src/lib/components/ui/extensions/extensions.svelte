@@ -1,13 +1,16 @@
 <script lang='ts'>
+  import { Github, Globe, Plus } from 'lucide-svelte'
+  import { MagnifyingGlass } from 'svelte-radix'
+  import { toast } from 'svelte-sonner'
+
+  import { Button, iconSizes } from '../button'
+
+  import ExtensionSettings from './ExtensionSettings.svelte'
+
   import * as Tabs from '$lib/components/ui/tabs'
   import { Input } from '$lib/components/ui/input'
   import { saved, storage } from '$lib/modules/extensions'
-  import ExtensionSettings from './ExtensionSettings.svelte'
   import * as Tooltip from '$lib/components/ui/tooltip'
-  import { Github, Globe, Plus } from 'lucide-svelte'
-  import { Button, iconSizes } from '../button'
-  import { MagnifyingGlass } from 'svelte-radix'
-  import { toast } from 'svelte-sonner'
 
   const typeMap = {
     nzb: 'NZB',

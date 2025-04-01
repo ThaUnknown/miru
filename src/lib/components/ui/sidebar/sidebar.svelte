@@ -1,7 +1,9 @@
 <script lang='ts'>
-  import { isMobile } from '$lib/utils'
   import { Menu, X } from 'lucide-svelte'
+
   import { Button } from '../button'
+
+  import { isMobile } from '$lib/utils'
 
   let open = false // 152 x 140
 </script>

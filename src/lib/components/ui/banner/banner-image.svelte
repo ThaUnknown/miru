@@ -1,7 +1,8 @@
 <script lang='ts' context='module'>
+  import { writable } from 'simple-store-svelte'
+
   import { safeBanner, type Media } from '$lib/modules/anilist'
   import { cn } from '$lib/utils'
-  import { writable } from 'simple-store-svelte'
 
   export const bannerSrc = writable<Media | null>(null)
 

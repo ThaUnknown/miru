@@ -1,7 +1,9 @@
-import type { Media } from '$lib/modules/anilist'
-import { settings } from '$lib/modules/settings'
 import { get } from 'svelte/store'
+
+import type { Media } from '$lib/modules/anilist'
 import type { Track } from '../../../../app'
+
+import { settings } from '$lib/modules/settings'
 
 export interface Chapter {
   start: number

@@ -4,7 +4,6 @@
   import { SingleCombo } from '$lib/components/ui/combobox'
   import { Input } from '$lib/components/ui/input'
   import { Switch } from '$lib/components/ui/switch'
-
   import native from '$lib/modules/native'
   import { settings, languageCodes, subtitleResolutions } from '$lib/modules/settings'
 

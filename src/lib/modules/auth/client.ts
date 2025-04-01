@@ -1,7 +1,9 @@
 import { readable } from 'simple-store-svelte'
+
+import { client } from '../anilist'
+
 import type { VariablesOf } from 'gql.tada'
 import type { Entry } from '../anilist/queries'
-import { client } from '../anilist'
 
 export default new class AuthAggregator {
   hasAuth = readable(this.checkAuth(), set => {

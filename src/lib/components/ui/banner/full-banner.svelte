@@ -1,9 +1,12 @@
 <script lang='ts'>
-  import { desc, duration, format, season, title, type Media } from '$lib/modules/anilist'
-  import { click } from '$lib/modules/navigate'
   import { onDestroy } from 'svelte'
+
   import { BookmarkButton, FavoriteButton, PlayButton } from '../button'
+
   import { bannerSrc } from './banner-image.svelte'
+
+  import { click } from '$lib/modules/navigate'
+  import { desc, duration, format, season, title, type Media } from '$lib/modules/anilist'
   import { of } from '$lib/modules/auth'
   export let mediaList: Array<Media | null>
 

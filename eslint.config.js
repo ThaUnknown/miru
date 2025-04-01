@@ -1,5 +1,6 @@
 import config from 'eslint-config-standard-universal'
 import tseslint from 'typescript-eslint'
+
 import svelteConfig from './svelte.config.js'
 
 export default tseslint.config(
@@ -12,7 +13,11 @@ export default tseslint.config(
       }
     },
     rules: {
-      'svelte/html-self-closing': 'off'
+      'svelte/html-self-closing': 'off',
+      'import/order': ['error', {
+        'newlines-between': 'always',
+        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type']
+      }]
     }
   }
 )

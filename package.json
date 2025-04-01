@@ -4,12 +4,13 @@
 	"license": "BUSL-1.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --open",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "eslint --print-config eslint.config.js",
+		"lint": "eslint -c eslint.config.js",
+		"lint:fix": "eslint -c eslint.config.js --fix",
 		"gql:turbo": "node ./node_modules/gql.tada/bin/cli.js turbo"
 	},
 	"devDependencies": {

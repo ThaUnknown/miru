@@ -1,5 +1,6 @@
 <script lang='ts'>
   import { ChevronRight } from 'svelte-radix'
+
   import { getMenuContext, getLevelContext } from './context.ts'
 
   const { state, setActive, setInactive } = getMenuContext()

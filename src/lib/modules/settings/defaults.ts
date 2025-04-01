@@ -1,4 +1,5 @@
 import SUPPORTS from './supports'
+
 import type { languageCodes, subtitleResolutions, videoResolutions } from './util'
 
 export default {

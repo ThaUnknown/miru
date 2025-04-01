@@ -21,7 +21,8 @@
         "tadaOutputLocation": "./src/lib/modules/anilist/graphql-env.d.ts",
         "tadaTurboLocation": "./src/lib/modules/anilist/graphql-turbo.d.ts"
       }
-    ]
+    ],
+    "maxNodeModuleJsDepth": 1
   },
   "include": [
     "src/**/*.ts",

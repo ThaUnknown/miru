@@ -1,7 +1,9 @@
 <script lang='ts' context='module'>
   import SpeedTest from '@cloudflare/speedtest'
-  import { fastPrettyBits } from '$lib/utils'
+
   import type { Checks } from '../Footer.svelte'
+
+  import { fastPrettyBits } from '$lib/utils'
 
   const speedTest = new SpeedTest({
     autoStart: false,
@@ -27,13 +29,14 @@
 </script>
 
 <script lang='ts'>
+  import Footer from '../Footer.svelte'
+  import Progress from '../Progress.svelte'
+
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { Input } from '$lib/components/ui/input'
   import { Switch } from '$lib/components/ui/switch'
   import { settings } from '$lib/modules/settings'
   import native from '$lib/modules/native'
-  import Footer from '../Footer.svelte'
-  import Progress from '../Progress.svelte'
 
   if (!speedTest.isRunning) speedTest.play()
 

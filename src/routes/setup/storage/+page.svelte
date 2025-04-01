@@ -1,12 +1,13 @@
 <script lang='ts'>
+  import Footer, { type Checks } from '../Footer.svelte'
+  import Progress from '../Progress.svelte'
+
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { Button } from '$lib/components/ui/button'
   import { Input } from '$lib/components/ui/input'
   import { Switch } from '$lib/components/ui/switch'
   import { SUPPORTS, settings } from '$lib/modules/settings'
   import native from '$lib/modules/native'
-  import Footer, { type Checks } from '../Footer.svelte'
-  import Progress from '../Progress.svelte'
   import { fastPrettyBytes } from '$lib/utils'
 
   async function selectDownloadFolder () {

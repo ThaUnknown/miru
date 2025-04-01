@@ -1,10 +1,12 @@
 <script lang='ts'>
+  import { onMount, tick } from 'svelte'
+
+  import type { MediaInfo } from '$lib/components/ui/player/util'
+
   import { bannerSrc, hideBanner } from '$lib/components/ui/banner'
   import { Player } from '$lib/components/ui/player'
-  import type { MediaInfo } from '$lib/components/ui/player/util'
   import { banner, client, title } from '$lib/modules/anilist'
   import { IDMedia } from '$lib/modules/anilist/queries'
-  import { onMount, tick } from 'svelte'
 
   onMount(async () => {
     await tick()

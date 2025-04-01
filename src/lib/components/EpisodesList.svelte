@@ -7,17 +7,20 @@
 </script>
 
 <script lang='ts'>
-  import { episodes as _episodes, dedupeAiring, episodeByAirDate, notes, type Media } from '$lib/modules/anilist'
-  import type { EpisodesResponse } from '$lib/modules/anizip/types'
-  import { cn, isMobile, since } from '$lib/utils'
   import { ChevronLeft, Play } from 'lucide-svelte'
+  import { ChevronRight } from 'svelte-radix'
+
   import Pagination from './Pagination.svelte'
   import { Button } from './ui/button'
-  import { ChevronRight } from 'svelte-radix'
-  import { list, progress } from '$lib/modules/auth'
-  import { click } from '$lib/modules/navigate'
   import { searchStore } from './SearchModal.svelte'
   import { Load } from './ui/img'
+
+  import type { EpisodesResponse } from '$lib/modules/anizip/types'
+
+  import { episodes as _episodes, dedupeAiring, episodeByAirDate, notes, type Media } from '$lib/modules/anilist'
+  import { cn, isMobile, since } from '$lib/utils'
+  import { list, progress } from '$lib/modules/auth'
+  import { click } from '$lib/modules/navigate'
 
   export let eps: EpisodesResponse | null
   export let media: Media

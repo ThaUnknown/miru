@@ -19,7 +19,6 @@
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { SingleCombo } from '$lib/components/ui/combobox'
   import { Switch } from '$lib/components/ui/switch'
-
   import native from '$lib/modules/native'
   import { settings, SUPPORTS } from '$lib/modules/settings'
   import { Textarea } from '$lib/components/ui/textarea'

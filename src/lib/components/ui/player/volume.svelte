@@ -1,6 +1,7 @@
 <script lang='ts'>
-  import { Button } from '$lib/components/ui/button'
   import { Volume, Volume1, Volume2, VolumeOff, VolumeX } from 'lucide-svelte'
+
+  import { Button } from '$lib/components/ui/button'
 
   function clamp (value: number) {
     return Math.min(Math.max(value, 0), 1)

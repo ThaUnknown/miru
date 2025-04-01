@@ -1,6 +1,7 @@
 import { fontFamily } from 'tailwindcss/defaultTheme'
-import type { Config } from 'tailwindcss'
 import plugin from 'tailwindcss/plugin'
+
+import type { Config } from 'tailwindcss'
 
 const config: Config = {
   plugins: [

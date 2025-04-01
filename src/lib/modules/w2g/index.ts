@@ -1,13 +1,15 @@
 import { EventEmitter } from 'events'
 
 import P2PT, { type Peer } from 'p2pt'
-
-import Event, { EventTypes } from './events.js'
 import { writable } from 'simple-store-svelte'
 import Debug from 'debug'
+
+import client from '../anilist/client.js'
+
+import Event, { EventTypes } from './events.js'
+
 import type { Viewer } from '../anilist/queries'
 import type { ResultOf } from 'gql.tada'
-import client from '../anilist/client.js'
 
 const debug = Debug('ui:w2g')
 

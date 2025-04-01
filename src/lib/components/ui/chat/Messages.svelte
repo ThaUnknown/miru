@@ -1,6 +1,7 @@
 <script lang='ts'>
-  import type { Writable } from 'simple-store-svelte'
   import { getPFP, type ChatMessage } from '.'
+
+  import type { Writable } from 'simple-store-svelte'
 
   export let messages: Writable<ChatMessage[]>
 

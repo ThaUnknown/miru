@@ -1,7 +1,9 @@
 <script lang='ts'>
   import { Bookmark } from 'lucide-svelte'
-  import { Button, iconSizes, type Props } from '$lib/components/ui/button'
+
   import type { Media } from '$lib/modules/anilist'
+
+  import { Button, iconSizes, type Props } from '$lib/components/ui/button'
   import { list, authAggregator, lists } from '$lib/modules/auth'
   import { clickwrap, keywrap } from '$lib/modules/navigate'
 

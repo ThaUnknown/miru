@@ -1,7 +1,8 @@
 <script lang='ts'>
+  import { persisted } from 'svelte-persisted-store'
+
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
-  import { persisted } from 'svelte-persisted-store'
 
   const debug = persisted('debug', '')
 </script>

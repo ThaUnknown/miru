@@ -1,17 +1,20 @@
 <script lang='ts' context='module'>
-  import { extensions } from '$lib/modules/extensions/extensions'
   import { writable } from 'simple-store-svelte'
-  import * as Dialog from '$lib/components/ui/dialog'
-  import { Input } from './ui/input'
   import { MagnifyingGlass } from 'svelte-radix'
-  import { settings, videoResolutions } from '$lib/modules/settings'
+  import { BadgeCheck, Database } from 'lucide-svelte'
+
+  import { Input } from './ui/input'
   import { SingleCombo } from './ui/combobox'
-  import { title, type Media } from '$lib/modules/anilist'
+
   import type { AnitomyResult } from 'anitomyscript'
+  import type { TorrentResult } from 'hayase-extensions'
+
+  import { extensions } from '$lib/modules/extensions/extensions'
+  import * as Dialog from '$lib/components/ui/dialog'
+  import { settings, videoResolutions } from '$lib/modules/settings'
+  import { title, type Media } from '$lib/modules/anilist'
   import { click } from '$lib/modules/navigate'
   import { fastPrettyBytes, since } from '$lib/utils'
-  import { BadgeCheck, Database } from 'lucide-svelte'
-  import type { TorrentResult } from 'hayase-extensions'
 
   const termMapping: Record<string, {text: string, color: string}> = {}
   termMapping['5.1'] = termMapping['5.1CH'] = { text: '5.1', color: '#f67255' }
@@ -61,6 +64,7 @@
 <script lang='ts'>
   import ProgressButton from './ui/button/progress-button.svelte'
   import { Banner } from './ui/img'
+
   import { saved } from '$lib/modules/extensions'
 
   $: open = !!$searchStore.media

@@ -1,6 +1,7 @@
 <script lang='ts'>
-  import { SkeletonCard, SmallCard } from '$lib/components/ui/cards'
   import type { client } from '$lib/modules/anilist'
+
+  import { SkeletonCard, SmallCard } from '$lib/components/ui/cards'
 
   export let query: ReturnType<typeof client.search>
 

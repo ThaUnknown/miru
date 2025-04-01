@@ -1,21 +1,24 @@
 <script lang='ts'>
+  import { MagnifyingGlass } from 'svelte-radix'
+  import { FileImage, Trash, X } from 'lucide-svelte'
+  import { onMount, tick } from 'svelte'
+  import { toast } from 'svelte-sonner'
+
+  import { genres, years, seasons, formats, status, sort } from './values'
+
+  import type { VariablesOf } from 'gql.tada'
+  import type { Search } from '$lib/modules/anilist/queries'
+
   import { ComboBox } from '$lib/components/ui/combobox'
   import { Input, type FormInputEvent } from '$lib/components/ui/input'
-  import { MagnifyingGlass } from 'svelte-radix'
-  import { genres, years, seasons, formats, status, sort } from './values'
   import { Button } from '$lib/components/ui/button'
-  import { FileImage, Trash, X } from 'lucide-svelte'
   import { cn, debounce, traceAnime } from '$lib/utils'
   import { badgeVariants } from '$lib/components/ui/badge'
   import { click, dragScroll } from '$lib/modules/navigate'
   import { client } from '$lib/modules/anilist'
   import { BannerImage, hideBanner } from '$lib/components/ui/banner'
-  import { onMount, tick } from 'svelte'
   import { QueryCard } from '$lib/components/ui/cards'
   import { page } from '$app/stores'
-  import type { VariablesOf } from 'gql.tada'
-  import type { Search } from '$lib/modules/anilist/queries'
-  import { toast } from 'svelte-sonner'
 
   // util
 

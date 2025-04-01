@@ -1,7 +1,8 @@
 <script lang='ts'>
-  import { click } from '$lib/modules/navigate'
   import { VolumeX, Volume2 } from 'lucide-svelte'
   import { createEventDispatcher, onDestroy } from 'svelte'
+
+  import { click } from '$lib/modules/navigate'
 
   export let id: string
 

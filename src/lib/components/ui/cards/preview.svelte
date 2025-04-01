@@ -1,10 +1,12 @@
 <script lang='ts'>
   import { BookmarkButton, FavoriteButton, PlayButton } from '../button'
-  import { desc, duration, format, season, title, type Media } from '$lib/modules/anilist'
+  import { Banner } from '../img'
+
   import YoutubeIframe from './YoutubeIframe.svelte'
+
+  import { desc, duration, format, season, title, type Media } from '$lib/modules/anilist'
   import { cn } from '$lib/utils'
   import { of } from '$lib/modules/auth'
-  import { Banner } from '../img'
 
   export let media: Media
 

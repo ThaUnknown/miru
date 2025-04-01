@@ -3,21 +3,20 @@ import { offlineExchange } from '@urql/exchange-graphcache'
 import { makeDefaultStorage } from '@urql/exchange-graphcache/default-storage'
 import { authExchange } from '@urql/exchange-auth'
 import { refocusExchange } from '@urql/exchange-refocus'
-import type { ResultOf, VariablesOf } from 'gql.tada'
-import type { AnyVariables, TypedDocumentNode } from 'urql'
-
 import Bottleneck from 'bottleneck'
-
-import { safeLocalStorage, sleep } from '$lib/utils'
-import native from '$lib/modules/native'
+import { readable, writable, type Writable } from 'simple-store-svelte'
+import { derived } from 'svelte/store'
 
 import schema from './schema.json' with { type: 'json' }
 import { CustomLists, DeleteEntry, Entry, Following, FullMedia, FullMediaList, Schedule, Search, ToggleFavourite, UserLists, Viewer } from './queries'
 import { currentSeason, currentYear, lastSeason, lastYear, nextSeason, nextYear } from './util'
-
-import { readable, writable, type Writable } from 'simple-store-svelte'
 import gql from './gql'
-import { derived } from 'svelte/store'
+
+import type { ResultOf, VariablesOf } from 'gql.tada'
+import type { AnyVariables, TypedDocumentNode } from 'urql'
+
+import { safeLocalStorage, sleep } from '$lib/utils'
+import native from '$lib/modules/native'
 
 function arrayEqual <T> (a: T[], b: T[]) {
   return a.length === b.length && a.every((v, i) => v === b[i])

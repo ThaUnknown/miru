@@ -1,12 +1,16 @@
 <script lang='ts'>
   import { CalendarDays, Tv } from 'lucide-svelte'
-  import PreviewCard from './preview.svelte'
-  import { coverMedium, format, title } from '$lib/modules/anilist/util'
-  import type { Media } from '$lib/modules/anilist/types'
-  import { hover } from '$lib/modules/navigate'
-  import { goto } from '$app/navigation'
+
   import StatusDot from '../../StatusDot.svelte'
   import { Load } from '../img'
+
+  import PreviewCard from './preview.svelte'
+
+  import type { Media } from '$lib/modules/anilist/types'
+
+  import { coverMedium, format, title } from '$lib/modules/anilist/util'
+  import { hover } from '$lib/modules/navigate'
+  import { goto } from '$app/navigation'
 
   export let media: Media
 

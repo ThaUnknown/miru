@@ -1,12 +1,16 @@
-import { dedupeAiring, episodeByAirDate, isMovie, type Media, type MediaEdge } from '../anilist'
-import type { TorrentResult } from 'hayase-extensions'
-import { storage } from './storage'
-import { settings, type videoResolutions } from '../settings'
 import { get } from 'svelte/store'
 import anitomyscript, { type AnitomyResult } from 'anitomyscript'
-import type { EpisodesResponse } from '../anizip/types'
-import { options as extensionOptions, saved } from '$lib/modules/extensions'
+
+import { dedupeAiring, episodeByAirDate, isMovie, type Media, type MediaEdge } from '../anilist'
+import { settings, type videoResolutions } from '../settings'
 import native from '../native'
+
+import { storage } from './storage'
+
+import type { TorrentResult } from 'hayase-extensions'
+import type { EpisodesResponse } from '../anizip/types'
+
+import { options as extensionOptions, saved } from '$lib/modules/extensions'
 
 const exclusions = ['DTS', 'TrueHD', '[EMBER]']
 const isDev = location.hostname === 'localhost'

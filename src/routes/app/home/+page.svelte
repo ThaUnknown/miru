@@ -1,10 +1,12 @@
 <script lang='ts' context='module'>
-  import { client, currentSeason, currentYear } from '$lib/modules/anilist'
-  import { authAggregator } from '$lib/modules/auth'
   import { derived } from 'svelte/store'
+
   import type { Readable } from 'simple-store-svelte'
   import type { VariablesOf } from 'gql.tada'
   import type { Search } from '$lib/modules/anilist/queries'
+
+  import { authAggregator } from '$lib/modules/auth'
+  import { client, currentSeason, currentYear } from '$lib/modules/anilist'
 
   interface Section {
     title: string

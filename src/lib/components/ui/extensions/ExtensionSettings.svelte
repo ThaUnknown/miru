@@ -1,8 +1,10 @@
 <script lang='ts'>
-  import { Button } from '$lib/components/ui/button'
   import { Settings } from 'lucide-svelte'
-  import * as Dialog from '$lib/components/ui/dialog'
+
   import type { ExtensionConfig } from 'hayase-extensions'
+
+  import { Button } from '$lib/components/ui/button'
+  import * as Dialog from '$lib/components/ui/dialog'
   import { storage, options as exopts } from '$lib/modules/extensions'
   import { Input } from '$lib/components/ui/input'
   import { Label } from '$lib/components/ui/label'

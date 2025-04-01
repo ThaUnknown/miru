@@ -1,11 +1,12 @@
 <script lang='ts'>
+  import { persisted } from 'svelte-persisted-store'
+
   import Anilist from '$lib/components/icons/Anilist.svelte'
   import * as Avatar from '$lib/components/ui/avatar'
   import { Button } from '$lib/components/ui/button'
   import { Label } from '$lib/components/ui/label'
   import { Switch } from '$lib/components/ui/switch'
   import { client } from '$lib/modules/anilist'
-  import { persisted } from 'svelte-persisted-store'
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
 

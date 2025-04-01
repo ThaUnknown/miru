@@ -1,7 +1,10 @@
 <script lang='ts'>
-  import type { Writable } from 'svelte/store'
-  import { getPFP, type ChatUser } from '.'
   import { ExternalLink } from 'lucide-svelte'
+
+  import { getPFP, type ChatUser } from '.'
+
+  import type { Writable } from 'svelte/store'
+
   import { click } from '$lib/modules/navigate'
   import native from '$lib/modules/native'
 

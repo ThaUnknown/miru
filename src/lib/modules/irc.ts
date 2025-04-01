@@ -1,8 +1,11 @@
-import Client, { createChannelConstructor } from '@thaunknown/web-irc'
-import type IrcChannel from '@thaunknown/web-irc/channel'
 import { EventEmitter } from 'events'
+
+import Client, { createChannelConstructor } from '@thaunknown/web-irc'
 import { writable } from 'simple-store-svelte'
+
 import { decryptMessage, encryptMessage } from './crypt'
+
+import type IrcChannel from '@thaunknown/web-irc/channel'
 import type { ChatMessage, ChatUser } from '$lib/components/ui/chat'
 export interface IRCUser { nick: string, ident: string, hostname: string, modes: string[], tags: object }
 export interface PrivMessage {

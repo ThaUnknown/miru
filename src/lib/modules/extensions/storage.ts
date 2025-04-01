@@ -1,12 +1,14 @@
 import { set, getMany, delMany, del } from 'idb-keyval'
-import type { ExtensionConfig } from 'hayase-extensions'
-import Worker from './worker?worker'
-import type extensionLoader from './worker'
 import { releaseProxy, type Remote } from 'abslink'
 import { persisted } from 'svelte-persisted-store'
 import { wrap } from 'abslink/worker'
 import { get } from 'svelte/store'
 import { toast } from 'svelte-sonner'
+
+import Worker from './worker?worker'
+
+import type extensionLoader from './worker'
+import type { ExtensionConfig } from 'hayase-extensions'
 
 export const saved = persisted<Record<string, ExtensionConfig>>('extensions', {})
 export const options = persisted<Record<string, {options: Record<string, string | number | boolean | undefined>, enabled: boolean}>>('extensionoptions', {})

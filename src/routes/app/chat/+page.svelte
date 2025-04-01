@@ -3,9 +3,10 @@
 </script>
 
 <script lang='ts'>
+  import { TriangleAlert } from 'lucide-svelte'
+
   import { Button } from '$lib/components/ui/button'
   import { IRC } from '$lib/components/ui/irc'
-  import { TriangleAlert } from 'lucide-svelte'
 
   let agreed = prevAgreed
   function agree () {

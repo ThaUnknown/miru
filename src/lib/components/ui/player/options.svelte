@@ -1,14 +1,17 @@
 <script lang='ts'>
+  import { EllipsisVertical } from 'lucide-svelte'
+  import { tick } from 'svelte'
+  import Keybinds from 'svelte-keybinds'
+
+  import { normalizeTracks, type Chapter } from './util'
+
+  import type { Writable } from 'simple-store-svelte'
+  import type { HTMLAttributes } from 'svelte/elements'
+
   import * as Dialog from '$lib/components/ui/dialog'
   import * as Tree from '$lib/components/ui/tree'
   import { Button } from '$lib/components/ui/button'
-  import { EllipsisVertical } from 'lucide-svelte'
-  import { normalizeTracks, type Chapter } from './util'
-  import type { Writable } from 'simple-store-svelte'
-  import { tick } from 'svelte'
-  import type { HTMLAttributes } from 'svelte/elements'
   import { cn, toTS } from '$lib/utils'
-  import Keybinds from 'svelte-keybinds'
 
   export let wrapper: HTMLDivElement
 

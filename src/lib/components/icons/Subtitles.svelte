@@ -1,5 +1,6 @@
 <script lang='ts'>
   import { Icon, type Attrs } from 'lucide-svelte'
+
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   const iconNode: Array<[elementName: keyof SvelteHTMLElements, attrs: Attrs]> = [

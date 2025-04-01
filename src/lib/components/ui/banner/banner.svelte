@@ -6,9 +6,10 @@
 </script>
 
 <script lang='ts'>
+  import { get } from 'svelte/store'
+
   import FullBanner from './full-banner.svelte'
   import SkeletonBanner from './skeleton-banner.svelte'
-  import { get } from 'svelte/store'
 
   if (get(query.isPaused$)) query.resume()
 </script>

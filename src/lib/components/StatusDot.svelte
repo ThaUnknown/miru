@@ -1,7 +1,9 @@
 <script lang='ts'>
-  import { cn } from '$lib/utils'
-  import type { HTMLAttributes } from 'svelte/elements'
   import { tv, type VariantProps } from 'tailwind-variants'
+
+  import type { HTMLAttributes } from 'svelte/elements'
+
+  import { cn } from '$lib/utils'
 
   const dotvariants = tv({
     base: 'inline-flex w-[0.55rem] h-[0.55rem] me-1 bg-blue-600 rounded-full',

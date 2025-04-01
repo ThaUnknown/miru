@@ -3,7 +3,6 @@
   import { Button } from '$lib/components/ui/button'
   import { Input } from '$lib/components/ui/input'
   import { Switch } from '$lib/components/ui/switch'
-
   import native from '$lib/modules/native'
   import { settings, SUPPORTS } from '$lib/modules/settings'
 

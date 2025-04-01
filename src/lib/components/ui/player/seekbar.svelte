@@ -27,11 +27,14 @@
 </script>
 
 <script lang='ts'>
-  import { toTS } from '$lib/utils'
 
   import { createEventDispatcher } from 'svelte'
+
   import { getChapterTitle } from './util'
+
   import type Thumbnailer from './thumbnailer'
+
+  import { toTS } from '$lib/utils'
 
   const dispatch = createEventDispatcher<{
     seeking: null

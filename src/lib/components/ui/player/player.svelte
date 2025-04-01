@@ -1,4 +1,20 @@
 <script lang='ts'>
+  import { Cast, FastForward, Maximize, Minimize, Pause, Rewind, SkipBack, SkipForward, Captions, Contrast, List, PictureInPicture2, Proportions, RefreshCcw, RotateCcw, RotateCw, ScreenShare, Volume1, Volume2, VolumeX } from 'lucide-svelte'
+  import { writable, type Writable } from 'simple-store-svelte'
+  import { persisted } from 'svelte-persisted-store'
+  import { toast } from 'svelte-sonner'
+  import { fade } from 'svelte/transition'
+  import { onMount } from 'svelte'
+  import { loadWithDefaults } from 'svelte-keybinds'
+
+  import Seekbar from './seekbar.svelte'
+  import { autoPiP, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
+  import Thumbnailer from './thumbnailer'
+  import Options from './options.svelte'
+  import Volume from './volume.svelte'
+
+  import type { SvelteMediaTimeRange } from 'svelte/elements'
+
   import PictureInPictureExit from '$lib/components/icons/PictureInPictureExit.svelte'
   import * as Sheet from '$lib/components/ui/sheet'
   import PictureInPicture from '$lib/components/icons/PictureInPicture.svelte'
@@ -7,26 +23,15 @@
   import { Button } from '$lib/components/ui/button'
   import { settings } from '$lib/modules/settings'
   import { bindPiP, toTS } from '$lib/utils'
-  import { Cast, FastForward, Maximize, Minimize, Pause, Rewind, SkipBack, SkipForward, Captions, Contrast, List, PictureInPicture2, Proportions, RefreshCcw, RotateCcw, RotateCw, ScreenShare, Volume1, Volume2, VolumeX } from 'lucide-svelte'
-  import { writable, type Writable } from 'simple-store-svelte'
-  import { persisted } from 'svelte-persisted-store'
-  import { toast } from 'svelte-sonner'
-  import Seekbar from './seekbar.svelte'
-  import type { SvelteMediaTimeRange } from 'svelte/elements'
-  import { fade } from 'svelte/transition'
-  import { autoPiP, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
-  import Thumbnailer from './thumbnailer'
-  import { onMount } from 'svelte'
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
   import { goto } from '$app/navigation'
-  import Options from './options.svelte'
   import EpisodesList from '$lib/components/EpisodesList.svelte'
   import { episodes } from '$lib/modules/anizip'
-  import Volume from './volume.svelte'
-  import { loadWithDefaults } from 'svelte-keybinds'
 
   export let mediaInfo: MediaInfo
+  export let prev: null | (() => void)
+  export let next: null | (() => void)
   // bindings
   // values
   let videoHeight = 9
@@ -106,12 +111,6 @@
         track.selected = track.id === id
       }
     }
-  }
-  function prev () {
-  // TODO
-  }
-  function next () {
-  // TODO
   }
   function seek (time: number) {
     video.currentTime = currentTime = currentTime + time
@@ -203,7 +202,7 @@
         currentTime = currentTime + 85
       } else {
         const endtime = current.end
-        if ((safeduration - endtime | 0) === 0) return next()
+        if ((safeduration - endtime | 0) === 0) return next?.()
         currentTime = endtime
         currentSkippable = null
       }
@@ -217,7 +216,16 @@
     video.currentTime = currentTime
   }
 
-  let stats: any | null = null
+  let stats: {
+    fps?: string
+    presented?: number
+    dropped?: number
+    processing?: string
+    viewport?: string
+    resolution?: string
+    buffer?: string
+    speed?: number
+  } | null = null
   let requestCallback: number | null = null
   function toggleStats () {
     if (requestCallback) {
@@ -313,14 +321,14 @@
       desc: 'Play/Pause'
     },
     KeyN: {
-      fn: () => next(),
+      fn: () => next?.(),
       id: 'skip_next',
       icon: SkipForward,
       type: 'icon',
       desc: 'Next Episode'
     },
     KeyB: {
-      fn: () => prev(),
+      fn: () => prev?.(),
       id: 'skip_previous',
       icon: SkipBack,
       type: 'icon',
@@ -471,9 +479,22 @@
         <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0' loading='lazy' decoding='async' />
       {/await}
     {/if}
+    {#if stats}
+      <div class='absolute top-10 left-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default px-3 py-2 rounded'>
+        <button class='absolute right-3 top-1' type='button' use:click={toggleStats}>×</button>
+        FPS: {stats.fps}<br />
+        Presented frames: {stats.presented}<br />
+        Dropped frames: {stats.dropped}<br />
+        Frame time: {stats.processing}<br />
+        Viewport: {stats.viewport}<br />
+        Resolution: {stats.resolution}<br />
+        Buffer health: {stats.buffer}<br />
+        Playback speed: x{stats.speed?.toFixed(1)}<br />
+      </div>
+    {/if}
     <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} bind:playbackRate class='mobile:inline-flex hidden p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />
     <div class='mobile:flex hidden gap-4 absolute items-center select:opacity-100 cursor-default' class:opacity-0={immersed}>
-      <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost'>
+      <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' disabled={!prev}>
         <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
       </Button>
       <Button class='p-3 w-24 h-24 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' on:click={playPause}>
@@ -483,7 +504,7 @@
           <Pause size='42px' fill='currentColor' strokeWidth='1' />
         {/if}
       </Button>
-      <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost'>
+      <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' disabled={!next}>
         <SkipForward size='24px' fill='currentColor' strokeWidth='1' />
       </Button>
     </div>
@@ -539,12 +560,16 @@
             <Pause size='24px' fill='currentColor' strokeWidth='1' />
           {/if}
         </Button>
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={prev}>
-          <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
-        </Button>
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={next}>
-          <SkipForward size='24px' fill='currentColor' strokeWidth='1' />
-        </Button>
+        {#if prev}
+          <Button class='p-3 w-12 h-12' variant='ghost' on:click={prev}>
+            <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
+          </Button>
+        {/if}
+        {#if next}
+          <Button class='p-3 w-12 h-12' variant='ghost' on:click={next}>
+            <SkipForward size='24px' fill='currentColor' strokeWidth='1' />
+          </Button>
+        {/if}
         <Volume bind:volume={$volume} bind:muted />
       </div>
       <div class='flex gap-2'>

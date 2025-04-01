@@ -1,6 +1,9 @@
 <script lang='ts'>
   import { Bell, Clapperboard, Maximize2, Share2 } from 'lucide-svelte'
   import { onDestroy } from 'svelte'
+
+  import EntryEditor from './EntryEditor.svelte'
+
   import type { PageData } from './$types'
 
   import * as Dialog from '$lib/components/ui/dialog'
@@ -9,12 +12,10 @@
   import { bannerSrc, hideBanner } from '$lib/components/ui/banner'
   import { PlayButton, Button, BookmarkButton, FavoriteButton } from '$lib/components/ui/button'
   import { dragScroll } from '$lib/modules/navigate'
-
   import { cover, desc, duration, format, relation, season, status, title } from '$lib/modules/anilist'
   import { authAggregator, of } from '$lib/modules/auth'
   import native from '$lib/modules/native'
   import { cn } from '$lib/utils'
-  import EntryEditor from './EntryEditor.svelte'
   import EpisodesList from '$lib/components/EpisodesList.svelte'
   import MyAnimeList from '$lib/components/icons/MyAnimeList.svelte'
   import Anilist from '$lib/components/icons/Anilist.svelte'

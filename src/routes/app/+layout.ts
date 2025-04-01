@@ -1,4 +1,5 @@
 import { error } from '@sveltejs/kit'
+
 import native from '$lib/modules/native'
 
 export function load () {

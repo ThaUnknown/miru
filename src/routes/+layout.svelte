@@ -2,9 +2,10 @@
   import '../app.css'
   import '@fontsource-variable/nunito'
   import '$lib/modules/navigate'
+  import { ProgressBar } from '@prgm/sveltekit-progress-bar'
+
   import Backplate from '$lib/components/Backplate.svelte'
   import { Menubar } from '$lib/components/ui/menubar'
-  import { ProgressBar } from '@prgm/sveltekit-progress-bar'
   import { Toaster } from '$lib/components/ui/sonner'
   import Online from '$lib/components/Online.svelte'
 

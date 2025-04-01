@@ -1,10 +1,13 @@
 <script lang='ts'>
   import { Home, Search, Calendar, Users, MessagesSquare, Heart, Settings, LogIn } from 'lucide-svelte'
-  import Hub from '$lib/components/icons/Hub.svelte'
-  import SidebarButton from './SidebarButton.svelte'
+
   import { BannerImage } from '../banner'
-  import native from '$lib/modules/native'
   import { Button } from '../button'
+
+  import SidebarButton from './SidebarButton.svelte'
+
+  import Hub from '$lib/components/icons/Hub.svelte'
+  import native from '$lib/modules/native'
   import client from '$lib/modules/auth/client'
   import * as Avatar from '$lib/components/ui/avatar'
 

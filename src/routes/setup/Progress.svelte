@@ -1,6 +1,7 @@
 <script lang='ts'>
-  import { Badge } from '$lib/components/ui/badge'
   import { HardDrive, Network, Puzzle } from 'lucide-svelte'
+
+  import { Badge } from '$lib/components/ui/badge'
 
   export let step = 0
 
