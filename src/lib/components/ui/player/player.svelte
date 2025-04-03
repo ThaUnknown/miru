@@ -29,9 +29,9 @@
   import EpisodesList from '$lib/components/EpisodesList.svelte'
   import { episodes } from '$lib/modules/anizip'
 
-  export let mediaInfo: MediaInfo
-  export let prev: null | (() => void)
-  export let next: null | (() => void)
+  export let mediaInfo: MediaInfo | undefined = undefined
+  export let prev: (() => void) | undefined = undefined
+  export let next: (() => void) | undefined = undefined
   // bindings
   // values
   let videoHeight = 9
@@ -83,16 +83,16 @@
   $: fullscreenElement ? screen.orientation.lock('landscape') : screen.orientation.unlock()
 
   function checkAudio () {
-    if ('audioTracks' in HTMLVideoElement.prototype) {
-      if (!video.audioTracks!.length) {
+    if (video.audioTracks) {
+      if (!video.audioTracks.length) {
         toast.error('Audio Codec Unsupported', {
           description: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in RSS settings."
         })
-      } else if (video.audioTracks!.length > 1) {
-        const preferredTrack = [...video.audioTracks!].find(({ language }) => language === $settings.audioLanguage)
+      } else if (video.audioTracks.length > 1) {
+        const preferredTrack = [...video.audioTracks].find(({ language }) => language === $settings.audioLanguage)
         if (preferredTrack) return selectAudio(preferredTrack.id)
 
-        const japaneseTrack = [...video.audioTracks!].find(({ language }) => language === 'jpn')
+        const japaneseTrack = [...video.audioTracks].find(({ language }) => language === 'jpn')
         if (japaneseTrack) return selectAudio(japaneseTrack.id)
       }
     }
@@ -154,9 +154,9 @@
   }
   let animations: Animation[] = []
 
-  const thumbnailer = new Thumbnailer(mediaInfo.url)
+  const thumbnailer = new Thumbnailer(mediaInfo?.url)
 
-  $: thumbnailer.updateSource(mediaInfo.url)
+  $: thumbnailer.updateSource(mediaInfo?.url)
 
   onMount(() => {
     thumbnailer.setVideo(video)
@@ -267,7 +267,7 @@
 
   $: seekIndex = Math.max(0, Math.floor(seekPercent * safeduration / 100 / thumbnailer.interval))
 
-  $: native.setMediaSession(mediaInfo.session)
+  $: if (mediaInfo?.session) native.setMediaSession(mediaInfo.session)
   $: native.setPositionState({ duration: safeduration, position: Math.max(0, currentTime), playbackRate })
   $: native.setPlayBackState(readyState === 0 ? 'none' : paused ? 'paused' : 'playing')
   native.setActionHandler('play', playPause)
@@ -275,12 +275,16 @@
   native.setActionHandler('seekto', ({ seekTime }) => seekTo(seekTime ?? 0))
   native.setActionHandler('seekbackward', () => seek(-2))
   native.setActionHandler('seekforward', () => seek(2))
-  native.setActionHandler('previoustrack', prev)
-  native.setActionHandler('nexttrack', next)
+  native.setActionHandler('previoustrack', () => prev?.())
+  native.setActionHandler('nexttrack', () => next?.())
   // about://flags/#auto-picture-in-picture-for-video-playback
   native.setActionHandler('enterpictureinpicture', () => pip(true))
 
   let openSubs: () => Promise<void>
+
+  function cycleSubtitles () {
+  // TODO
+  }
 
   function seekBarKey (event: KeyboardEvent) {
     // left right up down return preventdefault
@@ -452,9 +456,9 @@
 
 <svelte:document bind:fullscreenElement use:bindPiP={pictureInPictureElement} />
 
-<div style:aspect-ratio='{videoWidth} / {videoHeight}' class='max-w-full max-h-full min-w-[clamp(0%,700px,100%)] relative content-center fullscreen:bg-black fullscreen:rounded-none rounded-xl overflow-clip text-left' bind:this={wrapper}>
-  <video class='w-full max-h-full grow bg-black' preload='auto' class:cursor-none={immersed} class:object-cover={fitWidth}
-    src={mediaInfo.url}
+<div class='w-full h-full relative content-center fullscreen:bg-black overflow-clip text-left' bind:this={wrapper}>
+  <video class='w-full h-full grow bg-black' preload='auto' class:cursor-none={immersed} class:object-cover={fitWidth}
+    src={mediaInfo?.url}
     bind:videoHeight
     bind:videoWidth
     bind:currentTime
@@ -527,16 +531,18 @@
       </div>
     {/each}
   </div>
-  <div class='absolute w-full bottom-0 flex flex-col gradient px-10 py-4 transition-opacity select:opacity-100 cursor-default' class:opacity-0={immersed}>
+  <div class='absolute w-full bottom-0 flex flex-col gradient px-4 py-3 transition-opacity select:opacity-100 cursor-default' class:opacity-0={immersed}>
     <div class='flex justify-between gap-12 items-end'>
       <div class='flex flex-col gap-2 text-left cursor-pointer'>
-        <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
+        <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo?.media.id}`)}>{mediaInfo?.session.title ?? 'Unknown Anime'}</div>
         <Sheet.Root portal={wrapper}>
-          <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo.session.description}</Sheet.Trigger>
+          <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo?.session.description ?? 'Unknown Episode'}</Sheet.Trigger>
           <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black'>
-            {#await episodes(Number(mediaInfo.media.id)) then eps}
-              <EpisodesList {eps} media={mediaInfo.media} />
-            {/await}
+            {#if mediaInfo?.media}
+              {#await episodes(mediaInfo.media.id) then eps}
+                <EpisodesList {eps} media={mediaInfo.media} />
+              {/await}
+            {/if}
           </Sheet.Content>
         </Sheet.Root>
       </div>

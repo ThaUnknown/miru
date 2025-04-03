@@ -171,13 +171,6 @@ details:active,
   background-image: var(--bg);
 }
 
-.border-gradient-to-t {
-  border-image: fill 0 linear-gradient(#0008, #000);
-}
-
-.border-gradient-to-l {
-  border-image: fill 0 linear-gradient(90deg, hsl(var(--background) / 1) 32%, hsl(var(--background) / 0.9) 100%);
-}
 
 .sr-only {
   display: none !important;

@@ -1,3 +1,5 @@
+import process from 'node:process'
+
 import adapter from '@sveltejs/adapter-static'
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 
@@ -13,6 +15,9 @@ const config = {
     adapter: adapter({ fallback: 'index.html' }),
     alias: {
       '@/*': './path/to/lib/*'
+    },
+    version: {
+      name: process.env.npm_package_version
     }
   },
   runtime: ''

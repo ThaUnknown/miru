@@ -1,5 +1,26 @@
 import type { AuthResponse, Native } from '../../app'
 
+const dummyFiles = [
+  {
+    name: 'My Happy Marriage Season 2.webm',
+    hash: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    type: 'video/webm',
+    size: 1234567890,
+    path: '/Amebku.webm',
+    url: '/Ameku.webm',
+    id: 0
+  }
+// {
+//   name: 'My Happy Marriage Season 2.mkv',
+//   hash: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+//   type: 'video/mkv',
+//   size: 1234567890,
+//   path: '/video.mkv',
+//   url: '/video.mkv',
+//   id: 1
+// }
+]
+
 export default Object.assign<Native, Partial<Native>>({
   authAL: (url: string) => {
     return new Promise<AuthResponse>((resolve, reject) => {
@@ -37,5 +58,8 @@ export default Object.assign<Native, Partial<Native>>({
   checkAvailableSpace: () => new Promise(resolve => setTimeout(() => resolve(Math.floor(Math.random() * (1e10 - 1e8 + 1) + 1e8)), 1000)),
   checkIncomingConnections: () => new Promise(resolve => setTimeout(() => resolve(Math.random() > 0.5), 5000)),
   updatePeerCounts: async () => [],
-  isApp: false
-}, globalThis.native)
+  isApp: false,
+  playTorrent: async () => dummyFiles,
+  getAttachmentsURL: async () => location.origin
+  // @ts-expect-error idk
+}, globalThis.native as Partial<Native>)

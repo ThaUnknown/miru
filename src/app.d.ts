@@ -20,6 +20,16 @@ export interface Track {
   language: string
 }
 
+export interface TorrentFile {
+  name: string
+  hash: string
+  type: string
+  size: number
+  path: string
+  url: string
+  id: number
+}
+
 export interface Native {
   authAL: (url: string) => Promise<AuthResponse>
   restart: () => Promise<void>
@@ -44,6 +54,8 @@ export interface Native {
   checkAvailableSpace: (_?: unknown) => Promise<number>
   checkIncomingConnections: (_?: unknown) => Promise<boolean>
   updatePeerCounts: (hashes: string[]) => Promise<Array<{ hash, complete, downloaded, incomplete }>>
+  playTorrent: (id: string) => Promise<TorrentFile[]>
+  getAttachmentsURL: () => Promise<string>
   isApp: boolean
 }
 
@@ -57,7 +69,6 @@ declare global {
     }
     // interface Platform {}
   }
-  var native: Native
 
   interface HTMLMediaElement {
     videoTracks?: Track[]

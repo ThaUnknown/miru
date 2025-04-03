@@ -9,8 +9,8 @@
 
   type $$Props = HTMLAttributes<HTMLImageElement> & { media: Media }
 
-  const src = banner(media)
-  const isYoutube = src?.startsWith('https://i.ytimg.com/')
+  $: src = banner(media)
+  $: isYoutube = src?.startsWith('https://i.ytimg.com/')
   let className: $$Props['class'] = ''
   export { className as class }
 

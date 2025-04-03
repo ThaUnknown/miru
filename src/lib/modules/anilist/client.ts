@@ -1,4 +1,4 @@
-import { Client, fetchExchange, queryStore, type OperationResultState } from '@urql/svelte'
+import { Client, fetchExchange, queryStore, type OperationResultState, gql as _gql } from '@urql/svelte'
 import { offlineExchange } from '@urql/exchange-graphcache'
 import { makeDefaultStorage } from '@urql/exchange-graphcache/default-storage'
 import { authExchange } from '@urql/exchange-auth'
@@ -6,17 +6,20 @@ import { refocusExchange } from '@urql/exchange-refocus'
 import Bottleneck from 'bottleneck'
 import { readable, writable, type Writable } from 'simple-store-svelte'
 import { derived } from 'svelte/store'
+import lavenshtein from 'js-levenshtein'
 
 import schema from './schema.json' with { type: 'json' }
-import { CustomLists, DeleteEntry, Entry, Following, FullMedia, FullMediaList, Schedule, Search, ToggleFavourite, UserLists, Viewer } from './queries'
+import { CustomLists, DeleteEntry, Entry, Following, FullMedia, FullMediaList, IDMedia, Schedule, Search, ToggleFavourite, UserLists, Viewer } from './queries'
 import { currentSeason, currentYear, lastSeason, lastYear, nextSeason, nextYear } from './util'
 import gql from './gql'
 
 import type { ResultOf, VariablesOf } from 'gql.tada'
-import type { AnyVariables, TypedDocumentNode } from 'urql'
+import type { AnyVariables, RequestPolicy, TypedDocumentNode } from 'urql'
+import type { Media } from './types'
 
 import { safeLocalStorage, sleep } from '$lib/utils'
 import native from '$lib/modules/native'
+import { dev } from '$app/environment'
 
 function arrayEqual <T> (a: T[], b: T[]) {
   return a.length === b.length && a.every((v, i) => v === b[i])
@@ -40,6 +43,15 @@ function deferred () {
   return { resolve, promise }
 }
 
+function getDistanceFromTitle (media: Media & {lavenshtein?: number}, name: string) {
+  const titles = Object.values(media.title ?? {}).filter(v => v).map(title => lavenshtein(title!.toLowerCase(), name.toLowerCase()))
+  const synonyms = (media.synonyms ?? []).filter(v => v).map(title => lavenshtein(title!.toLowerCase(), name.toLowerCase()) + 2)
+  const distances = [...titles, ...synonyms]
+  const min = distances.reduce((prev, curr) => prev < curr ? prev : curr)
+  media.lavenshtein = min
+  return media as Media & {lavenshtein: number}
+}
+
 class AnilistClient {
   storagePromise = deferred()
   storage = makeDefaultStorage({
@@ -49,13 +61,12 @@ class AnilistClient {
   })
 
   client = new Client({
-    url: 'https://graphql.anilist.co', // TODO: uncoment fetch, its annoying for debugging stack tracess
-    // fetch: (req: RequestInfo | URL, opts?: RequestInit) => this.handleRequest(req, opts),
+    url: 'https://graphql.anilist.co',
+    fetch: dev ? fetch : (req: RequestInfo | URL, opts?: RequestInit) => this.handleRequest(req, opts),
     exchanges: [
       refocusExchange(),
       offlineExchange({
         schema: schema as Parameters<typeof offlineExchange>[0]['schema'],
-        logger: (...args) => console.log(...args),
         storage: this.storage,
         updates: {
           Mutation: {
@@ -122,6 +133,11 @@ class AnilistClient {
                 return { ...data, MediaListCollection: { ...data.MediaListCollection, lists } }
               })
             }
+          }
+        },
+        resolvers: {
+          Query: {
+            Media: (parent, { id }) => ({ __typename: 'Media', id })
           }
         },
         optimistic: {
@@ -318,6 +334,58 @@ class AnilistClient {
     return queryStore({ client: this.client, query: Search, variables, pause })
   }
 
+  async searchCompound (flattenedTitles: Array<{key: string, title: string, year?: string, isAdult: boolean}>) {
+    if (!flattenedTitles.length) return []
+    // isAdult doesn't need an extra variable, as the title is the same regardless of type, so we re-use the same variable for adult and non-adult requests
+
+    const requestVariables = flattenedTitles.reduce<Record<`v${number}`, string>>((obj, { title, isAdult }, i) => {
+      if (isAdult && i !== 0) return obj
+      obj[`v${i}`] = title
+      return obj
+    }, {})
+
+    const queryVariables = flattenedTitles.reduce<string[]>((arr, { isAdult }, i) => {
+      if (isAdult && i !== 0) return arr
+      arr.push(`$v${i}: String`)
+      return arr
+    }, []).join(', ')
+    const fragmentQueries = flattenedTitles.map(({ year, isAdult }, i) => /* js */`
+    v${i}: Page(perPage: 10) {
+      media(type: ANIME, search: $v${(isAdult && i !== 0) ? i - 1 : i}, status_in: [RELEASING, FINISHED], isAdult: ${!!isAdult} ${year ? `, seasonYear: ${year}` : ''}) {
+        ...med
+      }
+    }`).join(',')
+
+    const query = _gql/* gql */`
+    query(${queryVariables}) {
+      ${fragmentQueries}
+    }
+    
+    fragment med on Media {
+      id,
+      title {
+        romaji,
+        english,
+        native
+      },
+      synonyms
+    }`
+
+    const res = await this.client.query<Record<string, {media: Media[]}>>(query, requestVariables)
+
+    const searchResults: Record<string, number> = {}
+    for (const [variableName, { media }] of Object.entries(res.data!)) {
+      if (!media.length) continue
+      const titleObject = flattenedTitles[Number(variableName.slice(1))]!
+      if (searchResults[titleObject.key]) continue
+      searchResults[titleObject.key] = media.map(media => getDistanceFromTitle(media, titleObject.title)).reduce((prev, curr) => prev.lavenshtein <= curr.lavenshtein ? prev : curr).id
+    }
+
+    const ids = Object.values(searchResults)
+    const search = await this.client.query(Search, { ids, perPage: 50 })
+    return Object.entries(searchResults).map(([filename, id]) => [filename, search.data!.Page!.media!.find(media => media!.id === id)]) as Array<[string, Media | undefined]>
+  }
+
   schedule () {
     return queryStore({ client: this.client, query: Schedule, variables: { seasonCurrent: currentSeason, seasonYearCurrent: currentYear, seasonLast: lastSeason, seasonYearLast: lastYear, seasonNext: nextSeason, seasonYearNext: nextYear }, pause: true })
   }
@@ -332,6 +400,10 @@ class AnilistClient {
 
   async entry (variables: VariablesOf<typeof Entry>) {
     return await this.client.mutation(Entry, variables)
+  }
+
+  async single (id: number, requestPolicy: RequestPolicy = 'cache-first') {
+    return await this.client.query(IDMedia, { id }, { requestPolicy })
   }
 
   following (id: number) {

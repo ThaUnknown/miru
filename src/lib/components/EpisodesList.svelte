@@ -25,8 +25,6 @@
   export let eps: EpisodesResponse | null
   export let media: Media
 
-  // TODO: add watch progress from local sync
-
   const episodeCount = Math.max(_episodes(media) ?? 0, eps?.episodeCount ?? 0)
 
   const { episodes, specialCount } = eps ?? {}
@@ -78,7 +76,7 @@
         {@const target = _progress + 1 === episode}
         <div use:click={() => play(episode)}
           class={cn(
-            'select:scale-[1.05] select:shadow-lg scale-100 transition-all duration-200 shrink-0 ease-out focus-visible:ring-ring focus-visible:ring-1 rounded-md bg-neutral-950 text-secondary-foreground select:bg-neutral-900 flex w-full max-h-28 pointer relative overflow-hidden group',
+            'select:scale-[1.05] select:shadow-lg scale-100 transition-[transform,box-shadow] duration-200 shrink-0 ease-out focus-visible:ring-ring focus-visible:ring-1 rounded-md bg-neutral-950 text-secondary-foreground select:bg-neutral-900 flex w-full max-h-28 pointer relative overflow-hidden group',
             target && 'ring-ring ring-1',
             filler && '!ring-yellow-400 ring-1'
           )}>
@@ -90,8 +88,8 @@
                   {length ?? media.duration}m
                 </div>
               {/if}
-              <div class='absolute flex items-center justify-center w-full h-full bg-black group-select:bg-opacity-50 bg-opacity-0 duration-300 text-white transition-all ease-out top-0'>
-                <Play class='size-6 scale-75 opacity-0 group-select:opacity-100 group-select:scale-100 duration-300 transition-all ease-out' fill='currentColor' />
+              <div class='absolute flex items-center justify-center w-full h-full bg-black group-select:bg-opacity-50 bg-opacity-0 duration-200 text-white transition-[background] ease-out top-0'>
+                <Play class='size-6 scale-75 opacity-0 group-select:opacity-100 group-select:scale-100 duration-200 transition-[transform,opacity] ease-out' fill='currentColor' />
               </div>
             </div>
           {/if}

@@ -39,7 +39,6 @@
     await sleep(790)
     isAnimating = isSpinning = isFlying = false
   }
-  // TODO: finish :^)
   // @ts-expect-error non-standard API
   const idleDetector = new IdleDetector()
   idleDetector.addEventListener('change', () => {

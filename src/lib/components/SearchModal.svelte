@@ -58,6 +58,7 @@
     return simpleName.replace(/[[{(]\s*[\]})]/g, '').replace(/\s+/g, ' ').trim()
   }
 
+  // episode is optional here, but is actually always defined
   export const searchStore = writable<{episode?: number, media?: Media}>({})
 </script>
 
@@ -66,6 +67,8 @@
   import { Banner } from './ui/img'
 
   import { saved } from '$lib/modules/extensions'
+  import { server } from '$lib/modules/torrent'
+  import { goto } from '$app/navigation'
 
   $: open = !!$searchStore.media
 
@@ -78,8 +81,9 @@
   let inputText = ''
 
   function play (result: TorrentResult & { parseObject: AnitomyResult, extension: Set<string> }) {
+    server.play(result.hash, $searchStore.media!, $searchStore.episode!)
+    goto('/app/player/')
     close(false)
-  // TODO
   }
 
   async function playBest () {
@@ -140,7 +144,9 @@
 <Dialog.Root bind:open onOpenChange={close} portal='#root'>
   <Dialog.Content class='bg-black h-full lg:border-x-4 border-b-0 max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex lg:rounded-t-xl overflow-hidden'>
     <div class='absolute top-0 left-0 w-full h-full max-h-28 overflow-hidden'>
-      <Banner media={$searchStore.media} class='object-cover w-full h-full absolute bottom-[0.5px] left-0 -z-10' />
+      {#if $searchStore.media}
+        <Banner media={$searchStore.media} class='object-cover w-full h-full absolute bottom-[0.5px] left-0 -z-10' />
+      {/if}
       <div class='w-full h-full banner-2' />
     </div>
     <div class='gap-4 w-full relative h-full flex flex-col pt-6'>
@@ -209,7 +215,9 @@
                     <div class='text-xl font-bold text-nowrap'>{result.parseObject.release_group && result.parseObject.release_group.length < 20 ? result.parseObject.release_group : 'No Group'}</div>
                     <div class='ml-auto flex gap-2 self-start'>
                       {#each result.extension as id (id)}
-                        <img src={$saved[id].icon} alt={id} class='size-4' title='Provided by {id}' decoding='async' loading='lazy' />
+                        {#if $saved[id]}
+                          <img src={$saved[id].icon} alt={id} class='size-4' title='Provided by {id}' decoding='async' loading='lazy' />
+                        {/if}
                       {/each}
                     </div>
                   </div>

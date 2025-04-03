@@ -1,7 +1,8 @@
 <script lang='ts' context='module'>
   import { writable } from 'simple-store-svelte'
 
-  import { safeBanner, type Media } from '$lib/modules/anilist'
+  import type { Media } from '$lib/modules/anilist'
+
   import { cn } from '$lib/utils'
 
   export const bannerSrc = writable<Media | null>(null)
@@ -10,19 +11,31 @@
 </script>
 
 <script lang='ts'>
+  import { Banner } from '../img'
+
   import type { HTMLAttributes } from 'svelte/elements'
 
   type $$Props = HTMLAttributes<HTMLImageElement>
 
-  $: src = $bannerSrc && safeBanner($bannerSrc)
   let className: $$Props['class'] = ''
   export { className as class } // TODO: needs nice animations, should update to coverimage on mobile width
 </script>
 
-{#await src then src}
-  <div class={cn('object-cover w-screen absolute top-0 left-0 h-full overflow-hidden pointer-events-none bg-black', className)}>
-    {#if src}
-      <div class='min-w-[100vw] w-screen h-[30rem] bg-url bg-center bg-cover opacity-100 transition-opacity duration-500 border-gradient-to-t' style:--bg='url({src})' class:!opacity-45={$hideBanner} />
-    {/if}
+{#if $bannerSrc}
+  <div class={cn('object-cover w-screen absolute top-0 left-0 h-full overflow-hidden pointer-events-none bg-black banner', className)}>
+    {#key $bannerSrc}
+      <Banner media={$bannerSrc} class='min-w-[100vw] w-screen h-[30rem] object-cover opacity-100 transition-opacity duration-500 banner-gr relative' />
+    {/key}
   </div>
-{/await}
+{/if}
+
+<style>
+  :global(.banner-gr::after) {
+    content: '';
+    position: absolute;
+    left: 0 ; bottom: 0;
+    /* when clicking, translate fucks up the position, and video might leak down 1 or 2 pixels, stickig under the gradient, look bad */
+    width: 100%; height: 100% ;
+    background: linear-gradient(#0008, #000);
+  }
+</style>

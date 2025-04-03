@@ -21,7 +21,6 @@ export interface MediaInfo {
   url: string
   media: Media
   episode: number
-  forced: boolean
   session: SessionMetadata
 }
 

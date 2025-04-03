@@ -27,7 +27,6 @@
 </script>
 
 <script lang='ts'>
-
   import { createEventDispatcher } from 'svelte'
 
   import { getChapterTitle } from './util'
@@ -150,7 +149,7 @@
     </div>
   {/each}
   {#if !seeking && seek}
-    <div class='absolute w-full transform-gpu flex pointer-events-none group-hover/seekbar:opacity-100 opacity-0 bottom-9' style:--tw-translate-x='clamp(64px, {clamp(seek)}%, calc(100% - 64px))'>
+    <div class='absolute w-full transform-gpu flex pointer-events-none group-hover/seekbar:opacity-100 opacity-0 bottom-9' style:--tw-translate-x='clamp(70px, {clamp(seek)}%, calc(100% - 70px))'>
       <div class='-translate-x-1/2 text-sm leading-none text-nowrap flex flex-col justify-center items-center gap-1 rounded-lg bg-neutral-200 border-white border py-2 px-3 has-[img]:p-0 text-zinc-900 shadow-lg'>
         {#await thumbnailer.getThumbnail(seekIndex)}
           {#if title}

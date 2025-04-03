@@ -9,28 +9,6 @@ export function banner (media: Pick<Media, 'trailer' | 'bannerImage' | 'coverIma
   return media.coverImage?.extraLarge as string | undefined
 }
 
-const sizes = ['hq720', 'sddefault', 'hqdefault', 'mqdefault', 'default']
-
-export async function safeBanner (media: Pick<Media, 'trailer' | 'bannerImage' | 'coverImage'>): Promise<string | undefined> { // TODO: this needs to be a component
-  const src = banner(media)
-  if (!src?.startsWith('https://i.ytimg.com/')) return src
-
-  return await new Promise(resolve => {
-    const img = new Image()
-    let sizeAttempt = 0
-
-    img.onload = () => {
-      if (img.naturalWidth === 120 && img.naturalHeight === 90) {
-        img.src = `https://i.ytimg.com/vi/${media.trailer?.id}/${sizes[sizeAttempt++]}.jpg`
-      } else {
-        resolve(img.src)
-        img.remove()
-      }
-    }
-    img.src = src
-  })
-}
-
 export const STATUS_LABELS = {
   CURRENT: 'Watching',
   PLANNING: 'Plan to Watch',

@@ -13,7 +13,12 @@ export default tseslint.config(
       }
     },
     rules: {
-      'svelte/html-self-closing': 'off',
+      'svelte/html-self-closing': [
+        'error',
+        'all'
+      ],
+      'svelte/no-reactive-reassign': 'off',
+      'no-undef-init': 'off',
       'import/order': ['error', {
         'newlines-between': 'always',
         groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type']

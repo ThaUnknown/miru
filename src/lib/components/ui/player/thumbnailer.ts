@@ -15,12 +15,14 @@ export default class Thumbnailer {
   nextTask: RenderItem | undefined
   src
 
-  constructor (src: string) {
+  constructor (src?: string) {
     this.video.preload = 'none'
-    this.video.src = this.src = src
-    this.video.load()
     this.video.playbackRate = 0
     this.video.muted = true
+    if (src) {
+      this.video.src = this.src = src
+      this.video.load()
+    }
   }
 
   setVideo (currentVideo: HTMLVideoElement) {
@@ -89,8 +91,8 @@ export default class Thumbnailer {
     return await this._createThumbnail(index)
   }
 
-  updateSource (src: string) {
-    if (src === this.src) return
+  updateSource (src?: string) {
+    if (src === this.src || !src) return
     for (const thumbnail of this.thumbnails) URL.revokeObjectURL(thumbnail)
     this.thumbnails = []
     this.currentTask = undefined
