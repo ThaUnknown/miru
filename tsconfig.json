@@ -22,7 +22,7 @@
         "tadaTurboLocation": "./src/lib/modules/anilist/graphql-turbo.d.ts"
       }
     ],
-    "maxNodeModuleJsDepth": 2
+    "maxNodeModuleJsDepth": 3
   },
   "include": [
     "src/**/*.ts",

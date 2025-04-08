@@ -4,16 +4,18 @@
   import { persisted } from 'svelte-persisted-store'
   import { toast } from 'svelte-sonner'
   import { fade } from 'svelte/transition'
-  import { onMount } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
   import { loadWithDefaults } from 'svelte-keybinds'
 
   import Seekbar from './seekbar.svelte'
-  import { autoPiP, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
+  import { autoPiP, burnIn, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
   import Thumbnailer from './thumbnailer'
   import Options from './options.svelte'
   import Volume from './volume.svelte'
+  import Subs from './subtitles'
 
   import type { SvelteMediaTimeRange } from 'svelte/elements'
+  import type { TorrentFile } from '../../../../app'
 
   import PictureInPictureExit from '$lib/components/icons/PictureInPictureExit.svelte'
   import * as Sheet from '$lib/components/ui/sheet'
@@ -28,8 +30,10 @@
   import { goto } from '$app/navigation'
   import EpisodesList from '$lib/components/EpisodesList.svelte'
   import { episodes } from '$lib/modules/anizip'
+  import { page } from '$app/stores'
 
-  export let mediaInfo: MediaInfo | undefined = undefined
+  export let mediaInfo: MediaInfo
+  export let files: TorrentFile[]
   export let prev: (() => void) | undefined = undefined
   export let next: (() => void) | undefined = undefined
   // bindings
@@ -73,11 +77,11 @@
   }
 
   function pip (enable = !$pictureInPictureElement) {
-    return enable ? video.requestPictureInPicture() : document.exitPictureInPicture()
+    return enable ? burnIn(video, subtitles) : document.exitPictureInPicture()
   }
 
   function toggleCast () {
-  // TODO
+  // TODO: never
   }
 
   $: fullscreenElement ? screen.orientation.lock('landscape') : screen.orientation.unlock()
@@ -131,8 +135,26 @@
     if (!wasPaused) video.play()
   }
 
-  function screenshot () {
-  // TODO
+  async function screenshot () {
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    if (!context) return
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+    context.drawImage(video, 0, 0)
+    if (subtitles?.renderer) {
+      subtitles.renderer.resize(video.videoWidth, video.videoHeight)
+      await new Promise(resolve => setTimeout(resolve, 500)) // this is hacky, but TLDR wait for canvas to update and re-render, in practice this will take at MOST 100ms, but just to be safe
+      // @ts-expect-error internal call on canvas
+      context.drawImage(subtitles.renderer._canvas, 0, 0, canvas.width, canvas.height)
+      subtitles.renderer.resize(0, 0, 0, 0) // undo resize
+    }
+    const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!)))
+    canvas.remove()
+    await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
+    toast.success('Screenshot', {
+      description: 'Saved screenshot to clipboard.'
+    })
   }
 
   // animations
@@ -154,21 +176,27 @@
   }
   let animations: Animation[] = []
 
-  const thumbnailer = new Thumbnailer(mediaInfo?.url)
+  const thumbnailer = new Thumbnailer(mediaInfo.file.url)
+  $: thumbnailer.updateSource(mediaInfo.file.url)
+  onMount(() => thumbnailer.setVideo(video))
 
-  $: thumbnailer.updateSource(mediaInfo?.url)
+  let chapters: Chapter[] = []
+  const chaptersPromise = native.chapters(mediaInfo.file.hash, mediaInfo.file.id)
+  async function loadChapters (pr: typeof chaptersPromise, safeduration: number) {
+    chapters = sanitizeChapters(await pr, safeduration)
+  }
+  $: loadChapters(chaptersPromise, safeduration)
 
-  onMount(() => {
-    thumbnailer.setVideo(video)
+  let subtitles: Subs | undefined
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  $: if (video && !subtitles) {
+    subtitles = new Subs(video, files, mediaInfo.file)
+  }
+
+  onDestroy(() => {
+    if (subtitles) subtitles.destroy()
   })
-
   // other
-
-  $: chapters = sanitizeChapters([
-    { start: 5, end: 15, text: 'OP' },
-    { start: 1.0 * 60, end: 1.2 * 60, text: 'Chapter 1' },
-    { start: 1.4 * 60, end: 88, text: 'Chapter 2 ' }
-  ], safeduration)
 
   let currentSkippable: string | null = null
   function checkSkippableChapters () {
@@ -267,7 +295,7 @@
 
   $: seekIndex = Math.max(0, Math.floor(seekPercent * safeduration / 100 / thumbnailer.interval))
 
-  $: if (mediaInfo?.session) native.setMediaSession(mediaInfo.session)
+  $: native.setMediaSession(mediaInfo.session)
   $: native.setPositionState({ duration: safeduration, position: Math.max(0, currentTime), playbackRate })
   $: native.setPlayBackState(readyState === 0 ? 'none' : paused ? 'paused' : 'playing')
   native.setActionHandler('play', playPause)
@@ -283,7 +311,11 @@
   let openSubs: () => Promise<void>
 
   function cycleSubtitles () {
-  // TODO
+    if (!subtitles) return
+    const entries = Object.entries(subtitles._tracks.value)
+    const index = entries.findIndex(([index]) => index === subtitles!.current.value)
+    const nextIndex = (index + 1) % entries.length
+    subtitles.selectCaptions(entries[nextIndex]![0])
   }
 
   function seekBarKey (event: KeyboardEvent) {
@@ -452,13 +484,16 @@
       desc: 'Reset Playback Rate'
     }
   })
+
+  $: isMiniplayer = $page.route.id !== '/app/player'
 </script>
 
 <svelte:document bind:fullscreenElement use:bindPiP={pictureInPictureElement} />
 
 <div class='w-full h-full relative content-center fullscreen:bg-black overflow-clip text-left' bind:this={wrapper}>
-  <video class='w-full h-full grow bg-black' preload='auto' class:cursor-none={immersed} class:object-cover={fitWidth}
-    src={mediaInfo?.url}
+  <video class='w-full h-full grow bg-black' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth}
+    crossorigin='anonymous'
+    src={mediaInfo.file.url}
     bind:videoHeight
     bind:videoWidth
     bind:currentTime
@@ -471,7 +506,7 @@
     bind:playbackRate
     bind:volume={exponentialVolume}
     bind:this={video}
-    on:click={playPause}
+    on:click={() => isMiniplayer ? goto('/app/player') : playPause()}
     on:dblclick={fullscreen}
     on:loadeddata={checkAudio}
     on:timeupdate={checkSkippableChapters}
@@ -480,7 +515,7 @@
   <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
     {#if seeking}
       {#await thumbnailer.getThumbnail(seekIndex) then src}
-        <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0' loading='lazy' decoding='async' />
+        <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0 object-contain' loading='lazy' decoding='async' />
       {/await}
     {/if}
     {#if stats}
@@ -496,7 +531,7 @@
         Playback speed: x{stats.speed?.toFixed(1)}<br />
       </div>
     {/if}
-    <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} bind:playbackRate class='mobile:inline-flex hidden p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />
+    <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} bind:playbackRate class='mobile:inline-flex hidden p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />
     <div class='mobile:flex hidden gap-4 absolute items-center select:opacity-100 cursor-default' class:opacity-0={immersed}>
       <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' disabled={!prev}>
         <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
@@ -512,7 +547,7 @@
         <SkipForward size='24px' fill='currentColor' strokeWidth='1' />
       </Button>
     </div>
-    {#if readyState < 3}
+    {#if buffering}
       <div in:fade={{ duration: 200, delay: 500 }} out:fade={{ duration: 200 }}>
         <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
       </div>
@@ -531,14 +566,14 @@
       </div>
     {/each}
   </div>
-  <div class='absolute w-full bottom-0 flex flex-col gradient px-4 py-3 transition-opacity select:opacity-100 cursor-default' class:opacity-0={immersed}>
+  <div class='absolute w-full bottom-0 flex flex-col gradient px-4 py-3 transition-opacity select:opacity-100 cursor-default' class:opacity-0={immersed} class:hidden={isMiniplayer}>
     <div class='flex justify-between gap-12 items-end'>
       <div class='flex flex-col gap-2 text-left cursor-pointer'>
-        <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo?.media.id}`)}>{mediaInfo?.session.title ?? 'Unknown Anime'}</div>
+        <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
         <Sheet.Root portal={wrapper}>
-          <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo?.session.description ?? 'Unknown Episode'}</Sheet.Trigger>
+          <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo.session.description}</Sheet.Trigger>
           <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black'>
-            {#if mediaInfo?.media}
+            {#if mediaInfo.media}
               {#await episodes(mediaInfo.media.id) then eps}
                 <EpisodesList {eps} media={mediaInfo.media} />
               {/await}
@@ -579,10 +614,12 @@
         <Volume bind:volume={$volume} bind:muted />
       </div>
       <div class='flex gap-2'>
-        <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} bind:playbackRate />
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs}>
-          <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
-        </Button>
+        <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} bind:playbackRate />
+        {#if subtitles}
+          <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs}>
+            <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
+          </Button>
+        {/if}
         <Button class='p-3 w-12 h-12' variant='ghost' on:click={() => pip()}>
           {#if $pictureInPictureElement}
             <PictureInPictureExit size='24px' strokeWidth='2' />

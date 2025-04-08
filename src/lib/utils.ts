@@ -215,3 +215,39 @@ export async function traceAnime (image: File) { // WAIT lookup logic
     throw new Error('Search Failed \n Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.')
   }
 }
+
+export class HashMap<K extends object, T> {
+  map = new Map<string, T>()
+
+  _id (k: K): string {
+    return JSON.stringify(k, Object.keys(k).sort())
+  }
+
+  has (k: K): boolean {
+    return this.map.has(this._id(k))
+  }
+
+  add (k: K, o: T) {
+    return this.map.set(this._id(k), o)
+  }
+
+  delete (k: K): boolean {
+    return this.map.delete(this._id(k))
+  }
+
+  clear () {
+    this.map.clear()
+  }
+
+  get size (): number {
+    return this.map.size
+  }
+
+  values (): IterableIterator<T> {
+    return this.map.values()
+  }
+
+  [Symbol.iterator] (): IterableIterator<T> {
+    return this.values()
+  }
+}

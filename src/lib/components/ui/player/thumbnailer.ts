@@ -19,6 +19,7 @@ export default class Thumbnailer {
     this.video.preload = 'none'
     this.video.playbackRate = 0
     this.video.muted = true
+    this.video.crossOrigin = 'anonymous'
     if (src) {
       this.video.src = this.src = src
       this.video.load()
@@ -99,5 +100,10 @@ export default class Thumbnailer {
     this.nextTask = undefined
     this.video.src = this.src = src
     this.video.load()
+  }
+
+  destroy () {
+    this.video.remove()
+    this.thumbnails = []
   }
 }

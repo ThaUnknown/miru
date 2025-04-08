@@ -3,10 +3,11 @@
   import { tick } from 'svelte'
   import Keybinds from 'svelte-keybinds'
 
-  import { normalizeTracks, type Chapter } from './util'
+  import { normalizeSubs, normalizeTracks, type Chapter } from './util'
 
   import type { Writable } from 'simple-store-svelte'
   import type { HTMLAttributes } from 'svelte/elements'
+  import type Subtitles from './subtitles'
 
   import * as Dialog from '$lib/components/ui/dialog'
   import * as Tree from '$lib/components/ui/tree'
@@ -23,6 +24,10 @@
   export let chapters: Chapter[]
   export let seekTo: (time: number) => void
   export let playbackRate: number
+  export let subtitles: Subtitles | undefined
+
+  $: tracks = subtitles?._tracks
+  $: current = subtitles?.current
 
   let open = false
 
@@ -106,17 +111,28 @@
               {/each}
             </Tree.Sub>
           </Tree.Item>
-          <Tree.Item id='subs'>
-            <span slot='trigger'>Subtitles</span>
-            <Tree.Sub>
-              <Tree.Item>
-                <span>Consulting</span>
-              </Tree.Item>
-              <Tree.Item>
-                <span>Support</span>
-              </Tree.Item>
-            </Tree.Sub>
-          </Tree.Item>
+          {#if subtitles}
+            <Tree.Item id='subs'>
+              <span slot='trigger'>Subtitles</span>
+              <Tree.Sub>
+                <Tree.Item active={Number($current) === -1} on:click={() => { $current = -1; open = false }}>
+                  <span>OFF</span>
+                </Tree.Item>
+                {#each Object.entries(normalizeSubs($tracks)) as [lang, tracks] (lang)}
+                  <Tree.Item>
+                    <span slot='trigger' class='capitalize'>{lang}</span>
+                    <Tree.Sub>
+                      {#each tracks as { number, language, name }, i (i)}
+                        <Tree.Item active={Number(number) === Number($current)} on:click={() => { $current = number; open = false }}>
+                          <span>{name}</span>
+                        </Tree.Item>
+                      {/each}
+                    </Tree.Sub>
+                  </Tree.Item>
+                {/each}
+              </Tree.Sub>
+            </Tree.Item>
+          {/if}
           <Tree.Item>
             <span slot='trigger'>Chapters</span>
             <Tree.Sub>

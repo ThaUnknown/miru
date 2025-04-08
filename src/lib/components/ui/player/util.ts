@@ -2,6 +2,8 @@ import { get } from 'svelte/store'
 
 import type { Media } from '$lib/modules/anilist'
 import type { Track } from '../../../../app'
+import type Subtitles from './subtitles'
+import type { ResolvedFile } from './resolver'
 
 import { settings } from '$lib/modules/settings'
 
@@ -18,7 +20,7 @@ export interface SessionMetadata {
 }
 
 export interface MediaInfo {
-  url: string
+  file: ResolvedFile
   media: Media
   episode: number
   session: SessionMetadata
@@ -169,6 +171,21 @@ export function normalizeTracks (_tracks: Track[]) {
   }, {})
 }
 
+export function normalizeSubs (_tracks?: Record<number | string, { meta: { language?: string, type: string, header: string, number: string, name?: string } }>) {
+  if (!_tracks) return {}
+  const hasEng = Object.values(_tracks).some(({ meta }) => meta.language === 'eng' || meta.language === 'en')
+  const lang = Object.values(_tracks).map(({ meta }) => ({
+    language: meta.language ?? !hasEng ? 'eng' : 'unk',
+    number: meta.number,
+    name: meta.name ?? meta.language ?? !hasEng ? 'eng' : 'unk'
+  }))
+  return lang.reduce<Record<string, typeof lang>>((acc, track) => {
+    if (!acc[track.language]) acc[track.language] = []
+    acc[track.language]!.push(track)
+    return acc
+  }, {})
+}
+
 export function autoPiP (video: HTMLVideoElement, pipfn: (enable: boolean) => void) {
   const signal = new AbortController()
 
@@ -179,4 +196,55 @@ export function autoPiP (video: HTMLVideoElement, pipfn: (enable: boolean) => vo
   return {
     destroy: () => signal.abort()
   }
+}
+
+export function burnIn (video: HTMLVideoElement, subtitles?: Subtitles) {
+  if (!subtitles?.renderer) return video.requestPictureInPicture()
+
+  const canvasVideo = document.createElement('video')
+
+  const canvas = document.createElement('canvas')
+  const context = canvas.getContext('2d')
+  if (!context) return
+  let loop: number
+  canvas.width = video.videoWidth
+  canvas.height = video.videoHeight
+  subtitles.renderer.resize(video.videoWidth, video.videoHeight)
+  const renderFrame = () => {
+    // context.drawImage(deband ? deband.canvas : video, 0, 0)
+    context.drawImage(video, 0, 0)
+    // @ts-expect-error internal call on canvas
+    if (canvas.width && canvas.height && subtitles.renderer?._canvas) context.drawImage(subtitles.renderer._canvas, 0, 0, canvas.width, canvas.height)
+    loop = video.requestVideoFrameCallback(renderFrame)
+  }
+  renderFrame()
+  const destroy = () => {
+    subtitles.renderer?.resize()
+    video.cancelVideoFrameCallback(loop)
+    canvas.remove()
+  }
+
+  const stream = canvas.captureStream()
+
+  const cleanup = () => {
+    destroy()
+    canvasVideo.remove()
+  }
+
+  canvasVideo.srcObject = stream
+  canvasVideo.onloadedmetadata = () => {
+    canvasVideo.play()
+    canvasVideo.requestPictureInPicture().then(pipwindow => {
+      pipwindow.onresize = () => {
+        const { width, height } = pipwindow
+        if (isNaN(width) || isNaN(height)) return
+        if (!isFinite(width) || !isFinite(height)) return
+        subtitles.renderer?.resize(width, height)
+      }
+    }).catch(e => {
+      cleanup()
+      console.warn('Failed To Burn In Subtitles ' + e)
+    })
+  }
+  canvasVideo.onleavepictureinpicture = cleanup
 }

@@ -8,7 +8,6 @@ import type { Media } from '../anilist'
 import type { TorrentFile } from '../../../app'
 
 export const server = new class ServerClient {
-  attachmentsURL = native.getAttachmentsURL()
   last = persisted<{media: Media, id: string, episode: number} | null>('last-torrent', null)
   active = writable<Promise<{media: Media, id: string, episode: number, files: TorrentFile[]}| null>>()
 

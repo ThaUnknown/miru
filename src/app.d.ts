@@ -30,6 +30,13 @@ export interface TorrentFile {
   id: number
 }
 
+export interface Attachment {
+  filename: string
+  mimetype: string
+  id: number
+  url: string
+}
+
 export interface Native {
   authAL: (url: string) => Promise<AuthResponse>
   restart: () => Promise<void>
@@ -53,9 +60,12 @@ export interface Native {
   setActionHandler: (action: MediaSessionAction | 'enterpictureinpicture', handler: MediaSessionActionHandler | null) => void
   checkAvailableSpace: (_?: unknown) => Promise<number>
   checkIncomingConnections: (_?: unknown) => Promise<boolean>
-  updatePeerCounts: (hashes: string[]) => Promise<Array<{ hash, complete, downloaded, incomplete }>>
+  updatePeerCounts: (hashes: string[]) => Promise<Array<{ hash: string, complete: string, downloaded: string, incomplete: string }>>
   playTorrent: (id: string) => Promise<TorrentFile[]>
-  getAttachmentsURL: () => Promise<string>
+  attachments: (hash: string, id: number) => Promise<Attachment[]>
+  tracks: (hash: string, id: number) => Promise<Array<{ number: string, language?: string, type: string, header: string, name?: string }>>
+  subtitles: (hash: string, id: number, cb: (subtitle: { text: string, time: number, duration: number }, trackNumber: number) => void) => Promise<void>
+  chapters: (hash: string, id: number) => Promise<Array<{ start: number, end: number, text: string }>>
   isApp: boolean
 }
 
