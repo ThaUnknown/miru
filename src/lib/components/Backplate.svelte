@@ -1,5 +1,6 @@
 <script lang='ts'>
   import { page } from '$app/stores'
+  import { activityState, idleState, isPlaying, lockedState } from '$lib/modules/idle'
   import { settings } from '$lib/modules/settings'
   import { sleep } from '$lib/utils'
 
@@ -7,9 +8,6 @@
   export let root: HTMLDivElement
 
   let visibilityState: DocumentVisibilityState
-  let idleState = 'idle' as 'active' | 'idle'
-  let lockedState = 'unlocked' as 'unlocked' | 'locked'
-  let activityState = document.hasFocus() ? 'active' : 'inactive' as 'active' | 'inactive'
 
   let isAnimating = false
   let isSpinning = false
@@ -30,7 +28,7 @@
   }
 
   async function reset () {
-    if (!isAnimating) return clearTimeout(timeout)
+    if (!isAnimating) return
     root.style.transform = getComputedStyle(root).transform
     plate.style.transform = getComputedStyle(plate).transform
     isSpinning = isFlying = false
@@ -39,32 +37,20 @@
     await sleep(790)
     isAnimating = isSpinning = isFlying = false
   }
-  // @ts-expect-error non-standard API
-  const idleDetector = new IdleDetector()
-  idleDetector.addEventListener('change', () => {
-    idleState = idleDetector.userState
-    lockedState = idleDetector.screenState
-  })
-  idleDetector.start({
-    threshold: 60_000
-  })
 
-  function checkIdleState (idleState: 'active' | 'idle', lockedState: 'unlocked' | 'locked', activityState: 'active' | 'inactive', visibilityState: DocumentVisibilityState) {
-    if ($settings.idleAnimation === 'off') return reset()
-    // don't waste resources
-    if (lockedState === 'locked' || visibilityState === 'hidden') return reset()
-    if (idleState === 'active' && activityState === 'active') return reset()
-    if ($page.url.pathname === '/app/player/') return reset()
+  $: active = $lockedState === 'locked' || visibilityState === 'hidden' || ($idleState === 'active' && $activityState === 'active') || $isPlaying
+
+  function checkIdleState (active: boolean, idleAnimation: 'fancy' | 'fast' | 'off') {
     clearTimeout(timeout)
+    if (idleAnimation === 'off' || active) return reset()
+
     timeout = setTimeout(start, 20_000)
   }
 
-  $: checkIdleState(idleState, lockedState, activityState, visibilityState)
+  $: checkIdleState(active, $settings.idleAnimation)
 </script>
 
-<svelte:document bind:visibilityState on:mouseleave={() => { if (!document.hasFocus()) activityState = 'inactive' }} on:mouseenter={() => { activityState = 'active' }} />
-<svelte:window on:focus={() => { activityState = 'active' }} on:blur={() => { activityState = 'inactive' }}
-  on:pointermove={() => { idleState = 'active'; activityState = 'active' }} />
+<svelte:document bind:visibilityState />
 
 <div class='preserve-3d absolute w-full h-full overflow-hidden flip backface-hidden backplate bg-black flex-col justify-center pointer-events-none hidden'
   bind:this={plate}

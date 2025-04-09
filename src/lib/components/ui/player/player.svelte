@@ -31,6 +31,7 @@
   import EpisodesList from '$lib/components/EpisodesList.svelte'
   import { episodes } from '$lib/modules/anizip'
   import { page } from '$app/stores'
+  import { isPlaying } from '$lib/modules/idle'
 
   export let mediaInfo: MediaInfo
   export let files: TorrentFile[]
@@ -63,6 +64,8 @@
   let ended = false
   let paused = true
   const cast = false
+
+  $: $isPlaying = !paused
 
   $: buffering = readyState < 3
   $: immersed = !buffering && !seeking && !paused && !ended && !$pictureInPictureElement

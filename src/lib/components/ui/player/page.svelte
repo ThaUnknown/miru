@@ -7,6 +7,7 @@
   import { hideBanner } from '$lib/components/ui/banner'
   import { server } from '$lib/modules/torrent'
   import { page } from '$app/stores'
+  import { goto } from '$app/navigation'
 
   onMount(async () => {
     await tick()
@@ -18,25 +19,29 @@
   $: active = resolveFilesPoorly($act)
 
   $: isMiniplayer = $page.route.id !== '/app/player'
+
+  function openPlayer () {
+    goto('/app/player/')
+  }
 </script>
 
-<div class='w-full {isMiniplayer ? 'z-[100] max-w-80  absolute bottom-4 right-4 rounded-lg overflow-clip' : 'h-full'}'>
+<div class='w-full {isMiniplayer ? 'z-[49] max-w-80 absolute bottom-4 left-4 md:left-[unset] md:right-4 rounded-lg overflow-clip' : 'h-full'}'>
   {#if active}
     {#await active}
-      <div class='w-full flex justify-center items-center bg-black aspect-video'>
+      <div class='w-full flex justify-center items-center bg-black aspect-video cursor-pointer' on:click={openPlayer}>
         <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
       </div>
     {:then mediaInfo}
       {#if mediaInfo}
         <Mediahandler {mediaInfo} />
       {:else}
-        <div class='w-full flex justify-center items-center bg-black aspect-video'>
+        <div class='w-full flex justify-center items-center bg-black aspect-video cursor-pointer' on:click={openPlayer}>
           <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
         </div>
       {/if}
     {/await}
   {:else}
-    <div class='w-full flex justify-center items-center bg-black aspect-video'>
+    <div class='w-full flex justify-center items-center bg-black aspect-video cursor-pointer' on:click={openPlayer}>
       <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
     </div>
   {/if}
