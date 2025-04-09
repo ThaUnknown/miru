@@ -143,10 +143,6 @@
   // }
   // TODO: selects should turn into modals on mobile! like anilist
   // TODO: infinite scroll
-  onMount(async () => {
-    await tick()
-    hideBanner.value = true
-  })
 
   async function imagePicker (e: Event) {
     const target = e.target as HTMLInputElement
@@ -166,7 +162,7 @@
 
         clear()
         search.ids = [...new Set(res.map(r => r.anilist))]
-      // TODO: sort by similarity
+      // TODO: sort by similarity, finish
       } catch (e) {
         console.error(e)
       }
@@ -175,8 +171,7 @@
 </script>
 
 <div class='flex flex-col h-full overflow-y-auto overflow-x-clip -ml-14 pl-14 z-20 min-w-0 grow pointer-events-none' use:dragScroll>
-  <div class='sticky top-0 z-20 px-10 pointer-events-auto shrink-0 overflow-clip'>
-    <BannerImage class='-z-10 -left-14' />
+  <div class='sticky top-0 z-20 px-10 pointer-events-auto shrink-0 overflow-clip bg-black'>
     <div class='flex flex-wrap pt-5'>
       <div class='grid items-center w-1/4 p-2'>
         <div class='text-xl font-bold mb-1 ml-1'>

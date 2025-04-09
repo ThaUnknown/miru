@@ -13,9 +13,6 @@ const config = {
   preprocess: vitePreprocess({}),
   kit: {
     adapter: adapter({ fallback: 'index.html' }),
-    alias: {
-      '@/*': './path/to/lib/*'
-    },
     version: {
       name: process.env.npm_package_version
     }

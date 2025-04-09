@@ -9,6 +9,7 @@
   import { SUPPORTS, settings } from '$lib/modules/settings'
   import native from '$lib/modules/native'
   import { fastPrettyBytes } from '$lib/utils'
+  import { dragScroll } from '$lib/modules/navigate'
 
   async function selectDownloadFolder () {
     $settings.torrentPath = await native.selectDownload()
@@ -26,7 +27,7 @@
 
 <Progress />
 
-<div class='space-y-3 lg:max-w-4xl pt-5 h-full overflow-y-auto'>
+<div class='space-y-3 lg:max-w-4xl pt-5 h-full overflow-y-auto' use:dragScroll>
   <SettingCard class='bg-transparent' let:id title='Torrent Download Location' description='Path to the folder used to store torrents. By default this is the TMP folder, which might lose data when your OS tries to reclaim storage.  {SUPPORTS.isAndroid ? 'RESTART IS REQUIRED. /sdcard/ is internal storage, not external SD Cards. /storage/AB12-34CD/ is external storage, not internal. Thank you Android!' : ''}'>
     <div class='flex'>
       {#if !SUPPORTS.isAndroid}

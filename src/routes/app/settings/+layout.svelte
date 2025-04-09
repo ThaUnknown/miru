@@ -1,6 +1,7 @@
 <script lang='ts'>
   import SettingsNav from '$lib/components/SettingsNav.svelte'
   import { Separator } from '$lib/components/ui/separator'
+  import { dragScroll } from '$lib/modules/navigate'
 
   const items = [
     {
@@ -8,8 +9,8 @@
       href: '/app/settings/'
     },
     {
-      title: 'Torrent',
-      href: '/app/settings/torrent/'
+      title: 'Client',
+      href: '/app/settings/client/'
     },
     {
       title: 'Interface',
@@ -46,7 +47,7 @@
     <aside class='lg:grow lg:max-w-60'>
       <SettingsNav {items} />
     </aside>
-    <div class='flex-1 overflow-y-scroll'>
+    <div class='flex-1 overflow-y-scroll' use:dragScroll>
       <slot />
     </div>
   </div>

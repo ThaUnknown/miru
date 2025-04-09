@@ -13,6 +13,7 @@
   import * as Tree from '$lib/components/ui/tree'
   import { Button } from '$lib/components/ui/button'
   import { cn, toTS } from '$lib/utils'
+  import { dragScroll } from '$lib/modules/navigate'
 
   export let wrapper: HTMLDivElement
 
@@ -59,7 +60,7 @@
     </Button>
   </Dialog.Trigger>
   <Dialog.Content class='absolute bg-transparent border-none p-0 shadow-none size-full overflow-hidden'>
-    <div on:pointerdown|self={close} class='size-full flex justify-center items-center flex-col overflow-y-scroll text-[6px] lg:text-xs'>
+    <div on:pointerdown|self={close} class='size-full flex justify-center items-center flex-col overflow-y-scroll text-[6px] lg:text-xs' use:dragScroll>
       {#if showKeybinds}
         <div class='bg-black py-3 px-4 rounded-md text-sm lg:text-lg font-bold mb-4'>
           Drag and drop binds to change them

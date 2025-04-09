@@ -37,6 +37,7 @@
   import { Switch } from '$lib/components/ui/switch'
   import { settings } from '$lib/modules/settings'
   import native from '$lib/modules/native'
+  import { dragScroll } from '$lib/modules/navigate'
 
   if (!speedTest.isRunning) speedTest.play()
 
@@ -55,7 +56,7 @@
 
 <Progress step={1} />
 
-<div class='space-y-3 lg:max-w-4xl pt-5 h-full overflow-y-auto'>
+<div class='space-y-3 lg:max-w-4xl pt-5 h-full overflow-y-auto' use:dragScroll>
   <SettingCard class='bg-transparent' let:id title='Streamed Download' description="Only downloads the single file that's currently being watched, instead of downloading an entire batch of episodes. Saves bandwidth and reduces strain on the peer swarm.">
     <Switch {id} bind:checked={$settings.torrentStreamedDownload} />
   </SettingCard>

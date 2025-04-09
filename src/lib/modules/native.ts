@@ -67,7 +67,8 @@ export default Object.assign<Native, Partial<Native>>({
     { start: 5, end: 15, text: 'OP' },
     { start: 1.0 * 60, end: 1.2 * 60, text: 'Chapter 1' },
     { start: 1.4 * 60, end: 88, text: 'Chapter 2 ' }
-  ]
+  ],
+  version: () => 'v0.0.2'
 
   // @ts-expect-error idk
 }, globalThis.native as Partial<Native>)

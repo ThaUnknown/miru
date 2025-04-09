@@ -35,7 +35,7 @@
       <div class='flex items-center leading-none text-sm'>
         {#await promise}
           <div class='w-4 h-4 relative animate-spin mr-2.5'>
-            <div class='w-4 h-4 border-2 rounded-[50%] border-neutral-700 border-b-border'></div>
+            <div class='w-4 h-4 border-2 rounded-[50%] border-neutral-700 border-b-border' />
           </div>
           {title} -&nbsp;<span class='text-muted-foreground text-xs'>{pending}</span>
         {:then { status, text }}

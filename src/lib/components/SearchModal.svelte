@@ -13,7 +13,7 @@
   import * as Dialog from '$lib/components/ui/dialog'
   import { settings, videoResolutions } from '$lib/modules/settings'
   import { title, type Media } from '$lib/modules/anilist'
-  import { click } from '$lib/modules/navigate'
+  import { click, dragScroll } from '$lib/modules/navigate'
   import { fastPrettyBytes, since } from '$lib/utils'
 
   const termMapping: Record<string, {text: string, color: string}> = {}
@@ -178,7 +178,7 @@
           Auto Select Torrent
         </ProgressButton>
       </div>
-      <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation}>
+      <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation} use:dragScroll>
         {#await searchResult}
           {#each Array.from({ length: 12 }) as _, i (i)}
             <div class='p-3 h-[104px] flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border flex-col justify-between'>

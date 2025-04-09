@@ -3,7 +3,6 @@
   import { Sidebar } from '$lib/components/ui/sidebar'
   import SearchModal from '$lib/components/SearchModal.svelte'
   import Sidebarlist from '$lib/components/ui/sidebar/sidebarlist.svelte'
-  import { version, dev } from '$app/environment'
   import { Player } from '$lib/components/ui/player'
 </script>
 

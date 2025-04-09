@@ -67,6 +67,7 @@ export interface Native {
   subtitles: (hash: string, id: number, cb: (subtitle: { text: string, time: number, duration: number }, trackNumber: number) => void) => Promise<void>
   chapters: (hash: string, id: number) => Promise<Array<{ start: number, end: number, text: string }>>
   isApp: boolean
+  version: () => string
 }
 
 declare global {

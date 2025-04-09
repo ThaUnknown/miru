@@ -190,6 +190,14 @@ details:active,
   background: black !important;
 }
 
+.svelte-progress-bar {
+  height: 2px !important;
+}
+
+.svelte-progress-bar-leader {
+  height: 4px !important;
+}
+
 /* Backplate related things */
 
 body {

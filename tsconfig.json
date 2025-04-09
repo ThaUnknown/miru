@@ -24,7 +24,11 @@
     ],
     "maxNodeModuleJsDepth": 3
   },
+  "files": [
+    "src/service-worker/index.ts"
+  ],
   "include": [
+    "src/service-worker/index.ts",
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.svelte",
