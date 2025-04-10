@@ -1,7 +1,5 @@
-import { derived, readable } from 'svelte/store'
+import { readable } from 'svelte/store'
 import { writable } from 'simple-store-svelte'
-
-import { page } from '$app/stores'
 
 export const activityState = readable<'active' | 'inactive'>(document.hasFocus() ? 'active' : 'inactive', set => {
   set(document.hasFocus() ? 'active' : 'inactive')
@@ -21,9 +19,7 @@ export const activityState = readable<'active' | 'inactive'>(document.hasFocus()
 
 // @ts-expect-error non-standard API
 const idleDetector = new IdleDetector()
-idleDetector.start({
-  threshold: 60_000
-})
+idleDetector.start({ threshold: 60_000 })
 
 export const idleState = readable<'active' | 'idle'>(idleDetector.userState, set => {
   set(idleDetector.userState)

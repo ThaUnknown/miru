@@ -3,8 +3,7 @@ import { clientsClaim, skipWaiting } from 'workbox-core'
 
 import { build, files, prerendered, version } from '$service-worker'
 
-const precache = [...build, ...files, ...prerendered, '/'].map(url => ({ url, revision: version }))
-precacheAndRoute(precache)
+precacheAndRoute([...build, ...files.filter(e => !['/Ameku.webm', '/video.mkv'].includes(e)), ...prerendered, '/'].map(url => ({ url, revision: version })))
 cleanupOutdatedCaches()
 clientsClaim()
 skipWaiting()

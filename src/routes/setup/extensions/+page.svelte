@@ -1,15 +1,17 @@
 <script lang='ts'>
+  import { toast } from 'svelte-sonner'
+
   import Footer, { type Checks } from '../Footer.svelte'
   import Progress from '../Progress.svelte'
 
   import type { ExtensionConfig } from 'hayase-extensions'
 
   import { Extensions } from '$lib/components/ui/extensions'
-  import { saved, options } from '$lib/modules/extensions'
+  import { saved, options, storage } from '$lib/modules/extensions'
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { SingleCombo } from '$lib/components/ui/combobox'
-  import { lookupPreferences, settings } from '$lib/modules/settings'
-  import { dragScroll } from '$lib/modules/navigate'
+  import { lookupPreferences, settings, SUPPORTS } from '$lib/modules/settings'
+  import { DEFAULT_EXTENSIONS } from '$lib'
 
   function checkExtensions (svd: Record<string, ExtensionConfig>, opts: Record<string, {
     options: Record<string, string | number | boolean | undefined>
@@ -32,11 +34,22 @@
     title: 'Extensions Required',
     pending: 'Waiting for at least one extension to be installed...'
   }]
+
+  async function importDefault () {
+    try {
+      await storage.import(DEFAULT_EXTENSIONS)
+    } catch (err) {
+      const error = err as Error
+      toast.error(error.cause as string, { description: error.message })
+    }
+  }
+
+  if (!SUPPORTS.isAndroid && !Object.keys($saved).length) importDefault()
 </script>
 
 <Progress step={2} />
 
-<div class='space-y-3 lg:max-w-4xl h-full overflow-y-auto w-full py-8' use:dragScroll>
+<div class='space-y-3 lg:max-w-4xl h-full overflow-y-auto w-full py-8'>
   <SettingCard title='Lookup Preference' description='What to prioritize when looking for and sorting results. Quality will focus on the best quality available which often means big file sizes, Size will focus on the smallest file size available, and Availability will pick results with the most peers regardless of size and quality.'>
     <SingleCombo bind:value={$settings.lookupPreference} items={lookupPreferences} class='w-32 shrink-0 border-input border' />
   </SettingCard>

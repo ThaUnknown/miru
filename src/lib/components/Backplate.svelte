@@ -1,5 +1,4 @@
 <script lang='ts'>
-  import { page } from '$app/stores'
   import { activityState, idleState, isPlaying, lockedState } from '$lib/modules/idle'
   import { settings } from '$lib/modules/settings'
   import { sleep } from '$lib/utils'
