@@ -24,6 +24,9 @@
     ],
     "maxNodeModuleJsDepth": 3
   },
+  "typeAcquisition": {
+    "enable": false
+  },
   "files": [
     "src/service-worker/index.ts"
   ],

@@ -70,15 +70,6 @@ export default new class LocalSync {
   // sequelIDs () {
   // }
 
-  _fillOutKeys (entry: StoredMedia, variables: VariablesOf<typeof Entry>) {
-    const keys = ['status', 'score', 'repeat', 'progress'] as const
-
-    for (const key of keys) {
-      // @ts-expect-error idk how to fix this tbf
-      entry.mediaListEntry[key] = variables[key] ?? null
-    }
-  }
-
   entry (variables: VariablesOf<typeof Entry>) {
     this.entries.update(entries => {
       const entry = this._createEntry(variables.id)

@@ -217,6 +217,21 @@
   }
 
   // other
+  $: if (ended && $settings.playerAutoplay) next?.()
+
+  function handleVisibility (visibility: DocumentVisibilityState) {
+    if (!ended && $settings.playerPause && !$pictureInPictureElement) {
+      if (visibility === 'hidden') {
+        visibilityPaused = paused
+        paused = true
+      } else {
+        if (!visibilityPaused) paused = false
+      }
+    }
+  }
+  let visibilityPaused = true
+  let visibilityState: DocumentVisibilityState
+  $: handleVisibility(visibilityState)
 
   let currentSkippable: string | null = null
   function checkSkippableChapters () {
@@ -225,6 +240,9 @@
       currentSkippable = isChapterSkippable(current)
     }
   }
+
+  $: if (currentSkippable && $settings.playerSkip) skip()
+
   const skippableChaptersRx: Array<[string, RegExp]> = [
     ['Opening', /^op$|opening$|^ncop/mi],
     ['Ending', /^ed$|ending$|^nced/mi],
@@ -508,7 +526,7 @@
   $: isMiniplayer = $page.route.id !== '/app/player'
 </script>
 
-<svelte:document bind:fullscreenElement use:bindPiP={pictureInPictureElement} />
+<svelte:document bind:fullscreenElement use:bindPiP={pictureInPictureElement} bind:visibilityState />
 
 <div class='w-full h-full relative content-center fullscreen:bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper}>
   <video class='w-full h-full grow bg-black' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={deband} class:absolute={deband} class:top-0={deband}
