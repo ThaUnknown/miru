@@ -25,7 +25,7 @@
 
   function checkNext () {
     if (step !== 2) return
-    localStorage.setItem('setup-finished', 'true')
+    localStorage.setItem('setup-finished', '1')
   }
 </script>
 

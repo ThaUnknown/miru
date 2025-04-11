@@ -15,7 +15,6 @@
   import { cover, desc, duration, format, relation, season, status, title } from '$lib/modules/anilist'
   import { authAggregator, of } from '$lib/modules/auth'
   import native from '$lib/modules/native'
-  import { cn } from '$lib/utils'
   import EpisodesList from '$lib/components/EpisodesList.svelte'
   import MyAnimeList from '$lib/components/icons/MyAnimeList.svelte'
   import Anilist from '$lib/components/icons/Anilist.svelte'
@@ -55,10 +54,8 @@
     hideBanner.value = target.scrollTop > 100
   }
 
-  const hasAuth = authAggregator.hasAuth
-
   $: mediaID = media.id
-  $: following = $hasAuth ? authAggregator.following(mediaID) : undefined
+  $: following = authAggregator.following(mediaID)
 
   $: eps = data.eps
 </script>
@@ -116,10 +113,8 @@
     </div>
     <div class='flex gap-2 items-center justify-center md:justify-start w-full lex-wrap'>
       <div class='flex md:mr-3 w-full min-[380px]:w-[180px]'>
-        <PlayButton size='default' {media} class={cn($hasAuth && 'rounded-r-none', 'w-full')} />
-        {#if $hasAuth}
-          <EntryEditor {media} />
-        {/if}
+        <PlayButton size='default' {media} class='rounded-r-none' />
+        <EntryEditor {media} />
       </div>
       <FavoriteButton {media} variant='secondary' size='icon' class='min-[380px]:-order-1 md:order-none' />
       <BookmarkButton {media} variant='secondary' size='icon' class='min-[380px]:-order-2 md:order-none' />

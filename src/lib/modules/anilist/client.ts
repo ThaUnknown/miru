@@ -89,7 +89,7 @@ class AnilistClient {
                   if (!list?.entries) return list
                   return {
                     ...list,
-                    entries: list.entries.filter(entry => entry?.id !== id)
+                    entries: list.entries.filter(entry => entry?.media?.mediaListEntry?.id !== id)
                   }
                 })
 
@@ -101,15 +101,15 @@ class AnilistClient {
 
               const entry = result.SaveMediaListEntry
 
-              if (entry?.customLists) entry.customLists = (entry.customLists as string[]).map(name => ({ enabled: true, name }))
+              if (entry?.media?.mediaListEntry?.customLists) entry.media.mediaListEntry.customLists = (entry.media.mediaListEntry.customLists as string[]).map(name => ({ enabled: true, name }))
               cache.writeFragment(media, {
                 id: mediaId as number,
-                mediaListEntry: entry
+                mediaListEntry: entry?.media?.mediaListEntry ?? null
               })
               cache.updateQuery({ query: UserLists, variables: { id: this.viewer.value?.viewer?.id } }, data => {
                 if (!data?.MediaListCollection?.lists) return data
                 const oldLists = data.MediaListCollection.lists
-                const oldEntry = oldLists.flatMap(list => list?.entries).find(entry => entry?.media?.id === mediaId) ?? result.SaveMediaListEntry
+                const oldEntry = oldLists.flatMap(list => list?.entries).find(entry => entry?.media?.id === mediaId)
 
                 const lists = oldLists.map(list => {
                   if (!list?.entries) return list
@@ -119,7 +119,7 @@ class AnilistClient {
                   }
                 })
 
-                const status = result.SaveMediaListEntry?.status ?? oldEntry?.status ?? 'PLANNING' as const
+                const status = result.SaveMediaListEntry?.media?.mediaListEntry?.status ?? oldEntry?.media?.mediaListEntry?.status ?? 'PLANNING' as const
 
                 const fallback: NonNullable<typeof oldLists[0]> = { status, entries: [] }
                 let targetList = lists.find(list => list?.status === status)
@@ -187,8 +187,7 @@ class AnilistClient {
           MediaTitle: () => null,
           MediaCoverImage: () => null,
           AiringSchedule: () => null,
-          // @ts-expect-error idk
-          MediaListCollection: e => e.user?.id as string | null,
+          MediaListCollection: e => (e.user as any)?.id as string | null,
           MediaListGroup: () => null,
           UserAvatar: () => null
         }
@@ -302,7 +301,7 @@ class AnilistClient {
 
       const ids = mediaList.filter(entry => {
         if (entry?.media?.status === 'FINISHED') return true
-        const progress = entry?.progress ?? 0
+        const progress = entry?.media?.mediaListEntry?.progress ?? 0
         return progress < (entry?.media?.nextAiringEpisode?.episode ?? (progress + 2)) - 1
       }).map(entry => entry?.media?.id) as number[]
 
@@ -386,8 +385,8 @@ class AnilistClient {
     return Object.entries(searchResults).map(([filename, id]) => [filename, search.data!.Page!.media!.find(media => media!.id === id)]) as Array<[string, Media | undefined]>
   }
 
-  schedule () {
-    return queryStore({ client: this.client, query: Schedule, variables: { seasonCurrent: currentSeason, seasonYearCurrent: currentYear, seasonLast: lastSeason, seasonYearLast: lastYear, seasonNext: nextSeason, seasonYearNext: nextYear }, pause: true })
+  schedule (ids?: number[]) {
+    return queryStore({ client: this.client, query: Schedule, variables: { ids, seasonCurrent: currentSeason, seasonYearCurrent: currentYear, seasonLast: lastSeason, seasonYearLast: lastYear, seasonNext: nextSeason, seasonYearNext: nextYear }, pause: true })
   }
 
   async toggleFav (id: number) {

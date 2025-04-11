@@ -2,17 +2,19 @@ import { readable } from 'simple-store-svelte'
 
 import { client } from '../anilist'
 
+import local from './local'
+
 import type { VariablesOf } from 'gql.tada'
 import type { Entry } from '../anilist/queries'
 
 export default new class AuthAggregator {
   hasAuth = readable(this.checkAuth(), set => {
-    // add other subscriptions here
-    const unsAL = client.viewer.subscribe(() => set(this.checkAuth()))
+    // add other subscriptions here for MAL, kitsu, tvdb, etc
+    const unsub = [
+      client.viewer.subscribe(() => set(this.checkAuth()))
+    ]
 
-    return () => {
-      unsAL()
-    }
+    return () => unsub.forEach(fn => fn())
   })
 
   // AUTH
@@ -33,8 +35,6 @@ export default new class AuthAggregator {
 
   profile () {
     if (this.anilist()) return client.viewer.value?.viewer
-
-    return null
   }
 
   // QUERIES/MUTATIONS
@@ -42,25 +42,22 @@ export default new class AuthAggregator {
   schedule () {
     if (this.anilist()) return client.schedule()
 
-    return client.schedule()
+    return local.schedule()
   }
 
   toggleFav (id: number) {
-    if (this.anilist()) return client.toggleFav(id)
-
-    return client.toggleFav(id)
+    if (this.anilist()) client.toggleFav(id)
+    local.toggleFav(id)
   }
 
   delete (id: number) {
-    if (this.anilist()) return client.deleteEntry(id)
+    if (this.anilist()) client.deleteEntry(id)
 
-    return client.deleteEntry(id)
+    local.deleteEntry(id)
   }
 
   following (id: number) {
     if (this.anilist()) return client.following(id)
-
-    return client.following(id)
   }
 
   continueIDs () {
@@ -82,8 +79,8 @@ export default new class AuthAggregator {
     } else {
       delete variables.lists
     }
-    if (this.anilist()) return client.entry(variables)
+    if (this.anilist()) client.entry(variables)
 
-    return client.entry(variables)
+    local.entry(variables)
   }
 }()

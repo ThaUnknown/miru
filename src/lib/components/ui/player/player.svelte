@@ -4,8 +4,9 @@
   import { persisted } from 'svelte-persisted-store'
   import { toast } from 'svelte-sonner'
   import { fade } from 'svelte/transition'
-  import { onDestroy, onMount } from 'svelte'
+  import { onMount } from 'svelte'
   import { loadWithDefaults } from 'svelte-keybinds'
+  import VideoDeband from 'video-deband'
 
   import Seekbar from './seekbar.svelte'
   import { autoPiP, burnIn, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
@@ -80,7 +81,7 @@
   }
 
   function pip (enable = !$pictureInPictureElement) {
-    return enable ? burnIn(video, subtitles) : document.exitPictureInPicture()
+    return enable ? burnIn(video, subtitles, deband) : document.exitPictureInPicture()
   }
 
   function toggleCast () {
@@ -180,7 +181,6 @@
   let animations: Animation[] = []
 
   const thumbnailer = new Thumbnailer(mediaInfo.file.url)
-  $: thumbnailer.updateSource(mediaInfo.file.url)
   onMount(() => thumbnailer.setVideo(video))
 
   let chapters: Chapter[] = []
@@ -191,14 +191,31 @@
   $: loadChapters(chaptersPromise, safeduration)
 
   let subtitles: Subs | undefined
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  $: if (video && !subtitles) {
+
+  function createSubtitles (video: HTMLVideoElement) {
     subtitles = new Subs(video, files, mediaInfo.file)
+    return {
+      destroy: () => {
+        subtitles?.destroy()
+      }
+    }
   }
 
-  onDestroy(() => {
-    if (subtitles) subtitles.destroy()
-  })
+  let deband: VideoDeband | undefined
+
+  function createDeband (video: HTMLVideoElement, playerDeband: boolean) {
+    if (!playerDeband) return
+    deband = new VideoDeband(video)
+    deband.canvas.classList.add('deband-canvas', 'w-full', 'h-full', 'grow', 'pointer-events-none', 'object-contain')
+    video.before(deband.canvas)
+    return {
+      destroy: () => {
+        deband?.destroy()
+        deband?.canvas.remove()
+      }
+    }
+  }
+
   // other
 
   let currentSkippable: string | null = null
@@ -493,8 +510,11 @@
 
 <svelte:document bind:fullscreenElement use:bindPiP={pictureInPictureElement} />
 
-<div class='w-full h-full relative content-center fullscreen:bg-black overflow-clip text-left' bind:this={wrapper}>
-  <video class='w-full h-full grow bg-black' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth}
+<div class='w-full h-full relative content-center fullscreen:bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper}>
+  <video class='w-full h-full grow bg-black' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={deband} class:absolute={deband} class:top-0={deband}
+    use:createDeband={$settings.playerDeband}
+    use:createSubtitles
+    use:autoPiP={pip}
     crossorigin='anonymous'
     src={mediaInfo.file.url}
     bind:videoHeight
@@ -513,7 +533,6 @@
     on:dblclick={fullscreen}
     on:loadeddata={checkAudio}
     on:timeupdate={checkSkippableChapters}
-    use:autoPiP={pip}
   />
   <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
     {#if seeking}
@@ -652,6 +671,9 @@
 </div>
 
 <style>
+  .fitWidth :global(.deband-canvas) {
+    object-fit: cover !important;
+  }
   .gradient {
     background: linear-gradient(to top, oklab(0 0 0 / 0.85) 0%, oklab(0 0 0 / 0.7) 35%, oklab(0 0 0 / 0) 100%);
   }

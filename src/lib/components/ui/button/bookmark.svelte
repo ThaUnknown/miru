@@ -16,8 +16,6 @@
   export let size: NonNullable<$$Props['size']> = 'icon-sm'
   export let variant: NonNullable<$$Props['variant']> = 'ghost'
 
-  const hasAuth = authAggregator.hasAuth
-
   function toggleBookmark () {
     if (!media.mediaListEntry?.status) {
       authAggregator.entry({ id: media.id, status: 'PLANNING', lists: lists(media)?.filter(({ enabled }) => enabled).map(({ name }) => name) })
@@ -27,6 +25,6 @@
   }
 </script>
 
-<Button {size} {variant} class={className} disabled={!$hasAuth} on:click={clickwrap(toggleBookmark)} on:keydown={keywrap(toggleBookmark)}>
+<Button {size} {variant} class={className} on:click={clickwrap(toggleBookmark)} on:keydown={keywrap(toggleBookmark)}>
   <Bookmark fill={list(media) ? 'currentColor' : 'transparent'} size={iconSizes[size]} />
 </Button>

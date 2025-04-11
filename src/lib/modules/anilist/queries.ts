@@ -125,7 +125,7 @@ export const Search = gql(`
 `, [FullMedia])
 
 export const IDMedia = gql(`
-  query IDMedia($id: Int) {
+  query IDMedia($id: Int!) {
     Media(id: $id, type: ANIME) {
       ...FullMedia
     }
@@ -158,10 +158,13 @@ export const UserLists = gql(`
       lists {
         status,
         entries {
-          ...FullMediaList,
+          id,
           media {
             id,
             status,
+            mediaListEntry {
+              ...FullMediaList
+            },
             nextAiringEpisode {
               episode
             },
@@ -213,34 +216,34 @@ export const ScheduleMedia = gql(`
 `)
 
 export const Schedule = gql(`
-  query Schedule($seasonCurrent: MediaSeason, $seasonYearCurrent: Int, $seasonLast: MediaSeason, $seasonYearLast: Int, $seasonNext: MediaSeason, $seasonYearNext: Int) {
+  query Schedule($seasonCurrent: MediaSeason, $seasonYearCurrent: Int, $seasonLast: MediaSeason, $seasonYearLast: Int, $seasonNext: MediaSeason, $seasonYearNext: Int, $ids: [Int]) {
     curr1: Page(page: 1) {
-      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: true) {
+      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
         ...ScheduleMedia
       }
     }
     curr2: Page(page: 2) {
-      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: true) {
+      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
         ...ScheduleMedia
       }
     }
     curr3: Page(page: 3) {
-      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: true) {
+      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
         ...ScheduleMedia
       }
     }
     residue: Page(page: 1) {
-      media(type: ANIME, season: $seasonLast, seasonYear: $seasonYearLast, episodes_greater: 16, countryOfOrigin: JP, format_not: TV_SHORT, onList: true) {
+      media(type: ANIME, season: $seasonLast, seasonYear: $seasonYearLast, episodes_greater: 16, countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
         ...ScheduleMedia
       }
     },
     next1: Page(page: 1) {
-      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], countryOfOrigin: JP, format_not: TV_SHORT, onList: true) {
+      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
         ...ScheduleMedia
       }
     },
     next2: Page(page: 2) {
-      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], countryOfOrigin: JP, format_not: TV_SHORT, onList: true) {
+      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
         ...ScheduleMedia
       }
     }
@@ -248,7 +251,7 @@ export const Schedule = gql(`
 `, [ScheduleMedia])
 
 export const Following = gql(`
-  query Following($id: Int) {
+  query Following($id: Int!) {
     Page {
       mediaList(mediaId: $id, isFollowing: true, sort: UPDATED_TIME_DESC) {
         id,
@@ -268,12 +271,15 @@ export const Following = gql(`
 `)
 
 export const Entry = gql(`
-  mutation Entry($lists: [String], $id: Int, $status: MediaListStatus, $progress: Int, $repeat: Int, $score: Int) {
+  mutation Entry($lists: [String], $id: Int!, $status: MediaListStatus, $progress: Int, $repeat: Int, $score: Int) {
     SaveMediaListEntry(mediaId: $id, status: $status, progress: $progress, repeat: $repeat, scoreRaw: $score, customLists: $lists) {
-      ...FullMediaList
+      id,
       media {
         id,
         status,
+        mediaListEntry {
+          ...FullMediaList
+        },
         nextAiringEpisode {
           episode
         }
@@ -283,7 +289,7 @@ export const Entry = gql(`
 `, [FullMediaList])
 
 export const DeleteEntry = gql(`
-  mutation DeleteEntry($id: Int) {
+  mutation DeleteEntry($id: Int!) {
     DeleteMediaListEntry(id: $id) {
       deleted
     }
@@ -291,7 +297,7 @@ export const DeleteEntry = gql(`
 `)
 
 export const ToggleFavourite = gql(`
-  mutation ToggleFavourite($id: Int) {
+  mutation ToggleFavourite($id: Int!) {
     ToggleFavourite(animeId: $id) { anime { nodes { id } } } 
   }
 `)

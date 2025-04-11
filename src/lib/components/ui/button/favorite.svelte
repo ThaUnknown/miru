@@ -14,10 +14,8 @@
   export let media: Media
   export let size: NonNullable<$$Props['size']> = 'icon-sm'
   export let variant: NonNullable<$$Props['variant']> = 'ghost'
-
-  const hasAuth = authAggregator.hasAuth
 </script>
 
-<Button {size} {variant} class={className} disabled={!$hasAuth} on:click={clickwrap(() => authAggregator.toggleFav(media.id))} on:keydown={keywrap(() => authAggregator.toggleFav(media.id))}>
+<Button {size} {variant} class={className} on:click={clickwrap(() => authAggregator.toggleFav(media.id))} on:keydown={keywrap(() => authAggregator.toggleFav(media.id))}>
   <Heart fill={fav(media) ? 'currentColor' : 'transparent'} size={iconSizes[size]} />
 </Button>

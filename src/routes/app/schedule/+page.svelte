@@ -1,7 +1,6 @@
 <script lang='ts'>
   import { addMonths, endOfMonth, endOfWeek, format, isSameMonth, isToday, startOfMonth, startOfWeek, subMonths } from 'date-fns'
   import { Button as ButtonPrimitive } from 'bits-ui'
-  import { get } from 'svelte/store'
   import { onMount, tick } from 'svelte'
   import { Cross2 } from 'svelte-radix'
   import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-svelte'
@@ -46,7 +45,7 @@
   $: dayList = listDays(firstDay, lastDay)
 
   const paused = query.isPaused$
-  if (get(query.isPaused$)) query.resume()
+  if ($paused) query.resume()
 
   interface DayAirTimes { day: { date: Date, number: number }, episodes: Array<ResultOf<typeof ScheduleMedia> & { episode: number, airTime: Date }> }
 

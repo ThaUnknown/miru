@@ -70,6 +70,7 @@
 		"tailwind-variants": "^0.2.1",
 		"uint8-util": "^2.2.5",
 		"urql": "^4.2.1",
+		"video-deband": "^1.0.6",
 		"workbox-core": "^7.3.0",
 		"workbox-precaching": "^7.3.0"
 	}

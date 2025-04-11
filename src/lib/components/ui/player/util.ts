@@ -4,6 +4,7 @@ import type { Media } from '$lib/modules/anilist'
 import type { Track } from '../../../../app'
 import type Subtitles from './subtitles'
 import type { ResolvedFile } from './resolver'
+import type VideoDeband from 'video-deband'
 
 import { settings } from '$lib/modules/settings'
 
@@ -198,7 +199,8 @@ export function autoPiP (video: HTMLVideoElement, pipfn: (enable: boolean) => vo
   }
 }
 
-export function burnIn (video: HTMLVideoElement, subtitles?: Subtitles) {
+// TODO: de-shittify this code, abort signal, play/pause sync
+export function burnIn (video: HTMLVideoElement, subtitles?: Subtitles, deband?: VideoDeband) {
   if (!subtitles?.renderer) return video.requestPictureInPicture()
 
   const canvasVideo = document.createElement('video')
@@ -211,8 +213,7 @@ export function burnIn (video: HTMLVideoElement, subtitles?: Subtitles) {
   canvas.height = video.videoHeight
   subtitles.renderer.resize(video.videoWidth, video.videoHeight)
   const renderFrame = () => {
-    // context.drawImage(deband ? deband.canvas : video, 0, 0)
-    context.drawImage(video, 0, 0)
+    context.drawImage(deband?.canvas ?? video, 0, 0)
     // @ts-expect-error internal call on canvas
     if (canvas.width && canvas.height && subtitles.renderer?._canvas) context.drawImage(subtitles.renderer._canvas, 0, 0, canvas.width, canvas.height)
     loop = video.requestVideoFrameCallback(renderFrame)
