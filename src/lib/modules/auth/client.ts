@@ -2,7 +2,7 @@ import { readable } from 'simple-store-svelte'
 import { persisted } from 'svelte-persisted-store'
 import { get } from 'svelte/store'
 
-import { client } from '../anilist'
+import { client, episodes, type Media } from '../anilist'
 
 import local from './local'
 
@@ -31,7 +31,7 @@ export default new class AuthAggregator {
   }
 
   id () {
-    if (this.anilist()) return client.viewer.value?.viewer?.id
+    if (this.anilist()) return client.viewer.value!.viewer?.id
 
     return -1
   }
@@ -73,6 +73,27 @@ export default new class AuthAggregator {
     if (this.anilist()) return client.sequelIDs
 
     return client.sequelIDs
+  }
+
+  watch (media: Media, progress: number) {
+    // TODO: auto re-watch status
+    // if (media.status !== 'FINISHED' && media.status !== 'RELEASING') return // this turned out to be a bad idea, anilist sometimes delays status changes by up to a day... yikes
+    const totalEps = episodes(media) ?? 1 // episodes or movie which is single episode
+    if (totalEps < progress) return // woah, bad data from resolver?!
+
+    const currentProgress = media.mediaListEntry?.progress ?? 0
+    if (currentProgress <= progress) return
+
+    const status =
+      totalEps === progress
+        ? 'COMPLETED'
+        : media.mediaListEntry?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
+
+    const repeat = media.mediaListEntry?.repeat ?? 0 + (totalEps === progress ? 1 : 0)
+
+    const lists = (media.mediaListEntry?.customLists as Array<{enabled: boolean, name: string}> | undefined)?.filter(list => list.enabled).map(list => list.name) ?? []
+
+    this.entry({ id: media.id, progress, repeat, status, lists })
   }
 
   entry (variables: VariablesOf<typeof Entry>) {

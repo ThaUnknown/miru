@@ -33,6 +33,7 @@
   import { episodes } from '$lib/modules/anizip'
   import { page } from '$app/stores'
   import { isPlaying } from '$lib/modules/idle'
+  import { authAggregator } from '$lib/modules/auth'
 
   export let mediaInfo: MediaInfo
   export let files: TorrentFile[]
@@ -213,6 +214,22 @@
         deband?.destroy()
         deband?.canvas.remove()
       }
+    }
+  }
+
+  let completed = false
+  function checkCompletion () {
+    if (!completed && $settings.playerAutocomplete) {
+      checkCompletionByTime(currentTime, safeduration)
+    }
+  }
+  let externalPlayerReady = false
+  function checkCompletionByTime (currentTime: number, safeduration: number) {
+    const fromend = Math.max(180, safeduration / 10)
+    if (safeduration && currentTime && (video.readyState || externalPlayerReady) && safeduration - fromend < currentTime) {
+      authAggregator.watch(mediaInfo.media, mediaInfo.episode)
+      completed = true
+      externalPlayerReady = false
     }
   }
 
@@ -551,6 +568,7 @@
     on:dblclick={fullscreen}
     on:loadeddata={checkAudio}
     on:timeupdate={checkSkippableChapters}
+    on:timeupdate={checkCompletion}
   />
   <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
     {#if seeking}
