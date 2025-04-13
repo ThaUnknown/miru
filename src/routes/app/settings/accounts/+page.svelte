@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { persisted } from 'svelte-persisted-store'
+  import { Folder } from 'lucide-svelte'
 
   import Anilist from '$lib/components/icons/Anilist.svelte'
   import * as Avatar from '$lib/components/ui/avatar'
@@ -7,6 +7,7 @@
   import { Label } from '$lib/components/ui/label'
   import { Switch } from '$lib/components/ui/switch'
   import { client } from '$lib/modules/anilist'
+  import { authAggregator } from '$lib/modules/auth'
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
 
@@ -14,7 +15,7 @@
 
   $: anilist = $viewer
 
-  const syncSettings = persisted('syncSettings', { al: true })
+  const syncSettings = authAggregator.syncSettings
 </script>
 
 <div class='space-y-3 pb-10 lg:max-w-4xl'>
@@ -47,6 +48,27 @@
       {:else}
         <Button variant='secondary' on:click={() => client.auth()}>Login</Button>
       {/if}
+      <div class='flex gap-2 items-center'>
+        <Switch hideState={true} id='al-sync-switch' bind:checked={$syncSettings.al} />
+        <Label for='al-sync-switch' class='cursor-pointer'>Enable Sync</Label>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class='bg-neutral-900 px-6 py-4 rounded-t-md flex flex-row gap-3'>
+      <div class='flex flex-row gap-3'>
+        <div class='flex flex-col'>
+          <div class='text-sm'>
+            Other
+          </div>
+          <div class='text-[9px] text-muted-foreground leading-snug'>
+            Local
+          </div>
+        </div>
+      </div>
+      <Folder class='size-6 !ml-auto' fill='currentColor' />
+    </div>
+    <div class='bg-neutral-950 px-6 py-4 rounded-b-md flex justify-end h-[68px]'>
       <div class='flex gap-2 items-center'>
         <Switch hideState={true} id='al-sync-switch' bind:checked={$syncSettings.al} />
         <Label for='al-sync-switch' class='cursor-pointer'>Enable Sync</Label>

@@ -12,6 +12,7 @@
   import * as Avatar from '$lib/components/ui/avatar'
   import { lockedState, idleState, activityState } from '$lib/modules/idle'
   import { page } from '$app/stores'
+  import Logo from '$lib/components/icons/Logo.svelte'
 
   const auth = client.hasAuth
 
@@ -25,7 +26,7 @@
 <svelte:document bind:visibilityState />
 
 <BannerImage class='absolute top-0 left-0 w-14 -z-10 hidden md:block' />
-<img src='/logo_cropped.png' alt='logo' class='mb-3 cursor-pointer h-10 object-contain px-1 hidden md:block' loading='lazy' decoding='async' />
+<Logo class='mb-3 h-10 object-contain px-2 hidden md:block text-white' />
 <SidebarButton href='/app/home/'>
   <Home size={18} />
 </SidebarButton>

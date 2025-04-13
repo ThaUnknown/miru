@@ -1,4 +1,6 @@
 import { readable } from 'simple-store-svelte'
+import { persisted } from 'svelte-persisted-store'
+import { get } from 'svelte/store'
 
 import { client } from '../anilist'
 
@@ -17,6 +19,7 @@ export default new class AuthAggregator {
     return () => unsub.forEach(fn => fn())
   })
 
+  syncSettings = persisted('syncSettings', { al: true, local: true })
   // AUTH
 
   anilist () {
@@ -73,14 +76,15 @@ export default new class AuthAggregator {
   }
 
   entry (variables: VariablesOf<typeof Entry>) {
+    const syncSettings = get(this.syncSettings)
     variables.lists ??= []
     if (!variables.lists.includes('Watched using Hayase')) {
       variables.lists.push('Watched using Hayase')
     } else {
       delete variables.lists
     }
-    if (this.anilist()) client.entry(variables)
 
-    local.entry(variables)
+    if (this.anilist() && syncSettings.al) client.entry(variables)
+    if (syncSettings.local) local.entry(variables)
   }
 }()
