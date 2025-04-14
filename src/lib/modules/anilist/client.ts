@@ -187,7 +187,7 @@ class AnilistClient {
           MediaTitle: () => null,
           MediaCoverImage: () => null,
           AiringSchedule: () => null,
-          MediaListCollection: e => (e.user as any)?.id as string | null,
+          MediaListCollection: e => (e.user as {id: string | null}).id,
           MediaListGroup: () => null,
           UserAvatar: () => null
         }
@@ -201,7 +201,7 @@ class AnilistClient {
             })
           },
           didAuthError (error, _operation) {
-            return error.graphQLErrors.some(e => e.extensions.code === 'FORBIDDEN') // TODO: verify how anilist handles auth errors
+            return error.graphQLErrors.some(e => e.extensions.code === 'FORBIDDEN') // TODO: verify how anilist handles auth errors: {"data":null,"errors":[{"message":"Invalid token","status":400}]}
           },
           refreshAuth: async () => {
             await this.auth()

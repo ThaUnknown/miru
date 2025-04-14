@@ -8,12 +8,14 @@
   import type { Writable } from 'simple-store-svelte'
   import type { HTMLAttributes } from 'svelte/elements'
   import type Subtitles from './subtitles'
+  import type { ResolvedFile } from './resolver'
 
   import * as Dialog from '$lib/components/ui/dialog'
   import * as Tree from '$lib/components/ui/tree'
   import { Button } from '$lib/components/ui/button'
   import { cn, toTS } from '$lib/utils'
   import { dragScroll } from '$lib/modules/navigate'
+  import { settings } from '$lib/modules/settings'
 
   export let wrapper: HTMLDivElement
 
@@ -26,6 +28,9 @@
   export let seekTo: (time: number) => void
   export let playbackRate: number
   export let subtitles: Subtitles | undefined
+  export let videoFiles: ResolvedFile[]
+  export let selectFile: (file: ResolvedFile) => void
+  export let pip: () => void
 
   $: tracks = subtitles?._tracks
   $: current = subtitles?.current
@@ -51,6 +56,11 @@
       open = false
     }
   }
+  function deband () {
+    $settings.playerDeband = !$settings.playerDeband
+  }
+
+  let fullscreenElement: HTMLElement | null = null
 </script>
 
 <Dialog.Root portal={wrapper} bind:open>
@@ -123,7 +133,7 @@
                   <Tree.Item>
                     <span slot='trigger' class='capitalize'>{lang}</span>
                     <Tree.Sub>
-                      {#each tracks as { number, language, name }, i (i)}
+                      {#each tracks as { number, name }, i (i)}
                         <Tree.Item active={Number(number) === Number($current)} on:click={() => { $current = number; open = false }}>
                           <span>{name}</span>
                         </Tree.Item>
@@ -173,14 +183,32 @@
               </Tree.Item>
             </Tree.Sub>
           </Tree.Item>
+          <Tree.Item>
+            <span slot='trigger'>Playlist</span>
+            <Tree.Sub>
+              {#each videoFiles as file, i (i)}
+                <Tree.Item on:click={() => selectFile(file)}>
+                  <span class='text-ellipsis text-nowrap overflow-clip w-full'>{file.name}</span>
+                </Tree.Item>
+              {/each}
+            </Tree.Sub>
+          </Tree.Item>
           <Tree.Item on:click={() => (showKeybinds = !showKeybinds)}>
             Keybinds
           </Tree.Item>
-          <Tree.Item on:click={fullscreen}>
+          <Tree.Item on:click={fullscreen} active={!!fullscreenElement}>
             Fullscreen
+          </Tree.Item>
+          <Tree.Item on:click={pip}>
+            Picture in Picture
+          </Tree.Item>
+          <Tree.Item on:click={deband} active={$settings.playerDeband}>
+            Deband
           </Tree.Item>
         </Tree.Root>
       {/if}
     </div>
   </Dialog.Content>
 </Dialog.Root>
+
+<svelte:document bind:fullscreenElement />

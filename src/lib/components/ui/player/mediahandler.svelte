@@ -25,7 +25,7 @@
   let current = fileToMedaInfo(mediaInfo.target)
 
   function findEpisode (episode: number) {
-    return mediaInfo.targetAnimeFiles.find(file => file.metadata.episode === episode) ?? mediaInfo.targetAnimeFiles.find(file => file.metadata.episode === 1)
+    return mediaInfo.targetAnimeFiles.find(file => file.metadata.episode === episode)
   }
 
   function hasNext (file: ResolvedFile) {
@@ -53,6 +53,10 @@
     }
   }
 
+  function selectFile (file: ResolvedFile) {
+    current = fileToMedaInfo(file)
+  }
+
   $: next = hasNext(mediaInfo.target)
     ? playNext
     : undefined
@@ -62,4 +66,7 @@
     : undefined
 </script>
 
-<Player mediaInfo={current} files={mediaInfo.otherFiles} {prev} {next} />
+<!-- inefficient, but safe -->
+{#key current}
+  <Player mediaInfo={current} otherFiles={mediaInfo.otherFiles} videoFiles={mediaInfo.resolvedFiles} {selectFile} {prev} {next} />
+{/key}

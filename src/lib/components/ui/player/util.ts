@@ -231,21 +231,23 @@ export function burnIn (video: HTMLVideoElement, subtitles?: Subtitles, deband?:
     destroy()
     canvasVideo.remove()
   }
-
-  canvasVideo.srcObject = stream
-  canvasVideo.onloadedmetadata = () => {
-    canvasVideo.play()
-    canvasVideo.requestPictureInPicture().then(pipwindow => {
-      pipwindow.onresize = () => {
-        const { width, height } = pipwindow
-        if (isNaN(width) || isNaN(height)) return
-        if (!isFinite(width) || !isFinite(height)) return
-        subtitles.renderer?.resize(width, height)
-      }
-    }).catch(e => {
-      cleanup()
-      console.warn('Failed To Burn In Subtitles ' + e)
-    })
-  }
-  canvasVideo.onleavepictureinpicture = cleanup
+  return new Promise<PictureInPictureWindow>(resolve => {
+    canvasVideo.srcObject = stream
+    canvasVideo.onloadedmetadata = () => {
+      canvasVideo.play()
+      canvasVideo.requestPictureInPicture().then(pipwindow => {
+        resolve(pipwindow)
+        pipwindow.onresize = () => {
+          const { width, height } = pipwindow
+          if (isNaN(width) || isNaN(height)) return
+          if (!isFinite(width) || !isFinite(height)) return
+          subtitles.renderer?.resize(width, height)
+        }
+      }).catch(e => {
+        cleanup()
+        console.warn('Failed To Burn In Subtitles ' + e)
+      })
+    }
+    canvasVideo.onleavepictureinpicture = cleanup
+  })
 }

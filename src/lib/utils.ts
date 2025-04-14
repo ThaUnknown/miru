@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { cubicOut } from 'svelte/easing'
-import { readable, type Writable } from 'simple-store-svelte'
+import { readable } from 'simple-store-svelte'
 
 import type { TransitionConfig } from 'svelte/transition'
 
@@ -150,17 +150,6 @@ export function toTS (sec: number, full?: number) {
   if (minutes < 10 && (hours > 0 || full)) minutes = '0' + minutes
   if (Number(seconds) < 10) seconds = '0' + seconds
   return (hours > 0 || full === 1 || full === 2) ? hours + ':' + minutes + ':' + seconds : minutes + ':' + seconds
-}
-
-export function bindPiP (doc: Document, store: Writable<HTMLVideoElement | null>) {
-  const signal = new AbortController()
-  doc.addEventListener('enterpictureinpicture', (e) => {
-    store.set(e.target as HTMLVideoElement)
-  }, { signal: signal.signal })
-  doc.addEventListener('leavepictureinpicture', () => {
-    store.set(null)
-  }, { signal: signal.signal })
-  return { destroy: () => signal.abort() }
 }
 
 interface TraceAnime {

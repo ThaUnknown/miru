@@ -1,6 +1,5 @@
 <script lang='ts'>
   import { Cast, FastForward, Maximize, Minimize, Pause, Rewind, SkipBack, SkipForward, Captions, Contrast, List, PictureInPicture2, Proportions, RefreshCcw, RotateCcw, RotateCw, ScreenShare, Volume1, Volume2, VolumeX } from 'lucide-svelte'
-  import { writable, type Writable } from 'simple-store-svelte'
   import { persisted } from 'svelte-persisted-store'
   import { toast } from 'svelte-sonner'
   import { fade } from 'svelte/transition'
@@ -17,6 +16,7 @@
 
   import type { SvelteMediaTimeRange } from 'svelte/elements'
   import type { TorrentFile } from '../../../../app'
+  import type { ResolvedFile } from './resolver'
 
   import PictureInPictureExit from '$lib/components/icons/PictureInPictureExit.svelte'
   import * as Sheet from '$lib/components/ui/sheet'
@@ -25,7 +25,7 @@
   import Play from '$lib/components/icons/Play.svelte'
   import { Button } from '$lib/components/ui/button'
   import { settings } from '$lib/modules/settings'
-  import { bindPiP, toTS } from '$lib/utils'
+  import { toTS } from '$lib/utils'
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
   import { goto } from '$app/navigation'
@@ -36,7 +36,9 @@
   import { authAggregator } from '$lib/modules/auth'
 
   export let mediaInfo: MediaInfo
-  export let files: TorrentFile[]
+  export let otherFiles: TorrentFile[]
+  export let videoFiles: ResolvedFile[]
+  export let selectFile: (file: ResolvedFile) => void
   export let prev: (() => void) | undefined = undefined
   export let next: (() => void) | undefined = undefined
   // bindings
@@ -57,7 +59,7 @@
 
   // elements
   let fullscreenElement: HTMLElement | null = null
-  const pictureInPictureElement: Writable<HTMLVideoElement | null> = writable(null)
+  let pictureInPictureElement: HTMLVideoElement | null = null
   let video: HTMLVideoElement
   let wrapper: HTMLDivElement
 
@@ -70,7 +72,7 @@
   $: $isPlaying = !paused
 
   $: buffering = readyState < 3
-  $: immersed = !buffering && !seeking && !paused && !ended && !$pictureInPictureElement
+  $: immersed = !buffering && !seeking && !paused && !ended && !pictureInPictureElement
 
   // functions
   function playPause () {
@@ -81,8 +83,9 @@
     return fullscreenElement ? document.exitFullscreen() : wrapper.requestFullscreen()
   }
 
-  function pip (enable = !$pictureInPictureElement) {
-    return enable ? burnIn(video, subtitles, deband) : document.exitPictureInPicture()
+  async function pip () {
+    !pictureInPictureElement ? await burnIn(video, subtitles, deband) : await document.exitPictureInPicture()
+    pictureInPictureElement = document.pictureInPictureElement as HTMLVideoElement
   }
 
   function toggleCast () {
@@ -116,7 +119,7 @@
   }
   function selectVideo (id: string) {
     if (id) {
-      for (const track of video.videoTracks!) {
+      for (const track of video.videoTracks ?? []) {
         track.selected = track.id === id
       }
     }
@@ -194,7 +197,7 @@
   let subtitles: Subs | undefined
 
   function createSubtitles (video: HTMLVideoElement) {
-    subtitles = new Subs(video, files, mediaInfo.file)
+    subtitles = new Subs(video, otherFiles, mediaInfo.file)
     return {
       destroy: () => {
         subtitles?.destroy()
@@ -237,7 +240,7 @@
   $: if (ended && $settings.playerAutoplay) next?.()
 
   function handleVisibility (visibility: DocumentVisibilityState) {
-    if (!ended && $settings.playerPause && !$pictureInPictureElement) {
+    if (!ended && $settings.playerPause && !pictureInPictureElement) {
       if (visibility === 'hidden') {
         visibilityPaused = paused
         paused = true
@@ -361,7 +364,7 @@
   native.setActionHandler('previoustrack', () => prev?.())
   native.setActionHandler('nexttrack', () => next?.())
   // about://flags/#auto-picture-in-picture-for-video-playback
-  native.setActionHandler('enterpictureinpicture', () => pip(true))
+  native.setActionHandler('enterpictureinpicture', () => pip())
 
   let openSubs: () => Promise<void>
 
@@ -543,7 +546,7 @@
   $: isMiniplayer = $page.route.id !== '/app/player'
 </script>
 
-<svelte:document bind:fullscreenElement use:bindPiP={pictureInPictureElement} bind:visibilityState />
+<svelte:document bind:fullscreenElement bind:visibilityState />
 
 <div class='w-full h-full relative content-center fullscreen:bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper}>
   <video class='w-full h-full grow bg-black' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={deband} class:absolute={deband} class:top-0={deband}
@@ -589,7 +592,8 @@
         Playback speed: x{stats.speed?.toFixed(1)}<br />
       </div>
     {/if}
-    <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} bind:playbackRate class='mobile:inline-flex hidden p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />
+    <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate
+      class='mobile:inline-flex hidden p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />
     <div class='mobile:flex hidden gap-4 absolute items-center select:opacity-100 cursor-default' class:opacity-0={immersed}>
       <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' disabled={!prev}>
         <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
@@ -624,7 +628,7 @@
       </div>
     {/each}
   </div>
-  <div class='absolute w-full bottom-0 flex flex-col gradient px-4 py-3 transition-opacity select:opacity-100 cursor-default' class:opacity-0={immersed} class:hidden={isMiniplayer}>
+  <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity select:opacity-100 cursor-default' class:opacity-0={immersed} class:hidden={isMiniplayer}>
     <div class='flex justify-between gap-12 items-end'>
       <div class='flex flex-col gap-2 text-left cursor-pointer'>
         <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
@@ -672,14 +676,14 @@
         <Volume bind:volume={$volume} bind:muted />
       </div>
       <div class='flex gap-2'>
-        <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} bind:playbackRate />
+        <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate />
         {#if subtitles}
           <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs}>
             <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
           </Button>
         {/if}
         <Button class='p-3 w-12 h-12' variant='ghost' on:click={() => pip()}>
-          {#if $pictureInPictureElement}
+          {#if pictureInPictureElement}
             <PictureInPictureExit size='24px' strokeWidth='2' />
           {:else}
             <PictureInPicture size='24px' strokeWidth='2' />

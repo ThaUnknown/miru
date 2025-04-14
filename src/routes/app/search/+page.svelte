@@ -1,7 +1,6 @@
 <script lang='ts'>
   import { MagnifyingGlass } from 'svelte-radix'
   import { FileImage, Trash, X } from 'lucide-svelte'
-  import { onMount, tick } from 'svelte'
   import { toast } from 'svelte-sonner'
 
   import { genres, years, seasons, formats, status, sort } from './values'
@@ -16,7 +15,6 @@
   import { badgeVariants } from '$lib/components/ui/badge'
   import { click, dragScroll } from '$lib/modules/navigate'
   import { client } from '$lib/modules/anilist'
-  import { BannerImage, hideBanner } from '$lib/components/ui/banner'
   import { QueryCard } from '$lib/components/ui/cards'
   import { page } from '$app/stores'
 

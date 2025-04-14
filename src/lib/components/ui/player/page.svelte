@@ -1,18 +1,11 @@
 <script lang='ts'>
-  import { onMount, tick } from 'svelte'
 
   import { resolveFilesPoorly } from './resolver'
   import Mediahandler from './mediahandler.svelte'
 
-  import { hideBanner } from '$lib/components/ui/banner'
   import { server } from '$lib/modules/torrent'
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
-
-  onMount(async () => {
-    await tick()
-    hideBanner.value = true
-  })
 
   const act = server.active
 

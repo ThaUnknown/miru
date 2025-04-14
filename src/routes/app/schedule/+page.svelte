@@ -1,7 +1,6 @@
 <script lang='ts'>
   import { addMonths, endOfMonth, endOfWeek, format, isSameMonth, isToday, startOfMonth, startOfWeek, subMonths } from 'date-fns'
   import { Button as ButtonPrimitive } from 'bits-ui'
-  import { onMount, tick } from 'svelte'
   import { Cross2 } from 'svelte-radix'
   import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-svelte'
 
@@ -11,7 +10,6 @@
   import { cn, isMobile } from '$lib/utils'
   import * as Tooltip from '$lib/components/ui/tooltip'
   import StatusDot from '$lib/components/StatusDot.svelte'
-  import { hideBanner } from '$lib/components/ui/banner'
   import * as Drawer from '$lib/components/ui/drawer'
   import { Button } from '$lib/components/ui/button'
   import { dragScroll } from '$lib/modules/navigate'
@@ -73,10 +71,6 @@
     return Object.values(dayMap) as DayAirTimes[]
   }
 
-  onMount(async () => {
-    await tick()
-    hideBanner.value = true
-  })
 </script>
 
 <div class='flex flex-col items-center w-full h-full overflow-y-auto px-5' use:dragScroll>

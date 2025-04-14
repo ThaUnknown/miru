@@ -3,6 +3,7 @@
 import type { SessionMetadata } from '$lib/components/ui/player/util'
 import type { Search } from '$lib/modules/anilist/queries'
 import type { VariablesOf } from 'gql.tada'
+import type { SvelteComponentTyped } from 'svelte'
 
 // for information about these interfaces
 export interface AuthResponse {
@@ -89,6 +90,10 @@ declare global {
   interface ScreenOrientation {
     lock: (orientation: 'any' | 'natural' | 'landscape' | 'portrait' | 'portrait-primary' | 'portrait-secondary' | 'landscape-primary' | 'landscape-secondary') => Promise<void>
   }
+}
+
+declare module '*.svelte' {
+  export default SvelteComponentTyped
 }
 
 export {}

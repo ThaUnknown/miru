@@ -131,6 +131,7 @@ export default class Subtitles {
     } else {
       tracks[trackNumber] = {
         events: new HashMap(),
+        // @ts-expect-error initializing with empty object
         meta: {},
         styles: {}
       }

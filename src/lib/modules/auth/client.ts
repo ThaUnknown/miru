@@ -89,9 +89,9 @@ export default new class AuthAggregator {
         ? 'COMPLETED'
         : media.mediaListEntry?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
 
-    const repeat = media.mediaListEntry?.repeat ?? 0 + (totalEps === progress ? 1 : 0)
+    const repeat = (media.mediaListEntry?.repeat ?? 0) + (totalEps === progress ? 1 : 0)
 
-    const lists = (media.mediaListEntry?.customLists as Array<{enabled: boolean, name: string}> | undefined)?.filter(list => list.enabled).map(list => list.name) ?? []
+    const lists = (media.mediaListEntry?.customLists as Array<{enabled: boolean, name: string}> | undefined)?.filter(({ enabled }) => enabled).map(({ name }) => name) ?? []
 
     this.entry({ id: media.id, progress, repeat, status, lists })
   }
