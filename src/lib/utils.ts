@@ -95,6 +95,7 @@ export const isMobile = readable(!mql?.matches, set => {
 })
 
 const formatter = new Intl.RelativeTimeFormat('en')
+const formatterShort = new Intl.RelativeTimeFormat('en', { style: 'short' })
 const ranges: Partial<Record<Intl.RelativeTimeFormatUnit, number>> = {
   years: 3600 * 24 * 365,
   months: 3600 * 24 * 30,
@@ -115,12 +116,22 @@ export function since (date: Date) {
     }
   }
 }
+export function eta (date: Date) {
+  const secondsElapsed = (date.getTime() - Date.now()) / 1000
+  for (const _key in ranges) {
+    const key = _key as Intl.RelativeTimeFormatUnit
+    if ((ranges[key] ?? 0) < Math.abs(secondsElapsed)) {
+      const delta = secondsElapsed / (ranges[key] ?? 0)
+      return formatterShort.format(Math.round(delta), key)
+    }
+  }
+}
 const bytes = [' B', ' kB', ' MB', ' GB', ' TB']
 export function fastPrettyBytes (num: number) {
   if (isNaN(num)) return '0 B'
   if (num < 1) return num + ' B'
   const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), bytes.length - 1)
-  return Number((num / Math.pow(1000, exponent)).toFixed(2)) + bytes[exponent]!
+  return Number((num / Math.pow(1000, exponent)).toFixed(1)) + bytes[exponent]!
 }
 
 const bits = [' b', ' kb', ' Mb', ' Gb', ' Tb']
@@ -128,7 +139,7 @@ export function fastPrettyBits (num: number) {
   if (isNaN(num)) return '0 b'
   if (num < 1) return num + ' b'
   const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), bits.length - 1)
-  return Number((num / Math.pow(1000, exponent)).toFixed(2)) + bits[exponent]!
+  return Number((num / Math.pow(1000, exponent)).toFixed(1)) + bits[exponent]!
 }
 
 export function toTS (sec: number, full?: number) {

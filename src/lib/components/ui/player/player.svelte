@@ -1,10 +1,10 @@
 <script lang='ts'>
-  import { Cast, FastForward, Maximize, Minimize, Pause, Rewind, SkipBack, SkipForward, Captions, Contrast, List, PictureInPicture2, Proportions, RefreshCcw, RotateCcw, RotateCw, ScreenShare, Volume1, Volume2, VolumeX } from 'lucide-svelte'
+  import { Cast, FastForward, Maximize, Minimize, Pause, Rewind, SkipBack, SkipForward, Captions, Contrast, List, PictureInPicture2, Proportions, RefreshCcw, RotateCcw, RotateCw, ScreenShare, Volume1, Volume2, VolumeX, ChevronDown, ChevronUp, Users } from 'lucide-svelte'
   import { persisted } from 'svelte-persisted-store'
   import { toast } from 'svelte-sonner'
   import { fade } from 'svelte/transition'
   import { onMount } from 'svelte'
-  import { loadWithDefaults } from 'svelte-keybinds'
+  import { condition, loadWithDefaults } from 'svelte-keybinds'
   import VideoDeband from 'video-deband'
 
   import Seekbar from './seekbar.svelte'
@@ -18,6 +18,7 @@
   import type { TorrentFile } from '../../../../app'
   import type { ResolvedFile } from './resolver'
 
+  import { server } from '$lib/modules/torrent'
   import PictureInPictureExit from '$lib/components/icons/PictureInPictureExit.svelte'
   import * as Sheet from '$lib/components/ui/sheet'
   import PictureInPicture from '$lib/components/icons/PictureInPicture.svelte'
@@ -25,7 +26,7 @@
   import Play from '$lib/components/icons/Play.svelte'
   import { Button } from '$lib/components/ui/button'
   import { settings } from '$lib/modules/settings'
-  import { toTS } from '$lib/utils'
+  import { toTS, fastPrettyBits } from '$lib/utils'
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
   import { goto } from '$app/navigation'
@@ -543,7 +544,12 @@
     }
   })
 
+  const torrentstats = server.stats
+
   $: isMiniplayer = $page.route.id !== '/app/player'
+
+  // @ts-expect-error bad type infer
+  $condition = () => !isMiniplayer
 </script>
 
 <svelte:document bind:fullscreenElement bind:visibilityState />
@@ -574,6 +580,21 @@
     on:timeupdate={checkCompletion}
   />
   <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
+    <div class='absolute top-0 flex w-full pointer-events-none justify-center z-50 gap-4 pt-3 items-center font-bold text-lg' class:hidden={isMiniplayer}>
+      <!-- {($torrentstats.progress * 100).toFixed(1)}% -->
+      <div class='flex justify-center items-center gap-2'>
+        <Users size={18} />
+        {$torrentstats.seeders}
+      </div>
+      <div class='flex justify-center items-center gap-2'>
+        <ChevronDown size={18} />
+        {fastPrettyBits($torrentstats.down)}/s
+      </div>
+      <div class='flex justify-center items-center gap-2'>
+        <ChevronUp size={18} />
+        {fastPrettyBits($torrentstats.up)}/s
+      </div>
+    </div>
     {#if seeking}
       {#await thumbnailer.getThumbnail(seekIndex) then src}
         <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0 object-contain' loading='lazy' decoding='async' />

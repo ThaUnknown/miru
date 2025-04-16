@@ -38,6 +38,20 @@ export interface Attachment {
   url: string
 }
 
+export interface TorrentInfo {
+  peers: number
+  progress: number
+  down: number
+  up: number
+  name: string
+  hash: string
+  seeders: number
+  leechers: number
+  size: number
+  downloaded: number
+  eta: number
+}
+
 export interface Native {
   authAL: (url: string) => Promise<AuthResponse>
   restart: () => Promise<void>
@@ -67,6 +81,8 @@ export interface Native {
   tracks: (hash: string, id: number) => Promise<Array<{ number: string, language?: string, type: string, header: string, name?: string }>>
   subtitles: (hash: string, id: number, cb: (subtitle: { text: string, time: number, duration: number }, trackNumber: number) => void) => Promise<void>
   chapters: (hash: string, id: number) => Promise<Array<{ start: number, end: number, text: string }>>
+  torrentStats: (hash: string) => Promise<TorrentInfo>
+  torrents: () => Promise<TorrentInfo[]>
   isApp: boolean
   version: () => string
 }

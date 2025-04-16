@@ -1,8 +1,10 @@
-import type { AuthResponse, Native } from '../../app'
+import type { AuthResponse, Native, TorrentInfo } from '../../app'
+
+const rnd = (range = 100) => Math.floor(Math.random() * range)
 
 const dummyFiles = [
   {
-    name: 'My Happy Marriage Season 2.webm',
+    name: 'Amebku.webm',
     hash: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
     type: 'video/webm',
     size: 1234567890,
@@ -68,7 +70,8 @@ export default Object.assign<Native, Partial<Native>>({
     { start: 1.0 * 60, end: 1.2 * 60, text: 'Chapter 1' },
     { start: 1.4 * 60, end: 88, text: 'Chapter 2 ' }
   ],
-  version: () => 'v0.0.2'
-
+  version: () => 'v0.0.2',
+  torrentStats: async (): Promise<TorrentInfo> => ({ peers: rnd(), seeders: rnd(), leechers: rnd(), progress: Math.random(), down: rnd(100000000), up: rnd(100000000), name: 'Amebku.webm', downloaded: rnd(100000), hash: '1234567890abcdef', size: 1234567890, eta: rnd() }),
+  torrents: async (): Promise<TorrentInfo[]> => [{ peers: rnd(), seeders: rnd(), leechers: rnd(), progress: Math.random(), down: rnd(100000000), up: rnd(100000000), name: 'Amebku.webm', downloaded: rnd(100000), hash: '1234567890abcdef', size: 1234567890, eta: rnd() }]
   // @ts-expect-error idk
 }, globalThis.native as Partial<Native>)

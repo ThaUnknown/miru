@@ -1,12 +1,12 @@
 <script lang='ts'>
   import { Home, Search, Calendar, Users, MessagesSquare, Heart, Settings, LogIn } from 'lucide-svelte'
+  import { Download } from 'svelte-radix'
 
   import { BannerImage } from '../banner'
   import { Button } from '../button'
 
   import SidebarButton from './SidebarButton.svelte'
 
-  import Hub from '$lib/components/icons/Hub.svelte'
   import native from '$lib/modules/native'
   import client from '$lib/modules/auth/client'
   import * as Avatar from '$lib/components/ui/avatar'
@@ -36,14 +36,15 @@
 <SidebarButton href='/app/schedule/'>
   <Calendar size={18} />
 </SidebarButton>
-<SidebarButton href='/app/w2g/'>
+<!-- <SidebarButton href='/app/w2g/'> -->
+<SidebarButton disabled={true}>
   <Users size={18} />
 </SidebarButton>
 <SidebarButton href='/app/chat/'>
   <MessagesSquare size={18} />
 </SidebarButton>
 <SidebarButton href='/app/client/'>
-  <Hub size={18} fill='currentColor' />
+  <Download size={18} />
 </SidebarButton>
 <Button variant='ghost' on:click={() => native.openURL('https://github.com/sponsors/ThaUnknown/')} class='px-2 w-full relative mt-auto select:!bg-transparent text-[#fa68b6] select:text-[#fa68b6]'>
   <Heart size={18} fill='currentColor' class='absolute' />

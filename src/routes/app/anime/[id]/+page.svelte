@@ -113,7 +113,7 @@
     </div>
     <div class='flex gap-2 items-center justify-center md:justify-start w-full lex-wrap'>
       <div class='flex md:mr-3 w-full min-[380px]:w-[180px]'>
-        <PlayButton size='default' {media} class='rounded-r-none' />
+        <PlayButton size='default' {media} class='rounded-r-none w-full' />
         <EntryEditor {media} />
       </div>
       <FavoriteButton {media} variant='secondary' size='icon' class='min-[380px]:-order-1 md:order-none' />
