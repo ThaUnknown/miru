@@ -2,6 +2,6 @@ import { redirect } from '@sveltejs/kit'
 
 import { outdatedComponent } from '$lib/modules/update'
 
-export function load () {
-  if (!outdatedComponent) redirect(307, '/')
+export async function load () {
+  if (!await outdatedComponent) redirect(307, '/')
 }

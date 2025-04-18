@@ -10,9 +10,9 @@
   <Menubar />
   <div class='overflow-x-hidden overflow-y-scroll relative flex justify-center items-center text-white px-15 w-full font-light'>
     <div class='max-w-full min-w-96 justify-center items-center flex-col flex'>
-      <div class='text-6xl text-center'>Update Required</div>
+      <div class='text-6xl text-center font-bold'>Update Required</div>
       <Separator class='my-6 w-40' />
-      <div class='text-xl text-wrap max-w-full text-center'>A mandatory update is available for the {outdatedComponent}.<br />Please update to continue.</div>
+      <div class='text-xl text-wrap max-w-full text-center'>A mandatory update is available for the {#await outdatedComponent then name}{name}{/await}.<br />Please update to continue.</div>
       <Button class='mt-6 text-md font-bold' size='lg' on:click={native.restart}>Update</Button>
     </div>
   </div>

@@ -4,12 +4,13 @@ import native from './native'
 
 import { version } from '$app/environment'
 
-function compareVersions (): 'ui' | 'client' | undefined {
-  const releaseType = diff(version, native.version())
+async function compareVersions (): Promise<'ui' | 'client' | undefined> {
+  const nativeVersion = await native.version()
+  const releaseType = diff(version, nativeVersion)
   if (!releaseType) return
   if (releaseType === 'patch') return
 
-  return compare(version, native.version()) === -1 ? 'ui' : 'client'
+  return compare(version, nativeVersion) === -1 ? 'ui' : 'client'
 }
 
 export const outdatedComponent = compareVersions()

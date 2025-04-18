@@ -26,7 +26,7 @@
 <svelte:document bind:visibilityState />
 
 <BannerImage class='absolute top-0 left-0 w-14 -z-10 hidden md:block' />
-<Logo class='mb-3 h-10 object-contain px-2 hidden md:block text-white' />
+<Logo class='mb-3 h-10 object-contain px-2.5 hidden md:block text-white' />
 <SidebarButton href='/app/home/'>
   <Home size={18} />
 </SidebarButton>

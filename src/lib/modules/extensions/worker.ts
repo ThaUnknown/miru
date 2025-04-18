@@ -1,5 +1,5 @@
 import { finalizer } from 'abslink'
-import { expose } from 'abslink/worker'
+import { expose } from 'abslink/w3c'
 
 import type { SearchFunction, TorrentSource } from 'hayase-extensions'
 

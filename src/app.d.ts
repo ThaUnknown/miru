@@ -52,6 +52,17 @@ export interface TorrentInfo {
   eta: number
 }
 
+export interface TorrentSettings {
+  torrentPersist: boolean
+  torrentDHT: boolean
+  torrentStreamedDownload: boolean
+  torrentSpeed: number
+  maxConns: number
+  torrentPort: number
+  dhtPort: number
+  torrentPeX: boolean
+}
+
 export interface Native {
   authAL: (url: string) => Promise<AuthResponse>
   restart: () => Promise<void>
@@ -83,8 +94,10 @@ export interface Native {
   chapters: (hash: string, id: number) => Promise<Array<{ start: number, end: number, text: string }>>
   torrentStats: (hash: string) => Promise<TorrentInfo>
   torrents: () => Promise<TorrentInfo[]>
+  setDOH: (dns: string) => Promise<void>
+  updateSettings: (settings: TorrentSettings) => Promise<void>
   isApp: boolean
-  version: () => string
+  version: () => Promise<string>
 }
 
 declare global {

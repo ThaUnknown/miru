@@ -4,7 +4,7 @@
   import type { resolveFilesPoorly, ResolvedFile } from './resolver'
   import type { MediaInfo } from '$lib/components/ui/player/util'
 
-  import { banner, episodes, title } from '$lib/modules/anilist'
+  import { cover, episodes, title } from '$lib/modules/anilist'
   import { searchStore } from '$lib/components/SearchModal.svelte'
 
   export let mediaInfo: NonNullable<Awaited<ReturnType<typeof resolveFilesPoorly>>>
@@ -16,8 +16,8 @@
       media: file.metadata.media,
       session: {
         title: title(file.metadata.media),
-        description: 'N/A', // TODO
-        image: banner(file.metadata.media) ?? ''
+        description: 'Episode ' + file.metadata.episode, // TODO
+        image: cover(file.metadata.media) ?? ''
       }
     }
   }

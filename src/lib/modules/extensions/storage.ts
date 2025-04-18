@@ -1,7 +1,7 @@
 import { set, getMany, delMany, del } from 'idb-keyval'
 import { releaseProxy, type Remote } from 'abslink'
 import { persisted } from 'svelte-persisted-store'
-import { wrap } from 'abslink/worker'
+import { wrap } from 'abslink/w3c'
 import { get } from 'svelte/store'
 import { toast } from 'svelte-sonner'
 
