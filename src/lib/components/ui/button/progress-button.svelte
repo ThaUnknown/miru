@@ -26,7 +26,6 @@
     animating = false
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (autoStart) startAnimation()
 
   function handleAnimationEnd () {

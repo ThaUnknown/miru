@@ -20,7 +20,6 @@
     isAnimating = true
     isFlying = true
     await sleep(800)
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!isFlying) return
     isSpinning = true
     isFlying = false

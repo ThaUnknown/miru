@@ -1,7 +1,7 @@
 <script lang='ts'>
   import { Dialog as DialogPrimitive } from 'bits-ui'
 
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   type $$Props = DialogPrimitive.PortalProps
 
 </script>

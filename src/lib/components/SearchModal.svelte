@@ -140,7 +140,6 @@
   $: searchResult && startAnimation(searchResult)
 </script>
 
-<!-- eslint-disable-next-line svelte/no-reactive-reassign -->
 <Dialog.Root bind:open onOpenChange={close} portal='#root'>
   <Dialog.Content class='bg-black h-full lg:border-x-4 border-b-0 max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex lg:rounded-t-xl overflow-hidden'>
     <div class='absolute top-0 left-0 w-full h-full max-h-28 overflow-hidden'>

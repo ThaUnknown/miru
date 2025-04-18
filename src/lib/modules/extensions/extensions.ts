@@ -205,14 +205,12 @@ export const extensions = new class Extensions {
           ? entry.accuracy
           : dupe.accuracy)
         dupe.title = entry.title.length > dupe.title.length ? entry.title : dupe.title
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         dupe.link ??= entry.link
         dupe.id ??= entry.id
         dupe.seeders ||= entry.seeders >= 30000 ? 0 : entry.seeders
         dupe.leechers ||= entry.leechers >= 30000 ? 0 : entry.leechers
         dupe.downloads ||= entry.downloads
         dupe.size ||= entry.size
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         dupe.date ||= entry.date
         dupe.type ??= entry.type === 'best' ? 'best' : entry.type === 'alt' ? 'alt' : entry.type
       } else {

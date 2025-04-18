@@ -22,7 +22,9 @@ export default tseslint.config(
       'import/order': ['error', {
         'newlines-between': 'always',
         groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type']
-      }]
+      }],
+      '@typescript-eslint/no-unnecessary-condition': 'warn',
+      '@typescript-eslint/no-unused-vars': 'off'
     }
   }
 )

@@ -27,7 +27,7 @@
 
   export let id: string
 
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   type $$Props = HTMLAttributes<HTMLDivElement> & { id: string }
 
   function mount (node: HTMLDivElement) {

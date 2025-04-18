@@ -103,7 +103,6 @@ export class W2GClient extends EventEmitter {
 
   _playerStateChanged (state: PlayerState) {
     debug(`_playerStateChanged: ${this.player.paused} ${state.paused} ${this.player.time} ${state.time}`)
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!state) return false
     if (this.player.paused !== state.paused || this.player.time !== state.time) {
       this.player = state
@@ -167,7 +166,6 @@ export class W2GClient extends EventEmitter {
         break
       case EventTypes.MagnetLinkEvent: {
         const cast = data as Event<{magnet: string, hash: string}>
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (cast.payload.magnet === undefined) break
         const { hash, magnet } = cast.payload
         if (hash !== this.magnet?.hash) {
@@ -180,7 +178,6 @@ export class W2GClient extends EventEmitter {
       }
       case EventTypes.MediaIndexEvent: {
         const cast = data as Event<{index: number}>
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (cast.payload.index === undefined) break
         if (this.index !== cast.payload.index) {
           this.index = cast.payload.index
@@ -190,7 +187,6 @@ export class W2GClient extends EventEmitter {
       }
       case EventTypes.PlayerStateEvent: {
         const cast = data as Event<PlayerState>
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (cast.payload.time === undefined) break
         if (this._playerStateChanged(cast.payload)) this.emit('player', data.payload)
         break

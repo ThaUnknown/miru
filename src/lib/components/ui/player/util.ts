@@ -158,7 +158,6 @@ export function normalizeTracks (_tracks: Track[]) {
   const hasEng = tracks.some(track => track.language === 'eng' || track.language === 'en')
   const lang = tracks.map(({ id, language, label, enabled, selected }) => {
     return {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       enabled: enabled ?? selected,
       id,
       language: language || !hasEng ? 'eng' : 'unk',
