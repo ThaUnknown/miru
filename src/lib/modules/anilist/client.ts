@@ -239,7 +239,7 @@ class AnilistClient {
   })
 
   async auth () {
-    const res = await native.authAL('https://anilist.co/api/v2/oauth/authorize?client_id=3461&response_type=token')
+    const res = await native.authAL(`https://anilist.co/api/v2/oauth/authorize?client_id=${dev ? 26159 : 3461}&response_type=token`)
     const token = res.access_token
     const expires = '' + (Date.now() + (parseInt(res.expires_in) * 1000))
 

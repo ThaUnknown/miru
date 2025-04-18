@@ -113,7 +113,7 @@ export default class MessageClient extends EventEmitter {
         gecos: 'https://kiwiirc.com/',
         encoding: 'utf8',
         auto_reconnect: true,
-        transport: createChannelConstructor(`http${dev ? '' : 's'}://do-e.clients.kiwiirc.com/webirc/kiwiirc/`, '', '1') // this people are dumb enough to not refresh the ssl cert so don't use https
+        transport: createChannelConstructor('http://do-e.clients.kiwiirc.com/webirc/kiwiirc/', '', '1') // this people are dumb enough to not refresh the ssl cert so don't use https
       })
     })
 

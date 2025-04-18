@@ -21,22 +21,18 @@
 <div class='w-full {isMiniplayer ? 'z-[49] max-w-80 absolute bottom-4 left-4 md:left-[unset] md:right-4 rounded-lg overflow-clip' : 'h-full'}'>
   {#if active}
     {#await active}
-      <div class='w-full flex justify-center items-center bg-black aspect-video cursor-pointer' on:click={openPlayer}>
+      <div class='w-full flex justify-center items-center bg-black {isMiniplayer ? 'aspect-video' : 'h-full' } cursor-pointer' on:click={openPlayer}>
         <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
       </div>
     {:then mediaInfo}
       {#if mediaInfo}
         <Mediahandler {mediaInfo} />
       {:else}
-        <div class='w-full flex justify-center items-center bg-black aspect-video cursor-pointer' on:click={openPlayer}>
-          <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
-        </div>
+        <div class='w-full flex justify-center items-center bg-black {isMiniplayer ? 'aspect-video' : 'h-full' } cursor-pointer' on:click={openPlayer} />
       {/if}
     {/await}
   {:else}
-    <div class='w-full flex justify-center items-center bg-black aspect-video cursor-pointer' on:click={openPlayer}>
-      <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
-    </div>
+    <div class='w-full flex justify-center items-center bg-black {isMiniplayer ? 'aspect-video' : 'h-full' } cursor-pointer' on:click={openPlayer} />
   {/if}
 </div>
 
