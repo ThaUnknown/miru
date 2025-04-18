@@ -32,7 +32,7 @@ export const languageCodes = {
   per: 'Persian',
   mal: 'Malayalam',
   '': 'None'
-}
+} as const
 
 export const subtitleResolutions = {
   '0': 'None',
@@ -40,7 +40,7 @@ export const subtitleResolutions = {
   '1080': '1080p',
   '720': '720p',
   '480': '480p'
-}
+} as const
 
 export const videoResolutions = {
   '2160': '2160p',
@@ -48,10 +48,10 @@ export const videoResolutions = {
   '720': '720p',
   '480': '480p',
   '': 'Any'
-}
+} as const
 
 export const lookupPreferences = {
   quality: 'Quality',
   size: 'Size',
   seeders: 'Availability'
-}
+} as const

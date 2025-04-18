@@ -29,9 +29,9 @@
           <Table.Cell>{(progress * 100).toFixed(1)}%</Table.Cell>
           <Table.Cell>{fastPrettyBytes(size)}</Table.Cell>
           <Table.Cell>{fastPrettyBytes(size * progress)}</Table.Cell>
-          <Table.Cell>{fastPrettyBits(down)}/s</Table.Cell>
-          <Table.Cell>{fastPrettyBits(up)}/s</Table.Cell>
-          <Table.Cell>{_eta(new Date(Date.now() + eta * 1000))}</Table.Cell>
+          <Table.Cell>{fastPrettyBits(down * 8)}/s</Table.Cell>
+          <Table.Cell>{fastPrettyBits(up * 8)}/s</Table.Cell>
+          <Table.Cell>{_eta(new Date(Date.now() + eta)) ?? 'Done'}</Table.Cell>
           <Table.Cell>{seeders}<span class='text-muted-foreground'>/{peers}</span></Table.Cell>
           <Table.Cell>{leechers}<span class='text-muted-foreground'>/{peers}</span></Table.Cell>
         </Table.Row>

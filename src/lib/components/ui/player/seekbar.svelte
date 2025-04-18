@@ -69,6 +69,8 @@
       }
     }
 
+    if (!barSegments.length) barSegments.push({ size: 100, text: '', offset: 0, scale: 100 })
+
     return barSegments
   }
   // seeking

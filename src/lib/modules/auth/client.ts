@@ -82,7 +82,7 @@ export default new class AuthAggregator {
     if (totalEps < progress) return // woah, bad data from resolver?!
 
     const currentProgress = media.mediaListEntry?.progress ?? 0
-    if (currentProgress <= progress) return
+    if (currentProgress >= progress) return
 
     const status =
       totalEps === progress

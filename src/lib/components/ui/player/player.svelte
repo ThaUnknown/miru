@@ -554,8 +554,8 @@
 
 <svelte:document bind:fullscreenElement bind:visibilityState />
 
-<div class='w-full h-full relative content-center fullscreen:bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper}>
-  <video class='w-full h-full grow bg-black' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={deband} class:absolute={deband} class:top-0={deband}
+<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper}>
+  <video class='w-full h-full grow' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={deband} class:absolute={deband} class:top-0={deband}
     use:createDeband={$settings.playerDeband}
     use:createSubtitles
     use:autoPiP={pip}
@@ -580,7 +580,7 @@
     on:timeupdate={checkCompletion}
   />
   <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
-    <div class='absolute top-0 flex w-full pointer-events-none justify-center z-50 gap-4 pt-3 items-center font-bold text-lg' class:hidden={isMiniplayer}>
+    <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg' class:hidden={isMiniplayer}>
       <!-- {($torrentstats.progress * 100).toFixed(1)}% -->
       <div class='flex justify-center items-center gap-2'>
         <Users size={18} />
@@ -588,11 +588,11 @@
       </div>
       <div class='flex justify-center items-center gap-2'>
         <ChevronDown size={18} />
-        {fastPrettyBits($torrentstats.down)}/s
+        {fastPrettyBits($torrentstats.down * 8)}/s
       </div>
       <div class='flex justify-center items-center gap-2'>
         <ChevronUp size={18} />
-        {fastPrettyBits($torrentstats.up)}/s
+        {fastPrettyBits($torrentstats.up * 8)}/s
       </div>
     </div>
     {#if seeking}
