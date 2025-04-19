@@ -37,5 +37,6 @@ export default {
   playerPath: '',
   playerSeek: 2,
   playerSkip: false,
-  playerSkipFiller: false
+  playerSkipFiller: false,
+  minimalPlayerUI: false
 }

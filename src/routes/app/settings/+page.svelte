@@ -61,6 +61,10 @@
     <Switch {id} bind:checked={$settings.playerSkipFiller} />
   </SettingCard>
 
+  <div class='font-weight-bold text-xl font-bold'>Interface Settings</div>
+  <SettingCard let:id title='Minimal UI' description='Forces minimalistic UI, hides controls.'>
+    <Switch {id} bind:checked={$settings.minimalPlayerUI} />
+  </SettingCard>
   <div class='font-weight-bold text-xl font-bold'>External Player Settings</div>
   <SettingCard let:id title='Enable External Player' description='Opens a custom user-picked external video player to play video, instead of using the built-in one.'>
     <Switch {id} bind:checked={$settings.enableExternal} />

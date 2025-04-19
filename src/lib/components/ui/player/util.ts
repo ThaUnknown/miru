@@ -53,7 +53,7 @@ interface AniSkip {
   statusCode: number
 }
 
-export async function getChaptersAniSkip (idMal: number, episode: number, duration: number) {
+export async function getChaptersAniSkip (idMal: number, episode: number, duration: number): Promise<Chapter[]> {
   const resAccurate = await fetch(`https://api.aniskip.com/v2/skip-times/${idMal}/${episode}/?episodeLength=${duration}&types=op&types=ed&types=recap`)
   const jsonAccurate = await resAccurate.json() as AniSkip
 

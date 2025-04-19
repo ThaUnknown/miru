@@ -8,7 +8,7 @@
   import VideoDeband from 'video-deband'
 
   import Seekbar from './seekbar.svelte'
-  import { autoPiP, burnIn, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
+  import { autoPiP, burnIn, getChaptersAniSkip, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
   import Thumbnailer from './thumbnailer'
   import Options from './options.svelte'
   import Volume from './volume.svelte'
@@ -191,7 +191,17 @@
   let chapters: Chapter[] = []
   const chaptersPromise = native.chapters(mediaInfo.file.hash, mediaInfo.file.id)
   async function loadChapters (pr: typeof chaptersPromise, safeduration: number) {
-    chapters = sanitizeChapters(await pr, safeduration)
+    const nativeChapters = await pr
+    if (nativeChapters.length) {
+      chapters = sanitizeChapters(nativeChapters, safeduration)
+      return
+    }
+
+    const idMal = mediaInfo.media.idMal
+    if (!idMal) return
+    const aniSkipChapters = await getChaptersAniSkip(idMal, mediaInfo.episode, safeduration)
+    if (!aniSkipChapters.length) return
+    chapters = sanitizeChapters(aniSkipChapters, safeduration)
   }
   $: loadChapters(chaptersPromise, safeduration)
 
@@ -579,8 +589,8 @@
     on:timeupdate={checkSkippableChapters}
     on:timeupdate={checkCompletion}
   />
-  <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
-    <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg' class:hidden={isMiniplayer}>
+  <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none' class:hidden={isMiniplayer}>
+    <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg'>
       <!-- {($torrentstats.progress * 100).toFixed(1)}% -->
       <div class='flex justify-center items-center gap-2'>
         <Users size={18} />
@@ -614,7 +624,7 @@
       </div>
     {/if}
     <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate
-      class='mobile:inline-flex hidden p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />
+      class='{$settings.minimalPlayerUI ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />
     <div class='mobile:flex hidden gap-4 absolute items-center select:opacity-100 cursor-default' class:opacity-0={immersed}>
       <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' disabled={!prev}>
         <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
@@ -675,7 +685,7 @@
       </div>
     </div>
     <Seekbar {duration} {currentTime} buffer={buffer / duration * 100} {chapters} bind:seeking bind:seek={seekPercent} on:seeked={finishSeek} on:seeking={startSeek} {thumbnailer} on:keydown={seekBarKey} on:dblclick={fullscreen} />
-    <div class='flex justify-between gap-2 mobile:hidden'>
+    <div class='justify-between gap-2 {$settings.minimalPlayerUI ? 'hidden' : 'mobile:hidden flex'}'>
       <div class='flex text-white gap-2'>
         <Button class='p-3 w-12 h-12' variant='ghost' on:click={playPause} id='play-pause-button'>
           {#if paused}
