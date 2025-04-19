@@ -60,8 +60,9 @@ export default class Subtitles {
       for (const track of tracklist) {
         const newtrack = this.track(track.number)
         newtrack.styles.Default = 0
-        if (track.type !== 'ass') track.header = defaultHeader
-        newtrack.meta = track
+        if (track.header?.startsWith('[Script Info]')) track.type = 'ass'
+        track.header ??= defaultHeader
+        newtrack.meta = track as { language?: string, type: string, header: string, number: string, name?: string }
         const styleMatches = track.header.match(stylesRx)
         if (!styleMatches) continue
         for (let i = 0; i < styleMatches.length; ++i) {
@@ -141,19 +142,20 @@ export default class Subtitles {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructSub (subtitle: any, isNotAss: boolean, subtitleIndex: number, Style: string) {
+    let Text = subtitle.text || ''
     if (isNotAss) { // converts VTT or other to SSA
-      const matches: string[] | null = subtitle.text.match(/<[^>]+>/g) // create array of all tags
+      const matches: string[] | null = Text.match(/<[^>]+>/g) // create array of all tags
       if (matches) {
         matches.forEach(match => {
           if (match.includes('</')) { // check if its a closing tag
-            subtitle.text = subtitle.text.replace(match, match.replace('</', '{\\').replace('>', '0}'))
+            Text = Text.replace(match, match.replace('</', '{\\').replace('>', '0}'))
           } else {
-            subtitle.text = subtitle.text.replace(match, match.replace('<', '{\\').replace('>', '1}'))
+            Text = Text.replace(match, match.replace('<', '{\\').replace('>', '1}'))
           }
         })
       }
       // replace all html special tags with normal ones
-      subtitle.text = subtitle.text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, '\\h').replace(/\r?\n/g, '\\N')
+      Text = Text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, '\\h').replace(/1?\n/g, '\\N')
     }
     return {
       Start: subtitle.time,
@@ -164,7 +166,7 @@ export default class Subtitles {
       MarginR: Number(subtitle.marginR) || 0,
       MarginV: Number(subtitle.marginV) || 0,
       Effect: subtitle.effect || '',
-      Text: subtitle.text || '',
+      Text,
       ReadOrder: 1,
       Layer: Number(subtitle.layer) || 0,
       _index: subtitleIndex

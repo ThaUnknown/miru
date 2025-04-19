@@ -160,7 +160,7 @@ export function normalizeTracks (_tracks: Track[]) {
     return {
       enabled: enabled ?? selected,
       id,
-      language: language || !hasEng ? 'eng' : 'unk',
+      language: language || (!hasEng ? 'eng' : 'unk'),
       label: label || 'Default'
     }
   })
@@ -175,9 +175,9 @@ export function normalizeSubs (_tracks?: Record<number | string, { meta: { langu
   if (!_tracks) return {}
   const hasEng = Object.values(_tracks).some(({ meta }) => meta.language === 'eng' || meta.language === 'en')
   const lang = Object.values(_tracks).map(({ meta }) => ({
-    language: meta.language ?? !hasEng ? 'eng' : 'unk',
+    language: meta.language ?? (!hasEng ? 'eng' : 'unk'),
     number: meta.number,
-    name: meta.name ?? meta.language ?? !hasEng ? 'eng' : 'unk'
+    name: meta.name ?? meta.language ?? (!hasEng ? 'eng' : 'unk')
   }))
   return lang.reduce<Record<string, typeof lang>>((acc, track) => {
     if (!acc[track.language]) acc[track.language] = []

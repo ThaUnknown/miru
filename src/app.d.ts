@@ -89,7 +89,7 @@ export interface Native {
   updatePeerCounts: (hashes: string[]) => Promise<Array<{ hash: string, complete: string, downloaded: string, incomplete: string }>>
   playTorrent: (id: string) => Promise<TorrentFile[]>
   attachments: (hash: string, id: number) => Promise<Attachment[]>
-  tracks: (hash: string, id: number) => Promise<Array<{ number: string, language?: string, type: string, header: string, name?: string }>>
+  tracks: (hash: string, id: number) => Promise<Array<{ number: string, language?: string, type: string, header?: string, name?: string }>>
   subtitles: (hash: string, id: number, cb: (subtitle: { text: string, time: number, duration: number }, trackNumber: number) => void) => Promise<void>
   chapters: (hash: string, id: number) => Promise<Array<{ start: number, end: number, text: string }>>
   torrentStats: (hash: string) => Promise<TorrentInfo>

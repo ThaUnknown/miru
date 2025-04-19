@@ -1,7 +1,7 @@
 import { get } from 'svelte/store'
 import anitomyscript, { type AnitomyResult } from 'anitomyscript'
 
-import { dedupeAiring, episodeByAirDate, isMovie, type Media, type MediaEdge } from '../anilist'
+import { dedupeAiring, episodeByAirDate, episodes, isMovie, type Media, type MediaEdge } from '../anilist'
 import { settings, type videoResolutions } from '../settings'
 import native from '../native'
 
@@ -81,7 +81,7 @@ export const extensions = new class Extensions {
 
     const options = {
       anilistId: media.id,
-      episodeCount: media.episodes ?? undefined,
+      episodeCount: episodes(media) ?? undefined,
       episode,
       anidbAid,
       anidbEid,
