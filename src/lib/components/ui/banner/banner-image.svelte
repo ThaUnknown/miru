@@ -24,18 +24,26 @@
 {#if $bannerSrc}
   <div class={cn('object-cover w-screen absolute top-0 left-0 h-full overflow-hidden pointer-events-none bg-black banner', className)}>
     {#key $bannerSrc}
-      <Banner media={$bannerSrc} class='min-w-[100vw] w-screen h-[30rem] object-cover {$hideBanner ? 'opacity-35' : 'opacity-100'} transition-opacity duration-500 banner-gr relative' />
+      <Banner media={$bannerSrc} class='min-w-[100vw] w-screen h-[23rem] object-cover {$hideBanner ? 'opacity-35' : 'opacity-100'} transition-opacity duration-500 banner-gr relative' />
     {/key}
   </div>
 {/if}
 
 <style>
-  :global(.banner-gr::after) {
+  :global(div.banner-gr::after) {
     content: '';
     position: absolute;
     left: 0 ; bottom: 0;
-    /* when clicking, translate fucks up the position, and video might leak down 1 or 2 pixels, stickig under the gradient, look bad */
-    width: 100%; height: 100% ;
-    background: linear-gradient(#0000, #0008, #000);
+    width: 100%;
+    height: 300px;
+    background: linear-gradient(1turn, rgb(3, 3, 3) 8.98%, rgba(0, 0, 0, 0) 100%);
+  }
+  .banner::after {
+    content: '';
+    position: absolute;
+    left: 0 ; top: 0;
+    width: 100%; height: 23rem;
+    z-index: 0;
+    border-image: fill 0 linear-gradient(rgba(0, 0, 0, .4));
   }
 </style>

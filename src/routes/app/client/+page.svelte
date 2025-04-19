@@ -25,7 +25,7 @@
     <Table.Body>
       {#each $list as { name, progress, size, down, up, eta, seeders, leechers, peers }, i (i)}
         <Table.Row class='[&>*]:p-4'>
-          <Table.Cell>{name}</Table.Cell>
+          <Table.Cell>{name ?? '?'}</Table.Cell>
           <Table.Cell>{(progress * 100).toFixed(1)}%</Table.Cell>
           <Table.Cell>{fastPrettyBytes(size)}</Table.Cell>
           <Table.Cell>{fastPrettyBytes(size * progress)}</Table.Cell>

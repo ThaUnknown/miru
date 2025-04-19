@@ -16,7 +16,7 @@
 
 <div class='w-full h-[450px] relative'>
   <!-- really shit and hacky way of fixing scroll position jumping when banner changes height -->
-  <div class='absolute top-0 transparent h-[450px] opacity-0'>.</div>
+  <div class='absolute top-0 transparent h-full opacity-0'>.</div>
   {#if $query.fetching}
     <SkeletonBanner />
   {/if}

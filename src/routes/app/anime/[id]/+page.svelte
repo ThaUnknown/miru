@@ -61,7 +61,7 @@
 </script>
 
 <div class='min-w-0 -ml-14 pl-14 grow items-center flex flex-col h-full overflow-y-auto z-10 pointer-events-none' use:dragScroll on:scroll={handleScroll}>
-  <div class='gap-6 w-full pt-4 md:pt-48 flex flex-col items-center justify-center max-w-[1600px] px-3 xl:px-14 pointer-events-auto'>
+  <div class='gap-6 w-full pt-4 md:pt-32 flex flex-col items-center justify-center max-w-[1600px] px-3 xl:px-14 pointer-events-auto'>
     <div class='flex flex-col md:flex-row w-full items-center md:items-end gap-5 pt-12'>
       <Dialog.Root portal='#root'>
         <Dialog.Trigger class='shrink-0 w-[180px] h-[256px] rounded overflow-hidden relative group focus-visible:ring-1 focus-visible:ring-ring select:scale-[1.02] transition-transform duration-200'>
@@ -79,28 +79,28 @@
           <h3 class='text-lg capitalize leading-none text-muted-foreground'>
             {season(media)}
           </h3>
-          <h1 class='font-extrabold text-2xl md:text-4xl line-clamp-2 text-white'>{title(media)}</h1>
+          <h1 class='font-black text-2xl md:text-4xl line-clamp-2 text-white'>{title(media)}</h1>
           <h2 class='line-clamp-1 text-sm md:text-lg font-light text-muted-foreground'>{media.title?.romaji ?? ''}</h2>
           <div class='flex-wrap w-full justify-start md:pt-1 gap-4 hidden md:flex'>
             <div class='rounded px-3 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
-              <div class='text-transparent bg-clip-text text-contrast bg-inherit'>
+              <div class='text-contrast'>
                 {of(media) ?? duration(media) ?? 'N/A'}
               </div>
             </div>
             <div class='rounded px-3 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
-              <div class='text-transparent bg-clip-text text-contrast bg-inherit'>
+              <div class='text-contrast'>
                 {format(media)}
               </div>
             </div>
             {#if media.averageScore}
               <div class='rounded px-3 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
-                <div class='text-transparent bg-clip-text text-contrast bg-inherit'>
+                <div class='text-contrast'>
                   {media.averageScore}%
                 </div>
               </div>
             {/if}
             <div class='rounded px-3 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
-              <div class='text-transparent bg-clip-text text-contrast bg-inherit'>
+              <div class='text-contrast'>
                 {status(media)}
               </div>
             </div>

@@ -43,7 +43,8 @@ export default new class LocalSync {
   }
 
   schedule (): ReturnType<typeof client.schedule> {
-    return client.schedule(Object.keys(this.entries.value).map(id => parseInt(id)))
+    const ids = Object.keys(this.entries.value).map(id => parseInt(id))
+    return client.schedule(ids.length ? ids : undefined)
   }
 
   toggleFav (id: number) {

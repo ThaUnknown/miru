@@ -157,7 +157,6 @@ details:active,
   transform: scale(0.98);
 }
 
-/* should contain:strict be used here?*/
 .overflow-y-scroll,
 .overflow-y-auto,
 .overflow-x-scroll,
@@ -183,7 +182,12 @@ details:active,
 }
 
 .text-contrast {
-  filter: invert(1) grayscale(1) contrast(100)
+  filter: invert(1) grayscale(1) brightness(1.2) contrast(9000);
+  mix-blend-mode: luminosity;
+  -webkit-font-smoothing: antialiased;
+  background-color: inherit;
+  background-clip: text;
+  color: transparent
 }
 
 .svelte-keybinds {
@@ -294,7 +298,6 @@ body {
 
 .animate-marquee {
   animation: marquee 80s infinite linear;
-  will-change: background-position;
 }
 
 .animate-marquee-bg {
