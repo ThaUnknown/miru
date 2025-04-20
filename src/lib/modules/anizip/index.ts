@@ -9,13 +9,13 @@ const safefetch = async <T> (_fetch: typeof fetch, ...args: Parameters<typeof fe
   }
 }
 
-// const episodes = safefetch<EpisodesResponse>(`https://api.ani.zip/v1/episodes?anilist_id=${params.id}`)
-// const mappings = safefetch<MappingsResponse>(fetch, `https://api.ani.zip/v1/mappings?anilist_id=${params.id}`)
+// const episodes = safefetch<EpisodesResponse>(`https://hayase.ani.zip/v1/episodes?anilist_id=${params.id}`)
+// const mappings = safefetch<MappingsResponse>(fetch, `https://hayase.ani.zip/v1/mappings?anilist_id=${params.id}`)
 
 export async function episodes (id: number, _fetch = fetch) {
-  return await safefetch<EpisodesResponse>(_fetch, `https://api.ani.zip/v1/episodes?anilist_id=${id}`)
+  return await safefetch<EpisodesResponse>(_fetch, `https://hayase.ani.zip/v1/episodes?anilist_id=${id}`)
 }
 
 export async function mappings (id: number, _fetch = fetch) {
-  return await safefetch<MappingsResponse>(_fetch, `https://api.ani.zip/v1/mappings?anilist_id=${id}`)
+  return await safefetch<MappingsResponse>(_fetch, `https://hayase.ani.zip/v1/mappings?anilist_id=${id}`)
 }

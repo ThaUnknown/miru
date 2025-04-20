@@ -141,7 +141,7 @@
 </script>
 
 <Dialog.Root bind:open onOpenChange={close} portal='#root'>
-  <Dialog.Content class='bg-black h-full lg:border-x-4 border-b-0 max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex lg:rounded-t-xl overflow-hidden'>
+  <Dialog.Content class='bg-black h-full lg:border-x-4 border-b-0 max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex lg:rounded-t-xl overflow-hidden z-[100]'>
     <div class='absolute top-0 left-0 w-full h-full max-h-28 overflow-hidden'>
       {#if $searchStore.media}
         <Banner media={$searchStore.media} class='object-cover w-full h-full absolute bottom-[0.5px] left-0 -z-10' />

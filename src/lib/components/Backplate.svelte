@@ -42,7 +42,7 @@
     clearTimeout(timeout)
     if (idleAnimation === 'off' || active) return reset()
 
-    timeout = setTimeout(start, 20_000)
+    timeout = setTimeout(start, 120_000)
   }
 
   $: checkIdleState(active, $settings.idleAnimation)

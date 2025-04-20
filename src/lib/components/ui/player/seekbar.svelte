@@ -69,7 +69,7 @@
       }
     }
 
-    if (!barSegments.length) barSegments.push({ size: 100, text: '', offset: 0, scale: 100 })
+    if (!barSegments.length) barSegments.push({ size: 100, text: '', offset: 0, scale: 1 })
 
     return barSegments
   }

@@ -611,7 +611,7 @@
       {/await}
     {/if}
     {#if stats}
-      <div class='absolute top-10 left-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default px-3 py-2 rounded'>
+      <div class='absolute top-10 left-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto transition-opacity select:opacity-100 px-3 py-2 rounded'>
         <button class='absolute right-3 top-1' type='button' use:click={toggleStats}>×</button>
         FPS: {stats.fps}<br />
         Presented frames: {stats.presented}<br />
@@ -624,8 +624,8 @@
       </div>
     {/if}
     <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate
-      class='{$settings.minimalPlayerUI ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto select:opacity-100 cursor-default {immersed && 'opacity-0'}' />
-    <div class='mobile:flex hidden gap-4 absolute items-center select:opacity-100 cursor-default' class:opacity-0={immersed}>
+      class='{$settings.minimalPlayerUI ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto transition-opacity select:opacity-100 {immersed && 'opacity-0'}' />
+    <div class='mobile:flex hidden gap-4 absolute items-center transition-opacity select:opacity-100' class:opacity-0={immersed}>
       <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' disabled={!prev}>
         <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
       </Button>
