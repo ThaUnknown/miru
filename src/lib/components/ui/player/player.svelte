@@ -74,6 +74,7 @@
 
   $: buffering = readyState < 3
   $: immersed = !buffering && !seeking && !paused && !ended && !pictureInPictureElement
+  $: isMiniplayer = $page.route.id !== '/app/player'
 
   // functions
   function playPause () {
@@ -248,7 +249,7 @@
   }
 
   // other
-  $: if (ended && $settings.playerAutoplay) next?.()
+  $: if (ended && $settings.playerAutoplay && !isMiniplayer) next?.()
 
   function handleVisibility (visibility: DocumentVisibilityState) {
     if (!ended && $settings.playerPause && !pictureInPictureElement) {
@@ -263,6 +264,10 @@
   let visibilityPaused = true
   let visibilityState: DocumentVisibilityState
   $: handleVisibility(visibilityState)
+
+  function autoPlay () {
+    if (!isMiniplayer) video.play()
+  }
 
   let currentSkippable: string | null = null
   function checkSkippableChapters () {
@@ -556,8 +561,6 @@
 
   const torrentstats = server.stats
 
-  $: isMiniplayer = $page.route.id !== '/app/player'
-
   // @ts-expect-error bad type infer
   $condition = () => !isMiniplayer
 </script>
@@ -588,9 +591,10 @@
     on:loadeddata={checkAudio}
     on:timeupdate={checkSkippableChapters}
     on:timeupdate={checkCompletion}
+    on:loadedmetadata={autoPlay}
   />
   <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none' class:hidden={isMiniplayer}>
-    <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg'>
+    <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg transition-opacity' class:opacity-0={immersed}>
       <!-- {($torrentstats.progress * 100).toFixed(1)}% -->
       <div class='flex justify-center items-center gap-2'>
         <Users size={18} />
@@ -659,7 +663,7 @@
       </div>
     {/each}
   </div>
-  <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity select:opacity-100 cursor-default' class:opacity-0={immersed} class:hidden={isMiniplayer}>
+  <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity select:opacity-100' class:opacity-0={immersed} class:hidden={isMiniplayer}>
     <div class='flex justify-between gap-12 items-end'>
       <div class='flex flex-col gap-2 text-left cursor-pointer'>
         <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
