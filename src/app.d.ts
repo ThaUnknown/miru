@@ -96,6 +96,7 @@ export interface Native {
   torrents: () => Promise<TorrentInfo[]>
   setDOH: (dns: string) => Promise<void>
   updateSettings: (settings: TorrentSettings) => Promise<void>
+  spawnPlayer: (url: string) => Promise<void>
   isApp: boolean
   version: () => Promise<string>
 }

@@ -238,13 +238,11 @@
       checkCompletionByTime(currentTime, safeduration)
     }
   }
-  let externalPlayerReady = false
   function checkCompletionByTime (currentTime: number, safeduration: number) {
     const fromend = Math.max(180, safeduration / 10)
-    if (safeduration && currentTime && (video.readyState || externalPlayerReady) && safeduration - fromend < currentTime) {
+    if (safeduration && currentTime && video.readyState && safeduration - fromend < currentTime) {
       authAggregator.watch(mediaInfo.media, mediaInfo.episode)
       completed = true
-      externalPlayerReady = false
     }
   }
 

@@ -18,7 +18,7 @@
   }
 </script>
 
-<div class='w-full {isMiniplayer ? 'z-[49] max-w-80 absolute bottom-4 left-4 md:left-[unset] md:right-4 rounded-lg overflow-clip shadow shadow-neutral-800' : 'h-full'}'>
+<div class='w-full {isMiniplayer ? 'z-[49] max-w-80 absolute bottom-8 left-8 md:left-[unset] md:right-8 rounded-lg overflow-clip shadow shadow-neutral-800' : 'h-full'}'>
   {#if active}
     {#await active}
       <div class='w-full flex justify-center items-center bg-black {isMiniplayer ? 'aspect-video' : 'h-full' } cursor-pointer' on:click={openPlayer}>

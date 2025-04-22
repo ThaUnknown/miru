@@ -63,7 +63,7 @@ export const flyAndScale = (
   }
 }
 
-export const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t))
+export const sleep = (t: number) => new Promise<void>(resolve => setTimeout(resolve, t))
 
 export function safeLocalStorage<T> (key: string): T | undefined {
   try {

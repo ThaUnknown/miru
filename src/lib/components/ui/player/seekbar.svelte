@@ -142,7 +142,7 @@
     {@const { size, scale, offset } = chapter}
     {@const active = seek && seek > offset && seek < offset + size}
     <div class='w-full py-4 shrink-0 flex items-center justify-center' style:width='{size}%'>
-      <div class='relative w-full h-1 flex items-center justify-center overflow-hidden rounded-[2px]' class:ml-0.5={!!i}>
+      <div class='relative w-full h-1 flex items-center justify-center overflow-clip rounded-[2px]' class:ml-0.5={!!i}>
         <div class='bg-[rgba(217,217,217,0.4)] absolute left-0 w-full h-0.5 transition-[height] duration-75' class:h-1={active} />
         <div class='bg-[rgba(217,217,217,0.4)] absolute left-0 w-full h-0.5 transition-[height] duration-75 transform-gpu' class:h-1={active} style:--tw-translate-x='{skewclamp(scale * (buffer - offset)) - 100}%' />
         <div class='bg-[rgba(217,217,217,0.4)] absolute left-0 w-full h-0.5 transition-[height] duration-75 transform-gpu' class:h-1={active} style:--tw-translate-x='{skewclamp(scale * (seek - offset)) - 100}%' />
@@ -155,13 +155,13 @@
       <div class='-translate-x-1/2 text-sm leading-none text-nowrap flex flex-col justify-center items-center gap-1 rounded-lg bg-neutral-200 border-white border py-2 px-3 has-[img]:p-0 text-zinc-900 shadow-lg'>
         {#await thumbnailer.getThumbnail(seekIndex)}
           {#if title}
-            <div class='max-w-24 text-ellipsis overflow-hidden'>{title}</div>
+            <div class='max-w-24 text-ellipsis overflow-clip'>{title}</div>
           {/if}
           <div>{toTS(seekTime)}</div>
         {:then src}
           <img {src} alt='thumbnail' class='w-40 rounded-lg min-h-10' loading='lazy' decoding='async' />
           {#if title}
-            <div class='max-w-24 text-ellipsis overflow-hidden absolute top-0 bg-white py-1 px-2 rounded-b-lg'>{title}</div>
+            <div class='max-w-24 text-ellipsis overflow-clip absolute top-0 bg-white py-1 px-2 rounded-b-lg'>{title}</div>
           {/if}
           <div class='absolute bottom-0 bg-white py-1 px-2 rounded-t-lg'>{toTS(seekTime)}</div>
         {/await}

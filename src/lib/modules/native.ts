@@ -1,5 +1,7 @@
 import type { AuthResponse, Native, TorrentInfo } from '../../app'
 
+import { sleep } from '$lib/utils'
+
 const rnd = (range = 100) => Math.floor(Math.random() * range)
 
 const dummyFiles = [
@@ -78,6 +80,7 @@ export default Object.assign<Native, Partial<Native>>({
   version: async () => 'v6.0.0',
   updateSettings: async () => undefined,
   setDOH: async () => undefined,
+  spawnPlayer: () => sleep(rnd(100_000)),
   torrentStats: async (): Promise<TorrentInfo> => ({ peers: rnd(), seeders: rnd(), leechers: rnd(), progress: Math.random(), down: rnd(100000000), up: rnd(100000000), name: 'Amebku.webm', downloaded: rnd(100000), hash: '1234567890abcdef', size: 1234567890, eta: rnd() }),
   torrents: async (): Promise<TorrentInfo[]> => [{ peers: rnd(), seeders: rnd(), leechers: rnd(), progress: Math.random(), down: rnd(100000000), up: rnd(100000000), name: 'Amebku.webm', downloaded: rnd(100000), hash: '1234567890abcdef', size: 1234567890, eta: rnd() }]
   // @ts-expect-error idk

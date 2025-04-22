@@ -1,11 +1,13 @@
 <script lang='ts'>
   import Player from './player.svelte'
+  import Externalplayer from './externalplayer.svelte'
 
   import type { resolveFilesPoorly, ResolvedFile } from './resolver'
   import type { MediaInfo } from '$lib/components/ui/player/util'
 
   import { cover, episodes, title } from '$lib/modules/anilist'
   import { searchStore } from '$lib/components/SearchModal.svelte'
+  import { settings } from '$lib/modules/settings'
 
   export let mediaInfo: NonNullable<Awaited<ReturnType<typeof resolveFilesPoorly>>>
 
@@ -68,5 +70,9 @@
 
 <!-- inefficient, but safe -->
 {#key current}
-  <Player mediaInfo={current} otherFiles={mediaInfo.otherFiles} videoFiles={mediaInfo.resolvedFiles} {selectFile} {prev} {next} />
+  {#if $settings.enableExternal}
+    <Externalplayer mediaInfo={current} otherFiles={mediaInfo.otherFiles} videoFiles={mediaInfo.resolvedFiles} {selectFile} {prev} {next} />
+  {:else}
+    <Player mediaInfo={current} otherFiles={mediaInfo.otherFiles} videoFiles={mediaInfo.resolvedFiles} {selectFile} {prev} {next} />
+  {/if}
 {/key}
