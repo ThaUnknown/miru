@@ -216,6 +216,10 @@ export async function traceAnime (image: File) { // WAIT lookup logic
   }
 }
 
+export function codeToEmoji (c: string) {
+  return c.replace(/./g, (ch) => String.fromCodePoint(0x1f1a5 + ch.charCodeAt(0)))
+}
+
 export class HashMap<K extends object, T> {
   map = new Map<string, T>()
 

@@ -11,6 +11,7 @@
   import { Input } from '$lib/components/ui/input'
   import { saved, storage } from '$lib/modules/extensions'
   import * as Tooltip from '$lib/components/ui/tooltip'
+  import { codeToEmoji } from '$lib/utils'
 
   const typeMap = {
     nzb: 'NZB',
@@ -85,6 +86,16 @@
               {#if config.ratio}
                 <div class='rounded px-3 py-0.5 font-bold bg-neutral-900 leading-snug'>
                   {config.ratio} Ratio
+                </div>
+              {/if}
+              <div class='rounded px-3 py-0.5 font-bold bg-neutral-900 leading-snug capitalize'>
+                {config.media}
+              </div>
+              {#if config.languages}
+                <div class='font-twemoji text-xl leading-none content-center line-clamp-1'>
+                  {#each config.languages as lang (lang)}
+                    {codeToEmoji(lang)}
+                  {/each}
                 </div>
               {/if}
             </div>

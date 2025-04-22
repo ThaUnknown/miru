@@ -34,12 +34,6 @@
     metal: 'Metal'
   }
 
-  const idle = {
-    off: 'Off',
-    fast: 'Fast',
-    fancy: 'Fancy'
-  }
-
   function changeAngle (value: string) {
     native.setAngle(value)
   }
@@ -64,8 +58,8 @@
     </SettingCard>
 
     <div class='font-weight-bold text-xl font-bold'>UI Settings</div>
-    <SettingCard title='Idle Animation' description='Idle 3d animation settings. Fast turns off some heavy details. Fancy can cause performance issues on very low end devices.'>
-      <SingleCombo bind:value={$settings.idleAnimation} items={idle} class='w-40 shrink-0 border-input border' />
+    <SettingCard title='Idle Animation' description='Enable/Disable the 3d idle animation.'>
+      <Switch bind:checked={$settings.idleAnimation} />
     </SettingCard>
   {/if}
 </div>

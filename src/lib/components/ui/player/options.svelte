@@ -1,8 +1,8 @@
 <script lang='ts'>
   import { EllipsisVertical } from 'lucide-svelte'
   import { tick } from 'svelte'
-  import Keybinds from 'svelte-keybinds'
 
+  import Keybinds from './keybinds.svelte'
   import { normalizeSubs, normalizeTracks, type Chapter } from './util'
 
   import type { Writable } from 'simple-store-svelte'

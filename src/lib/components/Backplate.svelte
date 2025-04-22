@@ -11,6 +11,7 @@
   let isAnimating = false
   let isSpinning = false
   let isFlying = false
+  let showBackplate = false
   let timeout: number
 
   // WE LOVE RACE CONDITIONS WOOOO YEAAH MY SANITY
@@ -21,6 +22,7 @@
     isFlying = true
     await sleep(800)
     if (!isFlying) return
+    showBackplate = true
     isSpinning = true
     isFlying = false
   }
@@ -32,15 +34,15 @@
     isSpinning = isFlying = false
     await sleep(10)
     root.style.transform = plate.style.transform = ''
-    await sleep(790)
-    isAnimating = isSpinning = isFlying = false
+    await sleep(490)
+    isAnimating = showBackplate = isSpinning = isFlying = false
   }
 
   $: active = $lockedState === 'locked' || visibilityState === 'hidden' || ($idleState === 'active' && $activityState === 'active') || $isPlaying
 
-  function checkIdleState (active: boolean, idleAnimation: 'fancy' | 'fast' | 'off') {
+  function checkIdleState (active: boolean, idleAnimation: boolean) {
     clearTimeout(timeout)
-    if (idleAnimation === 'off' || active) return reset()
+    if (!idleAnimation || active) return reset()
 
     timeout = setTimeout(start, 120_000)
   }
@@ -52,22 +54,26 @@
 
 <div class='preserve-3d absolute w-full h-full overflow-hidden flip backface-hidden backplate bg-black flex-col justify-center pointer-events-none hidden'
   bind:this={plate}
-  class:!flex={isAnimating}
+  class:!flex={showBackplate}
   class:backplate-fly={isFlying}
   class:backplate-spin={isSpinning}>
-  {#each Array.from({ length: 5 }) as _, i (i)}
-    <div class='flex flex-row w-full font-molot font-bold -rotate-12' style:padding-left='{(4 - i) * 600 - 1000}px'>
-      {#each Array.from({ length: 3 }) as _, i (i)}
-        <div class='animate-marquee mt-32 leading-[0.8]'>
-          <div class='text-[24rem] bg-striped !bg-clip-text text-transparent tracking-wide' class:animate-marquee-bg={$settings.idleAnimation === 'fancy'}>
-            HAYASE.06&nbsp;
-          </div>
-          <div class='flex pl-1'>
-            <div class='bg-striped-muted rounded py-2 px-3 mt-1 mb-[2.5px] mr-2 ml-1 text-black flex items-center leading-[0.9]' class:animate-marquee-bg={$settings.idleAnimation === 'fancy'}>
-              TORRENTING<br />MADE<br />SIMPLE
+  {#each Array.from({ length: 6 }) as _, i (i)}
+    <div class='flex flex-row w-full font-molot font-bold leading-[0.8] ml-[--ml-offset] -rotate-12 text-white mt-64' style:--ml-offset='calc((-1 * {(i) * 600}px) - 10vw)'>
+      {#each Array.from({ length: 4 }) as _, i (i)}
+        <div>
+          <div class='bg-striped'>
+            <div class='text-[24rem] tracking-wide animate-marquee bg-black mix-blend-multiply'>
+              HAYASE.06&nbsp;
             </div>
-            <div class='text-[5.44rem] bg-striped-muted !bg-clip-text text-transparent tracking-wider' class:animate-marquee-bg={$settings.idleAnimation === 'fancy'}>
-              MAGNET://SIMPLICITY TOPS EVERYTHING
+          </div>
+          <div class='bg-striped-muted'>
+            <div class='flex pl-1 animate-marquee bg-black mix-blend-multiply'>
+              <div class='rounded py-2 px-3 mt-1 mb-[2.5px] mr-2 ml-1 text-black bg-white flex items-center leading-[0.9]'>
+                TORRENTING<br />MADE<br />SIMPLE
+              </div>
+              <div class='text-[5.44rem] bg-striped-muted tracking-wider'>
+                MAGNET://SIMPLICITY TOPS EVERYTHING
+              </div>
             </div>
           </div>
         </div>

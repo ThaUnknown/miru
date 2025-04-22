@@ -84,7 +84,12 @@
 
 @font-face {
   font-family: 'molotregular';
-  src: url('/Molot-webfont.woff') format('woff');
+  src: url('/Molot-webfont-subset.woff') format('woff');
+}
+
+@font-face {
+  font-family: "Twemoji";
+  src: url("/twemoji-subset.woff2") format("woff2");
 }
 
 
@@ -226,15 +231,6 @@ body {
   transform: perspective(100vw) translate3d(0, 0, 0vw) rotateY(0deg) rotateX(0deg);
 }
 
-@keyframes spin3d {
-  from {
-    transform: rotateY(0deg) translate3d(0, 0, -5000px);
-  }
-
-  to {
-    transform: rotateY(360deg) translate3d(0, 0, -5000px);
-  }
-}
 
 
 @keyframes idle-fly {
@@ -285,23 +281,8 @@ body {
   }
 }
 
-@keyframes marquee-bg {
-  from {
-    /* this is the exact size of the backplate single div, this animation isn't very performant! */
-    background-position: -2111.74px 0;
-  }
-
-  to {
-    background-position: 0 0;
-  }
-}
-
 .animate-marquee {
   animation: marquee 80s infinite linear;
-}
-
-.animate-marquee-bg {
-  animation: marquee-bg 80s infinite linear;
 }
 
 .bg-striped {
@@ -326,6 +307,10 @@ body {
 
 .font-molot {
   font-family: 'molotregular';
+}
+
+.font-twemoji {
+  font-family: 'Twemoji';
 }
 
 .backface-visible {

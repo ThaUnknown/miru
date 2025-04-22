@@ -4,9 +4,9 @@
   import { toast } from 'svelte-sonner'
   import { fade } from 'svelte/transition'
   import { onMount } from 'svelte'
-  import { condition, loadWithDefaults } from 'svelte-keybinds'
   import VideoDeband from 'video-deband'
 
+  import { condition, loadWithDefaults } from './keybinds.svelte'
   import Seekbar from './seekbar.svelte'
   import { autoPiP, burnIn, getChaptersAniSkip, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
   import Thumbnailer from './thumbnailer'

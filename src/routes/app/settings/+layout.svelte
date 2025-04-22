@@ -47,7 +47,7 @@
     <aside class='lg:grow lg:max-w-60'>
       <SettingsNav {items} />
     </aside>
-    <div class='flex-1 overflow-y-scroll' use:dragScroll>
+    <div class='flex-1 overflow-y-scroll pb-40' use:dragScroll>
       <slot />
     </div>
   </div>
