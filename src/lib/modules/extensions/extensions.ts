@@ -4,6 +4,7 @@ import anitomyscript, { type AnitomyResult } from 'anitomyscript'
 import { dedupeAiring, episodeByAirDate, episodes, isMovie, type Media, type MediaEdge } from '../anilist'
 import { settings, type videoResolutions } from '../settings'
 import native from '../native'
+import { episodes as _episodes } from '../anizip'
 
 import { storage } from './storage'
 
@@ -155,15 +156,13 @@ export const extensions = new class Extensions {
   }
 
   async ALToAniDB (media: Media) {
-    const mappingsResponse = await fetch('https://api.ani.zip/v1/episodes?anilist_id=' + media.id)
-    const json = await mappingsResponse.json() as EpisodesResponse
-    if (json.mappings?.anidb_id) return json
+    const json = await _episodes(media.id)
+    if (json?.mappings?.anidb_id) return json
 
     const parentID = this.getParentForSpecial(media)
     if (!parentID) return
 
-    const parentResponse = await fetch('https://api.ani.zip/v1/episodes?anilist_id=' + parentID)
-    return await parentResponse.json() as EpisodesResponse
+    return await _episodes(parentID)
   }
 
   getParentForSpecial (media: Media) {
