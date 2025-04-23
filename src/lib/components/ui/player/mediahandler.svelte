@@ -8,6 +8,7 @@
   import { cover, episodes, title } from '$lib/modules/anilist'
   import { searchStore } from '$lib/components/SearchModal.svelte'
   import { settings } from '$lib/modules/settings'
+  import { fillerEpisodes } from '$lib/components/EpisodesList.svelte'
 
   export let mediaInfo: NonNullable<Awaited<ReturnType<typeof resolveFilesPoorly>>>
 
@@ -37,7 +38,13 @@
     return Number(file.metadata.episode) > 1
   }
   function playNext () {
-    const episode = parseInt('' + mediaInfo.target.metadata.episode) + 1
+    let episode = parseInt('' + mediaInfo.target.metadata.episode) + 1
+    if ($settings.playerSkipFiller) {
+      while (fillerEpisodes[mediaInfo.target.metadata.media.id]?.includes(episode)) {
+        episode++
+      }
+      episode = Math.min(episode, episodes(mediaInfo.target.metadata.media) ?? 1)
+    }
     const nextFile = findEpisode(episode)
     if (nextFile) {
       current = fileToMedaInfo(nextFile)
@@ -46,7 +53,13 @@
     }
   }
   function playPrev () {
-    const episode = parseInt('' + mediaInfo.target.metadata.episode) - 1
+    let episode = parseInt('' + mediaInfo.target.metadata.episode) - 1
+    if ($settings.playerSkipFiller) {
+      while (fillerEpisodes[mediaInfo.target.metadata.media.id]?.includes(episode)) {
+        episode--
+      }
+      episode = Math.max(1, episode)
+    }
     const prevFile = findEpisode(episode)
     if (prevFile) {
       current = fileToMedaInfo(prevFile)

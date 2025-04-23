@@ -130,15 +130,6 @@
     color: #737373 !important;
   }
   .fade-in {
-    animation: fadeIn ease .8s;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    animation: fade-in ease .8s;
   }
 </style>

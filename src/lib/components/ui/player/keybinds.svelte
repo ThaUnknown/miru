@@ -25,6 +25,7 @@
   document.addEventListener('keydown', e => runBind(e, e.code as KeyCode))
 
   async function runBind (e: MouseEvent | KeyboardEvent, code: KeyCode) {
+    if ('repeat' in e && e.repeat) return
     const kbn = get(binds)
     if (await cnd(code)) kbn[layout[code] ?? code]?.fn()
   }

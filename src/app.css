@@ -231,6 +231,15 @@ body {
   transform: perspective(100vw) translate3d(0, 0, 0vw) rotateY(0deg) rotateX(0deg);
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1
+  }
+}
 
 
 @keyframes idle-fly {

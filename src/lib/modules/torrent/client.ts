@@ -10,6 +10,7 @@ import type { TorrentFile, TorrentInfo } from '../../../app'
 export const server = new class ServerClient {
   last = persisted<{media: Media, id: string, episode: number} | null>('last-torrent', null)
   active = writable<Promise<{media: Media, id: string, episode: number, files: TorrentFile[]}| null>>()
+  downloaded = native.cachedTorrents()
 
   stats = readable<TorrentInfo>({ peers: 0, down: 0, up: 0, progress: 0, downloaded: 0, eta: 0, hash: '', leechers: 0, name: '', seeders: 0, size: 0 }, set => {
     let listener = 0
@@ -48,6 +49,8 @@ export const server = new class ServerClient {
   }
 
   async _play (id: string, media: Media, episode: number) {
-    return { id, media, episode, files: await native.playTorrent(id) }
+    const result = { id, media, episode, files: await native.playTorrent(id) }
+    this.downloaded = native.cachedTorrents()
+    return result
   }
 }()

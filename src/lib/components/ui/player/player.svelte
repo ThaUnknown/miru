@@ -561,11 +561,44 @@
 
   // @ts-expect-error bad type infer
   $condition = () => !isMiniplayer
+
+  let ff = false
+
+  function holdToFF (document: HTMLElement, type: 'key' | 'pointer') {
+    const ctrl = new AbortController()
+    let timeout = 0
+    const startFF = () => {
+      timeout = setTimeout(() => {
+        paused = false
+        ff = true
+        playbackRate = 2
+      }, 1000)
+    }
+    const endFF = () => {
+      clearTimeout(timeout)
+      ff = false
+      playbackRate = 1
+    }
+    document.addEventListener(type + 'down' as 'keydown' | 'pointerdown', (event) => {
+      if (isMiniplayer) return
+      if ('code' in event && (event.code !== 'Space' || event.repeat)) return
+      startFF()
+    }, { signal: ctrl.signal })
+    document.addEventListener(type + 'up' as 'keydown' | 'pointerdown', (event) => {
+      if (isMiniplayer) return
+      if ('code' in event && event.code !== 'Space') return
+      endFF()
+    }, { signal: ctrl.signal })
+
+    return {
+      destroy: () => ctrl.abort()
+    }
+  }
 </script>
 
-<svelte:document bind:fullscreenElement bind:visibilityState />
+<svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
 
-<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper}>
+<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper} use:holdToFF={'pointer'}>
   <video class='w-full h-full grow' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={deband} class:absolute={deband} class:top-0={deband}
     use:createDeband={$settings.playerDeband}
     use:createSubtitles
@@ -627,6 +660,9 @@
     {/if}
     <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate
       class='{$settings.minimalPlayerUI ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute top-10 right-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto transition-opacity select:opacity-100 {immersed && 'opacity-0'}' />
+    {#if ff}
+      <div class='absolute top-10 font-bold text-sm animate-[fade-in_.4s_ease] flex items-center leading-none bg-black/60 px-4 py-2 rounded-2xl'>x2 <FastForward class='ml-2' size='12' fill='currentColor' /></div>
+    {/if}
     <div class='mobile:flex hidden gap-4 absolute items-center transition-opacity select:opacity-100' class:opacity-0={immersed}>
       <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' disabled={!prev}>
         <SkipBack size='24px' fill='currentColor' strokeWidth='1' />

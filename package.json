@@ -12,7 +12,8 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "eslint -c eslint.config.js",
 		"lint:fix": "eslint -c eslint.config.js --fix",
-		"gql:turbo": "node ./node_modules/gql.tada/bin/cli.js turbo"
+		"gql:turbo": "node ./node_modules/gql.tada/bin/cli.js turbo",
+		"gql:check": "node ./node_modules/gql.tada/bin/cli.js check"
 	},
 	"devDependencies": {
 		"@gql.tada/svelte-support": "^1.0.1",

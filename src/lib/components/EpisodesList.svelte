@@ -1,5 +1,5 @@
 <script context='module' lang='ts'>
-  let fillerEpisodes: Record<number, number[] | undefined> = {}
+  export let fillerEpisodes: Record<number, number[] | undefined> = {}
 
   fetch('https://raw.githubusercontent.com/ThaUnknown/filler-scrape/master/filler.json').then(async res => {
     fillerEpisodes = await res.json()
