@@ -97,6 +97,7 @@ export interface Native {
   setDOH: (dns: string) => Promise<void>
   cachedTorrents: () => Promise<string[]>
   updateSettings: (settings: TorrentSettings) => Promise<void>
+  updateProgress: (cb: (progress: number) => void) => Promise<void>
   spawnPlayer: (url: string) => Promise<void>
   isApp: boolean
   version: () => Promise<string>

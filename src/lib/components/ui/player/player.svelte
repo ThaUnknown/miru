@@ -590,9 +590,7 @@
       endFF()
     }, { signal: ctrl.signal })
 
-    return {
-      destroy: () => ctrl.abort()
-    }
+    return { destroy: () => ctrl.abort() }
   }
 </script>
 
