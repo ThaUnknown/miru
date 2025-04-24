@@ -56,6 +56,7 @@
 
   $: mediaID = media.id
   $: following = authAggregator.following(mediaID)
+  $: followerEntries = $following?.data?.Page?.mediaList?.filter(e => e?.user?.id !== authAggregator.id()) ?? []
 
   $: eps = data.eps
 </script>
@@ -145,22 +146,20 @@
         <Bell class='size-4' />
       </Button>
       <div class='-space-x-1 md:ml-3 hidden md:flex'>
-        {#if following && $following?.data?.Page?.mediaList}
-          {#each $following.data.Page.mediaList.filter(e => e?.user?.id !== authAggregator.id()) as followerEntry, i (followerEntry?.user?.id ?? i)}
-            <Tooltip.Root>
-              <Tooltip.Trigger class='inline-block size-8 cursor-default'>
-                <Avatar.Root class='inline-block ring-4 ring-black size-8 bg-black'>
-                  <Avatar.Image src={followerEntry?.user?.avatar?.medium ?? ''} alt={followerEntry?.user?.name ?? 'N/A'} />
-                  <Avatar.Fallback>{followerEntry?.user?.name ?? 'N/A'}</Avatar.Fallback>
-                </Avatar.Root>
-              </Tooltip.Trigger>
-              <Tooltip.Content>
-                <p class='font-extrabold'>{followerEntry?.user?.name}</p>
-                <p class='capitalize'>{followerEntry?.status?.toLowerCase()}</p>
-              </Tooltip.Content>
-            </Tooltip.Root>
-          {/each}
-        {/if}
+        {#each followerEntries as followerEntry, i (followerEntry?.user?.id ?? i)}
+          <Tooltip.Root>
+            <Tooltip.Trigger class='inline-block size-8 cursor-default'>
+              <Avatar.Root class='inline-block ring-4 ring-black size-8 bg-black'>
+                <Avatar.Image src={followerEntry?.user?.avatar?.medium ?? ''} alt={followerEntry?.user?.name ?? 'N/A'} />
+                <Avatar.Fallback>{followerEntry?.user?.name ?? 'N/A'}</Avatar.Fallback>
+              </Avatar.Root>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
+              <p class='font-extrabold'>{followerEntry?.user?.name}</p>
+              <p class='capitalize'>{followerEntry?.status?.toLowerCase()}</p>
+            </Tooltip.Content>
+          </Tooltip.Root>
+        {/each}
       </div>
     </div>
     {#if relations?.length}
@@ -195,7 +194,7 @@
         <div class='text-[20px] md:text-2xl font-bold'>Episodes</div>
       </div>
       {#key mediaID}
-        <EpisodesList {media} {eps} />
+        <EpisodesList {media} {eps} {following} />
       {/key}
     </div>
   </div>

@@ -19,8 +19,10 @@
 
   import { episodes as _episodes, dedupeAiring, episodeByAirDate, notes, type Media } from '$lib/modules/anilist'
   import { cn, isMobile, since } from '$lib/utils'
-  import { list, progress } from '$lib/modules/auth'
+  import { authAggregator, list, progress } from '$lib/modules/auth'
   import { click, dragScroll } from '$lib/modules/navigate'
+  import * as Tooltip from '$lib/components/ui/tooltip'
+  import * as Avatar from '$lib/components/ui/avatar'
 
   export let eps: EpisodesResponse | null
   export let media: Media
@@ -66,6 +68,10 @@
   function play (episode: number) {
     searchStore.set({ media, episode })
   }
+
+  export let following = authAggregator.following(media.id)
+
+  $: followerEntries = $following?.data?.Page?.mediaList?.filter(e => e?.user?.id !== authAggregator.id()) ?? []
 </script>
 
 <Pagination count={episodeCount} {perPage} bind:currentPage let:pages let:hasNext let:hasPrev let:range let:setPage siblingCount={1}>
@@ -103,11 +109,29 @@
             <div class='text-[9.6px] text-muted-foreground overflow-hidden'>
               {notes(summary ?? '')}
             </div>
-            {#if airingAt ?? airdate}
-              <div class='pt-2 text-[9.6px] mt-auto'>
-                {since(new Date(airingAt ?? airdate ?? 0))}
+            <div class='flex w-full justify-between mt-auto'>
+              {#if airingAt ?? airdate}
+                <div class='text-[9.6px] pt-2'>
+                  {since(new Date(airingAt ?? airdate ?? 0))}
+                </div>
+              {/if}
+              <div class='-space-x-1 ml-auto inline-flex pt-1 pr-0.5'>
+                {#each followerEntries.filter(e => e?.progress === episode) as followerEntry, i (followerEntry?.user?.id ?? i)}
+                  <Tooltip.Root>
+                    <Tooltip.Trigger class='inline-block size-4 cursor-default'>
+                      <Avatar.Root class='inline-block ring-2 ring-neutral-950 size-4 bg-neutral-950'>
+                        <Avatar.Image src={followerEntry?.user?.avatar?.medium ?? ''} alt={followerEntry?.user?.name ?? 'N/A'} />
+                        <Avatar.Fallback>{followerEntry?.user?.name ?? 'N/A'}</Avatar.Fallback>
+                      </Avatar.Root>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                      <p class='font-extrabold'>{followerEntry?.user?.name}</p>
+                      <p class='capitalize'>{followerEntry?.status?.toLowerCase()}</p>
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                {/each}
               </div>
-            {/if}
+            </div>
             {#if filler}
               <div class='rounded-tl bg-yellow-400 py-1 px-2 text-primary-foreground absolute bottom-0 right-0 text-[9.6px] font-bold'>Filler</div>
             {/if}
