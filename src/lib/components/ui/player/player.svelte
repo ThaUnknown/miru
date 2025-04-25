@@ -599,11 +599,12 @@
 
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
 
-<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper} use:holdToFF={'pointer'}>
+<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper}>
   <video class='w-full h-full grow' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={deband} class:absolute={deband} class:top-0={deband}
     use:createDeband={$settings.playerDeband}
     use:createSubtitles
     use:autoPiP={pip}
+    use:holdToFF={'pointer'}
     crossorigin='anonymous'
     src={mediaInfo.file.url}
     bind:videoHeight

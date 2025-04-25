@@ -56,7 +56,8 @@ class AnilistClient {
 
   client = new Client({
     url: 'https://graphql.anilist.co',
-    fetch: dev ? fetch : (req: RequestInfo | URL, opts?: RequestInit) => this.handleRequest(req, opts),
+    // fetch: dev ? fetch : (req: RequestInfo | URL, opts?: RequestInit) => this.handleRequest(req, opts),
+    fetch: (req: RequestInfo | URL, opts?: RequestInit) => this.handleRequest(req, opts),
     exchanges: [
       refocusExchange(),
       offlineExchange({
@@ -168,7 +169,7 @@ class AnilistClient {
               score: 0,
               id: -1,
               ...media.mediaListEntry,
-              customLists: (args.customLists as string[]).map(name => ({ enabled: true, name })).concat(...(media.mediaListEntry?.customLists as (Array<{ enabled: boolean, name: string }> | undefined) ?? [])),
+              customLists: (args.lists as string[]).map(name => ({ enabled: true, name })).concat(...(media.mediaListEntry?.customLists as (Array<{ enabled: boolean, name: string }> | undefined) ?? [])),
               ...args,
               media,
               __typename: 'MediaList'
