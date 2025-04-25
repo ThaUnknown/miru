@@ -3,9 +3,9 @@
 
   import { cn } from '$lib/utils.js'
 
-  type $$Props = AvatarPrimitive.ImageProps
+  type $$Props = AvatarPrimitive.ImageProps & { alt: string | undefined | null, src: string | undefined | null }
 
-  let className: $$Props['class']
+  let className: $$Props['class'] = undefined
   export let src: $$Props['src']
   export let alt: $$Props['alt']
   export { className as class }

@@ -15,17 +15,17 @@
   import { Button, type Props } from '$lib/components/ui/button'
   import { cn } from '$lib/utils.js'
 
-  type $$Props = Props & { href: string }
-  export let href: string
+  type $$Props = Props & { href: string | null | undefined }
+  export let href: string | null | undefined = undefined
 
   function matchPath (path: string, page: { url: URL }) {
     return page.url.pathname.startsWith(path)
   }
 
-  let className: $$Props['class'] = ''
+  let className: $$Props['class'] = undefined
   export { className as class }
 
-  $: isActive = matchPath(href, $page)
+  $: isActive = href && matchPath(href, $page)
 </script>
 
 <Button variant='ghost' {href} class={cn(className, 'px-2 w-10 relative')} {...$$restProps}>

@@ -8,8 +8,8 @@
   }
   type $$Events = SwitchPrimitive.Events
 
-  let className: $$Props['class']
-  export let checked: $$Props['checked']
+  let className: $$Props['class'] = undefined
+  export let checked: $$Props['checked'] = undefined
   export let hideState = false
   export { className as class }
 </script>

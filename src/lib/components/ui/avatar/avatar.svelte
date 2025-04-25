@@ -5,7 +5,7 @@
 
   type $$Props = AvatarPrimitive.Props
 
-  let className: $$Props['class']
+  let className: $$Props['class'] = undefined
   export let delayMs: $$Props['delayMs'] = 0
   export { className as class }
 </script>

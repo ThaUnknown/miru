@@ -5,9 +5,9 @@
 
   type $$Props = SeparatorPrimitive.Props
 
-  let className: $$Props['class'] = ''
+  let className: $$Props['class'] = undefined
   export let orientation: $$Props['orientation'] = 'horizontal'
-  export let decorative: $$Props['decorative']
+  export let decorative: $$Props['decorative'] = undefined
   export { className as class }
 </script>
 

@@ -6,7 +6,7 @@
 
   type $$Props = SheetPrimitive.OverlayProps
 
-  let className: $$Props['class']
+  let className: $$Props['class'] = undefined
   export { className as class }
   export let transition: $$Props['transition'] = fade
   export let transitionConfig: $$Props['transitionConfig'] = {
