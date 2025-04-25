@@ -1,9 +1,6 @@
 <script lang='ts'>
-  import { onDestroy } from 'svelte'
-
   import type { PageData } from './$types'
 
-  import { bannerSrc, hideBanner } from '$lib/components/ui/banner'
   import { Button } from '$lib/components/ui/button'
   import { dragScroll } from '$lib/modules/navigate'
   import { format, relation } from '$lib/modules/anilist'
@@ -13,13 +10,6 @@
   import { Threads } from '$lib/components/ui/forums'
 
   export let data: PageData
-
-  const oldBanner = bannerSrc.value
-  $: bannerSrc.value = data.anime.value.Media
-  hideBanner.value = false
-  onDestroy(() => {
-    bannerSrc.value = oldBanner
-  })
 
   $: anime = data.anime
 
@@ -66,7 +56,7 @@
     </div>
   </div>
 {/if}
-<div class='w-full'>
+<div class='w-full flex flex-col'>
   <div class='flex justify-between items-center'>
     <div class='text-[20px] md:text-2xl font-bold'>Episodes</div>
   </div>
@@ -74,7 +64,7 @@
     <EpisodesList {media} {eps} {following} />
   {/key}
 </div>
-<div class='w-full'>
+<div class='w-full flex flex-col'>
   <div class='flex justify-between items-center'>
     <div class='text-[20px] md:text-2xl font-bold'>Threads</div>
   </div>

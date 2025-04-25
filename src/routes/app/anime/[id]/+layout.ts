@@ -5,7 +5,7 @@ import { IDMedia } from '$lib/modules/anilist/queries'
 import { episodes } from '$lib/modules/anizip'
 
 export const load: LayoutLoad = async ({ params, fetch }) => {
-  const store = asyncStore(IDMedia, { id: Number(params.id) })
+  const store = asyncStore(IDMedia, { id: Number(params.id) }, { requestPolicy: 'cache-first' })
 
   const eps = await episodes(Number(params.id), fetch)
 

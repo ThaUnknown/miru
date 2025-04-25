@@ -115,6 +115,7 @@ export function since (date: Date) {
       return formatter.format(Math.round(delta), key)
     }
   }
+  return 'now'
 }
 export function eta (date: Date) {
   const secondsElapsed = (date.getTime() - Date.now()) / 1000
@@ -125,6 +126,7 @@ export function eta (date: Date) {
       return formatterShort.format(Math.round(delta), key)
     }
   }
+  return 'now'
 }
 const bytes = [' B', ' kB', ' MB', ' GB', ' TB']
 export function fastPrettyBytes (num: number) {

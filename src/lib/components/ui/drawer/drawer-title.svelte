@@ -5,8 +5,8 @@
 
   type $$Props = DrawerPrimitive.TitleProps
 
-  export let el: $$Props['el']
-  let className: $$Props['class'] = ''
+  export let el: $$Props['el'] = undefined
+  let className: $$Props['class'] = undefined
   export { className as class }
 </script>
 

@@ -7,7 +7,7 @@
 
   type $$Props = DrawerPrimitive.ContentProps
 
-  let className: $$Props['class'] = ''
+  let className: $$Props['class'] = undefined
   export { className as class }
 </script>
 

@@ -95,7 +95,7 @@
 
 html,
 body {
-  height: 100vh;
+  height: 100vh !important;
   width: 100%;
   margin: 0;
   padding: 0;
