@@ -78,6 +78,7 @@ export default class Thumbnailer {
 
   // generate and store the thumbnail
   async _paintThumbnail (video: HTMLVideoElement, index: number, width = video.videoWidth, height = video.videoHeight) {
+    if (this.thumbnails[index]) return this.thumbnails[index]
     this.canvas.width = this.size
     this.canvas.height = height / width * this.size
     this.ctx.drawImage(video, 0, 0, this.canvas.width, this.canvas.height)
