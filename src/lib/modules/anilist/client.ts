@@ -9,12 +9,12 @@ import { derived } from 'svelte/store'
 import lavenshtein from 'js-levenshtein'
 
 import schema from './schema.json' with { type: 'json' }
-import { CustomLists, DeleteEntry, Entry, Following, FullMedia, FullMediaList, IDMedia, Schedule, Search, ToggleFavourite, UserLists, Viewer } from './queries'
+import { CommentFrag, Comments, CustomLists, DeleteEntry, Entry, Following, FullMedia, FullMediaList, IDMedia, Schedule, Search, ThreadFrag, Threads, ToggleFavourite, UserLists, Viewer } from './queries'
 import { currentSeason, currentYear, lastSeason, lastYear, nextSeason, nextYear } from './util'
 import gql from './gql'
 
 import type { ResultOf, VariablesOf } from 'gql.tada'
-import type { AnyVariables, RequestPolicy, TypedDocumentNode } from 'urql'
+import type { AnyVariables, OperationContext, RequestPolicy, TypedDocumentNode } from 'urql'
 import type { Media } from './types'
 
 import { safeLocalStorage, sleep } from '$lib/utils'
@@ -36,13 +36,6 @@ class FetchError extends Error {
 
 interface ViewerData { viewer: ResultOf<typeof Viewer>['Viewer'], token: string, expires: string }
 
-function deferred () {
-  let resolve: () => void
-  const promise = new Promise<void>(_resolve => { resolve = _resolve })
-  // @ts-expect-error resolve is always defined
-  return { resolve, promise }
-}
-
 function getDistanceFromTitle (media: Media & {lavenshtein?: number}, name: string) {
   const titles = Object.values(media.title ?? {}).filter(v => v).map(title => lavenshtein(title!.toLowerCase(), name.toLowerCase()))
   const synonyms = (media.synonyms ?? []).filter(v => v).map(title => lavenshtein(title!.toLowerCase(), name.toLowerCase()) + 2)
@@ -53,7 +46,8 @@ function getDistanceFromTitle (media: Media & {lavenshtein?: number}, name: stri
 }
 
 class AnilistClient {
-  storagePromise = deferred()
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  storagePromise = Promise.withResolvers<void>()
   storage = makeDefaultStorage({
     idbName: 'graphcache-v3',
     onCacheHydrated: () => this.storagePromise.resolve(),
@@ -137,7 +131,8 @@ class AnilistClient {
         },
         resolvers: {
           Query: {
-            Media: (parent, { id }) => ({ __typename: 'Media', id })
+            Media: (parent, { id }) => ({ __typename: 'Media', id }),
+            Thread: (parent, { id }) => ({ __typename: 'Thread', id })
           }
         },
         optimistic: {
@@ -177,6 +172,21 @@ class AnilistClient {
               ...args,
               media,
               __typename: 'MediaList'
+            }
+          },
+          ToggleLikeV2 ({ id, type }, cache, info) {
+            const threadOrCommentId = id as number
+            const likable = type as 'THREAD' | 'THREAD_COMMENT' | 'ACTIVITY' | 'ACTIVITY_REPLY'
+
+            // @ts-expect-error idk whats wrong here but it works correctly
+            const likableUnion = cache.readFragment(likable === 'THREAD' ? ThreadFrag : CommentFrag, { id: threadOrCommentId })
+
+            if (!likableUnion) return {}
+
+            return {
+              id: threadOrCommentId,
+              isLiked: !likableUnion.isLiked,
+              __typename: likable === 'THREAD' ? 'Thread' : 'ThreadComment'
             }
           }
         },
@@ -405,8 +415,16 @@ class AnilistClient {
     return await this.client.query(IDMedia, { id }, { requestPolicy })
   }
 
-  following (id: number) {
-    return queryStore({ client: this.client, query: Following, variables: { id } })
+  following (animeID: number) {
+    return queryStore({ client: this.client, query: Following, variables: { id: animeID } })
+  }
+
+  threads (animeID: number, page = 1) {
+    return queryStore({ client: this.client, query: Threads, variables: { id: animeID, page, perPage: 16 } })
+  }
+
+  comments (threadId: number, page = 1) {
+    return queryStore({ client: this.client, query: Comments, variables: { threadId, page } })
   }
 }
 
@@ -419,11 +437,11 @@ await client.storagePromise?.promise
 
 export default client
 
-export function asyncStore<Result, Variables = AnyVariables> (query: TypedDocumentNode<Result, Variables>, variables: AnyVariables): Promise<Writable<Result>> {
+export function asyncStore<Result, Variables = AnyVariables> (query: TypedDocumentNode<Result, Variables>, variables: AnyVariables, context?: Partial<OperationContext>): Promise<Writable<Result>> {
   return new Promise((resolve, reject) => {
     const store = writable<Result>(undefined, () => () => subscription.unsubscribe())
 
-    const subscription = client.client.query(query, variables).subscribe(value => {
+    const subscription = client.client.query(query, variables, context).subscribe(value => {
       if (value.error) {
         reject(value.error)
       } else if (value.data) {

@@ -7,8 +7,7 @@
 </script>
 
 <script lang='ts'>
-  import { ChevronLeft, Play } from 'lucide-svelte'
-  import { ChevronRight } from 'svelte-radix'
+  import { ChevronLeft, Play, ChevronRight } from 'lucide-svelte'
 
   import Pagination from './Pagination.svelte'
   import { Button } from './ui/button'
@@ -82,7 +81,7 @@
         {@const target = _progress + 1 === episode}
         <div use:click={() => play(episode)}
           class={cn(
-            'select:scale-[1.05] select:shadow-lg scale-100 transition-[transform,box-shadow] duration-200 shrink-0 ease-out focus-visible:ring-ring focus-visible:ring-1 rounded-md bg-neutral-950 text-secondary-foreground select:bg-neutral-900 flex w-full max-h-28 pointer relative overflow-hidden group',
+            'select:scale-[1.05] select:shadow-lg scale-100 transition-[transform,box-shadow] duration-200 shrink-0 ease-out focus-visible:ring-ring focus-visible:ring-1 rounded-md bg-neutral-950 text-secondary-foreground select:bg-neutral-900 flex w-full max-h-28 cursor-pointer relative overflow-hidden group',
             target && 'ring-ring ring-1',
             filler && '!ring-yellow-400 ring-1'
           )}>

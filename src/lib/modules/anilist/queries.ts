@@ -301,3 +301,149 @@ export const ToggleFavourite = gql(`
     ToggleFavourite(animeId: $id) { anime { nodes { id } } } 
   }
 `)
+
+export const ThreadFrag = gql(`
+  fragment ThreadFrag on Thread @_unmask {
+    id,
+    title,
+    body(asHtml: true),
+    userId,
+    replyCount,
+    viewCount,
+    isLocked,
+    isSubscribed,
+    isLiked,
+    likeCount,
+    repliedAt,
+    createdAt,
+    user {
+      id,
+      name,
+      avatar {
+        medium
+      }
+    },
+    categories {
+      id,
+      name
+    }
+  }
+`)
+
+export const Threads = gql(`
+  query Threads($id: Int, $page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+      pageInfo {
+        hasNextPage
+      },
+      threads(mediaCategoryId: $id, sort: ID_DESC) {
+        ...ThreadFrag
+      }
+    }
+  }
+`, [ThreadFrag])
+
+export const Thread = gql(`
+  query Thread($threadId: Int) {
+    Thread(id: $threadId) {
+      ...ThreadFrag
+    }
+  }
+`, [ThreadFrag])
+
+export const CommentFrag = gql(`
+  fragment CommentFrag on ThreadComment @_unmask {
+    id,
+    comment(asHtml: true),
+    isLiked,
+    likeCount,
+    createdAt,
+    user {
+      id,
+      name,
+      moderatorRoles,
+      avatar {
+        medium
+      },
+    },
+    childComments,
+    isLocked
+  }
+`)
+
+// AL in their infinite wisdom decided to make childComments infer the schema of the parent comment, so we can't use the CommentFrag here
+export const Comments = gql(`
+  query Comments($threadId: Int, $page: Int) {
+    Page(page: $page, perPage: 15) {
+      pageInfo {
+        hasNextPage
+      }
+      threadComments(threadId: $threadId) {
+        id,
+        comment(asHtml: true),
+        isLiked,
+        likeCount,
+        createdAt,
+        user {
+          id,
+          name,
+          moderatorRoles,
+          avatar {
+            medium
+          },
+        },
+        childComments,
+        isLocked
+      }
+    }
+  }
+`)
+
+export const User = gql(`
+  query User ($id: Int) {
+    User(id: $id) {
+      id,
+      name,
+      avatar {
+        large
+      },
+      bannerImage,
+      about(asHtml: true),
+      isFollowing,
+      isFollower,
+      donatorBadge,
+      createdAt,
+      options {
+        profileColor
+      },
+      statistics {
+        anime {
+          count,
+          minutesWatched,
+          episodesWatched,
+          genrePreview: genres(limit: 10, sort: COUNT_DESC) {
+            genre,
+            count
+          }
+        }
+      }
+    }
+  }
+`)
+
+export const ToggleLike = gql(`
+  mutation ToggleLike ($id: Int, $type: LikeableType) {
+    ToggleLikeV2(id: $id, type: $type) {
+      ... on Thread {
+        id
+        likeCount
+        isLiked
+      }
+      ... on ThreadComment {
+        id
+        likeCount
+        isLiked
+      }
+    }
+  }
+`)
