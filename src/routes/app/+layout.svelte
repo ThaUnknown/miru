@@ -8,7 +8,7 @@
 
 <BannerImage class='absolute top-0 left-0' />
 <SearchModal />
-<div class='flex flex-row grow h-full overflow-hidden relative'>
+<div class='flex flex-row grow h-full overflow-clip'>
   <Sidebar>
     <Sidebarlist />
   </Sidebar>

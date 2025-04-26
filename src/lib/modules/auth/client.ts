@@ -101,8 +101,6 @@ export default new class AuthAggregator {
     variables.lists ??= []
     if (!variables.lists.includes('Watched using Hayase')) {
       variables.lists.push('Watched using Hayase')
-    } else {
-      delete variables.lists
     }
 
     if (this.anilist() && syncSettings.al) client.entry(variables)

@@ -270,19 +270,14 @@ export const Following = gql(`
   }
 `)
 
+// AL API is dog, fullmedialist is NULL when queried inside media..., it's possible this can cause cache loops, but there's no other way to do this!!!
 export const Entry = gql(`
   mutation Entry($lists: [String], $id: Int!, $status: MediaListStatus, $progress: Int, $repeat: Int, $score: Int) {
     SaveMediaListEntry(mediaId: $id, status: $status, progress: $progress, repeat: $repeat, scoreRaw: $score, customLists: $lists) {
       id,
+      ...FullMediaList,
       media {
-        id,
-        status,
-        mediaListEntry {
-          ...FullMediaList
-        },
-        nextAiringEpisode {
-          episode
-        }
+        id
       }
     }
   }

@@ -367,8 +367,9 @@
 
   $: seekIndex = Math.max(0, Math.floor(seekPercent * safeduration / 100 / thumbnailer.interval))
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  $: if (video?.readyState) thumbnailer._paintThumbnail(video, seekIndex)
+  $: playbackIndex = Math.max(0, Math.floor(currentTime / thumbnailer.interval))
+
+  $: if (readyState && !seekIndex) thumbnailer._paintThumbnail(video, playbackIndex)
 
   $: native.setMediaSession(mediaInfo.session)
   $: native.setPositionState({ duration: safeduration, position: Math.max(0, currentTime), playbackRate })

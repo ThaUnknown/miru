@@ -96,10 +96,10 @@ class AnilistClient {
 
               const entry = result.SaveMediaListEntry
 
-              if (entry?.media?.mediaListEntry?.customLists) entry.media.mediaListEntry.customLists = (entry.media.mediaListEntry.customLists as string[]).map(name => ({ enabled: true, name }))
+              if (entry?.customLists) entry.customLists = (entry.customLists as string[]).map(name => ({ enabled: true, name }))
               cache.writeFragment(media, {
                 id: mediaId as number,
-                mediaListEntry: entry?.media?.mediaListEntry ?? null
+                mediaListEntry: entry ?? null
               })
               cache.updateQuery({ query: UserLists, variables: { id: this.viewer.value?.viewer?.id } }, data => {
                 if (!data?.MediaListCollection?.lists) return data
@@ -114,7 +114,7 @@ class AnilistClient {
                   }
                 })
 
-                const status = result.SaveMediaListEntry?.media?.mediaListEntry?.status ?? oldEntry?.media?.mediaListEntry?.status ?? 'PLANNING' as const
+                const status = result.SaveMediaListEntry?.status ?? oldEntry?.media?.mediaListEntry?.status ?? 'PLANNING' as const
 
                 const fallback: NonNullable<typeof oldLists[0]> = { status, entries: [] }
                 let targetList = lists.find(list => list?.status === status)
@@ -177,7 +177,7 @@ class AnilistClient {
             const id = args.mediaId as number
             // @ts-expect-error idk whats wrong here but it works correctly
             const media = cache.readFragment(FullMedia, { id })
-            if (!media) return {}
+            if (!media) return null
             info.partial = true
 
             return {
@@ -187,7 +187,7 @@ class AnilistClient {
               score: 0,
               id: -1,
               ...media.mediaListEntry,
-              customLists: (args.lists as string[]).map(name => ({ enabled: true, name })).concat(...(media.mediaListEntry?.customLists as (Array<{ enabled: boolean, name: string }> | undefined) ?? [])),
+              customLists: (args.customLists as string[]).map(name => ({ enabled: true, name })),
               ...args,
               media,
               __typename: 'MediaList'
