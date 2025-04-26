@@ -5,8 +5,8 @@
   import YoutubeIframe from './YoutubeIframe.svelte'
 
   import { desc, duration, format, season, title, type Media } from '$lib/modules/anilist'
-  import { cn } from '$lib/utils'
   import { of } from '$lib/modules/auth'
+  import { cn } from '$lib/utils'
 
   export let media: Media
 

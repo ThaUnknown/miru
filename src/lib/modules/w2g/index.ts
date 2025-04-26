@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events'
 
+import Debug from 'debug'
 import P2PT, { type Peer } from 'p2pt'
 import { writable } from 'simple-store-svelte'
-import Debug from 'debug'
 
 import client from '../anilist/client.js'
 

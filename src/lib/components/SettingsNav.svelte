@@ -4,8 +4,8 @@
 
   import { Button } from './ui/button'
 
-  import { cn } from '$lib/utils.js'
   import { page } from '$app/stores'
+  import { cn } from '$lib/utils.js'
 
   let className: string | undefined | null = ''
   export let items: Array<{ href: string, title: string }>

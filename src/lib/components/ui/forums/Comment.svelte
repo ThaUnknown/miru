@@ -6,12 +6,12 @@
 
   import { Write } from '.'
 
-  import type { ResultOf } from 'gql.tada'
   import type { CommentFrag } from '$lib/modules/anilist/queries'
+  import type { ResultOf } from 'gql.tada'
 
   import * as Avatar from '$lib/components/ui/avatar'
-  import { since } from '$lib/utils'
   import { client } from '$lib/modules/anilist'
+  import { since } from '$lib/utils'
 
   export let comment: ResultOf<typeof CommentFrag>
   export let depth = 0

@@ -1,20 +1,20 @@
 <script lang='ts'>
-  import { addMonths, endOfMonth, endOfWeek, format, isSameMonth, isToday, startOfMonth, startOfWeek, subMonths } from 'date-fns'
   import { Button as ButtonPrimitive } from 'bits-ui'
-  import { Cross2 } from 'svelte-radix'
+  import { addMonths, endOfMonth, endOfWeek, format, isSameMonth, isToday, startOfMonth, startOfWeek, subMonths } from 'date-fns'
   import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-svelte'
+  import { Cross2 } from 'svelte-radix'
 
-  import type { ResultOf } from 'gql.tada'
   import type { Schedule, ScheduleMedia } from '$lib/modules/anilist/queries'
+  import type { ResultOf } from 'gql.tada'
 
-  import { cn, isMobile } from '$lib/utils'
-  import * as Tooltip from '$lib/components/ui/tooltip'
   import StatusDot from '$lib/components/StatusDot.svelte'
-  import * as Drawer from '$lib/components/ui/drawer'
   import { Button } from '$lib/components/ui/button'
-  import { dragScroll } from '$lib/modules/navigate'
-  import { authAggregator } from '$lib/modules/auth'
+  import * as Drawer from '$lib/components/ui/drawer'
+  import * as Tooltip from '$lib/components/ui/tooltip'
   import { dedupeAiring } from '$lib/modules/anilist'
+  import { authAggregator } from '$lib/modules/auth'
+  import { dragScroll } from '$lib/modules/navigate'
+  import { cn, isMobile } from '$lib/utils'
 
   const query = authAggregator.schedule()
 

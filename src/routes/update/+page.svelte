@@ -1,7 +1,7 @@
 <script lang='ts'>
+  import { Button } from '$lib/components/ui/button'
   import { Menubar } from '$lib/components/ui/menubar'
   import { Separator } from '$lib/components/ui/separator'
-  import { Button } from '$lib/components/ui/button'
   import native from '$lib/modules/native'
   import { outdatedComponent } from '$lib/modules/update'
 </script>

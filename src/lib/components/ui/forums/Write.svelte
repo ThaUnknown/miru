@@ -2,8 +2,8 @@
   import { Button } from '../button'
   import { Textarea } from '../textarea'
 
-  import { client } from '$lib/modules/anilist'
   import * as Drawer from '$lib/components/ui/drawer'
+  import { client } from '$lib/modules/anilist'
 
   export let isLocked = false
 

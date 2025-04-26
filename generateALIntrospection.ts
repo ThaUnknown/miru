@@ -1,8 +1,8 @@
 // @ts-expect-error no types for this, that's fine
 import { writeFileSync } from 'node:fs'
 
-import { getIntrospectionQuery, type IntrospectionQuery } from 'graphql'
 import { getIntrospectedSchema, minifyIntrospectionQuery } from '@urql/introspection'
+import { getIntrospectionQuery, type IntrospectionQuery } from 'graphql'
 
 const res = await fetch('https://graphql.anilist.co', {
   method: 'POST',

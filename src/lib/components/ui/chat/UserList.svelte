@@ -5,8 +5,8 @@
 
   import type { Writable } from 'svelte/store'
 
-  import { click } from '$lib/modules/navigate'
   import native from '$lib/modules/native'
+  import { click } from '$lib/modules/navigate'
 
   export let users: Writable<Record<string, ChatUser>>
 

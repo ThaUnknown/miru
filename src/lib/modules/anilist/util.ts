@@ -1,7 +1,7 @@
-import type { ResultOf } from 'gql.tada'
-import type { Episode, Episodes } from '../anizip/types'
-import type { Media } from './types'
 import type { ScheduleMedia } from './queries'
+import type { Media } from './types'
+import type { Episode, Episodes } from '../anizip/types'
+import type { ResultOf } from 'gql.tada'
 
 export function banner (media: Pick<Media, 'trailer' | 'bannerImage' | 'coverImage'>): string | undefined {
   if (media.bannerImage) return media.bannerImage

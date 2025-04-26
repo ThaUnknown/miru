@@ -6,10 +6,10 @@
   import { Button } from '$lib/components/ui/button'
   import { Input } from '$lib/components/ui/input'
   import { Switch } from '$lib/components/ui/switch'
-  import { SUPPORTS, settings } from '$lib/modules/settings'
   import native from '$lib/modules/native'
-  import { fastPrettyBytes } from '$lib/utils'
   import { dragScroll } from '$lib/modules/navigate'
+  import { SUPPORTS, settings } from '$lib/modules/settings'
+  import { fastPrettyBytes } from '$lib/utils'
 
   async function selectDownloadFolder () {
     $settings.torrentPath = await native.selectDownload()

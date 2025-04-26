@@ -7,10 +7,10 @@
 
   import ExtensionSettings from './ExtensionSettings.svelte'
 
-  import * as Tabs from '$lib/components/ui/tabs'
   import { Input } from '$lib/components/ui/input'
-  import { saved, storage } from '$lib/modules/extensions'
+  import * as Tabs from '$lib/components/ui/tabs'
   import * as Tooltip from '$lib/components/ui/tooltip'
+  import { saved, storage } from '$lib/modules/extensions'
   import { codeToEmoji } from '$lib/utils'
 
   const typeMap = {

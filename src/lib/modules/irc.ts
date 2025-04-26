@@ -5,8 +5,8 @@ import { writable } from 'simple-store-svelte'
 
 import { decryptMessage, encryptMessage } from './crypt'
 
-import type IrcChannel from '@thaunknown/web-irc/channel'
 import type { ChatMessage, ChatUser } from '$lib/components/ui/chat'
+import type IrcChannel from '@thaunknown/web-irc/channel'
 
 export interface IRCUser { nick: string, ident: string, hostname: string, modes: string[], tags: object }
 export interface PrivMessage {

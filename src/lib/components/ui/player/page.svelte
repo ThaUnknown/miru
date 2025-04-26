@@ -1,11 +1,11 @@
 <script lang='ts'>
 
-  import { resolveFilesPoorly } from './resolver'
   import Mediahandler from './mediahandler.svelte'
+  import { resolveFilesPoorly } from './resolver'
 
-  import { server } from '$lib/modules/torrent'
-  import { page } from '$app/stores'
   import { goto } from '$app/navigation'
+  import { page } from '$app/stores'
+  import { server } from '$lib/modules/torrent'
 
   const act = server.active
 

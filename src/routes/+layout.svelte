@@ -5,9 +5,9 @@
   import { ProgressBar } from '@prgm/sveltekit-progress-bar'
 
   import Backplate from '$lib/components/Backplate.svelte'
+  import Online from '$lib/components/Online.svelte'
   import { Menubar } from '$lib/components/ui/menubar'
   import { Toaster } from '$lib/components/ui/sonner'
-  import Online from '$lib/components/Online.svelte'
   import native from '$lib/modules/native'
 
   let root: HTMLDivElement

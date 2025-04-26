@@ -35,9 +35,9 @@
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { Input } from '$lib/components/ui/input'
   import { Switch } from '$lib/components/ui/switch'
-  import { settings } from '$lib/modules/settings'
   import native from '$lib/modules/native'
   import { dragScroll } from '$lib/modules/navigate'
+  import { settings } from '$lib/modules/settings'
 
   if (!speedTest.isRunning) speedTest.play()
 

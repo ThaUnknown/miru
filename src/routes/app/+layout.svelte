@@ -1,9 +1,9 @@
 <script lang='ts'>
-  import { BannerImage } from '$lib/components/ui/banner'
-  import { Sidebar } from '$lib/components/ui/sidebar'
   import SearchModal from '$lib/components/SearchModal.svelte'
-  import Sidebarlist from '$lib/components/ui/sidebar/sidebarlist.svelte'
+  import { BannerImage } from '$lib/components/ui/banner'
   import { Player } from '$lib/components/ui/player'
+  import { Sidebar } from '$lib/components/ui/sidebar'
+  import Sidebarlist from '$lib/components/ui/sidebar/sidebarlist.svelte'
 </script>
 
 <BannerImage class='absolute top-0 left-0' />

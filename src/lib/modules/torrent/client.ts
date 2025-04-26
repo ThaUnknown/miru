@@ -1,11 +1,11 @@
 import { readable, writable } from 'simple-store-svelte'
-import { persisted } from 'svelte-persisted-store'
 import { get } from 'svelte/store'
+import { persisted } from 'svelte-persisted-store'
 
 import native from '../native'
 
-import type { Media } from '../anilist'
 import type { TorrentFile, TorrentInfo } from '../../../app'
+import type { Media } from '../anilist'
 
 export const server = new class ServerClient {
   last = persisted<{media: Media, id: string, episode: number} | null>('last-torrent', null)

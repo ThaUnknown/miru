@@ -1,13 +1,13 @@
 <script lang='ts'>
   import type { PageData } from './$types'
 
+  import EpisodesList from '$lib/components/EpisodesList.svelte'
   import { Button } from '$lib/components/ui/button'
-  import { dragScroll } from '$lib/modules/navigate'
+  import { Threads } from '$lib/components/ui/forums'
+  import { Load } from '$lib/components/ui/img'
   import { format, relation } from '$lib/modules/anilist'
   import { authAggregator } from '$lib/modules/auth'
-  import EpisodesList from '$lib/components/EpisodesList.svelte'
-  import { Load } from '$lib/components/ui/img'
-  import { Threads } from '$lib/components/ui/forums'
+  import { dragScroll } from '$lib/modules/navigate'
 
   export let data: PageData
 

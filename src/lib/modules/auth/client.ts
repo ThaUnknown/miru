@@ -1,13 +1,13 @@
 import { readable } from 'simple-store-svelte'
-import { persisted } from 'svelte-persisted-store'
 import { get } from 'svelte/store'
+import { persisted } from 'svelte-persisted-store'
 
 import { client, episodes, type Media } from '../anilist'
 
 import local from './local'
 
-import type { VariablesOf } from 'gql.tada'
 import type { Entry } from '../anilist/queries'
+import type { VariablesOf } from 'gql.tada'
 
 export default new class AuthAggregator {
   hasAuth = readable(this.checkAuth(), set => {

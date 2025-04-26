@@ -10,18 +10,18 @@
   import { ChevronLeft, Play, ChevronRight } from 'lucide-svelte'
 
   import Pagination from './Pagination.svelte'
-  import { Button } from './ui/button'
   import { searchStore } from './SearchModal.svelte'
+  import { Button } from './ui/button'
   import { Load } from './ui/img'
 
   import type { EpisodesResponse } from '$lib/modules/anizip/types'
 
+  import * as Avatar from '$lib/components/ui/avatar'
+  import * as Tooltip from '$lib/components/ui/tooltip'
   import { episodes as _episodes, dedupeAiring, episodeByAirDate, notes, type Media } from '$lib/modules/anilist'
-  import { cn, isMobile, since } from '$lib/utils'
   import { authAggregator, list, progress } from '$lib/modules/auth'
   import { click, dragScroll } from '$lib/modules/navigate'
-  import * as Tooltip from '$lib/components/ui/tooltip'
-  import * as Avatar from '$lib/components/ui/avatar'
+  import { cn, isMobile, since } from '$lib/utils'
 
   export let eps: EpisodesResponse | null
   export let media: Media

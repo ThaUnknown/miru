@@ -21,7 +21,8 @@ export default tseslint.config(
       'no-undef-init': 'off',
       'import/order': ['error', {
         'newlines-between': 'always',
-        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type']
+        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type'],
+        alphabetize: { order: 'asc' }
       }],
       '@typescript-eslint/no-unnecessary-condition': 'warn'
       // '@typescript-eslint/no-unused-vars': 'off'

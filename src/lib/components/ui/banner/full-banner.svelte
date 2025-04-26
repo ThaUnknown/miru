@@ -5,9 +5,9 @@
 
   import { bannerSrc } from './banner-image.svelte'
 
-  import { click } from '$lib/modules/navigate'
   import { desc, duration, format, season, title, type Media } from '$lib/modules/anilist'
   import { of } from '$lib/modules/auth'
+  import { click } from '$lib/modules/navigate'
   export let mediaList: Array<Media | null>
 
   function shuffle <T extends unknown[]> (array: T): T {

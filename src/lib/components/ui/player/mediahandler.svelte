@@ -1,14 +1,14 @@
 <script lang='ts'>
-  import Player from './player.svelte'
   import Externalplayer from './externalplayer.svelte'
+  import Player from './player.svelte'
 
-  import type { resolveFilesPoorly, ResolvedFile } from './resolver'
   import type { MediaInfo } from '$lib/components/ui/player/util'
+  import type { resolveFilesPoorly, ResolvedFile } from './resolver'
 
-  import { cover, episodes, title } from '$lib/modules/anilist'
-  import { searchStore } from '$lib/components/SearchModal.svelte'
-  import { settings } from '$lib/modules/settings'
   import { fillerEpisodes } from '$lib/components/EpisodesList.svelte'
+  import { searchStore } from '$lib/components/SearchModal.svelte'
+  import { cover, episodes, title } from '$lib/modules/anilist'
+  import { settings } from '$lib/modules/settings'
 
   export let mediaInfo: NonNullable<Awaited<ReturnType<typeof resolveFilesPoorly>>>
 

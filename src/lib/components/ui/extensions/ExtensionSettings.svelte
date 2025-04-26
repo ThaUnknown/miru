@@ -5,10 +5,10 @@
 
   import { Button } from '$lib/components/ui/button'
   import * as Dialog from '$lib/components/ui/dialog'
-  import { storage, options as exopts } from '$lib/modules/extensions'
   import { Input } from '$lib/components/ui/input'
   import { Label } from '$lib/components/ui/label'
   import { Switch } from '$lib/components/ui/switch'
+  import { storage, options as exopts } from '$lib/modules/extensions'
 
   export let config: ExtensionConfig
 

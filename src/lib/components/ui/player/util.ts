@@ -1,9 +1,9 @@
 import { get } from 'svelte/store'
 
 import type { Media } from '$lib/modules/anilist'
-import type { Track } from '../../../../app'
-import type Subtitles from './subtitles'
 import type { ResolvedFile } from './resolver'
+import type Subtitles from './subtitles'
+import type { Track } from '../../../../app'
 import type VideoDeband from 'video-deband'
 
 import { settings } from '$lib/modules/settings'

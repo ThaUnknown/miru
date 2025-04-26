@@ -1,12 +1,12 @@
 <script lang='ts' context='module'>
-  import { writable, type Writable } from 'simple-store-svelte'
   import { SendHorizontal } from 'lucide-svelte'
+  import { writable, type Writable } from 'simple-store-svelte'
 
   import { Messages, UserList } from '../chat'
 
-  import MessageClient from '$lib/modules/irc'
-  import { client } from '$lib/modules/anilist'
   import { Textarea } from '$lib/components/ui/textarea'
+  import { client } from '$lib/modules/anilist'
+  import MessageClient from '$lib/modules/irc'
 
   const irc: Writable<Promise<MessageClient> | null> = writable(null)
 </script>

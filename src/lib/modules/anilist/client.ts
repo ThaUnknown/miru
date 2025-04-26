@@ -1,25 +1,25 @@
-import { Client, fetchExchange, queryStore, type OperationResultState, gql as _gql } from '@urql/svelte'
+import { authExchange } from '@urql/exchange-auth'
 import { offlineExchange } from '@urql/exchange-graphcache'
 import { makeDefaultStorage } from '@urql/exchange-graphcache/default-storage'
-import { authExchange } from '@urql/exchange-auth'
 import { refocusExchange } from '@urql/exchange-refocus'
+import { Client, fetchExchange, queryStore, type OperationResultState, gql as _gql } from '@urql/svelte'
 import Bottleneck from 'bottleneck'
+import lavenshtein from 'js-levenshtein'
 import { readable, writable, type Writable } from 'simple-store-svelte'
 import { derived } from 'svelte/store'
-import lavenshtein from 'js-levenshtein'
 
-import schema from './schema.json' with { type: 'json' }
-import { CommentFrag, Comments, CustomLists, DeleteEntry, DeleteThreadComment, Entry, Following, FullMedia, FullMediaList, IDMedia, SaveThreadComment, Schedule, Search, ThreadFrag, Threads, ToggleFavourite, ToggleLike, UserLists, Viewer } from './queries'
-import { currentSeason, currentYear, lastSeason, lastYear, nextSeason, nextYear } from './util'
 import gql from './gql'
+import { CommentFrag, Comments, CustomLists, DeleteEntry, DeleteThreadComment, Entry, Following, FullMedia, FullMediaList, IDMedia, SaveThreadComment, Schedule, Search, ThreadFrag, Threads, ToggleFavourite, ToggleLike, UserLists, Viewer } from './queries'
+import schema from './schema.json' with { type: 'json' }
+import { currentSeason, currentYear, lastSeason, lastYear, nextSeason, nextYear } from './util'
 
+import type { Media } from './types'
 import type { ResultOf, VariablesOf } from 'gql.tada'
 import type { AnyVariables, OperationContext, RequestPolicy, TypedDocumentNode } from 'urql'
-import type { Media } from './types'
 
-import { safeLocalStorage, sleep } from '$lib/utils'
-import native from '$lib/modules/native'
 import { dev } from '$app/environment'
+import native from '$lib/modules/native'
+import { safeLocalStorage, sleep } from '$lib/utils'
 
 function arrayEqual <T> (a: T[], b: T[]) {
   return a.length === b.length && a.every((v, i) => v === b[i])

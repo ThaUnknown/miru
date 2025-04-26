@@ -6,18 +6,18 @@
 
   import type { LayoutData } from './$types'
 
-  import * as Dialog from '$lib/components/ui/dialog'
-  import * as Tooltip from '$lib/components/ui/tooltip'
+  import Anilist from '$lib/components/icons/Anilist.svelte'
+  import MyAnimeList from '$lib/components/icons/MyAnimeList.svelte'
   import * as Avatar from '$lib/components/ui/avatar'
   import { bannerSrc, hideBanner } from '$lib/components/ui/banner'
   import { PlayButton, Button, BookmarkButton, FavoriteButton } from '$lib/components/ui/button'
-  import { dragScroll } from '$lib/modules/navigate'
+  import * as Dialog from '$lib/components/ui/dialog'
+  import { Load } from '$lib/components/ui/img'
+  import * as Tooltip from '$lib/components/ui/tooltip'
   import { cover, desc, duration, format, season, status, title } from '$lib/modules/anilist'
   import { authAggregator, of } from '$lib/modules/auth'
   import native from '$lib/modules/native'
-  import MyAnimeList from '$lib/components/icons/MyAnimeList.svelte'
-  import Anilist from '$lib/components/icons/Anilist.svelte'
-  import { Load } from '$lib/components/ui/img'
+  import { dragScroll } from '$lib/modules/navigate'
 
   export let data: LayoutData
 

@@ -5,17 +5,17 @@
   import Keybinds from './keybinds.svelte'
   import { normalizeSubs, normalizeTracks, type Chapter } from './util'
 
+  import type { ResolvedFile } from './resolver'
+  import type Subtitles from './subtitles'
   import type { Writable } from 'simple-store-svelte'
   import type { HTMLAttributes } from 'svelte/elements'
-  import type Subtitles from './subtitles'
-  import type { ResolvedFile } from './resolver'
 
+  import { Button } from '$lib/components/ui/button'
   import * as Dialog from '$lib/components/ui/dialog'
   import * as Tree from '$lib/components/ui/tree'
-  import { Button } from '$lib/components/ui/button'
-  import { cn, toTS } from '$lib/utils'
   import { dragScroll } from '$lib/modules/navigate'
   import { settings } from '$lib/modules/settings'
+  import { cn, toTS } from '$lib/utils'
 
   export let wrapper: HTMLDivElement
 

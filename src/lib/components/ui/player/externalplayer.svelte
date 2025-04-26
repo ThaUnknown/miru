@@ -1,24 +1,24 @@
 <script lang='ts'>
-  import { writable } from 'svelte/store'
   import { SkipBack, SkipForward } from 'lucide-svelte'
+  import { writable } from 'svelte/store'
 
-  import * as Sheet from '../sheet'
   import { Button } from '../button'
+  import * as Sheet from '../sheet'
 
-  import type { TorrentFile } from '../../../../app'
   import type { ResolvedFile } from './resolver'
   import type { MediaInfo } from './util'
+  import type { TorrentFile } from '../../../../app'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import { click } from '$lib/modules/navigate'
-  import { episodes } from '$lib/modules/anizip'
   import EpisodesList from '$lib/components/EpisodesList.svelte'
-  import native from '$lib/modules/native'
-  import { toTS } from '$lib/utils'
   import * as Dialog from '$lib/components/ui/dialog'
+  import { episodes } from '$lib/modules/anizip'
   import { authAggregator } from '$lib/modules/auth'
+  import native from '$lib/modules/native'
+  import { click } from '$lib/modules/navigate'
   import { settings } from '$lib/modules/settings'
+  import { toTS } from '$lib/utils'
 
   export let mediaInfo: MediaInfo
   export let otherFiles: TorrentFile[]

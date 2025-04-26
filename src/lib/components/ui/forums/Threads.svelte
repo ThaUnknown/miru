@@ -4,10 +4,10 @@
   import Pagination from '../../Pagination.svelte'
   import { Button } from '../button'
 
+  import * as Avatar from '$lib/components/ui/avatar'
+  import * as Tooltip from '$lib/components/ui/tooltip'
   import { client, type Media } from '$lib/modules/anilist'
   import { isMobile, since } from '$lib/utils'
-  import * as Tooltip from '$lib/components/ui/tooltip'
-  import * as Avatar from '$lib/components/ui/avatar'
 
   export let media: Media
 

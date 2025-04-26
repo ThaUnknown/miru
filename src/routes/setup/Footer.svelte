@@ -12,10 +12,10 @@
 <script lang='ts'>
   import { Check, X } from 'lucide-svelte'
 
+  import { goto } from '$app/navigation'
   import { Badge } from '$lib/components/ui/badge'
   import { Button } from '$lib/components/ui/button'
   import * as Tooltip from '$lib/components/ui/tooltip'
-  import { goto } from '$app/navigation'
   export let step = 0
   export let checks: Checks[] = []
 

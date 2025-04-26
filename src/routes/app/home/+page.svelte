@@ -1,12 +1,12 @@
 <script lang='ts' context='module'>
   import { derived } from 'svelte/store'
 
-  import type { Readable } from 'simple-store-svelte'
-  import type { VariablesOf } from 'gql.tada'
   import type { Search } from '$lib/modules/anilist/queries'
+  import type { VariablesOf } from 'gql.tada'
+  import type { Readable } from 'simple-store-svelte'
 
-  import { authAggregator } from '$lib/modules/auth'
   import { client, currentSeason, currentYear } from '$lib/modules/anilist'
+  import { authAggregator } from '$lib/modules/auth'
 
   interface Section {
     title: string
@@ -60,10 +60,10 @@
 </script>
 
 <script lang='ts'>
-  import { click, dragScroll } from '$lib/modules/navigate'
-  import { Banner, hideBanner } from '$lib/components/ui/banner'
   import { goto } from '$app/navigation'
+  import { Banner, hideBanner } from '$lib/components/ui/banner'
   import { QueryCard } from '$lib/components/ui/cards'
+  import { click, dragScroll } from '$lib/modules/navigate'
 
   function handleScroll (e: Event) {
     const target = e.target as HTMLDivElement

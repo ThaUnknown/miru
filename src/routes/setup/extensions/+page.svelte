@@ -6,12 +6,12 @@
 
   import type { ExtensionConfig } from 'hayase-extensions'
 
-  import { Extensions } from '$lib/components/ui/extensions'
-  import { saved, options, storage } from '$lib/modules/extensions'
+  import { DEFAULT_EXTENSIONS } from '$lib'
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { SingleCombo } from '$lib/components/ui/combobox'
+  import { Extensions } from '$lib/components/ui/extensions'
+  import { saved, options, storage } from '$lib/modules/extensions'
   import { lookupPreferences, settings, SUPPORTS } from '$lib/modules/settings'
-  import { DEFAULT_EXTENSIONS } from '$lib'
 
   function checkExtensions (svd: Record<string, ExtensionConfig>, opts: Record<string, {
     options: Record<string, string | number | boolean | undefined>

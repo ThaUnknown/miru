@@ -8,15 +8,15 @@
 </script>
 
 <script lang='ts'>
-  import { CaretSort, Check } from 'svelte-radix'
-  import { tick } from 'svelte'
   import { X } from 'lucide-svelte'
+  import { tick } from 'svelte'
+  import { CaretSort, Check } from 'svelte-radix'
 
+  import { Button } from '$lib/components/ui/button'
   import * as Command from '$lib/components/ui/command'
   import * as Popover from '$lib/components/ui/popover'
-  import { Button } from '$lib/components/ui/button'
-  import { cn } from '$lib/utils.js'
   import { intputType } from '$lib/modules/navigate'
+  import { cn } from '$lib/utils.js'
 
   interface value {
     value: string

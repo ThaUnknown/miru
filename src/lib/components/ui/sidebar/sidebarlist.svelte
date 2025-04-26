@@ -7,12 +7,12 @@
 
   import SidebarButton from './SidebarButton.svelte'
 
-  import native from '$lib/modules/native'
-  import client from '$lib/modules/auth/client'
-  import * as Avatar from '$lib/components/ui/avatar'
-  import { lockedState, idleState, activityState } from '$lib/modules/idle'
   import { page } from '$app/stores'
   import Logo from '$lib/components/icons/Logo.svelte'
+  import * as Avatar from '$lib/components/ui/avatar'
+  import client from '$lib/modules/auth/client'
+  import { lockedState, idleState, activityState } from '$lib/modules/idle'
+  import native from '$lib/modules/native'
 
   const auth = client.hasAuth
 

@@ -1,15 +1,15 @@
 import JASSUB, { type ASS_Event as ASSEvent } from 'jassub'
-import { get } from 'svelte/store'
 import { writable } from 'simple-store-svelte'
+import { get } from 'svelte/store'
 
 import { fontRx, type ResolvedFile } from './resolver'
 
 import type { TorrentFile } from '../../../../app'
 
-import { HashMap } from '$lib/utils'
-import { settings, SUPPORTS } from '$lib/modules/settings'
-// import { toTS } from '$lib/utils'
 import native from '$lib/modules/native'
+import { settings, SUPPORTS } from '$lib/modules/settings'
+import { HashMap } from '$lib/utils'
+// import { toTS } from '$lib/utils'
 
 const defaultHeader = `[Script Info]
 Title: English (US)

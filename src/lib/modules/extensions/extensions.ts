@@ -1,15 +1,15 @@
-import { get } from 'svelte/store'
 import anitomyscript, { type AnitomyResult } from 'anitomyscript'
+import { get } from 'svelte/store'
 
 import { dedupeAiring, episodeByAirDate, episodes, isMovie, type Media, type MediaEdge } from '../anilist'
-import { settings, type videoResolutions } from '../settings'
-import native from '../native'
 import { episodes as _episodes } from '../anizip'
+import native from '../native'
+import { settings, type videoResolutions } from '../settings'
 
 import { storage } from './storage'
 
-import type { TorrentResult } from 'hayase-extensions'
 import type { EpisodesResponse } from '../anizip/types'
+import type { TorrentResult } from 'hayase-extensions'
 
 import { options as extensionOptions, saved } from '$lib/modules/extensions'
 

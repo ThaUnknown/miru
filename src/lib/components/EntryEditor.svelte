@@ -1,13 +1,13 @@
 <script lang='ts'>
   import { PencilLine } from 'lucide-svelte'
 
-  import * as Dialog from '$lib/components/ui/dialog'
-  import * as Select from '$lib/components/ui/select'
   import { Button } from '$lib/components/ui/button'
+  import * as Dialog from '$lib/components/ui/dialog'
   import { Input } from '$lib/components/ui/input'
-  import { dragScroll } from '$lib/modules/navigate'
+  import * as Select from '$lib/components/ui/select'
   import { cover, title, type Media } from '$lib/modules/anilist'
   import { list, progress as _progress, score as _score, repeat as _repeat, authAggregator, lists } from '$lib/modules/auth'
+  import { dragScroll } from '$lib/modules/navigate'
 
   export let media: Media
 

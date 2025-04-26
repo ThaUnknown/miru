@@ -3,12 +3,12 @@
 
   import type { PageData } from './$types'
 
+  import Shadow from '$lib/components/Shadow.svelte'
   import * as Avatar from '$lib/components/ui/avatar'
-  import { since } from '$lib/utils'
   import { Button, iconSizes } from '$lib/components/ui/button'
   import { Comments, Write } from '$lib/components/ui/forums'
   import { client } from '$lib/modules/anilist'
-  import Shadow from '$lib/components/Shadow.svelte'
+  import { since } from '$lib/utils'
 
   export let data: PageData
 

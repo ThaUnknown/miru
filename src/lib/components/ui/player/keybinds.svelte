@@ -1,7 +1,7 @@
 <script context='module' lang='ts'>
-  import { persisted } from 'svelte-persisted-store'
   import { writable } from 'simple-store-svelte'
   import { get } from 'svelte/store'
+  import { persisted } from 'svelte-persisted-store'
 
   import { keys, layout, type KeyCode } from './maps.ts'
 

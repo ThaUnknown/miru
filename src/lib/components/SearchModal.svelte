@@ -1,19 +1,19 @@
 <script lang='ts' context='module'>
+  import { BadgeCheck, Database } from 'lucide-svelte'
   import { writable } from 'simple-store-svelte'
   import { MagnifyingGlass } from 'svelte-radix'
-  import { BadgeCheck, Database } from 'lucide-svelte'
 
-  import { Input } from './ui/input'
   import { SingleCombo } from './ui/combobox'
+  import { Input } from './ui/input'
 
   import type { AnitomyResult } from 'anitomyscript'
   import type { TorrentResult } from 'hayase-extensions'
 
-  import { extensions } from '$lib/modules/extensions/extensions'
   import * as Dialog from '$lib/components/ui/dialog'
-  import { settings, videoResolutions } from '$lib/modules/settings'
   import { title, type Media } from '$lib/modules/anilist'
+  import { extensions } from '$lib/modules/extensions/extensions'
   import { click, dragScroll } from '$lib/modules/navigate'
+  import { settings, videoResolutions } from '$lib/modules/settings'
   import { fastPrettyBytes, since } from '$lib/utils'
 
   const termMapping: Record<string, {text: string, color: string}> = {}
@@ -66,9 +66,9 @@
   import ProgressButton from './ui/button/progress-button.svelte'
   import { Banner } from './ui/img'
 
+  import { goto } from '$app/navigation'
   import { saved } from '$lib/modules/extensions'
   import { server } from '$lib/modules/torrent'
-  import { goto } from '$app/navigation'
 
   $: open = !!$searchStore.media
 

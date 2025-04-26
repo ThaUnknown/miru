@@ -1,9 +1,9 @@
 import { type VariantProps, tv } from 'tailwind-variants'
 
-import Root from './button.svelte'
-import Play from './play.svelte'
-import Favorite from './favorite.svelte'
 import Bookmark from './bookmark.svelte'
+import Root from './button.svelte'
+import Favorite from './favorite.svelte'
+import Play from './play.svelte'
 
 import type { Button as ButtonPrimitive } from 'bits-ui'
 

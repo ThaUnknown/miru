@@ -8,9 +8,9 @@
 
   import type { Media } from '$lib/modules/anilist/types'
 
+  import { goto } from '$app/navigation'
   import { coverMedium, format, title } from '$lib/modules/anilist/util'
   import { hover } from '$lib/modules/navigate'
-  import { goto } from '$app/navigation'
 
   export let media: Media
 

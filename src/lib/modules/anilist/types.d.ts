@@ -1,5 +1,5 @@
-import type { ResultOf } from 'gql.tada'
 import type { FullMedia, MediaEdgeFrag } from './queries'
+import type { ResultOf } from 'gql.tada'
 
 export type Media = ResultOf<typeof FullMedia>
 
