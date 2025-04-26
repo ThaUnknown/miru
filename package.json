@@ -10,8 +10,8 @@
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "eslint -c eslint.config.js",
-		"lint:fix": "eslint -c eslint.config.js --fix",
+		"lint": "eslint --quiet -c eslint.config.js",
+		"lint:fix": "eslint --quiet -c eslint.config.js --fix",
 		"gql:turbo": "node ./node_modules/gql.tada/bin/cli.js turbo",
 		"gql:check": "node ./node_modules/gql.tada/bin/cli.js check",
 		"gql:generate": "node --experimental-strip-types ./generateALIntrospection.ts"

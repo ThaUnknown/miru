@@ -37,6 +37,9 @@
     "src/**/*.svelte",
     "src/global.d.tsd.ts",
     "src/global.d.tsd.ts"
+  ],
+  "exclude": [
+    "../node_modules/**"
   ]
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
   // except $lib which is handled by https://kit.svelte.dev/docs/configuration#files

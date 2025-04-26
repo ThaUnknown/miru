@@ -7,10 +7,10 @@
   type $$Props = SelectPrimitive.ItemProps
   type $$Events = Required<SelectPrimitive.ItemEvents>
 
-  let className: $$Props['class'] = ''
-  export let value: $$Props['value']
-  export let label: $$Props['label']
-  export let disabled: $$Props['disabled']
+  let className: $$Props['class'] = undefined
+  export let value: $$Props['value'] = undefined
+  export let label: $$Props['label'] = undefined
+  export let disabled: $$Props['disabled'] = undefined
   export { className as class }
 </script>
 

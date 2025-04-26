@@ -44,7 +44,7 @@
       const imported = JSON.parse(await navigator.clipboard.readText())
       $settings = imported
       native.restart()
-    } catch (error) {
+    } catch (err) {
       toast.error('Failed to import settings', {
         description: 'Failed to import settings from clipboard, make sure the copied data is valid JSON.',
         duration: 5000

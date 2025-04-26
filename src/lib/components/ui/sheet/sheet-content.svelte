@@ -17,7 +17,7 @@
     side?: Side
   }
 
-  let className: $$Props['class']
+  let className: $$Props['class'] = undefined
   export let side: $$Props['side'] = 'right'
   export { className as class }
   export let inTransition: $$Props['inTransition'] = fly

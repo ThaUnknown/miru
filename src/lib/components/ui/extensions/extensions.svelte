@@ -23,7 +23,7 @@
 
   function filterSearch <T extends Array<[string, unknown]>> (repositories: T, input: string): T {
     if (!input) return repositories
-    return repositories.filter(([id, _]) => id.toLowerCase().includes(input.toLowerCase())) as T
+    return repositories.filter(([id]) => id.toLowerCase().includes(input.toLowerCase())) as T
   }
 
   let extensionInput = ''

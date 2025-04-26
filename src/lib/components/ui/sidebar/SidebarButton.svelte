@@ -15,8 +15,9 @@
   import { Button, type Props } from '$lib/components/ui/button'
   import { cn } from '$lib/utils.js'
 
-  type $$Props = Props & { href: string | null | undefined }
+  type $$Props = Props & { disabled?: boolean | undefined | null }
   export let href: string | null | undefined = undefined
+  export let disabled: $$Props['disabled'] = undefined
 
   function matchPath (path: string, page: { url: URL }) {
     return page.url.pathname.startsWith(path)

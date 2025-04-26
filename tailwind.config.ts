@@ -5,12 +5,12 @@ import type { Config } from 'tailwindcss'
 
 const config: Config = {
   plugins: [
-    plugin(({ addVariant, matchVariant }) => {
-      addVariant('select', ['&:hover', '&:focus-visible', '&:active'])
-      addVariant('group-select', [':merge(.group):hover &', ':merge(.group):focus-visible &', ':merge(.group):active &'])
-      addVariant('fullscreen', '&:fullscreen')
-      addVariant('group-fullscreen', ':merge(.group):fullscreen &')
-      matchVariant(
+    plugin((api) => {
+      api.addVariant('select', ['&:hover', '&:focus-visible', '&:active'])
+      api.addVariant('group-select', [':merge(.group):hover &', ':merge(.group):focus-visible &', ':merge(.group):active &'])
+      api.addVariant('fullscreen', '&:fullscreen')
+      api.addVariant('group-fullscreen', ':merge(.group):fullscreen &')
+      api.matchVariant(
         'group-fullscreen',
         (value, { modifier }) => [
           ':merge(.group):fullscreen &',
@@ -18,7 +18,7 @@ const config: Config = {
         ],
         { values: { DEFAULT: undefined } }
       )
-      matchVariant(
+      api.matchVariant(
         'group-select',
         (value, { modifier }) => [
           ':merge(.group):hover &',
@@ -30,7 +30,7 @@ const config: Config = {
         ],
         { values: { DEFAULT: undefined } }
       )
-      addVariant('mobile', '@media (pointer: none), (pointer: coarse)')
+      api.addVariant('mobile', '@media (pointer: none), (pointer: coarse)')
     })
   ],
   darkMode: ['class'],

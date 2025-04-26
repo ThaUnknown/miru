@@ -8,8 +8,6 @@ import { decryptMessage, encryptMessage } from './crypt'
 import type IrcChannel from '@thaunknown/web-irc/channel'
 import type { ChatMessage, ChatUser } from '$lib/components/ui/chat'
 
-import { dev } from '$app/environment'
-
 export interface IRCUser { nick: string, ident: string, hostname: string, modes: string[], tags: object }
 export interface PrivMessage {
   from_server: boolean
@@ -38,18 +36,18 @@ export default class MessageClient extends EventEmitter {
     this.ident = ident
     this.irc.on('userlist', async ({ users }: { users: IRCUser[] }) => {
       this.users.value = users.reduce((acc, user) => {
-        const [nick, pfpid, pfpex] = user.nick.split('_')
-        const [type, id] = user.ident.split('_')
-        acc[user.ident] = { nick, id, pfpid: `${pfpid}.${pfpex}`, type: type as 'al' | 'guest' }
+        const [nick, pfpid, pfpex] = user.nick.split('_') as [string, string, string]
+        const [type, id] = user.ident.split('_') as ['al' | 'guest', string]
+        acc[user.ident] = { nick, id, pfpid: `${pfpid}.${pfpex}`, type }
         return acc
       }, this.users.value)
     })
 
     this.irc.on('join', async (user: IRCUser) => {
       try {
-        const [nick, pfpid, pfpex] = user.nick.split('_')
-        const [type, id] = user.ident.split('_')
-        this.users.value[user.ident] = { nick, id, pfpid: `${pfpid}.${pfpex}`, type: type as 'al' | 'guest' }
+        const [nick, pfpid, pfpex] = user.nick.split('_') as [string, string, string]
+        const [type, id] = user.ident.split('_') as ['al' | 'guest', string]
+        this.users.value[user.ident] = { nick, id, pfpid: `${pfpid}.${pfpex}`, type }
         this.users.update(users => users)
       } catch (error) {
         console.error(error)
@@ -70,7 +68,7 @@ export default class MessageClient extends EventEmitter {
       try {
         this.messages.update(messages => [...messages, {
           message,
-          user: this.users.value[priv.ident],
+          user: this.users.value[priv.ident]!,
           type: 'incoming',
           date: new Date(priv.time)
         }])

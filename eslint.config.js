@@ -23,8 +23,27 @@ export default tseslint.config(
         'newlines-between': 'always',
         groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type']
       }],
-      '@typescript-eslint/no-unnecessary-condition': 'warn',
-      '@typescript-eslint/no-unused-vars': 'off'
+      '@typescript-eslint/no-unnecessary-condition': 'warn'
+      // '@typescript-eslint/no-unused-vars': 'off'
+    }
+  },
+  {
+    files: ['**/*.svelte'],
+    rules: {
+      'no-unused-vars': ['error', {
+        varsIgnorePattern: '.{2}(Events|Props)',
+        args: 'none',
+        caughtErrors: 'none',
+        ignoreRestSiblings: true,
+        vars: 'all'
+      }],
+      '@typescript-eslint/no-unused-vars': ['error', {
+        varsIgnorePattern: '.{2}(Events|Props)',
+        args: 'none',
+        caughtErrors: 'none',
+        ignoreRestSiblings: true,
+        vars: 'all'
+      }]
     }
   }
 )

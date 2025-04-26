@@ -5,7 +5,7 @@
 
   type $$Props = SheetPrimitive.DescriptionProps
 
-  let className: $$Props['class']
+  let className: $$Props['class'] = undefined
   export { className as class }
 </script>
 

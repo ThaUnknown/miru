@@ -6,10 +6,10 @@
 
   type $$Props = SelectPrimitive.ContentProps
 
-  let className: $$Props['class'] = ''
+  let className: $$Props['class'] = undefined
   export let sideOffset: $$Props['sideOffset'] = 4
   export let inTransition: $$Props['inTransition'] = flyAndScale
-  export let inTransitionConfig: $$Props['inTransitionConfig']
+  export let inTransitionConfig: $$Props['inTransitionConfig'] = undefined
   export let outTransition: $$Props['outTransition'] = scale
   export let outTransitionConfig: $$Props['outTransitionConfig'] = {
     start: 0.95,
