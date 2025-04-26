@@ -1,12 +1,11 @@
 <script lang='ts'>
-  import { ChevronLeft, ChevronRight, Eye, Heart, MessagesSquare } from 'lucide-svelte'
+  import { ChevronLeft, ChevronRight, Eye, Heart, MessagesSquare, Lock } from 'lucide-svelte'
 
   import Pagination from '../../Pagination.svelte'
   import { Button } from '../button'
 
   import { client, type Media } from '$lib/modules/anilist'
   import { isMobile, since } from '$lib/utils'
-  import { dragScroll } from '$lib/modules/navigate'
   import * as Tooltip from '$lib/components/ui/tooltip'
   import * as Avatar from '$lib/components/ui/avatar'
 
@@ -36,8 +35,8 @@
 </script>
 
 <Pagination {count} {perPage} bind:currentPage let:pages let:hasNext let:hasPrev let:range let:setPage siblingCount={1}>
-  <div class='overflow-y-auto pt-3 -mx-14 px-14 pointer-events-none -mb-3 pb-3' use:dragScroll>
-    <div class='grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(500px,1fr))] place-items-center gap-x-10 gap-y-7 justify-center align-middle pointer-events-auto'>
+  <div class='pt-3'>
+    <div class='grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(500px,1fr))] place-items-center gap-x-10 gap-y-7 justify-center align-middle'>
       {#if $currentPageStore.fetching}
         Loading threads...
       {:else if $currentPageStore.error}
@@ -70,6 +69,9 @@
                     {thread.viewCount ?? 0}
                     <MessagesSquare size='12' class='mr-1 ml-2' />
                     {thread.replyCount ?? 0}
+                    {#if thread.isLocked}
+                      <Lock size='12' class='mr-1 ml-2 text-red-500' />
+                    {/if}
                   </div>
                 </div>
                 <div class='flex w-full justify-between mt-auto text-[9.6px]'>

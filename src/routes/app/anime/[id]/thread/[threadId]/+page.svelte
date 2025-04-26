@@ -1,14 +1,12 @@
 <script lang='ts'>
-  import { ChevronLeft, Eye, MessagesSquare, Heart } from 'lucide-svelte'
-  import { onMount } from 'svelte'
+  import { ChevronLeft, Eye, MessagesSquare, Heart, Lock, Reply } from 'lucide-svelte'
 
   import type { PageData } from './$types'
 
   import * as Avatar from '$lib/components/ui/avatar'
   import { since } from '$lib/utils'
-  import { Button } from '$lib/components/ui/button'
-  import { Comments } from '$lib/components/ui/forums'
-  import { ToggleLike } from '$lib/modules/anilist/queries'
+  import { Button, iconSizes } from '$lib/components/ui/button'
+  import { Comments, Write } from '$lib/components/ui/forums'
   import { client } from '$lib/modules/anilist'
   import Shadow from '$lib/components/Shadow.svelte'
 
@@ -28,15 +26,15 @@
     commentQueries = commentQueries
   }
 
-  onMount(loadComments)
+  $: commentQueries = [client.comments(thread.id, 1)]
 
   $: anime = data.anime
   $: media = $anime.Media!
 
-  const x = async () => await client.client.mutation(ToggleLike, { id: thread.id, type: 'THREAD' })
-
   $: latestQuery = commentQueries[commentQueries.length - 1]
   $: hasMore = $latestQuery?.data?.Page?.pageInfo?.hasNextPage ?? false
+
+  const viewer = client.viewer
 </script>
 
 <div class='flex items-center w-full'>
@@ -55,18 +53,29 @@
       {thread.user?.name ?? 'N/A'}
     </div>
     <div class='flex ml-2 text-[12.8px] leading-none mt-0.5'>
-      <Heart size='12' class='mr-1' />
+      <Heart size='12' class='mr-1' fill={thread.isLiked ? 'currentColor' : 'transparent'} />
       {thread.likeCount}
       <Eye size='12' class='mr-1 ml-2' />
       {thread.viewCount ?? 0}
       <MessagesSquare size='12' class='mr-1 ml-2' />
       {thread.replyCount ?? 0}
+      {#if thread.isLocked}
+        <Lock size='12' class='mr-1 ml-2 text-red-500' />
+      {/if}
     </div>
   </div>
-  <Shadow html={thread.body ?? ''} class='my-3 text-muted-foreground leading-relaxed [&_*]:flex [&_*]:flex-col [&_br]:hidden overflow-clip' />
+  <Shadow html={thread.body ?? ''} class='my-3 text-muted-foreground [&_*]:flex [&_*]:flex-col [&_br]:hidden overflow-clip' />
   <div class='flex w-full justify-between mt-auto text-[9.6px]'>
-    <div class='pt-2 flex items-end'>
-      {since(new Date(thread.createdAt * 1000))}
+    <div class='flex items-center leading-none'>
+      <Button size='icon-sm' variant='ghost' class='mr-1' on:click={() => client.toggleLike(thread.id, 'THREAD', !!thread.isLiked)} disabled={!!thread.isLocked || !$viewer?.viewer}>
+        <Heart fill={thread.isLiked ? 'currentColor' : 'transparent'} size={iconSizes['icon-sm']} />
+      </Button>
+      <Write threadId={thread.id} isLocked={!!thread.isLocked}>
+        <Reply size={iconSizes['icon-sm']} />
+      </Write>
+      <span class='ml-2'>
+        {since(new Date(thread.createdAt * 1000))}
+      </span>
     </div>
     <div class='ml-auto inline-flex flex-wrap gap-2 items-end'>
       {#each thread.categories?.filter(category => category?.name !== 'Anime') ?? [] as category, i (category?.id ?? i)}
@@ -84,7 +93,7 @@
   {thread.replyCount} Replies
 </div>
 {#each commentQueries as comments, i (i)}
-  <Comments bind:comments />
+  <Comments bind:comments isLocked={!!thread.isLocked} threadId={thread.id} />
 {/each}
 {#if hasMore}
   <Button size='lg' class='w-full font-bold' on:click={loadComments}>Load more comments</Button>

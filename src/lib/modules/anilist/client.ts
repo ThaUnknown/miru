@@ -9,7 +9,7 @@ import { derived } from 'svelte/store'
 import lavenshtein from 'js-levenshtein'
 
 import schema from './schema.json' with { type: 'json' }
-import { CommentFrag, Comments, CustomLists, DeleteEntry, Entry, Following, FullMedia, FullMediaList, IDMedia, Schedule, Search, ThreadFrag, Threads, ToggleFavourite, UserLists, Viewer } from './queries'
+import { CommentFrag, Comments, CustomLists, DeleteEntry, DeleteThreadComment, Entry, Following, FullMedia, FullMediaList, IDMedia, SaveThreadComment, Schedule, Search, ThreadFrag, Threads, ToggleFavourite, ToggleLike, UserLists, Viewer } from './queries'
 import { currentSeason, currentYear, lastSeason, lastYear, nextSeason, nextYear } from './util'
 import gql from './gql'
 
@@ -127,6 +127,24 @@ class AnilistClient {
                 targetList.entries.push(oldEntry)
                 return { ...data, MediaListCollection: { ...data.MediaListCollection, lists } }
               })
+            },
+            SaveThreadComment: (_result, args, cache, _info) => {
+              if (_info.variables.rootCommentId) {
+                const id = _info.variables.rootCommentId as number
+                cache.invalidate({
+                  __typename: 'ThreadComment',
+                  id
+                })
+              } else {
+                cache.invalidate('ThreadComment')
+              }
+            },
+            DeleteThreadComment: (_result, args, cache, _info) => {
+              const id = (_info.variables.rootCommentId ?? args.id) as number
+              cache.invalidate({
+                __typename: 'ThreadComment',
+                id
+              })
             }
           }
         },
@@ -182,11 +200,12 @@ class AnilistClient {
             // @ts-expect-error idk whats wrong here but it works correctly
             const likableUnion = cache.readFragment(likable === 'THREAD' ? ThreadFrag : CommentFrag, { id: threadOrCommentId })
 
-            if (!likableUnion) return {}
+            if (!likableUnion) return null
 
             return {
               id: threadOrCommentId,
               isLiked: !likableUnion.isLiked,
+              likeCount: likableUnion.likeCount + (likableUnion.isLiked ? -1 : 1),
               __typename: likable === 'THREAD' ? 'Thread' : 'ThreadComment'
             }
           }
@@ -426,6 +445,18 @@ class AnilistClient {
 
   comments (threadId: number, page = 1) {
     return queryStore({ client: this.client, query: Comments, variables: { threadId, page } })
+  }
+
+  async toggleLike (id: number, type: 'THREAD' | 'THREAD_COMMENT' | 'ACTIVITY' | 'ACTIVITY_REPLY', wasLiked: boolean) {
+    return await this.client.mutation(ToggleLike, { id, type, wasLiked })
+  }
+
+  async comment (variables: VariablesOf<typeof SaveThreadComment> & { rootCommentId?: number }) {
+    return await this.client.mutation(SaveThreadComment, variables)
+  }
+
+  async deleteComment (id: number, rootCommentId: number) {
+    return await this.client.mutation(DeleteThreadComment, { id, rootCommentId })
   }
 }
 

@@ -1,6 +1,6 @@
 {
 	"name": "ui",
-	"version": "6.0.12",
+	"version": "6.0.13",
 	"license": "BUSL-1.1",
 	"private": true,
 	"packageManager": "pnpm@9.14.4",
@@ -13,7 +13,8 @@
 		"lint": "eslint -c eslint.config.js",
 		"lint:fix": "eslint -c eslint.config.js --fix",
 		"gql:turbo": "node ./node_modules/gql.tada/bin/cli.js turbo",
-		"gql:check": "node ./node_modules/gql.tada/bin/cli.js check"
+		"gql:check": "node ./node_modules/gql.tada/bin/cli.js check",
+		"gql:generate": "node --experimental-strip-types ./generateALIntrospection.ts"
 	},
 	"devDependencies": {
 		"@gql.tada/svelte-support": "^1.0.1",
@@ -64,6 +65,7 @@
 		"idb-keyval": "^6.2.1",
 		"js-levenshtein": "^1.1.6",
 		"lucide-svelte": "^0.452.0",
+		"marked": "^15.0.11",
 		"p2pt": "^1.5.1",
 		"semver": "^7.7.1",
 		"simple-store-svelte": "^1.0.6",

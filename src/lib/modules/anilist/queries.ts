@@ -306,7 +306,7 @@ export const ThreadFrag = gql(`
   fragment ThreadFrag on Thread @_unmask {
     id,
     title,
-    body(asHtml: true),
+    body,
     userId,
     replyCount,
     viewCount,
@@ -331,7 +331,7 @@ export const ThreadFrag = gql(`
 `)
 
 export const Threads = gql(`
-  query Threads($id: Int, $page: Int, $perPage: Int) {
+  query Threads($id: Int!, $page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
       pageInfo {
         hasNextPage
@@ -344,7 +344,7 @@ export const Threads = gql(`
 `, [ThreadFrag])
 
 export const Thread = gql(`
-  query Thread($threadId: Int) {
+  query Thread($threadId: Int!) {
     Thread(id: $threadId) {
       ...ThreadFrag
     }
@@ -354,7 +354,7 @@ export const Thread = gql(`
 export const CommentFrag = gql(`
   fragment CommentFrag on ThreadComment @_unmask {
     id,
-    comment(asHtml: true),
+    comment,
     isLiked,
     likeCount,
     createdAt,
@@ -380,7 +380,7 @@ export const Comments = gql(`
       }
       threadComments(threadId: $threadId) {
         id,
-        comment(asHtml: true),
+        comment,
         isLiked,
         likeCount,
         createdAt,
@@ -408,7 +408,7 @@ export const User = gql(`
         large
       },
       bannerImage,
-      about(asHtml: true),
+      about,
       isFollowing,
       isFollower,
       donatorBadge,
@@ -432,7 +432,7 @@ export const User = gql(`
 `)
 
 export const ToggleLike = gql(`
-  mutation ToggleLike ($id: Int, $type: LikeableType) {
+  mutation ToggleLike ($id: Int!, $type: LikeableType!) {
     ToggleLikeV2(id: $id, type: $type) {
       ... on Thread {
         id
@@ -444,6 +444,22 @@ export const ToggleLike = gql(`
         likeCount
         isLiked
       }
+    }
+  }
+`)
+
+export const SaveThreadComment = gql(`
+  mutation SaveThreadComment ($id: Int, $threadId: Int, $parentCommentId: Int, $comment: String) {
+    SaveThreadComment(id: $id, threadId: $threadId, parentCommentId: $parentCommentId, comment: $comment) {
+      ...CommentFrag
+    }
+  }
+`, [CommentFrag])
+
+export const DeleteThreadComment = gql(`
+  mutation DeleteThreadComment ($id: Int) {
+    DeleteThreadComment(id: $id) {
+      deleted
     }
   }
 `)
