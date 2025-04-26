@@ -30,7 +30,7 @@
     </Button>
   </Drawer.Trigger>
   <Drawer.Content tabindex={null} class='px-20 py-10 gap-4'>
-    <Textarea class='form-control w-full shrink-0 min-h-56 bg-dark' {placeholder} bind:value />
+    <Textarea class='form-control w-full shrink-0 min-h-56 bg-dark !transform-none !scale-100' {placeholder} bind:value />
     <div class='flex gap-2 justify-end'>
       <Drawer.Close asChild let:builder>
         <Button variant='secondary' builders={[builder]}>

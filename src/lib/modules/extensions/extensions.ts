@@ -123,7 +123,7 @@ export const extensions = new class Extensions {
 
     const deduped = this.dedupe(results)
 
-    if (!deduped.length) throw new Error('No results found.\nTry specifying a torrent manually by pasting a magnet link or torrent file.')
+    if (!deduped.length) throw new Error('No results found.\nTry specifying a torrent manually by pasting a magnet link or torrent file into the filter bar.')
 
     const parseObjects = await anitomyscript(deduped.map(({ title }) => title))
     parseObjects.forEach((parseObject, index) => {

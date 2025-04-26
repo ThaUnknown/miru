@@ -60,9 +60,7 @@
   <div class='flex justify-between items-center'>
     <div class='text-[20px] md:text-2xl font-bold'>Episodes</div>
   </div>
-  {#key mediaID}
-    <EpisodesList {media} {eps} {following} />
-  {/key}
+  <EpisodesList {media} {eps} {following} />
 </div>
 <div class='w-full flex flex-col'>
   <div class='flex justify-between items-center'>

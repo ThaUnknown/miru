@@ -10,7 +10,7 @@ import type { Media } from '../anilist'
 export const server = new class ServerClient {
   last = persisted<{media: Media, id: string, episode: number} | null>('last-torrent', null)
   active = writable<Promise<{media: Media, id: string, episode: number, files: TorrentFile[]}| null>>()
-  downloaded = native.cachedTorrents()
+  downloaded = writable(this.cachedSet())
 
   stats = readable<TorrentInfo>({ peers: 0, down: 0, up: 0, progress: 0, downloaded: 0, eta: 0, hash: '', leechers: 0, name: '', seeders: 0, size: 0 }, set => {
     let listener = 0
@@ -42,6 +42,10 @@ export const server = new class ServerClient {
     if (last) this.play(last.id, last.media, last.episode)
   }
 
+  async cachedSet () {
+    return new Set(await native.cachedTorrents())
+  }
+
   play (id: string, media: Media, episode: number) {
     this.last.set({ id, media, episode })
     this.active.value = this._play(id, media, episode)
@@ -50,7 +54,7 @@ export const server = new class ServerClient {
 
   async _play (id: string, media: Media, episode: number) {
     const result = { id, media, episode, files: await native.playTorrent(id) }
-    this.downloaded = native.cachedTorrents()
+    this.downloaded.value = this.cachedSet()
     return result
   }
 }()

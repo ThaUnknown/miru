@@ -6,7 +6,7 @@
   import Sidebarlist from '$lib/components/ui/sidebar/sidebarlist.svelte'
 </script>
 
-<BannerImage class='absolute top-0 left-0' />
+<BannerImage class='absolute top-0 left-0 -z-[1]' />
 <SearchModal />
 <div class='flex flex-row grow h-full overflow-clip'>
   <Sidebar>

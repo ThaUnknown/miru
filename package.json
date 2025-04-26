@@ -1,6 +1,6 @@
 {
 	"name": "ui",
-	"version": "6.0.13",
+	"version": "6.0.14",
 	"license": "BUSL-1.1",
 	"private": true,
 	"packageManager": "pnpm@9.14.4",
@@ -8,8 +8,8 @@
 		"dev": "vite dev --open",
 		"build": "vite build",
 		"preview": "vite preview",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"check": "svelte-kit sync && svelte-check --threshold error --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check -threshold error --tsconfig ./tsconfig.json --watch",
 		"lint": "eslint --quiet -c eslint.config.js",
 		"lint:fix": "eslint --quiet -c eslint.config.js --fix",
 		"gql:turbo": "node ./node_modules/gql.tada/bin/cli.js turbo",

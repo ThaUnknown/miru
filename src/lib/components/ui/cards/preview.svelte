@@ -33,7 +33,7 @@
       <FavoriteButton {media} class='ml-2' />
       <BookmarkButton {media} class='ml-2' />
     </div>
-    <div class='details text-white capitalize pt-3 pb-2 flex text-[.7rem]'>
+    <div class='details text-white capitalize pt-3 pb-2 flex text-[11px]'>
       <span class='text-nowrap flex items-center'>
         {format(media)}
       </span>
@@ -43,6 +43,11 @@
       <span class='text-nowrap flex items-center'>
         {season(media)}
       </span>
+      {#if media.averageScore}
+        <span class='text-nowrap flex items-center'>
+          {media.averageScore}%
+        </span>
+      {/if}
     </div>
     <div class='w-full h-full overflow-clip text-[.7rem] text-muted-foreground line-clamp-4'>
       {desc(media)}

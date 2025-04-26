@@ -26,7 +26,7 @@
   export let eps: EpisodesResponse | null
   export let media: Media
 
-  const episodeCount = Math.max(_episodes(media) ?? 0, eps?.episodeCount ?? 0)
+  $: episodeCount = Math.max(_episodes(media) ?? 0, eps?.episodeCount ?? 0)
 
   const { episodes, specialCount } = eps ?? {}
 
@@ -36,7 +36,7 @@
     alSchedule[episode] = new Date(airingAt * 1000)
   }
 
-  const episodeList = Array.from({ length: episodeCount }, (_, i) => {
+  $: episodeList = Array.from({ length: episodeCount }, (_, i) => {
     const episode = i + 1
 
     const airingAt = alSchedule[episode]
@@ -55,14 +55,14 @@
 
   const perPage = 16
 
-  function getPage (page: number) {
-    return episodeList.slice((page - 1) * perPage, page * perPage)
+  function getPage (page: number, list: typeof episodeList = episodeList) {
+    return list.slice((page - 1) * perPage, page * perPage)
   }
 
-  const _progress = progress(media) ?? 0
-  const completed = list(media) === 'COMPLETED'
+  $: _progress = progress(media) ?? 0
+  $: completed = list(media) === 'COMPLETED'
 
-  let currentPage = Math.floor(_progress / perPage) + 1
+  let currentPage = Math.floor((progress(media) ?? 0) / perPage) + 1
 
   function play (episode: number) {
     searchStore.set({ media, episode })
@@ -76,7 +76,7 @@
 <Pagination count={episodeCount} {perPage} bind:currentPage let:pages let:hasNext let:hasPrev let:range let:setPage siblingCount={1}>
   <div class='overflow-y-auto pt-3 -mx-14 px-14 pointer-events-none -mb-3 pb-3' use:dragScroll>
     <div class='grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(500px,1fr))] place-items-center gap-x-10 gap-y-7 justify-center align-middle pointer-events-auto'>
-      {#each getPage(currentPage) as { episode, image, title, summary, airingAt, airdate, filler, length } (episode)}
+      {#each getPage(currentPage, episodeList) as { episode, image, title, summary, airingAt, airdate, filler, length } (episode)}
         {@const watched = _progress >= episode}
         {@const target = _progress + 1 === episode}
         <div use:click={() => play(episode)}

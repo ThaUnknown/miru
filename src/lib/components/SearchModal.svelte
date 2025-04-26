@@ -1,7 +1,7 @@
 <script lang='ts' context='module'>
   import { BadgeCheck, Database } from 'lucide-svelte'
-  import { writable } from 'simple-store-svelte'
-  import { MagnifyingGlass } from 'svelte-radix'
+  import { writable } from 'svelte/store'
+  import { Download, MagnifyingGlass } from 'svelte-radix'
 
   import { SingleCombo } from './ui/combobox'
   import { Input } from './ui/input'
@@ -74,26 +74,30 @@
 
   $: searchResult = !!$searchStore.media && extensions.getResultsFromExtensions({ media: $searchStore.media, episode: $searchStore.episode, batch: $settings.searchBatch, resolution: $settings.searchQuality })
 
-  function close (state: boolean) {
-    if (!state) searchStore.set({})
+  function close (state = false) {
+    if (!state) {
+      searchStore.set({})
+      open = false
+      inputText = ''
+    }
   }
 
   let inputText = ''
 
-  function play (result: TorrentResult & { parseObject: AnitomyResult, extension: Set<string> }) {
+  function play (result: Pick<TorrentResult, 'hash'>) {
     server.play(result.hash, $searchStore.media!, $searchStore.episode!)
     goto('/app/player/')
-    close(false)
+    close()
   }
 
   async function playBest () {
     if (!searchResult) return
-    const best = filterAndSortResults((await searchResult).results, inputText)[0]
+    const best = filterAndSortResults((await searchResult).results, inputText, await $downloaded)[0]
 
     if (best) play(best)
   }
 
-  function filterAndSortResults (results: Array<TorrentResult & { parseObject: AnitomyResult, extension: Set<string> }>, searchText: string) {
+  function filterAndSortResults (results: Array<TorrentResult & { parseObject: AnitomyResult, extension: Set<string> }>, searchText: string, downloaded: Set<string>) {
     const preference = $settings.lookupPreference
     return results
       .filter(({ title }) => title.toLowerCase().includes(searchText.toLowerCase()))
@@ -102,6 +106,7 @@
         // the higher the rank the worse the result... don't ask
         function getRank (res: typeof results[0]) {
           if (res.accuracy === 'low') return 3
+          if (downloaded.has(res.hash)) return 0
           if (res.seeders <= 15) return 2
           if ((res.type === 'best' || res.type === 'alt') && preference === 'quality') return 0
           return 1
@@ -137,7 +142,19 @@
     animating = false
   }
 
+  const torrentRx = /(^magnet:){1}|(^[A-F\d]{8,40}$){1}|(.*\.torrent$){1}/i
+
+  function findTorrentIdentifiers (hash: string) {
+    if (torrentRx.test(hash)) {
+      play({ hash })
+    }
+  }
+
+  $: findTorrentIdentifiers(inputText)
+
   $: searchResult && startAnimation(searchResult)
+
+  const downloaded = server.downloaded
 </script>
 
 <Dialog.Root bind:open onOpenChange={close} portal='#root'>
@@ -154,8 +171,8 @@
 
         <div class='flex items-center relative scale-parent'>
           <Input
-            class='pl-9 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50 capitalize'
-            placeholder='Any'
+            class='pl-9 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50'
+            placeholder='Filter by text, or paste a magnet link or torrent file to specify a torrent manually'
             bind:value={inputText} />
           <MagnifyingGlass class='h-4 w-4 shrink-0 opacity-50 absolute left-3 text-muted-foreground z-10 pointer-events-none' />
         </div>
@@ -178,7 +195,7 @@
         </ProgressButton>
       </div>
       <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation} use:dragScroll>
-        {#await searchResult}
+        {#await Promise.all([searchResult, $downloaded])}
           {#each Array.from({ length: 12 }) as _, i (i)}
             <div class='p-3 h-[104px] flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border flex-col justify-between'>
               <div class='h-4 w-40 bg-primary/5 animate-pulse rounded mt-2' />
@@ -192,11 +209,11 @@
               </div>
             </div>
           {/each}
-        {:then search}
+        {:then [search, downloaded]}
           {@const media = $searchStore.media}
           {#if search && media}
             {@const { results, errors } = search}
-            {#each filterAndSortResults(results, inputText) as result (result.hash)}
+            {#each filterAndSortResults(results, inputText, downloaded) as result (result.hash)}
               <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border select:ring-1 select:ring-ring select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name}>
                 {#if result.accuracy === 'high'}
                   <div class='absolute top-0 left-0 w-full h-full -z-10'>
@@ -206,10 +223,12 @@
                 {/if}
                 <div class='flex pl-2 flex-col justify-between w-full h-20 relative min-w-0 text-[.7rem]'>
                   <div class='flex w-full items-center'>
-                    {#if result.type === 'batch'}
+                    {#if downloaded.has(result.hash)}
+                      <Download class='mr-2 text-[#53da33]' size='1.2rem' />
+                    {:else if result.type === 'batch'}
                       <Database class='mr-2' size='1.2rem' />
                     {:else if result.accuracy === 'high'}
-                      <BadgeCheck size='1.2rem' class='mr-2' style='color: #53da33' />
+                      <BadgeCheck class='mr-2 text-[#53da33]' size='1.2rem' />
                     {/if}
                     <div class='text-xl font-bold text-nowrap'>{result.parseObject.release_group && result.parseObject.release_group.length < 20 ? result.parseObject.release_group : 'No Group'}</div>
                     <div class='ml-auto flex gap-2 self-start'>
@@ -265,7 +284,7 @@
         {:catch error}
           <div class='p-5 flex items-center justify-center w-full h-80'>
             <div>
-              <div class='mb-1 font-bold text-4xl text-center '>
+              <div class='mb-3 font-bold text-4xl text-center '>
                 Ooops!
               </div>
               <div class='text-lg text-center text-muted-foreground whitespace-pre-wrap'>
