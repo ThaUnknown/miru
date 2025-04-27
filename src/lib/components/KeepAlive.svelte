@@ -27,16 +27,12 @@
 
   export let id: string
 
-  // eslint-disable-next-line no-unused-vars
   type $$Props = HTMLAttributes<HTMLDivElement> & { id: string }
 
   function mount (node: HTMLDivElement) {
     const entry = keep.get(id)
     if (entry) node.appendChild(entry.node)
   }
-
-  console.log($$props.$$slots)
-
 </script>
 
 <div use:mount {...$$restProps} />

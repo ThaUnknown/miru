@@ -18,61 +18,59 @@
   export let user: ResultOf<typeof UserFrag>
 </script>
 
-{#if user}
-  {@const name = user.name}
-  {@const avatar = user.avatar?.medium ?? ''}
-  {@const banner = user.bannerImage ?? ''}
-  {@const bubble = user.donatorBadge}
-  <div class='flex'>
-    <Popover.Root>
-      <Popover.Trigger class='flex'>
-        <Avatar.Root class={className}>
-          <Avatar.Image src={avatar} alt={name} />
-          <Avatar.Fallback>{name}</Avatar.Fallback>
-        </Avatar.Root>
-      </Popover.Trigger>
-      <Popover.Content class='p-1 m-3 rounded-md shadow root-bg border-none w-auto' style='--theme-base-color: {user.options?.profileColor ?? '#000'}'>
-        <div class='w-[300px] rounded core-bg gap-2 flex flex-col pb-2'>
-          <div class={cn('w-full h-[105px] relative p-3 flex items-end', !banner && 'bg-white/10')}>
-            {#if banner}
-              <img src={banner} alt='banner' class='absolute top-0 left-0 w-full h-full rounded-t opacity-50 pointer-events-none object-cover' />
-            {/if}
-            <Avatar.Root class='inline-block size-20'>
-              <Avatar.Image src={avatar} alt={name} />
-              <Avatar.Fallback>{name}</Avatar.Fallback>
-            </Avatar.Root>
-            <div class='min-w-0 flex flex-col pl-3 relative'>
-              <div class='font-extrabold pb-0.5 text-2xl text-ellipsis overflow-clip pr-0.5'>
-                {name}
-              </div>
-              <div class='details text-neutral-200 flex text-[11px]'>
-                {#if user.isFollower}
-                  <span class='text-nowrap flex items-center'>Follows you</span>
-                {/if}
-                <span class='text-nowrap flex items-center'>Joined {since(new Date((user.createdAt ?? 0) * 1000))}</span>
+{@const name = user.name}
+{@const avatar = user.avatar?.medium ?? ''}
+{@const banner = user.bannerImage ?? ''}
+{@const bubble = user.donatorBadge}
+<div class='flex'>
+  <Popover.Root>
+    <Popover.Trigger class='flex'>
+      <Avatar.Root class={className}>
+        <Avatar.Image src={avatar} alt={name} />
+        <Avatar.Fallback>{name}</Avatar.Fallback>
+      </Avatar.Root>
+    </Popover.Trigger>
+    <Popover.Content class='p-1 m-3 rounded-md shadow root-bg border-none w-auto' style='--theme-base-color: {user.options?.profileColor ?? '#000'}'>
+      <div class='w-[300px] rounded core-bg gap-2 flex flex-col pb-2'>
+        <div class={cn('w-full h-[105px] relative p-3 flex items-end', !banner && 'bg-white/10')}>
+          {#if banner}
+            <img src={banner} alt='banner' class='absolute top-0 left-0 w-full h-full rounded-t opacity-50 pointer-events-none object-cover' />
+          {/if}
+          <Avatar.Root class='inline-block size-20'>
+            <Avatar.Image src={avatar} alt={name} />
+            <Avatar.Fallback>{name}</Avatar.Fallback>
+          </Avatar.Root>
+          <div class='min-w-0 flex flex-col pl-3 relative'>
+            <div class='font-extrabold pb-0.5 text-2xl text-ellipsis overflow-clip pr-0.5'>
+              {name}
+            </div>
+            <div class='details text-neutral-200 flex text-[11px]'>
+              {#if user.isFollower}
+                <span class='text-nowrap flex items-center'>Follows you</span>
+              {/if}
+              <span class='text-nowrap flex items-center'>Joined {since(new Date((user.createdAt ?? 0) * 1000))}</span>
+            </div>
+          </div>
+          {#if bubble && bubble !== 'Donator'}
+            <div class='-left-5 -top-11 absolute text-sm'>
+              <div class='px-4 py-2 rounded-2xl bg-mix bubbles relative leading-tight'>
+                <span class='text-contrast'>
+                  {bubble}
+                </span>
               </div>
             </div>
-            {#if bubble && bubble !== 'Donator'}
-              <div class='-left-5 -top-11 absolute text-sm'>
-                <div class='px-4 py-2 rounded-2xl bg-mix bubbles relative leading-tight'>
-                  <span class='text-contrast'>
-                    {bubble}
-                  </span>
-                </div>
-              </div>
-            {/if}
-          </div>
-          <Shadow html={user.about ?? 'No user description'} class='w-full max-h-[200px] text-sm py-2 px-4 overflow-y-auto overflow-x-clip' />
-          <div class='details text-neutral-200 flex text-[11px] px-4'>
-            <span class='text-nowrap flex items-center'>{user.statistics?.anime?.count ?? 0} anime</span>
-            <span class='text-nowrap flex items-center'>{user.statistics?.anime?.episodesWatched ?? 0} episodes</span>
-            <span class='text-nowrap flex items-center'>{since(new Date(Date.now() - (user.statistics?.anime?.minutesWatched ?? 0) * 60 * 1000)).replace('ago', 'watched')}</span>
-          </div>
+          {/if}
         </div>
-      </Popover.Content>
-    </Popover.Root>
-  </div>
-{/if}
+        <Shadow html={user.about ?? 'No user description'} class='w-full max-h-[200px] text-sm py-2 px-4 overflow-y-auto overflow-x-clip' />
+        <div class='details text-neutral-200 flex text-[11px] px-4'>
+          <span class='text-nowrap flex items-center'>{user.statistics?.anime?.count ?? 0} anime</span>
+          <span class='text-nowrap flex items-center'>{user.statistics?.anime?.episodesWatched ?? 0} episodes</span>
+          <span class='text-nowrap flex items-center'>{since(new Date(Date.now() - (user.statistics?.anime?.minutesWatched ?? 0) * 60 * 1000)).replace('ago', 'watched')}</span>
+        </div>
+      </div>
+    </Popover.Content>
+  </Popover.Root>
+</div>
 
 <style>
   :global(.root-bg) {

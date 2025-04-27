@@ -48,7 +48,7 @@
     <div class='font-bold mb-2 line-clamp-1 flex leading-none items-center'>
       {#if thread.user}
         <Profile user={thread.user} class='size-8 mr-4' />
-        {thread.user.name ?? 'N/A'}
+        {thread.user.name}
       {/if}
     </div>
     <div class='flex ml-2 text-[12.8px] leading-none mt-0.5'>

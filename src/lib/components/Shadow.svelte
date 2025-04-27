@@ -2,8 +2,6 @@
   import dompurify from 'dompurify'
   import { marked } from 'marked'
 
-  import { dragScroll } from '$lib/modules/navigate'
-
   marked.setOptions({
     gfm: true,
     breaks: true,
@@ -57,4 +55,4 @@
   export { className as class }
 </script>
 
-<div use:shadow={html} class={className} use:dragScroll />
+<div use:shadow={html} class={className} />

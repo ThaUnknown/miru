@@ -48,15 +48,7 @@ export default class Subtitles {
       this.selectCaptions(value)
     })
 
-    native.subtitles(this.selected.hash, this.selected.id, (subtitle: { text: string, time: number, duration: number, style?: string }, trackNumber) => {
-      const { events, meta, styles } = this.track(trackNumber)
-      if (events.has(subtitle)) return
-      const event = this.constructSub(subtitle, meta.type !== 'ass', events.size, '' + (styles[subtitle.style ?? 'Default'] ?? 0))
-      events.add(subtitle, event)
-      if (Number(this.current.value) === trackNumber) this.renderer?.createEvent(event)
-    })
-
-    native.tracks(this.selected.hash, this.selected.id).then(tracklist => {
+    const tracks = native.tracks(this.selected.hash, this.selected.id).then(tracklist => {
       for (const track of tracklist) {
         const newtrack = this.track(track.number)
         newtrack.styles.Default = 0
@@ -87,6 +79,15 @@ export default class Subtitles {
           this.selectCaptions(tracks[0]![0])
         }
       }
+    })
+
+    native.subtitles(this.selected.hash, this.selected.id, async (subtitle: { text: string, time: number, duration: number, style?: string }, trackNumber) => {
+      await tracks
+      const { events, meta, styles } = this.track(trackNumber)
+      if (events.has(subtitle)) return
+      const event = this.constructSub(subtitle, meta.type !== 'ass', events.size, '' + (styles[subtitle.style ?? 'Default'] ?? 0))
+      events.add(subtitle, event)
+      if (Number(this.current.value) === trackNumber) this.renderer?.createEvent(event)
     })
 
     native.attachments(this.selected.hash, this.selected.id).then(attachments => {
