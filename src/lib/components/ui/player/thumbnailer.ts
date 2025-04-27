@@ -1,7 +1,7 @@
 interface RenderItem {
   index: number
   run: () => void
-  promise: Promise<string>
+  promise: Promise<string | undefined>
 }
 
 export default class Thumbnailer {
@@ -35,7 +35,7 @@ export default class Thumbnailer {
   }
 
   _createTask (index: number): RenderItem {
-    const { promise, resolve } = Promise.withResolvers<string>()
+    const { promise, resolve } = Promise.withResolvers<string | undefined>()
 
     const run = () => {
       this.video.requestVideoFrameCallback((_now, meta) => {
@@ -79,6 +79,7 @@ export default class Thumbnailer {
   // generate and store the thumbnail
   async _paintThumbnail (video: HTMLVideoElement, index: number, width = video.videoWidth, height = video.videoHeight) {
     if (this.thumbnails[index]) return this.thumbnails[index]
+    if (!width || !height) return undefined
     this.canvas.width = this.size
     this.canvas.height = height / width * this.size
     this.ctx.drawImage(video, 0, 0, this.canvas.width, this.canvas.height)
@@ -86,7 +87,7 @@ export default class Thumbnailer {
     return this.thumbnails[index]
   }
 
-  async getThumbnail (index: number): Promise<string> {
+  async getThumbnail (index: number): Promise<string | undefined> {
     const thumbnail = this.thumbnails[index]
     if (thumbnail) return thumbnail
 

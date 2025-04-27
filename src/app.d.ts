@@ -99,30 +99,29 @@ export interface Native {
   updateSettings: (settings: TorrentSettings) => Promise<void>
   updateProgress: (cb: (progress: number) => void) => Promise<void>
   spawnPlayer: (url: string) => Promise<void>
+  setHideToTray: (enabled: boolean) => Promise<void>
   isApp: boolean
   version: () => Promise<string>
 }
 
 declare global {
-  // eslint-disable-next-line no-unused-vars
+
   namespace App {
     // interface Error {}
     // interface Locals {}
     // interface PageData {}
-  // eslint-disable-next-line no-unused-vars
+
     interface PageState {
       search?: VariablesOf<typeof Search>
     }
     // interface Platform {}
   }
 
-  // eslint-disable-next-line no-unused-vars
   interface HTMLMediaElement {
     videoTracks?: Track[]
     audioTracks?: Track[]
   }
 
-  // eslint-disable-next-line no-unused-vars
   interface ScreenOrientation {
     lock: (orientation: 'any' | 'natural' | 'landscape' | 'portrait' | 'portrait-primary' | 'portrait-secondary' | 'landscape-primary' | 'landscape-secondary') => Promise<void>
   }

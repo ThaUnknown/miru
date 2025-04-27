@@ -27,6 +27,7 @@ export default {
   subtitleLanguage: 'eng' as keyof typeof languageCodes,
   audioLanguage: 'jpn' as keyof typeof languageCodes,
   enableDoH: true,
+  hideToTray: false,
   doHURL: 'https://cloudflare-dns.com/dns-query',
   disableSubtitleBlur: SUPPORTS.isAndroid,
   showDetailsInRPC: true,
