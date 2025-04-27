@@ -5,6 +5,7 @@
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { Button } from '$lib/components/ui/button'
   import { SingleCombo } from '$lib/components/ui/combobox'
+  import { Switch } from '$lib/components/ui/switch'
   import native from '$lib/modules/native'
   import { settings, SUPPORTS } from '$lib/modules/settings'
 
@@ -85,6 +86,11 @@
   {/if}
 
   <div class='font-weight-bold text-xl font-bold'>App Settings</div>
+  {#if !SUPPORTS.isAndroid}
+    <SettingCard let:id title='Hide App To Tray' description='Makes the app hide to tray instead of closing when you close the window. This is useful if you want to keep the torrent client open in the background to seed/leech.'>
+      <Switch {id} bind:checked={$settings.hideToTray} />
+    </SettingCard>
+  {/if}
   <div class='d-inline-flex flex-column'>
     <Button on:click={importSettings}>
       Import Settings From Clipboard
