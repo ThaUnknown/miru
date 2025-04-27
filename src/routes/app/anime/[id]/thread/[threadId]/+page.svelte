@@ -4,9 +4,9 @@
   import type { PageData } from './$types'
 
   import Shadow from '$lib/components/Shadow.svelte'
-  import * as Avatar from '$lib/components/ui/avatar'
   import { Button, iconSizes } from '$lib/components/ui/button'
   import { Comments, Write } from '$lib/components/ui/forums'
+  import { Profile } from '$lib/components/ui/profile'
   import { client } from '$lib/modules/anilist'
   import { since } from '$lib/utils'
 
@@ -46,11 +46,10 @@
 <div class='rounded-md bg-neutral-950 text-secondary-foreground flex w-full mb-10 py-6 px-8 flex-col'>
   <div class='flex w-full justify-between text-xl'>
     <div class='font-bold mb-2 line-clamp-1 flex leading-none items-center'>
-      <Avatar.Root class='inline-block size-8 mr-4'>
-        <Avatar.Image src={thread.user?.avatar?.medium ?? ''} alt={thread.user?.name ?? 'N/A'} />
-        <Avatar.Fallback>{thread.user?.name ?? 'N/A'}</Avatar.Fallback>
-      </Avatar.Root>
-      {thread.user?.name ?? 'N/A'}
+      {#if thread.user}
+        <Profile user={thread.user} class='size-8 mr-4' />
+        {thread.user.name ?? 'N/A'}
+      {/if}
     </div>
     <div class='flex ml-2 text-[12.8px] leading-none mt-0.5'>
       <Heart size='12' class='mr-1' fill={thread.isLiked ? 'currentColor' : 'transparent'} />

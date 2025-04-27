@@ -250,6 +250,36 @@ export const Schedule = gql(`
   }
 `, [ScheduleMedia])
 
+export const UserFrag = gql(`
+  fragment UserFrag on User @_unmask {
+    id,
+    bannerImage,
+    about,
+    isFollowing,
+    isFollower,
+    donatorBadge,
+    options {
+      profileColor
+    },
+    createdAt,
+    name,
+    avatar {
+      medium
+    },
+    statistics {
+      anime {
+        count,
+        minutesWatched,
+        episodesWatched,
+        genres(limit: 3, sort: COUNT_DESC) {
+          genre,
+          count
+        }
+      }
+    }
+  }
+`)
+
 export const Following = gql(`
   query Following($id: Int!) {
     Page {
@@ -259,16 +289,12 @@ export const Following = gql(`
         score,
         progress,
         user {
-          id,
-          name,
-          avatar {
-            medium
-          }
+          ...UserFrag
         }
       }
     }
   }
-`)
+`, [UserFrag])
 
 // AL API is dog, fullmedialist is NULL when queried inside media..., it's possible this can cause cache loops, but there's no other way to do this!!!
 export const Entry = gql(`
@@ -312,18 +338,14 @@ export const ThreadFrag = gql(`
     repliedAt,
     createdAt,
     user {
-      id,
-      name,
-      avatar {
-        medium
-      }
+      ...UserFrag
     },
     categories {
       id,
       name
     }
   }
-`)
+`, [UserFrag])
 
 export const Threads = gql(`
   query Threads($id: Int!, $page: Int, $perPage: Int) {
@@ -354,17 +376,12 @@ export const CommentFrag = gql(`
     likeCount,
     createdAt,
     user {
-      id,
-      name,
-      moderatorRoles,
-      avatar {
-        medium
-      },
+      ...UserFrag
     },
     childComments,
     isLocked
   }
-`)
+`, [UserFrag])
 
 // AL in their infinite wisdom decided to make childComments infer the schema of the parent comment, so we can't use the CommentFrag here
 export const Comments = gql(`
@@ -380,51 +397,14 @@ export const Comments = gql(`
         likeCount,
         createdAt,
         user {
-          id,
-          name,
-          moderatorRoles,
-          avatar {
-            medium
-          },
+          ...UserFrag
         },
         childComments,
         isLocked
       }
     }
   }
-`)
-
-export const User = gql(`
-  query User ($id: Int) {
-    User(id: $id) {
-      id,
-      name,
-      avatar {
-        large
-      },
-      bannerImage,
-      about,
-      isFollowing,
-      isFollower,
-      donatorBadge,
-      createdAt,
-      options {
-        profileColor
-      },
-      statistics {
-        anime {
-          count,
-          minutesWatched,
-          episodesWatched,
-          genrePreview: genres(limit: 10, sort: COUNT_DESC) {
-            genre,
-            count
-          }
-        }
-      }
-    }
-  }
-`)
+`, [UserFrag])
 
 export const ToggleLike = gql(`
   mutation ToggleLike ($id: Int!, $type: LikeableType!) {

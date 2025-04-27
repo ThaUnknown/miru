@@ -219,7 +219,8 @@ class AnilistClient {
           AiringSchedule: () => null,
           MediaListCollection: e => (e.user as {id: string | null}).id,
           MediaListGroup: () => null,
-          UserAvatar: () => null
+          UserAvatar: () => null,
+          UserOptions: () => null
         }
       }),
       authExchange(async utils => {

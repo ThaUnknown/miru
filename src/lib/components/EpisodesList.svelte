@@ -13,11 +13,10 @@
   import { searchStore } from './SearchModal.svelte'
   import { Button } from './ui/button'
   import { Load } from './ui/img'
+  import { Profile } from './ui/profile'
 
   import type { EpisodesResponse } from '$lib/modules/anizip/types'
 
-  import * as Avatar from '$lib/components/ui/avatar'
-  import * as Tooltip from '$lib/components/ui/tooltip'
   import { episodes as _episodes, dedupeAiring, episodeByAirDate, notes, type Media } from '$lib/modules/anilist'
   import { authAggregator, list, progress } from '$lib/modules/auth'
   import { click, dragScroll } from '$lib/modules/navigate'
@@ -116,18 +115,9 @@
               {/if}
               <div class='-space-x-1 ml-auto inline-flex pt-1 pr-0.5'>
                 {#each followerEntries.filter(e => e?.progress === episode) as followerEntry, i (followerEntry?.user?.id ?? i)}
-                  <Tooltip.Root>
-                    <Tooltip.Trigger class='inline-block size-4 cursor-default'>
-                      <Avatar.Root class='inline-block ring-2 ring-neutral-950 size-4 bg-neutral-950'>
-                        <Avatar.Image src={followerEntry?.user?.avatar?.medium ?? ''} alt={followerEntry?.user?.name ?? 'N/A'} />
-                        <Avatar.Fallback>{followerEntry?.user?.name ?? 'N/A'}</Avatar.Fallback>
-                      </Avatar.Root>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>
-                      <p class='font-extrabold'>{followerEntry?.user?.name}</p>
-                      <p class='capitalize'>{followerEntry?.status?.toLowerCase()}</p>
-                    </Tooltip.Content>
-                  </Tooltip.Root>
+                  {#if followerEntry?.user}
+                    <Profile user={followerEntry.user} class='ring-2 ring-neutral-950 size-4 bg-neutral-950' />
+                  {/if}
                 {/each}
               </div>
             </div>

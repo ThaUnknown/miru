@@ -26,6 +26,7 @@ for (const { pointer, value } of pointerTypes) {
 
 const noop: () => void = () => undefined
 
+// this is for nested click elements, its svelte's |preventDefault for other components
 export function clickwrap (cb: (_: MouseEvent) => unknown = noop) {
   return (e: MouseEvent) => {
     e.stopPropagation()

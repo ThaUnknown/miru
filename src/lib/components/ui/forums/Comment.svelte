@@ -3,13 +3,13 @@
 
   import Shadow from '../../Shadow.svelte'
   import { Button, iconSizes } from '../button'
+  import { Profile } from '../profile'
 
   import { Write } from '.'
 
   import type { CommentFrag } from '$lib/modules/anilist/queries'
   import type { ResultOf } from 'gql.tada'
 
-  import * as Avatar from '$lib/components/ui/avatar'
   import { client } from '$lib/modules/anilist'
   import { since } from '$lib/utils'
 
@@ -28,10 +28,9 @@
 <div class='rounded-md {depth % 2 === 1 ? 'bg-black' : 'bg-neutral-950'} text-secondary-foreground flex w-full py-4 px-6 flex-col'>
   <div class='flex w-full justify-between text-xl'>
     <div class='font-bold mb-2 line-clamp-1 flex leading-none items-center text-[16px]'>
-      <Avatar.Root class='inline-block size-5 mr-2'>
-        <Avatar.Image src={comment.user?.avatar?.medium ?? ''} alt={comment.user?.name ?? 'N/A'} />
-        <Avatar.Fallback>{comment.user?.name ?? 'N/A'}</Avatar.Fallback>
-      </Avatar.Root>
+      {#if comment.user}
+        <Profile user={comment.user} class='size-5 mr-2' />
+      {/if}
       {comment.user?.name ?? 'N/A'}
     </div>
     <div class='flex ml-2 text-[12.8px] leading-none '>

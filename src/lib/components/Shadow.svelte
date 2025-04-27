@@ -2,6 +2,8 @@
   import dompurify from 'dompurify'
   import { marked } from 'marked'
 
+  import { dragScroll } from '$lib/modules/navigate'
+
   marked.setOptions({
     gfm: true,
     breaks: true,
@@ -18,7 +20,7 @@
     margin-block-start: .5em;
     margin-block-end: .5em;
   }
-  img {
+  img, video {
     max-width: 100%;
     -webkit-user-drag: none;
   }`)
@@ -55,4 +57,4 @@
   export { className as class }
 </script>
 
-<div use:shadow={html} class={className} />
+<div use:shadow={html} class={className} use:dragScroll />

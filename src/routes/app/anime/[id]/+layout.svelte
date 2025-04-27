@@ -8,12 +8,11 @@
 
   import Anilist from '$lib/components/icons/Anilist.svelte'
   import MyAnimeList from '$lib/components/icons/MyAnimeList.svelte'
-  import * as Avatar from '$lib/components/ui/avatar'
   import { bannerSrc, hideBanner } from '$lib/components/ui/banner'
   import { PlayButton, Button, BookmarkButton, FavoriteButton } from '$lib/components/ui/button'
   import * as Dialog from '$lib/components/ui/dialog'
   import { Load } from '$lib/components/ui/img'
-  import * as Tooltip from '$lib/components/ui/tooltip'
+  import { Profile } from '$lib/components/ui/profile'
   import { cover, desc, duration, format, season, status, title } from '$lib/modules/anilist'
   import { authAggregator, of } from '$lib/modules/auth'
   import native from '$lib/modules/native'
@@ -142,18 +141,9 @@
       </Button>
       <div class='-space-x-1 md:ml-3 hidden md:flex'>
         {#each followerEntries as followerEntry, i (followerEntry?.user?.id ?? i)}
-          <Tooltip.Root>
-            <Tooltip.Trigger class='inline-block size-8 cursor-default'>
-              <Avatar.Root class='inline-block ring-4 ring-black size-8 bg-black'>
-                <Avatar.Image src={followerEntry?.user?.avatar?.medium ?? ''} alt={followerEntry?.user?.name ?? 'N/A'} />
-                <Avatar.Fallback>{followerEntry?.user?.name ?? 'N/A'}</Avatar.Fallback>
-              </Avatar.Root>
-            </Tooltip.Trigger>
-            <Tooltip.Content>
-              <p class='font-extrabold'>{followerEntry?.user?.name}</p>
-              <p class='capitalize'>{followerEntry?.status?.toLowerCase()}</p>
-            </Tooltip.Content>
-          </Tooltip.Root>
+          {#if followerEntry?.user}
+            <Profile user={followerEntry.user} />
+          {/if}
         {/each}
       </div>
     </div>

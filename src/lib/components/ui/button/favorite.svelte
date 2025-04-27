@@ -5,6 +5,7 @@
 
   import { Button, iconSizes, type Props } from '$lib/components/ui/button'
   import { authAggregator, fav } from '$lib/modules/auth'
+  import { clickwrap, keywrap } from '$lib/modules/navigate'
 
   type $$Props = Props & { media: Media }
 
@@ -15,6 +16,6 @@
   export let variant: NonNullable<$$Props['variant']> = 'ghost'
 </script>
 
-<Button {size} {variant} class={className} on:click={() => authAggregator.toggleFav(media.id)}>
+<Button {size} {variant} class={className} on:click={clickwrap(() => authAggregator.toggleFav(media.id))} on:keydown={keywrap(() => authAggregator.toggleFav(media.id))}>
   <Heart fill={fav(media) ? 'currentColor' : 'transparent'} size={iconSizes[size]} />
 </Button>
