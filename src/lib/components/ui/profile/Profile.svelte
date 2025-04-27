@@ -16,12 +16,13 @@
   export { className as class }
 
   export let user: ResultOf<typeof UserFrag>
+
+  $: name = user.name
+  $: avatar = user.avatar?.medium ?? ''
+  $: banner = user.bannerImage ?? ''
+  $: bubble = user.donatorBadge
 </script>
 
-{@const name = user.name}
-{@const avatar = user.avatar?.medium ?? ''}
-{@const banner = user.bannerImage ?? ''}
-{@const bubble = user.donatorBadge}
 <div class='flex'>
   <Popover.Root>
     <Popover.Trigger class='flex'>

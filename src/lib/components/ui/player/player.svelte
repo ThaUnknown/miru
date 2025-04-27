@@ -219,18 +219,21 @@
 
   let deband: VideoDeband | undefined
 
-  function createDeband (video: HTMLVideoElement, playerDeband: boolean) {
-    if (!playerDeband) return
-    deband = new VideoDeband(video)
-    deband.canvas.classList.add('deband-canvas', 'w-full', 'h-full', 'grow', 'pointer-events-none', 'object-contain')
-    video.before(deband.canvas)
-    return {
-      destroy: () => {
-        deband?.destroy()
-        deband?.canvas.remove()
-      }
-    }
+  function cleanupDeband () {
+    deband?.destroy()
+    deband?.canvas.remove()
+    deband = undefined
   }
+
+  function createDeband (video: HTMLVideoElement | undefined, playerDeband: boolean) {
+    if (!playerDeband || !video) return cleanupDeband()
+    deband = new VideoDeband(video)
+    deband.canvas.classList.add('deband-canvas', 'w-full', 'h-full', 'pointer-events-none', 'object-contain')
+    video.before(deband.canvas)
+    return { destroy: cleanupDeband }
+  }
+
+  $: createDeband(video, $settings.playerDeband)
 
   let completed = false
   function checkCompletion () {
@@ -601,8 +604,7 @@
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
 
 <div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper}>
-  <video class='w-full h-full grow' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={deband} class:absolute={deband} class:top-0={deband}
-    use:createDeband={$settings.playerDeband}
+  <video class='w-full h-full' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
     use:createSubtitles
     use:autoPiP={pip}
     use:holdToFF={'pointer'}

@@ -10,11 +10,11 @@
 </script>
 
 {#if $online && hideFirst}
-  <div class='bg-green-600 text-white justify-center items-center flex flex-row online overflow-hidden relative z-40 px-4'>
+  <div class='bg-green-600 text-white justify-center items-center flex flex-row online overflow-hidden relative z-40 px-4 shrink-0'>
     Back online
   </div>
 {:else if !$online}
-  <div class='bg-neutral-950 text-white justify-center items-center flex flex-row top-0 offline overflow-hidden relative z-40 px-4'>
+  <div class='bg-neutral-950 text-white justify-center items-center flex flex-row top-0 offline overflow-hidden relative z-40 px-4 shrink-0'>
     <CloudOff size={16} class='me-2' />
     Offline
   </div>
