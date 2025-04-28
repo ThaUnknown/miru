@@ -76,10 +76,6 @@
       <Button on:click={copyLogs} class='btn btn-primary'>Copy To Clipboard</Button>
     </SettingCard>
 
-    <SettingCard title='Open Torrent Devtools' description="Open devtools for the detached torrent process, this allows to inspect code execution and memory. DO NOT PASTE ANY CODE IN THERE, YOU'RE LIKELY BEING SCAMMED IF SOMEONE TELLS YOU TO!">
-      <Button on:click={native.openTorrentDevtools} class='btn btn-primary'>Open Devtools</Button>
-    </SettingCard>
-
     <SettingCard title='Open UI Devtools' description="Open devtools for the UI process, this allows to inspect media playback information, rendering performance and more. DO NOT PASTE ANY CODE IN THERE, YOU'RE LIKELY BEING SCAMMED IF SOMEONE TELLS YOU TO!">
       <Button on:click={native.openUIDevtools} class='btn btn-primary'>Open Devtools</Button>
     </SettingCard>

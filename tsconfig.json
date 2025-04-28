@@ -32,6 +32,7 @@
   ],
   "include": [
     "src/service-worker/index.ts",
+    "src/**/*.js",
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.svelte",

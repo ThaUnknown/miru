@@ -227,10 +227,10 @@
 
   function createDeband (video: HTMLVideoElement | undefined, playerDeband: boolean) {
     if (!playerDeband || !video) return cleanupDeband()
+    if (deband) cleanupDeband()
     deband = new VideoDeband(video)
     deband.canvas.classList.add('deband-canvas', 'w-full', 'h-full', 'pointer-events-none', 'object-contain')
     video.before(deband.canvas)
-    return { destroy: cleanupDeband }
   }
 
   $: createDeband(video, $settings.playerDeband)
