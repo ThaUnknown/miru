@@ -60,7 +60,7 @@
 
   // elements
   let fullscreenElement: HTMLElement | null = null
-  let pictureInPictureElement: HTMLVideoElement | null = null
+  let pictureInPictureElement: Promise<void> | undefined
   let video: HTMLVideoElement
   let wrapper: HTMLDivElement
 
@@ -86,8 +86,11 @@
   }
 
   async function pip () {
-    !pictureInPictureElement ? await burnIn(video, subtitles, deband) : await document.exitPictureInPicture()
-    pictureInPictureElement = document.pictureInPictureElement as HTMLVideoElement
+    // TODO: this is shit code
+    pictureInPictureElement = (async () => {
+      await pictureInPictureElement
+      document.pictureInPictureElement ? await document.exitPictureInPicture() : await burnIn(video, subtitles, deband)
+    })()
   }
 
   function toggleCast () {
