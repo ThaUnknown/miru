@@ -89,7 +89,7 @@ const TYPE_EXCLUSIONS = ['ED', 'ENDING', 'NCED', 'NCOP', 'OP', 'OPENING', 'PREVI
 // find best media in batch to play
 // currently in progress or unwatched
 // tv, movie, ona, ova
-// TODO: load magnets manually
+
 // function findPreferredPlaybackMedia (videoFiles) {
 //   for (const { media } of videoFiles) {
 //     if (media.media?.mediaListEntry?.status === 'CURRENT') return { media: media.media, episode: (media.media.mediaListEntry.progress || 0) + 1 }

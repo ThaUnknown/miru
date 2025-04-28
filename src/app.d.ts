@@ -85,7 +85,7 @@ export interface Native {
   setPlayBackState: (paused: 'none' | 'paused' | 'playing') => Promise<void>
   setActionHandler: (action: MediaSessionAction | 'enterpictureinpicture', handler: MediaSessionActionHandler | null) => void
   checkAvailableSpace: (_?: unknown) => Promise<number>
-  checkIncomingConnections: (_?: unknown) => Promise<boolean>
+  checkIncomingConnections: (port: number) => Promise<boolean>
   updatePeerCounts: (hashes: string[]) => Promise<Array<{ hash: string, complete: string, downloaded: string, incomplete: string }>>
   playTorrent: (id: string) => Promise<TorrentFile[]>
   attachments: (hash: string, id: number) => Promise<Attachment[]>

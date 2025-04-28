@@ -383,7 +383,7 @@ export const CommentFrag = gql(`
   }
 `, [UserFrag])
 
-// AL in their infinite wisdom decided to make childComments infer the schema of the parent comment, so we can't use the CommentFrag here
+// AL in their infinite wisdom decided to make childComments infer the schema of the parent comment, but fragments break it, so we can't use any fragments here
 export const Comments = gql(`
   query Comments($threadId: Int, $page: Int) {
     Page(page: $page, perPage: 15) {
@@ -397,14 +397,38 @@ export const Comments = gql(`
         likeCount,
         createdAt,
         user {
-          ...UserFrag
+          id,
+          bannerImage,
+          about,
+          isFollowing,
+          isFollower,
+          donatorBadge,
+          options {
+            profileColor
+          },
+          createdAt,
+          name,
+          avatar {
+            medium
+          },
+          statistics {
+            anime {
+              count,
+              minutesWatched,
+              episodesWatched,
+              genres(limit: 3, sort: COUNT_DESC) {
+                genre,
+                count
+              }
+            }
+          }
         },
         childComments,
         isLocked
       }
     }
   }
-`, [UserFrag])
+`)
 
 export const ToggleLike = gql(`
   mutation ToggleLike ($id: Int!, $type: LikeableType!) {

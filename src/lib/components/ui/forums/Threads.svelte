@@ -37,7 +37,12 @@
   <div class='pt-3'>
     <div class='grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(500px,1fr))] place-items-center gap-x-10 gap-y-7 justify-center align-middle'>
       {#if $currentPageStore.fetching}
-        Loading threads...
+        {#each Array.from({ length: 4 }) as _, i (i)}
+          <div class='px-4 py-[18px] shrink-0 h-[75px] w-full bg-neutral-950 rounded-md flex flex-col'>
+            <div class='bg-primary/5 animate-pulse rounded h-2 w-28' />
+            <div class='mt-auto bg-primary/5 animate-pulse rounded h-2 w-20' />
+          </div>
+        {/each}
       {:else if $currentPageStore.error}
         <div class='p-5 flex items-center justify-center w-full h-80'>
           <div>
@@ -93,6 +98,17 @@
               </div>
             </a>
           {/if}
+        {:else}
+          <div class='p-5 flex items-center justify-center w-full h-80'>
+            <div>
+              <div class='mb-1 font-bold text-4xl text-center '>
+                Ooops!
+              </div>
+              <div class='text-lg text-center text-muted-foreground'>
+                Looks like there's nothing here yet!
+              </div>
+            </div>
+          </div>
         {/each}
       {/if}
     </div>
