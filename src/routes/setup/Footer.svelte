@@ -13,6 +13,7 @@
   import { Check, X } from 'lucide-svelte'
 
   import { goto } from '$app/navigation'
+  import { SETUP_VERSION } from '$lib'
   import { Badge } from '$lib/components/ui/badge'
   import { Button } from '$lib/components/ui/button'
   import * as Tooltip from '$lib/components/ui/tooltip'
@@ -25,7 +26,7 @@
   $: settled = Promise.allSettled(checks.map(({ promise }) => promise))
 
   function checkNext () {
-    if (step === 2) localStorage.setItem('setup-finished', '1')
+    if (step === 2) localStorage.setItem('setup-finished', SETUP_VERSION.toString())
     goto(`../${NEXT[step]}`)
   }
 </script>
