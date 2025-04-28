@@ -127,12 +127,12 @@
     }
   }
   function seek (time: number) {
-    video.currentTime = currentTime = currentTime + time
+    currentTime = currentTime + time
     playAnimation(time > 0 ? 'seekforw' : 'seekback')
   }
   function seekTo (time: number) {
     playAnimation(time > currentTime ? 'seekforw' : 'seekback')
-    video.currentTime = currentTime = time
+    currentTime = time
   }
   let wasPaused = false
   function startSeek () {
@@ -243,7 +243,7 @@
   }
   function checkCompletionByTime (currentTime: number, safeduration: number) {
     const fromend = Math.max(180, safeduration / 10)
-    if (safeduration && currentTime && video.readyState && safeduration - fromend < currentTime) {
+    if (safeduration && currentTime && readyState && safeduration - fromend < currentTime) {
       authAggregator.watch(mediaInfo.media, mediaInfo.episode)
       completed = true
     }
@@ -316,7 +316,6 @@
     } else {
       currentTime = currentTime + 85
     }
-    video.currentTime = currentTime
   }
 
   let stats: {
