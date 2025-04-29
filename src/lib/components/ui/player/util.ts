@@ -71,8 +71,8 @@ export async function getChaptersAniSkip (idMal: number, episode: number, durati
   const chapters = results.map(result => {
     const diff = duration - result.episodeLength
     return {
-      start: (result.interval.startTime + diff) * 1000,
-      end: (result.interval.endTime + diff) * 1000,
+      start: Math.max(0, (result.interval.startTime + diff) * 1000),
+      end: Math.min(duration * 1000, Math.max(0, (result.interval.endTime + diff) * 1000)),
       text: result.skipType.toUpperCase()
     }
   })
@@ -122,8 +122,8 @@ export function sanitizeChapters (chapters: Chapter[], length: number): Chapter[
   let currentTime = 0
 
   const sortedChapters = chapters.map(chapter => {
-    const end = Math.min(length, chapter.end)
-    const start = Math.min(Math.max(0, chapter.start), end)
+    const end = Math.max(0, Math.min(length, chapter.end / 1000))
+    const start = Math.min(Math.max(0, chapter.start / 1000), end)
     return { start, end, text: chapter.text }
   }).sort((a, b) => a.start - b.start)
 
