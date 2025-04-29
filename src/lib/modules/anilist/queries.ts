@@ -351,7 +351,8 @@ export const Threads = gql(`
   query Threads($id: Int!, $page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
       pageInfo {
-        hasNextPage
+        hasNextPage,
+        total
       },
       threads(mediaCategoryId: $id, sort: ID_DESC) {
         ...ThreadFrag
@@ -388,7 +389,8 @@ export const Comments = gql(`
   query Comments($threadId: Int, $page: Int) {
     Page(page: $page, perPage: 15) {
       pageInfo {
-        hasNextPage
+        hasNextPage,
+        total
       }
       threadComments(threadId: $threadId) {
         id,

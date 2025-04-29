@@ -5,6 +5,7 @@
   import { Button } from '$lib/components/ui/button'
   import { Threads } from '$lib/components/ui/forums'
   import { Load } from '$lib/components/ui/img'
+  import * as Tabs from '$lib/components/ui/tabs'
   import { format, relation } from '$lib/modules/anilist'
   import { authAggregator } from '$lib/modules/auth'
   import { dragScroll } from '$lib/modules/navigate'
@@ -27,6 +28,8 @@
   $: following = authAggregator.following(mediaID)
 
   $: eps = data.eps
+
+  let value: string
 </script>
 
 {#if relations?.length}
@@ -56,17 +59,20 @@
     </div>
   </div>
 {/if}
-<div class='w-full flex flex-col'>
-  <div class='flex justify-between items-center'>
-    <div class='text-[20px] md:text-2xl font-bold'>Episodes</div>
+<Tabs.Root bind:value class='w-full'>
+  <div class='flex justify-between items-center gap-3 sm:flex-row flex-col'>
+    <Tabs.List class='flex'>
+      <Tabs.Trigger value='episodes' class='px-8 data-[state=active]:font-bold'>Episodes</Tabs.Trigger>
+      <Tabs.Trigger value='threads' class='px-8 data-[state=active]:font-bold'>Threads</Tabs.Trigger>
+      <Tabs.Trigger value='themes' class='px-8 data-[state=active]:font-bold' disabled>Themes</Tabs.Trigger>
+    </Tabs.List>
   </div>
-  <EpisodesList {media} {eps} {following} />
-</div>
-<div class='w-full flex flex-col'>
-  <div class='flex justify-between items-center'>
-    <div class='text-[20px] md:text-2xl font-bold'>Threads</div>
-  </div>
-  {#key mediaID}
-    <Threads {media} />
-  {/key}
-</div>
+  <Tabs.Content value='episodes' tabindex={-1}>
+    <EpisodesList {media} {eps} {following} />
+  </Tabs.Content>
+  <Tabs.Content value='threads' tabindex={-1}>
+    {#key mediaID}
+      <Threads {media} />
+    {/key}
+  </Tabs.Content>
+</Tabs.Root>

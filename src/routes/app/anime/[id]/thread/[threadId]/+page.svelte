@@ -15,24 +15,8 @@
   $: threadStore = data.thread
   $: thread = $threadStore.Thread!
 
-  let page = 0
-
-  let commentQueries: Array<ReturnType<typeof client.comments>> = []
-
-  function loadComments () {
-    page += 1
-    commentQueries[page - 1] = client.comments(thread.id, page)
-    // eslint-disable-next-line no-self-assign
-    commentQueries = commentQueries
-  }
-
-  $: commentQueries = [client.comments(thread.id, 1)]
-
   $: anime = data.anime
   $: media = $anime.Media!
-
-  $: latestQuery = commentQueries[commentQueries.length - 1]
-  $: hasMore = $latestQuery?.data?.Page?.pageInfo?.hasNextPage ?? false
 
   const viewer = client.viewer
 </script>
@@ -91,9 +75,4 @@
 <div class='flex justify-between items-center w-full text-[20px] md:text-2xl font-bold'>
   {thread.replyCount} Replies
 </div>
-{#each commentQueries as comments, i (i)}
-  <Comments bind:comments isLocked={!!thread.isLocked} threadId={thread.id} />
-{/each}
-{#if hasMore}
-  <Button size='lg' class='w-full font-bold' on:click={loadComments}>Load more comments</Button>
-{/if}
+<Comments isLocked={!!thread.isLocked} threadId={thread.id} />

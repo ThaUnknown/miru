@@ -67,6 +67,7 @@
 		"lucide-svelte": "^0.452.0",
 		"marked": "^15.0.11",
 		"p2pt": "^1.5.1",
+		"rollup-plugin-license": "^3.6.0",
 		"semver": "^7.7.1",
 		"simple-store-svelte": "^1.0.6",
 		"svelte-keybinds": "^1.0.9",

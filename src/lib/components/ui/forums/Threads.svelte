@@ -10,40 +10,25 @@
 
   export let media: Media
 
-  let threads = [client.threads(media.id)]
+  const threads = client.threads(media.id)
 
-  function getPage (page: number): ReturnType<typeof client.threads> {
-    const index = page - 1
-    const slice = threads[index]
-    if (slice) return slice
-    const missing = client.threads(media.id, page)
-    threads[index] = missing
-
-    // eslint-disable-next-line no-self-assign
-    threads = threads
-    return missing
-  }
   let currentPage = 1
 
-  $: currentPageStore = getPage(currentPage)
-
-  $: hasNextPage = $currentPageStore.data?.Page?.pageInfo?.hasNextPage ?? false
-
   const perPage = 16
-  $: count = (threads.length + Number(hasNextPage)) * perPage
+  $: count = $threads.data?.Page?.pageInfo?.total ?? 0
 </script>
 
 <Pagination {count} {perPage} bind:currentPage let:pages let:hasNext let:hasPrev let:range let:setPage siblingCount={1}>
   <div class='pt-3'>
     <div class='grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(500px,1fr))] place-items-center gap-x-10 gap-y-7 justify-center align-middle'>
-      {#if $currentPageStore.fetching}
+      {#if $threads.fetching}
         {#each Array.from({ length: 4 }) as _, i (i)}
           <div class='px-4 py-[18px] shrink-0 h-[75px] w-full bg-neutral-950 rounded-md flex flex-col'>
             <div class='bg-primary/5 animate-pulse rounded h-2 w-28' />
             <div class='mt-auto bg-primary/5 animate-pulse rounded h-2 w-20' />
           </div>
         {/each}
-      {:else if $currentPageStore.error}
+      {:else if $threads.error}
         <div class='p-5 flex items-center justify-center w-full h-80'>
           <div>
             <div class='mb-1 font-bold text-4xl text-center '>
@@ -53,12 +38,12 @@
               Looks like something went wrong!
             </div>
             <div class='text-lg text-center text-muted-foreground'>
-              {$currentPageStore.error.message}
+              {$threads.error.message}
             </div>
           </div>
         </div>
       {:else}
-        {#each $currentPageStore.data?.Page?.threads ?? [] as thread, i (thread?.id ?? i)}
+        {#each $threads.data?.Page?.threads ?? [] as thread, i (thread?.id ?? i)}
           {#if thread}
             <a href='./thread/{thread.id}' class= 'select:scale-[1.05] select:shadow-lg scale-100 transition-[transform,box-shadow] duration-200 shrink-0 ease-out focus-visible:ring-ring focus-visible:ring-1 rounded-md bg-neutral-950 text-secondary-foreground select:bg-neutral-900 flex w-full max-h-28 relative overflow-hidden cursor-pointer'>
               <div class='flex-grow py-3 px-4 flex flex-col'>
