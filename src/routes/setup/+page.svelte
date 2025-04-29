@@ -16,7 +16,7 @@
 <div class='flex items-center space-x-2 pt-12'>
   <Checkbox id='terms' bind:checked />
   <Label for='terms' class='text-md font-medium leading-none text-muted-foreground'>
-    I agree to the <a use:click={() => native.openURL(`${WEB_URL}/terms`)} class='text-primary underline'>Terms of Service</a> and <a use:click={() => native.openURL(`${WEB_URL}/terms`)} class='text-primary underline'>Privacy Policy</a>
+    I agree to the <a use:click={() => native.openURL(`${WEB_URL}/terms`)} class='text-primary underline'>Terms of Service</a> and <a use:click={() => native.openURL(`${WEB_URL}/privacy`)} class='text-primary underline'>Privacy Policy</a>
   </Label>
 </div>
 <Button class='mt-8 text-lg font-bold' disabled={!checked} size='lg' href={checked ? './storage' : undefined}>Start Setup</Button>
