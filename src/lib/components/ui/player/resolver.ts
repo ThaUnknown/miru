@@ -36,12 +36,13 @@ export async function resolveFilesPoorly (promise: Promise<{media: Media, id: st
 
   const resolved = videoFiles.length === 1 ? [{ episode: list.episode, parseObject: (await anitomyscript([videoFiles[0]!.name]))[0]!, media: list.media, failed: false }] : await AnimeResolver.resolveFileAnime(videoFiles.map(file => file.name))
 
+  console.log({ resolved, videoFiles })
   const resolvedFiles: ResolvedFile[] = videoFiles.map(file => {
     return {
       ...file,
-      metadata: resolved.find(({ parseObject }) => file.name.includes(parseObject.file_name))!
+      metadata: resolved.find(({ parseObject }) => file.name.includes(parseObject.file_name))
     }
-  }).filter(file => !TYPE_EXCLUSIONS.includes(file.metadata.parseObject.anime_type?.toUpperCase() ?? ''))
+  }).filter(file => file.metadata && !TYPE_EXCLUSIONS.includes(file.metadata.parseObject.anime_type?.toUpperCase() ?? '')) as ResolvedFile[] // assertion because of file metadata
 
   let targetAnimeFiles = resolvedFiles.filter(file => file.metadata.media.id && file.metadata.media.id === list.media.id)
 
@@ -255,7 +256,7 @@ const AnimeResolver = new class AnimeResolver {
               // if they didnt use an accurate title then its likely an absolute numbering scheme
               // parent check is to break out of those incorrectly resolved OVA's
               // if we used anime season to resolve anime name, then there's no need to march into prequel!
-              const prequel = !parseObj.anime_season && (this.findEdge(media, 'PREQUEL').node ?? ((media.format === 'OVA' || media.format === 'ONA') && this.findEdge(media, 'PARENT').node))
+              const prequel = !parseObj.anime_season && (this.findEdge(media, 'PREQUEL')?.node ?? ((media.format === 'OVA' || media.format === 'ONA') && this.findEdge(media, 'PARENT')?.node))
               // debug(`Prequel ${prequel?.id}:${prequel?.title.userPreferred}`)
               const root = prequel && (await this.resolveSeason({ media: await this.getAnimeById(prequel.id), force: true })).media
               // debug(`Root ${root?.id}:${root?.title.userPreferred}`)
@@ -277,7 +278,7 @@ const AnimeResolver = new class AnimeResolver {
         } else {
           if (maxep && parseInt(parseObj.episode_number) > maxep) {
             // see big comment above
-            const prequel = !parseObj.anime_season && (this.findEdge(media, 'PREQUEL').node ?? ((media.format === 'OVA' || media.format === 'ONA') && this.findEdge(media, 'PARENT').node))
+            const prequel = !parseObj.anime_season && (this.findEdge(media, 'PREQUEL')?.node ?? ((media.format === 'OVA' || media.format === 'ONA') && this.findEdge(media, 'PARENT')?.node))
             // debug(`Prequel ${prequel?.id}:${prequel?.title.userPreferred}`)
             const root = prequel && (await this.resolveSeason({ media: await this.getAnimeById(prequel.id), force: true })).media
             // debug(`Root ${root?.id}:${root?.title.userPreferred}`)
@@ -307,16 +308,17 @@ const AnimeResolver = new class AnimeResolver {
     return fileAnimes
   }
 
-  findEdge (media: Media, type: string, formats = ['TV', 'TV_SHORT'], skip?: boolean): ResultOf<typeof MediaEdgeFrag> {
+  findEdge (media: Media, type: string, formats = ['TV', 'TV_SHORT'], skip?: boolean): ResultOf<typeof MediaEdgeFrag> | undefined {
     let res = media.relations?.edges?.find(edge => {
       if (edge?.relationType === type) {
         return formats.includes(edge.node?.format ?? '')
       }
       return false
-    })
+    }) as ResultOf<typeof MediaEdgeFrag> | undefined
+    console.log(res)
     // this is hit-miss
     if (!res && !skip && type === 'SEQUEL') res = this.findEdge(media, type, formats = ['TV', 'TV_SHORT', 'OVA'], true)
-    return res as ResultOf<typeof MediaEdgeFrag>
+    return res
   }
 
   // note: this doesnt cover anime which uses partially relative and partially absolute episode number, BUT IT COULD!
@@ -329,9 +331,9 @@ const AnimeResolver = new class AnimeResolver {
 
     const rootHighest = episodes(rootMedia) ?? 1
 
-    const prequel = !increment && this.findEdge(media, 'PREQUEL').node
+    const prequel = !increment && this.findEdge(media, 'PREQUEL')?.node
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    const sequel = !prequel && (increment || increment == null) && this.findEdge(media, 'SEQUEL').node
+    const sequel = !prequel && (increment || increment == null) && this.findEdge(media, 'SEQUEL')?.node
     const edge = prequel ?? sequel
     increment = increment ?? !prequel
 
