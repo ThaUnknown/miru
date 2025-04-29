@@ -12,7 +12,7 @@
 
 <Logo class='w-52 h-52 object-contain mb-14' />
 <div class='font-bold text-5xl'>Welcome to Hayase</div>
-<div class='text-muted-foreground pt-6'>Let's set up your perfect streaming enviorment.</div>
+<div class='text-muted-foreground pt-6'>Let's set up your perfect streaming environment.</div>
 <div class='flex items-center space-x-2 pt-12'>
   <Checkbox id='terms' bind:checked />
   <Label for='terms' class='text-md font-medium leading-none text-muted-foreground'>

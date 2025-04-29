@@ -39,14 +39,14 @@
   <SettingCard let:id title='Auto-Play Next Episode' description='Automatically starts playing next episode when a video ends.'>
     <Switch {id} bind:checked={$settings.playerAutoplay} />
   </SettingCard>
-  <SettingCard let:id title='Pause On Lost Focus' description='Pauses/Resumes video playback when tabbing in/out of the app.'>
+  <SettingCard let:id title='Pause On Lost Visibility' description='Pauses/Resumes video playback when the app looses visibility.'>
     <Switch {id} bind:checked={$settings.playerPause} />
+  </SettingCard>
+  <SettingCard let:id title='PiP On Lost Visibility' description='Automatically enters Picture in Picture mode when the app looses visibility.'>
+    <Switch {id} bind:checked={$settings.playerAutoPiP} />
   </SettingCard>
   <SettingCard let:id title='Auto-Complete Episodes' description='Automatically marks episodes as complete when you finish watching them. Requires Account login.'>
     <Switch {id} bind:checked={$settings.playerAutocomplete} />
-  </SettingCard>
-  <SettingCard let:id title='Auto-Enter PiP' description='Automatically enters Picture in Picture mode when the app looses visibility.'>
-    <Switch {id} bind:checked={$settings.playerAutoPiP} />
   </SettingCard>
   <SettingCard let:id title='Deband Video' description='Reduces banding on dark and compressed videos. High performance impact, not recommended for high quality videos.'>
     <Switch {id} bind:checked={$settings.playerDeband} />

@@ -53,7 +53,7 @@
   </SettingCard>
   {#if !SUPPORTS.isAndroid}
     <div class='font-weight-bold text-xl font-bold'>Rendering Settings</div>
-    <SettingCard title='ANGLE Backend' description="What ANGLE backend to use for rendering. DON'T CHANGE WITHOUT REASON! On some Windows machines D3D9 might help with flicker. Changing this setting to something your device doesn't support might prevent Miru from opening which will require a full reinstall. While Vulkan is an available option it might not be fully supported on Linux.">
+    <SettingCard title='ANGLE Backend' description="What ANGLE backend to use for rendering. DON'T CHANGE WITHOUT REASON! On some Windows machines D3D9 might help with flicker. Changing this setting to something your device doesn't support might prevent Hayase from opening which will require a full reinstall. While Vulkan is an available option it might not be fully supported on Linux.">
       <SingleCombo bind:value={$settings.angle} items={angle} class='w-40 shrink-0 border-input border' onSelected={changeAngle} />
     </SettingCard>
 
