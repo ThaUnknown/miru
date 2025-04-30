@@ -1,9 +1,9 @@
 <script lang='ts' context='module'>
-  import { derived } from 'svelte/store'
+  import { derived, type Readable } from 'svelte/store'
 
   import type { Search } from '$lib/modules/anilist/queries'
   import type { VariablesOf } from 'gql.tada'
-  import type { Readable } from 'simple-store-svelte'
+  // import type { Readable } from 'simple-store-svelte'
 
   import { client, currentSeason, currentYear } from '$lib/modules/anilist'
   import { authAggregator } from '$lib/modules/auth'
@@ -36,11 +36,15 @@
   }
 
   const sectionQueries = derived<[
-    typeof authAggregator.hasAuth, Readable<number[]>, Readable<number[]>], SectionQuery[]
-  >([authAggregator.hasAuth, authAggregator.continueIDs(), authAggregator.sequelIDs()], ([hasAuth, continueIDs, sequelIDs], set) => {
+    typeof authAggregator.hasAuth, Readable<number[]>, Readable<number[]>, Readable<number[]>], SectionQuery[]
+  >([authAggregator.hasAuth, authAggregator.continueIDs(), authAggregator.sequelIDs(), authAggregator.planningIDs()], ([hasAuth, continueIDs, sequelIDs, planningIDs], set) => {
     const sections = [...sectionsQueries]
     const unsub: Array<() => void> = []
     if (hasAuth) {
+      const planningQuery = client.search({ ids: planningIDs }, true)
+      unsub.push(planningQuery.subscribe(() => undefined))
+      sections.unshift({ title: 'Your List', query: planningQuery, variables: { ids: planningIDs } })
+
       const sequelsQuery = client.search({ ids: sequelIDs, status: ['FINISHED', 'RELEASING'], onList: false }, true)
       unsub.push(sequelsQuery.subscribe(() => undefined))
       sections.unshift({ title: 'Sequels You Missed', query: sequelsQuery, variables: { ids: sequelIDs, status: ['FINISHED', 'RELEASING'], onList: false } })

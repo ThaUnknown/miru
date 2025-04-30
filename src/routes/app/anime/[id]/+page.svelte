@@ -74,7 +74,9 @@
   </Tabs.Content>
   <Tabs.Content value='threads' tabindex={-1}>
     {#key mediaID}
-      <Threads {media} />
+      {#if value === 'threads'}
+        <Threads {media} />
+      {/if}
     {/key}
   </Tabs.Content>
 </Tabs.Root>

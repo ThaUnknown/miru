@@ -5,8 +5,9 @@ import { refocusExchange } from '@urql/exchange-refocus'
 import { Client, fetchExchange, queryStore, type OperationResultState, gql as _gql } from '@urql/svelte'
 import Bottleneck from 'bottleneck'
 import lavenshtein from 'js-levenshtein'
-import { readable, writable, type Writable } from 'simple-store-svelte'
-import { derived } from 'svelte/store'
+import { writable as _writable } from 'simple-store-svelte'
+import { derived, readable, writable, type Writable } from 'svelte/store'
+import { toast } from 'svelte-sonner'
 
 import gql from './gql'
 import { CommentFrag, Comments, CustomLists, DeleteEntry, DeleteThreadComment, Entry, Following, FullMedia, FullMediaList, IDMedia, SaveThreadComment, Schedule, Search, ThreadFrag, Threads, ToggleFavourite, ToggleLike, UserLists, Viewer } from './queries'
@@ -293,6 +294,7 @@ class AnilistClient {
   }
 
   setRateLimit (sec: number) {
+    toast.error('Anilist Error', { description: 'Rate limit exceeded, retrying in ' + Math.round(sec / 1000) + ' seconds.' })
     if (!this.rateLimitPromise) this.rateLimitPromise = sleep(sec).then(() => { this.rateLimitPromise = null })
     return sec
   }
@@ -303,8 +305,8 @@ class AnilistClient {
       if (error.name === 'AbortError') return undefined
       if (jobInfo.retryCount > 8) return undefined
 
-      if (error.message === 'Failed to fetch') return this.setRateLimit(6000)
       if (!(error instanceof FetchError)) return 0
+      if (error.message === 'Failed to fetch' && !error.res.headers.get('retry-after')) return this.setRateLimit(60000)
       if (error.res.status === 500) return 1000
 
       const time = (parseInt(error.res.headers.get('retry-after') ?? '60') + 1) * 1000
@@ -315,16 +317,17 @@ class AnilistClient {
     this.continueIDs.subscribe(() => undefined)
   }
 
-  viewer = writable<ViewerData | undefined>(safeLocalStorage('ALViewer'))
+  viewer = _writable<ViewerData | undefined>(safeLocalStorage('ALViewer'))
 
   userlists = derived<typeof this.viewer, OperationResultState<ResultOf<typeof UserLists>>>(this.viewer, (store, set) => {
     return queryStore({ client: this.client, query: UserLists, variables: { id: store?.viewer?.id } }).subscribe(set)
   })
 
-  // these should be optimised to be called with ids.slice(index, index + perPage)
+  // WARN: these 3 sections are hacky, i use oldvalue to prevent re-running loops, I DO NOT KNOW WHY THE LOOPS HAPPEN!
+  // TODO: these should be optimised to be called with ids.slice(index, index + perPage)
   continueIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
-    this.userlists.subscribe(values => {
+    const sub = this.userlists.subscribe(values => {
       if (!values.data?.MediaListCollection?.lists) return []
       const mediaList = values.data.MediaListCollection.lists.reduce<NonNullable<NonNullable<NonNullable<NonNullable<ResultOf<typeof UserLists>['MediaListCollection']>['lists']>[0]>['entries']>>((filtered, list) => {
         return (list?.status === 'CURRENT' || list?.status === 'REPEATING') ? filtered.concat(list.entries) : filtered
@@ -340,12 +343,13 @@ class AnilistClient {
       oldvalue = ids
       set(ids)
     })
+    return sub
   })
 
-  // this needs to be called with onList: false
+  // TODO: this needs to be called with onList: false
   sequelIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
-    this.userlists.subscribe(values => {
+    const sub = this.userlists.subscribe(values => {
       if (!values.data?.MediaListCollection?.lists) return []
       const mediaList = values.data.MediaListCollection.lists.find(list => list?.status === 'COMPLETED')?.entries
       if (!mediaList) return []
@@ -358,6 +362,22 @@ class AnilistClient {
       oldvalue = ids
       set(ids)
     })
+    return sub
+  })
+
+  planningIDs = readable<number[]>([], set => {
+    let oldvalue: number[] = []
+    const sub = this.userlists.subscribe(userLists => {
+      if (!userLists.data?.MediaListCollection?.lists) return []
+      const mediaList = userLists.data.MediaListCollection.lists.find(list => list?.status === 'PLANNING')?.entries
+      if (!mediaList) return []
+      const ids = mediaList.map(entry => entry?.media?.id) as number[]
+
+      if (arrayEqual(oldvalue, ids)) return
+      oldvalue = ids
+      set(ids)
+    })
+    return sub
   })
 
   search (variables: VariablesOf<typeof Search>, pause?: boolean) {

@@ -404,10 +404,10 @@
     if (['ArrowLeft', 'ArrowRight'].includes(event.key)) event.stopPropagation()
     switch (event.key) {
       case 'ArrowLeft':
-        seek(-$settings.playerSeek)
+        seek(-Number($settings.playerSeek))
         break
       case 'ArrowRight':
-        seek($settings.playerSeek)
+        seek(Number($settings.playerSeek))
         break
       case 'Enter':
         playPause()
@@ -509,7 +509,7 @@
     },
     ArrowLeft: {
       fn: () => {
-        seek(-$settings.playerSeek)
+        seek(-Number($settings.playerSeek))
       },
       id: 'fast_rewind',
       icon: Rewind,
@@ -518,7 +518,7 @@
     },
     ArrowRight: {
       fn: () => {
-        seek($settings.playerSeek)
+        seek(Number($settings.playerSeek))
       },
       id: 'fast_forward',
       icon: FastForward,

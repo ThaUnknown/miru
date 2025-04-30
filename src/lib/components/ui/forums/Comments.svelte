@@ -19,8 +19,6 @@
 
   const perPage = 15
   $: count = $comments.data?.Page?.pageInfo?.total ?? 0
-
-  $: console.log($comments.fetching, $comments.error, $comments.data?.Page?.threadComments)
 </script>
 
 <Pagination {count} {perPage} bind:currentPage let:pages let:hasNext let:hasPrev let:range let:setPage siblingCount={1}>

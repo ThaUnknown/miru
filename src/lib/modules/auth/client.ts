@@ -63,6 +63,12 @@ export default new class AuthAggregator {
     if (this.anilist()) return client.following(id)
   }
 
+  planningIDs () {
+    if (this.anilist()) return client.planningIDs
+
+    return client.planningIDs
+  }
+
   continueIDs () {
     if (this.anilist()) return client.continueIDs
 

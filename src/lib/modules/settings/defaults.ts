@@ -36,7 +36,7 @@ export default {
   idleAnimation: true,
   enableExternal: false,
   playerPath: '',
-  playerSeek: 2,
+  playerSeek: '2',
   playerSkip: false,
   playerSkipFiller: false,
   minimalPlayerUI: false

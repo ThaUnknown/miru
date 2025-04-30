@@ -36,7 +36,6 @@ export async function resolveFilesPoorly (promise: Promise<{media: Media, id: st
 
   const resolved = videoFiles.length === 1 ? [{ episode: list.episode, parseObject: (await anitomyscript([videoFiles[0]!.name]))[0]!, media: list.media, failed: false }] : await AnimeResolver.resolveFileAnime(videoFiles.map(file => file.name))
 
-  console.log({ resolved, videoFiles })
   const resolvedFiles: ResolvedFile[] = videoFiles.map(file => {
     return {
       ...file,
@@ -315,7 +314,6 @@ const AnimeResolver = new class AnimeResolver {
       }
       return false
     }) as ResultOf<typeof MediaEdgeFrag> | undefined
-    console.log(res)
     // this is hit-miss
     if (!res && !skip && type === 'SEQUEL') res = this.findEdge(media, type, formats = ['TV', 'TV_SHORT', 'OVA'], true)
     return res
