@@ -48,8 +48,9 @@
   interface DayAirTimes { day: { date: Date, number: number }, episodes: Array<ResultOf<typeof ScheduleMedia> & { episode: number, airTime: Date }> }
 
   function aggregate (data: ResultOf<typeof Schedule>, dayList: Array<{ date: Date, number: number }>) {
-    // join media from all queries into single list
-    const mediaList = [...data.curr1?.media ?? [], ...data.curr2?.media ?? [], ...data.curr3?.media ?? [], ...data.residue?.media ?? [], ...data.next1?.media ?? [], ...data.next2?.media ?? []].filter((v, i, a) => v != null && a.findIndex(s => s?.id === v.id) === i) as Array<ResultOf<typeof ScheduleMedia>>
+    // join media from all queries into single list, de-duplicate it, and make sure it's not dropped
+    const mediaList = [...data.curr1?.media ?? [], ...data.curr2?.media ?? [], ...data.curr3?.media ?? [], ...data.residue?.media ?? [], ...data.next1?.media ?? [], ...data.next2?.media ?? []]
+      .filter((v, i, a) => v != null && a.findIndex(s => s?.id === v.id) === i && v.mediaListEntry?.status !== 'DROPPED') as Array<ResultOf<typeof ScheduleMedia>>
 
     const dayMap: Record<string, DayAirTimes | undefined> = Object.fromEntries(dayList.map(day => [+day.date, { day, episodes: [] }]))
 
