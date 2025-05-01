@@ -105,8 +105,8 @@ importers:
         specifier: ^4.2.1
         version: 4.2.1(@urql/core@5.1.0(graphql@16.10.0))(react@19.0.0)
       video-deband:
-        specifier: ^1.0.6
-        version: 1.0.6
+        specifier: ^1.0.7
+        version: 1.0.7
       workbox-core:
         specifier: ^7.3.0
         version: 7.3.0
@@ -152,7 +152,7 @@ importers:
         version: 0.0.18(svelte@4.2.19)
       eslint-config-standard-universal:
         specifier: github:thaunknown/eslint-config-standard-universal
-        version: https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/a9994824ad3b4528533007eec7f31ed773a89bc0(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6)
+        version: https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/14c085cecee00b3d56760ea8ff5c8e3486c3c4cf(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6)
       globals:
         specifier: ^15.11.0
         version: 15.11.0
@@ -1228,8 +1228,8 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-config-standard-universal@https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/a9994824ad3b4528533007eec7f31ed773a89bc0:
-    resolution: {tarball: https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/a9994824ad3b4528533007eec7f31ed773a89bc0}
+  eslint-config-standard-universal@https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/14c085cecee00b3d56760ea8ff5c8e3486c3c4cf:
+    resolution: {tarball: https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/14c085cecee00b3d56760ea8ff5c8e3486c3c4cf}
     version: 1.0.4
 
   eslint-import-resolver-node@0.3.9:
@@ -2491,8 +2491,8 @@ packages:
     peerDependencies:
       svelte: ^4.0.0 || ^5.0.0-next.1
 
-  video-deband@1.0.6:
-    resolution: {integrity: sha512-A/RlvlG+L1BzC78yZpWoOuImZpuBcsFisaBsq6EPeLBUYIJ3U/794k2kKqKRT+bVHr6C2Bmbp2CP5rZxpIcR9w==}
+  video-deband@1.0.7:
+    resolution: {integrity: sha512-vwJ2E/e7DfvFlKU5RQ8T8ZEcG7m7A41TIxZ3X57o7Rzw+HSTNyljrtSPJU11UQR2X9wVmAC7WKdOs7zOsxNV6A==}
 
   vite@5.4.11:
     resolution: {integrity: sha512-c7jFQRklXua0mTzneGW9QVyxFjUgwcihC4bXEtujIo2ouWCe1Ajt/amn2PCxYnhYfd5k09JX3SB7OYWFKYqj8Q==}
@@ -3727,7 +3727,7 @@ snapshots:
       eslint: 9.17.0(jiti@1.21.6)
       semver: 7.7.1
 
-  eslint-config-standard-universal@https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/a9994824ad3b4528533007eec7f31ed773a89bc0(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6):
+  eslint-config-standard-universal@https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/14c085cecee00b3d56760ea8ff5c8e3486c3c4cf(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6):
     dependencies:
       '@stylistic/eslint-plugin': 4.2.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2)
       eslint: 9.17.0(jiti@1.21.6)
@@ -5120,7 +5120,7 @@ snapshots:
       bits-ui: 0.21.16(svelte@4.2.19)
       svelte: 4.2.19
 
-  video-deband@1.0.6:
+  video-deband@1.0.7:
     dependencies:
       rvfc-polyfill: 1.0.7
       twgl.js: 5.5.4

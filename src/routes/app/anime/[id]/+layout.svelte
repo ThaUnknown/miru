@@ -26,6 +26,7 @@
 
   $: media = $anime.Media!
 
+  $: bannerSrc.value = media
   hideBanner.value = false
   onDestroy(() => {
     bannerSrc.value = oldBanner

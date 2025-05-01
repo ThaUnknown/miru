@@ -57,6 +57,7 @@ export default Object.assign<Native, Partial<Native>>({
   openTorrentDevtools: async () => undefined,
   minimise: async () => undefined,
   maximise: async () => undefined,
+  focus: async () => undefined,
   close: async () => undefined,
   checkUpdate: async () => undefined,
   toggleDiscordDetails: async () => undefined,

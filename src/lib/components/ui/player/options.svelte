@@ -5,6 +5,7 @@
   import Keybinds from './keybinds.svelte'
   import { normalizeSubs, normalizeTracks, type Chapter } from './util'
 
+  import type PictureInPicture from './pip'
   import type { ResolvedFile } from './resolver'
   import type Subtitles from './subtitles'
   import type { Writable } from 'simple-store-svelte'
@@ -30,7 +31,9 @@
   export let subtitles: Subtitles | undefined
   export let videoFiles: ResolvedFile[]
   export let selectFile: (file: ResolvedFile) => void
-  export let pip: () => void
+  export let pip: PictureInPicture
+
+  $: pipElement = pip.element
 
   $: tracks = subtitles?._tracks
   $: current = subtitles?.current
@@ -199,7 +202,7 @@
           <Tree.Item on:click={fullscreen} active={!!fullscreenElement}>
             Fullscreen
           </Tree.Item>
-          <Tree.Item on:click={pip}>
+          <Tree.Item on:click={() => pip.pip()} active={!!$pipElement}>
             Picture in Picture
           </Tree.Item>
           <Tree.Item on:click={deband} active={$settings.playerDeband}>

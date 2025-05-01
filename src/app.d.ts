@@ -70,6 +70,7 @@ export interface Native {
   share: Navigator['share']
   minimise: () => Promise<void>
   maximise: () => Promise<void>
+  focus: () => Promise<void>
   close: () => Promise<void>
   selectPlayer: () => Promise<string>
   selectDownload: () => Promise<string>

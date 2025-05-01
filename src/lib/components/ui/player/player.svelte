@@ -1,6 +1,6 @@
 <script lang='ts'>
   import { Cast, FastForward, Maximize, Minimize, Pause, Rewind, SkipBack, SkipForward, Captions, Contrast, List, PictureInPicture2, Proportions, RefreshCcw, RotateCcw, RotateCw, ScreenShare, Volume1, Volume2, VolumeX, ChevronDown, ChevronUp, Users } from 'lucide-svelte'
-  import { onMount } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
   import { fade } from 'svelte/transition'
   import { persisted } from 'svelte-persisted-store'
   import { toast } from 'svelte-sonner'
@@ -8,10 +8,11 @@
 
   import { condition, loadWithDefaults } from './keybinds.svelte'
   import Options from './options.svelte'
+  import PictureInPicture from './pip'
   import Seekbar from './seekbar.svelte'
   import Subs from './subtitles'
   import Thumbnailer from './thumbnailer'
-  import { autoPiP, burnIn, getChaptersAniSkip, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
+  import { getChaptersAniSkip, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
   import Volume from './volume.svelte'
 
   import type { ResolvedFile } from './resolver'
@@ -21,7 +22,7 @@
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import EpisodesList from '$lib/components/EpisodesList.svelte'
-  import PictureInPicture from '$lib/components/icons/PictureInPicture.svelte'
+  import PictureInPictureOff from '$lib/components/icons/PictureInPicture.svelte'
   import PictureInPictureExit from '$lib/components/icons/PictureInPictureExit.svelte'
   import Play from '$lib/components/icons/Play.svelte'
   import Subtitles from '$lib/components/icons/Subtitles.svelte'
@@ -60,9 +61,19 @@
 
   // elements
   let fullscreenElement: HTMLElement | null = null
-  let pictureInPictureElement: Promise<void> | undefined
   let video: HTMLVideoElement
   let wrapper: HTMLDivElement
+
+  let subtitles: Subs | undefined
+  let deband: VideoDeband | undefined
+
+  const pip = new PictureInPicture()
+  $: pip._setElements(video, subtitles, deband)
+  const pipElementStore = pip.element
+  $: pictureInPictureElement = $pipElementStore
+  onDestroy(() => {
+    pip.destroy()
+  })
 
   // state
   let seeking = false
@@ -83,14 +94,6 @@
   }
   function fullscreen () {
     return fullscreenElement ? document.exitFullscreen() : wrapper.requestFullscreen()
-  }
-
-  async function pip () {
-    // TODO: this is shit code
-    pictureInPictureElement = (async () => {
-      await pictureInPictureElement
-      document.pictureInPictureElement ? await document.exitPictureInPicture() : await burnIn(video, subtitles, deband)
-    })()
   }
 
   function toggleCast () {
@@ -209,8 +212,6 @@
   }
   $: loadChapters(chaptersPromise, safeduration)
 
-  let subtitles: Subs | undefined
-
   function createSubtitles (video: HTMLVideoElement) {
     subtitles = new Subs(video, otherFiles, mediaInfo.file)
     return {
@@ -220,18 +221,18 @@
     }
   }
 
-  let deband: VideoDeband | undefined
-
   function cleanupDeband () {
     deband?.destroy()
     deband?.canvas.remove()
     deband = undefined
+    pip._setElements(video, subtitles, deband)
   }
 
   function createDeband (video: HTMLVideoElement | undefined, playerDeband: boolean) {
     if (!playerDeband || !video) return cleanupDeband()
     if (deband) cleanupDeband()
     deband = new VideoDeband(video)
+    pip._setElements(video, subtitles, deband)
     deband.canvas.classList.add('deband-canvas', 'w-full', 'h-full', 'pointer-events-none', 'object-contain')
     video.before(deband.canvas)
   }
@@ -387,7 +388,7 @@
   native.setActionHandler('previoustrack', () => prev?.())
   native.setActionHandler('nexttrack', () => next?.())
   // about://flags/#auto-picture-in-picture-for-video-playback
-  native.setActionHandler('enterpictureinpicture', () => pip())
+  native.setActionHandler('enterpictureinpicture', () => pip.pip(true))
 
   let openSubs: () => Promise<void>
 
@@ -468,7 +469,7 @@
       desc: 'Toggle Mute'
     },
     KeyP: {
-      fn: () => pip(),
+      fn: () => pip.pip(),
       id: 'picture_in_picture',
       icon: PictureInPicture2,
       type: 'icon',
@@ -608,7 +609,6 @@
 <div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper}>
   <video class='w-full h-full' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
     use:createSubtitles
-    use:autoPiP={pip}
     use:holdToFF={'pointer'}
     crossorigin='anonymous'
     src={mediaInfo.file.url}
@@ -758,11 +758,11 @@
             <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
           </Button>
         {/if}
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={() => pip()}>
+        <Button class='p-3 w-12 h-12' variant='ghost' on:click={() => pip.pip()}>
           {#if pictureInPictureElement}
             <PictureInPictureExit size='24px' strokeWidth='2' />
           {:else}
-            <PictureInPicture size='24px' strokeWidth='2' />
+            <PictureInPictureOff size='24px' strokeWidth='2' />
           {/if}
         </Button>
         {#if false}
