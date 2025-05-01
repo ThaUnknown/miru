@@ -1,8 +1,13 @@
 <script lang='ts' context='module'>
-  export function fromobj (object: Record<string, string>, key: string): { items: Array<{ value: string, label: string }>, value: Array<{ value: string, label: string }> } {
+  interface value {
+    value: string
+    label: string
+  }
+
+  export function fromobj (object: Record<string, string>, key: string): { items: value[], value: value[] } {
     return {
       items: Object.entries(object).map(([value, label]) => ({ value, label })),
-      value: [{ value: '' + key, label: object[key] }]
+      value: [{ value: '' + key, label: object[key]! }]
     }
   }
 </script>
@@ -17,11 +22,6 @@
   import * as Popover from '$lib/components/ui/popover'
   import { intputType } from '$lib/modules/navigate'
   import { cn } from '$lib/utils.js'
-
-  interface value {
-    value: string
-    label: string
-  }
 
   export let items: value[] = []
 

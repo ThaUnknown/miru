@@ -163,3 +163,14 @@ export const sort = [
     label: 'Updated Date'
   }
 ]
+
+export const onlist = [
+  {
+    value: 'true',
+    label: 'On List'
+  },
+  {
+    value: 'false',
+    label: 'Not On List'
+  }
+]

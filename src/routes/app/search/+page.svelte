@@ -3,7 +3,7 @@
   import { MagnifyingGlass } from 'svelte-radix'
   import { toast } from 'svelte-sonner'
 
-  import { genres, years, seasons, formats, status, sort } from './values'
+  import { genres, years, seasons, formats, status, sort, onlist } from './values'
 
   import type { Search } from '$lib/modules/anilist/queries'
   import type { VariablesOf } from 'gql.tada'
@@ -40,22 +40,25 @@
   }
 
   function remove (label: string) {
+    if (label === 'IDs') {
+      search.ids = undefined
+      return
+    }
     Object.entries(search).forEach(([key, value]) => {
       const nk = key as keyof typeof search
       if (Array.isArray(value)) {
-        if (typeof value[0] === 'number') {
-          search.ids = undefined
-        } else {
-          search[nk] = value.filter(v => (v as format).label !== label) as format[] & string & Array<number | null>
-        }
-      } else {
-        if (value === label) search[nk] = '' as format[] & string & Array<number | null>
+        search[nk] = value.filter(v => (v as format).label !== label) as format[] & string & Array<number | null> & boolean
+      } else if (value === label) {
+        search[nk] = '' as format[] & string & Array<number | null> & boolean
       }
     })
   }
 
   function filterEmpty (obj: typeof search): Partial<typeof search> {
-    return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v?.length))
+    return Object.fromEntries(Object.entries(obj).filter(([_, v]) => {
+      if (typeof v === 'boolean') return true
+      return v?.length
+    }))
   }
 
   function variablesToSearch (variables?: VariablesOf<typeof Search>) {
@@ -63,6 +66,7 @@
     return {
       ids: variables.ids,
       name: variables.search ?? '',
+      onList: onlist.filter(s => s.value === (variables.onList?.toString() ?? 'null')) as format[],
       genres: genres.filter(g => (variables.genre ?? []).includes(g.value)) as format[],
       years: years.filter(y => y.value === ('' + (variables.seasonYear ?? ''))) as format[],
       seasons: seasons.filter(s => s.value === (variables.season ?? '')) as format[],
@@ -83,7 +87,8 @@
     formats: [] as format[],
     status: [] as format[],
     sort: [] as format[],
-    ids: undefined
+    ids: undefined,
+    onList: [] as format[]
   }
 
   let pageNumber = 1
@@ -98,7 +103,8 @@
       formats: [],
       status: [],
       sort: [],
-      ids: undefined
+      ids: undefined,
+      onList: []
     }
     inputText = ''
     pageNumber = 1
@@ -119,6 +125,7 @@
       page,
       ids: filter.ids,
       search: filter.name,
+      onList: filter.onList?.[0]?.value === 'true' ? true : filter.onList?.[0]?.value === 'false' ? false : undefined,
       genre: filter.genres?.map(g => g.value),
       seasonYear: filter.years ? parseInt(filter.years[0]!.value) : undefined,
       season: filter.seasons?.[0]!.value as 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL' | undefined,
@@ -166,16 +173,18 @@
       }
     }
   }
+
+  const viewer = client.viewer
 </script>
 
 <div class='flex flex-col h-full overflow-y-auto overflow-x-clip -ml-14 pl-14 z-20 min-w-0 grow pointer-events-none' use:dragScroll>
-  <div class='sticky top-0 z-20 px-10 pointer-events-auto shrink-0 overflow-clip bg-black'>
+  <div class='sticky top-0 z-20 px-2 sm:px-10 pointer-events-auto shrink-0 overflow-clip bg-black'>
     <div class='flex flex-wrap pt-5'>
-      <div class='grid items-center w-1/4 p-2'>
+      <div class='grid items-center min-w-40 flex-1 md:basis-auto md:w-1/4 p-2'>
         <div class='text-xl font-bold mb-1 ml-1'>
           Title
         </div>
-        <div class='flex items-center relative scale-parent'>
+        <div class='flex items-center scale-parent relative'>
           <Input
             class='pl-9 border-0 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50 capitalize'
             placeholder='Any'
@@ -184,43 +193,51 @@
           <MagnifyingGlass class='h-4 w-4 shrink-0 opacity-50 absolute left-3 text-muted-foreground z-10 pointer-events-none' />
         </div>
       </div>
-      <div class='grid items-center w-1/4 p-2'>
+      <div class='grid items-center min-w-40 flex-1 md:basis-auto md:w-1/4 p-2'>
         <div class='text-xl font-bold mb-1 ml-1'>
           Genre
         </div>
         <ComboBox items={genres} multiple={true} bind:value={search.genres} class='w-full' />
       </div>
-      <div class='grid items-center w-1/4 p-2'>
+      <div class='grid items-center min-w-40 flex-1 md:basis-auto md:w-1/4 p-2'>
         <div class='text-xl font-bold mb-1 ml-1'>
           Year
         </div>
         <ComboBox items={years} bind:value={search.years} class='w-full' />
       </div>
-      <div class='grid items-center w-1/4 p-2'>
+      <div class='grid items-center min-w-40 flex-1 md:basis-auto md:w-1/4 p-2'>
         <div class='text-xl font-bold mb-1 ml-1'>
           Season
         </div>
         <ComboBox items={seasons} bind:value={search.seasons} class='w-full' />
       </div>
-      <div class='grid items-center flex-1 p-2'>
+      <div class='grid items-center p-2 min-w-40 flex-1'>
         <div class='text-xl font-bold mb-1 ml-1'>
           Format
         </div>
         <ComboBox items={formats} multiple={true} bind:value={search.formats} class='w-full' />
       </div>
-      <div class='grid items-center flex-1 p-2'>
+      <div class='grid items-center p-2 min-w-40 flex-1'>
         <div class='text-xl font-bold mb-1 ml-1'>
           Status
         </div>
         <ComboBox items={status} multiple={true} bind:value={search.status} class='w-full' />
       </div>
-      <div class='grid items-center flex-1 p-2'>
+      <div class='grid items-center p-2 min-w-40 flex-1'>
         <div class='text-xl font-bold mb-1 ml-1'>
           Sort
         </div>
         <ComboBox items={sort} bind:value={search.sort} class='w-full' placeholder='Accuracy' />
       </div>
-      <div class='flex-0 w-auto p-2 gap-4 grid grid-cols-2 items-end'>
+      {#if $viewer?.viewer?.id}
+        <div class='grid items-center p-2 min-w-36 flex-1'>
+          <div class='text-xl font-bold mb-1 ml-1 text-nowrap'>
+            My List
+          </div>
+          <ComboBox items={onlist} bind:value={search.onList} class='w-full' placeholder='List' />
+        </div>
+      {/if}
+      <div class='w-auto p-2 gap-4 grid grid-cols-2 items-end'>
         <Button variant='outline' size='icon' class='border-0'>
           <label for='search-image' class='contents'>
             <FileImage class='h-4 w-full cursor-pointer' />
@@ -228,7 +245,7 @@
           <input type='file' class='hidden' id='search-image' accept='image/*' on:input|preventDefault|stopPropagation={imagePicker} />
         </Button>
         <Button variant='outline' size='icon' on:click={clear} class='border-0'>
-          <Trash class={cn('h-4 w-4', empty(search) && 'text-muted-foreground opacity-50')} />
+          <Trash class={cn('h-4 w-4', empty(search) ? 'text-muted-foreground opacity-50' : 'text-blue-400')} />
         </Button>
       </div>
     </div>
@@ -241,7 +258,7 @@
       {/each}
     </div>
   </div>
-  <div class='flex flex-wrap px-7 justify-center pointer-events-auto'>
+  <div class='flex flex-wrap md:px-7 justify-center pointer-events-auto'>
     {#each media as query, i (i)}
       <QueryCard {query} />
     {/each}
