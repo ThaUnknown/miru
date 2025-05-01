@@ -49,7 +49,7 @@
       unsub.push(sequelsQuery.subscribe(() => undefined))
       sections.unshift({ title: 'Sequels You Missed', query: sequelsQuery, variables: { ids: sequelIDs, status: ['FINISHED', 'RELEASING'], onList: false } })
 
-      const contiueQuery = derived(client.search({ ids: continueIDs, sort: ['UPDATED_AT_DESC'] }, false), value => {
+      const contiueQuery = derived(client.search({ ids: continueIDs.slice(0, 50), sort: ['UPDATED_AT_DESC'] }, false), value => {
         value.data?.Page?.media?.sort((a, b) => continueIDs.indexOf(a!.id) - continueIDs.indexOf(b!.id))
         return value
       }) as ReturnType<typeof client.search>

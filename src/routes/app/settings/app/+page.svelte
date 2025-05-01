@@ -6,6 +6,7 @@
   import { Button } from '$lib/components/ui/button'
   import { SingleCombo } from '$lib/components/ui/combobox'
   import { Switch } from '$lib/components/ui/switch'
+  import { client } from '$lib/modules/anilist'
   import native from '$lib/modules/native'
   import { settings, SUPPORTS } from '$lib/modules/settings'
 
@@ -59,6 +60,11 @@
       duration: 5000
     })
   }
+  function reset () {
+    localStorage.clear()
+    client.storage.clear()
+    native.restart()
+  }
 </script>
 
 <div class='space-y-3 pb-10 lg:max-w-4xl'>
@@ -87,22 +93,15 @@
       <Switch {id} bind:checked={$settings.hideToTray} />
     </SettingCard>
   {/if}
-  <div class='d-inline-flex flex-column'>
+  <div class='flex flex-wrap gap-2'>
     <Button on:click={importSettings}>
       Import Settings From Clipboard
     </Button>
     <Button on:click={exportSettings}>
       Export Settings To Clipboard
     </Button>
-    {#if !SUPPORTS.isAndroid}
-      <Button on:click={native.checkUpdate}>
-        Check For Updates
-      </Button>
-    {/if}
-    <Button
-      on:click={() => { settings.reset(); native.restart() }}
-      variant='destructive'>
-      Restore Default Settings
+    <Button on:click={reset} variant='destructive'>
+      Reset EVERYTHING To Default
     </Button>
   </div>
 </div>
