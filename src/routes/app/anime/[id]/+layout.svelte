@@ -21,15 +21,15 @@
   export let data: LayoutData
 
   const oldBanner = bannerSrc.value
-  $: bannerSrc.value = data.anime.value.Media
-  hideBanner.value = false
-  onDestroy(() => {
-    bannerSrc.value = oldBanner
-  })
 
   $: anime = data.anime
 
   $: media = $anime.Media!
+
+  hideBanner.value = false
+  onDestroy(() => {
+    bannerSrc.value = oldBanner
+  })
 
   function share () {
     native.share({

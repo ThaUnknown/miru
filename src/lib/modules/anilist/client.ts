@@ -221,7 +221,10 @@ class AnilistClient {
           MediaListCollection: e => (e.user as {id: string | null}).id,
           MediaListGroup: () => null,
           UserAvatar: () => null,
-          UserOptions: () => null
+          UserOptions: () => null,
+          UserStatisticTypes: () => null,
+          UserGenreStatistic: () => null,
+          UserStatistics: () => null
         }
       }),
       authExchange(async utils => {
