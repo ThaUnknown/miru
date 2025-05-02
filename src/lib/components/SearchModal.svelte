@@ -34,27 +34,20 @@
   // termMapping.HDTV = termMapping.HDTVRIP = termMapping.TVRIP = termMapping['TV-RIP'] = { text: 'TV', color: '#ab1b31' }
   // termMapping.WEBCAST = termMapping.WEBRIP = { text: 'WEB', color: '#ab1b31' }
 
-  function sanitiseTerms ({ video_term: vid, audio_term: aud, video_resolution: resolution, source: src }: AnitomyResult) {
-    const video = !Array.isArray(vid) ? [vid] : vid
-    const audio = !Array.isArray(aud) ? [aud] : aud
-    const source = !Array.isArray(src) ? [src] : src
-
-    const terms = [...new Set([...video, ...audio, ...source].map(term => termMapping[term?.toUpperCase()]).filter(t => t))] as Array<{text: string, color: string}>
-    if (resolution) terms.unshift({ text: resolution, color: '#c6ec58' })
+  function sanitiseTerms ({ video_term: video, audio_term: audio, video_resolution: resolution, source }: AnitomyResult) {
+    const terms = [...new Set([...video ?? [], ...audio ?? [], ...source ?? []].map(term => termMapping[term.toUpperCase() ?? '']).filter(t => t))] as Array<{text: string, color: string}>
+    if (resolution?.length) terms.unshift({ text: resolution[0]!, color: '#c6ec58' })
 
     return terms
   }
 
-  function simplifyFilename ({ video_term: vid, audio_term: aud, video_resolution: resolution, file_name: name, release_group: group, file_checksum: checksum }: AnitomyResult) {
-    const video = !Array.isArray(vid) ? [vid] : vid
-    const audio = !Array.isArray(aud) ? [aud] : aud
-
-    let simpleName = name
-    if (group) simpleName = simpleName.replace(group, '')
-    if (resolution) simpleName = simpleName.replace(resolution, '')
-    if (checksum) simpleName = simpleName.replace(checksum, '')
-    for (const term of video) simpleName = simpleName.replace(term, '')
-    for (const term of audio) simpleName = simpleName.replace(term, '')
+  function simplifyFilename ({ video_term: video, audio_term: audio, video_resolution: resolution, file_name: name, release_group: group, file_checksum: checksum }: AnitomyResult) {
+    let simpleName = name[0]!
+    if (group?.length) simpleName = simpleName.replace(group[0]!, '')
+    if (resolution?.length) simpleName = simpleName.replace(resolution[0]!, '')
+    if (checksum?.length) simpleName = simpleName.replace(checksum[0]!, '')
+    for (const term of video ?? []) simpleName = simpleName.replace(term[0]!, '')
+    for (const term of audio ?? []) simpleName = simpleName.replace(term[0]!, '')
     return simpleName.replace(/[[{(]\s*[\]})]/g, '').replace(/\s+/g, ' ').trim()
   }
 
@@ -214,7 +207,7 @@
           {#if search && media}
             {@const { results, errors } = search}
             {#each filterAndSortResults(results, inputText, downloaded) as result (result.hash)}
-              <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border select:ring-1 select:ring-ring select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name}>
+              <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border select:ring-1 select:ring-ring select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name[0]}>
                 {#if result.accuracy === 'high'}
                   <div class='absolute top-0 left-0 w-full h-full -z-10'>
                     <Banner {media} class='object-cover w-full h-full' />
@@ -230,7 +223,7 @@
                     {:else if result.accuracy === 'high'}
                       <BadgeCheck class='mr-2 text-[#53da33]' size='1.2rem' />
                     {/if}
-                    <div class='text-xl font-bold text-nowrap'>{result.parseObject.release_group && result.parseObject.release_group.length < 20 ? result.parseObject.release_group : 'No Group'}</div>
+                    <div class='text-xl font-bold text-nowrap'>{result.parseObject.release_group[0] && result.parseObject.release_group[0].length < 20 ? result.parseObject.release_group[0] : 'No Group'}</div>
                     <div class='ml-auto flex gap-2 self-start'>
                       {#each result.extension as id (id)}
                         {#if $saved[id]}

@@ -142,9 +142,9 @@ export const extensions = new class Extensions {
       for (const { hash, complete, downloaded, incomplete } of updated) {
         const found = entries.find(mapped => mapped.hash === hash)
         if (!found) continue
-        found.downloads = downloaded
-        found.leechers = incomplete
-        found.seeders = complete
+        found.downloads = Number(downloaded)
+        found.leechers = Number(incomplete)
+        found.seeders = Number(complete)
       }
 
       debug(`Found ${updated.length} entries: ${JSON.stringify(updated)}`)

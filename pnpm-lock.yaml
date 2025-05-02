@@ -43,7 +43,7 @@ importers:
         version: 1.0.16
       anitomyscript:
         specifier: github:thaunknown/anitomyscript
-        version: https://codeload.github.com/thaunknown/anitomyscript/tar.gz/6214b582127f16b3e50fc12b9cdb2fcf650f7aa6
+        version: https://codeload.github.com/thaunknown/anitomyscript/tar.gz/fc00888d69ba59258167f2fac9e86576b29863b7
       bottleneck:
         specifier: ^2.19.5
         version: 2.19.5
@@ -812,9 +812,9 @@ packages:
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
 
-  anitomyscript@https://codeload.github.com/thaunknown/anitomyscript/tar.gz/6214b582127f16b3e50fc12b9cdb2fcf650f7aa6:
-    resolution: {tarball: https://codeload.github.com/thaunknown/anitomyscript/tar.gz/6214b582127f16b3e50fc12b9cdb2fcf650f7aa6}
-    version: 2.0.8
+  anitomyscript@https://codeload.github.com/thaunknown/anitomyscript/tar.gz/fc00888d69ba59258167f2fac9e86576b29863b7:
+    resolution: {tarball: https://codeload.github.com/thaunknown/anitomyscript/tar.gz/fc00888d69ba59258167f2fac9e86576b29863b7}
+    version: 2.0.10
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -3212,7 +3212,7 @@ snapshots:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
 
-  anitomyscript@https://codeload.github.com/thaunknown/anitomyscript/tar.gz/6214b582127f16b3e50fc12b9cdb2fcf650f7aa6: {}
+  anitomyscript@https://codeload.github.com/thaunknown/anitomyscript/tar.gz/fc00888d69ba59258167f2fac9e86576b29863b7: {}
 
   ansi-regex@5.0.1: {}
 
