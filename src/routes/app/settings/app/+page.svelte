@@ -28,13 +28,16 @@
   }
 
   async function copyDevice () {
-    const device = await native.getDeviceInfo() // TODO: app version and platform
-    device.appInfo = {
-      userAgent: navigator.userAgent,
-      support: SUPPORTS,
-      settings
+    const device = await native.getDeviceInfo() as object
+    const info = {
+      ...device,
+      appInfo: {
+        userAgent: await navigator.userAgentData.getHighEntropyValues(['architecture', 'platform', 'platformVersion']),
+        support: SUPPORTS,
+        settings: $settings
+      }
     }
-    navigator.clipboard.writeText(JSON.stringify(device, null, 2))
+    navigator.clipboard.writeText(JSON.stringify(info, null, 2))
     toast.success('Copied to clipboard', {
       description: 'Copied device info to clipboard',
       duration: 5000
