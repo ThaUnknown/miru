@@ -15,6 +15,16 @@ export default defineConfig({
       }
     })
   ],
+  resolve: {
+    alias: {
+      // thank you bottleneck for importing useless modules
+      './RedisConnection': resolve(__dirname, 'src/patches/empty.cjs'),
+      './RedisConnection.js': resolve(__dirname, 'src/patches/empty.cjs'),
+      './RedisDatastore': resolve(__dirname, 'src/patches/empty.cjs'),
+      './IORedisConnection': resolve(__dirname, 'src/patches/empty.cjs'),
+      './Scripts': resolve(__dirname, 'src/patches/empty.cjs')
+    }
+  },
   server: { port: 7344 },
   build: {
     target: 'esnext'

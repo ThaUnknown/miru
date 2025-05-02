@@ -71,28 +71,29 @@
 
   let dragged: HTMLDivElement | null = null
   function draggable (node: HTMLDivElement, code: KeyCode) {
+    const ctrl = new AbortController()
     let drag = false
     node.addEventListener('dragstart', ({ target: _target }) => {
       const target = _target as HTMLDivElement
       dragged = target
       target.classList.add('transparent')
       drag = true
-    })
+    }, { signal: ctrl.signal })
     node.addEventListener('dragend', ({ target: _target }) => {
       const target = _target as HTMLDivElement
       target.classList.remove('transparent')
       drag = false
-    })
+    }, { signal: ctrl.signal })
     node.addEventListener('dragover', (e) => {
       const target = e.target as HTMLDivElement
       e.dataTransfer!.dropEffect = 'move'
       e.preventDefault()
       if (!drag) target.classList.add('transparent')
-    })
+    }, { signal: ctrl.signal })
     node.addEventListener('dragleave', ({ target: _target }) => {
       const target = _target as HTMLDivElement
       if (!drag) target.classList.remove('transparent')
-    })
+    }, { signal: ctrl.signal })
     node.addEventListener('drop', ({ target: _target }) => {
       const target = _target as HTMLDivElement
       target.style.opacity = ''
@@ -106,7 +107,9 @@
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete $binds[targetcode]
       }
-    })
+    }, { signal: ctrl.signal })
+
+    return { destroy: () => ctrl.abort() }
   }
 </script>
 

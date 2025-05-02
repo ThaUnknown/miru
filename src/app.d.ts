@@ -101,6 +101,7 @@ export interface Native {
   updateProgress: (cb: (progress: number) => void) => Promise<void>
   spawnPlayer: (url: string) => Promise<void>
   setHideToTray: (enabled: boolean) => Promise<void>
+  transparency: (enabled: boolean) => Promise<void>
   isApp: boolean
   version: () => Promise<string>
 }

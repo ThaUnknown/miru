@@ -58,8 +58,8 @@
     </SettingCard>
 
     <div class='font-weight-bold text-xl font-bold'>UI Settings</div>
-    <SettingCard title='Idle Animation' description='Enable/Disable the 3d idle animation.'>
-      <Switch bind:checked={$settings.idleAnimation} />
+    <SettingCard title='Idle Animation' description='Enable/Disable the 3d idle animation. Changing this setting will restart the app.'>
+      <Switch bind:checked={$settings.idleAnimation} on:click={native.restart} />
     </SettingCard>
   {/if}
 </div>

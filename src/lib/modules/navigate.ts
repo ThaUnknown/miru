@@ -50,6 +50,7 @@ export function keywrap (cb: (_: KeyboardEvent) => unknown = noop) {
  * Adds click event listener to the specified node.
  */
 export function click (node: HTMLElement, cb: (_: Event) => unknown = noop) {
+  const ctrl = new AbortController()
   node.tabIndex = 0
   node.role = 'button'
   node.addEventListener('click', e => {
@@ -57,20 +58,23 @@ export function click (node: HTMLElement, cb: (_: Event) => unknown = noop) {
     e.preventDefault()
     navigator.vibrate(15)
     cb(e)
-  })
+  }, { signal: ctrl.signal })
   node.addEventListener('keydown', e => {
     if (e.key === 'Enter' && intputType.value === 'dpad') {
       e.stopPropagation()
       e.preventDefault()
       cb(e)
     }
-  })
+  }, { signal: ctrl.signal })
+
+  return { destroy: () => ctrl.abort() }
 }
 
 /**
  * Adds hover and click event listeners to the specified node.
  */
 export function hover (node: HTMLElement, [cb = noop, hoverUpdate = noop]: [typeof noop, (_: boolean) => void]) {
+  const ctrl = new AbortController()
   node.addEventListener('wheel', e => {
     // cheap way to update hover state on scroll
     if (document.elementsFromPoint(e.clientX, e.clientY).includes(node)) {
@@ -80,14 +84,14 @@ export function hover (node: HTMLElement, [cb = noop, hoverUpdate = noop]: [type
     } else {
       hoverUpdate(false)
     }
-  }, { passive: true })
+  }, { passive: true, signal: ctrl.signal })
   node.tabIndex = 0
   node.role = 'button'
   node.addEventListener('pointerenter', () => {
     lastHoverElement?.(false)
     hoverUpdate(true)
     if (intputType.value === 'mouse') lastHoverElement = hoverUpdate
-  })
+  }, { signal: ctrl.signal })
   node.addEventListener('click', e => {
     e.stopPropagation()
     if (intputType.value === 'dpad') return
@@ -100,7 +104,7 @@ export function hover (node: HTMLElement, [cb = noop, hoverUpdate = noop]: [type
     } else {
       lastHoverElement = hoverUpdate
     }
-  })
+  }, { signal: ctrl.signal })
   node.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === 'Enter' && intputType.value === 'dpad') {
       e.stopPropagation()
@@ -113,16 +117,18 @@ export function hover (node: HTMLElement, [cb = noop, hoverUpdate = noop]: [type
         lastHoverElement = hoverUpdate
       }
     }
-  })
+  }, { signal: ctrl.signal })
   node.addEventListener('pointerleave', () => {
     if (intputType.value !== 'touch') hoverUpdate(false)
-  })
+  }, { signal: ctrl.signal })
   node.addEventListener('pointermove', () => {
     if (intputType.value === 'touch') hoverUpdate(false)
-  })
+  }, { signal: ctrl.signal })
   node.addEventListener('drag', () => {
     if (intputType.value === 'mouse') hoverUpdate(false)
-  })
+  }, { signal: ctrl.signal })
+
+  return { destroy: () => ctrl.abort() }
 }
 
 interface ElementPosition { element: HTMLElement, x: number, y: number, inViewport: boolean }
@@ -275,16 +281,18 @@ export function dragScroll (node: HTMLElement) {
   let deltaX = 0
   let deltaY = 0
 
+  const ctrl = new AbortController()
+
   node.addEventListener('mousedown', e => {
     isDragging = true
     x = e.clientX
     y = e.clientY
     deltaX = 0
     deltaY = 0
-  })
+  }, { signal: ctrl.signal })
   node.addEventListener('click', e => {
     isDragging = false
-  })
+  }, { signal: ctrl.signal })
 
   node.addEventListener('mousemove', e => {
     if (!isDragging) return true
@@ -296,13 +304,15 @@ export function dragScroll (node: HTMLElement) {
     if (deltaX > 15 || deltaY > 15) {
       e.target?.dispatchEvent(new MouseEvent('drag', { bubbles: true }))
     }
-  })
+  }, { signal: ctrl.signal })
 
   node.addEventListener('mouseleave', () => {
     isDragging = false
-  })
+  }, { signal: ctrl.signal })
 
   node.addEventListener('mouseup', () => {
     isDragging = false
-  })
+  }, { signal: ctrl.signal })
+
+  return { destroy: () => ctrl.abort() }
 }
