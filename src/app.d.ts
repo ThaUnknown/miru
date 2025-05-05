@@ -1,9 +1,10 @@
 // See https://kit.svelte.dev/docs/types#app
 
+import { SvelteComponentTyped } from 'svelte'
+
 import type { SessionMetadata } from '$lib/components/ui/player/util'
 import type { Search } from '$lib/modules/anilist/queries'
 import type { VariablesOf } from 'gql.tada'
-import type { SvelteComponentTyped } from 'svelte'
 
 // for information about these interfaces
 export interface AuthResponse {
@@ -97,6 +98,7 @@ export interface Native {
   torrents: () => Promise<TorrentInfo[]>
   setDOH: (dns: string) => Promise<void>
   cachedTorrents: () => Promise<string[]>
+  downloadProgress: (percent: number) => Promise<void>
   updateSettings: (settings: TorrentSettings) => Promise<void>
   updateProgress: (cb: (progress: number) => void) => Promise<void>
   spawnPlayer: (url: string) => Promise<void>
@@ -133,6 +135,11 @@ declare global {
       getHighEntropyValues: (keys: string[]) => Promise<Record<string, string>>
     }
   }
+
+  declare module '*.svelte' {
+    export default SvelteComponentTyped
+  }
+
 }
 
 declare module '*.svelte' {

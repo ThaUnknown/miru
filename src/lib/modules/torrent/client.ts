@@ -40,6 +40,10 @@ export const server = new class ServerClient {
   constructor () {
     const last = get(this.last)
     if (last) this.play(last.id, last.media, last.episode)
+
+    this.stats.subscribe((stats) => {
+      native.downloadProgress(stats.progress)
+    })
   }
 
   async cachedSet () {

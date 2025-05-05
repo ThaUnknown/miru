@@ -88,7 +88,7 @@ export default class Subtitles {
       const event = this.constructSub(subtitle, meta.type !== 'ass', events.size, '' + (styles[subtitle.style ?? 'Default'] ?? 0))
       events.add(subtitle, event)
       if (Number(this.current.value) === trackNumber) this.renderer?.createEvent(event)
-    })
+    }).catch(console.error)
 
     native.attachments(this.selected.hash, this.selected.id).then(attachments => {
       for (const attachment of attachments) {

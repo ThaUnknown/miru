@@ -31,31 +31,31 @@
     return mediaInfo.targetAnimeFiles.find(file => file.metadata.episode === episode)
   }
 
-  function hasNext (file: ResolvedFile) {
-    return Number(file.metadata.episode) < (episodes(file.metadata.media) ?? 1)
+  function hasNext (file: MediaInfo) {
+    return Number(file.episode) < (episodes(file.media) ?? 1)
   }
-  function hasPrev (file: ResolvedFile) {
-    return Number(file.metadata.episode) > 1
+  function hasPrev (file: MediaInfo) {
+    return Number(file.episode) > 1
   }
   function playNext () {
-    let episode = parseInt('' + mediaInfo.target.metadata.episode) + 1
+    let episode = parseInt('' + current.episode) + 1
     if ($settings.playerSkipFiller) {
-      while (fillerEpisodes[mediaInfo.target.metadata.media.id]?.includes(episode)) {
+      while (fillerEpisodes[current.media.id]?.includes(episode)) {
         episode++
       }
-      episode = Math.min(episode, episodes(mediaInfo.target.metadata.media) ?? 1)
+      episode = Math.min(episode, episodes(current.media) ?? 1)
     }
     const nextFile = findEpisode(episode)
     if (nextFile) {
       current = fileToMedaInfo(nextFile)
     } else {
-      searchStore.set({ media: mediaInfo.target.metadata.media, episode })
+      searchStore.set({ media: current.media, episode })
     }
   }
   function playPrev () {
-    let episode = parseInt('' + mediaInfo.target.metadata.episode) - 1
+    let episode = parseInt('' + current.episode) - 1
     if ($settings.playerSkipFiller) {
-      while (fillerEpisodes[mediaInfo.target.metadata.media.id]?.includes(episode)) {
+      while (fillerEpisodes[current.media.id]?.includes(episode)) {
         episode--
       }
       episode = Math.max(1, episode)
@@ -64,7 +64,7 @@
     if (prevFile) {
       current = fileToMedaInfo(prevFile)
     } else {
-      searchStore.set({ media: mediaInfo.target.metadata.media, episode })
+      searchStore.set({ media: current.media, episode })
     }
   }
 
@@ -72,16 +72,16 @@
     current = fileToMedaInfo(file)
   }
 
-  $: next = hasNext(mediaInfo.target)
+  $: next = hasNext(current)
     ? playNext
     : undefined
 
-  $: prev = hasPrev(mediaInfo.target)
+  $: prev = hasPrev(current)
     ? playPrev
     : undefined
 </script>
 
-<!-- inefficient, but safe -->
+<!-- TODO: inefficient, but safe -->
 {#key current}
   {#if $settings.enableExternal}
     <Externalplayer mediaInfo={current} otherFiles={mediaInfo.otherFiles} videoFiles={mediaInfo.resolvedFiles} {selectFile} {prev} {next} />

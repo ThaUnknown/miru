@@ -1,1 +1,1 @@
-export { default as Player } from './page.svelte'
+export { default as Player } from './wrapper.svelte'
