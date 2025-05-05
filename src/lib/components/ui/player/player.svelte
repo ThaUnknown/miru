@@ -403,6 +403,8 @@
   function seekBarKey (event: KeyboardEvent) {
     // left right up down return preventdefault
     if (['ArrowLeft', 'ArrowRight'].includes(event.key)) event.stopPropagation()
+
+    if (event.repeat) return
     switch (event.key) {
       case 'ArrowLeft':
         seek(-Number($settings.playerSeek))
@@ -577,26 +579,33 @@
   function holdToFF (document: HTMLElement, type: 'key' | 'pointer') {
     const ctrl = new AbortController()
     let timeout = 0
+    let oldPlaybackRate = playbackRate
     const startFF = () => {
       timeout = setTimeout(() => {
         paused = false
         ff = true
+        oldPlaybackRate = playbackRate
         playbackRate = 2
       }, 1000)
     }
     const endFF = () => {
       clearTimeout(timeout)
-      ff = false
-      playbackRate = 1
+      if (ff) {
+        ff = false
+        playbackRate = oldPlaybackRate
+        paused = true
+      }
     }
     document.addEventListener(type + 'down' as 'keydown' | 'pointerdown', (event) => {
       if (isMiniplayer) return
       if ('code' in event && (event.code !== 'Space' || event.repeat)) return
+      if ('pointerId' in event) document.setPointerCapture(event.pointerId)
       startFF()
     }, { signal: ctrl.signal })
-    document.addEventListener(type + 'up' as 'keydown' | 'pointerdown', (event) => {
+    document.addEventListener(type + 'up' as 'keyup' | 'pointerup', (event) => {
       if (isMiniplayer) return
       if ('code' in event && event.code !== 'Space') return
+      if ('pointerId' in event) document.releasePointerCapture(event.pointerId)
       endFF()
     }, { signal: ctrl.signal })
 
