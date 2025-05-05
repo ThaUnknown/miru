@@ -198,7 +198,8 @@ export const ScheduleMedia = gql(`
       userPreferred
     }
     mediaListEntry {
-      status
+      status,
+      id
     }
     aired: airingSchedule(page: 1, perPage: 50, notYetAired: false) {
       n: nodes {

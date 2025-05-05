@@ -53,7 +53,7 @@
 <SidebarButton href='/app/settings/'>
   <Settings size={18} />
 </SidebarButton>
-<SidebarButton href='/app/profile/' class='hidden md:block'>
+<SidebarButton href='/app/profile/' class='hidden md:flex py-0'>
   {#if hasAuth}
     {@const viewer = client.profile()}
     <Avatar.Root class='size-6 rounded-md'>

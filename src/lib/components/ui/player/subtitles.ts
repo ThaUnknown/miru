@@ -2,13 +2,12 @@ import JASSUB, { type ASS_Event as ASSEvent } from 'jassub'
 import { writable } from 'simple-store-svelte'
 import { get } from 'svelte/store'
 
-import { fontRx, type ResolvedFile } from './resolver'
-
+import type { ResolvedFile } from './resolver'
 import type { TorrentFile } from '../../../../app'
 
 import native from '$lib/modules/native'
 import { settings, SUPPORTS } from '$lib/modules/settings'
-import { HashMap } from '$lib/utils'
+import { fontRx, HashMap, subRx, subtitleExtensions, toTS } from '$lib/utils'
 // import { toTS } from '$lib/utils'
 
 const defaultHeader = `[Script Info]
@@ -37,6 +36,8 @@ export default class Subtitles {
   set = get(settings)
 
   _tracks = writable<Record<number | string, { events: HashMap<{ text: string, time: number, duration: number, style?: string }, ASSEvent>, meta: { language?: string, type: string, header: string, number: string, name?: string }, styles: Record<string | number, number> }>>({})
+
+  ctrl = new AbortController()
 
   constructor (video: HTMLVideoElement, files: TorrentFile[], selected: ResolvedFile) {
     this.video = video
@@ -98,6 +99,66 @@ export default class Subtitles {
         }
       }
     })
+
+    video.parentElement!.addEventListener('drop', e => this.handleTransfer(e), { signal: this.ctrl.signal })
+    video.parentElement!.addEventListener('paste', e => this.handleTransfer(e), { signal: this.ctrl.signal })
+    video.parentElement!.addEventListener('dragover', e => e.preventDefault(), { signal: this.ctrl.signal })
+  }
+
+  async handleTransfer (e: { dataTransfer?: DataTransfer | null, clipboardData?: DataTransfer | null } & Event) {
+    e.preventDefault()
+    const promises = [...(e.dataTransfer ?? e.clipboardData)!.items].map(item => {
+      const type = item.type
+      return new Promise<File>(resolve => item.kind === 'string' ? item.getAsString(text => resolve(new File([text], 'Subtitle.txt', { type }))) : resolve(item.getAsFile()!))
+    })
+
+    for (const file of await Promise.all(promises)) {
+      if (subRx.test(file.name)) this.addSingleSubtitleFile(file)
+    }
+  }
+
+  pickFile () {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = subtitleExtensions.map(ext => '.' + ext).join(',')
+    input.multiple = true
+    input.addEventListener('change', async () => {
+      for (const file of Array.from(input.files ?? [])) {
+        if (subRx.test(file.name)) this.addSingleSubtitleFile(file)
+      }
+    })
+    input.click()
+  }
+
+  async addSingleSubtitleFile (file: File) {
+    // lets hope there's no more than 100 subtitle tracks in a file
+    const trackNumber = 1000 + Object.keys(this._tracks.value).length
+
+    const dot = file.name.lastIndexOf('.')
+    const extension = file.name.substring(dot + 1).toLowerCase()
+    if (!subtitleExtensions.includes(extension)) return
+    const filename = file.name.slice(0, dot)
+    // sub name could contain video name with or without extension, possibly followed by lang, or not.
+    const name = filename.includes(this.selected.name)
+      ? filename.replace(this.selected.name, '')
+      : filename.replace(this.selected.name.slice(0, this.selected.name.lastIndexOf('.')), '')
+
+    const convert = Subtitles.convertSubText(await file.text(), extension)
+    if (!convert) return
+    const { header, type } = convert
+    const newtrack = this.track(trackNumber)
+    newtrack.styles.Default = 0
+    newtrack.meta = { type, header, number: '' + trackNumber, name, language: name.replace(/[,._-]/g, ' ').trim() || 'Track ' + trackNumber }
+    const styleMatches = header.match(stylesRx)
+    if (styleMatches) {
+      for (let i = 0; i < styleMatches.length; ++i) {
+        newtrack.styles[styleMatches[i]!.replace('Style:', '').trim()] = i + 1
+      }
+    }
+    if (this.current.value === -1) {
+      this.selectCaptions(trackNumber)
+      this.initSubtitleRenderer()
+    }
   }
 
   initSubtitleRenderer () {
@@ -194,107 +255,78 @@ export default class Subtitles {
 
   destroy () {
     this.renderer?.destroy()
+    this.ctrl.abort()
     this.files = []
     for (const { events } of Object.values(this._tracks.value)) {
       events.clear()
     }
   }
 
-  // async addSingleSubtitleFile (file: File) {
-  //   // lets hope there's no more than 100 subtitle tracks in a file
-  //   const index = 100 + this.headers.length
-  //   this.subtitleFiles[index] = file
-  //   const type = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase()
-  //   const subname = file.name.slice(0, file.name.lastIndexOf('.'))
-  //   // sub name could contain video name with or without extension, possibly followed by lang, or not.
-  //   const name = subname.includes(this.selected.name)
-  //     ? subname.replace(this.selected.name, '')
-  //     : subname.replace(this.selected.name.slice(0, this.selected.name.lastIndexOf('.')), '')
-  //   this.headers[index] = {
-  //     header: defaultHeader,
-  //     language: name.replace(/[,._-]/g, ' ').trim() || 'Track ' + index,
-  //     number: index,
-  //     type
-  //   }
-  //   this.tracks[index] = []
-  //   const subtitles = Subtitles.convertSubText(await file.text(), type) ?? ['']
-  //   if (type === 'ass') {
-  //     this.headers[index].header = subtitles
-  //   } else {
-  //     this.headers[index].header += subtitles.join('\n')
-  //   }
-  //   if (!this.current) {
-  //     this.current = index
-  //     this.initSubtitleRenderer()
-  //     this.selectCaptions(this.current)
-  //   }
-  // }
-
-  // static convertSubText (text: string, type: string) {
-  //   const srtRx = /(?:\d+\r?\n)?(\S{9,12})\s?-->\s?(\S{9,12})(.*)\r?\n([\s\S]*)$/i
-  //   const srt = (text: string) => {
-  //     const subtitles = []
-  //     const replaced = text.replace(/\r/g, '')
-  //     for (const split of replaced.split(/\r?\n\r?\n/)) {
-  //       const match: string[] | null = split.match(srtRx)
-  //       if (match?.length !== 5) continue
-  //       // timestamps
-  //       match[1] = match[1]!.match(/.*[.,]\d{2}/)![0]
-  //       match[2] = match[2]!.match(/.*[.,]\d{2}/)![0]
-  //       if (match[1]?.length === 9) {
-  //         match[1] = '0:' + match[1]
-  //       } else {
-  //         if (match[1]?.[0] === '0') {
-  //           match[1] = match[1].substring(1)
-  //         }
-  //       }
-  //       match[1]?.replace(',', '.')
-  //       if (match[2]?.length === 9) {
-  //         match[2] = '0:' + match[2]
-  //       } else {
-  //         if (match[2]?.[0] === '0') {
-  //           match[2] = match[2].substring(1)
-  //         }
-  //       }
-  //       match[2]?.replace(',', '.')
-  //       // create array of all tags
-  //       const matches = match[4]?.match(/<[^>]+>/g)
-  //       if (matches) {
-  //         matches.forEach(matched => {
-  //           if (matched.includes('</')) { // check if its a closing tag
-  //             match[4] = match[4]!.replace(matched, matched.replace('</', '{\\').replace('>', '0}'))
-  //           } else {
-  //             match[4] = match[4]!.replace(matched, matched.replace('<', '{\\').replace('>', '1}'))
-  //           }
-  //         })
-  //       }
-  //       subtitles.push('Dialogue: 0,' + match[1].replace(',', '.') + ',' + match[2].replace(',', '.') + ',Default,,0,0,0,,' + match[4]!.replace(/\r?\n/g, '\\N'))
-  //     }
-  //     return subtitles
-  //   }
-  //   const subRx = /[{[](\d+)[}\]][{[](\d+)[}\]](.+)/i
-  //   const sub = (text: string) => {
-  //     const subtitles = []
-  //     const replaced = text.replace(/\r/g, '')
-  //     let frames = 1000 / Number(replaced.match(subRx)?.[3])
-  //     if (!frames || isNaN(frames)) frames = 41.708
-  //     for (const split of replaced.split('\r?\n')) {
-  //       const match = split.match(subRx)
-  //       if (match) subtitles.push('Dialogue: 0,' + toTS((Number(match[1]) * frames) / 1000, 1) + ',' + toTS((Number(match[2]) * frames) / 1000, 1) + ',Default,,0,0,0,,' + match[3]?.replace('|', '\\N'))
-  //     }
-  //     return subtitles
-  //   }
-  //   const subtitles = type === 'ass' ? text : []
-  //   if (type === 'ass') {
-  //     return subtitles
-  //   } else if (type === 'srt' || type === 'vtt') {
-  //     return srt(text)
-  //   } else if (type === 'sub') {
-  //     return sub(text)
-  //   } else {
-  //     // subbers have a tendency to not set the extensions properly
-  //     if (srtRx.test(text)) return srt(text)
-  //     if (subRx.test(text)) return sub(text)
-  //   }
-  // }
+  static convertSubText (text: string, type: string) {
+    const srtRx = /(?:\d+\r?\n)?(\S{9,12})\s?-->\s?(\S{9,12})(.*)\r?\n([\s\S]*)$/i
+    const srt = (text: string) => {
+      const subtitles = []
+      const replaced = text.replace(/\r/g, '')
+      for (const split of replaced.split(/\r?\n\r?\n/)) {
+        const match: string[] | null = split.match(srtRx)
+        if (match?.length !== 5) continue
+        // timestamps
+        match[1] = match[1]!.match(/.*[.,]\d{2}/)![0]
+        match[2] = match[2]!.match(/.*[.,]\d{2}/)![0]
+        if (match[1]?.length === 9) {
+          match[1] = '0:' + match[1]
+        } else {
+          if (match[1]?.[0] === '0') {
+            match[1] = match[1].substring(1)
+          }
+        }
+        match[1]?.replace(',', '.')
+        if (match[2]?.length === 9) {
+          match[2] = '0:' + match[2]
+        } else {
+          if (match[2]?.[0] === '0') {
+            match[2] = match[2].substring(1)
+          }
+        }
+        match[2]?.replace(',', '.')
+        // create array of all tags
+        const matches = match[4]?.match(/<[^>]+>/g)
+        if (matches) {
+          matches.forEach(matched => {
+            if (matched.includes('</')) { // check if its a closing tag
+              match[4] = match[4]!.replace(matched, matched.replace('</', '{\\').replace('>', '0}'))
+            } else {
+              match[4] = match[4]!.replace(matched, matched.replace('<', '{\\').replace('>', '1}'))
+            }
+          })
+        }
+        subtitles.push('Dialogue: 0,' + match[1].replace(',', '.') + ',' + match[2].replace(',', '.') + ',Default,,0,0,0,,' + match[4]!.replace(/\r?\n/g, '\\N'))
+      }
+      return subtitles
+    }
+    const subRx = /[{[](\d+)[}\]][{[](\d+)[}\]](.+)/i
+    const sub = (text: string) => {
+      const subtitles = []
+      const replaced = text.replace(/\r/g, '')
+      let frames = 1000 / Number(replaced.match(subRx)?.[3])
+      if (!frames || isNaN(frames)) frames = 41.708
+      for (const split of replaced.split('\r?\n')) {
+        const match = split.match(subRx)
+        if (match) subtitles.push('Dialogue: 0,' + toTS((Number(match[1]) * frames) / 1000, 1) + ',' + toTS((Number(match[2]) * frames) / 1000, 1) + ',Default,,0,0,0,,' + match[3]?.replace('|', '\\N'))
+      }
+      return subtitles
+    }
+    if (type === 'ass') {
+      return { type: 'ass', header: text }
+    } else if (type === 'srt' || type === 'vtt') {
+      return { type: 'srt', header: srt(text).join('\n') }
+    } else if (type === 'sub') {
+      return { type: 'sub', header: sub(text).join('\n') }
+    } else {
+      // subbers have a tendency to not set the extensions at all
+      if (text.startsWith('[Script Info]')) return { type: 'ass', header: text }
+      if (srtRx.test(text)) return { type: 'srt', header: srt(text).join('\n') }
+      if (subRx.test(text)) return { type: 'sub', header: sub(text).join('\n') }
+    }
+  }
 }

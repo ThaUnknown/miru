@@ -139,7 +139,6 @@ declare global {
   declare module '*.svelte' {
     export default SvelteComponentTyped
   }
-
 }
 
 declare module '*.svelte' {

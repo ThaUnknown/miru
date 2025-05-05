@@ -6,16 +6,7 @@ import type { AnitomyResult } from 'anitomyscript'
 import type { ResultOf } from 'gql.tada'
 
 import { client, episodes, type Media } from '$lib/modules/anilist'
-
-export const subtitleExtensions = ['srt', 'vtt', 'ass', 'ssa', 'sub', 'txt']
-export const subRx = new RegExp(`.(${subtitleExtensions.join('|')})$`, 'i')
-
-export const videoExtensions = ['3g2', '3gp', 'asf', 'avi', 'dv', 'flv', 'gxf', 'm2ts', 'm4a', 'm4b', 'm4p', 'm4r', 'm4v', 'mkv', 'mov', 'mp4', 'mpd', 'mpeg', 'mpg', 'mxf', 'nut', 'ogm', 'ogv', 'swf', 'ts', 'vob', 'webm', 'wmv', 'wtv']
-export const videoRx = new RegExp(`.(${videoExtensions.join('|')})$`, 'i')
-
-// freetype supported
-export const fontExtensions = ['ttf', 'ttc', 'woff', 'woff2', 'otf', 'cff', 'otc', 'pfa', 'pfb', 'pcf', 'fnt', 'bdf', 'pfr', 'eot']
-export const fontRx = new RegExp(`.(${fontExtensions.join('|')})$`, 'i')
+import { videoRx } from '$lib/utils'
 
 export type ResolvedFile = TorrentFile & {metadata: { episode: string | number | undefined, parseObject: AnitomyResult, media: Media, failed: boolean }}
 
@@ -41,12 +32,12 @@ export async function resolveFilesPoorly (promise: Promise<{media: Media, id: st
       ...file,
       metadata: resolved.find(({ parseObject }) => file.name.includes(parseObject.file_name[0]!))
     }
-  }).filter(file => file.metadata && !TYPE_EXCLUSIONS.includes(file.metadata.parseObject.anime_type?.[0]?.toUpperCase() ?? '')) as ResolvedFile[] // assertion because of file metadata
+  }).filter(file => file.metadata && !TYPE_EXCLUSIONS.includes(file.metadata.parseObject.anime_type[0]?.toUpperCase() ?? '')) as ResolvedFile[] // assertion because of file metadata
 
   let targetAnimeFiles = resolvedFiles.filter(file => file.metadata.media.id && file.metadata.media.id === list.media.id)
 
   if (!targetAnimeFiles.length) {
-    const max = highestOccurence(resolvedFiles, file => file.metadata.parseObject.anime_title?.[0] ?? '').metadata.parseObject.anime_title
+    const max = highestOccurence(resolvedFiles, file => file.metadata.parseObject.anime_title[0] ?? '').metadata.parseObject.anime_title
     targetAnimeFiles = resolvedFiles.filter(file => file.metadata.parseObject.anime_title === max)
   }
 
@@ -151,7 +142,7 @@ const AnimeResolver = new class AnimeResolver {
   animeNameCache: Record<string, number> = {}
 
   getCacheKeyForTitle (obj: AnitomyResult): string {
-    let key = obj.anime_title?.[0] ?? ''
+    let key = obj.anime_title[0] ?? ''
     if (obj.anime_year) key += obj.anime_year[0]
     return key
   }
@@ -199,7 +190,7 @@ const AnimeResolver = new class AnimeResolver {
     if (!parseObjects.length) return
     const titleObjects = parseObjects.map(obj => {
       const key = this.getCacheKeyForTitle(obj)
-      const titleObjects: Array<{key: string, title: string, year?: string, isAdult: boolean}> = this.alternativeTitles(obj.anime_title?.[0] ?? '').map(title => ({ title, year: obj.anime_year?.[0], key, isAdult: false }))
+      const titleObjects: Array<{key: string, title: string, year?: string, isAdult: boolean}> = this.alternativeTitles(obj.anime_title[0] ?? '').map(title => ({ title, year: obj.anime_year[0], key, isAdult: false }))
       // @ts-expect-error cba fixing this for now, but this is correct
       titleObjects.push({ ...titleObjects.at(-1), isAdult: true })
       return titleObjects

@@ -36,16 +36,16 @@
 
   function sanitiseTerms ({ video_term: video, audio_term: audio, video_resolution: resolution, source }: AnitomyResult) {
     const terms = [...new Set([...video ?? [], ...audio ?? [], ...source ?? []].map(term => termMapping[term.toUpperCase() ?? '']).filter(t => t))] as Array<{text: string, color: string}>
-    if (resolution?.length) terms.unshift({ text: resolution[0]!, color: '#c6ec58' })
+    if (resolution.length) terms.unshift({ text: resolution[0]!, color: '#c6ec58' })
 
     return terms
   }
 
   function simplifyFilename ({ video_term: video, audio_term: audio, video_resolution: resolution, file_name: name, release_group: group, file_checksum: checksum }: AnitomyResult) {
     let simpleName = name[0]!
-    if (group?.length) simpleName = simpleName.replace(group[0]!, '')
-    if (resolution?.length) simpleName = simpleName.replace(resolution[0]!, '')
-    if (checksum?.length) simpleName = simpleName.replace(checksum[0]!, '')
+    if (group.length) simpleName = simpleName.replace(group[0]!, '')
+    if (resolution.length) simpleName = simpleName.replace(resolution[0]!, '')
+    if (checksum.length) simpleName = simpleName.replace(checksum[0]!, '')
     for (const term of video ?? []) simpleName = simpleName.replace(term[0]!, '')
     for (const term of audio ?? []) simpleName = simpleName.replace(term[0]!, '')
     return simpleName.replace(/[[{(]\s*[\]})]/g, '').replace(/\s+/g, ' ').trim()
@@ -257,6 +257,17 @@
                         </div>
                       {/each}
                     </div>
+                  </div>
+                </div>
+              </div>
+            {:else}
+              <div class='p-5 flex items-center justify-center w-full h-80'>
+                <div>
+                  <div class='mb-3 font-bold text-4xl text-center '>
+                    Ooops!
+                  </div>
+                  <div class='text-lg text-center text-muted-foreground'>
+                    No results found.<br />Try specifying a torrent manually by pasting a magnet link or torrent file into the filter bar.
                   </div>
                 </div>
               </div>

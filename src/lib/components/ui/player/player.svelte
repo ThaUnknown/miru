@@ -615,8 +615,8 @@
 
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
 
-<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth bind:this={wrapper}>
-  <video class='w-full h-full' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
+<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth class:seeking bind:this={wrapper}>
+  <video class='w-full h-full' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
     use:createSubtitles
     use:holdToFF={'pointer'}
     crossorigin='anonymous'
@@ -798,6 +798,10 @@
 <style>
   .fitWidth :global(.deband-canvas) {
     object-fit: cover !important;
+  }
+
+  .seeking :global(.deband-canvas) {
+    opacity: 0 !important;
   }
   .gradient {
     background: linear-gradient(to top, oklab(0 0 0 / 0.85) 0%, oklab(0 0 0 / 0.7) 35%, oklab(0 0 0 / 0) 100%);

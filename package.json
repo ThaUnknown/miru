@@ -1,6 +1,6 @@
 {
 	"name": "ui",
-	"version": "6.1.16",
+	"version": "6.1.17",
 	"license": "BUSL-1.1",
 	"private": true,
 	"packageManager": "pnpm@9.14.4",
@@ -23,7 +23,6 @@
 		"@sveltejs/kit": "^2.8.1",
 		"@sveltejs/vite-plugin-svelte": "^3.1.2",
 		"@types/debug": "^4.1.12",
-		"@types/events": "^3.0.3",
 		"@types/semver": "^7.7.0",
 		"@urql/introspection": "^1.1.0",
 		"autoprefixer": "^10.4.20",

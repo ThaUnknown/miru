@@ -144,6 +144,9 @@
                     </Tree.Sub>
                   </Tree.Item>
                 {/each}
+                <Tree.Item on:click={() => { subtitles.pickFile(); open = false }}>
+                  <span>Add Subtitle File</span>
+                </Tree.Item>
               </Tree.Sub>
             </Tree.Item>
           {/if}
