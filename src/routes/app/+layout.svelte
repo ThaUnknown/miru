@@ -8,7 +8,7 @@
 
 <BannerImage class='absolute top-0 left-0 -z-[1]' />
 <SearchModal />
-<div class='flex flex-row grow h-full overflow-clip'>
+<div class='flex flex-row grow h-full overflow-clip group/fullscreen' id='episodeListTarget'>
   <Sidebar>
     <Sidebarlist />
   </Sidebar>

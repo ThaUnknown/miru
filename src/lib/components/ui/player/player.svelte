@@ -93,7 +93,7 @@
     return paused ? video.play() : video.pause()
   }
   function fullscreen () {
-    return fullscreenElement ? document.exitFullscreen() : wrapper.requestFullscreen()
+    return fullscreenElement ? document.exitFullscreen() : document.getElementById('episodeListTarget')!.requestFullscreen()
   }
 
   function toggleCast () {
