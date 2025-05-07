@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: only light;
+  color-scheme: only dark;
 }
 
 @layer base {
@@ -109,6 +109,10 @@ body {
 
 img {
   -webkit-user-drag: none;
+}
+
+:fullscreen {
+  user-select: none;
 }
 
 @keyframes load-in {
