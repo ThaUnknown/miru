@@ -8,7 +8,6 @@ import type { TorrentFile } from '../../../../app'
 import native from '$lib/modules/native'
 import { settings, SUPPORTS } from '$lib/modules/settings'
 import { fontRx, HashMap, subRx, subtitleExtensions, toTS } from '$lib/utils'
-// import { toTS } from '$lib/utils'
 
 const defaultHeader = `[Script Info]
 Title: English (US)
@@ -122,8 +121,8 @@ export default class Subtitles {
     input.type = 'file'
     input.accept = subtitleExtensions.map(ext => '.' + ext).join(',')
     input.multiple = true
-    input.addEventListener('change', async () => {
-      for (const file of Array.from(input.files ?? [])) {
+    input.addEventListener('change', () => {
+      for (const file of input.files ?? []) {
         if (subRx.test(file.name)) this.addSingleSubtitleFile(file)
       }
     })

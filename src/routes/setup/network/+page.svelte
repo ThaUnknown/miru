@@ -17,9 +17,9 @@
   const downloadBandwidthCheck: Checks = {
     promise: new Promise(resolve => {
       speedTest.onFinish = res => {
-        const bandwidth = res.getDownloadBandwidth() ?? 0 // bytes
-        if (bandwidth < 1.875e6) resolve({ status: 'error', text: `Download speed is ${fastPrettyBits(bandwidth)}/s, at least 15Mb/s download is required to stream video real-time.` })
-        if (bandwidth < 3.125e6) resolve({ status: 'warning', text: `Download speed is ${fastPrettyBits(bandwidth)}/s, 25Mb/s download is recommended.` })
+        const bandwidth = res.getDownloadBandwidth() ?? 0 // bits
+        if (bandwidth < 1.5e+7) resolve({ status: 'error', text: `Download speed is ${fastPrettyBits(bandwidth)}/s, at least 15Mb/s download is required to stream video real-time.` })
+        if (bandwidth < 2.5e+7) resolve({ status: 'warning', text: `Download speed is ${fastPrettyBits(bandwidth)}/s, 25Mb/s download is recommended.` })
         resolve({ status: 'success', text: `Download speed is ${fastPrettyBits(bandwidth)}/s.` })
       }
     }),
@@ -44,13 +44,13 @@
   async function checkPortAvailability (port: number): Checks['promise'] {
     const res = await native.checkIncomingConnections(port)
     if (res) return { status: 'success', text: 'Port forwarding is available.' }
-    return { status: 'error', text: 'Port forwarding is not available. Peer discovery will suffer.' }
+    return { status: 'error', text: 'Not available. Peer discovery will suffer. Streaming old, poorly seeded anime might be impossible.' }
   }
 
   $: checks = [downloadBandwidthCheck, {
     promise: checkPortAvailability($settings.torrentPort),
-    title: 'Port Accessibility',
-    pending: 'Checking port forwarding...'
+    title: 'Port Forwarding',
+    pending: 'Checking port forwarding availability...'
   }]
 </script>
 
@@ -69,7 +69,7 @@
   <SettingCard class='bg-transparent' let:id title='Max Number of Connections' description='Number of peers per torrent. Higher values will increase download speeds but might quickly fill up available ports if your ISP limits the maximum allowed number of open connections.'>
     <Input type='number' inputmode='numeric' pattern='[0-9]*' min='1' max='512' bind:value={$settings.maxConns} {id} class='w-32 shrink-0 bg-background' />
   </SettingCard>
-  <SettingCard class='bg-transparent' let:id title='Torrent Port' description='Port used for Torrent connections. 0 is automatic. Change this to a specific port if your VPN exposes a specific port only.'>
+  <SettingCard class='bg-transparent' let:id title='Forwarded Torrent Port' description='Forwarded port used for incoming torrent connections. 0 automatically finds an open unused port. Change this to a specific port if your VPN exposes only a specific port.'>
     <Input type='number' inputmode='numeric' pattern='[0-9]*' min='0' max='65536' bind:value={$settings.torrentPort} {id} class='w-32 shrink-0 bg-background' />
   </SettingCard>
 </div>

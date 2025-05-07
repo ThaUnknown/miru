@@ -7,10 +7,11 @@ interface RenderItem {
 export default class Thumbnailer {
   video = document.createElement('video')
   canvas = new OffscreenCanvas(0, 0)
+  // TODO: consider using bitmap renderer for better performance, this might not be worth the performance hit
   ctx = this.canvas.getContext('2d')!
   thumbnails: string[] = []
-  size = 800
-  interval = 10
+  size = 700
+  interval = 12
   currentTask: RenderItem | undefined
   nextTask: RenderItem | undefined
   src
@@ -83,7 +84,7 @@ export default class Thumbnailer {
     this.canvas.width = this.size
     this.canvas.height = height / width * this.size
     this.ctx.drawImage(video, 0, 0, this.canvas.width, this.canvas.height)
-    this.thumbnails[index] = URL.createObjectURL(await this.canvas.convertToBlob({ type: 'image/webp', quality: 0.6 }))
+    this.thumbnails[index] = URL.createObjectURL(await this.canvas.convertToBlob({ type: 'image/jpeg' }))
     return this.thumbnails[index]
   }
 
