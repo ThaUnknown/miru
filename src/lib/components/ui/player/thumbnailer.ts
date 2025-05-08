@@ -39,9 +39,8 @@ export default class Thumbnailer {
     const { promise, resolve } = Promise.withResolvers<string | undefined>()
 
     const run = () => {
-      this.video.requestVideoFrameCallback((_now, meta) => {
-        resolve(this._paintThumbnail(this.video, index, meta.width, meta.height))
-        this.video.currentTime = 0
+      this.video.requestVideoFrameCallback(async (_now, meta) => {
+        resolve(await this._paintThumbnail(this.video, index, meta.width, meta.height))
         this.currentTask = undefined
         if (this.nextTask) {
           this.currentTask = this.nextTask

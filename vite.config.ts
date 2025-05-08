@@ -27,7 +27,8 @@ export default defineConfig({
   },
   server: { port: 7344 },
   build: {
-    target: 'esnext'
+    target: 'esnext',
+    sourcemap: true
   },
   ssr: {
     target: 'webworker'
