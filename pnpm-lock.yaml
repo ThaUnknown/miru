@@ -39,8 +39,8 @@ importers:
         specifier: ^4.2.1
         version: 4.2.1(@urql/core@5.1.0(graphql@16.10.0))(svelte@4.2.19)
       abslink:
-        specifier: ^1.0.17
-        version: 1.0.17
+        specifier: ^1.1.0
+        version: 1.1.0
       anitomyscript:
         specifier: github:thaunknown/anitomyscript
         version: https://codeload.github.com/thaunknown/anitomyscript/tar.gz/fc00888d69ba59258167f2fac9e86576b29863b7
@@ -148,8 +148,8 @@ importers:
         specifier: ^0.0.18
         version: 0.0.18(svelte@4.2.19)
       eslint-config-standard-universal:
-        specifier: github:thaunknown/eslint-config-standard-universal
-        version: https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/6aa7ce8715627166521f6212715e605caca433e3(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6)
+        specifier: ^1.0.6
+        version: 1.0.6(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6)
       globals:
         specifier: ^15.11.0
         version: 15.11.0
@@ -607,11 +607,6 @@ packages:
     peerDependencies:
       eslint: '>=9.0.0'
 
-  '@sveltejs/acorn-typescript@1.0.5':
-    resolution: {integrity: sha512-IwQk4yfwLdibDlrXVE04jTZYlLnwsTT2PIOQQGNLWfjavGifnk1JD1LcZjZaBTRcxZu2FfPfNLOE04DSu9lqtQ==}
-    peerDependencies:
-      acorn: ^8.9.0
-
   '@sveltejs/adapter-auto@3.2.5':
     resolution: {integrity: sha512-27LR+uKccZ62lgq4N/hvyU2G+hTP9fxWEAfnZcl70HnyfAjMSsGk1z/SjAPXNCD1mVJIE7IFu3TQ8cQ/UH3c0A==}
     peerDependencies:
@@ -787,8 +782,8 @@ packages:
       '@urql/core': ^5.0.0
       svelte: ^3.0.0 || ^4.0.0 || ^5.0.0
 
-  abslink@1.0.17:
-    resolution: {integrity: sha512-g+XhHxF3l6W06M0wcdf0/gPANe5CJGTS1pUqSRlBDjA2JMLSO2Q7j48fasTDHPjn4pDIdhRm6stuYJpyVfmbtA==}
+  abslink@1.1.0:
+    resolution: {integrity: sha512-1u7983BH0JhfcONA2Vu76f8WZLx2+CGGn7YceUQ3Kreu+VWtW9ru+laiun6WPw7eZvnTzd/+yUszNj1+Vy3mcA==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1222,9 +1217,8 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-config-standard-universal@https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/6aa7ce8715627166521f6212715e605caca433e3:
-    resolution: {tarball: https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/6aa7ce8715627166521f6212715e605caca433e3}
-    version: 1.0.4
+  eslint-config-standard-universal@1.0.6:
+    resolution: {integrity: sha512-QNyO5eC69udu7grO+INuGPETVmhodA5vg0u5WXX4tdesh7n6BpdMHUjXJnsW6N6466i6l7jFYrDyCn7nfN83nw==}
 
   eslint-import-resolver-node@0.3.9:
     resolution: {integrity: sha512-WFj2isz22JahUv+B788TlO3N6zL3nNJGU8CcZbPZvVEkBPaJdCV4vy5wyghty5ROFbCRnm132v8BScu5/1BQ8g==}
@@ -1313,9 +1307,6 @@ packages:
   esm-env@1.1.4:
     resolution: {integrity: sha512-oO82nKPHKkzIj/hbtuDYy/JHqBHFlMIW36SDiPCVsj87ntDLcWN+sJ1erdVryd4NxODacFTsdrIE3b7IamqbOg==}
 
-  esm-env@1.2.2:
-    resolution: {integrity: sha512-Epxrv+Nr/CaL4ZcFGPJIYLWFom+YeV1DqMLHJoEd9SYRxNbaFruBwfEX/kkHUJf55j2+TUbmDcmuilbP1TmXHA==}
-
   espree@10.3.0:
     resolution: {integrity: sha512-0QYC8b24HWY8zjRnDTL6RiHfDbAWn63qb4LMj1Z4b076A4une81+z03Kg7l7mn/48PUTqoLptSXez8oknU8Clg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -1323,9 +1314,6 @@ packages:
   esquery@1.6.0:
     resolution: {integrity: sha512-ca9pw9fomFcKPvFLXhBKUK90ZvGibiGOvRJNbjljY7s7uq/5YO4BOzcYtJqExdx99rF6aAcnRxHmcUHcz6sQsg==}
     engines: {node: '>=0.10'}
-
-  esrap@1.4.6:
-    resolution: {integrity: sha512-F/D2mADJ9SHY3IwksD4DAXjTt7qt7GWUf3/8RhCNWmC/67tyb55dpimHmy7EplakFaflV0R/PC+fdSPqrRHAQw==}
 
   esrecurse@4.3.0:
     resolution: {integrity: sha512-KmfKL3b6G+RXvP8N1vr3Tq1kL/oCFgn2NYXEtqP8/L3pKapUA4G8cFVaoF3SU323CD4XypR/ffioHmkti6/Tag==}
@@ -1632,9 +1620,6 @@ packages:
 
   is-reference@3.0.2:
     resolution: {integrity: sha512-v3rht/LgVcsdZa3O2Nqs+NMowLOxeOm7Ay9+/ARQ2F+qEoANRcqrjAZKGN0v8ymUetZGgkp26LTnGT7H0Qo9Pg==}
-
-  is-reference@3.0.3:
-    resolution: {integrity: sha512-ixkJoqQvAP88E6wLydLGGqCJsrFUnqoH6HnaczB8XmDH1oaWU+xxdptvikTgaEhtZ53Ky6YXiBuUI2WXLMCwjw==}
 
   is-regex@1.1.4:
     resolution: {integrity: sha512-kvRdxDsxZjhzUX07ZnLydzS1TU/TJlTUHHY4YLL87e37oUA49DfkLqgy+VjFocowy29cKvcSiu+kIv728jTTVg==}
@@ -2339,10 +2324,6 @@ packages:
     resolution: {integrity: sha512-IY1rnGr6izd10B0A8LqsBfmlT5OILVuZ7XsI0vdGPEvuonFV7NYEUK4dAkm9Zg2q0Um92kYjTpS1CAP3Nh/KWw==}
     engines: {node: '>=16'}
 
-  svelte@5.28.2:
-    resolution: {integrity: sha512-FbWBxgWOpQfhKvoGJv/TFwzqb4EhJbwCD17dB0tEpQiw1XyUEKZJtgm4nA4xq3LLsMo7hu5UY/BOFmroAxKTMg==}
-    engines: {node: '>=18'}
-
   tabbable@6.2.0:
     resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
 
@@ -2614,9 +2595,6 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
-
-  zimmerframe@1.1.2:
-    resolution: {integrity: sha512-rAbqEGa8ovJy4pyBxZM70hg4pE6gDgaQ0Sl9M3enG3I0d6H4XSAM3GeNGLKnsBpuijUow064sf7ww1nutC5/3w==}
 
 snapshots:
 
@@ -2945,10 +2923,6 @@ snapshots:
       - supports-color
       - typescript
 
-  '@sveltejs/acorn-typescript@1.0.5(acorn@8.14.0)':
-    dependencies:
-      acorn: 8.14.0
-
   '@sveltejs/adapter-auto@3.2.5(@sveltejs/kit@2.8.1(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.19)(vite@5.4.11(terser@5.39.0)))(svelte@4.2.19)(vite@5.4.11(terser@5.39.0)))':
     dependencies:
       '@sveltejs/kit': 2.8.1(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.19)(vite@5.4.11(terser@5.39.0)))(svelte@4.2.19)(vite@5.4.11(terser@5.39.0))
@@ -3187,7 +3161,7 @@ snapshots:
       svelte: 4.2.19
       wonka: 6.3.4
 
-  abslink@1.0.17: {}
+  abslink@1.1.0: {}
 
   acorn-jsx@5.3.2(acorn@8.14.0):
     dependencies:
@@ -3719,7 +3693,7 @@ snapshots:
       eslint: 9.17.0(jiti@1.21.6)
       semver: 7.7.1
 
-  eslint-config-standard-universal@https://codeload.github.com/thaunknown/eslint-config-standard-universal/tar.gz/6aa7ce8715627166521f6212715e605caca433e3(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6):
+  eslint-config-standard-universal@1.0.6(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(jiti@1.21.6):
     dependencies:
       '@stylistic/eslint-plugin': 4.2.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2)
       eslint: 9.17.0(jiti@1.21.6)
@@ -3727,9 +3701,9 @@ snapshots:
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2))(eslint@9.17.0(jiti@1.21.6))
       eslint-plugin-n: 17.15.0(eslint@9.17.0(jiti@1.21.6))
       eslint-plugin-promise: 7.2.1(eslint@9.17.0(jiti@1.21.6))
-      eslint-plugin-svelte: 3.1.0(eslint@9.17.0(jiti@1.21.6))(svelte@5.28.2)
+      eslint-plugin-svelte: 3.1.0(eslint@9.17.0(jiti@1.21.6))(svelte@4.2.19)
       globals: 16.0.0
-      svelte: 5.28.2
+      svelte: 4.2.19
       typescript: 5.7.2
       typescript-eslint: 8.18.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.7.2)
     transitivePeerDependencies:
@@ -3811,7 +3785,7 @@ snapshots:
       '@eslint-community/eslint-utils': 4.4.1(eslint@9.17.0(jiti@1.21.6))
       eslint: 9.17.0(jiti@1.21.6)
 
-  eslint-plugin-svelte@3.1.0(eslint@9.17.0(jiti@1.21.6))(svelte@5.28.2):
+  eslint-plugin-svelte@3.1.0(eslint@9.17.0(jiti@1.21.6))(svelte@4.2.19):
     dependencies:
       '@eslint-community/eslint-utils': 4.4.1(eslint@9.17.0(jiti@1.21.6))
       '@jridgewell/sourcemap-codec': 1.5.0
@@ -3823,9 +3797,9 @@ snapshots:
       postcss-load-config: 3.1.4(postcss@8.4.49)
       postcss-safe-parser: 7.0.1(postcss@8.4.49)
       semver: 7.7.1
-      svelte-eslint-parser: 1.0.1(svelte@5.28.2)
+      svelte-eslint-parser: 1.0.1(svelte@4.2.19)
     optionalDependencies:
-      svelte: 5.28.2
+      svelte: 4.2.19
     transitivePeerDependencies:
       - ts-node
 
@@ -3881,8 +3855,6 @@ snapshots:
 
   esm-env@1.1.4: {}
 
-  esm-env@1.2.2: {}
-
   espree@10.3.0:
     dependencies:
       acorn: 8.14.0
@@ -3892,10 +3864,6 @@ snapshots:
   esquery@1.6.0:
     dependencies:
       estraverse: 5.3.0
-
-  esrap@1.4.6:
-    dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
 
   esrecurse@4.3.0:
     dependencies:
@@ -4171,10 +4139,6 @@ snapshots:
   is-number@7.0.0: {}
 
   is-reference@3.0.2:
-    dependencies:
-      '@types/estree': 1.0.6
-
-  is-reference@3.0.3:
     dependencies:
       '@types/estree': 1.0.6
 
@@ -4863,7 +4827,7 @@ snapshots:
     transitivePeerDependencies:
       - picomatch
 
-  svelte-eslint-parser@1.0.1(svelte@5.28.2):
+  svelte-eslint-parser@1.0.1(svelte@4.2.19):
     dependencies:
       eslint-scope: 8.2.0
       eslint-visitor-keys: 4.2.0
@@ -4872,7 +4836,7 @@ snapshots:
       postcss-scss: 4.0.9(postcss@8.4.49)
       postcss-selector-parser: 7.1.0
     optionalDependencies:
-      svelte: 5.28.2
+      svelte: 4.2.19
 
   svelte-hmr@0.16.0(svelte@4.2.19):
     dependencies:
@@ -4915,23 +4879,6 @@ snapshots:
       locate-character: 3.0.0
       magic-string: 0.30.12
       periscopic: 3.1.0
-
-  svelte@5.28.2:
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@jridgewell/sourcemap-codec': 1.5.0
-      '@sveltejs/acorn-typescript': 1.0.5(acorn@8.14.0)
-      '@types/estree': 1.0.6
-      acorn: 8.14.0
-      aria-query: 5.3.2
-      axobject-query: 4.1.0
-      clsx: 2.1.1
-      esm-env: 1.2.2
-      esrap: 1.4.6
-      is-reference: 3.0.3
-      locate-character: 3.0.0
-      magic-string: 0.30.12
-      zimmerframe: 1.1.2
 
   tabbable@6.2.0: {}
 
@@ -5213,5 +5160,3 @@ snapshots:
   yaml@2.6.0: {}
 
   yocto-queue@0.1.0: {}
-
-  zimmerframe@1.1.2: {}

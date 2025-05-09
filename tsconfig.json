@@ -1,19 +1,9 @@
 {
-  "extends": "./.svelte-kit/tsconfig.json",
+  "extends": [
+    "eslint-config-standard-universal/tsconfig.json",
+    "./.svelte-kit/tsconfig.json"
+  ],
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noUncheckedIndexedAccess": true,
     "plugins": [
       {
         "name": "gql.tada/ts-plugin",
@@ -22,7 +12,6 @@
         "tadaTurboLocation": "./src/lib/modules/anilist/graphql-turbo.d.ts"
       }
     ],
-    "maxNodeModuleJsDepth": 3,
     "typeRoots": [
       "./src/types"
     ],
@@ -39,9 +28,7 @@
     "src/**/*.cjs",
     "src/**/*.ts",
     "src/**/*.d.ts",
-    "src/**/*.svelte",
-    "src/global.d.tsd.ts",
-    "src/global.d.tsd.ts"
+    "src/**/*.svelte"
   ],
   "exclude": [
     "../node_modules/**"

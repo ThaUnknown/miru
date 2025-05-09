@@ -13,7 +13,10 @@
       <div class='text-6xl text-center font-bold'>Update Required</div>
       <Separator class='my-6 w-40' />
       <div class='text-xl text-wrap max-w-full text-center'>A mandatory update is available for the {#await outdatedComponent then name}{name}{/await}.<br />Please update to continue.</div>
-      <Button class='mt-6 text-md font-bold' size='lg' on:click={native.restart}>Update</Button>
+      <!-- TODO: remove this github releases open and replace it with native client update call!!! -->
+      {#await outdatedComponent then name}
+        <Button class='mt-6 text-md font-bold' size='lg' on:click={() => name === 'client' ? native.openURL('https://github.com/ThaUnknown/miru/releases/tag/v6.1.0') : native.restart()}>Update</Button>
+      {/await}
     </div>
   </div>
 </div>
