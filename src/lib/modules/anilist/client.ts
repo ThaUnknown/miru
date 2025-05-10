@@ -105,7 +105,8 @@ class AnilistClient {
               cache.updateQuery({ query: UserLists, variables: { id: this.viewer.value?.viewer?.id } }, data => {
                 if (!data?.MediaListCollection?.lists) return data
                 const oldLists = data.MediaListCollection.lists
-                const oldEntry = oldLists.flatMap(list => list?.entries).find(entry => entry?.media?.id === mediaId)
+                const oldEntry = oldLists.flatMap(list => list?.entries).find(entry => entry?.media?.id === mediaId) ?? { id: -1, media: cache.readFragment(FullMedia, { id: mediaId as number, __typename: 'Media' }) }
+                if (!oldEntry.media) return data
 
                 const lists = oldLists.map(list => {
                   if (!list?.entries) return list
@@ -115,7 +116,7 @@ class AnilistClient {
                   }
                 })
 
-                const status = result.SaveMediaListEntry?.status ?? oldEntry?.media?.mediaListEntry?.status ?? 'PLANNING' as const
+                const status = result.SaveMediaListEntry?.status ?? oldEntry.media.mediaListEntry?.status ?? 'PLANNING' as const
 
                 const fallback: NonNullable<typeof oldLists[0]> = { status, entries: [] }
                 let targetList = lists.find(list => list?.status === status)
@@ -124,7 +125,6 @@ class AnilistClient {
                   targetList = fallback
                 }
                 if (!targetList.entries) targetList.entries = []
-                // @ts-expect-error it expects relations, but this is a partial update, so we dont need them
                 targetList.entries.push(oldEntry)
                 return { ...data, MediaListCollection: { ...data.MediaListCollection, lists } }
               })
@@ -158,8 +158,7 @@ class AnilistClient {
         optimistic: {
           ToggleFavourite ({ animeId }, cache, info) {
             const id = animeId as number
-            // @ts-expect-error idk whats wrong here but it works correctly
-            const media = cache.readFragment(FullMedia, { id })
+            const media = cache.readFragment(FullMedia, { id, __typename: 'Media' })
             info.partial = true
 
             const nodes = media?.isFavourite ? [] : [{ id, __typename: 'Media' }]
@@ -176,8 +175,7 @@ class AnilistClient {
           },
           SaveMediaListEntry (args, cache, info) {
             const id = args.mediaId as number
-            // @ts-expect-error idk whats wrong here but it works correctly
-            const media = cache.readFragment(FullMedia, { id })
+            const media = cache.readFragment(FullMedia, { id, __typename: 'Media' })
             if (!media) return null
             info.partial = true
 
@@ -198,8 +196,9 @@ class AnilistClient {
             const threadOrCommentId = id as number
             const likable = type as 'THREAD' | 'THREAD_COMMENT' | 'ACTIVITY' | 'ACTIVITY_REPLY'
 
-            // @ts-expect-error idk whats wrong here but it works correctly
-            const likableUnion = cache.readFragment(likable === 'THREAD' ? ThreadFrag : CommentFrag, { id: threadOrCommentId })
+            const typename = likable === 'THREAD' ? 'Thread' : 'ThreadComment'
+
+            const likableUnion = cache.readFragment(likable === 'THREAD' ? ThreadFrag : CommentFrag, { id: threadOrCommentId, __typename: typename })
 
             if (!likableUnion) return null
 
@@ -207,7 +206,7 @@ class AnilistClient {
               id: threadOrCommentId,
               isLiked: !likableUnion.isLiked,
               likeCount: likableUnion.likeCount + (likableUnion.isLiked ? -1 : 1),
-              __typename: likable === 'THREAD' ? 'Thread' : 'ThreadComment'
+              __typename: typename
             }
           }
         },

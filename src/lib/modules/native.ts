@@ -6,7 +6,7 @@ const rnd = (range = 100) => Math.floor(Math.random() * range)
 
 const dummyFiles = [
   {
-    name: 'Amebku.webm',
+    name: 'AmebkuUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU.webm',
     hash: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
     type: 'video/webm',
     size: 1234567890,
@@ -74,9 +74,9 @@ export default Object.assign<Native, Partial<Native>>({
   tracks: async () => [],
   subtitles: async () => undefined,
   chapters: async () => [
-    { start: 5, end: 15, text: 'OP' },
-    { start: 1.0 * 60, end: 1.2 * 60, text: 'Chapter 1' },
-    { start: 1.4 * 60, end: 88, text: 'Chapter 2 ' }
+    { start: 5 * 1000, end: 15 * 1000, text: 'OP' },
+    { start: 1.0 * 60 * 1000, end: 1.2 * 60 * 1000, text: 'Chapter 1' },
+    { start: 1.4 * 60 * 1000, end: 88 * 1000, text: 'Chapter 2 ' }
   ],
   version: async () => 'v6.3.0',
   updateSettings: async () => undefined,

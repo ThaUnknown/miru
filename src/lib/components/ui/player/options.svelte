@@ -13,6 +13,7 @@
 
   import { Button } from '$lib/components/ui/button'
   import * as Dialog from '$lib/components/ui/dialog'
+  import * as Tooltip from '$lib/components/ui/tooltip'
   import * as Tree from '$lib/components/ui/tree'
   import { dragScroll } from '$lib/modules/navigate'
   import { settings } from '$lib/modules/settings'
@@ -194,7 +195,14 @@
             <Tree.Sub>
               {#each videoFiles as file, i (i)}
                 <Tree.Item on:click={() => selectFile(file)}>
-                  <span class='text-ellipsis text-nowrap overflow-clip w-full'>{file.name}</span>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger class='text-ellipsis text-nowrap overflow-clip w-full'>
+                      {file.name}
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                      {file.name}
+                    </Tooltip.Content>
+                  </Tooltip.Root>
                 </Tree.Item>
               {/each}
             </Tree.Sub>

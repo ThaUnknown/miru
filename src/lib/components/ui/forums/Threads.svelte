@@ -10,9 +10,9 @@
 
   export let media: Media
 
-  const threads = client.threads(media.id)
-
   let currentPage = 1
+
+  $: threads = client.threads(media.id, currentPage)
 
   const perPage = 16
   $: count = $threads.data?.Page?.pageInfo?.total ?? 0

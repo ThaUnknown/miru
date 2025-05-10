@@ -13,9 +13,9 @@
   export let isLocked = false
   export let threadId: number
 
-  $: comments = client.comments(threadId, 1)
-
   let currentPage = 1
+
+  $: comments = client.comments(threadId, currentPage)
 
   const perPage = 15
   $: count = $comments.data?.Page?.pageInfo?.total ?? 0
