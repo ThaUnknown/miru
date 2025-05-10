@@ -5,6 +5,7 @@
   import { Button } from '../button'
   import { Profile } from '../profile'
 
+  import * as Tooltip from '$lib/components/ui/tooltip'
   import { client, type Media } from '$lib/modules/anilist'
   import { isMobile, since } from '$lib/utils'
 
@@ -15,7 +16,8 @@
   $: threads = client.threads(media.id, currentPage)
 
   const perPage = 16
-  $: count = $threads.data?.Page?.pageInfo?.total ?? 0
+  $: total = $threads.data?.Page?.pageInfo?.total ?? 0
+  $: count = total === 5000 ? 17 : total
 </script>
 
 <Pagination {count} {perPage} bind:currentPage let:pages let:hasNext let:hasPrev let:range let:setPage siblingCount={1}>
@@ -48,9 +50,14 @@
             <a href='./thread/{thread.id}' class= 'select:scale-[1.05] select:shadow-lg scale-100 transition-[transform,box-shadow] duration-200 shrink-0 ease-out focus-visible:ring-ring focus-visible:ring-1 rounded-md bg-neutral-950 text-secondary-foreground select:bg-neutral-900 flex w-full max-h-28 relative overflow-hidden cursor-pointer'>
               <div class='flex-grow py-3 px-4 flex flex-col'>
                 <div class='flex w-full justify-between text-[12.8px]'>
-                  <div class='font-bold mb-2 line-clamp-1'>
-                    {thread.title ?? 'Thread ' + (thread.id)}
-                  </div>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger class='font-bold mb-2 line-clamp-1'>
+                      {thread.title ?? 'Thread ' + (thread.id)}
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                      {thread.title ?? 'Thread ' + (thread.id)}
+                    </Tooltip.Content>
+                  </Tooltip.Root>
                   <div class='flex ml-2 leading-none mt-0.5'>
                     <Heart size='12' class='mr-1' />
                     {thread.likeCount}

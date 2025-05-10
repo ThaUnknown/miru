@@ -6,10 +6,15 @@
 </script>
 
 <script lang='ts'>
+  import { onDestroy } from 'svelte'
   import { get } from 'svelte/store'
 
   import FullBanner from './full-banner.svelte'
   import SkeletonBanner from './skeleton-banner.svelte'
+
+  onDestroy(() => {
+    query.pause()
+  })
 
   if (get(query.isPaused$)) query.resume()
 </script>

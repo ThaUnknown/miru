@@ -64,6 +64,8 @@
 </script>
 
 <script lang='ts'>
+  import { onDestroy } from 'svelte'
+
   import { goto } from '$app/navigation'
   import { Banner, hideBanner } from '$lib/components/ui/banner'
   import { QueryCard } from '$lib/components/ui/cards'
@@ -79,6 +81,13 @@
   function search (variables: VariablesOf<typeof Search>) {
     goto('/app/search', { state: { search: variables } })
   }
+
+  onDestroy(() => {
+    for (const { query } of $sectionQueries) {
+      // eslint-disable-next-line svelte/require-store-reactive-access
+      if ('pause' in query) query.pause()
+    }
+  })
 </script>
 
 <div class='grow h-full min-w-0 -ml-14 pl-14 overflow-y-scroll' use:dragScroll on:scroll={handleScroll}>
