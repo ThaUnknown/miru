@@ -13,6 +13,7 @@
   import client from '$lib/modules/auth/client'
   import { lockedState, idleState, activityState } from '$lib/modules/idle'
   import native from '$lib/modules/native'
+  import { cn } from '$lib/utils'
 
   const auth = client.hasAuth
 
@@ -47,8 +48,8 @@
   <Download size={18} />
 </SidebarButton>
 <Button variant='ghost' on:click={() => native.openURL('https://github.com/sponsors/ThaUnknown/')} class='px-2 w-full relative mt-auto select:!bg-transparent text-[#fa68b6] select:text-[#fa68b6]'>
-  <Heart size={18} fill='currentColor' class='absolute' />
-  <Heart size={18} fill='currentColor' class={active ? 'donate' : 'hidden'} />
+  <!-- <Heart size={18} fill='currentColor' class='absolute' /> -->
+  <Heart size={18} fill='currentColor' class={cn(active && 'donate')} />
 </Button>
 <SidebarButton href='/app/settings/'>
   <Settings size={18} />
@@ -64,19 +65,3 @@
     <LogIn size={18} />
   {/if}
 </SidebarButton>
-
-<style>
-  :global(.donate) {
-    filter: drop-shadow(0 0 1rem #fa68b6);
-    animation: glow 1s ease-in-out infinite alternate;
-  }
-
-  @keyframes glow {
-    from {
-      transform: translate3d(var(--tw-translate-x), var(--tw-translate-y), 0) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(1) scaleY(1);
-    }
-    to {
-      transform: translate3d(var(--tw-translate-x), var(--tw-translate-y), 0) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(0.5) scaleY(0.5);
-    }
-  }
-</style>

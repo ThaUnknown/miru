@@ -125,6 +125,21 @@ img {
   }
 }
 
+.donate {
+  filter: drop-shadow(0 0 1rem #fa68b6);
+  animation: glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    transform: translate3d(var(--tw-translate-x), var(--tw-translate-y), 0) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(1) scaleY(1);
+  }
+
+  to {
+    transform: translate3d(var(--tw-translate-x), var(--tw-translate-y), 0) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(0.85) scaleY(0.85);
+  }
+}
+
 .custom-bg {
   /* this is very hacky, but removes jagged edges */
   background: repeating-linear-gradient(40deg, #1114 0, #5554 1px, #5554 5px, #1114 6px, #1114 10px);
