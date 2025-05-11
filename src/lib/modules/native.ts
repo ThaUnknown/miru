@@ -85,6 +85,8 @@ export default Object.assign<Native, Partial<Native>>({
   spawnPlayer: () => sleep(rnd(100_000)),
   setHideToTray: async () => undefined,
   transparency: async () => undefined,
+  // @ts-expect-error yeah
+  navigate: async (cb) => { globalThis.___navigate = cb },
   downloadProgress: async (percent: number) => undefined,
   updateProgress: async (cb: (progress: number) => void) => undefined,
   torrentStats: async (): Promise<TorrentInfo> => ({ peers: rnd(), seeders: rnd(), leechers: rnd(), progress: Math.random(), down: rnd(100000000), up: rnd(100000000), name: 'Amebku.webm', downloaded: rnd(100000), hash: '1234567890abcdef', size: 1234567890, eta: rnd() }),

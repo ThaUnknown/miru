@@ -24,8 +24,8 @@
     showRelations = !showRelations
   }
 
-  $: mediaID = media.id
-  $: following = authAggregator.following(mediaID)
+  $: mediaId = media.id
+  $: following = authAggregator.following(mediaId)
 
   $: eps = data.eps
 
@@ -71,7 +71,7 @@
     <EpisodesList {media} {eps} {following} />
   </Tabs.Content>
   <Tabs.Content value='threads' tabindex={-1}>
-    {#key mediaID}
+    {#key mediaId}
       {#if value === 'threads'}
         <Threads {media} />
       {/if}

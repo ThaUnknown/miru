@@ -51,8 +51,8 @@
     return 'bg-red-400'
   }
 
-  $: mediaID = media.id
-  $: following = authAggregator.following(mediaID)
+  $: mediaId = media.id
+  $: following = authAggregator.following(mediaId)
   $: followerEntries = $following?.data?.Page?.mediaList?.filter(e => e?.user?.id !== authAggregator.id()) ?? []
 </script>
 

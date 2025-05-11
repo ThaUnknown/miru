@@ -392,7 +392,7 @@
 
   $: if (readyState && !seekIndex) thumbnailer._paintThumbnail(video, playbackIndex)
 
-  $: native.setMediaSession(mediaInfo.session)
+  $: native.setMediaSession(mediaInfo.session, mediaInfo.media.id)
   $: native.setPositionState({ duration: safeduration, position: Math.max(0, currentTime), playbackRate })
   $: native.setPlayBackState(readyState === 0 ? 'none' : paused ? 'paused' : 'playing')
   native.setActionHandler('play', playPause)

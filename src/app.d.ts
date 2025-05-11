@@ -82,7 +82,7 @@ export interface Native {
   openTorrentDevtools: () => Promise<void>
   checkUpdate: () => Promise<void>
   toggleDiscordDetails: (enabled: boolean) => Promise<void>
-  setMediaSession: (metadata: SessionMetadata) => Promise<void>
+  setMediaSession: (metadata: SessionMetadata, mediaId: number) => Promise<void>
   setPositionState: (state?: MediaPositionState) => Promise<void>
   setPlayBackState: (paused: 'none' | 'paused' | 'playing') => Promise<void>
   setActionHandler: (action: MediaSessionAction | 'enterpictureinpicture', handler: MediaSessionActionHandler | null) => void
@@ -106,6 +106,7 @@ export interface Native {
   transparency: (enabled: boolean) => Promise<void>
   isApp: boolean
   version: () => Promise<string>
+  navigate: (cb: (data: { target: string, value: string | undefined }) => void) => Promise<void>
 }
 
 declare global {
