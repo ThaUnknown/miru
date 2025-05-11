@@ -133,12 +133,12 @@
     }
   }
   function seek (time: number) {
-    currentTime = currentTime + time
+    video.currentTime = currentTime = currentTime + time
     playAnimation(time > 0 ? 'seekforw' : 'seekback')
   }
   function seekTo (time: number) {
     playAnimation(time > currentTime ? 'seekforw' : 'seekback')
-    currentTime = time
+    video.currentTime = currentTime = time
   }
   let wasPaused = false
   function startSeek () {
@@ -320,6 +320,7 @@
     } else {
       currentTime = currentTime + 85
     }
+    video.currentTime = currentTime
   }
 
   let stats: {
@@ -658,7 +659,7 @@
     </div>
     {#if seeking}
       {#await thumbnailer.getThumbnail(seekIndex) then src}
-        <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0 object-contain' loading='lazy' decoding='async' class:fitWidth />
+        <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0 object-contain' loading='lazy' decoding='async' class:!object-cover={fitWidth} />
       {/await}
     {/if}
     {#if stats}
