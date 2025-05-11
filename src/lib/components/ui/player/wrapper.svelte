@@ -75,7 +75,7 @@
   )} style:--top={bottom} style:--left={right}>
     {#if $active}
       {#await $active}
-        <div class='w-full flex flex-col gap-2 justify-center items-center bg-black {isMiniplayer ? 'aspect-video' : 'h-full' } text-center text-muted' on:click={openPlayer}>
+        <div class='w-full flex flex-col gap-2 justify-center items-center bg-black {isMiniplayer ? 'aspect-video' : 'h-full' } text-center text-white' on:click={openPlayer}>
           <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
           Loading torrent metadata,<br />
           this might take a minute...

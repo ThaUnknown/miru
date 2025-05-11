@@ -133,12 +133,15 @@
     }
   }
   function seek (time: number) {
-    video.currentTime = currentTime = currentTime + time
+    // this cant be called, because it will cause the video to mutate and update all video mutation listeners
+    // video.currentTime = currentTime = currentTime + time
+    currentTime = currentTime + time
     playAnimation(time > 0 ? 'seekforw' : 'seekback')
   }
   function seekTo (time: number) {
     playAnimation(time > currentTime ? 'seekforw' : 'seekback')
-    video.currentTime = currentTime = time
+    // video.currentTime = currentTime = time
+    currentTime = time
   }
   let wasPaused = false
   function startSeek () {
@@ -320,7 +323,7 @@
     } else {
       currentTime = currentTime + 85
     }
-    video.currentTime = currentTime
+  // video.currentTime = currentTime
   }
 
   let stats: {
