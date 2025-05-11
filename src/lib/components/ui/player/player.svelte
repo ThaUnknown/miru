@@ -71,8 +71,13 @@
   $: pip._setElements(video, subtitles, deband)
   const pipElementStore = pip.element
   $: pictureInPictureElement = $pipElementStore
+
+  const thumbnailer = new Thumbnailer(mediaInfo.file.url)
+  onMount(() => thumbnailer.setVideo(video))
+
   onDestroy(() => {
     pip.destroy()
+    thumbnailer.destroy()
   })
 
   // state
@@ -133,15 +138,14 @@
     }
   }
   function seek (time: number) {
-    // this cant be called, because it will cause the video to mutate and update all video mutation listeners
-    // video.currentTime = currentTime = currentTime + time
+    // WARN: this causes all subscriptions to video to re-run!!!
+    video.currentTime = currentTime = currentTime + time
     currentTime = currentTime + time
     playAnimation(time > 0 ? 'seekforw' : 'seekback')
   }
   function seekTo (time: number) {
     playAnimation(time > currentTime ? 'seekforw' : 'seekback')
-    // video.currentTime = currentTime = time
-    currentTime = time
+    video.currentTime = currentTime = time
   }
   let wasPaused = false
   function startSeek () {
@@ -195,9 +199,6 @@
   }
   let animations: Animation[] = []
 
-  const thumbnailer = new Thumbnailer(mediaInfo.file.url)
-  onMount(() => thumbnailer.setVideo(video))
-
   let chapters: Chapter[] = []
   const chaptersPromise = native.chapters(mediaInfo.file.hash, mediaInfo.file.id)
   async function loadChapters (pr: typeof chaptersPromise, safeduration: number) {
@@ -224,23 +225,33 @@
     }
   }
 
-  function cleanupDeband () {
-    deband?.destroy()
-    deband?.canvas.remove()
-    deband = undefined
-    pip._setElements(video, subtitles, deband)
-  }
+  function createDeband (video: HTMLVideoElement, playerDeband: boolean) {
+    const create = () => {
+      destroy()
+      deband = new VideoDeband(video)
+      deband.canvas.classList.add('deband-canvas', 'w-full', 'h-full', 'pointer-events-none', 'object-contain')
+      video.before(deband.canvas)
+    }
 
-  function createDeband (video: HTMLVideoElement | undefined, playerDeband: boolean) {
-    if (!playerDeband || !video) return cleanupDeband()
-    if (deband) cleanupDeband()
-    deband = new VideoDeband(video)
-    pip._setElements(video, subtitles, deband)
-    deband.canvas.classList.add('deband-canvas', 'w-full', 'h-full', 'pointer-events-none', 'object-contain')
-    video.before(deband.canvas)
-  }
+    const destroy = () => {
+      deband?.destroy()
+      deband?.canvas.remove()
+      deband = undefined
+    }
 
-  $: createDeband(video, $settings.playerDeband)
+    if (playerDeband) create()
+
+    return {
+      destroy,
+      update: (playerDeband: boolean) => {
+        if (playerDeband) {
+          create()
+        } else {
+          destroy()
+        }
+      }
+    }
+  }
 
   let completed = false
   function checkCompletion () {
@@ -323,7 +334,7 @@
     } else {
       currentTime = currentTime + 85
     }
-  // video.currentTime = currentTime
+    video.currentTime = currentTime
   }
 
   let stats: {
@@ -622,6 +633,7 @@
 <div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth class:seeking bind:this={wrapper}>
   <video class='w-full h-full' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
     use:createSubtitles
+    use:createDeband={$settings.playerDeband}
     use:holdToFF={'pointer'}
     crossorigin='anonymous'
     src={mediaInfo.file.url}

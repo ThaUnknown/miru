@@ -27,12 +27,16 @@ export default class Thumbnailer {
     }
   }
 
+  timeUpdateCtrl = new AbortController()
+
   setVideo (currentVideo: HTMLVideoElement) {
+    this.timeUpdateCtrl.abort()
+    this.timeUpdateCtrl = new AbortController()
     currentVideo.addEventListener('timeupdate', () => {
       const index = Math.floor(currentVideo.currentTime / this.interval)
       const thumbnail = this.thumbnails[index]
       if (!thumbnail) this._paintThumbnail(currentVideo, index)
-    })
+    }, { signal: this.timeUpdateCtrl.signal })
   }
 
   _createTask (index: number): RenderItem {
@@ -106,6 +110,7 @@ export default class Thumbnailer {
 
   destroy () {
     this.video.remove()
+    this.timeUpdateCtrl.abort()
     this.thumbnails = []
   }
 }

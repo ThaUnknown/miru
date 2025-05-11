@@ -37,7 +37,7 @@
   }
 </script>
 
-<div class='h-full w-full flex flex-row gap-2 group/volume'>
+<div class='h-full w-full hidden sm:flex flex-row gap-2 group/volume'>
   <Button class='p-3 w-12 h-12' variant='ghost' on:click={mute}>
     {#if muted}
       <VolumeOff size='24px' fill='currentColor' />
