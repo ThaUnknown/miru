@@ -27,15 +27,17 @@
 
   $: episodeCount = Math.max(_episodes(media) ?? 0, eps?.episodeCount ?? 0)
 
-  const { episodes, specialCount } = eps ?? {}
+  $: ({ episodes, specialCount } = eps ?? {})
 
   const alSchedule: Record<number, Date | undefined> = {}
 
-  for (const { a: airingAt, e: episode } of dedupeAiring(media)) {
-    alSchedule[episode] = new Date(airingAt * 1000)
+  $: {
+    for (const { a: airingAt, e: episode } of dedupeAiring(media)) {
+      alSchedule[episode] = new Date(airingAt * 1000)
+    }
   }
 
-  $: episodeList = Array.from({ length: episodeCount }, (_, i) => {
+  $: episodeList = media && Array.from({ length: episodeCount }, (_, i) => {
     const episode = i + 1
 
     const airingAt = alSchedule[episode]

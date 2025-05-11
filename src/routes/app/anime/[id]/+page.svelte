@@ -68,9 +68,7 @@
     </Tabs.List>
   </div>
   <Tabs.Content value='episodes' tabindex={-1}>
-    {#key mediaID}
-      <EpisodesList {media} {eps} {following} />
-    {/key}
+    <EpisodesList {media} {eps} {following} />
   </Tabs.Content>
   <Tabs.Content value='threads' tabindex={-1}>
     {#key mediaID}

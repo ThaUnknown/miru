@@ -265,7 +265,6 @@ class AnilistClient {
     await this.rateLimitPromise
     // await sleep(1000)
     const res = await fetch(req, opts)
-
     if (!res.ok && (res.status === 429 || res.status === 500)) {
       throw new FetchError(res)
     }
@@ -307,12 +306,11 @@ class AnilistClient {
       if (error.name === 'AbortError') return undefined
       if (jobInfo.retryCount > 8) return undefined
 
+      if (error.message === 'Failed to fetch') return this.setRateLimit(60000)
       if (!(error instanceof FetchError)) return 0
-      if (error.message === 'Failed to fetch' && !error.res.headers.get('retry-after')) return this.setRateLimit(60000)
       if (error.res.status === 500) return 1000
 
-      const time = (parseInt(error.res.headers.get('retry-after') ?? '60') + 1) * 1000
-      return this.setRateLimit(time)
+      return this.setRateLimit((parseInt(error.res.headers.get('retry-after') ?? '60') + 1) * 1000)
     })
     // hacky but prevents query from re-running
     this.userlists.subscribe(() => undefined)
