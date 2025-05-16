@@ -13,6 +13,7 @@
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
+  import { isPlaying } from '$lib/modules/idle'
   import { cn } from '$lib/utils'
 
   $: isMiniplayer = $page.route.id !== '/app/player'
@@ -26,7 +27,7 @@
   let dragging = false
 
   let bottom = '0px'
-  let right = '0px'
+  let right = '100%'
 
   function calculatePosition (e: PointerEvent) {
     if (!isMiniplayer) return
@@ -56,7 +57,7 @@
     const istop = window.innerHeight / 2 - clientY >= 0
     const isleft = window.innerWidth / 2 - clientX >= 0
     bottom = istop ? '-100vb' : '0px'
-    right = isleft ? '-100vi' : '0px'
+    right = isleft ? '-100vi' : '100%'
     dragging = false
     if (pointerId) wrapper.releasePointerCapture(pointerId)
   }
@@ -70,8 +71,9 @@
   on:pointerleave={endHover}>
   <div class={cn(
     'pointer-events-auto w-full',
-    isMiniplayer ? 'max-w-80 absolute bottom-0 right-0 rounded-lg overflow-clip shadow shadow-neutral-800 miniplayer transition-transform duration-[500ms] ease-[cubic-bezier(0.3,1.5,0.8,1)]' : 'h-full w-full',
-    dragging && isMiniplayer && 'dragging'
+    isMiniplayer ? 'max-w-80 absolute bottom-0 right-0 rounded-lg overflow-clip miniplayer transition-transform duration-[500ms] ease-[cubic-bezier(0.3,1.5,0.8,1)]' : 'h-full w-full',
+    dragging && isMiniplayer && 'dragging',
+    !$isPlaying && 'paused hover:paused-show'
   )} style:--top={bottom} style:--left={right}>
     {#if $active}
       {#await $active}
@@ -90,12 +92,16 @@
 </div>
 
 <style>
+  .paused {
+    --padding-right: calc(100% - 2rem);
+    --padding-left: calc(-100vi + 2rem);
+  }
   .miniplayer {
     transform: translate3d(
       clamp(
-        calc(-100vi + 100% + 1rem),
+        calc(var(--padding-left, -100vi + 100% + 1rem)),
         var(--left),
-        -1rem
+        var(--padding-right, -1rem)
       ),
       clamp(
         calc(-100vb + 100% + 1rem),
@@ -119,6 +125,6 @@
         90%
       ),
       0
-    );
+    ) !important;
   }
 </style>

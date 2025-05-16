@@ -7,6 +7,13 @@
 }
 
 @layer base {
+
+  /* miniplayer thing, required to work with :hover */
+  .paused-show {
+    --padding-right: unset !important;
+    --padding-left: unset !important;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
@@ -91,7 +98,6 @@
   font-family: "Twemoji";
   src: url("/twemoji-subset.woff2") format("woff2");
 }
-
 
 html,
 body {
