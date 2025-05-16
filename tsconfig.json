@@ -23,7 +23,7 @@
     "strictNullChecks": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "noEmit": false,
+    "noEmit": true,
     "noUncheckedIndexedAccess": true,
     "declaration": true,
     "alwaysStrict": true,

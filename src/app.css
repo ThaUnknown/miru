@@ -107,7 +107,8 @@ body {
   font-family: 'Nunito Variable'
 }
 
-img {
+img,
+a {
   -webkit-user-drag: none;
 }
 

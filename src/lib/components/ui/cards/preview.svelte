@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { BookmarkButton, FavoriteButton, PlayButton } from '../button'
+  import { BookmarkButton, FavoriteButton, PlayButton } from '../button/extra'
   import { Banner } from '../img'
 
   import YoutubeIframe from './YoutubeIframe.svelte'

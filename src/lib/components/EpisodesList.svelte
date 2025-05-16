@@ -10,13 +10,13 @@
   import { ChevronLeft, Play, ChevronRight } from 'lucide-svelte'
 
   import Pagination from './Pagination.svelte'
-  import { searchStore } from './SearchModal.svelte'
   import { Button } from './ui/button'
   import { Load } from './ui/img'
   import { Profile } from './ui/profile'
 
   import type { EpisodesResponse } from '$lib/modules/anizip/types'
 
+  import { searchStore } from '$lib'
   import { episodes as _episodes, dedupeAiring, episodeByAirDate, notes, type Media } from '$lib/modules/anilist'
   import { authAggregator, list, progress } from '$lib/modules/auth'
   import { click, dragScroll } from '$lib/modules/navigate'

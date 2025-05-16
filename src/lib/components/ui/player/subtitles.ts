@@ -318,14 +318,14 @@ export default class Subtitles {
     if (type === 'ass') {
       return { type: 'ass', header: text }
     } else if (type === 'srt' || type === 'vtt') {
-      return { type: 'srt', header: srt(text).join('\n') }
+      return { type: 'srt', header: defaultHeader + srt(text).join('\n') }
     } else if (type === 'sub') {
-      return { type: 'sub', header: sub(text).join('\n') }
+      return { type: 'sub', header: defaultHeader + sub(text).join('\n') }
     } else {
       // subbers have a tendency to not set the extensions at all
       if (text.startsWith('[Script Info]')) return { type: 'ass', header: text }
-      if (srtRx.test(text)) return { type: 'srt', header: srt(text).join('\n') }
-      if (subRx.test(text)) return { type: 'sub', header: sub(text).join('\n') }
+      if (srtRx.test(text)) return { type: 'srt', header: defaultHeader + srt(text).join('\n') }
+      if (subRx.test(text)) return { type: 'sub', header: defaultHeader + sub(text).join('\n') }
     }
   }
 }

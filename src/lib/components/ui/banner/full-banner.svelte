@@ -1,7 +1,7 @@
 <script lang='ts'>
   import { onDestroy } from 'svelte'
 
-  import { BookmarkButton, FavoriteButton, PlayButton } from '../button'
+  import { BookmarkButton, FavoriteButton, PlayButton } from '../button/extra'
 
   import { bannerSrc } from './banner-image.svelte'
 

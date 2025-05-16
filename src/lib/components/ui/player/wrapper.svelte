@@ -93,14 +93,14 @@
   .miniplayer {
     transform: translate3d(
       clamp(
-        calc(-100vi + 100% + 20px),
+        calc(-100vi + 100% + 1rem),
         var(--left),
-        -20px
+        -1rem
       ),
       clamp(
-        calc(-100vb + 100% + 20px),
+        calc(-100vb + 100% + 1rem),
         var(--top),
-        -20px
+        -1rem
       ),
       0
     );

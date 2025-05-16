@@ -1,6 +1,5 @@
 <script lang='ts' context='module'>
   import { BadgeCheck, Database } from 'lucide-svelte'
-  import { writable } from 'svelte/store'
   import { Download, MagnifyingGlass } from 'svelte-radix'
 
   import { SingleCombo } from './ui/combobox'
@@ -10,7 +9,7 @@
   import type { TorrentResult } from 'hayase-extensions'
 
   import * as Dialog from '$lib/components/ui/dialog'
-  import { title, type Media } from '$lib/modules/anilist'
+  import { title } from '$lib/modules/anilist'
   import { extensions } from '$lib/modules/extensions/extensions'
   import { click, dragScroll } from '$lib/modules/navigate'
   import { settings, videoResolutions } from '$lib/modules/settings'
@@ -50,9 +49,6 @@
     for (const term of audio ?? []) simpleName = simpleName.replace(term[0]!, '')
     return simpleName.replace(/[[{(]\s*[\]})]/g, '').replace(/\s+/g, ' ').trim()
   }
-
-  // episode is optional here, but is actually always defined
-  export const searchStore = writable<{episode?: number, media?: Media}>({})
 </script>
 
 <script lang='ts'>
@@ -60,6 +56,7 @@
   import { Banner } from './ui/img'
 
   import { goto } from '$app/navigation'
+  import { searchStore } from '$lib'
   import { saved } from '$lib/modules/extensions'
   import { server } from '$lib/modules/torrent'
 

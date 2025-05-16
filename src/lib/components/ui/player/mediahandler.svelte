@@ -5,8 +5,8 @@
   import type { MediaInfo } from '$lib/components/ui/player/util'
   import type { resolveFilesPoorly, ResolvedFile } from './resolver'
 
+  import { searchStore } from '$lib'
   import { fillerEpisodes } from '$lib/components/EpisodesList.svelte'
-  import { searchStore } from '$lib/components/SearchModal.svelte'
   import { cover, episodes, title } from '$lib/modules/anilist'
   import { settings } from '$lib/modules/settings'
 

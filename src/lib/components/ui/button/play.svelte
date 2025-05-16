@@ -3,7 +3,7 @@
 
   import type { Media } from '$lib/modules/anilist'
 
-  import { searchStore } from '$lib/components/SearchModal.svelte'
+  import { searchStore } from '$lib'
   import { Button, iconSizes, type Props } from '$lib/components/ui/button'
   import { list, progress } from '$lib/modules/auth'
   import { clickwrap, keywrap } from '$lib/modules/navigate'
