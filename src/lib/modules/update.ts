@@ -14,3 +14,7 @@ async function compareVersions (): Promise<'ui' | 'client' | undefined> {
 }
 
 export const outdatedComponent = compareVersions()
+
+export const uiUpdate = new Promise(resolve => {
+  if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true })
+})
