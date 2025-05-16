@@ -1,6 +1,8 @@
 <script lang='ts'>
-  import { FileImage, Trash, X } from 'lucide-svelte'
-  import { MagnifyingGlass } from 'svelte-radix'
+  import FileImage from 'lucide-svelte/icons/file-image'
+  import Trash from 'lucide-svelte/icons/trash'
+  import X from 'lucide-svelte/icons/x'
+  import MagnifyingGlass from 'svelte-radix/MagnifyingGlass.svelte'
   import { toast } from 'svelte-sonner'
 
   import { genres, years, seasons, formats, status, sort, onlist } from './values'

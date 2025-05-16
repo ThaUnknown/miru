@@ -13,9 +13,10 @@
 </script>
 
 <script lang='ts'>
-  import { X } from 'lucide-svelte'
+  import X from 'lucide-svelte/icons/x'
   import { tick } from 'svelte'
-  import { CaretSort, Check } from 'svelte-radix'
+  import CaretSort from 'svelte-radix/CaretSort.svelte'
+  import Check from 'svelte-radix/Check.svelte'
 
   import { Button } from '$lib/components/ui/button'
   import * as Command from '$lib/components/ui/command'

@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { Heart } from 'lucide-svelte'
+  import Heart from 'lucide-svelte/icons/heart'
 
   import type { Media } from '$lib/modules/anilist'
 

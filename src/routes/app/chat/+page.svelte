@@ -3,7 +3,7 @@
 </script>
 
 <script lang='ts'>
-  import { TriangleAlert } from 'lucide-svelte'
+  import TriangleAlert from 'lucide-svelte/icons/triangle-alert'
 
   import { Button } from '$lib/components/ui/button'
   import { IRC } from '$lib/components/ui/irc'

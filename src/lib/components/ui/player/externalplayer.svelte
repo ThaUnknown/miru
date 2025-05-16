@@ -1,5 +1,6 @@
 <script lang='ts'>
-  import { SkipBack, SkipForward } from 'lucide-svelte'
+  import SkipBack from 'lucide-svelte/icons/skip-back'
+  import SkipForward from 'lucide-svelte/icons/skip-forward'
   import { writable } from 'svelte/store'
 
   import { Button } from '../button'

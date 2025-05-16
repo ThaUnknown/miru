@@ -1,6 +1,8 @@
 <script lang='ts'>
-  import { Github, Globe, Plus } from 'lucide-svelte'
-  import { MagnifyingGlass } from 'svelte-radix'
+  import Github from 'lucide-svelte/icons/github'
+  import Globe from 'lucide-svelte/icons/globe'
+  import Plus from 'lucide-svelte/icons/plus'
+  import MagnifyingGlass from 'svelte-radix/MagnifyingGlass.svelte'
   import { toast } from 'svelte-sonner'
 
   import { Button, iconSizes } from '../button'

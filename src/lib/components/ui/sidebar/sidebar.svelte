@@ -1,5 +1,6 @@
 <script lang='ts'>
-  import { Menu, X } from 'lucide-svelte'
+  import Menu from 'lucide-svelte/icons/menu'
+  import X from 'lucide-svelte/icons/x'
 
   import { Button } from '../button'
 

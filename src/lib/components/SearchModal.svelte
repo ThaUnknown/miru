@@ -1,6 +1,8 @@
 <script lang='ts' context='module'>
-  import { BadgeCheck, Database } from 'lucide-svelte'
-  import { Download, MagnifyingGlass } from 'svelte-radix'
+  import BadgeCheck from 'lucide-svelte/icons/badge-check'
+  import Database from 'lucide-svelte/icons/database'
+  import Download from 'svelte-radix/Download.svelte'
+  import MagnifyingGlass from 'svelte-radix/MagnifyingGlass.svelte'
 
   import { SingleCombo } from './ui/combobox'
   import { Input } from './ui/input'

@@ -1,5 +1,7 @@
 <script lang='ts'>
-  import { HardDrive, Network, Puzzle } from 'lucide-svelte'
+  import HardDrive from 'lucide-svelte/icons/hard-drive'
+  import Network from 'lucide-svelte/icons/network'
+  import Puzzle from 'lucide-svelte/icons/puzzle'
 
   import { Badge } from '$lib/components/ui/badge'
 

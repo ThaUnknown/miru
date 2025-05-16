@@ -1,5 +1,6 @@
 <script lang='ts'>
-  import { CalendarDays, Tv } from 'lucide-svelte'
+  import CalendarDays from 'lucide-svelte/icons/calendar-days'
+  import Tv from 'lucide-svelte/icons/tv'
 
   import StatusDot from '../../StatusDot.svelte'
   import { Load } from '../img'

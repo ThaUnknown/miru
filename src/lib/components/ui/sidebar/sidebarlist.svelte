@@ -1,6 +1,13 @@
 <script lang='ts'>
-  import { Home, Search, Calendar, Users, MessagesSquare, Heart, Settings, LogIn } from 'lucide-svelte'
-  import { Download } from 'svelte-radix'
+  import Calendar from 'lucide-svelte/icons/calendar'
+  import Heart from 'lucide-svelte/icons/heart'
+  import House from 'lucide-svelte/icons/house'
+  import LogIn from 'lucide-svelte/icons/log-in'
+  import MessagesSquare from 'lucide-svelte/icons/messages-square'
+  import Search from 'lucide-svelte/icons/search'
+  import Settings from 'lucide-svelte/icons/settings'
+  import Users from 'lucide-svelte/icons/users'
+  import Download from 'svelte-radix/Download.svelte'
 
   import { BannerImage } from '../banner'
   import { Button } from '../button'
@@ -29,7 +36,7 @@
 <BannerImage class='absolute top-0 left-0 w-14 -z-10 hidden md:block' />
 <Logo class='mb-3 h-10 object-contain px-2.5 hidden md:block text-white' />
 <SidebarButton href='/app/home/'>
-  <Home size={18} />
+  <House size={18} />
 </SidebarButton>
 <SidebarButton href='/app/search/'>
   <Search size={18} />

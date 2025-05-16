@@ -1,6 +1,6 @@
 <script lang='ts'>
-
-  import { ChevronLeft, ChevronRight } from 'lucide-svelte'
+  import ChevronLeft from 'lucide-svelte/icons/chevron-left'
+  import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
   import Pagination from '../../Pagination.svelte'
   import { Button } from '../button'

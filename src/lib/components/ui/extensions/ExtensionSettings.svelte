@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { Settings } from 'lucide-svelte'
+  import Settings from 'lucide-svelte/icons/settings'
 
   import type { ExtensionConfig } from 'hayase-extensions'
 

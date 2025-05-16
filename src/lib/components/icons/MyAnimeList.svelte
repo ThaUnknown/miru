@@ -1,7 +1,9 @@
 <script lang='ts'>
-  import { Icon, type Attrs } from 'lucide-svelte'
+  import Icon from 'lucide-svelte/dist/Icon.svelte'
 
-  import type { SvelteHTMLElements } from 'svelte/elements'
+  import type { SvelteHTMLElements, SVGAttributes } from 'svelte/elements'
+
+  type Attrs = SVGAttributes<SVGSVGElement>
 
   import { cn } from '$lib/utils'
 

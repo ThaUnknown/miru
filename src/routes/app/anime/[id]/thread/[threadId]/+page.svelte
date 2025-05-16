@@ -1,5 +1,10 @@
 <script lang='ts'>
-  import { ChevronLeft, Eye, MessagesSquare, Heart, Lock, Reply } from 'lucide-svelte'
+  import ChevronLeft from 'lucide-svelte/icons/chevron-left'
+  import Eye from 'lucide-svelte/icons/eye'
+  import Heart from 'lucide-svelte/icons/heart'
+  import Lock from 'lucide-svelte/icons/lock'
+  import MessagesSquare from 'lucide-svelte/icons/messages-square'
+  import Reply from 'lucide-svelte/icons/reply'
 
   import type { PageData } from './$types'
 

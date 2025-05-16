@@ -1,5 +1,8 @@
 <script lang='ts'>
-  import { Heart, PenLine, Reply, Trash2 } from 'lucide-svelte'
+  import Heart from 'lucide-svelte/icons/heart'
+  import PenLine from 'lucide-svelte/icons/pen-line'
+  import Reply from 'lucide-svelte/icons/reply'
+  import Trash2 from 'lucide-svelte/icons/trash-2'
 
   import Shadow from '../../Shadow.svelte'
   import { Button, iconSizes } from '../button'

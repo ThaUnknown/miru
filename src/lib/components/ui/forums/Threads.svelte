@@ -1,5 +1,10 @@
 <script lang='ts'>
-  import { ChevronLeft, ChevronRight, Eye, Heart, MessagesSquare, Lock } from 'lucide-svelte'
+  import ChevronLeft from 'lucide-svelte/icons/chevron-left'
+  import ChevronRight from 'lucide-svelte/icons/chevron-right'
+  import Eye from 'lucide-svelte/icons/eye'
+  import Heart from 'lucide-svelte/icons/heart'
+  import Lock from 'lucide-svelte/icons/lock'
+  import MessagesSquare from 'lucide-svelte/icons/messages-square'
 
   import Pagination from '../../Pagination.svelte'
   import { Button } from '../button'

@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { EllipsisVertical } from 'lucide-svelte'
+  import EllipsisVertical from 'lucide-svelte/icons/ellipsis-vertical'
   import { tick } from 'svelte'
 
   import Keybinds from './keybinds.svelte'

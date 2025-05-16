@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { PencilLine } from 'lucide-svelte'
+  import PencilLine from 'lucide-svelte/icons/pencil-line'
 
   import { Button } from '$lib/components/ui/button'
   import * as Dialog from '$lib/components/ui/dialog'

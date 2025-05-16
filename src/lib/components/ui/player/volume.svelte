@@ -1,5 +1,9 @@
 <script lang='ts'>
-  import { Volume, Volume1, Volume2, VolumeOff, VolumeX } from 'lucide-svelte'
+  import Volume from 'lucide-svelte/icons/volume'
+  import Volume1 from 'lucide-svelte/icons/volume-1'
+  import Volume2 from 'lucide-svelte/icons/volume-2'
+  import VolumeOff from 'lucide-svelte/icons/volume-off'
+  import VolumeX from 'lucide-svelte/icons/volume-x'
 
   import { Button } from '$lib/components/ui/button'
 

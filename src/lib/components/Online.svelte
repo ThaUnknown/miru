@@ -1,7 +1,7 @@
 <script lang='ts'>
-  import { CloudOff } from 'lucide-svelte'
+  import CloudOff from 'lucide-svelte/icons/cloud-off'
 
-  import online from '$lib/modules/online.ts'
+  import online from '$lib/modules/online'
 
   let hideFirst = false
   $: if (!$online && !hideFirst) {

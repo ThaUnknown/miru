@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { Bookmark } from 'lucide-svelte'
+  import Bookmark from 'lucide-svelte/icons/bookmark'
 
   import type { Media } from '$lib/modules/anilist'
 

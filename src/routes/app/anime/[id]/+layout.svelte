@@ -1,5 +1,8 @@
 <script lang='ts'>
-  import { Bell, Clapperboard, Maximize2, Share2 } from 'lucide-svelte'
+  import Bell from 'lucide-svelte/icons/bell'
+  import Clapperboard from 'lucide-svelte/icons/clapperboard'
+  import Maximize2 from 'lucide-svelte/icons/maximize-2'
+  import Share2 from 'lucide-svelte/icons/share-2'
   import { onDestroy } from 'svelte'
 
   import EntryEditor from '../../../../lib/components/EntryEditor.svelte'

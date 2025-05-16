@@ -1,5 +1,5 @@
 <script lang='ts' context='module'>
-  import { SendHorizontal } from 'lucide-svelte'
+  import SendHorizontal from 'lucide-svelte/icons/send-horizontal'
   import { writable, type Writable } from 'simple-store-svelte'
 
   import { Messages, UserList } from '../chat'

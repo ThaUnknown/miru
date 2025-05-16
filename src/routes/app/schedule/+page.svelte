@@ -1,8 +1,9 @@
 <script lang='ts'>
   import { Button as ButtonPrimitive } from 'bits-ui'
   import { addMonths, endOfMonth, endOfWeek, format, isSameMonth, isToday, startOfMonth, startOfWeek, subMonths } from 'date-fns'
-  import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-svelte'
-  import { Cross2 } from 'svelte-radix'
+  import ChevronLeftIcon from 'lucide-svelte/icons/chevron-left'
+  import ChevronRightIcon from 'lucide-svelte/icons/chevron-right'
+  import Cross2 from 'svelte-radix/Cross2.svelte'
 
   import type { Schedule, ScheduleMedia } from '$lib/modules/anilist/queries'
   import type { ResultOf } from 'gql.tada'

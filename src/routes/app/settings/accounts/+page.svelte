@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { Folder } from 'lucide-svelte'
+  import Folder from 'lucide-svelte/icons/folder'
 
   import Anilist from '$lib/components/icons/Anilist.svelte'
   import * as Avatar from '$lib/components/ui/avatar'
