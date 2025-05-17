@@ -28,7 +28,6 @@ const stylesRx = /^Style:[^,]*/gm
 export default class Subtitles {
   video: HTMLVideoElement
   selected: ResolvedFile
-  files: TorrentFile[]
   fonts: string[]
   renderer: JASSUB | null = null
   current = writable<number | string>(-1)
@@ -38,15 +37,33 @@ export default class Subtitles {
 
   ctrl = new AbortController()
 
-  constructor (video: HTMLVideoElement, files: TorrentFile[], selected: ResolvedFile) {
+  constructor (video: HTMLVideoElement, otherFiles: TorrentFile[], selected: ResolvedFile) {
     this.video = video
     this.selected = selected
-    this.files = files
-    this.fonts = ['/Roboto.ttf', ...files.filter(file => fontRx.test(file.name)).map(file => file.url)]
+    this.fonts = ['/Roboto.ttf', ...otherFiles.filter(file => fontRx.test(file.name)).map(file => file.url)]
 
     this.current.subscribe(value => {
       this.selectCaptions(value)
     })
+
+    const subFiles = otherFiles.filter(({ name }) => subRx.test(name))
+
+    const fetchAndLoad = async (file: TorrentFile) => {
+      const res = await fetch(file.url)
+      const blob = await res.blob()
+      this.addSingleSubtitleFile(new File([blob], file.name))
+    }
+
+    if (subFiles.length === 1) {
+      fetchAndLoad(subFiles[0]!)
+    } else if (subFiles.length > 1) {
+      const videoName = selected.name.substring(0, selected.name.lastIndexOf('.')) || selected.name
+      for (const file of subFiles) {
+        if (file.name.includes(videoName)) {
+          fetchAndLoad(file)
+        }
+      }
+    }
 
     const tracks = native.tracks(this.selected.hash, this.selected.id).then(tracklist => {
       for (const track of tracklist) {
@@ -68,13 +85,29 @@ export default class Subtitles {
         if (tracks.length === 1) {
           this.selectCaptions(tracks[0]![0])
         } else {
-          const wantedTrack = tracks.find(([_, { meta }]) => {
+          const wantedTrack = tracks.filter(([_, { meta }]) => {
             return (meta.language ?? 'eng') === this.set.subtitleLanguage
           })
-          if (wantedTrack) return this.selectCaptions(wantedTrack[0])
+          if (wantedTrack.length) {
+            if (wantedTrack.length === 1) return this.selectCaptions(wantedTrack[0]![0])
 
-          const englishTrack = tracks.find(([_, { meta }]) => meta.language == null || meta.language === 'eng')
-          if (englishTrack) return this.selectCaptions(englishTrack[0])
+            const nonForced = wantedTrack.find(([_, { meta }]) => {
+              return !meta.name?.toLowerCase().includes('forced')
+            }) ?? wantedTrack[0]!
+
+            return this.selectCaptions(nonForced[0])
+          }
+
+          const englishTrack = tracks.filter(([_, { meta }]) => meta.language == null || meta.language === 'eng')
+          if (englishTrack.length) {
+            if (englishTrack.length === 1) return this.selectCaptions(englishTrack[0]![0])
+
+            const nonForced = englishTrack.find(([_, { meta }]) => {
+              return !meta.name?.toLowerCase().includes('forced')
+            }) ?? englishTrack[0]!
+
+            return this.selectCaptions(nonForced[0])
+          }
 
           this.selectCaptions(tracks[0]![0])
         }
@@ -203,7 +236,7 @@ export default class Subtitles {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructSub (subtitle: any, isNotAss: boolean, subtitleIndex: number, Style: string) {
-    let Text = subtitle.text || ''
+    let Text = subtitle.text ?? ''
     if (isNotAss) { // converts VTT or other to SSA
       const matches: string[] | null = Text.match(/<[^>]+>/g) // create array of all tags
       if (matches) {
@@ -222,11 +255,11 @@ export default class Subtitles {
       Start: subtitle.time,
       Duration: subtitle.duration,
       Style,
-      Name: subtitle.name || '',
+      Name: subtitle.name ?? '',
       MarginL: Number(subtitle.marginL) || 0,
       MarginR: Number(subtitle.marginR) || 0,
       MarginV: Number(subtitle.marginV) || 0,
-      Effect: subtitle.effect || '',
+      Effect: subtitle.effect ?? '',
       Text,
       ReadOrder: 1,
       Layer: Number(subtitle.layer) || 0,
@@ -255,7 +288,6 @@ export default class Subtitles {
   destroy () {
     this.renderer?.destroy()
     this.ctrl.abort()
-    this.files = []
     for (const { events } of Object.values(this._tracks.value)) {
       events.clear()
     }

@@ -41,7 +41,7 @@
   import type { TorrentFile } from '../../../../app'
   import type { SvelteMediaTimeRange } from 'svelte/elements'
 
-  import { goto } from '$app/navigation'
+  import { beforeNavigate, goto } from '$app/navigation'
   import { page } from '$app/stores'
   import EpisodesList from '$lib/components/EpisodesList.svelte'
   import PictureInPictureOff from '$lib/components/icons/PictureInPicture.svelte'
@@ -128,6 +128,10 @@
   }
 
   $: fullscreenElement ? screen.orientation.lock('landscape') : screen.orientation.unlock()
+
+  beforeNavigate(() => {
+    if (fullscreenElement) fullscreen()
+  })
 
   function checkAudio () {
     if (video.audioTracks) {

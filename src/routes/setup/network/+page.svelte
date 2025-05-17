@@ -47,8 +47,10 @@
     return { status: 'error', text: 'Not available. Peer discovery will suffer. Streaming old, poorly seeded anime might be impossible.' }
   }
 
+  $: port = $settings.torrentPort
+
   $: checks = [downloadBandwidthCheck, {
-    promise: checkPortAvailability($settings.torrentPort),
+    promise: checkPortAvailability(port),
     title: 'Port Forwarding',
     pending: 'Checking port forwarding availability...'
   }]
