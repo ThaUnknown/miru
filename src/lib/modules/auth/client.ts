@@ -23,7 +23,7 @@ export default new class AuthAggregator {
   // AUTH
 
   anilist () {
-    return !!client.viewer.value
+    return !!client.viewer.value?.viewer?.id
   }
 
   checkAuth () {

@@ -124,7 +124,7 @@ class AnilistClient {
                   lists.push(fallback)
                   targetList = fallback
                 }
-                if (!targetList.entries) targetList.entries = []
+                targetList.entries ??= []
                 targetList.entries.push(oldEntry)
                 return { ...data, MediaListCollection: { ...data.MediaListCollection, lists } }
               })
@@ -235,10 +235,12 @@ class AnilistClient {
             })
           },
           didAuthError (error, _operation) {
-            return error.graphQLErrors.some(e => e.extensions.code === 'FORBIDDEN') // TODO: verify how anilist handles auth errors: {"data":null,"errors":[{"message":"Invalid token","status":400}]}
+            return error.graphQLErrors.some(e => e.message === 'Invalid token')
           },
           refreshAuth: async () => {
-            await this.auth()
+            const oauth = this.token()
+            this.auth(oauth) // TODO: this should be awaited, but it utils doesnt expose query, only mutation, so need to wait for it to be added
+            await oauth
           },
           willAuthError: () => {
             if (!this.viewer.value?.expires) return false
@@ -271,11 +273,16 @@ class AnilistClient {
     return res
   })
 
-  async auth () {
+  async token () {
     const res = await native.authAL(`https://anilist.co/api/v2/oauth/authorize?client_id=${dev ? 26159 : 3461}&response_type=token`)
     const token = res.access_token
     const expires = '' + (Date.now() + (parseInt(res.expires_in) * 1000))
+    this.viewer.value = { viewer: this.viewer.value?.viewer ?? null, token, expires }
+    return { token, expires }
+  }
 
+  async auth (oauth = this.token()) {
+    const { token, expires } = await oauth
     const viewerRes = await this.client.query(Viewer, {}, { fetchOptions: { headers: { Authorization: `Bearer ${token}` } } })
     if (!viewerRes.data?.Viewer) throw new Error('Failed to fetch viewer data')
 
@@ -296,7 +303,7 @@ class AnilistClient {
 
   setRateLimit (sec: number) {
     toast.error('Anilist Error', { description: 'Rate limit exceeded, retrying in ' + Math.round(sec / 1000) + ' seconds.' })
-    if (!this.rateLimitPromise) this.rateLimitPromise = sleep(sec).then(() => { this.rateLimitPromise = null })
+    this.rateLimitPromise ??= sleep(sec).then(() => { this.rateLimitPromise = null })
     return sec
   }
 
@@ -324,7 +331,6 @@ class AnilistClient {
   })
 
   // WARN: these 3 sections are hacky, i use oldvalue to prevent re-running loops, I DO NOT KNOW WHY THE LOOPS HAPPEN!
-  // TODO: these should be optimised to be called with ids.slice(index, index + perPage)
   continueIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
     const sub = this.userlists.subscribe(values => {
@@ -346,7 +352,6 @@ class AnilistClient {
     return sub
   })
 
-  // TODO: this needs to be called with onList: false
   sequelIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
     const sub = this.userlists.subscribe(values => {

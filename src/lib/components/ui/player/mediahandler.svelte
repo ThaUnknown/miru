@@ -19,7 +19,7 @@
       media: file.metadata.media,
       session: {
         title: title(file.metadata.media),
-        description: 'Episode ' + file.metadata.episode, // TODO
+        description: 'Episode ' + file.metadata.episode,
         image: cover(file.metadata.media) ?? ''
       }
     }

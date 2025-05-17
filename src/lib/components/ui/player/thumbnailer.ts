@@ -7,7 +7,6 @@ interface RenderItem {
 export default class Thumbnailer {
   video = document.createElement('video')
   canvas = new OffscreenCanvas(0, 0)
-  // TODO: consider using bitmap renderer for better performance, this might not be worth the performance hit
   ctx = this.canvas.getContext('2d')!
   thumbnails: string[] = []
   size = 700
