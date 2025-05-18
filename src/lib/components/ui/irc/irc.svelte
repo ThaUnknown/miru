@@ -27,7 +27,7 @@
     ident = { nick: 'Guest-' + crypto.randomUUID().slice(0, 6), id: crypto.randomUUID().slice(0, 6), pfpid: '0', type: 'guest' }
   }
 
-  if (!irc.value) irc.value = MessageClient.new(ident)
+  irc.value ??= MessageClient.new(ident)
 
   let message = ''
   let rows = 1

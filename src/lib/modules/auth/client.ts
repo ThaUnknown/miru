@@ -19,7 +19,7 @@ export default new class AuthAggregator {
     return () => unsub.forEach(fn => fn())
   })
 
-  syncSettings = persisted('syncSettings', { al: true, local: true })
+  syncSettings = persisted('syncSettings', { al: true, local: true, kitsu: true, mal: true })
   // AUTH
 
   anilist () {

@@ -159,7 +159,7 @@ export function normalizeTracks (_tracks: Track[]) {
     }
   })
   return lang.reduce<Record<string, typeof lang>>((acc, track) => {
-    if (!acc[track.language]) acc[track.language] = []
+    acc[track.language] ??= []
     acc[track.language]!.push(track)
     return acc
   }, {})
@@ -174,7 +174,7 @@ export function normalizeSubs (_tracks?: Record<number | string, { meta: { langu
     name: meta.name ?? meta.language ?? (!hasEng ? 'eng' : 'unk')
   }))
   return lang.reduce<Record<string, typeof lang>>((acc, track) => {
-    if (!acc[track.language]) acc[track.language] = []
+    acc[track.language] ??= []
     acc[track.language]!.push(track)
     return acc
   }, {})
