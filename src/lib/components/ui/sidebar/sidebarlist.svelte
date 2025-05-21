@@ -44,8 +44,7 @@
 <SidebarButton href='/app/schedule/'>
   <Calendar size={18} />
 </SidebarButton>
-<!-- <SidebarButton href='/app/w2g/'> -->
-<SidebarButton disabled={true}>
+<SidebarButton href='/app/w2g/'>
   <Users size={18} />
 </SidebarButton>
 <SidebarButton href='/app/chat/'>
@@ -55,7 +54,6 @@
   <Download size={18} />
 </SidebarButton>
 <Button variant='ghost' on:click={() => native.openURL('https://github.com/sponsors/ThaUnknown/')} class='px-2 w-full relative mt-auto select:!bg-transparent text-[#fa68b6] select:text-[#fa68b6]'>
-  <!-- <Heart size={18} fill='currentColor' class='absolute' /> -->
   <Heart size={18} fill='currentColor' class={cn(active && 'donate')} />
 </Button>
 <SidebarButton href='/app/settings/'>

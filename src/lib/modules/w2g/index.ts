@@ -5,15 +5,15 @@ import P2PT, { type Peer } from 'p2pt'
 import { writable } from 'simple-store-svelte'
 
 import client from '../anilist/client.js'
+import { server } from '../torrent'
 
-import Event, { EventTypes } from './events.js'
+import Event, { type MediaState, type PlayerState, type W2GEvents } from './events.js'
 
-import type { Viewer } from '../anilist/queries'
-import type { ResultOf } from 'gql.tada'
+import type { ChatMessage, ChatUser } from '$lib/components/ui/chat'
 
 const debug = Debug('ui:w2g')
 
-function generateRandomHexCode (len: number) {
+export function generateRandomHexCode (len: number) {
   let hexCode = ''
 
   while (hexCode.length < len) {
@@ -23,73 +23,77 @@ function generateRandomHexCode (len: number) {
   return hexCode
 }
 
-type PeerList = Record<string, { user: ResultOf<typeof Viewer>['Viewer'] | {id: string }, peer?: Peer }>
+type AppEvent = {
+  [K in keyof W2GEvents]-?: Event<K>
+}[keyof W2GEvents]
 
-interface PlayerState {paused: boolean, time: number}
+type PeerList = Record<string, { user: ChatUser, peer?: Peer }>
 
-export class W2GClient extends EventEmitter {
-  static readonly #announce = [
-    atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
-    atob('d3NzOi8vdHJhY2tlci53ZWJ0b3JyZW50LmRldg=='),
-    atob('d3NzOi8vdHJhY2tlci5maWxlcy5mbTo3MDczL2Fubm91bmNl'),
-    atob('d3NzOi8vdHJhY2tlci5idG9ycmVudC54eXov')
-  ]
+const ANNOUNCE = [
+  atob('d3NzOi8vdHJhY2tlci5vcGVud2VidG9ycmVudC5jb20='),
+  atob('d3NzOi8vdHJhY2tlci53ZWJ0b3JyZW50LmRldg=='),
+  atob('d3NzOi8vdHJhY2tlci5maWxlcy5mbTo3MDczL2Fubm91bmNl'),
+  atob('d3NzOi8vdHJhY2tlci5idG9ycmVudC54eXov')
+]
 
+export class W2GClient extends EventEmitter<{index: [number], player: [PlayerState]}> {
   player: PlayerState = {
     paused: true,
     time: 0
   }
 
   index = 0
-  magnet: {magnet: string, hash: string} | null = null
-  isHost = false
-  #p2pt: P2PT | null
+  media: MediaState | undefined
+  isHost
+  readonly #p2pt
   code
 
-  messages = writable<Array<{message: string, user: ResultOf<typeof Viewer>['Viewer'] | {id: string }, type: 'incoming' | 'outgoing', date: Date}>>([])
+  messages = writable<ChatMessage[]>([])
 
-  self = client.viewer.value?.viewer ?? { id: generateRandomHexCode(16) }
-  /** @type {import('simple-store-svelte').Writable<PeerList>} */
+  self: ChatUser = client.viewer.value?.viewer ?? { id: generateRandomHexCode(16), avatar: null, mediaListOptions: null, name: 'Guest' }
   peers = writable<PeerList>({ [this.self.id]: { user: this.self } })
 
   get inviteLink () {
-    return `https://miru.watch/w2g/${this.code}`
+    return `https://hayas.ee/w2g/${this.code}`
   }
 
-  localMediaIndexChanged (index: number) {
-    this.index = index
-
-    this.mediaIndexChanged(index)
-  }
-
-  localPlayerStateChanged ({ payload }: Event<PlayerState>) {
-    debug(`localPlayerStateChanged: ${JSON.stringify(payload)}`)
-    this.player.paused = payload.paused
-    this.player.time = payload.time
-
-    this.playerStateChanged(this.player)
-  }
-
-  constructor (code?: string) {
+  constructor (code: string, isHost: boolean) {
     super()
-    this.isHost = !code
+    this.isHost = isHost
 
-    this.code = code ?? generateRandomHexCode(16)
+    this.code = code
 
     debug(`W2GClient: ${this.code}, ${this.isHost}`)
 
-    this.#p2pt = new P2PT(W2GClient.#announce, this.code)
+    this.#p2pt = new P2PT<Event>(ANNOUNCE, this.code)
 
-    this.#wireEvents()
+    this.#p2pt.on('peerconnect', peer => {
+      debug(`peerconnect: ${peer.id}`)
+      this._sendEvent(peer, new Event('init', this.self))
+
+      if (this.isHost) this._sendInitialSessionState(peer)
+    })
+
+    this.#p2pt.on('peerclose', peer => {
+      debug(`peerclose: ${peer.id}`)
+      this.peers.update(peers => {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete peers[peer.id]
+        return peers
+      })
+    })
+
+    this.#p2pt.on('msg', this._onMsg)
+
     this.#p2pt.start()
   }
 
-  magnetLink (magnet: { hash: string, magnet: string }) {
-    debug(`magnetLink: ${this.magnet?.hash} ${magnet.hash}`)
-    if (this.magnet?.hash !== magnet.hash) {
-      this.magnet = magnet
+  mediaChange (media: MediaState) {
+    debug(`mediaChange: ${this.media?.torrent} ${media.torrent}`)
+    if (this.media?.torrent !== media.torrent) {
+      this.media = media
       this.isHost = true
-      this.#sendToPeers(new Event('magnet', magnet))
+      this._sendToPeers(new Event('media', media))
     }
   }
 
@@ -97,7 +101,7 @@ export class W2GClient extends EventEmitter {
     debug(`mediaIndexChanged: ${this.index} ${index}`)
     if (this.index !== index) {
       this.index = index
-      this.#sendToPeers(new Event('index', index))
+      this._sendToPeers(new Event('index', index))
     }
   }
 
@@ -112,7 +116,7 @@ export class W2GClient extends EventEmitter {
 
   playerStateChanged (state: PlayerState) {
     debug(`playerStateChanged: ${JSON.stringify(state)}`)
-    if (this._playerStateChanged(state)) this.#sendToPeers(new Event('player', state))
+    if (this._playerStateChanged(state)) this._sendToPeers(new Event('player', state))
   }
 
   message (message: string) {
@@ -123,77 +127,61 @@ export class W2GClient extends EventEmitter {
       type: 'outgoing',
       date: new Date()
     })])
-    this.#sendToPeers(new Event('message', message))
+    this._sendToPeers(new Event('message', message))
   }
 
-  #wireEvents () {
-    this.#p2pt?.on('peerconnect', this.#onPeerconnect.bind(this))
-    this.#p2pt?.on('msg', this.#onMsg.bind(this))
-    this.#p2pt?.on('peerclose', this.#onPeerclose.bind(this))
+  _sendEvent (peer: Peer, event: Event) {
+    debug(`sendEvent: ${peer.id} ${JSON.stringify(event)}`)
+    this.#p2pt.send(peer, event)
   }
 
-  #sendEvent (peer: Peer, event: Event) {
-    debug(`#sendEvent: ${peer.id} ${JSON.stringify(event)}`)
-    this.#p2pt?.send(peer, JSON.stringify(event))
+  _sendInitialSessionState (peer: Peer) {
+    this._sendEvent(peer, new Event('media', this.media))
+    this._sendEvent(peer, new Event('index', this.index))
+    this._sendEvent(peer, new Event('player', this.player))
   }
 
-  #sendInitialSessionState (peer: Peer) {
-    this.#sendEvent(peer, new Event('magnet', this.magnet))
-    this.#sendEvent(peer, new Event('index', this.index))
-    this.#sendEvent(peer, new Event('player', this.player))
-  }
-
-  async #onPeerconnect (peer: Peer) {
-    debug(`#onPeerconnect: ${peer.id}`)
-    this.#sendEvent(peer, new Event('init', this.self))
-
-    if (this.isHost) this.#sendInitialSessionState(peer)
-  }
-
-  #onMsg (peer: Peer, data: Event<PlayerState | {magnet: string, hash: string} | string | ResultOf<typeof Viewer>['Viewer'] | {index: number}> | string) {
-    debug(`#onMsg: ${peer.id} ${JSON.stringify(data)}`)
-    data = typeof data === 'string' ? JSON.parse(data) as Event<PlayerState | {magnet: string, hash: string} | string | ResultOf<typeof Viewer>['Viewer'] | {index: number}> : data
+  _onMsg = async (peer: Peer, data: AppEvent) => {
+    debug(`onMsg: ${peer.id} ${JSON.stringify(data)}`)
 
     switch (data.type) {
-      case EventTypes.SessionInitEvent:
+      case 'init':
         this.peers.update(peers => {
           peers[peer.id] = {
             peer,
-            user: data.payload as ResultOf<typeof Viewer>['Viewer']
+            user: data.payload
           }
           return peers
         })
         break
-      case EventTypes.MagnetLinkEvent: {
-        const cast = data as Event<{magnet: string, hash: string}>
-        if (cast.payload.magnet === undefined) break
-        const { hash, magnet } = cast.payload
-        if (hash !== this.magnet?.hash) {
+      case 'media': {
+        if (data.payload?.torrent == null || data.payload?.mediaId == null) break
+        const { torrent, mediaId, episode } = data.payload
+        if (torrent !== this.media?.torrent) {
           this.isHost = false
-          this.magnet = cast.payload
-          add(magnet)
+          this.media = data.payload
+          const media = (await client.single(mediaId)).data?.Media
+          if (media == null) break
+          server.play(torrent, media, episode)
         }
 
         break
       }
-      case EventTypes.MediaIndexEvent: {
-        const cast = data as Event<{index: number}>
-        if (cast.payload.index === undefined) break
-        if (this.index !== cast.payload.index) {
-          this.index = cast.payload.index
-          this.emit('index', cast.payload.index)
+      case 'index': {
+        if (data.payload == null) break
+        if (this.index !== data.payload) {
+          this.index = data.payload
+          this.emit('index', data.payload)
         }
         break
       }
-      case EventTypes.PlayerStateEvent: {
-        const cast = data as Event<PlayerState>
-        if (cast.payload.time === undefined) break
-        if (this._playerStateChanged(cast.payload)) this.emit('player', data.payload)
+      case 'player': {
+        if (data.payload?.time == null) break
+        if (this._playerStateChanged(data.payload)) this.emit('player', data.payload)
         break
       }
-      case EventTypes.MessageEvent:{
-        const cast = data as Event<string>
-        this.messages.update(messages => [...messages, ({ message: cast.payload, user: this.peers.value[peer.id].user, type: 'incoming', date: new Date() })])
+      case 'message': {
+        this.messages.update(messages => [...messages, ({ message: data.payload, user: this.peers.value[peer.id]!.user, type: 'incoming', date: new Date() })])
         break
       }
       default:
@@ -201,27 +189,16 @@ export class W2GClient extends EventEmitter {
     }
   }
 
-  #onPeerclose (peer: Peer) {
-    debug(`#onPeerclose: ${peer.id}`)
-    this.peers.update(peers => {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete peers[peer.id]
-      return peers
-    })
-  }
-
-  #sendToPeers (event: Event) {
-    if (!this.#p2pt) return
+  _sendToPeers (event: Event) {
     for (const { peer } of Object.values(this.peers.value)) {
-      if (peer) this.#sendEvent(peer, event)
+      if (peer) this._sendEvent(peer, event)
     }
   }
 
   destroy () {
     debug('destroy')
-    this.#p2pt?.destroy()
+    this.#p2pt.destroy()
     this.removeAllListeners()
-    this.#p2pt = null
     this.isHost = false
     this.peers.value = {}
   }

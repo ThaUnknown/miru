@@ -25,6 +25,8 @@ export default defineConfig({
       './Scripts': resolve(__dirname, 'src/patches/empty.cjs'),
       // yeah they dont export this for making custom icons, sucks
       'lucide-svelte/dist/Icon.svelte': resolve(__dirname, 'node_modules/lucide-svelte/dist/Icon.svelte'),
+      // no exports :/
+      'bittorrent-tracker/lib/client/websocket-tracker.js': resolve(__dirname, 'node_modules/bittorrent-tracker/lib/client/websocket-tracker.js'),
     }
   },
   server: { port: 7344 },

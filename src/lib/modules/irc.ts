@@ -1,5 +1,3 @@
-import { EventEmitter } from 'events'
-
 import Client, { createChannelConstructor } from '@thaunknown/web-irc'
 import { writable } from 'simple-store-svelte'
 
@@ -7,6 +5,23 @@ import { decryptMessage, encryptMessage } from './crypt'
 
 import type { ChatMessage, ChatUser } from '$lib/components/ui/chat'
 import type IrcChannel from '@thaunknown/web-irc/channel'
+import type IrcClient from '@thaunknown/web-irc/client'
+import type { EventEmitter } from 'events'
+
+export type UserType = 'al' | 'guest'
+export interface IRCChatUser {
+  nick: string
+  id: string
+  pfpid: string
+  type: UserType
+}
+export function getPFP (user: Pick<IRCChatUser, 'id' | 'pfpid' | 'type'>) {
+  if (user.type === 'al') {
+    return `https://s4.anilist.co/file/anilistcdn/user/avatar/medium/b${user.id}-${user.pfpid}`
+  } else {
+    return 'https://s4.anilist.co/file/anilistcdn/user/avatar/medium/default.png'
+  }
+}
 
 export interface IRCUser { nick: string, ident: string, hostname: string, modes: string[], tags: object }
 export interface PrivMessage {
@@ -24,30 +39,48 @@ export interface PrivMessage {
   time: number
 }
 
-export default class MessageClient extends EventEmitter {
-  irc = new Client(null)
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type IRCEvents = {
+  userlist: [{ users: IRCUser[] }]
+  join: [IRCUser]
+  part: [IRCUser]
+  quit: [IRCUser]
+  kick: [IRCUser]
+  privmsg: [PrivMessage]
+  connected: []
+}
+
+function ircUserToChatUser ({ id, pfpid, type, nick }: IRCChatUser): ChatUser {
+  return { id, avatar: { medium: getPFP({ id, pfpid, type }) }, name: nick, mediaListOptions: null }
+}
+
+function ircIdentToChatUser (user: IRCUser): ChatUser {
+  const [nick, pfpid, pfpex] = user.nick.split('_') as [string, string, string]
+  const [type, id] = user.ident.split('_') as ['al' | 'guest', string]
+  return ircUserToChatUser({ id, pfpid: `${pfpid}.${pfpex}`, type, nick })
+}
+
+export default class MessageClient {
+  irc = new Client(null) as IrcClient & EventEmitter<IRCEvents>
   users = writable<Record<string, ChatUser>>({})
   messages = writable<ChatMessage[]>([])
   channel?: IrcChannel
   ident
 
-  constructor (ident: ChatUser) {
-    super()
+  constructor (ident: IRCChatUser) {
     this.ident = ident
-    this.irc.on('userlist', async ({ users }: { users: IRCUser[] }) => {
-      this.users.value = users.reduce((acc, user) => {
-        const [nick, pfpid, pfpex] = user.nick.split('_') as [string, string, string]
-        const [type, id] = user.ident.split('_') as ['al' | 'guest', string]
-        acc[user.ident] = { nick, id, pfpid: `${pfpid}.${pfpex}`, type }
+    this.irc.on('userlist', async ({ users }) => {
+      this.users.value = users.reduce((acc, ircuser) => {
+        const user = ircIdentToChatUser(ircuser)
+        acc[ircuser.ident] = user
         return acc
       }, this.users.value)
     })
 
-    this.irc.on('join', async (user: IRCUser) => {
+    this.irc.on('join', async ircuser => {
       try {
-        const [nick, pfpid, pfpex] = user.nick.split('_') as [string, string, string]
-        const [type, id] = user.ident.split('_') as ['al' | 'guest', string]
-        this.users.value[user.ident] = { nick, id, pfpid: `${pfpid}.${pfpex}`, type }
+        const user = ircIdentToChatUser(ircuser)
+        this.users.value[ircuser.ident] = user
         this.users.update(users => users)
       } catch (error) {
         console.error(error)
@@ -63,9 +96,9 @@ export default class MessageClient extends EventEmitter {
     this.irc.on('part', deleteUser)
     this.irc.on('kick', deleteUser)
 
-    this.irc.on('privmsg', async (priv: PrivMessage) => {
-      const message = await decryptMessage(priv.message)
+    this.irc.on('privmsg', async priv => {
       try {
+        const message = await decryptMessage(priv.message)
         this.messages.update(messages => [...messages, {
           message,
           user: this.users.value[priv.ident]!,
@@ -83,17 +116,17 @@ export default class MessageClient extends EventEmitter {
     const encrypted = await encryptMessage(message)
     this.channel!.say(encrypted)
     this.messages.update(messages => [...messages, {
-      user: this.ident,
+      user: ircUserToChatUser(this.ident),
       message,
       date: new Date(),
       type: 'outgoing'
     }])
   }
 
-  static async new ({ nick, id, pfpid, type }: ChatUser) {
+  static async new ({ nick, id, pfpid, type }: IRCChatUser) {
     const client = new this({ nick, id, pfpid, type })
 
-    await new Promise(resolve => {
+    await new Promise<void>(resolve => {
       client.irc.once('connected', resolve)
       client.irc.connect({
         version: null,

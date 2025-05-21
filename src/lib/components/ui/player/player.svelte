@@ -57,6 +57,7 @@
   import { click } from '$lib/modules/navigate'
   import { settings } from '$lib/modules/settings'
   import { server } from '$lib/modules/torrent'
+  import { w2globby } from '$lib/modules/w2g/lobby'
   import { toTS, fastPrettyBits } from '$lib/utils'
 
   export let mediaInfo: MediaInfo
@@ -652,6 +653,12 @@
 
     return { destroy: () => ctrl.abort() }
   }
+
+  $: $w2globby?.playerStateChanged({ paused, time: Math.floor(currentTime) })
+  $: $w2globby?.on('player', state => {
+    currentTime = state.time
+    paused = state.paused
+  })
 </script>
 
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />

@@ -9,6 +9,7 @@
   import { fillerEpisodes } from '$lib/components/EpisodesList.svelte'
   import { cover, episodes, title } from '$lib/modules/anilist'
   import { settings } from '$lib/modules/settings'
+  import { w2globby } from '$lib/modules/w2g/lobby'
 
   export let mediaInfo: NonNullable<Awaited<ReturnType<typeof resolveFilesPoorly>>>
 
@@ -26,6 +27,14 @@
   }
 
   let current = fileToMedaInfo(mediaInfo.target)
+
+  $: $w2globby?.mediaIndexChanged(mediaInfo.resolvedFiles.indexOf(current.file))
+  $: $w2globby?.on('index', index => {
+    const file = mediaInfo.resolvedFiles[index]
+    if (file) {
+      current = fileToMedaInfo(file)
+    }
+  })
 
   function findEpisode (episode: number) {
     return mediaInfo.targetAnimeFiles.find(file => file.metadata.episode === episode)
@@ -70,6 +79,7 @@
 
   function selectFile (file: ResolvedFile) {
     current = fileToMedaInfo(file)
+    $w2globby?.mediaIndexChanged(mediaInfo.resolvedFiles.indexOf(current.file))
   }
 
   $: next = hasNext(current)

@@ -3,6 +3,7 @@ import { get } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
 
 import native from '../native'
+import { w2globby } from '../w2g/lobby'
 
 import type { TorrentFile, TorrentInfo } from '../../../app'
 import type { Media } from '../anilist'
@@ -53,6 +54,7 @@ export const server = new class ServerClient {
   play (id: string, media: Media, episode: number) {
     this.last.set({ id, media, episode })
     this.active.value = this._play(id, media, episode)
+    w2globby.value?.mediaChange({ episode, mediaId: media.id, torrent: id })
     return this.active.value
   }
 

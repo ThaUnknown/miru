@@ -2,6 +2,7 @@
   import FileImage from 'lucide-svelte/icons/file-image'
   import Trash from 'lucide-svelte/icons/trash'
   import X from 'lucide-svelte/icons/x'
+  import { tick } from 'svelte'
   import MagnifyingGlass from 'svelte-radix/MagnifyingGlass.svelte'
   import { toast } from 'svelte-sonner'
 
@@ -10,6 +11,7 @@
   import type { Search } from '$lib/modules/anilist/queries'
   import type { VariablesOf } from 'gql.tada'
 
+  import { replaceState } from '$app/navigation'
   import { page } from '$app/stores'
   import { badgeVariants } from '$lib/components/ui/badge'
   import { Button } from '$lib/components/ui/button'
@@ -93,6 +95,8 @@
     onList: [] as format[]
   }
 
+  $: console.log('search updated', search)
+
   let pageNumber = 1
   let inputText = ''
 
@@ -123,7 +127,7 @@
   }
 
   function searchQuery (filter: Partial<typeof search>, page: number) {
-    return client.search({
+    const search = {
       page,
       ids: filter.ids,
       search: filter.name,
@@ -134,7 +138,11 @@
       format: filter.formats?.map(f => f.value) as Array<'MUSIC' | 'MANGA' | 'TV' | 'TV_SHORT' | 'MOVIE' | 'SPECIAL' | 'OVA' | 'ONA' | 'NOVEL' | 'ONE_SHOT'>,
       status: filter.status?.map(s => s.value) as Array<'FINISHED' | 'RELEASING' | 'NOT_YET_RELEASED' | 'CANCELLED' | 'HIATUS' | null>,
       sort: [filter.sort?.[0]?.value ?? 'SEARCH_MATCH'] as Array<'TITLE_ROMAJI_DESC' | 'ID' | 'START_DATE_DESC' | 'SCORE_DESC' | 'POPULARITY_DESC' | 'TRENDING_DESC' | 'UPDATED_AT_DESC' | 'ID_DESC' | 'TITLE_ROMAJI' | 'TITLE_ENGLISH' | 'TITLE_ENGLISH_DESC' | null>
-    })
+    }
+
+    tick().then(() => replaceState('', { search }))
+
+    return client.search(search)
   }
 
   const updateText = debounce((e: FormInputEvent) => {

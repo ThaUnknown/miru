@@ -1,25 +1,14 @@
 <script lang='ts'>
   import ExternalLink from 'lucide-svelte/icons/external-link'
 
-  import { getPFP, type ChatUser } from '.'
-
-  import type { Writable } from 'svelte/store'
+  import type { ChatUser } from '.'
 
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
 
-  export let users: Writable<Record<string, ChatUser>>
+  export let users: ChatUser[]
 
-  function processUsers (users: ChatUser[]) {
-    return users.map(user => {
-      return {
-        ...user,
-        pfp: getPFP(user)
-      }
-    })
-  }
-
-  $: processed = processUsers(Object.values($users))
+  $: processed = Object.entries(users)
 </script>
 
 <div class='flex flex-col w-72 max-w-full px-5 overflow-hidden'>
@@ -27,13 +16,13 @@
     {processed.length} Member(s)
   </div>
   <div>
-    {#each processed as { id, pfp, nick } (id)}
+    {#each processed as [key, user] (key)}
       <div class='flex items-center pb-2'>
-        <img src={pfp} alt='ProfilePicture' class='w-10 h-10 rounded-full p-1 mt-auto' loading='lazy' decoding='async' />
+        <img src={user.avatar?.medium} alt='ProfilePicture' class='w-10 h-10 rounded-full p-1 mt-auto' loading='lazy' decoding='async' />
         <div class='text-md pl-2'>
-          {nick}
+          {user.name}
         </div>
-        <span class='cursor-pointer flex items-center ml-auto text-blue-600' use:click={() => native.openURL('https://anilist.co/user/' + id)}>
+        <span class='cursor-pointer flex items-center ml-auto text-blue-600' use:click={() => native.openURL('https://anilist.co/user/' + user.id)}>
           <ExternalLink size='18' />
         </span>
       </div>
