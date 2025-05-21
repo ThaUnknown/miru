@@ -47,6 +47,7 @@ export class W2GClient extends EventEmitter<{index: [number], player: [PlayerSta
   isHost
   readonly #p2pt
   code
+  destroyed = false
 
   messages = writable<ChatMessage[]>([])
 
@@ -197,6 +198,7 @@ export class W2GClient extends EventEmitter<{index: [number], player: [PlayerSta
 
   destroy () {
     debug('destroy')
+    this.destroyed = true
     this.#p2pt.destroy()
     this.removeAllListeners()
     this.isHost = false
