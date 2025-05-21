@@ -54,6 +54,7 @@
 		"@urql/svelte": "^4.2.3",
 		"abslink": "^1.1.0",
 		"anitomyscript": "github:thaunknown/anitomyscript",
+		"bittorrent-tracker": "10.0.12",
 		"bottleneck": "^2.19.5",
 		"clsx": "^2.1.1",
 		"date-fns": "^4.1.0",

@@ -44,6 +44,9 @@ importers:
       anitomyscript:
         specifier: github:thaunknown/anitomyscript
         version: https://codeload.github.com/thaunknown/anitomyscript/tar.gz/fc00888d69ba59258167f2fac9e86576b29863b7
+      bittorrent-tracker:
+        specifier: 10.0.12
+        version: 10.0.12
       bottleneck:
         specifier: ^2.19.5
         version: 2.19.5

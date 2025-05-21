@@ -95,8 +95,6 @@
     onList: [] as format[]
   }
 
-  $: console.log('search updated', search)
-
   let pageNumber = 1
   let inputText = ''
 
