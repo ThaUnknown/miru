@@ -15,6 +15,9 @@ const config = {
     adapter: adapter({ fallback: 'index.html' }),
     version: {
       name: process.env.npm_package_version
+    },
+    alias: {
+      "lucide-svelte/dist/Icon.svelte": "./node_modules/lucide-svelte/dist/Icon.svelte"
     }
   },
   runtime: ''

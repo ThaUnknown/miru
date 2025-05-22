@@ -40,7 +40,7 @@
     ],
     "typeRoots": [
       "./src/types"
-    ],
+    ]
   },
   "typeAcquisition": {
     "enable": false
