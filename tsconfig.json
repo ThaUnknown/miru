@@ -1,0 +1,67 @@
+{
+  "extends": "./.svelte-kit/tsconfig.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "esnext",
+    "lib": [
+      "esnext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "emitDeclarationOnly": false,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "noUncheckedIndexedAccess": true,
+    "declaration": true,
+    "alwaysStrict": true,
+    "strict": true,
+    "maxNodeModuleJsDepth": 3,
+    "allowSyntheticDefaultImports": true,
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "schema": "https://graphql.anilist.co",
+        "tadaOutputLocation": "./src/lib/modules/anilist/graphql-env.d.ts",
+        "tadaTurboLocation": "./src/lib/modules/anilist/graphql-turbo.d.ts"
+      }
+    ],
+    "typeRoots": [
+      "./src/types"
+    ]
+  },
+  "typeAcquisition": {
+    "enable": false
+  },
+  "files": [
+    "src/service-worker/index.ts"
+  ],
+  "include": [
+    "src/service-worker/index.ts",
+    "src/**/*.js",
+    "src/**/*.cjs",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.svelte"
+  ],
+  "exclude": [
+    "../node_modules/**"
+  ]
+  // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
+  // except $lib which is handled by https://kit.svelte.dev/docs/configuration#files
+  //
+  // If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes
+  // from the referenced tsconfig.json - TypeScript does not merge them in
+}
