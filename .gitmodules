@@ -1,6 +1,0 @@
-[submodule "capacitor/git_modules/nodejs-mobile"]
-	path = capacitor/git_modules/nodejs-mobile
-	url = https://github.com/nodejs-mobile/nodejs-mobile
-[submodule "electron/electron-dist"]
-	path = electron/electron-dist
-	url = https://github.com/hayase-app/electron-dist
