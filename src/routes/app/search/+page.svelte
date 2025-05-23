@@ -2,7 +2,7 @@
   import FileImage from 'lucide-svelte/icons/file-image'
   import Trash from 'lucide-svelte/icons/trash'
   import X from 'lucide-svelte/icons/x'
-  import { tick } from 'svelte'
+  import { onDestroy, tick } from 'svelte'
   import MagnifyingGlass from 'svelte-radix/MagnifyingGlass.svelte'
   import { toast } from 'svelte-sonner'
 
@@ -20,7 +20,7 @@
   import { Input, type FormInputEvent } from '$lib/components/ui/input'
   import { client } from '$lib/modules/anilist'
   import { click, dragScroll } from '$lib/modules/navigate'
-  import { cn, debounce, traceAnime } from '$lib/utils'
+  import { cn, debounce, sleep, traceAnime } from '$lib/utils'
 
   // util
 
@@ -112,16 +112,25 @@
     }
     inputText = ''
     pageNumber = 1
+    for (const unsub of mediaSubscriptions) {
+      unsub()
+    }
+    mediaSubscriptions = []
   }
 
   let media: Array<ReturnType<typeof client.search>> = []
+
+  let mediaSubscriptions: Array<() => void> = []
+
+  onDestroy(clear)
 
   // handlers
 
   function searchChanged (s: typeof search) {
     const filter = filterEmpty(s)
 
-    media = [searchQuery(filter, pageNumber)]
+    pageNumber = 1
+    media = [searchQuery(filter, 1)]
   }
 
   function searchQuery (filter: Partial<typeof search>, page: number) {
@@ -131,7 +140,7 @@
       search: filter.name,
       onList: filter.onList?.[0]?.value === 'true' ? true : filter.onList?.[0]?.value === 'false' ? false : undefined,
       genre: filter.genres?.map(g => g.value),
-      seasonYear: filter.years ? parseInt(filter.years[0]!.value) : undefined,
+      seasonYear: filter.years?.length ? parseInt(filter.years[0]!.value) : undefined,
       season: filter.seasons?.[0]!.value as 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL' | undefined,
       format: filter.formats?.map(f => f.value) as Array<'MUSIC' | 'MANGA' | 'TV' | 'TV_SHORT' | 'MOVIE' | 'SPECIAL' | 'OVA' | 'ONA' | 'NOVEL' | 'ONE_SHOT'>,
       status: filter.status?.map(s => s.value) as Array<'FINISHED' | 'RELEASING' | 'NOT_YET_RELEASED' | 'CANCELLED' | 'HIATUS' | null>,
@@ -140,7 +149,10 @@
 
     tick().then(() => replaceState('', { search }))
 
-    return client.search(search)
+    const query = client.search(search)
+
+    mediaSubscriptions.push(query.subscribe(() => {}))
+    return query
   }
 
   const updateText = debounce((e: FormInputEvent) => {
@@ -150,12 +162,10 @@
 
   $: searchChanged(search)
 
-  // function nextPage () {
-  //   page = page + 1
-  //   media = [...media, searchQuery(filterEmpty(search), page)]
-  // }
   // TODO: selects should turn into modals on mobile! like anilist
-  // TODO: infinite scroll
+
+  $: lastestQuery = media[media.length - 1]
+  $: hasNextPage = $lastestQuery?.data?.Page?.pageInfo?.hasNextPage
 
   async function imagePicker (e: Event) {
     const target = e.target as HTMLInputElement
@@ -182,10 +192,35 @@
     }
   }
 
+  function infiniteScroll (div: HTMLDivElement) {
+    const ctrl = new AbortController()
+    let ticking = false
+    div.addEventListener('scrollend', async () => {
+      if (!ticking && hasNextPage) {
+        const scrollTop = div.scrollTop
+        const scrollable = div.scrollHeight - div.clientHeight
+        const remaining = scrollable - scrollTop
+        if (remaining < 800) {
+          pageNumber = pageNumber + 1
+          media = [...media, searchQuery(filterEmpty(search), pageNumber)]
+          ticking = true
+          await sleep(100)
+          ticking = false
+        }
+      }
+    }, { signal: ctrl.signal })
+
+    return {
+      destroy () {
+        ctrl.abort()
+      }
+    }
+  }
+
   const viewer = client.viewer
 </script>
 
-<div class='flex flex-col h-full overflow-y-auto overflow-x-clip -ml-14 pl-14 z-20 min-w-0 grow pointer-events-none' use:dragScroll>
+<div class='flex flex-col h-full overflow-y-auto overflow-x-clip -ml-14 pl-14 z-20 min-w-0 grow pointer-events-none' use:dragScroll use:infiniteScroll>
   <div class='sticky top-0 z-20 px-2 sm:px-10 pointer-events-auto shrink-0 overflow-clip bg-black'>
     <div class='flex flex-wrap pt-5'>
       <div class='grid items-center min-w-40 flex-1 md:basis-auto md:w-1/4 p-2'>
