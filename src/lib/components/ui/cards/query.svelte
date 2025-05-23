@@ -23,7 +23,7 @@
 {#if $paused}
   <div class='w-0 h-0' use:deferredLoad />
 {/if}
-{#if $query.fetching || $paused}
+{#if $query.fetching}
   {#each Array.from({ length: 50 }) as _, i (i)}
     <SkeletonCard />
   {/each}
@@ -66,6 +66,6 @@
   {/if}
 {:else}
   {#each Array.from({ length: 50 }) as _, i (i)}
-    <SkeletonCard />
+    <SkeletonCard animate={false} />
   {/each}
 {/if}
