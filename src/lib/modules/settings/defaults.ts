@@ -12,7 +12,6 @@ export default {
   searchQuality: '1080' as keyof typeof videoResolutions,
   rssFeedsNew: SUPPORTS.isAndroid ? [['New Releases', 'SubsPlease']] : [],
   searchAutoSelect: true,
-  searchBatch: true,
   lookupPreference: 'quality' as 'quality' | 'size' | 'seeders',
   torrentSpeed: 40,
   torrentPersist: false,

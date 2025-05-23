@@ -64,7 +64,7 @@
 
   $: open = !!$searchStore.media
 
-  $: searchResult = !!$searchStore.media && extensions.getResultsFromExtensions({ media: $searchStore.media, episode: $searchStore.episode, batch: $settings.searchBatch, resolution: $settings.searchQuality })
+  $: searchResult = !!$searchStore.media && extensions.getResultsFromExtensions({ media: $searchStore.media, episode: $searchStore.episode, resolution: $settings.searchQuality })
 
   function close (state = false) {
     if (!state) {
@@ -126,8 +126,8 @@
   async function startAnimation (searchRes: typeof searchResult) {
     if (!$settings.searchAutoSelect) return
     animating = false
-    await searchRes
-    if (searchRes === searchResult) animating = true
+    const results = await searchRes
+    if (searchRes === searchResult && results && results.results.length) animating = true
   }
 
   function stopAnimation () {
@@ -160,7 +160,6 @@
     <div class='gap-4 w-full relative h-full flex flex-col pt-6'>
       <div class='px-4 sm:px-6 space-y-4'>
         <div class='font-weight-bold text-2xl font-bold text-ellipsis text-nowrap overflow-hidden pb-2'>{$searchStore.media ? title($searchStore.media) : ''}</div>
-
         <div class='flex items-center relative scale-parent'>
           <Input
             class='pl-9 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50'

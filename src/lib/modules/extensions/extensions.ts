@@ -63,7 +63,7 @@ export const extensions = new class Extensions {
     return titles
   }
 
-  async getResultsFromExtensions ({ media, episode, batch, resolution }: { media: Media, episode?: number, batch: boolean, resolution: keyof typeof videoResolutions }) {
+  async getResultsFromExtensions ({ media, episode, resolution }: { media: Media, episode?: number, resolution: keyof typeof videoResolutions }) {
     await storage.modules
     const workers = storage.workers
     if (!Object.values(workers).length) {
@@ -73,7 +73,7 @@ export const extensions = new class Extensions {
 
     const movie = isMovie(media)
 
-    debug(`Fetching sources for ${media.id}:${media.title?.userPreferred} ${episode} ${batch} ${movie} ${resolution}`)
+    debug(`Fetching sources for ${media.id}:${media.title?.userPreferred} ${episode} ${movie} ${resolution}`)
 
     const aniDBMeta = await this.ALToAniDB(media)
     const anidbAid = aniDBMeta?.mappings?.anidb_id
@@ -103,8 +103,7 @@ export const extensions = new class Extensions {
       try {
         const promises: Array<Promise<TorrentResult[]>> = []
         promises.push(worker.single(options))
-        if (movie) promises.push(worker.movie(options))
-        if (batch) promises.push(worker.batch(options))
+        promises.push(movie ? worker.movie(options) : worker.batch(options))
 
         for (const result of await Promise.allSettled(promises)) {
           if (result.status === 'fulfilled') {
