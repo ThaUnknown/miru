@@ -71,7 +71,7 @@ export const genres = [
     value: 'Thriller',
     label: 'Thriller'
   }
-]
+] as const
 
 const currentYear = new Date().getFullYear()
 export const years = Array.from({ length: currentYear - 1940 + 2 }, (_, i) => '' + (currentYear + 2 - i)).map(value => ({ value, label: value }))
@@ -93,7 +93,7 @@ export const seasons = [
     value: 'WINTER',
     label: 'Winter'
   }
-]
+] as const
 
 export const formats = [
   {
@@ -116,7 +116,7 @@ export const formats = [
     value: 'ONA',
     label: 'ONA'
   }
-]
+] as const
 
 export const status = [
   {
@@ -135,7 +135,7 @@ export const status = [
     value: 'CANCELLED',
     label: 'Cancelled'
   }
-]
+] as const
 
 export const sort = [
   {
@@ -162,7 +162,7 @@ export const sort = [
     value: 'UPDATED_AT_DESC',
     label: 'Updated Date'
   }
-]
+] as const
 
 export const onlist = [
   {
@@ -173,4 +173,4 @@ export const onlist = [
     value: 'false',
     label: 'Not On List'
   }
-]
+] as const

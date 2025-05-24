@@ -24,7 +24,7 @@
   import { intputType } from '$lib/modules/navigate'
   import { cn } from '$lib/utils.js'
 
-  export let items: value[] = []
+  export let items: readonly value[] = []
 
   export let placeholder = 'Any'
 

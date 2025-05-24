@@ -74,9 +74,7 @@
       genres: genres.filter(g => (variables.genre ?? []).includes(g.value)) as format[],
       years: years.filter(y => y.value === ('' + (variables.seasonYear ?? ''))) as format[],
       seasons: seasons.filter(s => s.value === (variables.season ?? '')) as format[],
-      // @ts-expect-error fuck you
       formats: formats.filter(f => (variables.format ?? []).includes(f.value)) as format[],
-      // @ts-expect-error fuck you
       status: status.filter(s => (variables.status ?? '').includes(s.value)) as format[],
       sort: sort.filter(s => s.value === (variables.sort?.[0] ?? '')) as format[]
     }
@@ -112,25 +110,25 @@
     }
     inputText = ''
     pageNumber = 1
-    for (const unsub of mediaSubscriptions) {
+    for (const unsub of subscriptions) {
       unsub()
     }
-    mediaSubscriptions = []
+    subscriptions = []
   }
 
   let media: Array<ReturnType<typeof client.search>> = []
 
-  let mediaSubscriptions: Array<() => void> = []
+  // these are required, because #each key re-renders when the array changes, this doesnt repaint the ui, but re-triggers any active subscriptions
+  // and this re-runs the anilist queries as
+  let subscriptions: Array<() => void> = []
 
   onDestroy(clear)
 
   // handlers
 
   function searchChanged (s: typeof search) {
-    const filter = filterEmpty(s)
-
     pageNumber = 1
-    media = [searchQuery(filter, 1)]
+    media = [searchQuery(filterEmpty(s), 1)]
   }
 
   function searchQuery (filter: Partial<typeof search>, page: number) {
@@ -151,7 +149,7 @@
 
     const query = client.search(search)
 
-    mediaSubscriptions.push(query.subscribe(() => {}))
+    subscriptions.push(query.subscribe(() => {}))
     return query
   }
 
@@ -201,7 +199,7 @@
         const scrollable = div.scrollHeight - div.clientHeight
         const remaining = scrollable - scrollTop
         if (remaining < 800) {
-          pageNumber = pageNumber + 1
+          pageNumber += 1
           media = [...media, searchQuery(filterEmpty(search), pageNumber)]
           ticking = true
           await sleep(100)

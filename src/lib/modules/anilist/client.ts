@@ -38,8 +38,8 @@ class FetchError extends Error {
 interface ViewerData { viewer: ResultOf<typeof Viewer>['Viewer'], token: string, expires: string }
 
 function getDistanceFromTitle (media: Media & {lavenshtein?: number}, name: string) {
-  const titles = Object.values(media.title ?? {}).filter(v => v).map(title => lavenshtein(title!.toLowerCase(), name.toLowerCase()))
-  const synonyms = (media.synonyms ?? []).filter(v => v).map(title => lavenshtein(title!.toLowerCase(), name.toLowerCase()) + 2)
+  const titles = Object.values(media.title ?? {}).filter(v => v).map(title => lavenshtein(title?.toLowerCase() ?? '', name.toLowerCase()))
+  const synonyms = (media.synonyms ?? []).filter(v => v).map(title => lavenshtein(title?.toLowerCase() ?? '', name.toLowerCase()) + 2)
   const distances = [...titles, ...synonyms]
   const min = distances.reduce((prev, curr) => prev < curr ? prev : curr)
   media.lavenshtein = min
@@ -428,8 +428,10 @@ class AnilistClient {
 
     const res = await this.client.query<Record<string, {media: Media[]}>>(query, requestVariables)
 
+    if (!res.data) return []
+
     const searchResults: Record<string, number> = {}
-    for (const [variableName, { media }] of Object.entries(res.data!)) {
+    for (const [variableName, { media }] of Object.entries(res.data)) {
       if (!media.length) continue
       const titleObject = flattenedTitles[Number(variableName.slice(1))]!
       if (searchResults[titleObject.key]) continue
@@ -438,7 +440,8 @@ class AnilistClient {
 
     const ids = Object.values(searchResults)
     const search = await this.client.query(Search, { ids, perPage: 50 })
-    return Object.entries(searchResults).map(([filename, id]) => [filename, search.data!.Page!.media!.find(media => media!.id === id)]) as Array<[string, Media | undefined]>
+    if (!search.data?.Page?.media) return []
+    return Object.entries(searchResults).map(([filename, id]) => [filename, search.data!.Page!.media!.find(media => media?.id === id)]) as Array<[string, Media | undefined]>
   }
 
   schedule (ids?: number[]) {

@@ -138,7 +138,7 @@ export function episodeByAirDate (alDate: Date | undefined, episodes: Episodes, 
   // ineffcient but reliable
   const closestEpisodes: Episode[] = Object.values(episodes).reduce<Episode[]>((prev, curr) => {
     if (!prev[0]) return [curr]
-    const prevDate = Math.abs(+new Date(prev[0]?.airdate ?? 0) - +alDate)
+    const prevDate = Math.abs(+new Date(prev[0].airdate ?? 0) - +alDate)
     const currDate = Math.abs(+new Date(curr.airdate ?? 0) - +alDate)
     if (prevDate === currDate) {
       prev.push(curr)
