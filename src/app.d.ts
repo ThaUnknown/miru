@@ -5,6 +5,7 @@ import { SvelteComponentTyped } from 'svelte'
 import type { SessionMetadata } from '$lib/components/ui/player/util'
 import type { Search } from '$lib/modules/anilist/queries'
 import type { VariablesOf } from 'gql.tada'
+import type { CompositionEventHandler } from 'svelte/elements'
 
 // for information about these interfaces
 export interface AuthResponse {
@@ -137,13 +138,15 @@ declare global {
     }
   }
 
+   declare namespace svelteHTML {
+     interface HTMLAttributes<T> {
+       'on:navigate'?: CompositionEventHandler<T>
+     }
+  }
+
   // declare module '*.svelte' {
   //   export default SvelteComponentTyped
   // }
-}
-
-declare module '*.svelte' {
-  export default SvelteComponentTyped
 }
 
 export {}

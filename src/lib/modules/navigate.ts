@@ -266,6 +266,8 @@ function focusElement (element?: HTMLElement | null) {
   if (isInput) setTimeout(() => { (element as HTMLInputElement).readOnly = false })
   element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' })
 
+  element.dispatchEvent(new CustomEvent('navigate', { bubbles: true, composed: true, detail: { target: element.id, value: element.dataset.value } }))
+
   return true
 }
 

@@ -65,7 +65,7 @@
   $: _progress = progress(media) ?? 0
   $: completed = list(media) === 'COMPLETED'
 
-  let currentPage = Math.floor((progress(media) ?? 0) / perPage) + 1
+  $: currentPage = Math.floor((!completed ? _progress : 0) / perPage) + 1
 
   function play (episode: number) {
     searchStore.set({ media, episode })

@@ -107,13 +107,23 @@
   let seeking = false
   let ended = false
   let paused = true
+  let pointerMoving = false
   const cast = false
 
   $: $isPlaying = !paused
 
   $: buffering = readyState < 3
-  $: immersed = !buffering && !seeking && !paused && !ended && !pictureInPictureElement
+  $: immersed = !buffering && !paused && !ended && !pictureInPictureElement && !pointerMoving
   $: isMiniplayer = $page.route.id !== '/app/player'
+
+  let pointerMoveTimeout = 0
+  function resetMove () {
+    clearTimeout(pointerMoveTimeout)
+    pointerMoving = true
+    pointerMoveTimeout = setTimeout(() => {
+      pointerMoving = false
+    }, 300)
+  }
 
   // functions
   function playPause () {
@@ -663,7 +673,7 @@
 
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
 
-<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth class:seeking bind:this={wrapper}>
+<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth class:seeking bind:this={wrapper} on:navigate={resetMove}>
   <video class='w-full h-full' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
     use:createSubtitles
     use:createDeband={$settings.playerDeband}
@@ -688,6 +698,7 @@
     on:timeupdate={checkSkippableChapters}
     on:timeupdate={checkCompletion}
     on:loadedmetadata={autoPlay}
+    on:pointermove={resetMove}
   />
   <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none' class:hidden={isMiniplayer}>
     <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg transition-opacity' class:opacity-0={immersed}>
