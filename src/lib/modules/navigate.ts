@@ -31,6 +31,7 @@ export function clickwrap (cb: (_: MouseEvent) => unknown = noop) {
   return (e: MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
+    e.stopImmediatePropagation()
     navigator.vibrate(15)
     cb(e)
   }
@@ -38,9 +39,10 @@ export function clickwrap (cb: (_: MouseEvent) => unknown = noop) {
 
 export function keywrap (cb: (_: KeyboardEvent) => unknown = noop) {
   return (e: KeyboardEvent) => {
-    if (e.key === 'Enter' && intputType.value === 'dpad') {
+    if ((e.key === 'Enter' || e.key === ' ') && intputType.value === 'dpad' && !e.repeat) {
       e.stopPropagation()
       e.preventDefault()
+      e.stopImmediatePropagation()
       cb(e)
     }
   }
@@ -218,9 +220,13 @@ function navigateDPad (direction = 'up') {
   const keyboardFocusable = getFocusableElementPositions()
   const currentElement = !document.activeElement || document.activeElement === document.body ? keyboardFocusable[0]! : getElementPosition(document.activeElement as HTMLElement)
 
-  // allow overrides via data attributes ex: <div data-up="#id"?>
-  // this is safe, queryselector accepts undefined
-  if (focusElement(document.querySelector<HTMLElement>(currentElement.element.dataset[direction]!))) return
+  // allow overrides via data attributes ex: <div data-up="#id, #id2"?> but order them, as querySelectorAll returns them in order of appearance rather than order of selectors
+  for (const selector of currentElement.element.dataset[direction]?.split(',') ?? []) {
+    const element = document.querySelector<HTMLElement>(selector.trim())
+    if (!element) continue // skip if no element found
+    if (!element.checkVisibility()) continue // skip elements that are not visible
+    if (focusElement(element)) return
+  }
 
   const elementsInDesiredDirection = getElementsInDesiredDirection(keyboardFocusable, currentElement, direction)
 

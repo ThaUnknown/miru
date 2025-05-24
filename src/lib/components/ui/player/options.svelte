@@ -15,7 +15,7 @@
   import * as Dialog from '$lib/components/ui/dialog'
   import * as Tooltip from '$lib/components/ui/tooltip'
   import * as Tree from '$lib/components/ui/tree'
-  import { dragScroll } from '$lib/modules/navigate'
+  import { dragScroll, keywrap } from '$lib/modules/navigate'
   import { settings } from '$lib/modules/settings'
   import { cn, toTS } from '$lib/utils'
 
@@ -65,11 +65,13 @@
   }
 
   let fullscreenElement: HTMLElement | null = null
+
+  export let id = ''
 </script>
 
 <Dialog.Root portal={wrapper} bind:open>
   <Dialog.Trigger asChild let:builder>
-    <Button class={cn('p-3 w-12 h-12', className)} variant='ghost' builders={[builder]}>
+    <Button class={cn('p-3 w-12 h-12', className)} variant='ghost' builders={[builder]} on:keydown={keywrap(() => { open = !open })} data-left='#player-volume-button, #player-next-button, #player-prev-button, #player-play-pause-button' data-up='#player-seekbar' {id}>
       <EllipsisVertical size='24px' class='p-[1px]' />
     </Button>
   </Dialog.Trigger>
@@ -156,7 +158,7 @@
             <Tree.Sub>
               {#each chapters as { text, start }, i (i)}
                 <Tree.Item on:click={() => { seekTo(start); open = false }}>
-                  <div class='flex justify-between w-full'>
+                  <div class='flex justify-between w-full pr-2'>
                     <span>{text || '?'}</span>
                     <span class='text-muted-foreground'>{toTS(start || 0)}</span>
                   </div>
@@ -192,7 +194,7 @@
           </Tree.Item>
           <Tree.Item>
             <span slot='trigger'>Playlist</span>
-            <Tree.Sub>
+            <Tree.Sub class='w-auto max-w-96'>
               {#each videoFiles as file, i (i)}
                 <Tree.Item on:click={() => selectFile(file)}>
                   <Tooltip.Root>

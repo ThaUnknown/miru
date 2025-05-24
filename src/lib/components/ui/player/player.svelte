@@ -54,7 +54,7 @@
   import { authAggregator } from '$lib/modules/auth'
   import { isPlaying } from '$lib/modules/idle'
   import native from '$lib/modules/native'
-  import { click } from '$lib/modules/navigate'
+  import { click, keywrap } from '$lib/modules/navigate'
   import { settings } from '$lib/modules/settings'
   import { server } from '$lib/modules/torrent'
   import { w2globby } from '$lib/modules/w2g/lobby'
@@ -420,7 +420,7 @@
   $: if (readyState && !seekIndex) thumbnailer._paintThumbnail(video, playbackIndex)
 
   $: native.setMediaSession(mediaInfo.session, mediaInfo.media.id)
-  $: native.setPositionState({ duration: safeduration, position: Math.max(0, currentTime), playbackRate })
+  $: native.setPositionState({ duration: safeduration, position: Math.min(Math.max(0, currentTime), safeduration), playbackRate })
   $: native.setPlayBackState(readyState === 0 ? 'none' : paused ? 'paused' : 'playing')
   native.setActionHandler('play', playPause)
   native.setActionHandler('pause', playPause)
@@ -790,7 +790,7 @@
     <Seekbar {duration} {currentTime} buffer={buffer / duration * 100} {chapters} bind:seeking bind:seek={seekPercent} on:seeked={finishSeek} on:seeking={startSeek} {thumbnailer} on:keydown={seekBarKey} on:dblclick={fullscreen} />
     <div class='justify-between gap-2 {$settings.minimalPlayerUI ? 'hidden' : 'mobile:hidden flex'}'>
       <div class='flex text-white gap-2'>
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={playPause} id='play-pause-button'>
+        <Button class='p-3 w-12 h-12' variant='ghost' on:click={playPause} on:keydown={keywrap(playPause)} id='player-play-pause-button' data-up='#player-seekbar'>
           {#if paused}
             <Play size='24px' fill='currentColor' class='p-0.5' />
           {:else}
@@ -798,25 +798,25 @@
           {/if}
         </Button>
         {#if prev}
-          <Button class='p-3 w-12 h-12' variant='ghost' on:click={prev}>
+          <Button class='p-3 w-12 h-12' variant='ghost' on:click={prev} on:keydown={keywrap(prev)} id='player-prev-button' data-up='#player-seekbar' data-right='#player-next-button, #player-volume-button, #player-options-button'>
             <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
           </Button>
         {/if}
         {#if next}
-          <Button class='p-3 w-12 h-12' variant='ghost' on:click={next}>
+          <Button class='p-3 w-12 h-12' variant='ghost' on:click={next} on:keydown={keywrap(next)} id='player-next-button' data-up='#player-seekbar' data-right='#player-volume-button, #player-options-button'>
             <SkipForward size='24px' fill='currentColor' strokeWidth='1' />
           </Button>
         {/if}
         <Volume bind:volume={$volume} bind:muted />
       </div>
       <div class='flex gap-2'>
-        <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate />
+        <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate id='player-options-button' />
         {#if subtitles}
-          <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs}>
+          <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs} on:keydown={keywrap(openSubs)} data-up='#player-seekbar'>
             <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
           </Button>
         {/if}
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={() => pip.pip()}>
+        <Button class='p-3 w-12 h-12' variant='ghost' on:click={() => pip.pip()} on:keydown={keywrap(() => pip.pip())} data-up='#player-seekbar'>
           {#if pictureInPictureElement}
             <PictureInPictureExit size='24px' strokeWidth='2' />
           {:else}
@@ -824,7 +824,7 @@
           {/if}
         </Button>
         {#if false}
-          <Button class='p-3 w-12 h-12' variant='ghost'>
+          <Button class='p-3 w-12 h-12' variant='ghost' on:click={toggleCast} on:keydown={keywrap(toggleCast)} data-up='#player-seekbar'>
             {#if cast}
               <Cast size='24px' fill='white' strokeWidth='2' />
             {:else}
@@ -832,7 +832,7 @@
             {/if}
           </Button>
         {/if}
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={fullscreen}>
+        <Button class='p-3 w-12 h-12' variant='ghost' on:click={fullscreen} on:keydown={keywrap(fullscreen)} data-up='#player-seekbar'>
           {#if fullscreenElement}
             <Minimize size='24px' class='p-0.5' strokeWidth='2.5' />
           {:else}
