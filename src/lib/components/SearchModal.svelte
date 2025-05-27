@@ -174,7 +174,7 @@
           </div>
           <div class='flex items-center space-x-2 grow'>
             <span>Resolution</span>
-            <SingleCombo bind:value={$settings.searchQuality} items={videoResolutions} class='w-32 shrink-0 grow border-border border' />
+            <SingleCombo bind:value={$settings.searchQuality} items={videoResolutions} portal='#episodeListTarget' class='w-32 shrink-0 grow border-border border' />
           </div>
         </div>
         <ProgressButton

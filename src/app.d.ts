@@ -1,7 +1,4 @@
 // See https://kit.svelte.dev/docs/types#app
-
-import { SvelteComponentTyped } from 'svelte'
-
 import type { SessionMetadata } from '$lib/components/ui/player/util'
 import type { Search } from '$lib/modules/anilist/queries'
 import type { VariablesOf } from 'gql.tada'

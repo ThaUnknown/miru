@@ -50,6 +50,7 @@
   import Subtitles from '$lib/components/icons/Subtitles.svelte'
   import { Button } from '$lib/components/ui/button'
   import * as Sheet from '$lib/components/ui/sheet'
+  import { client } from '$lib/modules/anilist'
   import { episodes } from '$lib/modules/anizip'
   import { authAggregator } from '$lib/modules/auth'
   import { isPlaying } from '$lib/modules/idle'
@@ -781,8 +782,10 @@
           <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo.session.description}</Sheet.Trigger>
           <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black justify-between'>
             {#if mediaInfo.media}
-              {#await episodes(mediaInfo.media.id) then eps}
-                <EpisodesList {eps} media={mediaInfo.media} />
+              {#await Promise.all([episodes(mediaInfo.media.id), client.single(mediaInfo.media.id)]) then [eps, media]}
+                {#if media.data?.Media}
+                  <EpisodesList {eps} media={media.data.Media} />
+                {/if}
               {/await}
             {/if}
           </Sheet.Content>

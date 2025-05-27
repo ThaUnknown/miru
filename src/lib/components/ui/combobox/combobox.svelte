@@ -28,6 +28,8 @@
 
   export let placeholder = 'Any'
 
+  export let portal = '#root'
+
   let open = false
   export let value: value[] = []
 
@@ -65,7 +67,7 @@
   export { className as class }
 </script>
 
-<Popover.Root bind:open let:ids portal='#root'>
+<Popover.Root bind:open let:ids {portal}>
   <Popover.Trigger asChild let:builder>
     <Button
       builders={[builder]}

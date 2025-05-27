@@ -29,6 +29,8 @@
 </script>
 
 <script lang='ts'>
+  import { persisted } from 'svelte-persisted-store'
+
   import Footer from '../Footer.svelte'
   import Progress from '../Progress.svelte'
 
@@ -39,10 +41,13 @@
   import { dragScroll } from '$lib/modules/navigate'
   import { settings } from '$lib/modules/settings'
 
+  const hasForwarding = persisted('torrent-port-forwarding', false)
+
   if (!speedTest.isRunning) speedTest.play()
 
   async function checkPortAvailability (port: number): Checks['promise'] {
     const res = await native.checkIncomingConnections(port)
+    $hasForwarding = res
     if (res) return { status: 'success', text: 'Port forwarding is available.' }
     return { status: 'error', text: 'Not available. Peer discovery will suffer. Streaming old, poorly seeded anime might be impossible.' }
   }

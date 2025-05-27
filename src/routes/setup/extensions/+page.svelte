@@ -1,4 +1,5 @@
 <script lang='ts'>
+  import { persisted } from 'svelte-persisted-store'
   import { toast } from 'svelte-sonner'
 
   import Footer, { type Checks } from '../Footer.svelte'
@@ -45,6 +46,9 @@
   }
 
   if (!SUPPORTS.isAndroid && !Object.keys($saved).length) importDefault()
+
+  const hasForwarding = persisted('torrent-port-forwarding', false)
+  $settings.lookupPreference = $hasForwarding ? 'quality' : 'seeders'
 </script>
 
 <Progress step={2} />

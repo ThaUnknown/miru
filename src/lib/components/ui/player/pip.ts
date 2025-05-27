@@ -20,7 +20,7 @@ export default class PictureInPicture {
     this._attachListeners(document.documentElement, false)
 
     window.addEventListener('visibilitychange', () => {
-      if (get(settings).playerAutoPiP) this.pip(document.visibilityState !== 'visible')
+      if (get(settings).playerAutoPiP) this.pip(document.visibilityState !== 'visible' && !this.video?.paused)
     }, { signal: this.ctrl.signal })
   }
 
