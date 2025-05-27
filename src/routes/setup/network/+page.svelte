@@ -29,6 +29,7 @@
 </script>
 
 <script lang='ts'>
+  import CircleHelp from 'lucide-svelte/icons/circle-help'
   import { persisted } from 'svelte-persisted-store'
 
   import Footer from '../Footer.svelte'
@@ -49,7 +50,7 @@
     const res = await native.checkIncomingConnections(port)
     $hasForwarding = res
     if (res) return { status: 'success', text: 'Port forwarding is available.' }
-    return { status: 'error', text: 'Not available. Peer discovery will suffer. Streaming old, poorly seeded anime might be impossible.' }
+    return { status: 'error', text: 'Not available. Peer discovery will suffer. Streaming old, poorly seeded anime might be impossible.', slot: 'port' }
   }
 
   $: port = $settings.torrentPort
@@ -81,4 +82,8 @@
   </SettingCard>
 </div>
 
-<Footer step={1} {checks} />
+<Footer step={1} {checks}>
+  <div class='contents' on:click={() => native.openURL('https://thewiki.moe/getting-started/torrenting/#port-forwarding')}>
+    <CircleHelp class='size-4 ml-2 shrink-0 inline cursor-pointer' />
+  </div>
+</Footer>

@@ -32,10 +32,10 @@
 
   let importPromise = Promise.resolve()
 
-  function importExtension () {
+  export function importExtension (ext = extensionInput) {
     importPromise = (async () => {
       try {
-        await storage.import(extensionInput)
+        await storage.import(ext)
       } catch (err) {
         const error = err as Error
         toast.error(error.cause as string, { description: error.message })
@@ -132,7 +132,7 @@
           Importing extensions....
         </Button>
       {:then _}
-        <Button class='font-bold flex items-center justify-center w-full sm:w-56 max-w-full shrink-0' size='default' on:click={importExtension}>
+        <Button class='font-bold flex items-center justify-center w-full sm:w-56 max-w-full shrink-0' size='default' on:click={() => importExtension()}>
           <Plus size={iconSizes.lg} class='mr-2' />
           Import Extensions
         </Button>

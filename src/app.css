@@ -316,6 +316,16 @@ body {
   }
 }
 
+@keyframes bg-grid-animate {
+  from {
+    background-position: 0 100%;
+  }
+
+  to {
+    background-position: 100% 0;
+  }
+}
+
 .animate-marquee {
   animation: marquee 80s infinite linear;
 }

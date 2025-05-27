@@ -178,7 +178,7 @@
   function seek (time: number) {
     // WARN: this causes all subscriptions to video to re-run!!!
     video.currentTime = currentTime = currentTime + time
-    currentTime = currentTime + time
+    // currentTime = currentTime + time
     playAnimation(time > 0 ? 'seekforw' : 'seekback')
   }
   function seekTo (time: number) {

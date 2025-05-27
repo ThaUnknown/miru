@@ -3,6 +3,7 @@
     promise: Promise<{
       status: 'warning' | 'success' | 'error'
       text: string
+      slot?: string
     }>
     title: string
     pending: string
@@ -41,7 +42,7 @@
             <div class='w-4 h-4 border-2 rounded-[50%] border-neutral-700 border-b-border' />
           </div>
           {title} -&nbsp;<span class='text-muted-foreground text-xs text-wrap'>{pending}</span>
-        {:then { status, text }}
+        {:then { status, text, slot }}
           <Badge variant={status} class='w-4 h-4 rounded-[50%] p-[3px] justify-center items-center mr-2.5'>
             {#if status === 'success'}
               <Check strokeWidth='4px' />
@@ -54,13 +55,18 @@
               <X strokeWidth='4px' />
             {/if}
           </Badge>
-          {title} -&nbsp;<span class='text-muted-foreground text-xs text-wrap'>{text}</span>
+          {title} -&nbsp;<span class='text-muted-foreground text-xs text-wrap flex'>
+            {text}
+            {#if slot}
+              <slot />
+            {/if}
+          </span>
         {/await}
       </div>
     {/each}
   </div>
 </div>
-<div class='flex flex-row items-center justify-between w-full bg-neutral-950 border-t border-border py-4 px-8'>
+<div class='flex flex-row items-center justify-between w-full bg-neutral-950 border-t md:border md:rounded-lg border-border py-4 px-8'>
   <Button variant='secondary' class='w-24' href='../{PREV[step]}'>Prev</Button>
   {#await settled}
     <Tooltip.Root>

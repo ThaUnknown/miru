@@ -66,7 +66,7 @@ export default Object.assign<Native, Partial<Native>>({
   setPlayBackState: async e => { navigator.mediaSession.playbackState = e },
   setActionHandler: async (...args) => navigator.mediaSession.setActionHandler(...args as [action: MediaSessionAction, handler: MediaSessionActionHandler | null]),
   checkAvailableSpace: () => new Promise(resolve => setTimeout(() => resolve(Math.floor(Math.random() * (1e10 - 1e8 + 1) + 1e8)), 1000)),
-  checkIncomingConnections: () => new Promise(resolve => setTimeout(() => resolve(Math.random() > 0.5), 5000)),
+  checkIncomingConnections: () => new Promise(resolve => setTimeout(() => resolve(false), 1000)),
   updatePeerCounts: async () => [],
   isApp: false,
   playTorrent: async () => dummyFiles,
