@@ -155,10 +155,10 @@ importers:
         version: 1.8.10(@gql.tada/svelte-support@1.0.1(svelte@4.2.19)(typescript@5.8.3))(graphql@16.10.0)(typescript@5.8.3)
       hayase-extensions:
         specifier: github:hayase-app/extensions
-        version: https://codeload.github.com/hayase-app/extensions/tar.gz/d3bb37d74626580a06aff13d6f6f7a912c7ea4ff
+        version: https://codeload.github.com/hayase-app/extensions/tar.gz/a9415c297a899459be34a135a9adbcd72115e019
       jassub:
-        specifier: ^1.7.18
-        version: 1.7.18
+        specifier: ^1.7.20
+        version: 1.7.20
       svelte:
         specifier: ^4.2.19
         version: 4.2.19
@@ -1495,8 +1495,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hayase-extensions@https://codeload.github.com/hayase-app/extensions/tar.gz/d3bb37d74626580a06aff13d6f6f7a912c7ea4ff:
-    resolution: {tarball: https://codeload.github.com/hayase-app/extensions/tar.gz/d3bb37d74626580a06aff13d6f6f7a912c7ea4ff}
+  hayase-extensions@https://codeload.github.com/hayase-app/extensions/tar.gz/a9415c297a899459be34a135a9adbcd72115e019:
+    resolution: {tarball: https://codeload.github.com/hayase-app/extensions/tar.gz/a9415c297a899459be34a135a9adbcd72115e019}
     version: 1.0.6
 
   idb-keyval@6.2.2:
@@ -1659,8 +1659,8 @@ packages:
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
-  jassub@1.7.18:
-    resolution: {integrity: sha512-8cYnJlWuUP7xsdvoYyLVIcvXVa+0NvP1H1//yPck/LOHdnzY4KRwELNVx0khEd5BLN3bfWnMrcqFiHyTINObhA==}
+  jassub@1.7.20:
+    resolution: {integrity: sha512-0ADY2BdpPc6qQ6DFetg3S0TAnt530dgvxo/Gx0jyCygjyIhK6ndI47wlzwFOZo7IN+aPRaGqnhxTATf5J0j3OQ==}
 
   jiti@1.21.6:
     resolution: {integrity: sha512-2yTgeWTWzMWkHu6Jp9NKgePDaYHbntiwvYuuJLbbN9vl7DC9DvXKOB2BC3ZZ92D3cvV/aflH0osDfwpHepQ53w==}
@@ -4058,7 +4058,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hayase-extensions@https://codeload.github.com/hayase-app/extensions/tar.gz/d3bb37d74626580a06aff13d6f6f7a912c7ea4ff: {}
+  hayase-extensions@https://codeload.github.com/hayase-app/extensions/tar.gz/a9415c297a899459be34a135a9adbcd72115e019: {}
 
   idb-keyval@6.2.2: {}
 
@@ -4224,7 +4224,7 @@ snapshots:
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
 
-  jassub@1.7.18:
+  jassub@1.7.20:
     dependencies:
       rvfc-polyfill: 1.0.7
 
