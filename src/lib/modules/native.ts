@@ -85,6 +85,7 @@ export default Object.assign<Native, Partial<Native>>({
   spawnPlayer: () => sleep(rnd(100_000)),
   setHideToTray: async () => undefined,
   transparency: async () => undefined,
+  setZoom: async () => undefined,
   // @ts-expect-error yeah
   navigate: async (cb) => { globalThis.___navigate = cb },
   downloadProgress: async (percent: number) => undefined,

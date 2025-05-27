@@ -11,5 +11,6 @@ settings.subscribe(settings => {
   native.updateSettings({ torrentPersist, torrentDHT, torrentStreamedDownload, torrentSpeed, maxConns, torrentPort, dhtPort, torrentPeX })
   native.setHideToTray(settings.hideToTray)
   native.transparency(settings.idleAnimation)
+  native.setZoom(settings.uiScale)
   if (settings.enableDoH) native.setDOH(settings.doHURL)
 })

@@ -50,10 +50,10 @@
 <SidebarButton href='/app/chat/'>
   <MessagesSquare size={18} />
 </SidebarButton>
-<SidebarButton href='/app/client/'>
+<SidebarButton href='/app/client/' id='sidebar-client' data-down='#sidebar-donate'>
   <Download size={18} />
 </SidebarButton>
-<Button variant='ghost' on:click={() => native.openURL('https://github.com/sponsors/ThaUnknown/')} class='px-2 w-full relative mt-auto select:!bg-transparent text-[#fa68b6] select:text-[#fa68b6]'>
+<Button variant='ghost' id='sidebar-donate' data-up='#sidebar-client' on:click={() => native.openURL('https://github.com/sponsors/ThaUnknown/')} class='px-2 w-full relative mt-auto select:!bg-transparent text-[#fa68b6] select:text-[#fa68b6]'>
   <Heart size={18} fill='currentColor' class={cn(active && 'donate')} />
 </Button>
 <SidebarButton href='/app/settings/'>

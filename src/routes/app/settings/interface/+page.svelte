@@ -17,6 +17,7 @@
 <script lang='ts'>
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { SingleCombo } from '$lib/components/ui/combobox'
+  import { Input } from '$lib/components/ui/input'
   import { Switch } from '$lib/components/ui/switch'
   import { Textarea } from '$lib/components/ui/textarea'
   import native from '$lib/modules/native'
@@ -58,8 +59,11 @@
     </SettingCard>
 
     <div class='font-weight-bold text-xl font-bold'>UI Settings</div>
-    <SettingCard title='Idle Animation' description='Enable/Disable the 3d idle animation. Changing this setting will restart the app.'>
-      <Switch bind:checked={$settings.idleAnimation} on:click={native.restart} />
+    <SettingCard title='Idle Animation' description='Enable/Disable the 3d idle animation. Changing this setting will restart the app.' let:id>
+      <Switch bind:checked={$settings.idleAnimation} on:click={native.restart} {id} />
+    </SettingCard>
+    <SettingCard title='UI Scale' description='Change the zoom level of the interface.' let:id>
+      <Input type='number' inputmode='numeric' pattern='[0-9]*' min='0' max='65536' bind:value={$settings.uiScale} {id} class='w-32 shrink-0 bg-background' />
     </SettingCard>
   {/if}
 </div>

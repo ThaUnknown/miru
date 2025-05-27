@@ -33,6 +33,7 @@ export default {
   torrentPath: '',
   angle: 'default' as 'default' | 'd3d11'| 'd3d9' | 'warp' | 'gl' | 'gles' | 'swiftshader' | 'vulkan' | 'metal',
   idleAnimation: true,
+  uiScale: 1,
   enableExternal: false,
   playerPath: '',
   playerSeek: '2',
