@@ -1,11 +1,11 @@
 <script lang='ts' context='module'>
-  import { CHANGELOG_URL } from '$lib'
+  import { COMMITS_URL } from '$lib'
   import { Separator } from '$lib/components/ui/separator'
 
   const changeLog = (async () => {
-    const res = await fetch(CHANGELOG_URL)
-    const json = await res.json() as Array<{ body: string, tag_name: string, published_at: string }>
-    return json.map(({ body, tag_name: version, published_at: date }) => ({ body, version, date }))
+    const res = await fetch(COMMITS_URL)
+    const json = await res.json() as Array<{ sha: string, commit: { message: string, author: { date: string } } }>
+    return json.map(({ sha, commit }) => ({ sha, date: commit.author.date, body: commit.message }))
   })()
 </script>
 
@@ -32,7 +32,7 @@
       </div>
     {/each}
   {:then changelog}
-    {#each changelog as { version, date, body } (version)}
+    {#each changelog as { sha, date, body } (sha)}
       <Separator class='my-6' />
       <div class='grid-cols-12 grid py-4 px-4 sm:px-0 relative' tabindex='0' role='button'>
         <div class='sm:col-span-3 col-span-full order-last sm:order-first'>
@@ -40,9 +40,8 @@
             {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </div>
         </div>
-        <div class='sm:col-span-9 col-span-full whitespace-pre-wrap text-muted-foreground text-xs'>
-          <div class='font-bold text-white text-2xl mb-3'>{version}</div>
-          {body.replaceAll('- ', '')}
+        <div class='sm:col-span-9 col-span-full whitespace-pre-wrap text-muted-foreground text-md'>
+          <div class='font-bold text-white text-lg mb-3'>{sha.slice(0, 6)}</div>{body.replaceAll('- ', '').trim()}
         </div>
       </div>
     {/each}
