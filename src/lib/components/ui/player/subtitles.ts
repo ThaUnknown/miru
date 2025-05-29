@@ -75,10 +75,7 @@ export default class Subtitles {
     })
 
     settings.subscribe(set => {
-      if (this.set.subtitleStyle !== set.subtitleStyle) {
-        this.set = set
-        this._applyStyleOverride(set.subtitleStyle)
-      }
+      this._applyStyleOverride(set.subtitleStyle)
     })
 
     const subFiles = otherFiles.filter(({ name }) => subRx.test(name))
@@ -252,7 +249,10 @@ export default class Subtitles {
     this._applyStyleOverride(this.set.subtitleStyle)
   }
 
+  lastSubtitleStyle: typeof defaults.subtitleStyle | undefined = undefined
   _applyStyleOverride (subtitleStyle: typeof defaults.subtitleStyle) {
+    if (this.lastSubtitleStyle === subtitleStyle) return
+    this.lastSubtitleStyle = subtitleStyle
     if (subtitleStyle !== 'none') {
       const font = OVERRIDE_FONTS[subtitleStyle]
       if (font && !this.fonts.includes(font)) {
@@ -286,6 +286,8 @@ export default class Subtitles {
         ...STYLE_OVERRIDES[subtitleStyle]
       }
       this.renderer?.styleOverride(overrideStyle)
+    } else {
+      this.renderer?.disableStyleOverride()
     }
   }
 
