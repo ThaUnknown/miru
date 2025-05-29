@@ -52,7 +52,7 @@ class AnilistClient {
   storage = makeDefaultStorage({
     idbName: 'graphcache-v3',
     onCacheHydrated: () => this.storagePromise.resolve(),
-    maxAge: 14 // The maximum age of the persisted data in days
+    maxAge: 31 // The maximum age of the persisted data in days
   })
 
   client = new Client({

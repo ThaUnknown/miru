@@ -11,7 +11,7 @@
   export { className as class }
 </script>
 
-<div class={cn('flex flex-col md:flex-row md:items-center justify-between bg-neutral-950 rounded-md px-6 py-4 space-y-3 md:space-y-0 md:space-x-3', className)}>
+<div class={cn('flex flex-col md:flex-row md:items-center justify-between bg-neutral-950 rounded-md px-6 py-4 gap-3', className)}>
   <Label for={id} class='space-1 block leading-[unset] grow'>
     <div class='font-bold'>{title}</div>
     <div class='text-muted-foreground text-xs whitespace-pre-wrap block'>{description}</div>

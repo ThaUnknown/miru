@@ -1,4 +1,4 @@
-import JASSUB, { type ASS_Event as ASSEvent } from 'jassub'
+import JASSUB, { type ASS_Style as ASSStyle, type ASS_Event as ASSEvent } from 'jassub'
 import { writable } from 'simple-store-svelte'
 import { get } from 'svelte/store'
 
@@ -6,15 +6,15 @@ import type { ResolvedFile } from './resolver'
 import type { TorrentFile } from '../../../../app'
 
 import native from '$lib/modules/native'
-import { settings, SUPPORTS } from '$lib/modules/settings'
+import { type defaults, settings, SUPPORTS } from '$lib/modules/settings'
 import { fontRx, HashMap, subRx, subtitleExtensions, toTS } from '$lib/utils'
 
 const defaultHeader = `[Script Info]
 Title: English (US)
 ScriptType: v4.00+
 WrapStyle: 0
-PlayResX: 1280
-PlayResY: 720
+PlayResX: 1920
+PlayResY: 1080
 ScaledBorderAndShadow: yes
 
 [V4+ Styles]
@@ -23,6 +23,34 @@ Style: Default, Roboto Medium,52,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0
 [Events]
 
 `
+
+const STYLE_OVERRIDES: Record<typeof defaults.subtitleStyle, Pick<ASSStyle, 'FontName' |'Spacing' | 'ScaleX'>> = {
+  none: {
+    FontName: 'Roboto Medium',
+    Spacing: 0,
+    ScaleX: 1
+  },
+  gandhisans: {
+    FontName: 'Gandhi Sans',
+    Spacing: 0.2,
+    ScaleX: 0.98
+  },
+  notosans: {
+    FontName: 'Noto Sans',
+    Spacing: 0,
+    ScaleX: 0.99
+  },
+  roboto: {
+    FontName: 'Roboto Medium',
+    Spacing: 0,
+    ScaleX: 1
+  }
+}
+
+const OVERRIDE_FONTS: Partial<Record<typeof defaults.subtitleStyle, string>> = {
+  gandhisans: '/GandhiSans-Bold.woff2',
+  notosans: '/NotoSans-Bold.woff2'
+}
 
 const stylesRx = /^Style:[^,]*/gm
 export default class Subtitles {
@@ -40,10 +68,17 @@ export default class Subtitles {
   constructor (video: HTMLVideoElement, otherFiles: TorrentFile[], selected: ResolvedFile) {
     this.video = video
     this.selected = selected
-    this.fonts = ['/Roboto.ttf', ...otherFiles.filter(file => fontRx.test(file.name)).map(file => file.url)]
+    this.fonts = ['/Roboto.woff2', ...otherFiles.filter(file => fontRx.test(file.name)).map(file => file.url)]
 
     this.current.subscribe(value => {
       this.selectCaptions(value)
+    })
+
+    settings.subscribe(set => {
+      if (this.set.subtitleStyle !== set.subtitleStyle) {
+        this.set = set
+        this._applyStyleOverride(set.subtitleStyle)
+      }
     })
 
     const subFiles = otherFiles.filter(({ name }) => subRx.test(name))
@@ -126,8 +161,10 @@ export default class Subtitles {
     native.attachments(this.selected.hash, this.selected.id).then(attachments => {
       for (const attachment of attachments) {
         if (fontRx.test(attachment.filename) || attachment.mimetype.toLowerCase().includes('font')) {
-          this.fonts.push(attachment.url)
-          this.renderer?.addFont(attachment.url)
+          if (!this.fonts.includes(attachment.url)) {
+            this.fonts.push(attachment.url)
+            this.renderer?.addFont(attachment.url)
+          }
         }
       }
     })
@@ -203,20 +240,53 @@ export default class Subtitles {
       subContent: defaultHeader,
       fonts: this.fonts,
       offscreenRender: !SUPPORTS.isAndroid,
-      libassMemoryLimit: 1024, // TODO: more? check how much MPV uses
-      libassGlyphLimit: 80000,
       maxRenderHeight: parseInt(this.set.subtitleRenderHeight) || 0,
       fallbackFont: 'roboto medium',
-      availableFonts: {
-        'roboto medium': './Roboto.ttf'
-      },
       workerUrl: new URL('jassub/dist/jassub-worker.js', import.meta.url).toString(),
       wasmUrl: new URL('jassub/dist/jassub-worker.wasm', import.meta.url).toString(),
-      legacyWasmUrl: new URL('jassub/dist/jassub-worker.wasm.js', import.meta.url).toString(),
       modernWasmUrl: new URL('jassub/dist/jassub-worker-modern.wasm', import.meta.url).toString(),
       useLocalFonts: this.set.missingFont,
       dropAllBlur: this.set.disableSubtitleBlur
     })
+
+    this._applyStyleOverride(this.set.subtitleStyle)
+  }
+
+  _applyStyleOverride (subtitleStyle: typeof defaults.subtitleStyle) {
+    if (subtitleStyle !== 'none') {
+      const font = OVERRIDE_FONTS[subtitleStyle]
+      if (font && !this.fonts.includes(font)) {
+        this.fonts.push(font)
+        this.renderer?.addFont(font)
+      }
+      const overrideStyle: ASSStyle = {
+        Name: 'DialogueStyleOverride',
+        FontSize: 72,
+        PrimaryColour: 0xFFFFFF00,
+        SecondaryColour: 0xFF000000,
+        OutlineColour: 0,
+        BackColour: 0,
+        Bold: 1,
+        Italic: 0,
+        Underline: 0,
+        StrikeOut: 0,
+        ScaleY: 1,
+        Angle: 0,
+        BorderStyle: 1,
+        Outline: 4,
+        Shadow: 0,
+        Alignment: 2,
+        MarginL: 135,
+        MarginR: 135,
+        MarginV: 50,
+        Encoding: 1,
+        treat_fontname_as_pattern: 0,
+        Blur: 0,
+        Justify: 0,
+        ...STYLE_OVERRIDES[subtitleStyle]
+      }
+      this.renderer?.styleOverride(overrideStyle)
+    }
   }
 
   track (trackNumber: number | string) {

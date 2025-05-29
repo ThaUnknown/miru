@@ -11,6 +11,15 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
         svelteConfig
       }
+    },
+    rules: {
+      "svelte/no-useless-mustaches": [
+        "error",
+        {
+          "ignoreIncludesComment": false,
+          "ignoreStringEscape": true
+        }
+      ]
     }
   }
 )

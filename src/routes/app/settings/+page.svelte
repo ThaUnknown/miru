@@ -4,6 +4,7 @@
   import { SingleCombo } from '$lib/components/ui/combobox'
   import { Input } from '$lib/components/ui/input'
   import { Switch } from '$lib/components/ui/switch'
+  import * as ToggleGroup from '$lib/components/ui/toggle-group'
   import native from '$lib/modules/native'
   import { settings, languageCodes, subtitleResolutions } from '$lib/modules/settings'
 
@@ -25,6 +26,26 @@
   </SettingCard>
   <SettingCard title='Subtitle Render Resolution Limit' description="Max resolution to render subtitles at. If your resolution is higher than this setting the subtitles will be upscaled lineary. This will GREATLY improve rendering speeds for complex typesetting for slower devices. It's best to lower this on mobile devices which often have high pixel density where their effective resolution might be ~1440p while having small screens and slow processors.">
     <SingleCombo bind:value={$settings.subtitleRenderHeight} items={subtitleResolutions} class='w-32 shrink-0 border-input border' />
+  </SettingCard>
+
+  <SettingCard class='md:flex-col md:items-start' title='Subtitle Dialogue Style Overrides' description={'Selectively override the default dialogue style for subtitles. This will not change the style of typesetting.\n\nWarning: the heuristic used for deciding when to override the style is rather rough, and enabling this option can lead to incorrectly rendered subtitles.'}>
+    <ToggleGroup.Root type='single' class='grid sm:grid-cols-2 gap-3' bind:value={$settings.subtitleStyle}>
+      <ToggleGroup.Item value='none' class='h-auto aspect-video text-4xl px-0 relative'>
+        <div class='absolute top-4 text-xl font-bold'>None</div>🚫
+      </ToggleGroup.Item>
+      <ToggleGroup.Item value='gandhisans' class='h-auto px-0 relative'>
+        <div class='absolute top-4 text-xl font-bold'>Gandhi Sans Bold</div>
+        <img src='/gandhisans.png' class='w-full' />
+      </ToggleGroup.Item>
+      <ToggleGroup.Item value='notosans' class='h-auto px-0 relative'>
+        <div class='absolute top-4 text-xl font-bold'>Noto Sans Bold</div>
+        <img src='/notosans.png' class='w-full' />
+      </ToggleGroup.Item>
+      <ToggleGroup.Item value='roboto' class='h-auto px-0 relative'>
+        <div class='absolute top-4 text-xl font-bold'>Roboto Bold</div>
+        <img src='/roboto.png' class='w-full' />
+      </ToggleGroup.Item>
+    </ToggleGroup.Root>
   </SettingCard>
 
   <div class='font-weight-bold text-xl font-bold'>Language Settings</div>
