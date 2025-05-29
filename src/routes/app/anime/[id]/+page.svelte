@@ -6,6 +6,7 @@
   import { Threads } from '$lib/components/ui/forums'
   import { Load } from '$lib/components/ui/img'
   import * as Tabs from '$lib/components/ui/tabs'
+  import { Themes } from '$lib/components/ui/themes'
   import { format, relation } from '$lib/modules/anilist'
   import { authAggregator } from '$lib/modules/auth'
   import { dragScroll } from '$lib/modules/navigate'
@@ -74,6 +75,13 @@
     {#key mediaId}
       {#if value === 'threads'}
         <Threads {media} />
+      {/if}
+    {/key}
+  </Tabs.Content>
+  <Tabs.Content value='themes' tabindex={-1}>
+    {#key mediaId}
+      {#if value === 'themes'}
+        <Themes {media} />
       {/if}
     {/key}
   </Tabs.Content>

@@ -12,7 +12,10 @@
 
 <div class='space-y-3 lg:max-w-4xl h-full overflow-y-auto w-full py-8 flex flex-col items-center justify-center' use:dragScroll>
   <Logo class='w-52 h-52 object-contain mb-14 shrink-0' />
-  <div class='font-bold text-5xl'>Welcome to Hayase</div>
+  <div class='font-bold text-5xl relative'>
+    Welcome to Hayase
+    <div class='animate-[hearbeat_1.5s_ease-in-out_infinite_alternate] absolute text-lg text-theme -right-20 -top-2 rotate-12'>Previously known as Miru!</div>
+  </div>
   <div class='text-muted-foreground pt-3'>Let's set up your perfect streaming environment.</div>
   <div class='flex items-center space-x-2 pt-12 pb-3'>
     <Checkbox id='terms' bind:checked />

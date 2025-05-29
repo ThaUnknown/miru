@@ -9,8 +9,9 @@ export function progress ({ mediaListEntry, id }: Pick<Media, 'mediaListEntry' |
   return mediaListEntry.progress
 }
 
-export function fav (media: Pick<Media, 'isFavourite' | 'id'>): boolean {
-  return media.isFavourite || (local.get(media.id)?.isFavourite ?? false)
+export function fav (media: Pick<Media, 'mediaListEntry' | 'isFavourite' | 'id'>): boolean {
+  // TODO: idk how to handle this properly
+  return media.mediaListEntry ? media.isFavourite : (local.get(media.id)?.isFavourite ?? false)
 }
 
 export function list (media: Pick<Media, 'mediaListEntry' | 'id'>): 'CURRENT' | 'PLANNING' | 'COMPLETED' | 'DROPPED' | 'PAUSED' | 'REPEATING' | null | undefined {

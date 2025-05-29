@@ -132,12 +132,7 @@ a {
   }
 }
 
-.donate {
-  filter: drop-shadow(0 0 1rem #fa68b6);
-  animation: glow 1s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
+@keyframes hearbeat {
   from {
     transform: translate3d(var(--tw-translate-x), var(--tw-translate-y), 0) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(1) scaleY(1);
   }

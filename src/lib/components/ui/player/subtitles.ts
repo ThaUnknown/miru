@@ -252,7 +252,7 @@ export default class Subtitles {
   lastSubtitleStyle: typeof defaults.subtitleStyle | undefined = undefined
   _applyStyleOverride (subtitleStyle: typeof defaults.subtitleStyle) {
     if (this.lastSubtitleStyle === subtitleStyle) return
-    this.lastSubtitleStyle = subtitleStyle
+    if (this.renderer) this.lastSubtitleStyle = subtitleStyle
     if (subtitleStyle !== 'none') {
       const font = OVERRIDE_FONTS[subtitleStyle]
       if (font && !this.fonts.includes(font)) {
