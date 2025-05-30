@@ -1,6 +1,6 @@
 {
 	"name": "ui",
-	"version": "6.3.35",
+	"version": "6.3.36",
 	"license": "BUSL-1.1",
 	"private": true,
 	"packageManager": "pnpm@9.14.4",
@@ -30,7 +30,7 @@
 		"eslint-config-standard-universal": "^1.0.6",
 		"gql.tada": "^1.8.10",
 		"hayase-extensions": "github:hayase-app/extensions",
-		"jassub": "^1.8.4",
+		"jassub": "^1.8.5",
 		"svelte": "^4.2.19",
 		"svelte-check": "^4.2.1",
 		"svelte-radix": "^1.1.1",

@@ -52,6 +52,15 @@ const OVERRIDE_FONTS: Partial<Record<typeof defaults.subtitleStyle, string>> = {
   notosans: '/NotoSans-Bold.woff2'
 }
 
+const LANGUAGE_OVERRIDES: Record<string, {url: string, name: string}> = {
+  jpn: { url: '/NotoSansJP.woff2', name: 'Noto Sans JP' },
+  kor: { url: '/NotoSansKR.woff2', name: 'Noto Sans KR' },
+  chi: { url: '/NotoSansHK.woff2', name: 'Noto Sans HK' },
+  ja: { url: '/NotoSansJP.woff2', name: 'Noto Sans JP' },
+  ko: { url: '/NotoSansKR.woff2', name: 'Noto Sans KR' },
+  zh: { url: '/NotoSansHK.woff2', name: 'Noto Sans HK' }
+}
+
 const stylesRx = /^Style:[^,]*/gm
 export default class Subtitles {
   video: HTMLVideoElement
@@ -158,10 +167,7 @@ export default class Subtitles {
     native.attachments(this.selected.hash, this.selected.id).then(attachments => {
       for (const attachment of attachments) {
         if (fontRx.test(attachment.filename) || attachment.mimetype.toLowerCase().includes('font')) {
-          if (!this.fonts.includes(attachment.url)) {
-            this.fonts.push(attachment.url)
-            this.renderer?.addFont(attachment.url)
-          }
+          this.addFont(attachment.url)
         }
       }
     })
@@ -180,6 +186,13 @@ export default class Subtitles {
 
     for (const file of await Promise.all(promises)) {
       if (subRx.test(file.name)) this.addSingleSubtitleFile(file)
+    }
+  }
+
+  addFont (url: string) {
+    if (!this.fonts.includes(url)) {
+      this.fonts.push(url)
+      this.renderer?.addFont(url)
     }
   }
 
@@ -230,7 +243,6 @@ export default class Subtitles {
   initSubtitleRenderer () {
     if (this.renderer) return
 
-    // @ts-expect-error yeah, patching the library
     if (SUPPORTS.isAndroid) JASSUB._hasBitmapBug = true
     this.renderer = new JASSUB({
       video: this.video,
@@ -255,10 +267,7 @@ export default class Subtitles {
     if (this.renderer) this.lastSubtitleStyle = subtitleStyle
     if (subtitleStyle !== 'none') {
       const font = OVERRIDE_FONTS[subtitleStyle]
-      if (font && !this.fonts.includes(font)) {
-        this.fonts.push(font)
-        this.renderer?.addFont(font)
-      }
+      if (font) this.addFont(font)
       const overrideStyle: ASSStyle = {
         Name: 'DialogueStyleOverride',
         FontSize: 72,
@@ -354,6 +363,11 @@ export default class Subtitles {
 
     this.renderer.setTrack(track.meta.header.slice(0, -1))
     for (const subtitle of track.events) this.renderer.createEvent(subtitle)
+    if (LANGUAGE_OVERRIDES[track.meta.language ?? '']) {
+      const { name, url } = LANGUAGE_OVERRIDES[track.meta.language ?? '']!
+      this.addFont(url)
+      this.renderer.setDefaultFont(name)
+    }
     this.renderer.resize()
   }
 
