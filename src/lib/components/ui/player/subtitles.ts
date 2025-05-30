@@ -53,11 +53,11 @@ const OVERRIDE_FONTS: Partial<Record<typeof defaults.subtitleStyle, string>> = {
 }
 
 const LANGUAGE_OVERRIDES: Record<string, {url: string, name: string}> = {
-  jpn: { url: '/NotoSansJP.woff2', name: 'Noto Sans JP' },
-  kor: { url: '/NotoSansKR.woff2', name: 'Noto Sans KR' },
+  jpn: { url: '/NotoSansJP.woff2', name: 'Noto Sans JP Bold' },
+  kor: { url: '/NotoSansKR.woff2', name: 'Noto Sans KR Bold' },
   chi: { url: '/NotoSansHK.woff2', name: 'Noto Sans HK' },
-  ja: { url: '/NotoSansJP.woff2', name: 'Noto Sans JP' },
-  ko: { url: '/NotoSansKR.woff2', name: 'Noto Sans KR' },
+  ja: { url: '/NotoSansJP.woff2', name: 'Noto Sans JP Bold' },
+  ko: { url: '/NotoSansKR.woff2', name: 'Noto Sans KR Bold' },
   zh: { url: '/NotoSansHK.woff2', name: 'Noto Sans HK' }
 }
 
