@@ -17,7 +17,7 @@ export interface Anime {
 
 export interface AnimeTheme {
   id?: number
-  sequence?: null
+  sequence?: number
   slug?: string
   type?: string
   song?: Song
@@ -27,10 +27,10 @@ export interface AnimeTheme {
 export interface AnimeThemeEntry {
   id?: number
   episodes?: string
-  notes?: null
+  notes?: string
   nsfw?: boolean
   spoiler?: boolean
-  version?: null
+  version?: number
   videos?: Video[]
 }
 

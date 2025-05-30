@@ -177,8 +177,7 @@ select:not([disabled]):active,
 textarea:not([disabled]):active,
 details:active,
 [tabindex]:not([tabindex="-1"]):active,
-[contenteditable]:active,
-[controls]:active {
+[contenteditable]:active {
   transition: all 0.1s ease-in-out;
   transform: scale(0.98);
 }

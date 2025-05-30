@@ -65,7 +65,7 @@
     <Tabs.List class='flex'>
       <Tabs.Trigger value='episodes' class='px-8 data-[state=active]:font-bold'>Episodes</Tabs.Trigger>
       <Tabs.Trigger value='threads' class='px-8 data-[state=active]:font-bold'>Threads</Tabs.Trigger>
-      <Tabs.Trigger value='themes' class='px-8 data-[state=active]:font-bold' disabled>Themes</Tabs.Trigger>
+      <Tabs.Trigger value='themes' class='px-8 data-[state=active]:font-bold'>Themes</Tabs.Trigger>
     </Tabs.List>
   </div>
   <Tabs.Content value='episodes' tabindex={-1}>
