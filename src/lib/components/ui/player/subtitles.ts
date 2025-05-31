@@ -69,9 +69,9 @@ function detectCJKLanguage (str: string) {
   for (let i = 0; i < str.length; i += 10000) {
     const chunk = str.slice(i, i + 10000)
 
-    if (japaneseRegex.test(chunk)) return 'jp'
-    if (koreanRegex.test(chunk)) return 'kr'
-    if (chineseRegex.test(chunk)) return 'zh'
+    if (japaneseRegex.test(chunk)) return 'jpn'
+    if (koreanRegex.test(chunk)) return 'kor'
+    if (chineseRegex.test(chunk)) return 'chi'
   }
 
   return null
