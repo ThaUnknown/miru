@@ -56,7 +56,7 @@
   import { isPlaying } from '$lib/modules/idle'
   import native from '$lib/modules/native'
   import { click, keywrap } from '$lib/modules/navigate'
-  import { settings } from '$lib/modules/settings'
+  import { settings, SUPPORTS } from '$lib/modules/settings'
   import { server } from '$lib/modules/torrent'
   import { w2globby } from '$lib/modules/w2g/lobby'
   import { toTS, fastPrettyBits } from '$lib/utils'
@@ -80,7 +80,7 @@
   let readyState = 0
   $: safeduration = isFinite(duration) ? duration : currentTime
   const volume = persisted('volume', 1)
-  $: exponentialVolume = $volume ** 3
+  $: exponentialVolume = SUPPORTS.isAndroid ? 1 : $volume ** 3
   let muted = false
 
   // elements

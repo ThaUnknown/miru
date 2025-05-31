@@ -61,6 +61,22 @@ const LANGUAGE_OVERRIDES: Record<string, {url: string, name: string}> = {
   zh: { url: '/NotoSansHK.woff2', name: 'Noto Sans HK' }
 }
 
+function detectCJKLanguage (str: string) {
+  const japaneseRegex = /[\u3040-\u309f\u30a0-\u30ff]/
+  const koreanRegex = /[\uac00-\ud7af\u1100-\u11ff\u3130-\u318f\ua960-\ua97f\ud7b0-\ud7ff]/
+  const chineseRegex = /[\u4e00-\u9fff\u3400-\u4dbf]/
+
+  for (let i = 0; i < str.length; i += 10000) {
+    const chunk = str.slice(i, i + 10000)
+
+    if (japaneseRegex.test(chunk)) return 'jp'
+    if (koreanRegex.test(chunk)) return 'kr'
+    if (chineseRegex.test(chunk)) return 'zh'
+  }
+
+  return null
+}
+
 const stylesRx = /^Style:[^,]*/gm
 export default class Subtitles {
   video: HTMLVideoElement
@@ -227,7 +243,7 @@ export default class Subtitles {
     const { header, type } = convert
     const newtrack = this.track(trackNumber)
     newtrack.styles.Default = 0
-    newtrack.meta = { type, header, number: '' + trackNumber, name, language: name.replace(/[,._-]/g, ' ').trim() || 'Track ' + trackNumber }
+    newtrack.meta = { type, header, number: '' + trackNumber, name, language: (detectCJKLanguage(header) ?? name.replace(/[,._-]/g, ' ').trim()) || 'Track ' + trackNumber }
     const styleMatches = header.match(stylesRx)
     if (styleMatches) {
       for (let i = 0; i < styleMatches.length; ++i) {
