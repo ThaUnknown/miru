@@ -12,7 +12,7 @@
     user: ResultOf<typeof UserFrag>
   }
 
-  let className: $$Props['class'] = 'inline-block ring-4 ring-black size-8 bg-black'
+  let className: $$Props['class'] = 'inline-block ring-4 ring-black size-8 bg-black group-focus-visible/profile:ring-neutral-100 !border-0'
   export { className as class }
 
   export let user: ResultOf<typeof UserFrag>
@@ -25,8 +25,8 @@
 
 <div class='flex'>
   <Popover.Root>
-    <Popover.Trigger class='flex'>
-      <Avatar.Root class={className}>
+    <Popover.Trigger class='flex group/profile'>
+      <Avatar.Root class={cn('group-focus-visible/profile:border border-white', className)}>
         <Avatar.Image src={avatar} alt={name} />
         <Avatar.Fallback>{name}</Avatar.Fallback>
       </Avatar.Root>

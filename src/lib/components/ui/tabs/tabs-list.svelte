@@ -5,7 +5,7 @@
 
   type $$Props = TabsPrimitive.ListProps
 
-  let className: $$Props['class']
+  let className: $$Props['class'] = undefined
   export { className as class }
 </script>
 

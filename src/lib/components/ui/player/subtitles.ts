@@ -367,6 +367,8 @@ export default class Subtitles {
       const { name, url } = LANGUAGE_OVERRIDES[track.meta.language ?? '']!
       this.addFont(url)
       this.renderer.setDefaultFont(name)
+    } else {
+      this.renderer.setDefaultFont('roboto medium')
     }
     this.renderer.resize()
   }

@@ -60,12 +60,12 @@
     </div>
   </div>
 {/if}
-<Tabs.Root bind:value class='w-full'>
+<Tabs.Root bind:value class='w-full' activateOnFocus={false}>
   <div class='flex justify-between items-center gap-3 sm:flex-row flex-col'>
     <Tabs.List class='flex'>
-      <Tabs.Trigger value='episodes' class='px-8 data-[state=active]:font-bold'>Episodes</Tabs.Trigger>
-      <Tabs.Trigger value='threads' class='px-8 data-[state=active]:font-bold'>Threads</Tabs.Trigger>
-      <Tabs.Trigger value='themes' class='px-8 data-[state=active]:font-bold'>Themes</Tabs.Trigger>
+      <Tabs.Trigger value='episodes' tabindex={0} class='px-8 data-[state=active]:font-bold'>Episodes</Tabs.Trigger>
+      <Tabs.Trigger value='threads' tabindex={0} class='px-8 data-[state=active]:font-bold'>Threads</Tabs.Trigger>
+      <Tabs.Trigger value='themes' tabindex={0} class='px-8 data-[state=active]:font-bold'>Themes</Tabs.Trigger>
     </Tabs.List>
   </div>
   <Tabs.Content value='episodes' tabindex={-1}>

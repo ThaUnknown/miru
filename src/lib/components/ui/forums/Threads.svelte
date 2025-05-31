@@ -8,8 +8,8 @@
 
   import Pagination from '../../Pagination.svelte'
   import { Button } from '../button'
-  import { Profile } from '../profile'
 
+  import * as Avatar from '$lib/components/ui/avatar'
   import * as Tooltip from '$lib/components/ui/tooltip'
   import { client, type Media } from '$lib/modules/anilist'
   import { isMobile, since } from '$lib/utils'
@@ -56,7 +56,7 @@
               <div class='flex-grow py-3 px-4 flex flex-col'>
                 <div class='flex w-full justify-between text-[12.8px]'>
                   <Tooltip.Root>
-                    <Tooltip.Trigger class='font-bold mb-2 line-clamp-1'>
+                    <Tooltip.Trigger class='font-bold mb-2 line-clamp-1' tabindex={-1}>
                       {thread.title ?? 'Thread ' + (thread.id)}
                     </Tooltip.Trigger>
                     <Tooltip.Content>
@@ -78,7 +78,10 @@
                 <div class='flex w-full justify-between mt-auto text-[9.6px]'>
                   <div class='pt-2 flex items-end'>
                     {#if thread.user}
-                      <Profile user={thread.user} class='size-4 mr-2' />
+                      <Avatar.Root class='size-4 mr-2'>
+                        <Avatar.Image src={thread.user.avatar?.medium} alt='avatar' />
+                        <Avatar.Fallback>{thread.user.name}</Avatar.Fallback>
+                      </Avatar.Root>
                     {/if}
                     {since(new Date(thread.createdAt * 1000))}
                   </div>

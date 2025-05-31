@@ -166,18 +166,24 @@ a {
   color: #737373 !important;
 }
 
-a[href]:active,
-button:not([disabled], .no-scale):active,
-.scale-parent:has(.no-scale:active),
-fieldset:not([disabled]):active,
-input:not([disabled], [type='range'], .no-scale):active,
-optgroup:not([disabled]):active,
-option:not([disabled]):active,
-select:not([disabled]):active,
-textarea:not([disabled]):active,
-details:active,
-[tabindex]:not([tabindex="-1"]):active,
-[contenteditable]:active {
+a[href],
+button,
+fieldset,
+input,
+optgroup,
+option,
+select,
+textarea,
+details,
+[tabindex],
+[contenteditable] {
+  &:active:not([disabled], [type='range'], .no-scale, [tabindex="-1"]) {
+    transition: all 0.1s ease-in-out;
+    transform: scale(0.98);
+  }
+}
+
+.scale-parent:has(.no-scale:active) {
   transition: all 0.1s ease-in-out;
   transform: scale(0.98);
 }
