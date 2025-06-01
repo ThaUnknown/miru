@@ -157,8 +157,8 @@ importers:
         specifier: github:hayase-app/extensions
         version: https://codeload.github.com/hayase-app/extensions/tar.gz/a9415c297a899459be34a135a9adbcd72115e019
       jassub:
-        specifier: ^1.8.5
-        version: 1.8.5
+        specifier: ^1.8.6
+        version: 1.8.6
       svelte:
         specifier: ^4.2.19
         version: 4.2.19
@@ -1659,8 +1659,8 @@ packages:
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
-  jassub@1.8.5:
-    resolution: {integrity: sha512-BKf3qureEQcJ0WKi7rSJ86UsQF8hTcQqJaIWcwqezxIVTCOatT+tnShM6fauS0pdjeG4bLLFS2+51xMasl/WCw==}
+  jassub@1.8.6:
+    resolution: {integrity: sha512-56ZTtjM7LfdKsi7boUN/seNOQSOclLuDWEXxnHO55xNakj95SlBrv36hLyNDw0NmoOtLVeqzbpBU1VxT+ubFpg==}
 
   jiti@1.21.6:
     resolution: {integrity: sha512-2yTgeWTWzMWkHu6Jp9NKgePDaYHbntiwvYuuJLbbN9vl7DC9DvXKOB2BC3ZZ92D3cvV/aflH0osDfwpHepQ53w==}
@@ -4224,7 +4224,7 @@ snapshots:
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
 
-  jassub@1.8.5:
+  jassub@1.8.6:
     dependencies:
       rvfc-polyfill: 1.0.7
 
