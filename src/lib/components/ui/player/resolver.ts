@@ -10,6 +10,19 @@ import { videoRx } from '$lib/utils'
 
 export type ResolvedFile = TorrentFile & {metadata: { episode: string | number | undefined, parseObject: AnitomyResult, media: Media, failed: boolean }}
 
+async function toResolvedFile (file: TorrentFile, media: Media): Promise<ResolvedFile> {
+  const parseObject = (await anitomyscript([file.name]))[0]!
+  return {
+    ...file,
+    metadata: {
+      episode: parseObject.episode_number[0] ?? undefined,
+      parseObject,
+      media,
+      failed: false
+    }
+  }
+}
+
 export async function resolveFilesPoorly (promise: Promise<{media: Media, id: string, episode: number, files: TorrentFile[]}| null>) {
   const list = await promise
 
@@ -36,9 +49,11 @@ export async function resolveFilesPoorly (promise: Promise<{media: Media, id: st
 
   let targetAnimeFiles = resolvedFiles.filter(file => file.metadata.media.id && file.metadata.media.id === list.media.id)
 
-  if (!targetAnimeFiles.length) {
-    const max = highestOccurence(resolvedFiles, file => file.metadata.parseObject.anime_title[0] ?? '').metadata.parseObject.anime_title
-    targetAnimeFiles = resolvedFiles.filter(file => file.metadata.parseObject.anime_title === max)
+  if (!targetAnimeFiles.length && resolvedFiles.length) {
+    const max = highestOccurence(resolvedFiles, file => file.metadata.parseObject.anime_title[0] ?? '')?.metadata.parseObject.anime_title[0]
+    targetAnimeFiles = resolvedFiles.filter(file => file.metadata.parseObject.anime_title[0] === max)
+  } else {
+    targetAnimeFiles = await Promise.all(videoFiles.map(file => toResolvedFile(file, list.media)))
   }
 
   targetAnimeFiles.sort((a, b) => Number(a.metadata.episode) - Number(b.metadata.episode))
@@ -118,13 +133,13 @@ const TYPE_EXCLUSIONS = ['ED', 'ENDING', 'NCED', 'NCOP', 'OP', 'OPENING', 'PREVI
 // }
 
 // find element with most occurences in array according to map function
-function highestOccurence <T> (arr: T[] = [], mapfn = (a: T) => ''): T {
+function highestOccurence <T> (arr: T[] = [], mapfn = (a: T) => ''): T | undefined {
   return arr.reduce<{sums: Record<string, number>, max?: T}>((acc, el) => {
     const mapped = mapfn(el)
     acc.sums[mapped] = (acc.sums[mapped] ?? 0) + 1
     acc.max = (acc.max !== undefined ? acc.sums[mapfn(acc.max)]! : -1) > acc.sums[mapped] ? acc.max : el
     return acc
-  }, { sums: {}, max: undefined }).max as T
+  }, { sums: {}, max: undefined }).max
 }
 
 const postfix: Record<number, string> = {
