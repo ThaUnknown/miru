@@ -40,7 +40,7 @@ export async function resolveFilesPoorly (promise: Promise<{media: Media, id: st
 
   const resolved = videoFiles.length === 1 ? [{ episode: list.episode, parseObject: (await anitomyscript([videoFiles[0]!.name]))[0]!, media: list.media, failed: false }] : await AnimeResolver.resolveFileAnime(videoFiles.map(file => file.name))
 
-  const resolvedFiles: ResolvedFile[] = videoFiles.map(file => {
+  let resolvedFiles: ResolvedFile[] = videoFiles.map(file => {
     return {
       ...file,
       metadata: resolved.find(({ parseObject }) => file.name.includes(parseObject.file_name[0]!))
@@ -49,15 +49,17 @@ export async function resolveFilesPoorly (promise: Promise<{media: Media, id: st
 
   let targetAnimeFiles = resolvedFiles.filter(file => file.metadata.media.id && file.metadata.media.id === list.media.id)
 
-  if (!targetAnimeFiles.length && resolvedFiles.length) {
-    const max = highestOccurence(resolvedFiles, file => file.metadata.parseObject.anime_title[0] ?? '')?.metadata.parseObject.anime_title[0]
-    targetAnimeFiles = resolvedFiles.filter(file => file.metadata.parseObject.anime_title[0] === max)
-  } else {
-    targetAnimeFiles = await Promise.all(videoFiles.map(file => toResolvedFile(file, list.media)))
+  if (!targetAnimeFiles.length) {
+    if (resolvedFiles.length) {
+      const max = highestOccurence(resolvedFiles, file => file.metadata.parseObject.anime_title[0] ?? '')?.metadata.parseObject.anime_title[0]
+      targetAnimeFiles = resolvedFiles.filter(file => file.metadata.parseObject.anime_title[0] === max)
+    } else {
+      targetAnimeFiles = resolvedFiles = await Promise.all(videoFiles.map(file => toResolvedFile(file, list.media)))
+    }
   }
 
   targetAnimeFiles.sort((a, b) => Number(a.metadata.episode) - Number(b.metadata.episode))
-  targetAnimeFiles.sort((a, b) => Number(b.metadata.parseObject.anime_season ?? 1) - Number(a.metadata.parseObject.anime_season ?? 1))
+  targetAnimeFiles.sort((a, b) => Number(b.metadata.parseObject.anime_season[0] ?? 1) - Number(a.metadata.parseObject.anime_season[0] ?? 1))
 
   const targetEpisode = targetAnimeFiles.find(file => file.metadata.episode === list.episode) ?? targetAnimeFiles.find(file => file.metadata.episode === 1) ?? targetAnimeFiles[0]!
 

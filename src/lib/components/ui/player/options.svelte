@@ -2,6 +2,8 @@
   import EllipsisVertical from 'lucide-svelte/icons/ellipsis-vertical'
   import { tick } from 'svelte'
 
+  import { Input } from '../input'
+
   import Keybinds from './keybinds.svelte'
   import { normalizeSubs, normalizeTracks, type Chapter } from './util'
 
@@ -33,6 +35,7 @@
   export let videoFiles: ResolvedFile[]
   export let selectFile: (file: ResolvedFile) => void
   export let pip: PictureInPicture
+  export let subtitleDelay: number
 
   $: pipElement = pip.element
 
@@ -150,6 +153,11 @@
                 <Tree.Item on:click={() => { subtitles.pickFile(); open = false }}>
                   <span>Add Subtitle File</span>
                 </Tree.Item>
+                <div class='flex items-center relative scale-parent font-bold'>
+                  <div class='shrink-0 absolute left-4 z-10 pointer-events-none text-sm leading-5'>Delay</div>
+                  <Input type='number' inputmode='numeric' pattern='[0-9]*.?[0-9]*' step='0.1' min='-50' max='50' bind:value={subtitleDelay} {id} class='w-full shrink-0 px-12 border-0 !ring-0 no-scale text-right hover:bg-accent hover:text-accent-foreground rounded-sm' />
+                  <div class='shrink-0 absolute right-3 z-10 pointer-events-none text-sm leading-5'>sec</div>
+                </div>
               </Tree.Sub>
             </Tree.Item>
           {/if}

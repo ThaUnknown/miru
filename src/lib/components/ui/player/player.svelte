@@ -76,6 +76,7 @@
   let duration = 1
   let playbackRate = 1
   let buffered: SvelteMediaTimeRange[] = []
+  let subtitleDelay = 0
   $: buffer = Math.max(...buffered.map(({ end }) => end))
   let readyState = 0
   $: safeduration = isFinite(duration) ? duration : currentTime
@@ -103,6 +104,9 @@
     pip.destroy()
     thumbnailer.destroy()
   })
+
+  // @ts-expect-error bad type infer
+  $: if (subtitles?.renderer) subtitles.renderer.timeOffset = Number(subtitleDelay)
 
   // state
   let seeking = false
@@ -734,7 +738,7 @@
         Playback speed: x{stats.speed?.toFixed(1)}<br />
       </div>
     {/if}
-    <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate
+    <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay
       class='{$settings.minimalPlayerUI ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute top-4 left-4 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto transition-opacity select:opacity-100 {immersed && 'opacity-0'}' />
     {#if ff}
       <div class='absolute top-10 font-bold text-sm animate-[fade-in_.4s_ease] flex items-center leading-none bg-black/60 px-4 py-2 rounded-2xl'>x2 <FastForward class='ml-2' size='12' fill='currentColor' /></div>
@@ -823,7 +827,7 @@
         <Volume bind:volume={$volume} bind:muted />
       </div>
       <div class='flex gap-2'>
-        <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate id='player-options-button' />
+        <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay id='player-options-button' />
         {#if subtitles}
           <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs} on:keydown={keywrap(openSubs)} data-up='#player-seekbar'>
             <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
