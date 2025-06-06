@@ -165,15 +165,15 @@ export function toTS (sec: number, full?: number) {
   return (hours > 0 || full === 1 || full === 2) ? hours + ':' + minutes + ':' + seconds : minutes + ':' + seconds
 }
 
-interface TraceAnime {
-  'anilist': number
-  'filename': string
-  'episode': number
-  'from': number
-  'to': number
-  'similarity': number
-  'video': string
-  'image': string
+export interface TraceAnime {
+  anilist: number
+  filename: string
+  episode: number
+  from: number
+  to: number
+  similarity: number
+  video: string
+  image: string
 }
 
 export async function traceAnime (image: File) { // WAIT lookup logic

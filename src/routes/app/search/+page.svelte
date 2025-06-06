@@ -15,12 +15,12 @@
   import { page } from '$app/stores'
   import { badgeVariants } from '$lib/components/ui/badge'
   import { Button } from '$lib/components/ui/button'
-  import { QueryCard } from '$lib/components/ui/cards'
+  import { QueryCard, TraceCards } from '$lib/components/ui/cards'
   import { ComboBox } from '$lib/components/ui/combobox'
   import { Input, type FormInputEvent } from '$lib/components/ui/input'
   import { client } from '$lib/modules/anilist'
   import { click, dragScroll } from '$lib/modules/navigate'
-  import { cn, debounce, sleep, traceAnime } from '$lib/utils'
+  import { cn, debounce, sleep, traceAnime, type TraceAnime } from '$lib/utils'
 
   // util
 
@@ -114,6 +114,7 @@
       unsub()
     }
     subscriptions = []
+    trace = undefined
   }
 
   let media: Array<ReturnType<typeof client.search>> = []
@@ -165,6 +166,8 @@
   $: lastestQuery = media[media.length - 1]
   $: hasNextPage = $lastestQuery?.data?.Page?.pageInfo?.hasNextPage
 
+  let trace: TraceAnime[] | undefined
+
   async function imagePicker (e: Event) {
     const target = e.target as HTMLInputElement
     const { files } = target
@@ -182,6 +185,8 @@
         const res = await promise
 
         clear()
+
+        trace = res
         search.ids = [...new Set(res.map(r => r.anilist))]
       // TODO: sort by similarity, finish
       } catch (e) {
@@ -301,7 +306,11 @@
   </div>
   <div class='flex flex-wrap md:px-7 justify-center pointer-events-auto'>
     {#each media as query, i (i)}
-      <QueryCard {query} />
+      {#if trace}
+        <TraceCards {query} {trace} />
+      {:else}
+        <QueryCard {query} />
+      {/if}
     {/each}
   </div>
 </div>
