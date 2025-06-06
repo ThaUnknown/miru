@@ -36,19 +36,22 @@
   }
 
   const sectionQueries = derived<[
-    typeof authAggregator.hasAuth, Readable<number[]>, Readable<number[]>, Readable<number[]>], SectionQuery[]
-  >([authAggregator.hasAuth, authAggregator.continueIDs(), authAggregator.sequelIDs(), authAggregator.planningIDs()], ([hasAuth, continueIDs, sequelIDs, planningIDs], set) => {
+    Readable<number[] | null>, Readable<number[] | null>, Readable<number[] | null>], SectionQuery[]
+  >([authAggregator.continueIDs, authAggregator.sequelIDs, authAggregator.planningIDs], ([continueIDs, sequelIDs, planningIDs], set) => {
     const sections = [...sectionsQueries]
     const unsub: Array<() => void> = []
-    if (hasAuth) {
+
+    if (planningIDs) {
       const planningQuery = client.search({ ids: planningIDs }, true)
       unsub.push(planningQuery.subscribe(() => undefined))
       sections.unshift({ title: 'Your List', query: planningQuery, variables: { ids: planningIDs } })
-
+    }
+    if (sequelIDs) {
       const sequelsQuery = client.search({ ids: sequelIDs, status: ['FINISHED', 'RELEASING'], onList: false }, true)
       unsub.push(sequelsQuery.subscribe(() => undefined))
       sections.unshift({ title: 'Sequels You Missed', query: sequelsQuery, variables: { ids: sequelIDs, status: ['FINISHED', 'RELEASING'], onList: false } })
-
+    }
+    if (continueIDs) {
       const contiueQuery = derived(client.search({ ids: continueIDs.slice(0, 50), sort: ['UPDATED_AT_DESC'] }, false), value => {
         value.data?.Page?.media?.sort((a, b) => continueIDs.indexOf(a?.id ?? 0) - continueIDs.indexOf(b?.id ?? 0))
         return value
@@ -56,6 +59,7 @@
       unsub.push(contiueQuery.subscribe(() => undefined))
       sections.unshift({ title: 'Continue Watching', query: contiueQuery, variables: { ids: continueIDs, sort: ['UPDATED_AT_DESC'] } })
     }
+
     set(sections)
 
     return () => unsub.forEach(fn => fn())

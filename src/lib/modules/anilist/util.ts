@@ -88,7 +88,7 @@ export function format (media: Pick<Media, 'format'>): string {
   return 'N/A'
 }
 
-export function episodes (media: Pick<Media, 'aired' | 'notaired' | 'episodes' | 'mediaListEntry'>): number | undefined {
+export function episodes (media: Pick<Media, 'aired' | 'notaired' | 'episodes' | 'mediaListEntry' | 'id'>): number | undefined {
   if (media.episodes) return media.episodes
 
   const upcoming = media.aired?.n?.[media.aired.n.length - 1]?.e ?? 0

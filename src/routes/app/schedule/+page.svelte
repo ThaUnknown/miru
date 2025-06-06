@@ -13,7 +13,7 @@
   import * as Drawer from '$lib/components/ui/drawer'
   import * as Tooltip from '$lib/components/ui/tooltip'
   import { dedupeAiring } from '$lib/modules/anilist'
-  import { authAggregator } from '$lib/modules/auth'
+  import { authAggregator, list } from '$lib/modules/auth'
   import { dragScroll } from '$lib/modules/navigate'
   import { cn, isMobile } from '$lib/utils'
 
@@ -51,7 +51,7 @@
   function aggregate (data: ResultOf<typeof Schedule>, dayList: Array<{ date: Date, number: number }>) {
     // join media from all queries into single list, de-duplicate it, and make sure it's not dropped
     const mediaList = [...data.curr1?.media ?? [], ...data.curr2?.media ?? [], ...data.curr3?.media ?? [], ...data.residue?.media ?? [], ...data.next1?.media ?? [], ...data.next2?.media ?? []]
-      .filter((v, i, a) => v != null && a.findIndex(s => s?.id === v.id) === i && v.mediaListEntry?.status !== 'DROPPED') as Array<ResultOf<typeof ScheduleMedia>>
+      .filter((v, i, a) => v != null && a.findIndex(s => s?.id === v.id) === i && list(v) !== 'DROPPED') as Array<ResultOf<typeof ScheduleMedia>>
 
     const dayMap: Record<string, DayAirTimes | undefined> = Object.fromEntries(dayList.map(day => [+day.date, { day, episodes: [] }]))
 
@@ -73,6 +73,8 @@
     return Object.values(dayMap) as DayAirTimes[]
   }
 
+  // very stupid fix, for a very stupid bug
+  const _list = list
 </script>
 
 <div class='flex flex-col items-center w-full h-full overflow-y-auto px-5' use:dragScroll>
@@ -144,10 +146,11 @@
                   </Drawer.Header>
                   <Drawer.Footer>
                     {#each episodes as episode, i (i)}
+                      {@const status = _list(episode)}
                       <ButtonPrimitive.Root class={cn('flex items-center h-4 w-full group mt-1.5 px-3', +episode.airTime < Date.now() && 'opacity-30')} href='/app/anime/{episode.id}'>
                         <div class='font-medium text-nowrap text-ellipsis overflow-hidden pr-2' title={episode.title?.userPreferred}>
-                          {#if episode.mediaListEntry?.status}
-                            <StatusDot variant={episode.mediaListEntry.status} class='hidden' />
+                          {#if status}
+                            <StatusDot variant={status} class='hidden' />
                           {/if}
                           {episode.title?.userPreferred}
                         </div>
@@ -166,10 +169,11 @@
             {#if !$isMobile}
               <div class='mt-auto'>
                 {#each episodes.length > 6 ? episodes.slice(0, 5) : episodes as episode, i (i)}
+                  {@const status = _list(episode)}
                   <ButtonPrimitive.Root class={cn('flex items-center h-4 w-full group mt-1.5 px-3', +episode.airTime < Date.now() && 'opacity-30')} href='/app/anime/{episode.id}'>
                     <div class='font-medium text-nowrap text-ellipsis overflow-hidden pr-2' title={episode.title?.userPreferred}>
-                      {#if episode.mediaListEntry?.status}
-                        <StatusDot variant={episode.mediaListEntry.status} class='hidden lg:inline-flex' />
+                      {#if status}
+                        <StatusDot variant={status} class='hidden lg:inline-flex' />
                       {/if}
                       {episode.title?.userPreferred}
                     </div>
@@ -184,10 +188,11 @@
                     </Tooltip.Trigger>
                     <Tooltip.Content sameWidth={true} class='text-center gap-1.5'>
                       {#each episodes.slice(5) as episode, i (i)}
+                        {@const status = _list(episode)}
                         <ButtonPrimitive.Root class={cn('flex items-center h-4 w-full group', +episode.airTime < Date.now() && 'text-neutral-300')} href='/app/anime/{episode.id}'>
                           <div class='font-medium text-nowrap text-ellipsis overflow-hidden pr-2' title={episode.title?.userPreferred}>
-                            {#if episode.mediaListEntry?.status}
-                              <StatusDot variant={episode.mediaListEntry.status} class='hidden lg:inline-flex' />
+                            {#if status}
+                              <StatusDot variant={status} class='hidden lg:inline-flex' />
                             {/if}
                             {episode.title?.userPreferred}
                           </div>

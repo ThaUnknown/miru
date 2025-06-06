@@ -20,11 +20,7 @@ import type { AnyVariables, OperationContext, RequestPolicy, TypedDocumentNode }
 
 import { dev } from '$app/environment'
 import native from '$lib/modules/native'
-import { safeLocalStorage, sleep } from '$lib/utils'
-
-function arrayEqual <T> (a: T[], b: T[]) {
-  return a.length === b.length && a.every((v, i) => v === b[i])
-}
+import { arrayEqual, safeLocalStorage, sleep } from '$lib/utils'
 
 class FetchError extends Error {
   res
@@ -452,8 +448,9 @@ class AnilistClient {
     return await this.client.mutation(ToggleFavourite, { id })
   }
 
-  async deleteEntry (id: number) {
-    return await this.client.mutation(DeleteEntry, { id })
+  async deleteEntry (media: Media) {
+    if (!media.mediaListEntry?.id) return
+    return await this.client.mutation(DeleteEntry, { id: media.mediaListEntry.id })
   }
 
   async entry (variables: VariablesOf<typeof Entry>) {

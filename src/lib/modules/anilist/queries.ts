@@ -111,6 +111,36 @@ relations {
 }
 }`, [FullMediaList, MediaEdgeFrag])
 
+export const UserFrag = gql(`
+  fragment UserFrag on User @_unmask {
+    id,
+    bannerImage,
+    about,
+    isFollowing,
+    isFollower,
+    donatorBadge,
+    options {
+      profileColor
+    },
+    createdAt,
+    name,
+    avatar {
+      large
+    },
+    statistics {
+      anime {
+        count,
+        minutesWatched,
+        episodesWatched,
+        genres(limit: 3, sort: COUNT_DESC) {
+          genre,
+          count
+        }
+      }
+    }
+  }
+`)
+
 export const Search = gql(`
   query Search($page: Int, $perPage: Int, $search: String, $genre: [String], $format: [MediaFormat], $status: [MediaStatus], $statusNot: [MediaStatus], $season: MediaSeason, $seasonYear: Int, $isAdult: Boolean, $sort: [MediaSort], $onList: Boolean, $ids: [Int]) {
     Page(page: $page, perPage: $perPage) {
@@ -135,11 +165,7 @@ export const IDMedia = gql(`
 export const Viewer = gql(`
   query Viewer {
     Viewer {
-      avatar {
-        medium
-      },
-      name,
-      id,
+      ...UserFrag,
       mediaListOptions {
         animeList {
           customLists
@@ -147,7 +173,7 @@ export const Viewer = gql(`
       }
     }
   }
-`)
+`, [UserFrag])
 
 export const UserLists = gql(`
   query UserLists($id: Int) {
@@ -250,36 +276,6 @@ export const Schedule = gql(`
     }
   }
 `, [ScheduleMedia])
-
-export const UserFrag = gql(`
-  fragment UserFrag on User @_unmask {
-    id,
-    bannerImage,
-    about,
-    isFollowing,
-    isFollower,
-    donatorBadge,
-    options {
-      profileColor
-    },
-    createdAt,
-    name,
-    avatar {
-      medium
-    },
-    statistics {
-      anime {
-        count,
-        minutesWatched,
-        episodesWatched,
-        genres(limit: 3, sort: COUNT_DESC) {
-          genre,
-          count
-        }
-      }
-    }
-  }
-`)
 
 export const Following = gql(`
   query Following($id: Int!) {
@@ -412,7 +408,7 @@ export const Comments = gql(`
           createdAt,
           name,
           avatar {
-            medium
+            large
           },
           statistics {
             anime {

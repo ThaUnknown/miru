@@ -16,15 +16,17 @@
   export let size: NonNullable<$$Props['size']> = 'icon-sm'
   export let variant: NonNullable<$$Props['variant']> = 'ghost'
 
-  function toggleBookmark () {
-    if (!media.mediaListEntry?.status) {
-      authAggregator.entry({ id: media.id, status: 'PLANNING', lists: lists(media)?.filter(({ enabled }) => enabled).map(({ name }) => name) })
+  async function toggleBookmark () {
+    if (!list(media)) {
+      await authAggregator.entry({ id: media.id, status: 'PLANNING', lists: lists(media)?.filter(({ enabled }) => enabled).map(({ name }) => name) })
     } else {
-      authAggregator.delete(media.mediaListEntry.id)
+      await authAggregator.delete(media)
     }
+    ++key
   }
+  let key = 1
 </script>
 
 <Button {size} {variant} class={className} on:click={clickwrap(toggleBookmark)} on:keydown={keywrap(toggleBookmark)}>
-  <Bookmark fill={list(media) ? 'currentColor' : 'transparent'} size={iconSizes[size]} />
+  <Bookmark fill={key && list(media) ? 'currentColor' : 'transparent'} size={iconSizes[size]} />
 </Button>

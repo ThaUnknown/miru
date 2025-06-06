@@ -275,3 +275,7 @@ export const safefetch = async <T> (_fetch: typeof fetch, ...args: Parameters<ty
     return null
   }
 }
+
+export function arrayEqual <T> (a: T[], b: T[]) {
+  return a.length === b.length && a.every((v, i) => v === b[i])
+}

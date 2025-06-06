@@ -23,7 +23,7 @@
 
 <BannerImage class='absolute top-0 left-0 -z-[1]' />
 <SearchModal />
-<div class='flex flex-row grow h-full overflow-clip group/fullscreen' id='episodeListTarget'>
+<div class='flex flex-row grow h-full overflow-clip group/fullscreen min-h-0' id='episodeListTarget'>
   <Sidebar>
     <Sidebarlist />
   </Sidebar>

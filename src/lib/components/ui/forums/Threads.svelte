@@ -79,7 +79,7 @@
                   <div class='pt-2 flex items-end'>
                     {#if thread.user}
                       <Avatar.Root class='size-4 mr-2'>
-                        <Avatar.Image src={thread.user.avatar?.medium} alt='avatar' />
+                        <Avatar.Image src={thread.user.avatar?.large} alt='avatar' />
                         <Avatar.Fallback>{thread.user.name}</Avatar.Fallback>
                       </Avatar.Root>
                     {/if}

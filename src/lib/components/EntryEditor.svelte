@@ -27,8 +27,7 @@
   let repeat = _repeat(media) ?? 0
 
   function deleteEntry () {
-    if (!media.mediaListEntry) return
-    authAggregator.delete(media.mediaListEntry.id)
+    authAggregator.delete(media)
   }
 
   function saveEntry () {

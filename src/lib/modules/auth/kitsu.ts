@@ -1,67 +1,186 @@
-import { readable, writable } from 'simple-store-svelte'
+import { writable } from 'simple-store-svelte'
+import { derived, readable } from 'svelte/store'
+import { toast } from 'svelte-sonner'
 
-import type { Media } from '../anilist'
-import type { KitsuOAuth } from './kitsu-types'
-import type { Entry } from '../anilist/queries'
-import type { VariablesOf } from 'gql.tada'
+import { client, type Media } from '../anilist'
+import { mappings, mappingsByKitsuId } from '../anizip'
+import native from '../native'
 
-import { safeLocalStorage } from '$lib/utils'
+import type { Anime, Fav, KEntry, KitsuError, KitsuMediaStatus, Mapping, OAuth, Res, Resource, ResSingle, User } from './kitsu-types'
+import type { Entry, FullMediaList, UserFrag } from '../anilist/queries'
+import type { ResultOf, VariablesOf } from 'gql.tada'
+
+import { arrayEqual, safeLocalStorage } from '$lib/utils'
 
 const ENDPOINTS = {
   API_OAUTH: 'https://kitsu.app/api/oauth/token',
   API_USER_FETCH: 'https://kitsu.app/api/edge/users',
-  API_USER_LIBRARY: 'https://kitsu.app/api/edge/library-entries'
+  API_USER_LIBRARY: 'https://kitsu.app/api/edge/library-entries',
+  API_FAVOURITES: 'https://kitsu.app/api/edge/favorites'
+} as const
+
+type ALMediaStatus = 'CURRENT' | 'PLANNING' | 'COMPLETED' | 'DROPPED' | 'PAUSED' | 'REPEATING'
+
+const KITSU_TO_AL_STATUS: Record<KitsuMediaStatus, ALMediaStatus> = {
+  current: 'CURRENT',
+  planned: 'PLANNING',
+  completed: 'COMPLETED',
+  dropped: 'DROPPED',
+  on_hold: 'PAUSED'
+}
+
+const AL_TO_KITSU_STATUS: Record<ALMediaStatus, KitsuMediaStatus> = {
+  CURRENT: 'current',
+  PLANNING: 'planned',
+  COMPLETED: 'completed',
+  DROPPED: 'dropped',
+  PAUSED: 'on_hold',
+  REPEATING: 'current'
 }
 
 export default new class KitsuSync {
-  auth = writable<KitsuOAuth | undefined>(safeLocalStorage('kitsuAuth'))
-  viewer = writable<{id: number} | undefined>(safeLocalStorage('kitsuViewer'))
+  auth = writable<OAuth | undefined>(safeLocalStorage('kitsuAuth'))
+  viewer = writable<ResultOf<typeof UserFrag> | undefined>(safeLocalStorage('kitsuViewer'))
+  userlist = writable<Record<string, ResultOf<typeof FullMediaList>>>({}) // al id to al mapped kitsu entry
+  favorites = writable<Record<string, string>>({}) // kitsu anime id to kitsu fav id
+  kitsuToAL: Record<string, string> = {}
+  ALToKitsu: Record<string, string> = {}
+
+  continueIDs = readable<number[]>([], set => {
+    let oldvalue: number[] = []
+    const sub = this.userlist.subscribe(values => {
+      const entries = Object.entries(values)
+      if (!entries.length) return []
+
+      const ids: number[] = []
+
+      for (const [alId, entry] of entries) {
+        if (entry.status === 'REPEATING' || entry.status === 'CURRENT') {
+          ids.push(Number(alId))
+        }
+      }
+
+      if (arrayEqual(oldvalue, ids)) return
+      oldvalue = ids
+      set(ids)
+    })
+    return sub
+  })
+
+  planningIDs = readable<number[]>([], set => {
+    let oldvalue: number[] = []
+    const sub = this.userlist.subscribe(values => {
+      const entries = Object.entries(values)
+      if (!entries.length) return []
+
+      const ids: number[] = []
+
+      for (const [alId, entry] of entries) {
+        if (entry.status === 'PLANNING') {
+          ids.push(Number(alId))
+        }
+      }
+
+      if (arrayEqual(oldvalue, ids)) return
+      oldvalue = ids
+      set(ids)
+    })
+    return sub
+  })
+
+  constructor () {
+    this.auth.subscribe((auth) => {
+      if (auth) localStorage.setItem('kitsuAuth', JSON.stringify(auth))
+      this._user()
+    })
+
+    this.viewer.subscribe((viewer) => {
+      if (viewer) localStorage.setItem('kitsuViewer', JSON.stringify(viewer))
+    })
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async _request (url: string, method: string, body?: any): Promise<any> {
+  async _request <T = object> (url: string | URL, method: string, body?: any): Promise<T | KitsuError> {
     try {
+      if (this.auth.value) {
+        const expiresAt = (this.auth.value.created_at + this.auth.value.expires_in) * 1000
+
+        if (expiresAt < Date.now() - 1000 * 60 * 5) { // 5 minutes before expiry
+          await this._refresh()
+        }
+      }
       const res = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/vnd.api+json',
-          Accept: 'application/vnd.api+json',
           Authorization: this.auth.value ? `Bearer ${this.auth.value.access_token}` : ''
         },
-        body: JSON.stringify(body)
+        body: body ? JSON.stringify(body) : undefined
       })
 
-      if (res.status === 403 && !body?.refresh_token) {
-        await this._refresh()
-        return await this._request(url, method, body)
+      if (!res.ok) {
+        throw new Error(`Kitsu API Error: ${res.status} ${res.statusText}`)
+      }
+      if (method === 'DELETE') return undefined as T
+
+      const json = await res.json() as object | KitsuError
+
+      if ('error' in json) {
+        toast.error('Kitsu Error', { description: json.error_description })
+        console.error(json)
       }
 
-      return await res.json()
+      return json as T | KitsuError
     } catch (error) {
-      // TODO: :^)
       const err = error as Error
-      throw err
+
+      toast.error('Kitsu Error', { description: err.message })
+      console.error(err)
+
+      return {
+        error: err.name,
+        error_description: err.stack ?? 'An unknown error occurred'
+      }
     }
+  }
+
+  async _get <T> (target: string, body?: Record<string, unknown>): Promise<T | KitsuError> {
+    const url = new URL(target)
+
+    for (const [key, value] of Object.entries(body ?? {})) url.searchParams.append(key, String(value))
+
+    return await this._request<T>(url, 'GET')
+  }
+
+  async _delete <T> (url: string): Promise<T | KitsuError> {
+    return await this._request<T>(url, 'DELETE')
+  }
+
+  async _post <T> (url: string, body?: Record<string, unknown>): Promise<T | KitsuError> {
+    return await this._request<T>(url, 'POST', body)
+  }
+
+  async _patch <T> (url: string, body?: Record<string, unknown>): Promise<T | KitsuError> {
+    return await this._request<T>(url, 'PATCH', body)
   }
 
   async _refresh () {
-    try {
-      const data = await this._request(
-        ENDPOINTS.API_OAUTH,
-        'POST',
-        {
-          grant_type: 'refresh_token',
-          refresh_token: this.auth.value?.refresh_token
-        }
-      )
-      this.viewer.value = data
-      await this._user()
-    } catch (error) {
-      this.viewer.value = undefined
+    const data = await this._post<OAuth>(
+      ENDPOINTS.API_OAUTH,
+      {
+        grant_type: 'refresh_token',
+        refresh_token: this.auth.value?.refresh_token
+      }
+    )
+    if ('error' in data) {
+      this.auth.value = undefined
+    } else {
+      this.auth.value = data
     }
   }
 
-  async _login (username: string, password: string) {
-    const data = await this._request(
+  async login (username: string, password: string) {
+    const data = await this._request<OAuth>(
       ENDPOINTS.API_OAUTH,
       'POST',
       {
@@ -71,125 +190,276 @@ export default new class KitsuSync {
       }
     )
 
-    this.viewer.value = data
-    await this._user()
+    if ('error' in data) {
+      this.auth.value = undefined
+    } else {
+      this.auth.value = data
+    }
+  }
+
+  logout () {
+    localStorage.removeItem('kitsuViewer')
+    localStorage.removeItem('kitsuAuth')
+    native.restart()
   }
 
   async _user () {
-    const data = await this._request(
+    const res = await this._get<Res<User>>(
       ENDPOINTS.API_USER_FETCH,
-      'GET',
-      { 'filter[self]': true }
-    )
-
-    const [user] = data
-
-    return user.id
-  }
-
-  async _getEntry (id: number) {
-    const data = await this._request(
-      ENDPOINTS.API_USER_LIBRARY,
-      'GET',
       {
-        'filter[animeId]': id,
-        'filter[userId]': this.viewer.value?.id,
-        'filter[kind]': 'anime'
+        'filter[self]': true,
+        include: 'favorites.item,libraryEntries.anime,libraryEntries.anime.mappings',
+        'fields[users]': 'name,about,avatar,coverImage,createdAt',
+        'fields[anime]': 'status,episodeCount,mappings',
+        'fields[mappings]': 'externalSite,externalId',
+        'fields[libraryEntries]': 'anime,progress,status,reconsumeCount,reconsuming,rating'
       }
     )
 
-    const [anime] = data.data
+    if ('error' in res || !res.data[0]) return
 
-    return anime
+    this._entriesToML(res)
+
+    const { id, attributes } = res.data[0]
+
+    this.viewer.value = {
+      id: Number(id),
+      name: attributes.name ?? '',
+      about: attributes.about ?? '',
+      avatar: {
+        large: attributes.avatar?.original ?? null
+      },
+      bannerImage: attributes.coverImage?.original ?? null,
+      createdAt: +new Date(attributes.createdAt),
+      isFollowing: false,
+      isFollower: false,
+      donatorBadge: null,
+      options: null,
+      statistics: null
+    }
   }
 
-  async _addEntry (id: number, attributes: Record<string, unknown>) {
-    const data = await this._request(
-      ENDPOINTS.API_USER_LIBRARY,
-      'POST',
+  _kitsuEntryToAl (entry: Resource<KEntry>): ResultOf<typeof FullMediaList> {
+    return {
+      id: Number(entry.id),
+      status: entry.attributes.reconsuming ? 'REPEATING' : entry.attributes.status ? KITSU_TO_AL_STATUS[entry.attributes.status] : null,
+      progress: entry.attributes.progress ?? 0,
+      score: Number(entry.attributes.rating) || 0,
+      repeat: entry.attributes.reconsumeCount ?? 0,
+      customLists: null
+    }
+  }
+
+  _entriesToML (res: Res<KEntry | User, Anime | Mapping | KEntry | Fav>) {
+    const entryMap = this.userlist.value
+
+    const { included } = res
+
+    const relations = {
+      anime: new Map<string, Resource<Anime>>(),
+      mappings: new Map<string, Resource<Mapping>>(),
+      favorites: new Map<string, Resource<Fav>>()
+    }
+
+    const entries: Array<Resource<KEntry>> = []
+
+    if (res.data[0]?.type === 'libraryEntries') {
+      entries.push(...res.data as Array<Resource<KEntry>>)
+    }
+
+    for (const entry of included ?? []) {
+      if (entry.type === 'anime') {
+        relations.anime.set(entry.id, entry as Resource<Anime>)
+      } else if (entry.type === 'mappings') {
+        const e = entry as Resource<Mapping>
+        if (e.attributes.externalSite !== 'anilist/anime') continue
+        relations.mappings.set(entry.id, entry as Resource<Mapping>)
+      } else if (entry.type === 'favorites') {
+        relations.favorites.set(entry.id, entry as Resource<Fav>)
+      } else {
+        entries.push(entry as Resource<KEntry>)
+      }
+    }
+
+    for (const entry of entries) {
+      const animeRes = Array.isArray(entry.relationships?.anime?.data) ? entry.relationships.anime.data[0] : entry.relationships?.anime?.data
+      const anime = relations.anime.get(animeRes?.id ?? '')
+      const ids = Array.isArray(anime?.relationships?.mappings?.data) ? anime.relationships.mappings.data : [anime?.relationships?.mappings?.data]
+      const anilistId = ids.map(i => i && relations.mappings.get(i.id)).filter(i => i)[0]?.attributes.externalId
+
+      if (!anilistId || !animeRes) continue
+      this.kitsuToAL[animeRes.id] = anilistId
+      this.ALToKitsu[anilistId] = animeRes.id
+      entryMap[anilistId] = this._kitsuEntryToAl(entry)
+    }
+
+    for (const [id, fav] of relations.favorites.entries()) {
+      const data = fav.relationships!.item!.data as { id: string }
+      const animeId = data.id
+      this.favorites.value[animeId] = id
+      this._getAlId(+animeId)
+    }
+
+    this.userlist.value = entryMap
+  }
+
+  isFav (alID: number) {
+    const kitsuId = this.ALToKitsu[alID.toString()]
+    if (!kitsuId) return false
+    return !!this.favorites.value[kitsuId]
+  }
+
+  async _makeFavourite (kitsuAnimeId: string) {
+    const data = await this._post<ResSingle<Fav>>(
+      ENDPOINTS.API_FAVOURITES,
       {
         data: {
-          attributes: {
-            status: 'planned'
-          },
           relationships: {
-            anime: {
-              data: {
-                id,
-                type: 'anime'
-              }
-            },
-            user: {
-              data: {
-                id: this.viewer.value?.id,
-                type: 'users'
-              }
-            }
+            user: { data: { type: 'users', id: this.viewer.value?.id.toString() ?? '' } },
+            item: { data: { type: 'anime', id: kitsuAnimeId } }
+          },
+          type: 'favorites'
+        }
+      }
+    )
+
+    if ('error' in data) return
+
+    this.favorites.value[kitsuAnimeId] = data.data.id
+  }
+
+  async _addEntry (id: string, attributes: Omit<KEntry, 'createdAt' | 'updatedAt'>, alId: number) {
+    const data = await this._post<ResSingle<KEntry>>(
+      ENDPOINTS.API_USER_LIBRARY,
+      {
+        data: {
+          attributes,
+          relationships: {
+            anime: { data: { id, type: 'anime' } },
+            user: { data: { type: 'users', id: this.viewer.value?.id.toString() ?? '' } }
           },
           type: 'library-entries'
         }
       }
     )
 
-    return data
+    if ('error' in data) return
+
+    this.userlist.value[alId] = this._kitsuEntryToAl(data.data)
   }
 
-  async _updateEntry (id: number, attributes: Record<string, unknown>) {
-    const data = await this._request(
+  async _updateEntry (id: number, attributes: Omit<KEntry, 'createdAt' | 'updatedAt'>, alId: number) {
+    const data = await this._patch<ResSingle<KEntry>>(
       `${ENDPOINTS.API_USER_LIBRARY}/${id}`,
-      'PATCH', {
-        data: {
-          id,
-          attributes,
-          type: 'library-entries'
-        }
+      {
+        data: { id, attributes, type: 'library-entries' }
       }
     )
-    return data
+
+    if ('error' in data) return
+
+    this.userlist.value[alId] = this._kitsuEntryToAl(data.data)
   }
 
-  async _deleteEntry (id: number) {
-    this._request(
-      `${ENDPOINTS.API_USER_LIBRARY}/${id}`,
-      'DELETE'
-    )
+  async _getKitsuId (alId: number) {
+    const kitsuId = this.ALToKitsu[alId.toString()]
+    if (kitsuId) return kitsuId
+    const res = await mappings(alId)
+    if (!res?.kitsu_id) return
+    this.ALToKitsu[alId.toString()] = res.kitsu_id.toString()
+    return res.kitsu_id.toString()
   }
 
-  hasAuth = readable(false)
+  async _getAlId (kitsuId: number) {
+    const alId = this.kitsuToAL[kitsuId]
+    if (alId) return alId
+    const res = await mappingsByKitsuId(kitsuId)
+    if (!res?.anilist_id) return
+    this.kitsuToAL[kitsuId] = res.anilist_id.toString()
+    return res.anilist_id.toString()
+  }
+
+  hasAuth = derived(this.viewer, (viewer) => {
+    return viewer !== undefined && !!viewer.id
+  })
 
   id () {
-    return -1
+    return this.viewer.value?.id ?? -1
   }
 
-  profile () {
+  profile (): ResultOf<typeof UserFrag> | undefined {
+    return this.viewer.value
   }
 
   // QUERIES/MUTATIONS
 
   schedule () {
+    const ids = Object.keys(this.userlist.value).map(id => parseInt(id))
+    return client.schedule(ids.length ? ids : undefined)
   }
 
-  toggleFav (id: number) {
+  async toggleFav (id: number) {
+    const kitsuId = await this._getKitsuId(id)
+    if (!kitsuId) {
+      toast.error('Kitsu Sync', {
+        description: 'Could not find Kitsu ID for this media.'
+      })
+      return
+    }
+    const favs = this.favorites.value
+    const favId = favs[kitsuId]
+    if (!favId) {
+      await this._makeFavourite(kitsuId)
+    } else {
+      const res = await this._delete<undefined>(`${ENDPOINTS.API_FAVOURITES}/${favId}`)
+
+      if (res && 'error' in res) return
+
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete this.favorites.value[kitsuId]
+    }
   }
 
-  delete (id: number) {
+  async deleteEntry (media: Media) {
+    const id = this.userlist.value[media.id]?.id
+    if (!id) return
+    const res = await this._delete<undefined>(`${ENDPOINTS.API_USER_LIBRARY}/${id}`)
+    if (res && 'error' in res) return
+
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete this.userlist.value[media.id]
   }
 
   following (id: number) {
+    // TODO
   }
 
-  planningIDs () {
-  }
+  async entry (variables: VariablesOf<typeof Entry>) {
+    const targetMediaId = variables.id
 
-  continueIDs () {
-  }
+    const kitsuEntry = this.userlist.value[targetMediaId]
 
-  sequelIDs () {
-  }
+    const kitsuEntryVariables = {
+      status: AL_TO_KITSU_STATUS[variables.status!],
+      progress: variables.progress ?? undefined,
+      rating: (variables.score ?? 0) < 2 ? undefined : variables.score!.toString(),
+      reconsumeCount: variables.repeat ?? undefined,
+      reconsuming: variables.status === 'REPEATING'
+    }
 
-  watch (media: Media, progress: number) {
-  }
+    if (kitsuEntry) {
+      await this._updateEntry(kitsuEntry.id, kitsuEntryVariables, targetMediaId)
+    } else {
+      const kitsuAnimeId = await this._getKitsuId(targetMediaId)
 
-  entry (variables: VariablesOf<typeof Entry>) {
+      if (!kitsuAnimeId) {
+        toast.error('Kitsu Sync', {
+          description: 'Could not find Kitsu ID for this media.'
+        })
+        return
+      }
+
+      await this._addEntry(kitsuAnimeId, kitsuEntryVariables, targetMediaId)
+    }
   }
 }()

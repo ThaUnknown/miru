@@ -63,7 +63,7 @@
   {#if hasAuth}
     {@const viewer = client.profile()}
     <Avatar.Root class='size-6 rounded-md'>
-      <Avatar.Image src={viewer?.avatar?.medium ?? ''} alt={viewer?.name} />
+      <Avatar.Image src={viewer?.avatar?.large ?? ''} alt={viewer?.name} />
       <Avatar.Fallback>{viewer?.name}</Avatar.Fallback>
     </Avatar.Root>
   {:else}

@@ -1,19 +1,21 @@
 import { readable } from 'simple-store-svelte'
-import { get } from 'svelte/store'
+import { derived, get } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
 
 import { client, episodes, type Media } from '../anilist'
 
+import kitsu from './kitsu'
 import local from './local'
 
-import type { Entry } from '../anilist/queries'
-import type { VariablesOf } from 'gql.tada'
+import type { Entry, UserFrag } from '../anilist/queries'
+import type { ResultOf, VariablesOf } from 'gql.tada'
 
 export default new class AuthAggregator {
   hasAuth = readable(this.checkAuth(), set => {
     // add other subscriptions here for MAL, kitsu, tvdb, etc
     const unsub = [
-      client.viewer.subscribe(() => set(this.checkAuth()))
+      client.viewer.subscribe(() => set(this.checkAuth())),
+      kitsu.viewer.subscribe(() => set(this.checkAuth()))
     ]
 
     return () => unsub.forEach(fn => fn())
@@ -26,60 +28,81 @@ export default new class AuthAggregator {
     return !!client.viewer.value?.viewer?.id
   }
 
+  kitsu () {
+    return !!kitsu.viewer.value?.id
+  }
+
   checkAuth () {
-    return this.anilist()
+    return this.anilist() || this.kitsu()
   }
 
   id () {
     if (this.anilist()) return client.viewer.value!.viewer?.id
+    if (this.kitsu()) return kitsu.viewer.value?.id
 
     return -1
   }
 
-  profile () {
-    if (this.anilist()) return client.viewer.value?.viewer
+  profile (): ResultOf<typeof UserFrag> | undefined {
+    if (this.anilist()) return client.viewer.value?.viewer ?? undefined
+    if (this.kitsu()) return kitsu.viewer.value
+  }
+
+  mediaListEntry (media: Pick<Media, 'mediaListEntry' | 'id'>) {
+    if (this.anilist()) return media.mediaListEntry
+    if (this.kitsu()) return kitsu.userlist.value[media.id]
+
+    return local.get(media.id)?.mediaListEntry
+  }
+
+  isFavourite (media: Pick<Media, 'isFavourite' | 'id'>) {
+    if (this.anilist()) return media.isFavourite
+    if (this.kitsu()) return kitsu.isFav(media.id)
+
+    return local.get(media.id)?.isFavourite
   }
 
   // QUERIES/MUTATIONS
 
   schedule () {
     if (this.anilist()) return client.schedule()
+    if (this.kitsu()) return kitsu.schedule()
 
     return local.schedule()
   }
 
   toggleFav (id: number) {
-    if (this.anilist()) client.toggleFav(id)
-    local.toggleFav(id)
-  }
-
-  delete (id: number) {
-    if (this.anilist()) client.deleteEntry(id)
-
-    local.deleteEntry(id)
+    return Promise.allSettled([
+      this.anilist() && client.toggleFav(id),
+      this.kitsu() && kitsu.toggleFav(id),
+      local.toggleFav(id)
+    ])
   }
 
   following (id: number) {
     if (this.anilist()) return client.following(id)
+    if (this.kitsu()) return kitsu.following(id)
+    return null
   }
 
-  planningIDs () {
-    if (this.anilist()) return client.planningIDs
+  planningIDs = derived([client.planningIDs, kitsu.planningIDs, local.planningIDs], ([$client, $kitsu, $local]) => {
+    if (this.anilist()) return $client
+    if (this.kitsu()) return $kitsu
+    if ($local.length) return $local
+    return null
+  })
 
-    return client.planningIDs
-  }
+  continueIDs = derived([client.continueIDs, kitsu.continueIDs, local.continueIDs], ([$client, $kitsu, $local]) => {
+    if (this.anilist()) return $client
+    if (this.kitsu()) return $kitsu
+    if ($local.length) return $local
+    return null
+  })
 
-  continueIDs () {
-    if (this.anilist()) return client.continueIDs
-
-    return client.continueIDs
-  }
-
-  sequelIDs () {
-    if (this.anilist()) return client.sequelIDs
-
-    return client.sequelIDs
-  }
+  sequelIDs = derived([client.sequelIDs], ([$client]) => {
+    if (this.anilist()) return $client
+    return null
+  })
 
   watch (media: Media, progress: number) {
     // TODO: auto re-watch status
@@ -102,6 +125,16 @@ export default new class AuthAggregator {
     this.entry({ id: media.id, progress, repeat, status, lists })
   }
 
+  delete (media: Media) {
+    const syncSettings = get(this.syncSettings)
+
+    return Promise.allSettled([
+      this.anilist() && syncSettings.al && client.deleteEntry(media),
+      this.kitsu() && syncSettings.kitsu && kitsu.deleteEntry(media),
+      syncSettings.local && local.deleteEntry(media)
+    ])
+  }
+
   entry (variables: VariablesOf<typeof Entry>) {
     const syncSettings = get(this.syncSettings)
     variables.lists ??= []
@@ -109,7 +142,10 @@ export default new class AuthAggregator {
       variables.lists.push('Watched using Hayase')
     }
 
-    if (this.anilist() && syncSettings.al) client.entry(variables)
-    if (syncSettings.local) local.entry(variables)
+    return Promise.allSettled([
+      this.anilist() && syncSettings.al && client.entry(variables),
+      this.kitsu() && syncSettings.kitsu && kitsu.entry(variables),
+      syncSettings.local && local.entry(variables)
+    ])
   }
 }()

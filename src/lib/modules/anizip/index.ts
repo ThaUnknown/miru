@@ -12,3 +12,7 @@ export async function episodes (id: number, _fetch = fetch) {
 export async function mappings (id: number, _fetch = fetch) {
   return await safefetch<MappingsResponse>(_fetch, `https://hayase.ani.zip/v1/mappings?anilist_id=${id}`)
 }
+
+export async function mappingsByKitsuId (kitsuId: number, _fetch = fetch) {
+  return await safefetch<MappingsResponse>(_fetch, `https://hayase.ani.zip/v1/mappings?kitsu_id=${kitsuId}`)
+}

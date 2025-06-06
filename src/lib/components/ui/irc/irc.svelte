@@ -15,7 +15,7 @@
   let ident: { nick: string, id: string, pfpid: string, type: 'al' | 'guest' }
 
   if (viewer?.viewer) {
-    const url = viewer.viewer.avatar?.medium ?? ''
+    const url = viewer.viewer.avatar?.large ?? ''
     const id = '' + viewer.viewer.id
     const pfpid = url.slice(url.lastIndexOf('/') + 2 + id.length + 1)
     ident = { nick: viewer.viewer.name, id, pfpid, type: 'al' }

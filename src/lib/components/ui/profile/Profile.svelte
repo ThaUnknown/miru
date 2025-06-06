@@ -18,7 +18,7 @@
   export let user: ResultOf<typeof UserFrag>
 
   $: name = user.name
-  $: avatar = user.avatar?.medium ?? ''
+  $: avatar = user.avatar?.large ?? ''
   $: banner = user.bannerImage ?? ''
   $: bubble = user.donatorBadge
 </script>

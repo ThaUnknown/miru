@@ -11,6 +11,7 @@
 
   import { goto } from '$app/navigation'
   import { coverMedium, format, title } from '$lib/modules/anilist/util'
+  import { list } from '$lib/modules/auth'
   import { hover } from '$lib/modules/navigate'
 
   export let media: Media
@@ -23,6 +24,8 @@
   function onhover (state: boolean) {
     hidden = !state
   }
+
+  $: status = list(media)
 </script>
 
 <div class='text-white p-4 cursor-pointer shrink-0 relative pointer-events-auto' class:z-40={!hidden} use:hover={[onclick, onhover]}>
@@ -34,8 +37,8 @@
       <Load src={coverMedium(media)} alt='cover' class='object-cover w-full h-full rounded' color={media.coverImage?.color} />
     </div>
     <div class='pt-3 font-black text-[.8rem] line-clamp-2'>
-      {#if media.mediaListEntry?.status}
-        <StatusDot variant={media.mediaListEntry.status} />
+      {#if status}
+        <StatusDot variant={status} />
       {/if}
       {title(media)}
     </div>

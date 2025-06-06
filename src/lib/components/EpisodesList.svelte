@@ -10,6 +10,7 @@
   import ChevronLeft from 'lucide-svelte/icons/chevron-left'
   import ChevronRight from 'lucide-svelte/icons/chevron-right'
   import Play from 'lucide-svelte/icons/play'
+  import { readable } from 'svelte/store'
 
   import Pagination from './Pagination.svelte'
   import { Button } from './ui/button'
@@ -71,7 +72,7 @@
     searchStore.set({ media, episode })
   }
 
-  export let following = authAggregator.following(media.id)
+  export let following = authAggregator.following(media.id) ?? readable(null)
 
   $: followerEntries = $following?.data?.Page?.mediaList?.filter(e => e?.user?.id !== authAggregator.id()) ?? []
 </script>

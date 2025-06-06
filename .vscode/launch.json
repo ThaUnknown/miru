@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Chromium",
+      "port": 8412,
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:7344/",
+      "webRoot": "${workspaceFolder}/src",
+      "timeout": 60000,
+      "presentation": {
+        "hidden": true
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Attach",
+      "configurations": [
+        "Launch Chromium"
+      ],
+      "presentation": {
+        "order": 1
+      }
+    }
+  ]
+}
