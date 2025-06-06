@@ -2,7 +2,7 @@
   import type { client } from '$lib/modules/anilist'
   import type { TraceAnime } from '$lib/utils'
 
-  import { EpisodeCard, SkeletonCard } from '$lib/components/ui/cards'
+  import { EpisodeCard, SkeletonTraceCard } from '$lib/components/ui/cards'
 
   export let query: ReturnType<typeof client.search>
 
@@ -13,7 +13,7 @@
 
 {#if $query.fetching}
   {#each Array.from({ length: 50 }) as _, i (i)}
-    <SkeletonCard />
+    <SkeletonTraceCard />
   {/each}
 {:else if $query.error}
   <div class='p-5 flex items-center justify-center w-full h-80'>
@@ -50,11 +50,11 @@
     {/each}
   {:else}
     {#each Array.from({ length: 50 }) as _, i (i)}
-      <SkeletonCard />
+      <SkeletonTraceCard />
     {/each}
   {/if}
 {:else}
   {#each Array.from({ length: 50 }) as _, i (i)}
-    <SkeletonCard animate={false} />
+    <SkeletonTraceCard animate={false} />
   {/each}
 {/if}
