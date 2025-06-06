@@ -69,6 +69,8 @@
 <script lang='ts'>
   export let clickable = false
 
+  export let pointerOver: (bind: Bind | undefined) => void
+
   let dragged: HTMLDivElement | null = null
   function draggable (node: HTMLDivElement, code: KeyCode) {
     const ctrl = new AbortController()
@@ -113,7 +115,7 @@
   }
 </script>
 
-<div class='svelte-keybinds'>
+<div class='svelte-keybinds' on:pointerleave>
   {#each Object.values(keys) as key (key.name)}
     {@const { size, dark, name } = key}
     <div
@@ -123,6 +125,7 @@
       class='w-{size ?? 50}'
       {...$$restProps}
       use:draggable={name}
+      on:pointerover={() => pointerOver($binds[name])}
       on:click={(e) => clickable && runBind(e, name)}>
       <slot prop={$binds[name]} />
     </div>

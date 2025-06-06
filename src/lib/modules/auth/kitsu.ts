@@ -118,9 +118,6 @@ export default new class KitsuSync {
         body: body ? JSON.stringify(body) : undefined
       })
 
-      if (!res.ok) {
-        throw new Error(`Kitsu API Error: ${res.status} ${res.statusText}`)
-      }
       if (method === 'DELETE') return undefined as T
 
       const json = await res.json() as object | KitsuError
@@ -128,6 +125,11 @@ export default new class KitsuSync {
       if ('error' in json) {
         toast.error('Kitsu Error', { description: json.error_description })
         console.error(json)
+      } else if ('errors' in json) {
+        for (const error of json.errors) {
+          toast.error('Kitsu Error', { description: error.detail })
+          console.error(error)
+        }
       }
 
       return json as T | KitsuError
@@ -172,10 +174,10 @@ export default new class KitsuSync {
         refresh_token: this.auth.value?.refresh_token
       }
     )
-    if ('error' in data) {
-      this.auth.value = undefined
-    } else {
+    if ('access_token' in data) {
       this.auth.value = data
+    } else {
+      this.auth.value = undefined
     }
   }
 
@@ -190,10 +192,10 @@ export default new class KitsuSync {
       }
     )
 
-    if ('error' in data) {
-      this.auth.value = undefined
-    } else {
+    if ('access_token' in data) {
       this.auth.value = data
+    } else {
+      this.auth.value = undefined
     }
   }
 
@@ -216,7 +218,7 @@ export default new class KitsuSync {
       }
     )
 
-    if ('error' in res || !res.data[0]) return
+    if ('error' in res || 'errors' in res || !res.data[0]) return
 
     this._entriesToML(res)
 
@@ -323,7 +325,7 @@ export default new class KitsuSync {
       }
     )
 
-    if ('error' in data) return
+    if (!('data' in data)) return
 
     this.favorites.value[kitsuAnimeId] = data.data.id
   }
@@ -343,7 +345,7 @@ export default new class KitsuSync {
       }
     )
 
-    if ('error' in data) return
+    if (!('data' in data)) return
 
     this.userlist.value[alId] = this._kitsuEntryToAl(data.data)
   }
@@ -356,11 +358,12 @@ export default new class KitsuSync {
       }
     )
 
-    if ('error' in data) return
+    if (!('data' in data)) return
 
     this.userlist.value[alId] = this._kitsuEntryToAl(data.data)
   }
 
+  // TODO: use kitsu's own API for this instead?
   async _getKitsuId (alId: number) {
     const kitsuId = this.ALToKitsu[alId.toString()]
     if (kitsuId) return kitsuId
@@ -431,7 +434,17 @@ export default new class KitsuSync {
   }
 
   following (id: number) {
-    // TODO
+    return null
+    // TODO: this doesnt work
+    // this._get<Res<KEntry, Anime | Mapping>>(
+    //   ENDPOINTS.API_USER_LIBRARY,
+    //   {
+    //     'filter[following]': true,
+    //     'filter[user_id]': this.viewer.value?.id,
+    //     'filter[animeId]': 42765,
+    //     include: 'anime.mappings,user'
+    //   }
+    // )
   }
 
   async entry (variables: VariablesOf<typeof Entry>) {

@@ -70,6 +70,8 @@
   let fullscreenElement: HTMLElement | null = null
 
   export let id = ''
+
+  let keybindDesc: unknown = null
 </script>
 
 <Dialog.Root portal={wrapper} bind:open>
@@ -82,17 +84,17 @@
     <div on:pointerdown|self={close} class='size-full flex justify-center items-center flex-col overflow-y-scroll text-[6px] lg:text-xs' use:dragScroll>
       {#if showKeybinds}
         <div class='bg-black py-3 px-4 rounded-md text-sm lg:text-lg font-bold mb-4'>
-          Drag and drop binds to change them
+          {keybindDesc ?? 'Drag and drop binds to change them'}
         </div>
-        <Keybinds let:prop={item} autosave={true} clickable={true}>
+        <Keybinds let:prop={item} autosave={true} clickable={true} on:pointerleave={() => { keybindDesc = null }} pointerOver={item => { keybindDesc = item?.desc }}>
           {#if item?.type}
-            <div class='size-full flex justify-center p-1.5 lg:p-3' title={item.desc}>
+            <div class='size-full flex justify-center p-1.5 lg:p-3'>
               {#if item.icon}
                 <svelte:component this={item.icon} size='2rem' class='h-full' fill={item.id === 'play_arrow' ? 'currentColor' : 'none'} />
               {/if}
             </div>
           {:else}
-            <div class='size-full content-center text-center lg:text-lg' title={item?.desc}>{item?.id ?? ''}</div>
+            <div class='size-full content-center text-center lg:text-lg'>{item?.id ?? ''}</div>
           {/if}
         </Keybinds>
       {:else}

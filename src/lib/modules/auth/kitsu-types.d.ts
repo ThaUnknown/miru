@@ -7,9 +7,16 @@ export interface OAuth {
   token_type: string
 }
 
-export interface KitsuError {
+export type KitsuError = {
   error: string
   error_description: string
+} | {
+  errors: Array<{
+    code: string
+    status: string
+    title: string
+    detail: string
+  }>
 }
 
 export interface Resource<T> {

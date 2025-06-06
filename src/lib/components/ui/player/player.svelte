@@ -4,6 +4,8 @@
   import ChevronDown from 'lucide-svelte/icons/chevron-down'
   import ChevronUp from 'lucide-svelte/icons/chevron-up'
   import Contrast from 'lucide-svelte/icons/contrast'
+  import DecimalsArrowLeft from 'lucide-svelte/icons/decimals-arrow-left'
+  import DecimalsArrowRight from 'lucide-svelte/icons/decimals-arrow-right'
   import FastForward from 'lucide-svelte/icons/fast-forward'
   import List from 'lucide-svelte/icons/list'
   import Maximize from 'lucide-svelte/icons/maximize'
@@ -622,6 +624,20 @@
       id: 'schedule',
       type: 'icon',
       desc: 'Reset Playback Rate'
+    },
+    Semicolon: {
+      fn: () => { subtitleDelay -= 0.1 },
+      icon: DecimalsArrowLeft,
+      type: 'icon',
+      id: 'subtitle_delay_minus',
+      desc: 'Decrease Subtitle Delay'
+    },
+    Quote: {
+      fn: () => { subtitleDelay += 0.1 },
+      icon: DecimalsArrowRight,
+      type: 'icon',
+      id: 'subtitle_delay_plus',
+      desc: 'Increase Subtitle Delay'
     }
   })
 
@@ -736,6 +752,7 @@
         Resolution: {stats.resolution}<br />
         Buffer health: {stats.buffer}<br />
         Playback speed: x{stats.speed?.toFixed(1)}<br />
+        Subtitle delay: {subtitleDelay} sec
       </div>
     {/if}
     <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay
