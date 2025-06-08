@@ -51,7 +51,7 @@ type IRCEvents = {
 }
 
 function ircUserToChatUser ({ id, pfpid, type, nick }: IRCChatUser): ChatUser {
-  return { id, avatar: { medium: getPFP({ id, pfpid, type }) }, name: nick, mediaListOptions: null }
+  return { id, avatar: { large: getPFP({ id, pfpid, type }) }, name: nick, mediaListOptions: null }
 }
 
 function ircIdentToChatUser (user: IRCUser): ChatUser {

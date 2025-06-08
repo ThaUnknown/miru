@@ -3,7 +3,7 @@
 
   type $$Props = ContextMenuPrimitive.RadioGroupProps
 
-  export let value: $$Props['value']
+  export let value: $$Props['value'] = undefined
 </script>
 
 <ContextMenuPrimitive.RadioGroup {...$$restProps} bind:value>

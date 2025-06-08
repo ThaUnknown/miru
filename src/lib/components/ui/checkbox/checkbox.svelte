@@ -8,7 +8,7 @@
   type $$Props = CheckboxPrimitive.Props
   type $$Events = CheckboxPrimitive.Events
 
-  let className: $$Props['class']
+  let className: $$Props['class'] = undefined
   export let checked: $$Props['checked'] = false
   export { className as class }
 </script>

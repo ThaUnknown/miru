@@ -7,9 +7,9 @@
   type $$Props = ContextMenuPrimitive.CheckboxItemProps
   type $$Events = ContextMenuPrimitive.CheckboxItemEvents
 
-  let className: $$Props['class']
+  let className: $$Props['class'] = undefined
   export { className as class }
-  export let checked: $$Props['checked']
+  export let checked: $$Props['checked'] = false
 </script>
 
 <ContextMenuPrimitive.CheckboxItem

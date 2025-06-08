@@ -1,4 +1,3 @@
-// @ts-expect-error no types for this, that's fine
 import { writeFileSync } from 'node:fs'
 
 import { getIntrospectedSchema, minifyIntrospectionQuery } from '@urql/introspection'

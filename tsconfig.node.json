@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "esnext",
+    "lib": [
+      "esnext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "allowJs": true,
+    "checkJs": true,
+    "composite": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "emitDeclarationOnly": false,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "noUncheckedIndexedAccess": true,
+    "alwaysStrict": true,
+    "strict": true,
+    "outDir": "./dist",
+    "maxNodeModuleJsDepth": 3,
+    "allowSyntheticDefaultImports": true
+  },
+  "typeAcquisition": {
+    "enable": false
+  },
+  "include": [
+    "eslint.config.js",
+    "vite.config.ts",
+    "svelte.config.js",
+    "tailwind.config.ts",
+    "generateALIntrospection.ts",
+    "src/types/**/*.d.ts",
+    "postcss.config.js",
+    "tsconfig.web.json"
+  ],
+  "exclude": [
+    "../node_modules/**"
+  ]
+}

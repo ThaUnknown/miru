@@ -7,7 +7,7 @@
   type $$Props = ContextMenuPrimitive.RadioItemProps
   type $$Events = ContextMenuPrimitive.RadioItemEvents
 
-  let className: $$Props['class']
+  let className: $$Props['class'] = undefined
   export let value: $$Props['value']
   export { className as class }
 </script>

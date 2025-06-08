@@ -10,7 +10,7 @@ import Title from './drawer-title.svelte'
 import Root from './drawer.svelte'
 
 const Trigger = DrawerPrimitive.Trigger
-const Portal = DrawerPrimitive.Portal
+const Portal: typeof DrawerPrimitive.Portal = DrawerPrimitive.Portal
 const Close = DrawerPrimitive.Close
 
 export {

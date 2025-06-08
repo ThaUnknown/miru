@@ -8,8 +8,8 @@
   }
   type $$Events = ContextMenuPrimitive.ItemEvents
 
-  let className: $$Props['class']
-  export let inset: $$Props['inset']
+  let className: $$Props['class'] = undefined
+  export let inset: $$Props['inset'] = undefined
   export { className as class }
 </script>
 

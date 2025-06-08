@@ -5,9 +5,9 @@
 
   type $$Props = ContextMenuPrimitive.ContentProps
 
-  let className: $$Props['class']
+  let className: $$Props['class'] = undefined
   export let transition: $$Props['transition'] = flyAndScale
-  export let transitionConfig: $$Props['transitionConfig']
+  export let transitionConfig: $$Props['transitionConfig'] = undefined
   export { className as class }
 </script>
 

@@ -10,8 +10,19 @@ import Worker from './worker?worker'
 import type extensionLoader from './worker'
 import type { ExtensionConfig } from 'hayase-extensions'
 
-export const saved = persisted<Record<string, ExtensionConfig>>('extensions', {})
-export const options = persisted<Record<string, {options: Record<string, string | number | boolean | undefined>, enabled: boolean}>>('extensionoptions', {})
+type SavedExtensions = Record<ExtensionConfig['id'], ExtensionConfig>
+
+type ExtensionsOptions = {
+  [K in keyof SavedExtensions]: {
+    // this is bad, but w/e
+    options: Record<string, never>
+    enabled: boolean
+  }
+}
+
+// Usage:
+export const saved = persisted<SavedExtensions>('extensions', {})
+export const options = persisted<ExtensionsOptions>('extensionoptions', {})
 
 // `http${string}` | `gh:${string}` | `npm:${string}`
 // http[s]://[url] -> http[s]://[url]

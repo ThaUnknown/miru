@@ -5,7 +5,7 @@
 
   type $$Props = ContextMenuPrimitive.SeparatorProps
 
-  let className: $$Props['class']
+  let className: $$Props['class'] = undefined
   export { className as class }
 </script>
 
