@@ -492,7 +492,10 @@
       desc: 'Toggle Stats'
     },
     Space: {
-      fn: () => playPause(),
+      fn: (e) => {
+        e.preventDefault()
+        playPause()
+      },
       id: 'play_arrow',
       icon: Play,
       type: 'icon',

@@ -6,7 +6,7 @@
   import { keys, layout, type KeyCode } from './maps.ts'
 
   type Bind <T extends Record<string, unknown> = Record<string, unknown>> = T & {
-    fn: () => void
+    fn: (e: MouseEvent | KeyboardEvent) => void
     id: string
     code?: KeyCode
   }
@@ -27,7 +27,7 @@
   async function runBind (e: MouseEvent | KeyboardEvent, code: KeyCode) {
     if ('repeat' in e && e.repeat) return
     const kbn = get(binds)
-    if (await cnd(code)) kbn[layout[code] ?? code]?.fn()
+    if (await cnd(code)) kbn[layout[code] ?? code]?.fn(e)
   }
 
   export function loadWithDefaults (defaults: Partial<Record<string, Bind>>) {
