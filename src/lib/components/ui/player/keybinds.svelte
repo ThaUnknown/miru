@@ -13,7 +13,7 @@
 
   export const binds = persisted<Partial<Record<KeyCode, Bind>>>('thaunknown/svelte-keybinds', {})
 
-  const noop = async (_: KeyCode) => true
+  const noop = (_: KeyCode) => true
 
   let cnd = noop
 
@@ -22,12 +22,14 @@
     if (typeof fn === 'function') cnd = fn
   })
 
-  document.addEventListener('keydown', e => runBind(e, e.code as KeyCode))
+  document.addEventListener('keydown', e => runBind(e, e.code as KeyCode), {
+    capture: true
+  })
 
   async function runBind (e: MouseEvent | KeyboardEvent, code: KeyCode) {
     if ('repeat' in e && e.repeat) return
     const kbn = get(binds)
-    if (await cnd(code)) kbn[layout[code] ?? code]?.fn(e)
+    if (cnd(code)) kbn[layout[code] ?? code]?.fn(e)
   }
 
   export function loadWithDefaults (defaults: Partial<Record<string, Bind>>) {

@@ -494,6 +494,8 @@
     Space: {
       fn: (e) => {
         e.preventDefault()
+        e.stopImmediatePropagation()
+        e.stopPropagation()
         playPause()
       },
       id: 'play_arrow',
@@ -646,7 +648,6 @@
 
   const torrentstats = server.stats
 
-  // @ts-expect-error bad type infer
   $condition = () => !isMiniplayer
 
   let ff = false
