@@ -82,7 +82,7 @@
       {#each getPage(currentPage, episodeList) as { episode, image, title, summary, airingAt, airdate, filler, length } (episode)}
         {@const watched = _progress >= episode}
         {@const target = _progress + 1 === episode}
-        <div class={!target ? 'px-3' : 'contents'}>
+        <div class={!target ? 'px-3 w-full' : 'contents'}>
           <div use:click={() => play(episode)}
             class={cn(
               'select:scale-[1.05] select:shadow-lg scale-100 transition-[transform,box-shadow] duration-200 shrink-0 ease-out focus-visible:ring-ring focus-visible:ring-1 rounded-md bg-neutral-950 text-secondary-foreground select:bg-neutral-900 flex w-full max-h-28 cursor-pointer relative overflow-hidden group',

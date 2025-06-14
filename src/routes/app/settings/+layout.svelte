@@ -4,6 +4,7 @@
   import { Separator } from '$lib/components/ui/separator'
   import native from '$lib/modules/native'
   import { dragScroll } from '$lib/modules/navigate'
+  import { highEntropyValues } from '$lib/utils'
 
   const items = [
     {
@@ -51,8 +52,8 @@
       <div class='mt-auto text-xs text-muted-foreground px-4 sm:px-2 py-5 flex flex-row lg:flex-col font-light gap-0.5 gap-x-4 flex-wrap'>
         <div>Interface v{version}</div>
         <div>Native {#await native.version() then version}{version}{/await}</div>
-        {#if 'userAgentData' in navigator}
-          {#await navigator.userAgentData.getHighEntropyValues(['architecture', 'platform', 'platformVersion']) then { architecture, platform, platformVersion }}
+        {#if highEntropyValues}
+          {#await highEntropyValues then { architecture, platform, platformVersion }}
             <div>{platform} {platformVersion} {architecture}</div>
           {:catch e}
             <div>Could not obtain device version</div>
