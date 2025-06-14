@@ -40,7 +40,7 @@
   import { Switch } from '$lib/components/ui/switch'
   import native from '$lib/modules/native'
   import { dragScroll } from '$lib/modules/navigate'
-  import { settings } from '$lib/modules/settings'
+  import { settings, SUPPORTS } from '$lib/modules/settings'
 
   const hasForwarding = persisted('torrent-port-forwarding', false)
 
@@ -80,6 +80,14 @@
   <SettingCard class='bg-transparent' let:id title='Forwarded Torrent Port' description='Forwarded port used for incoming torrent connections. 0 automatically finds an open unused port. Change this to a specific port if your VPN exposes only a specific port.'>
     <Input type='number' inputmode='numeric' pattern='[0-9]*' min='0' max='65536' bind:value={$settings.torrentPort} {id} class='w-32 shrink-0 bg-background' />
   </SettingCard>
+  {#if !SUPPORTS.isAndroid}
+    <SettingCard class='bg-transparent' let:id title='Use DNS Over HTTPS' description='Enables DNS Over HTTPS, useful if your ISP blocks certain domains.'>
+      <Switch {id} bind:checked={$settings.enableDoH} />
+    </SettingCard>
+    <SettingCard class='bg-transparent' let:id title='DNS Over HTTPS URL' description='What URL to use for querying DNS Over HTTPS.'>
+      <Input type='url' bind:value={$settings.doHURL} {id} class='w-80 shrink-0 bg-background' />
+    </SettingCard>
+  {/if}
 </div>
 
 <Footer step={1} {checks}>

@@ -26,7 +26,7 @@ export default {
   subtitleRenderHeight: SUPPORTS.isAndroid ? '720' : '0' as keyof typeof subtitleResolutions,
   subtitleLanguage: 'eng' as keyof typeof languageCodes,
   audioLanguage: 'jpn' as keyof typeof languageCodes,
-  enableDoH: true,
+  enableDoH: false,
   hideToTray: false,
   doHURL: 'https://cloudflare-dns.com/dns-query',
   disableSubtitleBlur: SUPPORTS.isAndroid,
