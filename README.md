@@ -40,7 +40,7 @@ It is meant to feel look, work and perform like a premium streaming service, but
 
 ## 🏆 Features
 
-### **Anime**
+### 🎞️ Anime Management
 
 * Effortlessly manage your anime list with support for AniList, Kitsu, ~~MAL~~, and local storage.
 * Automatically track watched episodes.
