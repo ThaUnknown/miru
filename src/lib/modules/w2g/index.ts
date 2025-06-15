@@ -115,6 +115,16 @@ export class W2GClient extends EventEmitter<{index: [number], player: [PlayerSta
     }
   }
 
+  _remotePlayerStateChanged (state: PlayerState) {
+    debug(`_remotePlayerStateChanged: ${this.player.paused} ${state.paused} ${this.player.time} ${state.time}`)
+    if (!state) return false
+    // allow for 1s of error
+    if (Math.abs(this.player.time - state.time) > 2 || this.player.paused !== state.paused) {
+      this.player = state
+      return true
+    }
+  }
+
   playerStateChanged (state: PlayerState) {
     debug(`playerStateChanged: ${JSON.stringify(state)}`)
     if (this._playerStateChanged(state)) this._sendToPeers(new Event('player', state))
@@ -178,7 +188,7 @@ export class W2GClient extends EventEmitter<{index: [number], player: [PlayerSta
       }
       case 'player': {
         if (data.payload?.time == null) break
-        if (this._playerStateChanged(data.payload)) this.emit('player', data.payload)
+        if (this._remotePlayerStateChanged(data.payload)) this.emit('player', data.payload)
         break
       }
       case 'message': {

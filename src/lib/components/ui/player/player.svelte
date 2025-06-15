@@ -688,11 +688,13 @@
     return { destroy: () => ctrl.abort() }
   }
 
-  $: $w2globby?.playerStateChanged({ paused, time: Math.floor(currentTime) })
-  $: $w2globby?.on('player', state => {
+  function updateState (state: { paused: boolean, time: number }) {
     currentTime = state.time
     paused = state.paused
-  })
+  }
+
+  $: $w2globby?.playerStateChanged({ paused, time: Math.floor(currentTime) })
+  $: $w2globby?.on('player', updateState)
 </script>
 
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
