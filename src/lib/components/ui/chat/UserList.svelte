@@ -18,7 +18,7 @@
   <div>
     {#each processed as [key, user] (key)}
       <div class='flex items-center pb-2'>
-        <img src={user.avatar?.large} alt='ProfilePicture' class='w-10 h-10 rounded-full p-1 mt-auto' loading='lazy' decoding='async' />
+        <img src={user.avatar?.large ?? 'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png'} alt='ProfilePicture' class='w-10 h-10 rounded-full p-1 mt-auto' loading='lazy' decoding='async' />
         <div class='text-md pl-2'>
           {user.name}
         </div>

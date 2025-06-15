@@ -12,3 +12,4 @@ export interface ChatMessage {
 
 export { default as UserList } from './UserList.svelte'
 export { default as Messages } from './Messages.svelte'
+export { default as MessageToast } from './MessageToast.svelte'

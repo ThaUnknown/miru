@@ -3,13 +3,15 @@ import { EventEmitter } from 'events'
 import Debug from 'debug'
 import P2PT, { type Peer } from 'p2pt'
 import { writable } from 'simple-store-svelte'
+import { toast } from 'svelte-sonner'
 
 import client from '../anilist/client.js'
 import { server } from '../torrent'
 
 import Event, { type MediaState, type PlayerState, type W2GEvents } from './events.js'
 
-import type { ChatMessage, ChatUser } from '$lib/components/ui/chat'
+import { page } from '$app/state'
+import { MessageToast, type ChatMessage, type ChatUser } from '$lib/components/ui/chat'
 
 const debug = Debug('ui:w2g')
 
@@ -58,11 +60,11 @@ export class W2GClient extends EventEmitter<{index: [number], player: [PlayerSta
     return `https://hayas.ee/w2g/${this.code}`
   }
 
-  constructor (code: string, isHost: boolean) {
+  constructor (code: string, isHost: boolean, media?: MediaState) {
     super()
     this.isHost = isHost
-
     this.code = code
+    this.media = media
 
     debug(`W2GClient: ${this.code}, ${this.isHost}`)
 
@@ -192,7 +194,14 @@ export class W2GClient extends EventEmitter<{index: [number], player: [PlayerSta
         break
       }
       case 'message': {
-        this.messages.update(messages => [...messages, ({ message: data.payload, user: this.peers.value[peer.id]!.user, type: 'incoming', date: new Date() })])
+        const msg: ChatMessage = { message: data.payload, user: this.peers.value[peer.id]!.user, type: 'incoming', date: new Date() }
+        if (page.route.id !== '/app/w2g/[id]') {
+          toast.custom(MessageToast, {
+            classes: { toast: '!bg-transparent w-full !shadow-none h-auto flex' },
+            componentProps: { msg }
+          })
+        }
+        this.messages.update(messages => [...messages, msg])
         break
       }
       default:

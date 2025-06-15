@@ -26,7 +26,7 @@
 
 <div class='w-full h-full flex flex-col backface-hidden bg-black relative overflow-clip border-l-2 [border-image:linear-gradient(to_bottom,white_var(--progress),#2dcf58_var(--progress))_1] preserve-3d' bind:this={root} id='root' style:--progress='{100 - updateProgress}%'>
   <ProgressBar zIndex={100} />
-  <Toaster />
+  <Toaster position='top-right' expand={true} />
 
   <Menubar />
   <Online />
