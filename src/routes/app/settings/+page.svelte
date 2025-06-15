@@ -16,19 +16,19 @@
 <div class='space-y-3 pb-10 lg:max-w-4xl'>
   {#if ('queryLocalFonts' in self)}
     <div class='font-weight-bold text-xl font-bold'>Subtitle Settings</div>
-    <SettingCard let:id title='Find Missing Subtitle Fonts' description="Automatically finds and loads fonts that are missing from a video's subtitles.">
+    <SettingCard let:id title='Find Missing Subtitle Fonts' description="Automatically finds and loads fonts that are missing from a video's subtitles, using fonts installed on your OS.">
       <Switch {id} bind:checked={$settings.missingFont} />
     </SettingCard>
   {/if}
 
-  <SettingCard let:id title='Fast Subtitle Rendering' description='Disables blur when rendering subtitles reducing lag. Will cause text and subtitle edges to appear sharper and in rare cases might break styling. If you want better rendering speeds without sacrificing accuracy lower the render resolution limit.'>
+  <SettingCard let:id title='Fast Subtitle Rendering' description='Disables blur when rendering subtitles reducing lag. Will cause text and subtitle edges to appear sharper and in rare cases might break styling. Use this if you want better rendering speeds without sacrificing accuracy lower the render resolution limit.'>
     <Switch {id} bind:checked={$settings.disableSubtitleBlur} />
   </SettingCard>
   <SettingCard title='Subtitle Render Resolution Limit' description="Max resolution to render subtitles at. If your resolution is higher than this setting the subtitles will be upscaled lineary. This will GREATLY improve rendering speeds for complex typesetting for slower devices. It's best to lower this on mobile devices which often have high pixel density where their effective resolution might be ~1440p while having small screens and slow processors.">
     <SingleCombo bind:value={$settings.subtitleRenderHeight} items={subtitleResolutions} class='w-32 shrink-0 border-input border' />
   </SettingCard>
 
-  <SettingCard class='md:flex-col md:items-start' title='Subtitle Dialogue Style Overrides' description={'Selectively override the default dialogue style for subtitles. This will not change the style of typesetting.\n\nWarning: the heuristic used for deciding when to override the style is rather rough, and enabling this option can lead to incorrectly rendered subtitles.'}>
+  <SettingCard class='md:flex-col md:items-start' title='Subtitle Dialogue Style Overrides' description={'Selectively override the default dialogue style for subtitles. This will not change the style of typesetting [Fancy 3D Signs and Songs].\n\nWarning: the heuristic used for deciding when to override the style is rather rough, and enabling this option can lead to incorrectly rendered subtitles.'}>
     <ToggleGroup.Root type='single' class='grid sm:grid-cols-2 gap-3' bind:value={$settings.subtitleStyle}>
       <ToggleGroup.Item value='none' class='h-auto aspect-video text-4xl px-0 relative'>
         <div class='absolute top-4 text-xl font-bold'>None</div>🚫
@@ -69,7 +69,7 @@
   <SettingCard let:id title='Auto-Complete Episodes' description='Automatically marks episodes as complete when you finish watching them. Requires Account login.'>
     <Switch {id} bind:checked={$settings.playerAutocomplete} />
   </SettingCard>
-  <SettingCard let:id title='Deband Video' description='Reduces banding on dark and compressed videos. High performance impact, not recommended for high quality videos.'>
+  <SettingCard let:id title='Deband Video' description='Reduces banding [compression artifacts] on dark and compressed videos. High performance impact. Recommended for seasonal web releases, not recommended for high quality blu-ray videos.'>
     <Switch {id} bind:checked={$settings.playerDeband} />
   </SettingCard>
   <SettingCard let:id title='Seek Duration' description='Seconds to skip forward or backward when using the seek buttons or keyboard shortcuts. Higher values might negatively impact buffering speeds.'>
@@ -86,7 +86,7 @@
   </SettingCard>
 
   <div class='font-weight-bold text-xl font-bold'>Interface Settings</div>
-  <SettingCard let:id title='Minimal UI' description='Forces minimalistic UI, hides controls.'>
+  <SettingCard let:id title='Minimal UI' description='Forces minimalistic player UI, hides controls.'>
     <Switch {id} bind:checked={$settings.minimalPlayerUI} />
   </SettingCard>
   <div class='font-weight-bold text-xl font-bold'>External Player Settings</div>

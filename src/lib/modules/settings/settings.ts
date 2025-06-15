@@ -12,5 +12,6 @@ settings.subscribe(settings => {
   native.setHideToTray(settings.hideToTray)
   native.transparency(settings.idleAnimation)
   native.setZoom(settings.uiScale)
+  native.toggleDiscordDetails(settings.showDetailsInRPC)
   if (settings.enableDoH) native.setDOH(settings.doHURL)
 })

@@ -38,8 +38,6 @@
   function changeAngle (value: string) {
     native.setAngle(value)
   }
-
-  $: native.toggleDiscordDetails($settings.showDetailsInRPC)
 </script>
 
 <div class='space-y-3 pb-10 lg:max-w-4xl'>
