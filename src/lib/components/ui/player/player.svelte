@@ -61,6 +61,7 @@
   import { settings, SUPPORTS } from '$lib/modules/settings'
   import { server } from '$lib/modules/torrent'
   import { w2globby } from '$lib/modules/w2g/lobby'
+  import { getAnimeProgress, setAnimeProgress } from '$lib/modules/watchProgress'
   import { toTS, fastPrettyBits } from '$lib/utils'
 
   export let mediaInfo: MediaInfo
@@ -695,6 +696,27 @@
 
   $: $w2globby?.playerStateChanged({ paused, time: Math.floor(currentTime) })
   $: $w2globby?.on('player', updateState)
+
+  function loadAnimeProgress () {
+    if (!mediaInfo.media.id || !mediaInfo.episode) return
+
+    const animeProgress = getAnimeProgress(mediaInfo.media.id)
+    if (!animeProgress || animeProgress.episode !== mediaInfo.episode) return
+
+    currentTime = Math.max(animeProgress.currentTime - 5, 0)
+  }
+
+  function saveAnimeProgress () {
+    if (!mediaInfo.media.id || !mediaInfo.episode) return
+
+    if (buffering || paused || video.readyState < 4) return
+
+    setAnimeProgress(mediaInfo.media.id, { episode: mediaInfo.episode, currentTime: video.currentTime, safeduration })
+  }
+  const saveProgressLoop = setInterval(saveAnimeProgress, 10000)
+  onDestroy(() => {
+    clearInterval(saveProgressLoop)
+  })
 </script>
 
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
@@ -721,6 +743,7 @@
     on:click={() => isMiniplayer ? goto('/app/player') : playPause()}
     on:dblclick={fullscreen}
     on:loadeddata={checkAudio}
+    on:loadedmetadata={loadAnimeProgress}
     on:timeupdate={checkSkippableChapters}
     on:timeupdate={checkCompletion}
     on:loadedmetadata={autoPlay}

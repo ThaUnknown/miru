@@ -22,6 +22,7 @@
   import { episodes as _episodes, dedupeAiring, episodeByAirDate, notes, type Media } from '$lib/modules/anilist'
   import { authAggregator, list, progress } from '$lib/modules/auth'
   import { click, dragScroll } from '$lib/modules/navigate'
+  import { liveAnimeProgress } from '$lib/modules/watchProgress'
   import { cn, isMobile, since } from '$lib/utils'
 
   export let eps: EpisodesResponse | null
@@ -74,6 +75,8 @@
   export let following = authAggregator.following(media.id)
 
   $: followerEntries = $following?.data?.Page?.mediaList?.filter(e => e?.user?.id !== authAggregator.id()) ?? []
+
+  $: watchProgress = liveAnimeProgress(media.id)
 </script>
 
 <Pagination count={episodeCount} {perPage} bind:currentPage let:pages let:hasNext let:hasPrev let:range let:setPage siblingCount={1}>
@@ -108,6 +111,10 @@
               </div>
               {#if watched || completed}
                 <div class='mb-2 h-0.5 overflow-hidden w-full bg-blue-600 shrink-0' />
+              {:else if $watchProgress?.episode === episode}
+                <div class='w-full bg-neutral-800 mb-2'>
+                  <div class='h-0.5 overflow-hidden bg-blue-600 shrink-0' style:width={$watchProgress.progress + '%'} />
+                </div>
               {/if}
               <div class='text-[9.6px] text-muted-foreground overflow-hidden'>
                 {notes(summary ?? '')}
