@@ -3,6 +3,7 @@
   import '@fontsource-variable/nunito'
   import '$lib/modules/navigate'
   import { ProgressBar } from '@prgm/sveltekit-progress-bar'
+  import { toast } from 'svelte-sonner'
 
   import Backplate from '$lib/components/Backplate.svelte'
   import Online from '$lib/components/Online.svelte'
@@ -17,6 +18,10 @@
 
   native.updateProgress(progress => {
     updateProgress = progress
+  })
+  native.errors(error => {
+    toast.error('Torrent Process Error!', { description: error?.stack ?? error?.message })
+    console.error(error)
   })
 </script>
 
