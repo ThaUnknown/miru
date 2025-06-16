@@ -1,5 +1,6 @@
 import { writable } from 'simple-store-svelte'
-import { derived, readable } from 'svelte/store'
+import { derived, get, readable } from 'svelte/store'
+import { persisted } from 'svelte-persisted-store'
 import { toast } from 'svelte-sonner'
 
 import { client, type Media } from '../anilist'
@@ -10,7 +11,7 @@ import type { Anime, Fav, KEntry, KitsuError, KitsuMediaStatus, Mapping, OAuth, 
 import type { Entry, FullMediaList, UserFrag } from '../anilist/queries'
 import type { ResultOf, VariablesOf } from 'gql.tada'
 
-import { arrayEqual, safeLocalStorage } from '$lib/utils'
+import { arrayEqual } from '$lib/utils'
 
 const ENDPOINTS = {
   API_OAUTH: 'https://kitsu.app/api/oauth/token',
@@ -39,8 +40,8 @@ const AL_TO_KITSU_STATUS: Record<ALMediaStatus, KitsuMediaStatus> = {
 }
 
 export default new class KitsuSync {
-  auth = writable<OAuth | undefined>(safeLocalStorage('kitsuAuth'))
-  viewer = writable<ResultOf<typeof UserFrag> | undefined>(safeLocalStorage('kitsuViewer'))
+  auth = persisted<OAuth | undefined>('kitsuAuth', undefined)
+  viewer = persisted<ResultOf<typeof UserFrag> | undefined>('kitsuViewer', undefined)
   userlist = writable<Record<string, ResultOf<typeof FullMediaList>>>({}) // al id to al mapped kitsu entry
   favorites = writable<Record<string, string>>({}) // kitsu anime id to kitsu fav id
   kitsuToAL: Record<string, string> = {}
@@ -90,20 +91,16 @@ export default new class KitsuSync {
 
   constructor () {
     this.auth.subscribe((auth) => {
-      if (auth) localStorage.setItem('kitsuAuth', JSON.stringify(auth))
-      this._user()
-    })
-
-    this.viewer.subscribe((viewer) => {
-      if (viewer) localStorage.setItem('kitsuViewer', JSON.stringify(viewer))
+      if (auth) this._user()
     })
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async _request <T = object> (url: string | URL, method: string, body?: any): Promise<T | KitsuError> {
+    const auth = get(this.auth)
     try {
-      if (this.auth.value) {
-        const expiresAt = (this.auth.value.created_at + this.auth.value.expires_in) * 1000
+      if (auth) {
+        const expiresAt = (auth.created_at + auth.expires_in) * 1000
 
         if (expiresAt < Date.now() - 1000 * 60 * 5) { // 5 minutes before expiry
           await this._refresh()
@@ -113,7 +110,7 @@ export default new class KitsuSync {
         method,
         headers: {
           'Content-Type': 'application/vnd.api+json',
-          Authorization: this.auth.value ? `Bearer ${this.auth.value.access_token}` : ''
+          Authorization: auth ? `Bearer ${auth.access_token}` : ''
         },
         body: body ? JSON.stringify(body) : undefined
       })
@@ -167,17 +164,17 @@ export default new class KitsuSync {
   }
 
   async _refresh () {
+    const auth = get(this.auth)
     const data = await this._post<OAuth>(
       ENDPOINTS.API_OAUTH,
       {
         grant_type: 'refresh_token',
-        refresh_token: this.auth.value?.refresh_token
+        refresh_token: auth?.refresh_token
       }
     )
+
     if ('access_token' in data) {
-      this.auth.value = data
-    } else {
-      this.auth.value = undefined
+      this.auth.set(data)
     }
   }
 
@@ -193,9 +190,7 @@ export default new class KitsuSync {
     )
 
     if ('access_token' in data) {
-      this.auth.value = data
-    } else {
-      this.auth.value = undefined
+      this.auth.set(data)
     }
   }
 
@@ -224,7 +219,7 @@ export default new class KitsuSync {
 
     const { id, attributes } = res.data[0]
 
-    this.viewer.value = {
+    this.viewer.set({
       id: Number(id),
       name: attributes.name ?? '',
       about: attributes.about ?? '',
@@ -238,7 +233,7 @@ export default new class KitsuSync {
       donatorBadge: null,
       options: null,
       statistics: null
-    }
+    })
   }
 
   _kitsuEntryToAl (entry: Resource<KEntry>): ResultOf<typeof FullMediaList> {
@@ -312,12 +307,13 @@ export default new class KitsuSync {
   }
 
   async _makeFavourite (kitsuAnimeId: string) {
+    const viewer = get(this.viewer)
     const data = await this._post<ResSingle<Fav>>(
       ENDPOINTS.API_FAVOURITES,
       {
         data: {
           relationships: {
-            user: { data: { type: 'users', id: this.viewer.value?.id.toString() ?? '' } },
+            user: { data: { type: 'users', id: viewer?.id.toString() ?? '' } },
             item: { data: { type: 'anime', id: kitsuAnimeId } }
           },
           type: 'favorites'
@@ -331,6 +327,7 @@ export default new class KitsuSync {
   }
 
   async _addEntry (id: string, attributes: Omit<KEntry, 'createdAt' | 'updatedAt'>, alId: number) {
+    const viewer = get(this.viewer)
     const data = await this._post<ResSingle<KEntry>>(
       ENDPOINTS.API_USER_LIBRARY,
       {
@@ -338,7 +335,7 @@ export default new class KitsuSync {
           attributes,
           relationships: {
             anime: { data: { id, type: 'anime' } },
-            user: { data: { type: 'users', id: this.viewer.value?.id.toString() ?? '' } }
+            user: { data: { type: 'users', id: viewer?.id.toString() ?? '' } }
           },
           type: 'library-entries'
         }
@@ -387,11 +384,11 @@ export default new class KitsuSync {
   })
 
   id () {
-    return this.viewer.value?.id ?? -1
+    return get(this.viewer)?.id
   }
 
   profile (): ResultOf<typeof UserFrag> | undefined {
-    return this.viewer.value
+    return get(this.viewer)
   }
 
   // QUERIES/MUTATIONS

@@ -29,7 +29,7 @@ export default new class AuthAggregator {
   }
 
   kitsu () {
-    return !!kitsu.viewer.value?.id
+    return !!kitsu.id()
   }
 
   checkAuth () {
@@ -38,14 +38,14 @@ export default new class AuthAggregator {
 
   id () {
     if (this.anilist()) return client.viewer.value!.viewer?.id
-    if (this.kitsu()) return kitsu.viewer.value?.id
+    if (this.kitsu()) return kitsu.id()
 
     return -1
   }
 
   profile (): ResultOf<typeof UserFrag> | undefined {
     if (this.anilist()) return client.viewer.value?.viewer ?? undefined
-    if (this.kitsu()) return kitsu.viewer.value
+    if (this.kitsu()) return kitsu.profile()
   }
 
   mediaListEntry (media: Pick<Media, 'mediaListEntry' | 'id'>) {
