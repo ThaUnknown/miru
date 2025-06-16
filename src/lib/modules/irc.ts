@@ -1,12 +1,17 @@
 import Client, { createChannelConstructor } from '@thaunknown/web-irc'
 import { writable } from 'simple-store-svelte'
+import { toast } from 'svelte-sonner'
 
 import { decryptMessage, encryptMessage } from './crypt'
 
-import type { ChatMessage, ChatUser } from '$lib/components/ui/chat'
 import type IrcChannel from '@thaunknown/web-irc/channel'
 import type IrcClient from '@thaunknown/web-irc/client'
 import type { EventEmitter } from 'events'
+
+import { page } from '$app/state'
+import { MessageToast, type ChatMessage, type ChatUser } from '$lib/components/ui/chat'
+
+export const prevAgreed = writable(false)
 
 export type UserType = 'al' | 'guest'
 export interface IRCChatUser {
@@ -99,12 +104,20 @@ export default class MessageClient {
     this.irc.on('privmsg', async priv => {
       try {
         const message = await decryptMessage(priv.message)
-        this.messages.update(messages => [...messages, {
+        const msg: ChatMessage = {
           message,
           user: this.users.value[priv.ident]!,
           type: 'incoming',
           date: new Date(priv.time)
-        }])
+        }
+
+        if (page.route.id !== '/app/chat' && !msg.user.name.startsWith('Guest-')) {
+          toast.custom(MessageToast, {
+            classes: { toast: '!bg-transparent w-full !shadow-none h-auto flex' },
+            componentProps: { msg }
+          })
+        }
+        this.messages.update(messages => [...messages, msg])
       } catch (e) {
         // some1 sent a message without encryption
         console.error(e)
@@ -153,5 +166,10 @@ export default class MessageClient {
       client.channel = client.irc.channel('#4e63ad91532eb8849330')
     })
     return client
+  }
+
+  destroy () {
+    this.irc.removeAllListeners()
+    this.irc.connection?.end()
   }
 }

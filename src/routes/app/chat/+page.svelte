@@ -1,16 +1,13 @@
-<script lang='ts' context='module'>
-  let prevAgreed = false
-</script>
-
 <script lang='ts'>
   import TriangleAlert from 'lucide-svelte/icons/triangle-alert'
 
   import { Button } from '$lib/components/ui/button'
   import { IRC } from '$lib/components/ui/irc'
+  import { prevAgreed } from '$lib/modules/irc'
 
-  let agreed = prevAgreed
+  let agreed = $prevAgreed
   function agree () {
-    agreed = prevAgreed = true
+    agreed = $prevAgreed = true
   }
 </script>
 
