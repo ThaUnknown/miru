@@ -1,5 +1,3 @@
-import { authAggregator } from '../auth'
-
 import type { ScheduleMedia } from './queries'
 import type { Media } from './types'
 import type { Episode, Episodes } from '../anizip/types'
@@ -95,7 +93,7 @@ export function episodes (media: Pick<Media, 'aired' | 'notaired' | 'episodes' |
 
   const upcoming = media.aired?.n?.[media.aired.n.length - 1]?.e ?? 0
   const past = media.notaired?.n?.[media.notaired.n.length - 1]?.e ?? 0
-  const progress = authAggregator.mediaListEntry(media)?.progress ?? 0
+  const progress = media.mediaListEntry?.progress ?? 0
 
   return Math.max(upcoming, past, progress)
 }
