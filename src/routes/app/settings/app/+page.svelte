@@ -1,5 +1,4 @@
 <script lang='ts'>
-  import { persisted } from 'svelte-persisted-store'
   import { toast } from 'svelte-sonner'
 
   import SettingCard from '$lib/components/SettingCard.svelte'
@@ -8,7 +7,7 @@
   import { Switch } from '$lib/components/ui/switch'
   import { client } from '$lib/modules/anilist'
   import native from '$lib/modules/native'
-  import { settings, SUPPORTS } from '$lib/modules/settings'
+  import { settings, SUPPORTS, debug } from '$lib/modules/settings'
 
   const debugOpts = {
     '': 'None',
@@ -16,7 +15,6 @@
     'torrent:*,webtorrent:*,simple-peer,bittorrent-protocol,bittorrent-dht,bittorrent-lsd,torrent-discovery,bittorrent-tracker:*,ut_metadata,nat-pmp,nat-api': 'Torrent',
     'ui:*': 'Interface'
   }
-  const debug = persisted('debug', '')
 
   async function copyLogs () {
     const logs = await native.getLogs()
