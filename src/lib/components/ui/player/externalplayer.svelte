@@ -104,7 +104,7 @@
               Playlist
             </Button>
           </Dialog.Trigger>
-          <Dialog.Content class='bg-black p-10 border-4 max-w-5xl w-auto max-h-[calc(100%-1rem)] items-center justify-center flex rounded-xl overflow-y-auto z-[100]'>
+          <Dialog.Content class='bg-black p-10 border-4 max-w-5xl w-auto max-h-[calc(100%-1rem)] items-center justify-center flex flex-col rounded-xl overflow-y-auto z-[100]'>
             {#each videoFiles as file, i (i)}
               <Button on:click={() => selectFile(file)} variant='ghost'>
                 <span class='text-ellipsis text-nowrap overflow-clip'>{file.name}</span>
