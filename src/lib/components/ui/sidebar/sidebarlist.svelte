@@ -34,7 +34,7 @@
 <svelte:document bind:visibilityState />
 
 <BannerImage class='absolute top-0 left-0 w-14 -z-10 hidden md:block' />
-<Logo class='mb-3 h-10 object-contain px-2.5 hidden md:block text-white' />
+<Logo class='mb-3 h-10 object-contain px-2.5 hidden md:block text-white ml-2' />
 <SidebarButton href='/app/home/'>
   <House size={18} />
 </SidebarButton>
@@ -53,7 +53,7 @@
 <SidebarButton href='/app/client/' id='sidebar-client' data-down='#sidebar-donate'>
   <Download size={18} />
 </SidebarButton>
-<Button variant='ghost' id='sidebar-donate' data-up='#sidebar-client' on:click={() => native.openURL('https://github.com/sponsors/ThaUnknown/')} class='px-2 w-full relative mt-auto select:!bg-transparent text-[#fa68b6] select:text-[#fa68b6]'>
+<Button variant='ghost' id='sidebar-donate' data-up='#sidebar-client' on:click={() => native.openURL('https://github.com/sponsors/ThaUnknown/')} class='px-2 w-full relative mt-auto select:!bg-transparent text-[#fa68b6] select:text-[#fa68b6] md:pl-4 md:w-12 md:rounded-l-none'>
   <Heart size={18} fill='currentColor' class={cn('drop-shadow-[0_0_1rem_#fa68b6]', active && 'animate-[hearbeat_1s_ease-in-out_infinite_alternate]')} />
 </Button>
 <SidebarButton href='/app/settings/'>

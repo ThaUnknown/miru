@@ -10,13 +10,16 @@
   function tabindex (node: HTMLElement) {
     node.tabIndex = -1
   }
+  let fullscreenElement: HTMLElement | null = null
 </script>
+
+<svelte:document bind:fullscreenElement />
 
 <Wrapper let:platform>
   <div class='w-[calc(100%-3.5rem)] left-[3.5rem] top-0 z-[2000] flex navbar absolute h-8'>
-    <div class='draggable w-full' />
+    <div class='w-full {fullscreenElement ? 'not-draggable' : 'draggable'}' />
     {#if platform !== 'macOS'}
-      <div class='window-controls flex text-white backdrop-blur'>
+      <div class='window-controls not-draggable flex text-white backdrop-blur'>
         <button class='max-button flex items-center justify-center h-8 w-[46px]' use:click={native.minimise} use:tabindex>
           <svg class='svg-controls w-3 h-3' role='img' viewBox='0 0 12 12'><rect fill='currentColor' height='1' width='10' x='1' y='6' />
         </button>
@@ -43,11 +46,7 @@
     transform-origin: 100% 0;
     transform: translate(-29.3%) rotate(-45deg);
   }
-  .draggable {
-    -webkit-app-region: drag;
-  }
   .window-controls {
-    -webkit-app-region: no-drag;
     background: rgba(24, 24, 24, 0.1);
   }
   .window-controls button:hover {
