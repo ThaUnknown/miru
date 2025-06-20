@@ -1,12 +1,12 @@
 {
 	"name": "ui",
-	"version": "6.3.69",
+	"version": "6.3.70",
 	"license": "BUSL-1.1",
 	"private": true,
 	"packageManager": "pnpm@9.14.4",
 	"scripts": {
 		"dev": "vite dev --open",
-		"build": "vite build",
+		"build": "vite build && scopy ./build/index.html ./build/offline.html",
 		"preview": "vite preview",
 		"sync": "svelte-kit sync",
 		"check": "svelte-check --threshold error --tsconfig ./tsconfig.web.json",
@@ -32,6 +32,7 @@
 		"gql.tada": "^1.8.10",
 		"hayase-extensions": "github:hayase-app/extensions",
 		"jassub": "^1.8.6",
+		"simple-copy": "^2.2.1",
 		"svelte": "^4.2.19",
 		"svelte-check": "^4.2.1",
 		"svelte-radix": "^1.1.1",

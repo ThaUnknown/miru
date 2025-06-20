@@ -108,6 +108,7 @@ export interface Native {
   version: () => Promise<string>
   navigate: (cb: (data: { target: string, value: string | undefined }) => void) => Promise<void>
   defaultTransparency: () => boolean
+  debug: (levels: string[]) => Promise<void>
 }
 
 declare global {
