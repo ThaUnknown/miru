@@ -139,10 +139,10 @@ declare global {
     }
   }
 
-   declare namespace svelteHTML {
-     interface HTMLAttributes<T> {
-       'on:navigate'?: CompositionEventHandler<T>
-     }
+  declare namespace svelteHTML {
+    interface HTMLAttributes<T> {
+      'on:navigate'?: CompositionEventHandler<T>
+    }
   }
 
   // declare module '*.svelte' {

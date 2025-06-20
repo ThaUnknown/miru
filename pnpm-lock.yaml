@@ -116,6 +116,12 @@ importers:
       workbox-precaching:
         specifier: ^7.3.0
         version: 7.3.0
+      workbox-routing:
+        specifier: ^7.3.0
+        version: 7.3.0
+      workbox-strategies:
+        specifier: ^7.3.0
+        version: 7.3.0
     devDependencies:
       '@gql.tada/svelte-support':
         specifier: ^1.0.1
