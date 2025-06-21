@@ -60,6 +60,8 @@ export default Object.assign<Native, Partial<Native>>({
   focus: async () => undefined,
   close: async () => undefined,
   checkUpdate: async () => undefined,
+  updateAndRestart: async () => undefined,
+  updateReady: () => sleep(rnd(10_000)),
   toggleDiscordDetails: async () => undefined,
   setMediaSession: async (metadata) => { navigator.mediaSession.metadata = new MediaMetadata({ title: metadata.title, artist: metadata.description, artwork: [{ src: metadata.image }] }) },
   setPositionState: async e => navigator.mediaSession.setPositionState(e),

@@ -79,6 +79,8 @@ export interface Native {
   openUIDevtools: () => Promise<void>
   openTorrentDevtools: () => Promise<void>
   checkUpdate: () => Promise<void>
+  updateAndRestart: () => Promise<void>
+  updateReady: () => Promise<void>
   toggleDiscordDetails: (enabled: boolean) => Promise<void>
   setMediaSession: (metadata: SessionMetadata, mediaId: number) => Promise<void>
   setPositionState: (state?: MediaPositionState) => Promise<void>

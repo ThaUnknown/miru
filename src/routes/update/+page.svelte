@@ -1,8 +1,9 @@
 <script lang='ts'>
+  import InstallWaitButton from './InstallWaitButton.svelte'
+
   import { Button } from '$lib/components/ui/button'
   import { Menubar } from '$lib/components/ui/menubar'
   import { Separator } from '$lib/components/ui/separator'
-  import * as Tooltip from '$lib/components/ui/tooltip'
   import native from '$lib/modules/native'
   import { outdatedComponent, uiUpdate } from '$lib/modules/update'
 
@@ -18,18 +19,14 @@
       <div class='text-xl text-wrap max-w-full text-center mb-6'>A mandatory update is available for the {#await outdatedComponent then name}{name}{/await}.<br />Please update to continue.</div>
       {#await outdatedComponent then name}
         {#if name === 'client'}
-          <!-- TODO: remove this github releases open and replace it with native client update call!!! -->
-          <Button class='text-md font-bold' size='lg' on:click={() => native.openURL('https://github.com/ThaUnknown/miru/releases/tag/v6.1.0')}>Install</Button>
+          {#await native.updateReady()}
+            <InstallWaitButton />
+          {:then _}
+            <Button class='text-md font-bold' size='lg' on:click={native.updateAndRestart}>Update</Button>
+          {/await}
         {:else}
           {#await uiUpdate}
-            <Tooltip.Root>
-              <Tooltip.Trigger let:builder>
-                <Button builders={[builder]} class='text-md font-bold !pointer-events-auto cursor-wait' disabled>Install</Button>
-              </Tooltip.Trigger>
-              <Tooltip.Content>
-                <p>Waiting for update to download</p>
-              </Tooltip.Content>
-            </Tooltip.Root>
+            <InstallWaitButton />
           {:then _}
             <Button class='text-md font-bold' size='lg' on:click={() => location.reload()}>Install</Button>
           {/await}
