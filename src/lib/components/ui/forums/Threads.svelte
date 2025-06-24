@@ -12,7 +12,7 @@
   import * as Avatar from '$lib/components/ui/avatar'
   import * as Tooltip from '$lib/components/ui/tooltip'
   import { client, type Media } from '$lib/modules/anilist'
-  import { isMobile, since } from '$lib/utils'
+  import { breakpoints, since } from '$lib/utils'
 
   export let media: Media
 
@@ -121,7 +121,7 @@
       <Button size='icon' variant='ghost' on:click={() => setPage(currentPage - 1)} disabled={!hasPrev}>
         <ChevronLeft class='h-4 w-4' />
       </Button>
-      {#if !$isMobile}
+      {#if $breakpoints.md}
         {#each pages as { page, type } (page)}
           {#if type === 'ellipsis'}
             <span class='h-9 w-9 text-center'>...</span>

@@ -23,7 +23,7 @@
   import { authAggregator, list, progress } from '$lib/modules/auth'
   import { click, dragScroll } from '$lib/modules/navigate'
   import { liveAnimeProgress } from '$lib/modules/watchProgress'
-  import { cn, isMobile, since } from '$lib/utils'
+  import { breakpoints, cn, since } from '$lib/utils'
 
   export let eps: EpisodesResponse | null
   export let media: Media
@@ -150,7 +150,7 @@
       <Button size='icon' variant='ghost' on:click={() => setPage(currentPage - 1)} disabled={!hasPrev}>
         <ChevronLeft class='h-4 w-4' />
       </Button>
-      {#if !$isMobile}
+      {#if $breakpoints.md}
         {#each pages as { page, type } (page)}
           {#if type === 'ellipsis'}
             <span class='h-9 w-9 text-center'>...</span>

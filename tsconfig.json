@@ -1,5 +1,16 @@
 {
   "compilerOptions": {
+    "paths": {
+      "lucide-svelte/dist/Icon.svelte": [
+        "./node_modules/lucide-svelte/dist/Icon.svelte"
+      ],
+      "$lib": [
+        "./src/lib"
+      ],
+      "$lib/*": [
+        "./src/lib/*"
+      ]
+    },
     "typeRoots": [
       // these overrides are required, because we want a custom typed eventemitter, importing node types in any fashion will fully override the typed event emitter, making life a pain
       // disabling type acquisition does NOT prevent type acquisition from working, WE LOVE TYPESCRIPT, INDUSTRY LEADING TECHNOLOGY

@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { sveltekit } from '@sveltejs/kit/vite'
 import license from 'rollup-plugin-license'
 import { defineConfig } from 'vite'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
   plugins: [
@@ -13,6 +14,14 @@ export default defineConfig({
         output: resolve(import.meta.dirname, './build/LICENSE.txt'),
         includeSelf: true
       }
+    }),
+    viteStaticCopy({
+      targets: [
+        { // VITE IS DOG AND DOESNT SUPPORT DYNAMIC JSON IMPORTS
+          src: 'node_modules/doc999tor-fast-geoip/data/*.json',
+          dest: 'geoip/'
+        }
+      ]
     })
   ],
   resolve: {

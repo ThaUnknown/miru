@@ -754,15 +754,15 @@
       <!-- {($torrentstats.progress * 100).toFixed(1)}% -->
       <div class='flex justify-center items-center gap-2'>
         <Users size={18} />
-        {$torrentstats.seeders}
+        {$torrentstats.peers.seeders}
       </div>
       <div class='flex justify-center items-center gap-2'>
         <ChevronDown size={18} />
-        {fastPrettyBits($torrentstats.down * 8)}/s
+        {fastPrettyBits($torrentstats.speed.down * 8)}/s
       </div>
       <div class='flex justify-center items-center gap-2'>
         <ChevronUp size={18} />
-        {fastPrettyBits($torrentstats.up * 8)}/s
+        {fastPrettyBits($torrentstats.speed.up * 8)}/s
       </div>
     </div>
     {#if seeking}

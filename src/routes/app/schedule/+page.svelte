@@ -15,7 +15,7 @@
   import { dedupeAiring } from '$lib/modules/anilist'
   import { authAggregator, list } from '$lib/modules/auth'
   import { dragScroll } from '$lib/modules/navigate'
-  import { cn, isMobile } from '$lib/utils'
+  import { cn, breakpoints } from '$lib/utils'
 
   const query = authAggregator.schedule()
 
@@ -127,15 +127,17 @@
         {@const sameMonth = isSameMonth(now, day.date)}
         <div>
           <div class='flex flex-col text-xs py-3 h-48' class:opacity-30={!sameMonth}>
-            {#if $isMobile}
+            {#if !$breakpoints.md}
               <Drawer.Root shouldScaleBackground portal='html'>
                 <Drawer.Trigger class='h-full flex flex-col'>
                   <div class={cn('w-6 h-6 flex items-center justify-center font-bold mx-3', isToday(day.date) && 'bg-[rgb(61,180,242)] rounded-full')}>
                     {day.number}
                   </div>
-                  <div class='px-3 mt-auto text-ellipsis overflow-hidden text-nowrap w-full'>
-                    {episodes.length} eps
-                  </div>
+                  {#if episodes.length}
+                    <div class='px-3 mt-auto text-ellipsis overflow-hidden text-nowrap w-full'>
+                      {episodes.length} ep{episodes.length > 1 ? 's' : ''}
+                    </div>
+                  {/if}
                 </Drawer.Trigger>
                 <Drawer.Content tabindex={null}>
                   <Drawer.Header>
@@ -165,8 +167,6 @@
               <div class={cn('w-6 h-6 flex items-center justify-center font-bold mx-3', isToday(day.date) && 'bg-[rgb(61,180,242)] rounded-full')}>
                 {day.number}
               </div>
-            {/if}
-            {#if !$isMobile}
               <div class='mt-auto'>
                 {#each episodes.length > 6 ? episodes.slice(0, 5) : episodes as episode, i (i)}
                   {@const status = _list(episode)}

@@ -24,6 +24,29 @@ const dummyFiles = [
 //   id: 1
 // }
 ]
+// function makeRandomPeer (): PeerInfo {
+//   const ip = `${rnd(256)}.${rnd(256)}.${rnd(256)}.${rnd(256)}:${rnd(65536)}`
+//   return {
+//     ip,
+//     seeder: Math.random() < 0.5,
+//     client: ['qBittorrent 4.5.4', 'WebTorrent 1.0.0', 'Transmission 3.00', 'Deluge 2.1.1', 'μTorrent 3.5.5', 'Vuze 5.7.7.0', 'Azureus 5.7.6.0'].sort(() => Math.random() - 0.5)[0]!,
+//     progress: Math.random(),
+//     size: {
+//       downloaded: rnd(1000000),
+//       uploaded: rnd(1000000)
+//     },
+//     speed: {
+//       down: rnd(1000),
+//       up: rnd(1000)
+//     },
+//     time: rnd(1000),
+//     flags: (['encrypted', 'utp', 'incoming', 'outgoing'] as const).filter(() => Math.random() < 0.5).slice(0, 3)
+//   }
+// }
+// const dummyPeerInfo: PeerInfo[] = []
+// for (let i = 0; i < 100; i++) {
+//   dummyPeerInfo.push(makeRandomPeer())
+// }
 
 export default Object.assign<Native, Partial<Native>>({
   authAL: (url: string) => {
@@ -80,7 +103,7 @@ export default Object.assign<Native, Partial<Native>>({
     { start: 1.0 * 60 * 1000, end: 1.2 * 60 * 1000, text: 'Chapter 1' },
     { start: 1.4 * 60 * 1000, end: 88 * 1000, text: 'Chapter 2 ' }
   ],
-  version: async () => 'v6.3.0',
+  version: async () => 'v6.4.0',
   updateSettings: async () => undefined,
   setDOH: async () => undefined,
   cachedTorrents: async () => ['40a9047de61859035659e449d7b84286934486b0'],
@@ -88,12 +111,30 @@ export default Object.assign<Native, Partial<Native>>({
   setHideToTray: async () => undefined,
   transparency: async () => undefined,
   setZoom: async () => undefined,
-  // @ts-expect-error yeah
-  navigate: async (cb) => { globalThis.___navigate = cb },
+  navigate: async () => undefined,
   downloadProgress: async () => undefined,
   updateProgress: async () => undefined,
-  torrentStats: async (): Promise<TorrentInfo> => ({ peers: rnd(), seeders: rnd(), leechers: rnd(), progress: Math.random(), down: rnd(100000000), up: rnd(100000000), name: 'Amebku.webm', downloaded: rnd(100000), hash: '1234567890abcdef', size: 1234567890, eta: rnd() }),
-  torrents: async (): Promise<TorrentInfo[]> => [{ peers: rnd(), seeders: rnd(), leechers: rnd(), progress: Math.random(), down: rnd(100000000), up: rnd(100000000), name: 'Amebku.webm', downloaded: rnd(100000), hash: '1234567890abcdef', size: 1234567890, eta: rnd() }],
+  torrentInfo: async (): Promise<TorrentInfo> => ({
+    name: '',
+    progress: 0,
+    size: { total: 0, downloaded: 0, uploaded: 0 },
+    speed: { down: 0, up: 0 },
+    time: { remaining: 0, elapsed: 0 },
+    peers: { seeders: 0, leechers: 0, wires: 0 },
+    pieces: { total: 0, size: 0 },
+    hash: ''
+  }),
+  fileInfo: async () => [],
+  peerInfo: async () => [],
+  protocolStatus: async () => ({
+    dht: false,
+    lsd: false,
+    pex: false,
+    nat: false,
+    forwarding: false,
+    persisting: false,
+    streaming: false
+  }),
   defaultTransparency: () => false,
   errors: async () => undefined,
   debug: async () => undefined
