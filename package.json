@@ -1,6 +1,6 @@
 {
 	"name": "ui",
-	"version": "6.3.69",
+	"version": "6.3.70",
 	"license": "BUSL-1.1",
 	"private": true,
 	"packageManager": "pnpm@9.14.4",
@@ -39,12 +39,14 @@
 		"tailwindcss": "^3.4.17",
 		"typescript": "^5.8.3",
 		"vaul-svelte": "^0.3.2",
-		"vite": "^5.4.11"
+		"vite": "^5.4.11",
+		"vite-plugin-static-copy": "^3.0.2"
 	},
 	"type": "module",
 	"dependencies": {
 		"@cloudflare/speedtest": "^1.4.1",
 		"@fontsource-variable/nunito": "^5.2.5",
+		"@fontsource/geist-mono": "^5.2.6",
 		"@prgm/sveltekit-progress-bar": "2.0.0",
 		"@thaunknown/web-irc": "^1.0.3",
 		"@urql/exchange-auth": "^2.2.1",
@@ -58,8 +60,10 @@
 		"bittorrent-tracker": "10.0.12",
 		"bottleneck": "^2.19.5",
 		"clsx": "^2.1.1",
+		"cobe": "0.6.3",
 		"date-fns": "^4.1.0",
 		"debug": "^4.4.1",
+		"doc999tor-fast-geoip": "^1.1.335",
 		"dompurify": "^3.2.5",
 		"events": "^3.3.0",
 		"idb-keyval": "^6.2.2",
@@ -70,6 +74,7 @@
 		"rollup-plugin-license": "^3.6.0",
 		"semver": "^7.7.2",
 		"simple-store-svelte": "^1.0.6",
+		"svelte-headless-table": "^0.18.3",
 		"svelte-keybinds": "^1.0.9",
 		"svelte-persisted-store": "^0.12.0",
 		"tailwind-merge": "^3.3.0",

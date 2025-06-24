@@ -9,7 +9,7 @@
   export { className as class }
 </script>
 
-<div class='relative w-full overflow-auto'>
+<div class='relative w-full overflow-auto h-full'>
   <table class={cn('w-full caption-bottom text-sm', className)} {...$$restProps}>
     <slot />
   </table>

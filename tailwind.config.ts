@@ -34,7 +34,11 @@ const config: Config = {
     })
   ],
   darkMode: ['class'],
-  content: ['./src/**/*.{html,js,svelte,ts}'],
+  content: [
+    './src/**/*.{html,js,svelte,ts}',
+    './node_modules/svelte-ux/**/*.{svelte,js}',
+    './node_modules/layerchart/**/*.{svelte,js}'
+  ],
   safelist: ['dark'],
   theme: {
     container: {

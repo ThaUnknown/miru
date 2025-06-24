@@ -38,17 +38,55 @@ export interface Attachment {
 }
 
 export interface TorrentInfo {
-  peers: number
-  progress: number
-  down: number
-  up: number
   name: string
+  progress: number
+  size: {
+    total: number
+    downloaded: number
+    uploaded: number
+  }
+  speed: {
+    down: number
+    up: number
+  }
+  time: {
+    remaining: number
+    elapsed: number
+  }
+  peers: {
+    seeders: number
+    leechers: number
+    wires: number
+  }
+  pieces: {
+    total: number
+    size: number
+  }
   hash: string
-  seeders: number
-  leechers: number
+}
+
+export interface PeerInfo {
+  ip: string
+  seeder: boolean
+  client: string
+  progress: number
+  size: {
+    downloaded: number
+    uploaded: number
+  }
+  speed: {
+    down: number
+    up: number
+  }
+  flags: Array<'incoming' | 'outgoing' | 'utp' | 'encrypted'>
+  time: number
+}
+
+export interface FileInfo {
+  name: string
   size: number
-  downloaded: number
-  eta: number
+  progress: number
+  selections: number
 }
 
 export interface TorrentSettings {
@@ -93,8 +131,18 @@ export interface Native {
   subtitles: (hash: string, id: number, cb: (subtitle: { text: string, time: number, duration: number }, trackNumber: number) => void) => Promise<void>
   errors: (cb: (error: Error) => void) => Promise<void>
   chapters: (hash: string, id: number) => Promise<Array<{ start: number, end: number, text: string }>>
-  torrentStats: (hash: string) => Promise<TorrentInfo>
-  torrents: () => Promise<TorrentInfo[]>
+  torrentInfo: (hash: string) => Promise<TorrentInfo>
+  peerInfo: (hash: string) => Promise<PeerInfo[]>
+  fileInfo: (hash: string) => Promise<FileInfo[]>
+  protocolStatus: (hash: string) => Promise<{
+    dht: boolean
+    lsd: boolean
+    pex: boolean
+    nat: boolean
+    forwarding: boolean
+    persisting: boolean
+    streaming: boolean
+  }>
   setDOH: (dns: string) => Promise<void>
   cachedTorrents: () => Promise<string[]>
   downloadProgress: (percent: number) => Promise<void>
@@ -108,6 +156,7 @@ export interface Native {
   version: () => Promise<string>
   navigate: (cb: (data: { target: string, value: string | undefined }) => void) => Promise<void>
   defaultTransparency: () => boolean
+  debug: (levels: string) => Promise<void>
 }
 
 declare global {

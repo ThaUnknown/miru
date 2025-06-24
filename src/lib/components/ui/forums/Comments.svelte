@@ -8,7 +8,7 @@
   import { Comment } from './'
 
   import { client } from '$lib/modules/anilist'
-  import { isMobile } from '$lib/utils'
+  import { breakpoints } from '$lib/utils'
 
   export let isLocked = false
   export let threadId: number
@@ -71,7 +71,7 @@
       <Button size='icon' variant='ghost' on:click={() => setPage(currentPage - 1)} disabled={!hasPrev}>
         <ChevronLeft class='h-4 w-4' />
       </Button>
-      {#if !$isMobile}
+      {#if $breakpoints.md}
         {#each pages as { page, type } (page)}
           {#if type === 'ellipsis'}
             <span class='h-9 w-9 text-center'>...</span>

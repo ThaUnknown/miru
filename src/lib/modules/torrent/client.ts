@@ -5,33 +5,72 @@ import { persisted } from 'svelte-persisted-store'
 import native from '../native'
 import { w2globby } from '../w2g/lobby'
 
-import type { TorrentFile, TorrentInfo } from '../../../app'
+import type { FileInfo, PeerInfo, TorrentFile, TorrentInfo } from '$lib/../app'
 import type { Media } from '../anilist'
+
+const defaultTorrentInfo: TorrentInfo = {
+  name: '',
+  progress: 0,
+  size: { total: 0, downloaded: 0, uploaded: 0 },
+  speed: { down: 0, up: 0 },
+  time: { remaining: 0, elapsed: 0 },
+  peers: { seeders: 0, leechers: 0, wires: 0 },
+  pieces: { total: 0, size: 0 },
+  hash: ''
+}
+
+const defaultProtocolStatus = { dht: false, lsd: false, pex: false, nat: false, forwarding: false, persisting: false, streaming: false }
 
 export const server = new class ServerClient {
   last = persisted<{media: Media, id: string, episode: number} | null>('last-torrent', null)
   active = writable<Promise<{media: Media, id: string, episode: number, files: TorrentFile[]}| null>>()
   downloaded = writable(this.cachedSet())
 
-  stats = readable<TorrentInfo>({ peers: 0, down: 0, up: 0, progress: 0, downloaded: 0, eta: 0, hash: '', leechers: 0, name: '', seeders: 0, size: 0 }, set => {
+  stats = readable(defaultTorrentInfo, set => {
     let listener = 0
 
     const update = async () => {
       const id = (await get(this.active))?.id
-      if (id) set(await native.torrentStats(id))
-      listener = setTimeout(update, 1000)
+      if (id) set(await native.torrentInfo(id))
+      listener = setTimeout(update, 200)
     }
 
     update()
     return () => clearTimeout(listener)
   })
 
-  list = readable<TorrentInfo[]>([], set => {
+  protocol = readable(defaultProtocolStatus, set => {
     let listener = 0
 
     const update = async () => {
-      set(await native.torrents())
-      listener = setTimeout(update, 1000)
+      const id = (await get(this.active))?.id
+      if (id) set(await native.protocolStatus(id))
+      listener = setTimeout(update, 5000)
+    }
+
+    update()
+    return () => clearTimeout(listener)
+  })
+
+  peers = readable<PeerInfo[]>([], set => {
+    let listener = 0
+
+    const update = async () => {
+      const id = (await get(this.active))?.id
+      if (id) set(await native.peerInfo(id))
+      listener = setTimeout(update, 5000)
+    }
+
+    update()
+    return () => clearTimeout(listener)
+  })
+
+  files = readable<FileInfo[]>([], set => {
+    let listener = 0
+    const update = async () => {
+      const id = (await get(this.active))?.id
+      if (id) set(await native.fileInfo(id))
+      listener = setTimeout(update, 5000)
     }
 
     update()

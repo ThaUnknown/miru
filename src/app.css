@@ -14,6 +14,10 @@
     --padding-left: unset !important;
   }
 
+  .font-mono {
+    font-family: "Geist Mono", ui-monospace, SFMono-Regular, Roboto Mono, Menlo, Monaco, Liberation Mono, DejaVu Sans Mono, Courier New, monospace !important;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
