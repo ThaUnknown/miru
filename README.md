@@ -7,6 +7,8 @@
 
 <h4 align="center"><b>Stream anime torrents instantly, real-time with no waiting for downloads to finish! 🍿</b></h4>
 
+<p align="center">Formerly known as Miru.</p>
+
 <p align="center">
   <a href="https://hayase.watch/#about">About</a> •
   <a href="https://hayase.watch/features/">Features</a> •
