@@ -83,7 +83,7 @@
   <div class='overflow-y-auto pt-3 -mx-14 px-14 pointer-events-none -mb-3 pb-3' use:dragScroll>
     <div class='grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(500px,1fr))] place-items-center gap-x-4 gap-y-7 justify-center align-middle pointer-events-auto'>
       {#each getPage(currentPage, episodeList) as { episode, image, title, summary, airingAt, airdate, filler, length } (episode)}
-        {@const watched = _progress >= episode}
+        {@const watched = _progress >= episode && !completed}
         {@const target = _progress + 1 === episode}
         <div class={!target ? 'px-3 w-full' : 'contents'}>
           <div use:click={() => play(episode)}

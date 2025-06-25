@@ -127,7 +127,7 @@
               <ClockFading class='w-4 h-4 text-orange-500' />
               <span class='text-sm font-medium text-muted-foreground'>Remaining</span>
             </div>
-            <div class='text-2xl font-bold'>{eta(torrent.time.remaining)}</div>
+            <div class='text-2xl font-bold'>{eta(torrent.time.remaining / 1000)}</div>
           </div>
           <div class='space-y-2'>
             <div class='flex items-center gap-2'>
