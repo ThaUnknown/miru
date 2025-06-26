@@ -103,7 +103,7 @@ export default Object.assign<Native, Partial<Native>>({
     { start: 1.0 * 60 * 1000, end: 1.2 * 60 * 1000, text: 'Chapter 1' },
     { start: 1.4 * 60 * 1000, end: 88 * 1000, text: 'Chapter 2 ' }
   ],
-  version: async () => 'v6.4.0',
+  version: async () => 'v6.4.4',
   updateSettings: async () => undefined,
   setDOH: async () => undefined,
   cachedTorrents: async () => ['40a9047de61859035659e449d7b84286934486b0'],

@@ -89,9 +89,6 @@ importers:
       p2pt:
         specifier: github:ThaUnknown/p2pt#modernise
         version: https://codeload.github.com/ThaUnknown/p2pt/tar.gz/9ad7a56ed6ee43f5664ebad33b803702ee349316
-      rollup-plugin-license:
-        specifier: ^3.6.0
-        version: 3.6.0(picomatch@4.0.2)(rollup@4.40.2)
       semver:
         specifier: ^7.7.2
         version: 7.7.2
@@ -120,8 +117,8 @@ importers:
         specifier: ^4.2.2
         version: 4.2.2(@urql/core@5.1.0(graphql@16.10.0))(react@19.0.0)
       video-deband:
-        specifier: ^1.0.7
-        version: 1.0.7
+        specifier: ^1.0.8
+        version: 1.0.8
       workbox-core:
         specifier: ^7.3.0
         version: 7.3.0
@@ -177,6 +174,9 @@ importers:
       jassub:
         specifier: ^1.8.6
         version: 1.8.6
+      rollup-plugin-license:
+        specifier: ^3.6.0
+        version: 3.6.0(picomatch@4.0.2)(rollup@4.40.2)
       simple-copy:
         specifier: ^2.2.1
         version: 2.2.1
@@ -2594,8 +2594,8 @@ packages:
     peerDependencies:
       svelte: ^4.0.0 || ^5.0.0-next.1
 
-  video-deband@1.0.7:
-    resolution: {integrity: sha512-vwJ2E/e7DfvFlKU5RQ8T8ZEcG7m7A41TIxZ3X57o7Rzw+HSTNyljrtSPJU11UQR2X9wVmAC7WKdOs7zOsxNV6A==}
+  video-deband@1.0.8:
+    resolution: {integrity: sha512-QdEVDl29WWSb/HkGuLmdExto7x90WYqz1DdljT7IiCVH/zqepuCS2OnGX/C3kHDIIOiumtFWEj7z9wUiVojiSA==}
 
   vite-plugin-static-copy@3.0.2:
     resolution: {integrity: sha512-/seLvhUg44s1oU9RhjTZZy/0NPbfNctozdysKcvPovxxXZdI5l19mGq6Ri3IaTf1Dy/qChS4BSR7ayxeu8o9aQ==}
@@ -5340,7 +5340,7 @@ snapshots:
       bits-ui: 0.21.16(svelte@4.2.19)
       svelte: 4.2.19
 
-  video-deband@1.0.7:
+  video-deband@1.0.8:
     dependencies:
       rvfc-polyfill: 1.0.7
       twgl.js: 5.5.4

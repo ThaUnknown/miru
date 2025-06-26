@@ -72,13 +72,13 @@ export default class PictureInPicture {
     canvas.width = this.video.videoWidth
     canvas.height = this.video.videoHeight
     this.subtitles.renderer.resize(this.video.videoWidth, this.video.videoHeight)
-    const renderFrame = () => {
+    const renderFrame = (noskip?: number) => {
+      if (noskip) this.video!.paused ? video.pause() : video.play()
       context.drawImage(this.deband?.canvas ?? this.video!, 0, 0)
       // @ts-expect-error internal call on canvas
       if (canvas.width && canvas.height && this.subtitles.renderer?._canvas) context.drawImage(this.subtitles.renderer._canvas, 0, 0, canvas.width, canvas.height)
       loop = this.video!.requestVideoFrameCallback(renderFrame)
     }
-    renderFrame()
     ctrl.signal.addEventListener('abort', () => {
       this.subtitles?.renderer?.resize()
       this.video!.cancelVideoFrameCallback(loop)
@@ -90,7 +90,9 @@ export default class PictureInPicture {
     video.addEventListener('leavepictureinpicture', () => ctrl.abort(), { signal: ctrl.signal })
 
     try {
+      setTimeout(renderFrame, 10)
       await video.play()
+      if (this.video.paused) video.pause()
       const window = await video.requestPictureInPicture()
       window.addEventListener('resize', () => {
         const { width, height } = window

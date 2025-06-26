@@ -50,7 +50,7 @@
   import PictureInPictureExit from '$lib/components/icons/PictureInPictureExit.svelte'
   import Play from '$lib/components/icons/Play.svelte'
   import Subtitles from '$lib/components/icons/Subtitles.svelte'
-  import { Button } from '$lib/components/ui/button'
+  import { Button, iconSizes } from '$lib/components/ui/button'
   import * as Sheet from '$lib/components/ui/sheet'
   import { client } from '$lib/modules/anilist'
   import { episodes } from '$lib/modules/anizip'
@@ -721,8 +721,8 @@
 
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
 
-<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth class:seeking bind:this={wrapper} on:navigate={resetMove}>
-  <video class='w-full h-full' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
+<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth class:seeking class:pip={pictureInPictureElement} bind:this={wrapper} on:navigate={resetMove}>
+  <video class='w-full h-full' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking || pictureInPictureElement} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
     use:createSubtitles
     use:createDeband={$settings.playerDeband}
     use:holdToFF={'pointer'}
@@ -749,162 +749,174 @@
     on:loadedmetadata={autoPlay}
     on:pointermove={resetMove}
   />
-  <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none' class:hidden={isMiniplayer}>
-    <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg transition-opacity' class:opacity-0={immersed}>
-      <!-- {($torrentstats.progress * 100).toFixed(1)}% -->
-      <div class='flex justify-center items-center gap-2'>
-        <Users size={18} />
-        {$torrentstats.peers.seeders}
+  {#if !isMiniplayer}
+    <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
+      <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg transition-opacity' class:opacity-0={immersed}>
+        <!-- {($torrentstats.progress * 100).toFixed(1)}% -->
+        <div class='flex justify-center items-center gap-2'>
+          <Users size={18} />
+          {$torrentstats.peers.seeders}
+        </div>
+        <div class='flex justify-center items-center gap-2'>
+          <ChevronDown size={18} />
+          {fastPrettyBits($torrentstats.speed.down * 8)}/s
+        </div>
+        <div class='flex justify-center items-center gap-2'>
+          <ChevronUp size={18} />
+          {fastPrettyBits($torrentstats.speed.up * 8)}/s
+        </div>
       </div>
-      <div class='flex justify-center items-center gap-2'>
-        <ChevronDown size={18} />
-        {fastPrettyBits($torrentstats.speed.down * 8)}/s
-      </div>
-      <div class='flex justify-center items-center gap-2'>
-        <ChevronUp size={18} />
-        {fastPrettyBits($torrentstats.speed.up * 8)}/s
-      </div>
-    </div>
-    {#if seeking}
-      {#await thumbnailer.getThumbnail(seekIndex) then src}
-        <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0 object-contain' loading='lazy' decoding='async' class:!object-cover={fitWidth} />
-      {/await}
-    {/if}
-    {#if stats}
-      <div class='absolute top-10 left-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto transition-opacity select:opacity-100 px-3 py-2 rounded'>
-        <button class='absolute right-3 top-1' type='button' use:click={toggleStats}>×</button>
-        FPS: {stats.fps}<br />
-        Presented frames: {stats.presented}<br />
-        Dropped frames: {stats.dropped}<br />
-        Frame time: {stats.processing}<br />
-        Viewport: {stats.viewport}<br />
-        Resolution: {stats.resolution}<br />
-        Buffer health: {stats.buffer}<br />
-        Playback speed: x{stats.speed?.toFixed(1)}<br />
-        Subtitle delay: {subtitleDelay} sec
-      </div>
-    {/if}
-    <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay
-      class='{$settings.minimalPlayerUI ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute top-4 left-4 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto transition-opacity select:opacity-100 {immersed && 'opacity-0'}' />
-    {#if ff}
-      <div class='absolute top-10 font-bold text-sm animate-[fade-in_.4s_ease] flex items-center leading-none bg-black/60 px-4 py-2 rounded-2xl'>x2 <FastForward class='ml-2' size='12' fill='currentColor' /></div>
-    {/if}
-    <div class='mobile:flex hidden gap-4 absolute items-center transition-opacity select:opacity-100' class:opacity-0={immersed}>
-      <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' disabled={!prev}>
-        <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
-      </Button>
-      <Button class='p-3 w-24 h-24 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' on:click={playPause}>
-        {#if paused}
-          <Play size='42px' fill='currentColor' class='p-0.5' />
-        {:else}
-          <Pause size='42px' fill='currentColor' strokeWidth='1' />
-        {/if}
-      </Button>
-      <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' disabled={!next}>
-        <SkipForward size='24px' fill='currentColor' strokeWidth='1' />
-      </Button>
-    </div>
-    {#if buffering}
-      <div in:fade={{ duration: 200, delay: 500 }} out:fade={{ duration: 200 }}>
-        <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
-      </div>
-    {/if}
-    {#each animations as { type, id } (id)}
-      <div class='absolute animate-pulse-once' on:animationend={() => endAnimation(id)}>
-        {#if type === 'play'}
-          <Play size='64px' fill='white' />
-        {:else if type === 'pause'}
-          <Pause size='64px' fill='white' />
-        {:else if type === 'seekforw'}
-          <FastForward size='64px' fill='white' />
-        {:else if type === 'seekback'}
-          <Rewind size='64px' fill='white' />
-        {/if}
-      </div>
-    {/each}
-  </div>
-  <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity select:opacity-100' class:opacity-0={immersed} class:hidden={isMiniplayer}>
-    <div class='flex justify-between gap-12 items-end'>
-      <div class='flex flex-col gap-2 text-left cursor-pointer'>
-        <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
-        <Sheet.Root portal={wrapper}>
-          <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo.session.description}</Sheet.Trigger>
-          <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black justify-between'>
-            {#if mediaInfo.media}
-              {#await Promise.all([episodes(mediaInfo.media.id), client.single(mediaInfo.media.id)]) then [eps, media]}
-                {#if media.data?.Media}
-                  <EpisodesList {eps} media={media.data.Media} />
-                {/if}
-              {/await}
-            {/if}
-          </Sheet.Content>
-        </Sheet.Root>
-      </div>
-      <div class='flex flex-col gap-2 grow-0 items-end self-end'>
-        {#if currentSkippable}
-          <Button on:click={skip} class='font-bold mb-2'>
-            Skip {currentSkippable}
-          </Button>
-        {/if}
-        <div class='text-[rgba(217,217,217,0.6)] text-sm leading-none font-light line-clamp-1'>{getChapterTitle(seeking ? seekPercent * safeduration / 100 : currentTime, chapters) || ''}</div>
-        <div class='ml-auto self-end text-sm leading-none font-light text-nowrap'>{toTS(seeking ? seekPercent * safeduration / 100 : currentTime)} / {toTS(safeduration)}</div>
-      </div>
-    </div>
-    <Seekbar {duration} {currentTime} buffer={buffer / duration * 100} {chapters} bind:seeking bind:seek={seekPercent} on:seeked={finishSeek} on:seeking={startSeek} {thumbnailer} on:keydown={seekBarKey} on:dblclick={fullscreen} />
-    <div class='justify-between gap-2 {$settings.minimalPlayerUI ? 'hidden' : 'mobile:hidden flex'}'>
-      <div class='flex text-white gap-2'>
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={playPause} on:keydown={keywrap(playPause)} id='player-play-pause-button' data-up='#player-seekbar'>
+      {#if seeking}
+        {#await thumbnailer.getThumbnail(seekIndex) then src}
+          <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0 object-contain' loading='lazy' decoding='async' class:!object-cover={fitWidth} />
+        {/await}
+      {/if}
+      {#if stats}
+        <div class='absolute top-10 left-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto transition-opacity select:opacity-100 px-3 py-2 rounded'>
+          <button class='absolute right-3 top-1' type='button' use:click={toggleStats}>×</button>
+          FPS: {stats.fps}<br />
+          Presented frames: {stats.presented}<br />
+          Dropped frames: {stats.dropped}<br />
+          Frame time: {stats.processing}<br />
+          Viewport: {stats.viewport}<br />
+          Resolution: {stats.resolution}<br />
+          Buffer health: {stats.buffer}<br />
+          Playback speed: x{stats.speed?.toFixed(1)}<br />
+          Subtitle delay: {subtitleDelay} sec
+        </div>
+      {/if}
+      <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay
+        class='{$settings.minimalPlayerUI ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute top-4 left-4 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto transition-opacity select:opacity-100 {immersed && 'opacity-0'}' />
+      {#if ff}
+        <div class='absolute top-10 font-bold text-sm animate-[fade-in_.4s_ease] flex items-center leading-none bg-black/60 px-4 py-2 rounded-2xl'>x2 <FastForward class='ml-2' size='12' fill='currentColor' /></div>
+      {/if}
+      <div class='mobile:flex hidden gap-4 absolute items-center transition-opacity select:opacity-100' class:opacity-0={immersed}>
+        <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' disabled={!prev}>
+          <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
+        </Button>
+        <Button class='p-3 w-24 h-24 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' on:click={playPause}>
           {#if paused}
-            <Play size='24px' fill='currentColor' class='p-0.5' />
+            <Play size='42px' fill='currentColor' class='p-0.5' />
           {:else}
-            <Pause size='24px' fill='currentColor' strokeWidth='1' />
+            <Pause size='42px' fill='currentColor' strokeWidth='1' />
           {/if}
         </Button>
-        {#if prev}
-          <Button class='p-3 w-12 h-12' variant='ghost' on:click={prev} on:keydown={keywrap(prev)} id='player-prev-button' data-up='#player-seekbar' data-right='#player-next-button, #player-volume-button, #player-options-button'>
-            <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
-          </Button>
-        {/if}
-        {#if next}
-          <Button class='p-3 w-12 h-12' variant='ghost' on:click={next} on:keydown={keywrap(next)} id='player-next-button' data-up='#player-seekbar' data-right='#player-volume-button, #player-options-button'>
-            <SkipForward size='24px' fill='currentColor' strokeWidth='1' />
-          </Button>
-        {/if}
-        <Volume bind:volume={$volume} bind:muted />
+        <Button class='p-3 w-16 h-16 pointer-events-auto rounded-[50%] backdrop-blur-lg border-white/15 border bg-black/20' variant='ghost' disabled={!next}>
+          <SkipForward size='24px' fill='currentColor' strokeWidth='1' />
+        </Button>
       </div>
-      <div class='flex gap-2'>
-        <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay id='player-options-button' />
-        {#if subtitles}
-          <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs} on:keydown={keywrap(openSubs)} data-up='#player-seekbar'>
-            <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
-          </Button>
-        {/if}
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={() => pip.pip()} on:keydown={keywrap(() => pip.pip())} data-up='#player-seekbar'>
-          {#if pictureInPictureElement}
-            <PictureInPictureExit size='24px' strokeWidth='2' />
-          {:else}
-            <PictureInPictureOff size='24px' strokeWidth='2' />
+      {#if buffering}
+        <div in:fade={{ duration: 200, delay: 500 }} out:fade={{ duration: 200 }}>
+          <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
+        </div>
+      {/if}
+      {#each animations as { type, id } (id)}
+        <div class='absolute animate-pulse-once' on:animationend={() => endAnimation(id)}>
+          {#if type === 'play'}
+            <Play size='64px' fill='white' />
+          {:else if type === 'pause'}
+            <Pause size='64px' fill='white' />
+          {:else if type === 'seekforw'}
+            <FastForward size='64px' fill='white' />
+          {:else if type === 'seekback'}
+            <Rewind size='64px' fill='white' />
           {/if}
-        </Button>
-        {#if false}
-          <Button class='p-3 w-12 h-12' variant='ghost' on:click={toggleCast} on:keydown={keywrap(toggleCast)} data-up='#player-seekbar'>
-            {#if cast}
-              <Cast size='24px' fill='white' strokeWidth='2' />
+        </div>
+      {/each}
+    </div>
+    <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity select:opacity-100' class:opacity-0={immersed}>
+      <div class='flex justify-between gap-12 items-end'>
+        <div class='flex flex-col gap-2 text-left cursor-pointer'>
+          <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
+          <Sheet.Root portal={wrapper}>
+            <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo.session.description}</Sheet.Trigger>
+            <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black justify-between'>
+              {#if mediaInfo.media}
+                {#await Promise.all([episodes(mediaInfo.media.id), client.single(mediaInfo.media.id)]) then [eps, media]}
+                  {#if media.data?.Media}
+                    <EpisodesList {eps} media={media.data.Media} />
+                  {/if}
+                {/await}
+              {/if}
+            </Sheet.Content>
+          </Sheet.Root>
+        </div>
+        <div class='flex flex-col gap-2 grow-0 items-end self-end'>
+          {#if currentSkippable}
+            <Button on:click={skip} class='font-bold mb-2'>
+              Skip {currentSkippable}
+            </Button>
+          {/if}
+          <div class='text-[rgba(217,217,217,0.6)] text-sm leading-none font-light line-clamp-1'>{getChapterTitle(seeking ? seekPercent * safeduration / 100 : currentTime, chapters) || ''}</div>
+          <div class='ml-auto self-end text-sm leading-none font-light text-nowrap'>{toTS(seeking ? seekPercent * safeduration / 100 : currentTime)} / {toTS(safeduration)}</div>
+        </div>
+      </div>
+      <Seekbar {duration} {currentTime} buffer={buffer / duration * 100} {chapters} bind:seeking bind:seek={seekPercent} on:seeked={finishSeek} on:seeking={startSeek} {thumbnailer} on:keydown={seekBarKey} on:dblclick={fullscreen} />
+      <div class='justify-between gap-2 {$settings.minimalPlayerUI ? 'hidden' : 'mobile:hidden flex'}'>
+        <div class='flex text-white gap-2'>
+          <Button class='p-3 w-12 h-12' variant='ghost' on:click={playPause} on:keydown={keywrap(playPause)} id='player-play-pause-button' data-up='#player-seekbar'>
+            {#if paused}
+              <Play size='24px' fill='currentColor' class='p-0.5' />
             {:else}
-              <Cast size='24px' strokeWidth='2' />
+              <Pause size='24px' fill='currentColor' strokeWidth='1' />
             {/if}
           </Button>
-        {/if}
-        <Button class='p-3 w-12 h-12' variant='ghost' on:click={fullscreen} on:keydown={keywrap(fullscreen)} data-up='#player-seekbar'>
-          {#if fullscreenElement}
-            <Minimize size='24px' class='p-0.5' strokeWidth='2.5' />
-          {:else}
-            <Maximize size='24px' class='p-0.5' strokeWidth='2.5' />
+          {#if prev}
+            <Button class='p-3 w-12 h-12' variant='ghost' on:click={prev} on:keydown={keywrap(prev)} id='player-prev-button' data-up='#player-seekbar' data-right='#player-next-button, #player-volume-button, #player-options-button'>
+              <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
+            </Button>
           {/if}
-        </Button>
+          {#if next}
+            <Button class='p-3 w-12 h-12' variant='ghost' on:click={next} on:keydown={keywrap(next)} id='player-next-button' data-up='#player-seekbar' data-right='#player-volume-button, #player-options-button'>
+              <SkipForward size='24px' fill='currentColor' strokeWidth='1' />
+            </Button>
+          {/if}
+          <Volume bind:volume={$volume} bind:muted />
+        </div>
+        <div class='flex gap-2'>
+          <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay id='player-options-button' />
+          {#if subtitles}
+            <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs} on:keydown={keywrap(openSubs)} data-up='#player-seekbar'>
+              <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
+            </Button>
+          {/if}
+          <Button class='p-3 w-12 h-12' variant='ghost' on:click={() => pip.pip()} on:keydown={keywrap(() => pip.pip())} data-up='#player-seekbar'>
+            {#if pictureInPictureElement}
+              <PictureInPictureExit size='24px' strokeWidth='2' />
+            {:else}
+              <PictureInPictureOff size='24px' strokeWidth='2' />
+            {/if}
+          </Button>
+          {#if false}
+            <Button class='p-3 w-12 h-12' variant='ghost' on:click={toggleCast} on:keydown={keywrap(toggleCast)} data-up='#player-seekbar'>
+              {#if cast}
+                <Cast size='24px' fill='white' strokeWidth='2' />
+              {:else}
+                <Cast size='24px' strokeWidth='2' />
+              {/if}
+            </Button>
+          {/if}
+          <Button class='p-3 w-12 h-12' variant='ghost' on:click={fullscreen} on:keydown={keywrap(fullscreen)} data-up='#player-seekbar'>
+            {#if fullscreenElement}
+              <Minimize size='24px' class='p-0.5' strokeWidth='2.5' />
+            {:else}
+              <Maximize size='24px' class='p-0.5' strokeWidth='2.5' />
+            {/if}
+          </Button>
+        </div>
       </div>
     </div>
-  </div>
+  {:else}
+    <div class='absolute w-full left-0 bottom-0 flex justify-center'>
+      <Button variant='ghost' class='drop-shadow-[0_0_7px_#000] mb-1' size='icon' on:click={playPause}>
+        {#if paused}
+          <Play size={iconSizes.lg} fill='currentColor' class='px-0.5' />
+        {:else}
+          <Pause size={iconSizes.lg} fill='currentColor' strokeWidth='1' />
+        {/if}
+      </Button>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -912,9 +924,10 @@
     object-fit: cover !important;
   }
 
-  .seeking :global(.deband-canvas) {
-    opacity: 0 !important;
+  .seeking :global(.deband-canvas), .pip :global(.deband-canvas){
+    display: none;
   }
+
   .gradient {
     background: linear-gradient(to top, oklab(0 0 0 / 0.85) 0%, oklab(0 0 0 / 0.7) 35%, oklab(0 0 0 / 0) 100%);
   }
