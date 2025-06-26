@@ -908,7 +908,7 @@
     </div>
   {:else}
     <div class='absolute w-full left-0 bottom-0 flex justify-center'>
-      <Button variant='ghost' class='drop-shadow-[0_0_7px_#000] mb-1' size='icon' on:click={playPause}>
+      <Button variant='ghost' class='drop-shadow-[0_0_7px_#000] mb-1' size='icon' on:pointerdown={e => { e.stopPropagation(); playPause() }}>
         {#if paused}
           <Play size={iconSizes.lg} fill='currentColor' class='px-0.5' />
         {:else}
