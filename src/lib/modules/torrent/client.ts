@@ -5,7 +5,7 @@ import { persisted } from 'svelte-persisted-store'
 import native from '../native'
 import { w2globby } from '../w2g/lobby'
 
-import type { FileInfo, PeerInfo, TorrentFile, TorrentInfo } from '$lib/../app'
+import type { TorrentFile, TorrentInfo } from '$lib/../app'
 import type { Media } from '../anilist'
 
 const defaultTorrentInfo: TorrentInfo = {
@@ -22,60 +22,38 @@ const defaultTorrentInfo: TorrentInfo = {
 const defaultProtocolStatus = { dht: false, lsd: false, pex: false, nat: false, forwarding: false, persisting: false, streaming: false }
 
 export const server = new class ServerClient {
-  last = persisted<{media: Media, id: string, episode: number} | null>('last-torrent', null)
-  active = writable<Promise<{media: Media, id: string, episode: number, files: TorrentFile[]}| null>>()
+  last = persisted<{ media: Media, id: string, episode: number } | null>('last-torrent', null)
+  active = writable<Promise<{ media: Media, id: string, episode: number, files: TorrentFile[] } | null>>()
   downloaded = writable(this.cachedSet())
 
-  stats = readable(defaultTorrentInfo, set => {
-    let listener = 0
+  stats = this._timedSafeReadable(defaultTorrentInfo, native.torrentInfo, 200)
 
-    const update = async () => {
-      const id = (await get(this.active))?.id
-      if (id) set(await native.torrentInfo(id))
-      listener = setTimeout(update, 200)
-    }
+  protocol = this._timedSafeReadable(defaultProtocolStatus, native.protocolStatus)
 
-    update()
-    return () => clearTimeout(listener)
-  })
+  peers = this._timedSafeReadable([], native.peerInfo)
 
-  protocol = readable(defaultProtocolStatus, set => {
-    let listener = 0
+  files = this._timedSafeReadable([], native.fileInfo)
 
-    const update = async () => {
-      const id = (await get(this.active))?.id
-      if (id) set(await native.protocolStatus(id))
-      listener = setTimeout(update, 5000)
-    }
+  library = this._timedSafeReadable([], native.library, 120_000)
 
-    update()
-    return () => clearTimeout(listener)
-  })
+  _timedSafeReadable<T> (defaultData: T, fn: (id: string) => Promise<T>, duration = 5000) {
+    return readable<T>(defaultData, set => {
+      let listener = 0
 
-  peers = readable<PeerInfo[]>([], set => {
-    let listener = 0
+      const update = async () => {
+        try {
+          const id = (await get(this.active))?.id
+          if (id) set(await fn(id))
+        } catch (error) {
+          console.error(error)
+        }
+        listener = setTimeout(update, duration)
+      }
 
-    const update = async () => {
-      const id = (await get(this.active))?.id
-      if (id) set(await native.peerInfo(id))
-      listener = setTimeout(update, 5000)
-    }
-
-    update()
-    return () => clearTimeout(listener)
-  })
-
-  files = readable<FileInfo[]>([], set => {
-    let listener = 0
-    const update = async () => {
-      const id = (await get(this.active))?.id
-      if (id) set(await native.fileInfo(id))
-      listener = setTimeout(update, 5000)
-    }
-
-    update()
-    return () => clearTimeout(listener)
-  })
+      update()
+      return () => clearTimeout(listener)
+    })
+  }
 
   constructor () {
     const last = get(this.last)
@@ -98,7 +76,7 @@ export const server = new class ServerClient {
   }
 
   async _play (id: string, media: Media, episode: number) {
-    const result = { id, media, episode, files: await native.playTorrent(id) }
+    const result = { id, media, episode, files: await native.playTorrent(id, media.id, episode) }
     this.downloaded.value = this.cachedSet()
     return result
   }

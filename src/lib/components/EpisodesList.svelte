@@ -63,8 +63,8 @@
     return list.slice((page - 1) * perPage, page * perPage)
   }
 
-  $: _progress = progress(media) ?? 0
   $: completed = list(media) === 'COMPLETED'
+  $: _progress = completed ? 0 : progress(media) ?? 0
 
   $: currentPage = Math.floor((!completed ? _progress : 0) / perPage) + 1
 

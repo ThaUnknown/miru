@@ -111,7 +111,7 @@
         </div>
       </div>
     </div>
-    <div class='flex gap-2 items-center justify-center md:justify-start w-full lex-wrap'>
+    <div class='flex gap-2 items-center md:justify-start md:self-start'>
       <div class='flex md:mr-3 w-full min-[380px]:w-[180px]'>
         <PlayButton size='default' {media} class='rounded-r-none w-full' />
         <EntryEditor {media} />

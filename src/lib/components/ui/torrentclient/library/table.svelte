@@ -1,64 +1,76 @@
 <script lang='ts'>
-  import { writable } from 'svelte/store'
-  import { Render, Subscribe, createRender, createTable } from 'svelte-headless-table'
+  import { DataBodyRow, Render, Subscribe, createRender, createTable } from 'svelte-headless-table'
   import { addSortBy } from 'svelte-headless-table/plugins'
 
   import Columnheader from '../columnheader.svelte'
 
-  import { NameCell, StatusCell } from './cells'
+  import { MediaCell, NameCell, StatusCell } from './cells'
+
+  import type { LibraryEntry } from '$lib/../app'
 
   import * as Table from '$lib/components/ui/table'
+  import { client } from '$lib/modules/anilist'
+  import { server } from '$lib/modules/torrent'
   import { cn, fastPrettyBytes } from '$lib/utils'
 
-  interface LibraryEntry {
-    series: string
-    episode: string
-    name: string
-    files: number
-    size: number
-    completed: boolean
-    downloaded: number
-  }
+  const lib = server.library
 
-  const data = writable<LibraryEntry[]>([])
-
-  const table = createTable(data, {
+  const table = createTable(lib, {
     sort: addSortBy({ toggleOrder: ['asc', 'desc'] })
   })
 
   const columns = table.createColumns([
-    table.column({ accessor: 'series', header: 'Series', id: 'series' }),
-    table.column({ accessor: 'episode', header: 'Episode', id: 'episode' }),
     table.column({
-      accessor: 'name',
-      header: 'Torrent Name',
-      id: 'name',
-      cell: ({ value }) => createRender(NameCell, { value })
+      accessor: 'mediaID',
+      header: 'Series',
+      id: 'series',
+      cell: ({ value }) => value ? createRender(MediaCell, { value }) : '?'
+    }),
+    table.column({
+      accessor: 'episode',
+      header: 'Episode',
+      id: 'episode',
+      cell: ({ value }) => value ?? '?'
     }),
     table.column({ accessor: 'files', header: 'Files', id: 'files' }),
     table.column({
       accessor: 'size',
       header: 'Size',
       id: 'size',
-      cell: ({ value }) => fastPrettyBytes(value)
+      cell: ({ value }) => value ? fastPrettyBytes(value) : '?'
     }),
     table.column({
-      accessor: 'completed',
+      accessor: 'progress',
       header: 'Status',
       id: 'completed',
-      cell: ({ value }) => createRender(StatusCell, { value })
+      cell: ({ value }) => value ? createRender(StatusCell, { value: value === 1 }) : '?'
     }),
     table.column({
-      accessor: 'downloaded',
-      header: 'Downloaded',
-      id: 'downloaded',
-      cell: ({ value }) => new Date(value).toLocaleDateString()
+      accessor: 'date',
+      header: 'Date',
+      id: 'date',
+      cell: ({ value }) => value ? new Date(value).toLocaleDateString() : '?'
+    }),
+    table.column({
+      accessor: e => e?.name ?? e.hash,
+      header: 'Torrent Name',
+      id: 'name',
+      cell: ({ value }) => createRender(NameCell, { value })
     })
   ])
 
   const tableModel = table.createViewModel(columns)
 
   const { headerRows, pageRows, tableAttrs, tableBodyAttrs } = tableModel
+
+  async function playEntry ({ mediaID, episode, hash }: LibraryEntry) {
+    if (!mediaID || !hash) return
+    const media = await client.single(mediaID)
+    server.play(hash, media.data!.Media!, episode)
+  }
+
+// TODO
+  // $: allIDsPromise = client.multiple($lib.map(e => e.mediaID))
 </script>
 
 <div class='rounded-md border max-w-screen-xl h-full overflow-clip contain-strict'>
@@ -94,7 +106,7 @@
       {#if $pageRows.length}
         {#each $pageRows as row (row.id)}
           <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-            <Table.Row {...rowAttrs} class='h-12'>
+            <Table.Row {...rowAttrs} class={cn('h-12', (row instanceof DataBodyRow) && row.original.mediaID ? 'cursor-pointer' : 'cursor-not-allowed')} on:click={() => { if (row instanceof DataBodyRow) playEntry(row.original) }}>
               {#each row.cells as cell (cell.id)}
                 <Subscribe attrs={cell.attrs()} let:attrs>
                   <Table.Cell {...attrs} class={cn('px-4 h-14 first:pl-6 last:pr-6 text-nowrap', (cell.id === 'downloaded' || cell.id === 'episode') && 'text-muted-foreground')}>

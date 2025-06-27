@@ -95,6 +95,7 @@ export default Object.assign<Native, Partial<Native>>({
   updatePeerCounts: async () => [],
   isApp: false,
   playTorrent: async () => dummyFiles,
+  library: async () => [],
   attachments: async () => [],
   tracks: async () => [],
   subtitles: async () => undefined,

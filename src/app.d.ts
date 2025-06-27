@@ -100,6 +100,17 @@ export interface TorrentSettings {
   torrentPeX: boolean
 }
 
+export interface LibraryEntry {
+  mediaID: number
+  episode: number
+  files: number
+  hash: string
+  progress: number
+  date: number
+  size: number
+  name: string
+}
+
 export interface Native {
   authAL: (url: string) => Promise<AuthResponse>
   restart: () => Promise<void>
@@ -127,7 +138,8 @@ export interface Native {
   checkAvailableSpace: (_?: unknown) => Promise<number>
   checkIncomingConnections: (port: number) => Promise<boolean>
   updatePeerCounts: (hashes: string[]) => Promise<Array<{ hash: string, complete: string, downloaded: string, incomplete: string }>>
-  playTorrent: (id: string) => Promise<TorrentFile[]>
+  playTorrent: (id: string, mediaID: number, episode: number) => Promise<TorrentFile[]>
+  library: () => Promise<LibraryEntry[]>
   attachments: (hash: string, id: number) => Promise<Attachment[]>
   tracks: (hash: string, id: number) => Promise<Array<{ number: string, language?: string, type: string, header?: string, name?: string }>>
   subtitles: (hash: string, id: number, cb: (subtitle: { text: string, time: number, duration: number }, trackNumber: number) => void) => Promise<void>
