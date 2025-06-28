@@ -20,7 +20,7 @@
   import client from '$lib/modules/auth/client'
   import { lockedState, idleState, activityState } from '$lib/modules/idle'
   import native from '$lib/modules/native'
-  import { cn } from '$lib/utils'
+  import { cn, highEntropyValues } from '$lib/utils'
 
   const auth = client.hasAuth
 
@@ -29,12 +29,16 @@
   let visibilityState: DocumentVisibilityState
 
   $: active = ($lockedState === 'locked' || visibilityState === 'hidden' || ($idleState === 'active' && $activityState === 'active')) && $page.route.id !== '/app/player'
+
+  let isMac = false
+
+  if (highEntropyValues) highEntropyValues.then(({ platform }) => { isMac = platform === 'MacOS' })
 </script>
 
 <svelte:document bind:visibilityState />
 
 <BannerImage class='absolute top-0 left-0 w-14 -z-10 hidden md:block' />
-<Logo class='mb-3 h-10 object-contain px-2.5 hidden md:block text-white ml-2' />
+<Logo class={cn('mb-3 h-10 object-contain px-2.5 hidden md:block text-white ml-2', isMac && 'mt-3')} />
 <SidebarButton href='/app/home/'>
   <House size={18} />
 </SidebarButton>
