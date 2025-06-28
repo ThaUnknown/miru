@@ -11,7 +11,7 @@
   $: processed = Object.entries(users)
 </script>
 
-<div class='flex flex-col w-72 max-w-full px-5 overflow-hidden'>
+<div class='flex flex-col w-full md:w-72 max-w-full px-5 overflow-y-auto md:max-h-full max-h-[40%]'>
   <div class='text-md font-bold pl-1 pb-2'>
     {processed.length} Member(s)
   </div>
