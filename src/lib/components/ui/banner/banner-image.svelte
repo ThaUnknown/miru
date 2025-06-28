@@ -44,6 +44,6 @@
     left: 0 ; top: 0;
     width: 100%; height: 23rem;
     z-index: 0;
-    border-image: fill 0 linear-gradient(rgba(0, 0, 0, .4));
+    background: rgba(0, 0, 0, .4);
   }
 </style>

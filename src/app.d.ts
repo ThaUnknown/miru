@@ -182,6 +182,7 @@ declare global {
 
     interface PageState {
       search?: VariablesOf<typeof Search>
+      image?: File | string
     }
     // interface Platform {}
   }

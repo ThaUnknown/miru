@@ -168,30 +168,35 @@
 
   let trace: TraceAnime[] | undefined
 
+  async function traceReq (file: File | string) {
+    const promise = traceAnime(file)
+    toast.promise(promise, {
+      description: 'You can also paste an URL to an image.',
+      loading: 'Looking up anime for image...',
+      success: 'Found anime for image!',
+      error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
+    })
+
+    try {
+      const res = await promise
+
+      clear()
+
+      trace = res
+      search.ids = [...new Set(res.map(r => r.anilist))]
+    // TODO: sort by similarity, finish
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  if ($page.state.image) traceReq($page.state.image)
+
   async function imagePicker (e: Event) {
     const target = e.target as HTMLInputElement
     const { files } = target
     if (files?.[0]) {
-      const promise = traceAnime(files[0])
-      toast.promise(promise, {
-        description: 'You can also paste an URL to an image.',
-        loading: 'Looking up anime for image...',
-        success: 'Found anime for image!',
-        error: 'Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.'
-      })
-      target.value = ''
-
-      try {
-        const res = await promise
-
-        clear()
-
-        trace = res
-        search.ids = [...new Set(res.map(r => r.anilist))]
-      // TODO: sort by similarity, finish
-      } catch (e) {
-        console.error(e)
-      }
+      traceReq(files[0])
     }
   }
 

@@ -19,7 +19,7 @@
   if (get(query.isPaused$)) query.resume()
 </script>
 
-<div class='w-full h-[450px] relative'>
+<div class='w-full h-[400px] relative'>
   <!-- really shit and hacky way of fixing scroll position jumping when banner changes height -->
   <div class='absolute top-0 transparent h-full opacity-0'>.</div>
   {#if $query.fetching}

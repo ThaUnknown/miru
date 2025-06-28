@@ -223,45 +223,23 @@ export interface TraceAnime {
   image: string
 }
 
-export async function traceAnime (image: File) { // WAIT lookup logic
-  const options = {
-    method: 'POST',
-    body: image,
-    headers: { 'Content-type': image.type }
+export async function traceAnime (image: File | string) { // WAIT lookup logic
+  let res: Response
+  if (image instanceof File) {
+    res = await fetch('https://api.trace.moe/search?cutBorders', {
+      method: 'POST',
+      body: image,
+      headers: { 'Content-type': image.type }
+    })
+  } else {
+    res = await fetch(`https://api.trace.moe/search?cutBorders&url=${image}`)
   }
-  const url = 'https://api.trace.moe/search'
-  // let url = `https://api.trace.moe/search?cutBorders&url=${image}`
-
-  const res = await fetch(url, options)
   const { result } = await res.json() as { result: TraceAnime[] }
 
   if (result.length) {
     return result
-    // search.value = {
-    //   clearNext: true,
-    //   load: (page = 1, perPage = 50, variables = {}) => {
-    //     const res = anilistClient.searchIDS({ page, perPage, id: ids, ...SectionsManager.sanitiseObject(variables) }).then(res => {
-    //       for (const index in res.data?.Page?.media) {
-    //         const media = res.data.Page.media[index]
-    //         const counterpart = result.find(({ anilist }) => anilist === media.id)
-    //         res.data.Page.media[index] = {
-    //           media,
-    //           episode: counterpart.episode,
-    //           similarity: counterpart.similarity,
-    //           episodeData: {
-    //             image: counterpart.image,
-    //             video: counterpart.video
-    //           }
-    //         }
-    //       }
-    //       res.data?.Page?.media.sort((a, b) => b.similarity - a.similarity)
-    //       return res
-    //     })
-    //     return SectionsManager.wrapResponse(res, result.length, 'episode')
-    //   }
-    // }
   } else {
-    throw new Error('Search Failed \n Couldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.')
+    throw new Error('Search Failed\nCouldn\'t find anime for specified image! Try to remove black bars, or use a more detailed image.')
   }
 }
 

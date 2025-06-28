@@ -19,7 +19,36 @@
     const targetValue = NAVIGATE_TARGETS[target as keyof typeof NAVIGATE_TARGETS]
     goto(`/app/${targetValue}/${value ?? ''}`)
   })
+
+  const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
+
+  const w2gRx = /hayase(?:(?:\.watch)|(?::\/))\/w2g\/(.+)/
+
+  async function handleTransfer (e: { dataTransfer?: DataTransfer | null, clipboardData?: DataTransfer | null } & Event) {
+    e.preventDefault()
+    const promises = [...(e.dataTransfer ?? e.clipboardData)!.items].map(item => {
+      const type = item.type
+      return new Promise<File | { text: string, type: string }>(resolve => item.kind === 'string' ? item.getAsString(text => resolve({ text, type })) : resolve(item.getAsFile()!))
+    })
+
+    for (const file of await Promise.all(promises)) {
+      if (file instanceof Blob) {
+        if (file.type.startsWith('image') || imageRx.test(file.name)) {
+          goto('/app/search', { state: { image: file } })
+        }
+      } else if (file.type === 'text/plain') {
+        if (imageRx.test(file.text)) {
+          goto('/app/search', { state: { image: file.text } })
+        } else if (w2gRx.test(file.text)) {
+          const match = file.text.match(w2gRx)
+          if (match?.[1])goto('/app/w2g/' + match[1])
+        }
+      }
+    }
+  }
 </script>
+
+<svelte:window on:dragover|preventDefault on:drop={handleTransfer} on:paste={handleTransfer} />
 
 <BannerImage class='absolute top-0 left-0 -z-[1]' />
 <SearchModal />
