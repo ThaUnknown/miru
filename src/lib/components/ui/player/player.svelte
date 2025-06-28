@@ -78,6 +78,7 @@
   let seekPercent = 0
   let duration = 1
   let playbackRate = 1
+  $: console.log(playbackRate)
   let buffered: SvelteMediaTimeRange[] = []
   let subtitleDelay = 0
   $: buffer = Math.max(...buffered.map(({ end }) => end))
@@ -751,7 +752,7 @@
   />
   {#if !isMiniplayer}
     <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
-      <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg transition-opacity' class:opacity-0={immersed}>
+      <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg transition-opacity gradient-to-bottom' class:opacity-0={immersed}>
         <!-- {($torrentstats.progress * 100).toFixed(1)}% -->
         <div class='flex justify-center items-center gap-2'>
           <Users size={18} />
@@ -827,9 +828,9 @@
     <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity select:opacity-100' class:opacity-0={immersed}>
       <div class='flex justify-between gap-12 items-end'>
         <div class='flex flex-col gap-2 text-left cursor-pointer'>
-          <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
+          <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300 hover:underline' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
           <Sheet.Root portal={wrapper}>
-            <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo.session.description}</Sheet.Trigger>
+            <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left hover:underline'>{mediaInfo.session.description}</Sheet.Trigger>
             <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black justify-between'>
               {#if mediaInfo.media}
                 {#await Promise.all([episodes(mediaInfo.media.id), client.single(mediaInfo.media.id)]) then [eps, media]}
@@ -874,6 +875,11 @@
           <Volume bind:volume={$volume} bind:muted />
         </div>
         <div class='flex gap-2'>
+          {#if playbackRate !== 1}
+            <div class='flex justify-center items-center leading-none text-base font-bold px-1 pt-0.5'>
+              x{playbackRate.toFixed(1)}
+            </div>
+          {/if}
           <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay id='player-options-button' />
           {#if subtitles}
             <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs} on:keydown={keywrap(openSubs)} data-up='#player-seekbar'>
@@ -930,6 +936,10 @@
 
   .gradient {
     background: linear-gradient(to top, oklab(0 0 0 / 0.85) 0%, oklab(0 0 0 / 0.7) 35%, oklab(0 0 0 / 0) 100%);
+  }
+
+  .gradient-to-bottom {
+    background: linear-gradient(to bottom, oklab(0 0 0 / 0.85) 0%, oklab(0 0 0 / 0.7) 35%, oklab(0 0 0 / 0) 100%);
   }
 
   .animate-pulse-once {
