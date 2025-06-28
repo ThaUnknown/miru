@@ -161,6 +161,30 @@ export const sort = [
   {
     value: 'UPDATED_AT_DESC',
     label: 'Updated Date'
+  },
+  {
+    value: 'TITLE_ROMAJI',
+    label: 'Name Asc'
+  },
+  {
+    value: 'START_DATE',
+    label: 'Release Date Asc'
+  },
+  {
+    value: 'SCORE',
+    label: 'Score Asc'
+  },
+  {
+    value: 'POPULARITY',
+    label: 'Popularity Asc'
+  },
+  {
+    value: 'TRENDING',
+    label: 'Trending Asc'
+  },
+  {
+    value: 'UPDATED_AT',
+    label: 'Updated Date Asc'
   }
 ] as const
 
