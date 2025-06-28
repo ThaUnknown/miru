@@ -65,7 +65,7 @@
 <Progress step={1} />
 
 <div class='space-y-3 lg:max-w-4xl pt-5 h-full overflow-y-auto' use:dragScroll>
-  <SettingCard class='bg-transparent' let:id title='Streamed Download' description="Only downloads the single file that's currently being watched, instead of downloading an entire batch of episodes. Saves bandwidth and reduces strain on the peer swarm.">
+  <SettingCard class='bg-transparent' let:id title='Streamed Download' description="Only downloads the data that's directly needed for playback, down to the minute, instead of downloading an entire batch of episodes. Will not buffer ahead more than a few seconds, and will stop downloading once the few second buffer is filled. Saves bandwidth and reduces strain on the peer swarm.">
     <Switch {id} bind:checked={$settings.torrentStreamedDownload} />
   </SettingCard>
   <SettingCard class='bg-transparent' let:id title='Transfer Speed Limit' description='Download/Upload speed limit for torrents, higher values increase CPU usage, and values higher than your storage write speeds will quickly fill up RAM.'>

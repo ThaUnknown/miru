@@ -63,7 +63,7 @@
 
 <div class='pl-5 pb-5 justify-end flex flex-col h-full max-w-full'>
   {#key current}
-    <div class='text-white font-black text-4xl line-clamp-2 w-[800px] max-w-full leading-tight fade-in'>
+    <div class='text-white font-black text-4xl line-clamp-1 w-[900px] max-w-full leading-tight fade-in'>
       {title(current)}
     </div>
     <div class='details text-white capitalize pt-3 pb-2 flex w-[600px] max-w-full text-xs fade-in'>
