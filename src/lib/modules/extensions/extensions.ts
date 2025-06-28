@@ -118,6 +118,14 @@ export const extensions = new class Extensions {
       }
     }
 
+    if (!navigator.onLine) {
+      const library = await native.library()
+      const entry = library.find(lib => lib.mediaID === media.id && lib.episode === episode)
+      if (entry) {
+        results.push({ accuracy: 'high', date: new Date(entry.date), downloads: 0, hash: entry.hash, extension: new Set(['local']), leechers: 0, link: entry.hash, seeders: 0, size: entry.size, title: entry.name ?? entry.hash, type: entry.files > 1 ? 'batch' : undefined, parseObject: {} as unknown as AnitomyResult })
+      }
+    }
+
     debug(`Found ${results.length} results`)
 
     const deduped = this.dedupe(results)
