@@ -7,8 +7,6 @@
 
 <h4 align="center"><b>Stream anime torrents instantly, real-time with no waiting for downloads to finish! 🍿</b></h4>
 
-<p align="center">Formerly known as Miru.</p>
-
 <p align="center">
   <a href="https://hayase.watch/#about">About</a> •
   <a href="https://hayase.watch/features/">Features</a> •
@@ -23,6 +21,10 @@
     <img alt="Download" src="https://img.shields.io/github/downloads/ThaUnknown/miru/total?style=flat-square">
   </a>
 </p>
+
+<h4 align="center"><video src='https://raw.githubusercontent.com/hayase-app/website/main/docs/showcase.mp4' controls style='max-width: 80%'></h4>
+
+<p align="center">Formerly known as Miru.</p>
 
 ## ✨ About
 
@@ -51,6 +53,10 @@ It is meant to feel look, work and perform like a premium streaming service, but
 * Edit entries (score, progress, status, favorite, etc.) even while offline.
 * Search by image, name, genre, year, season, and more.
 * View trailers, OP/ED themes, and detailed episode lists with thumbnails, descriptions and filler indicators.
+
+<p align="center">
+  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/viewanime.webp' style='max-width: 400px'></img>
+</p>
 
 ### 🤝 Social & Community
 
@@ -90,6 +96,10 @@ It is meant to feel look, work and perform like a premium streaming service, but
 * Exponential volume \[better control at lower volumes].
 * External player support.
 
+<p align="center">
+  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/videoplayer.webp' style='max-width: 400px'></img>
+</p>
+
 ### 🧲 Torrents
 
 * Stream torrents instantly, no waiting for full downloads.
@@ -100,6 +110,10 @@ It is meant to feel look, work and perform like a premium streaming service, but
 * Support for most popular BEP's.
 * Persist torrents, cache progress, and rescan instantly.
 * View detailed torrent and peer info.
+
+<p align="center">
+  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/modal.webp' style='max-width: 400px'></img>
+</p>
 
 ### ⚙️ Performance & Security
 
@@ -120,6 +134,10 @@ It is meant to feel look, work and perform like a premium streaming service, but
 * Minimise to tray.
 * In-app changelog.
 * Custom themes.
+
+<p align="center">
+  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/simple.webp' style='max-width: 400px'></img>
+</p>
 
 ## **Building and Development**
 
