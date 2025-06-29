@@ -14,11 +14,11 @@
   import Pagination from './Pagination.svelte'
   import { Button } from './ui/button'
   import { Load } from './ui/img'
+  import { playEp } from './ui/player/mediahandler.svelte'
   import { Profile } from './ui/profile'
 
   import type { EpisodesResponse } from '$lib/modules/anizip/types'
 
-  import { searchStore } from '$lib'
   import { episodes as _episodes, dedupeAiring, episodeByAirDate, notes, type Media } from '$lib/modules/anilist'
   import { authAggregator, list, progress } from '$lib/modules/auth'
   import { click, dragScroll } from '$lib/modules/navigate'
@@ -69,7 +69,7 @@
   $: currentPage = Math.floor((!completed ? _progress : 0) / perPage) + 1
 
   function play (episode: number) {
-    searchStore.set({ media, episode })
+    $playEp(media, episode)
   }
 
   export let following = authAggregator.following(media.id)

@@ -1,4 +1,10 @@
+<script lang='ts' context='module'>
+  import { writable } from 'svelte/store'
+  export const playEp = writable((media: Media, episode: number) => {})
+</script>
+
 <script lang='ts'>
+
   import Externalplayer from './externalplayer.svelte'
   import Player from './player.svelte'
 
@@ -7,8 +13,9 @@
 
   import { searchStore } from '$lib'
   import { fillerEpisodes } from '$lib/components/EpisodesList.svelte'
-  import { cover, episodes, title } from '$lib/modules/anilist'
+  import { cover, episodes, title, type Media } from '$lib/modules/anilist'
   import { settings } from '$lib/modules/settings'
+  import { server } from '$lib/modules/torrent'
   import { w2globby } from '$lib/modules/w2g/lobby'
 
   export let mediaInfo: NonNullable<Awaited<ReturnType<typeof resolveFilesPoorly>>>
@@ -36,10 +43,6 @@
     }
   })
 
-  function findEpisode (episode: number) {
-    return mediaInfo.targetAnimeFiles.find(file => file.metadata.episode === episode)
-  }
-
   function hasNext (file: MediaInfo) {
     return Number(file.episode) < (episodes(file.media) ?? 1)
   }
@@ -54,12 +57,7 @@
       }
       episode = Math.min(episode, episodes(current.media) ?? 1)
     }
-    const nextFile = findEpisode(episode)
-    if (nextFile) {
-      current = fileToMedaInfo(nextFile)
-    } else {
-      searchStore.set({ media: current.media, episode })
-    }
+    playEpisode(current.media, episode)
   }
   function playPrev () {
     let episode = parseInt('' + current.episode) - 1
@@ -69,17 +67,24 @@
       }
       episode = Math.max(1, episode)
     }
-    const prevFile = findEpisode(episode)
-    if (prevFile) {
-      current = fileToMedaInfo(prevFile)
+    playEpisode(current.media, episode)
+  }
+
+  function playEpisode (media: Media, episode: number) {
+    if (episode === current.episode && media.id === current.media.id) return searchStore.set({ media, episode })
+    const file = mediaInfo.resolvedFiles.find(res => res.metadata.episode === episode && res.metadata.media.id === media.id)
+    if (file) {
+      current = fileToMedaInfo(file)
+      server.last.update(last => ({ media, episode, id: last!.id }))
     } else {
-      searchStore.set({ media: current.media, episode })
+      searchStore.set({ media, episode })
     }
   }
 
+  $: $playEp = playEpisode
+
   function selectFile (file: ResolvedFile) {
     current = fileToMedaInfo(file)
-    $w2globby?.mediaIndexChanged(mediaInfo.resolvedFiles.indexOf(current.file))
   }
 
   $: next = hasNext(current)

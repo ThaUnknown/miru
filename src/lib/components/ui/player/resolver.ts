@@ -1,7 +1,7 @@
 import anitomyscript from 'anitomyscript'
 
+import type { TorrentFile } from '$lib/../app'
 import type { MediaEdgeFrag } from '$lib/modules/anilist/queries'
-import type { TorrentFile } from '../../../../app'
 import type { AnitomyResult } from 'anitomyscript'
 import type { ResultOf } from 'gql.tada'
 
