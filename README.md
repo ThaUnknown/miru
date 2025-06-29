@@ -22,7 +22,7 @@
   </a>
 </p>
 
-<h4 align="center"><video src='https://raw.githubusercontent.com/hayase-app/website/main/docs/showcase.mp4' controls style='max-width: 80%'></h4>
+https://github.com/user-attachments/assets/bbbe2966-b773-4ebb-9d69-08248ae77ae4
 
 <p align="center">Formerly known as Miru.</p>
 
@@ -55,7 +55,7 @@ It is meant to feel look, work and perform like a premium streaming service, but
 * View trailers, OP/ED themes, and detailed episode lists with thumbnails, descriptions and filler indicators.
 
 <p align="center">
-  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/viewanime.webp' style='max-width: 400px'></img>
+  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/viewanime.webp' width='400px'></img>
 </p>
 
 ### 🤝 Social & Community
@@ -97,7 +97,7 @@ It is meant to feel look, work and perform like a premium streaming service, but
 * External player support.
 
 <p align="center">
-  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/videoplayer.webp' style='max-width: 400px'></img>
+  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/videoplayer.webp' width='400px'></img>
 </p>
 
 ### 🧲 Torrents
@@ -112,7 +112,7 @@ It is meant to feel look, work and perform like a premium streaming service, but
 * View detailed torrent and peer info.
 
 <p align="center">
-  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/modal.webp' style='max-width: 400px'></img>
+  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/modal.webp' width='400px'></img>
 </p>
 
 ### ⚙️ Performance & Security
@@ -136,7 +136,7 @@ It is meant to feel look, work and perform like a premium streaming service, but
 * Custom themes.
 
 <p align="center">
-  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/simple.webp' style='max-width: 400px'></img>
+  <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/simple.webp' width='400px'></img>
 </p>
 
 ## **Building and Development**
