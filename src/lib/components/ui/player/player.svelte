@@ -752,21 +752,22 @@
   />
   {#if !isMiniplayer}
     <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
-      <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg transition-opacity gradient-to-bottom' class:opacity-0={immersed}>
-        <!-- {($torrentstats.progress * 100).toFixed(1)}% -->
-        <div class='flex justify-center items-center gap-2'>
-          <Users size={18} />
-          {$torrentstats.peers.seeders}
+      {#if !$settings.minimalPlayerUI}
+        <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg transition-opacity gradient-to-bottom' class:opacity-0={immersed}>
+          <div class='flex justify-center items-center gap-2'>
+            <Users size={18} />
+            {$torrentstats.peers.seeders}
+          </div>
+          <div class='flex justify-center items-center gap-2'>
+            <ChevronDown size={18} />
+            {fastPrettyBits($torrentstats.speed.down * 8)}/s
+          </div>
+          <div class='flex justify-center items-center gap-2'>
+            <ChevronUp size={18} />
+            {fastPrettyBits($torrentstats.speed.up * 8)}/s
+          </div>
         </div>
-        <div class='flex justify-center items-center gap-2'>
-          <ChevronDown size={18} />
-          {fastPrettyBits($torrentstats.speed.down * 8)}/s
-        </div>
-        <div class='flex justify-center items-center gap-2'>
-          <ChevronUp size={18} />
-          {fastPrettyBits($torrentstats.speed.up * 8)}/s
-        </div>
-      </div>
+      {/if}
       {#if seeking}
         {#await thumbnailer.getThumbnail(seekIndex) then src}
           <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0 object-contain' loading='lazy' decoding='async' class:!object-cover={fitWidth} />
