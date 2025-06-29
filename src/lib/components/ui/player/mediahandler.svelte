@@ -1,6 +1,9 @@
 <script lang='ts' context='module'>
   import { writable } from 'svelte/store'
-  export const playEp = writable((media: Media, episode: number) => {})
+
+  import { searchStore } from '$lib'
+
+  export const playEp = writable((media: Media, episode: number) => searchStore.set({ media, episode }))
 </script>
 
 <script lang='ts'>
@@ -11,7 +14,6 @@
   import type { MediaInfo } from '$lib/components/ui/player/util'
   import type { resolveFilesPoorly, ResolvedFile } from './resolver'
 
-  import { searchStore } from '$lib'
   import { fillerEpisodes } from '$lib/components/EpisodesList.svelte'
   import { cover, episodes, title, type Media } from '$lib/modules/anilist'
   import { settings } from '$lib/modules/settings'
