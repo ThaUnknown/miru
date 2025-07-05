@@ -49,7 +49,10 @@
   async function checkPortAvailability (port: number): Checks['promise'] {
     const res = await native.checkIncomingConnections(port)
     $hasForwarding = res
-    if (res) return { status: 'success', text: 'Port forwarding is available.' }
+    if (res) {
+      $settings.maxConns = 120
+      return { status: 'success', text: 'Port forwarding is available.' }
+    }
     return { status: 'error', text: 'Not available. Peer discovery will suffer. Streaming old, poorly seeded anime might be impossible.', slot: 'port' }
   }
 

@@ -6,7 +6,6 @@
   import { Button } from '$lib/components/ui/button'
   import { Messages, UserList } from '$lib/components/ui/chat'
   import { Textarea } from '$lib/components/ui/textarea'
-  import { W2GClient } from '$lib/modules/w2g'
 </script>
 
 <script lang='ts'>
@@ -17,8 +16,6 @@
   import { w2globby } from '$lib/modules/w2g/lobby'
 
   export let data
-
-  $w2globby ??= new W2GClient(data.id, false)
 
   $: users = $w2globby!.peers
   $: messages = $w2globby!.messages
