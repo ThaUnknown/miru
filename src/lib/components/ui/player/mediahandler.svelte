@@ -79,10 +79,10 @@
     if (file) {
       current = fileToMedaInfo(file)
       server.last.update(last => ({ media, episode, id: last!.id }))
+      goto('/app/player')
     } else {
       searchStore.set({ media, episode })
     }
-    goto('/app/player')
   }
 
   $: $playEp = playEpisode
