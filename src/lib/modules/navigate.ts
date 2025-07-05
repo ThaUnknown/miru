@@ -3,10 +3,10 @@ import { writable, type Writable } from 'simple-store-svelte'
 let lastHoverElement: ((_: boolean) => unknown) | null = null
 
 type InputType = 'mouse' | 'touch' | 'dpad'
-export const intputType: Writable<InputType> = writable('touch')
+export const inputType: Writable<InputType> = writable('touch')
 
 function pointerEvent ({ pointerType }: PointerEvent) {
-  intputType.value = pointerType === 'mouse' ? 'mouse' : 'touch'
+  inputType.value = pointerType === 'mouse' ? 'mouse' : 'touch'
 }
 addEventListener('pointerdown', pointerEvent)
 addEventListener('pointermove', pointerEvent)
@@ -18,9 +18,9 @@ const pointerTypes = [{ pointer: '(pointer: coarse)', value: 'touch' }, { pointe
 // for stuff like surface tablets, which can dynamically switch between touch and mouse
 for (const { pointer, value } of pointerTypes) {
   const media = matchMedia(pointer)
-  if (media.matches) intputType.value = value as InputType
+  if (media.matches) inputType.value = value as InputType
   media.addEventListener('change', e => {
-    if (e.matches) intputType.value = value as InputType
+    if (e.matches) inputType.value = value as InputType
   })
 }
 
@@ -39,7 +39,7 @@ export function clickwrap (cb: (_: MouseEvent) => unknown = noop) {
 
 export function keywrap (cb: (_: KeyboardEvent) => unknown = noop) {
   return (e: KeyboardEvent) => {
-    if ((e.key === 'Enter' || e.key === ' ') && intputType.value === 'dpad' && !e.repeat) {
+    if ((e.key === 'Enter' || e.key === ' ') && inputType.value === 'dpad' && !e.repeat) {
       e.stopPropagation()
       e.preventDefault()
       e.stopImmediatePropagation()
@@ -62,7 +62,7 @@ export function click (node: HTMLElement, cb: (_: Event) => unknown = noop) {
     cb(e)
   }, { signal: ctrl.signal })
   node.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && intputType.value === 'dpad') {
+    if (e.key === 'Enter' && inputType.value === 'dpad') {
       e.stopPropagation()
       e.preventDefault()
       cb(e)
@@ -92,12 +92,12 @@ export function hover (node: HTMLElement, [cb = noop, hoverUpdate = noop]: [type
   node.addEventListener('pointerenter', () => {
     lastHoverElement?.(false)
     hoverUpdate(true)
-    if (intputType.value === 'mouse') lastHoverElement = hoverUpdate
+    if (inputType.value === 'mouse') lastHoverElement = hoverUpdate
   }, { signal: ctrl.signal })
   node.addEventListener('click', e => {
     e.stopPropagation()
-    if (intputType.value === 'dpad') return
-    if (intputType.value === 'mouse') return cb()
+    if (inputType.value === 'dpad') return
+    if (inputType.value === 'mouse') return cb()
     if (lastHoverElement === hoverUpdate) {
       lastHoverElement = null
       navigator.vibrate(15)
@@ -108,7 +108,7 @@ export function hover (node: HTMLElement, [cb = noop, hoverUpdate = noop]: [type
     }
   }, { signal: ctrl.signal })
   node.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.key === 'Enter' && intputType.value === 'dpad') {
+    if (e.key === 'Enter' && inputType.value === 'dpad') {
       e.stopPropagation()
       lastHoverElement?.(false)
       if (lastHoverElement === hoverUpdate) {
@@ -121,13 +121,13 @@ export function hover (node: HTMLElement, [cb = noop, hoverUpdate = noop]: [type
     }
   }, { signal: ctrl.signal })
   node.addEventListener('pointerleave', () => {
-    if (intputType.value !== 'touch') hoverUpdate(false)
+    if (inputType.value !== 'touch') hoverUpdate(false)
   }, { signal: ctrl.signal })
   node.addEventListener('pointermove', () => {
-    if (intputType.value === 'touch') hoverUpdate(false)
+    if (inputType.value === 'touch') hoverUpdate(false)
   }, { signal: ctrl.signal })
   node.addEventListener('drag', () => {
-    if (intputType.value === 'mouse') hoverUpdate(false)
+    if (inputType.value === 'mouse') hoverUpdate(false)
   }, { signal: ctrl.signal })
 
   return { destroy: () => ctrl.abort() }
@@ -277,7 +277,7 @@ document.addEventListener('keydown', e => {
   if (e.key in DirectionKeyMap) {
     e.preventDefault()
     e.stopPropagation()
-    intputType.value = 'dpad'
+    inputType.value = 'dpad'
     navigateDPad(DirectionKeyMap[e.key as 'ArrowDown' | 'ArrowUp' | 'ArrowLeft' | 'ArrowRight'])
   }
 })

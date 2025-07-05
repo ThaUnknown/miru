@@ -440,8 +440,8 @@ class AnilistClient {
     return Object.entries(searchResults).map(([filename, id]) => [filename, search.data!.Page!.media!.find(media => media?.id === id)]) as Array<[string, Media | undefined]>
   }
 
-  schedule (ids?: number[]) {
-    return queryStore({ client: this.client, query: Schedule, variables: { ids, seasonCurrent: currentSeason, seasonYearCurrent: currentYear, seasonLast: lastSeason, seasonYearLast: lastYear, seasonNext: nextSeason, seasonYearNext: nextYear }, pause: true })
+  schedule (ids?: number[], onList = true) {
+    return queryStore({ client: this.client, query: Schedule, variables: { ids, onList, seasonCurrent: currentSeason, seasonYearCurrent: currentYear, seasonLast: lastSeason, seasonYearLast: lastYear, seasonNext: nextSeason, seasonYearNext: nextYear } })
   }
 
   async toggleFav (id: number) {

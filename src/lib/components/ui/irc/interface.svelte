@@ -4,6 +4,7 @@
 
   import { Button } from '../button'
   import { Messages, UserList } from '../chat'
+  import { Separator } from '../separator'
 
   import type MessageClient from '$lib/modules/irc'
 
@@ -47,10 +48,16 @@
   }
 </script>
 
-<div class='flex flex-col w-full relative px-md-4 h-full overflow-hidden'>
-  <div class='flex md:flex-row flex-col-reverse w-full h-full pt-4'>
+<div class='flex flex-col w-full relative h-full overflow-clip'>
+  <div class='space-y-0.5 px-10 pt-10'>
+    <h2 class='text-2xl font-bold'>Global App Chat</h2>
+    <p class='text-muted-foreground'>
+      Chat with other users of the app, share your thoughts, ask questions and have fun!
+    </p>
+    <Separator class='!my-6' />
+  </div>
+  <div class='flex md:flex-row flex-col-reverse w-full h-full'>
     <div class='flex flex-col justify-end overflow-clip flex-grow px-4 pb-4 h-full min-h-0'>
-      <div class='mb-auto hidden md:block text-center font-bold text-lg'>Global App Chat</div>
       <div class='h-full overflow-y-scroll min-h-0 w-full'>
         <Messages messages={client.messages} />
       </div>
@@ -71,6 +78,5 @@
       </div>
     </div>
     <UserList users={processedUsers} />
-    <div class='md:hidden px-6 text-center font-bold text-lg'>Global App Chat</div>
   </div>
 </div>

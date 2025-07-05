@@ -393,9 +393,9 @@ export default new class KitsuSync {
 
   // QUERIES/MUTATIONS
 
-  schedule () {
+  schedule (onList = true) {
     const ids = Object.keys(this.userlist.value).map(id => parseInt(id))
-    return client.schedule(ids.length ? ids : undefined)
+    return client.schedule(onList && ids.length ? ids : undefined)
   }
 
   async toggleFav (id: number) {

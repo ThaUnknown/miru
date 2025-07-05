@@ -243,34 +243,34 @@ export const ScheduleMedia = gql(`
 `)
 
 export const Schedule = gql(`
-  query Schedule($seasonCurrent: MediaSeason, $seasonYearCurrent: Int, $seasonLast: MediaSeason, $seasonYearLast: Int, $seasonNext: MediaSeason, $seasonYearNext: Int, $ids: [Int]) {
+  query Schedule($seasonCurrent: MediaSeason, $seasonYearCurrent: Int, $seasonLast: MediaSeason, $seasonYearLast: Int, $seasonNext: MediaSeason, $seasonYearNext: Int, $onList: Boolean, $ids: [Int]) {
     curr1: Page(page: 1) {
-      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
+      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
         ...ScheduleMedia
       }
     }
     curr2: Page(page: 2) {
-      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
+      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
         ...ScheduleMedia
       }
     }
     curr3: Page(page: 3) {
-      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
+      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
         ...ScheduleMedia
       }
     }
     residue: Page(page: 1) {
-      media(type: ANIME, season: $seasonLast, seasonYear: $seasonYearLast, episodes_greater: 16, countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
+      media(type: ANIME, season: $seasonLast, seasonYear: $seasonYearLast, episodes_greater: 16, countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
         ...ScheduleMedia
       }
     },
     next1: Page(page: 1) {
-      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
+      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
         ...ScheduleMedia
       }
     },
     next2: Page(page: 2) {
-      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], countryOfOrigin: JP, format_not: TV_SHORT, onList: true, id_in: $ids) {
+      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
         ...ScheduleMedia
       }
     }

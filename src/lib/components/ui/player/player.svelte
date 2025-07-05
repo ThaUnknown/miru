@@ -57,7 +57,7 @@
   import { authAggregator } from '$lib/modules/auth'
   import { isPlaying } from '$lib/modules/idle'
   import native from '$lib/modules/native'
-  import { click, keywrap } from '$lib/modules/navigate'
+  import { click, inputType, keywrap } from '$lib/modules/navigate'
   import { settings, SUPPORTS } from '$lib/modules/settings'
   import { server } from '$lib/modules/torrent'
   import { w2globby } from '$lib/modules/w2g/lobby'
@@ -575,7 +575,11 @@
       desc: 'Cycle Subtitles'
     },
     ArrowLeft: {
-      fn: () => {
+      fn: (e) => {
+        if ($inputType === 'dpad') return
+        e.preventDefault()
+        e.stopImmediatePropagation()
+        e.stopPropagation()
         seek(-Number($settings.playerSeek))
       },
       id: 'fast_rewind',
@@ -584,7 +588,11 @@
       desc: 'Rewind'
     },
     ArrowRight: {
-      fn: () => {
+      fn: (e) => {
+        if ($inputType === 'dpad') return
+        e.preventDefault()
+        e.stopImmediatePropagation()
+        e.stopPropagation()
         seek(Number($settings.playerSeek))
       },
       id: 'fast_forward',
@@ -593,7 +601,11 @@
       desc: 'Seek'
     },
     ArrowUp: {
-      fn: () => {
+      fn: (e) => {
+        if ($inputType === 'dpad') return
+        e.preventDefault()
+        e.stopImmediatePropagation()
+        e.stopPropagation()
         $volume = Math.min(1, $volume + 0.05)
       },
       id: 'volume_up',
@@ -602,7 +614,11 @@
       desc: 'Volume Up'
     },
     ArrowDown: {
-      fn: () => {
+      fn: (e) => {
+        if ($inputType === 'dpad') return
+        e.preventDefault()
+        e.stopImmediatePropagation()
+        e.stopPropagation()
         $volume = Math.max(0, $volume - 0.05)
       },
       id: 'volume_down',

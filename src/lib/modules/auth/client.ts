@@ -64,11 +64,12 @@ export default new class AuthAggregator {
 
   // QUERIES/MUTATIONS
 
-  schedule () {
-    if (this.anilist()) return client.schedule()
-    if (this.kitsu()) return kitsu.schedule()
+  schedule (onList = true) {
+    console.log('re-running')
+    if (this.anilist()) return client.schedule(undefined, onList)
+    if (this.kitsu()) return kitsu.schedule(onList)
 
-    return local.schedule()
+    return local.schedule(onList)
   }
 
   toggleFav (id: number) {

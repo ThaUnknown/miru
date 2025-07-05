@@ -58,6 +58,9 @@
   $: mediaId = media.id
   $: following = authAggregator.following(mediaId)
   $: followerEntries = $following?.data?.Page?.mediaList?.filter(e => e?.user?.id !== authAggregator.id()) ?? []
+
+  $: nativeTitle = media.title?.native ?? media.title?.romaji ?? ''
+  $: romajiTitle = media.title?.romaji ?? media.title?.native ?? ''
 </script>
 
 <div class='min-w-0 -ml-14 pl-14 grow items-center flex flex-col h-full overflow-y-auto z-10 pointer-events-none pb-10' use:dragScroll on:scroll={handleScroll}>
@@ -75,30 +78,34 @@
         </Dialog.Content>
       </Dialog.Root>
       <div class='flex flex-col gap-4 items-center md:items-start justify-end w-full'>
-        <div class='flex flex-col gap-1 text-center md:text-start w-full'>
-          <h3 class='text-lg capitalize leading-none text-muted-foreground'>
-            {season(media)}
-          </h3>
-          <h1 class='font-black text-2xl md:text-4xl line-clamp-2 text-white'>{title(media)}</h1>
-          <h2 class='line-clamp-1 text-sm md:text-lg font-light text-muted-foreground'>{media.title?.romaji ?? ''}</h2>
+        <div class='flex flex-col gap-1.5 text-center md:text-start w-full'>
+          <h2 class='line-clamp-1 text-base md:text-lg font-light text-muted-foreground'>{media.title?.romaji?.toLowerCase().trim() === title(media).toLowerCase().trim() ? nativeTitle : romajiTitle}</h2>
+          <h1 class='font-black text-3xl md:text-4xl line-clamp-2 text-white'>{title(media)}</h1>
           <div class='flex-wrap w-full justify-start md:pt-1 gap-4 hidden md:flex'>
-            <div class='rounded px-3 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
+            <div class='rounded px-3.5 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
               <div class='text-contrast'>
                 {of(media) ?? duration(media) ?? 'N/A'}
               </div>
             </div>
-            <div class='rounded px-3 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
+            <div class='rounded px-3.5 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
               <div class='text-contrast'>
                 {format(media)}
               </div>
             </div>
-            <div class='rounded px-3 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
+            <div class='rounded px-3.5 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
               <div class='text-contrast'>
                 {status(media)}
               </div>
             </div>
+            {#if season(media)}
+              <div class='rounded px-3.5 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
+                <div class='text-contrast capitalize'>
+                  {season(media)}
+                </div>
+              </div>
+            {/if}
             {#if media.averageScore}
-              <div class='rounded px-3 font-bold {getColorForRating(media.averageScore)}'>
+              <div class='rounded px-3.5 font-bold {getColorForRating(media.averageScore)}'>
                 <div class='text-contrast'>
                   {media.averageScore}%
                 </div>
@@ -106,7 +113,7 @@
             {/if}
           </div>
           <div class='md:block hidden relative pb-6 md:pt-2 md:pb-0'>
-            <div class='line-clamp-4 md:text-start text-center text-xs md:text-md leading-2 font-light antialiased whitespace-pre-wrap text-muted-foreground'>{desc(media)}</div>
+            <div class='line-clamp-4 md:text-start text-center text-sm md:text-md leading-2 font-light antialiased whitespace-pre-wrap text-muted-foreground'>{desc(media)}</div>
           </div>
         </div>
       </div>
@@ -152,6 +159,13 @@
         {/each}
       </div>
     </div>
+    <!-- <div class='flex gap-2 items-center md:justify-start md:self-start flex-wrap'>
+      {#each media.genres ?? [] as genre (genre)}
+        <div class='bg-secondary text-secondary-foreground text-sm font-medium rounded-md h-9 items-center justify-center flex px-4 text-nowrap'>
+          {genre}
+        </div>
+      {/each}
+    </div> -->
     <slot />
   </div>
 </div>

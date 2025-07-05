@@ -45,9 +45,9 @@ export default new class LocalSync {
     }
   }
 
-  schedule (): ReturnType<typeof client.schedule> {
+  schedule (onList = true): ReturnType<typeof client.schedule> {
     const ids = Object.values(this.entries.value).map(({ mediaListEntry }) => mediaListEntry?.id).filter(e => e != null)
-    return client.schedule(ids.length ? ids : undefined)
+    return client.schedule(onList && ids.length ? ids : undefined)
   }
 
   toggleFav (id: number) {

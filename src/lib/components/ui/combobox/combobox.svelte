@@ -21,7 +21,7 @@
   import { Button } from '$lib/components/ui/button'
   import * as Command from '$lib/components/ui/command'
   import * as Popover from '$lib/components/ui/popover'
-  import { intputType } from '$lib/modules/navigate'
+  import { inputType } from '$lib/modules/navigate'
   import { cn } from '$lib/utils.js'
 
   export let items: readonly value[] = []
@@ -87,7 +87,7 @@
     <Command.Root>
       <Command.Input {placeholder} class='h-9 placeholder:opacity-50' />
       <Command.Empty>No results found.</Command.Empty>
-      {#if $intputType === 'dpad'}
+      {#if $inputType === 'dpad'}
         <Command.Group class='shrink-0' alwaysRender={true}>
           <Command.Item
             alwaysRender={true}

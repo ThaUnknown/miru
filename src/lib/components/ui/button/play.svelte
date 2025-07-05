@@ -26,7 +26,7 @@
   <Play fill='currentColor' class='mr-2' size={iconSizes[size]} />
   {@const status = list(media)}
   {#if status === 'COMPLETED'}
-    Rewatch Now
+    Rewatch
   {:else if status === 'CURRENT' || status === 'REPEATING' || status === 'PAUSED'}
     Continue
   {:else}

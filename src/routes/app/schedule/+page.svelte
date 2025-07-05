@@ -3,6 +3,7 @@
   import { addMonths, endOfMonth, endOfWeek, format, isSameMonth, isToday, startOfMonth, startOfWeek, subMonths } from 'date-fns'
   import ChevronLeftIcon from 'lucide-svelte/icons/chevron-left'
   import ChevronRightIcon from 'lucide-svelte/icons/chevron-right'
+  import { persisted } from 'svelte-persisted-store'
   import Cross2 from 'svelte-radix/Cross2.svelte'
 
   import type { Schedule, ScheduleMedia } from '$lib/modules/anilist/queries'
@@ -11,13 +12,17 @@
   import StatusDot from '$lib/components/StatusDot.svelte'
   import { Button } from '$lib/components/ui/button'
   import * as Drawer from '$lib/components/ui/drawer'
+  import { Label } from '$lib/components/ui/label'
+  import { Switch } from '$lib/components/ui/switch'
   import * as Tooltip from '$lib/components/ui/tooltip'
   import { dedupeAiring } from '$lib/modules/anilist'
   import { authAggregator, list } from '$lib/modules/auth'
   import { dragScroll } from '$lib/modules/navigate'
   import { cn, breakpoints } from '$lib/utils'
 
-  const query = authAggregator.schedule()
+  const onList = persisted('schedule-on-list', true)
+
+  $: query = authAggregator.schedule($onList)
 
   let now = new Date()
   $: monthName = now.toLocaleString('en-US', { month: 'long' })
@@ -42,9 +47,6 @@
   }
 
   $: dayList = listDays(firstDay, lastDay)
-
-  const paused = query.isPaused$
-  if ($paused) query.resume()
 
   interface DayAirTimes { day: { date: Date, number: number }, episodes: Array<ResultOf<typeof ScheduleMedia> & { episode: number, airTime: Date }> }
 
@@ -77,14 +79,24 @@
   const _list = list
 </script>
 
-<div class='flex flex-col items-center w-full h-full overflow-y-auto px-5' use:dragScroll>
-  <div class='my-10 grid grid-cols-7 border rounded-lg [&>*:not(:nth-child(7n+1)):nth-child(n+8)]:border-r [&>*:nth-last-child(n+8)]:border-b [&>*:nth-child(-n+8)]:border-b w-full max-w-[1800px]'>
+<div class='flex flex-col items-center w-full h-full overflow-y-auto p-10 min-w-0' use:dragScroll>
+  <div class='space-y-0.5 self-start mb-6'>
+    <h2 class='text-2xl font-bold'>Airing Calendar</h2>
+    <p class='text-muted-foreground'>
+      View upcoming episodes and their air times for the current season.
+    </p>
+  </div>
+  <div class='grid grid-cols-7 border rounded-lg [&>*:not(:nth-child(7n+1)):nth-child(n+8)]:border-r [&>*:nth-last-child(n+8)]:border-b [&>*:nth-child(-n+8)]:border-b w-full max-w-[1800px]'>
     <div class='col-span-full flex justify-between items-center p-4'>
       <Button size='icon' on:click={prevMonth} variant='outline' class='bg-transparent'>
         <ChevronLeftIcon class='h-6 w-6' />
       </Button>
       <div class='text-center font-bold text-xl'>
         {monthName}
+        <div class='self-start flex items-center space-x-2 mt-1 text-muted-foreground'>
+          <Switch bind:checked={$onList} id='schedule-on-list' hideState={true} />
+          <Label for='schedule-on-list'>My list</Label>
+        </div>
       </div>
       <Button size='icon' on:click={nextMonth} variant='outline' class='bg-transparent'>
         <ChevronRightIcon class='h-6 w-6' />
@@ -97,7 +109,7 @@
     <div class='text-center py-2'>Fri</div>
     <div class='text-center py-2'>Sat</div>
     <div class='text-center py-2'>Sun</div>
-    {#if $query.fetching || $paused}
+    {#if $query.fetching}
       {#each dayList as { date, number } (date)}
         {@const sameMonth = isSameMonth(now, date)}
         <div>
