@@ -137,7 +137,7 @@ export const extensions = new class Extensions {
       deduped[index]!.parseObject = parseObject
     })
 
-    return { results: await this.updatePeerCounts(deduped), errors }
+    return { results: navigator.onLine ? await this.updatePeerCounts(deduped) : deduped, errors }
   }
 
   async updatePeerCounts <T extends TorrentResult[]> (entries: T): Promise<T> {

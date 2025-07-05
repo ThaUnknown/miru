@@ -63,9 +63,9 @@
 
 <div class='pl-5 pb-5 justify-end flex flex-col h-full max-w-full'>
   {#key current}
-    <div class='text-white font-black text-4xl line-clamp-1 w-[900px] max-w-full leading-tight fade-in'>
+    <a class='text-white font-black text-4xl line-clamp-1 w-[900px] max-w-full leading-tight fade-in hover:text-neutral-300 hover:underline cursor-pointer' href='/app/anime/{current.id}'>
       {title(current)}
-    </div>
+    </a>
     <div class='details text-white capitalize pt-3 pb-2 flex w-[600px] max-w-full text-xs fade-in'>
       <span class='text-nowrap flex items-center'>
         {format(current)}

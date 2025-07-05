@@ -14,6 +14,7 @@
   import type { MediaInfo } from '$lib/components/ui/player/util'
   import type { resolveFilesPoorly, ResolvedFile } from './resolver'
 
+  import { goto } from '$app/navigation'
   import { fillerEpisodes } from '$lib/components/EpisodesList.svelte'
   import { cover, episodes, title, type Media } from '$lib/modules/anilist'
   import { settings } from '$lib/modules/settings'
@@ -81,6 +82,7 @@
     } else {
       searchStore.set({ media, episode })
     }
+    goto('/app/player')
   }
 
   $: $playEp = playEpisode
