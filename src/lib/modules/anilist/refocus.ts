@@ -39,6 +39,7 @@ export const refocusExchange = (minimumTime = 0): Exchange => {
             )
           })
         } else {
+          // TODO: PR this!
           // on hide wait for minimumTime before allowing another re-execute
           clearTimeout(timeout)
           timeout = setTimeout(() => {

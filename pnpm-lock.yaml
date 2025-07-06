@@ -23,24 +23,27 @@ importers:
       '@thaunknown/web-irc':
         specifier: ^1.0.3
         version: 1.0.3
+      '@urql/core':
+        specifier: ^5.2.0
+        version: 5.2.0(graphql@16.10.0)
       '@urql/exchange-auth':
         specifier: ^2.2.1
-        version: 2.2.1(@urql/core@5.1.0(graphql@16.10.0))
+        version: 2.2.1(@urql/core@5.2.0(graphql@16.10.0))
       '@urql/exchange-graphcache':
         specifier: ^7.2.3
-        version: 7.2.3(@urql/core@5.1.0(graphql@16.10.0))(graphql@16.10.0)
+        version: 7.2.3(@urql/core@5.2.0(graphql@16.10.0))(graphql@16.10.0)
       '@urql/exchange-refocus':
         specifier: ^1.1.1
-        version: 1.1.1(@urql/core@5.1.0(graphql@16.10.0))
+        version: 1.1.1(@urql/core@5.2.0(graphql@16.10.0))
       '@urql/exchange-request-policy':
         specifier: ^1.2.1
-        version: 1.2.1(@urql/core@5.1.0(graphql@16.10.0))
+        version: 1.2.1(@urql/core@5.2.0(graphql@16.10.0))
       '@urql/exchange-retry':
         specifier: ^1.3.1
-        version: 1.3.1(@urql/core@5.1.0(graphql@16.10.0))
+        version: 1.3.1(@urql/core@5.2.0(graphql@16.10.0))
       '@urql/svelte':
         specifier: ^4.2.3
-        version: 4.2.3(@urql/core@5.1.0(graphql@16.10.0))(svelte@4.2.19)
+        version: 4.2.3(@urql/core@5.2.0(graphql@16.10.0))(svelte@4.2.19)
       abslink:
         specifier: ^1.1.0
         version: 1.1.0
@@ -115,10 +118,13 @@ importers:
         version: 2.2.5
       urql:
         specifier: ^4.2.2
-        version: 4.2.2(@urql/core@5.1.0(graphql@16.10.0))(react@19.0.0)
+        version: 4.2.2(@urql/core@5.2.0(graphql@16.10.0))(react@19.0.0)
       video-deband:
         specifier: ^1.0.8
         version: 1.0.8
+      wonka:
+        specifier: ^6.3.5
+        version: 6.3.5
       workbox-core:
         specifier: ^7.3.0
         version: 7.3.0
@@ -757,8 +763,8 @@ packages:
     resolution: {integrity: sha512-ar0tjQfObzhSaW3C3QNmTc5ofj0hDoNQ5XWrCy6zDyabdr0TWhCkClp+rywGNj/odAFBVzzJrK4tEq5M4Hmu4w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@urql/core@5.1.0':
-    resolution: {integrity: sha512-yC3sw8yqjbX45GbXxfiBY8GLYCiyW/hLBbQF9l3TJrv4ro00Y0ChkKaD9I2KntRxAVm9IYBqh0awX8fwWAe/Yw==}
+  '@urql/core@5.2.0':
+    resolution: {integrity: sha512-/n0ieD0mvvDnVAXEQgX/7qJiVcvYvNkOHeBvkwtylfjydar123caCXcl58PXFY11oU1oquJocVXHxLAbtv4x1A==}
 
   '@urql/exchange-auth@2.2.1':
     resolution: {integrity: sha512-n4xUxxjvY36GJh539sLaPFyvFzreADOv8EFQdTiXOCIRVoXXhWVVI7DjY/HNtLICfbg1+UlbvQ7sNkwaBouDHg==}
@@ -3251,48 +3257,48 @@ snapshots:
       '@typescript-eslint/types': 8.32.1
       eslint-visitor-keys: 4.2.0
 
-  '@urql/core@5.1.0(graphql@16.10.0)':
+  '@urql/core@5.2.0(graphql@16.10.0)':
     dependencies:
       '@0no-co/graphql.web': 1.1.2(graphql@16.10.0)
       wonka: 6.3.5
     transitivePeerDependencies:
       - graphql
 
-  '@urql/exchange-auth@2.2.1(@urql/core@5.1.0(graphql@16.10.0))':
+  '@urql/exchange-auth@2.2.1(@urql/core@5.2.0(graphql@16.10.0))':
     dependencies:
-      '@urql/core': 5.1.0(graphql@16.10.0)
+      '@urql/core': 5.2.0(graphql@16.10.0)
       wonka: 6.3.5
 
-  '@urql/exchange-graphcache@7.2.3(@urql/core@5.1.0(graphql@16.10.0))(graphql@16.10.0)':
+  '@urql/exchange-graphcache@7.2.3(@urql/core@5.2.0(graphql@16.10.0))(graphql@16.10.0)':
     dependencies:
       '@0no-co/graphql.web': 1.1.2(graphql@16.10.0)
-      '@urql/core': 5.1.0(graphql@16.10.0)
+      '@urql/core': 5.2.0(graphql@16.10.0)
       wonka: 6.3.5
     transitivePeerDependencies:
       - graphql
 
-  '@urql/exchange-refocus@1.1.1(@urql/core@5.1.0(graphql@16.10.0))':
+  '@urql/exchange-refocus@1.1.1(@urql/core@5.2.0(graphql@16.10.0))':
     dependencies:
-      '@urql/core': 5.1.0(graphql@16.10.0)
+      '@urql/core': 5.2.0(graphql@16.10.0)
       wonka: 6.3.5
 
-  '@urql/exchange-request-policy@1.2.1(@urql/core@5.1.0(graphql@16.10.0))':
+  '@urql/exchange-request-policy@1.2.1(@urql/core@5.2.0(graphql@16.10.0))':
     dependencies:
-      '@urql/core': 5.1.0(graphql@16.10.0)
+      '@urql/core': 5.2.0(graphql@16.10.0)
       wonka: 6.3.5
 
-  '@urql/exchange-retry@1.3.1(@urql/core@5.1.0(graphql@16.10.0))':
+  '@urql/exchange-retry@1.3.1(@urql/core@5.2.0(graphql@16.10.0))':
     dependencies:
-      '@urql/core': 5.1.0(graphql@16.10.0)
+      '@urql/core': 5.2.0(graphql@16.10.0)
       wonka: 6.3.5
 
   '@urql/introspection@1.2.1(graphql@16.10.0)':
     dependencies:
       graphql: 16.10.0
 
-  '@urql/svelte@4.2.3(@urql/core@5.1.0(graphql@16.10.0))(svelte@4.2.19)':
+  '@urql/svelte@4.2.3(@urql/core@5.2.0(graphql@16.10.0))(svelte@4.2.19)':
     dependencies:
-      '@urql/core': 5.1.0(graphql@16.10.0)
+      '@urql/core': 5.2.0(graphql@16.10.0)
       svelte: 4.2.19
       wonka: 6.3.5
 
@@ -5322,9 +5328,9 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  urql@4.2.2(@urql/core@5.1.0(graphql@16.10.0))(react@19.0.0):
+  urql@4.2.2(@urql/core@5.2.0(graphql@16.10.0))(react@19.0.0):
     dependencies:
-      '@urql/core': 5.1.0(graphql@16.10.0)
+      '@urql/core': 5.2.0(graphql@16.10.0)
       react: 19.0.0
       wonka: 6.3.5
 
