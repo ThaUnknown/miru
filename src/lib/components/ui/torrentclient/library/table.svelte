@@ -31,7 +31,7 @@
       accessor: 'episode',
       header: 'Episode',
       id: 'episode',
-      cell: ({ value }) => value ?? '?'
+      cell: ({ value }) => value?.toString() ?? '?'
     }),
     table.column({ accessor: 'files', header: 'Files', id: 'files' }),
     table.column({

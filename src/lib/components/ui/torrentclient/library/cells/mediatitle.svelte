@@ -8,4 +8,6 @@
   ?
 {:then query}
   {query.data?.Media?.title?.userPreferred ?? '?'}
+{:catch}
+  ?
 {/await}
