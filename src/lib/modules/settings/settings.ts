@@ -19,5 +19,6 @@ settings.subscribe(settings => {
   native.transparency(settings.idleAnimation)
   native.setZoom(settings.uiScale)
   native.toggleDiscordDetails(settings.showDetailsInRPC)
+  native.setAngle(settings.angle)
   if (settings.enableDoH) native.setDOH(settings.doHURL)
 })

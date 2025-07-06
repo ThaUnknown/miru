@@ -1,7 +1,6 @@
 import { authExchange } from '@urql/exchange-auth'
 import { offlineExchange } from '@urql/exchange-graphcache'
 import { makeDefaultStorage } from '@urql/exchange-graphcache/default-storage'
-import { refocusExchange } from '@urql/exchange-refocus'
 import { Client, fetchExchange, queryStore, type OperationResultState, gql as _gql } from '@urql/svelte'
 import Bottleneck from 'bottleneck'
 import lavenshtein from 'js-levenshtein'
@@ -11,6 +10,7 @@ import { toast } from 'svelte-sonner'
 
 import gql from './gql'
 import { CommentFrag, Comments, CustomLists, DeleteEntry, DeleteThreadComment, Entry, Following, FullMedia, FullMediaList, IDMedia, SaveThreadComment, Schedule, Search, ThreadFrag, Threads, ToggleFavourite, ToggleLike, UserLists, Viewer } from './queries'
+import { refocusExchange } from './refocus'
 import schema from './schema.json' with { type: 'json' }
 import { currentSeason, currentYear, lastSeason, lastYear, nextSeason, nextYear } from './util'
 
@@ -56,7 +56,7 @@ class AnilistClient {
     // fetch: dev ? fetch : (req: RequestInfo | URL, opts?: RequestInit) => this.handleRequest(req, opts),
     fetch: (req: RequestInfo | URL, opts?: RequestInit) => this.handleRequest(req, opts),
     exchanges: [
-      refocusExchange(),
+      refocusExchange(60_000),
       offlineExchange({
         schema: schema as Parameters<typeof offlineExchange>[0]['schema'],
         storage: this.storage,
@@ -253,8 +253,8 @@ class AnilistClient {
     reservoir: 90,
     reservoirRefreshAmount: 90,
     reservoirRefreshInterval: 60 * 1000,
-    maxConcurrent: 10,
-    minTime: 100
+    maxConcurrent: 3,
+    minTime: 200
   })
 
   rateLimitPromise: Promise<void> | null = null
