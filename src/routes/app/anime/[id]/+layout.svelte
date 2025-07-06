@@ -9,6 +9,7 @@
 
   import type { LayoutData } from './$types'
 
+  import { onNavigate } from '$app/navigation'
   import Anilist from '$lib/components/icons/Anilist.svelte'
   import MyAnimeList from '$lib/components/icons/MyAnimeList.svelte'
   import { bannerSrc, hideBanner } from '$lib/components/ui/banner'
@@ -61,9 +62,18 @@
 
   $: nativeTitle = media.title?.native ?? media.title?.romaji ?? ''
   $: romajiTitle = media.title?.romaji ?? media.title?.native ?? ''
+
+  let container: HTMLDivElement
+
+  onNavigate(() => {
+    container.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  })
 </script>
 
-<div class='min-w-0 -ml-14 pl-14 grow items-center flex flex-col h-full overflow-y-auto z-10 pointer-events-none pb-10' use:dragScroll on:scroll={handleScroll}>
+<div class='min-w-0 -ml-14 pl-14 grow items-center flex flex-col h-full overflow-y-auto z-10 pointer-events-none pb-10' use:dragScroll on:scroll={handleScroll} bind:this={container}>
   <div class='gap-6 w-full pt-4 md:pt-32 flex flex-col items-center justify-center max-w-[1600px] px-3 xl:px-14 pointer-events-auto overflow-x-clip'>
     <div class='flex flex-col md:flex-row w-full items-center md:items-end gap-5 pt-12'>
       <Dialog.Root portal='#root'>

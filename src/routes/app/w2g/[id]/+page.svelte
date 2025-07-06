@@ -64,7 +64,7 @@
     </p>
     <Separator class='!my-6' />
   </div>
-  <div class='flex md:flex-row flex-col-reverse w-full h-full'>
+  <div class='flex md:flex-row flex-col-reverse w-full h-full min-h-0'>
     <div class='flex flex-col justify-end overflow-clip flex-grow px-4 pb-4 h-full min-h-0'>
       <div class='h-full overflow-y-scroll min-h-0 w-full'>
         <Messages {messages} />

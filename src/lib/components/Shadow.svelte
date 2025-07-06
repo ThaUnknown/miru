@@ -14,17 +14,28 @@
   const style = new CSSStyleSheet()
 
   style.replaceSync(/* css */`
-  p {
+  p, details {
     margin-block-start: .5em;
     margin-block-end: .5em;
   }
   img, video {
     max-width: 100%;
     -webkit-user-drag: none;
-  }`)
+  }
+  summary {
+    font-weight: bold;
+    cursor: pointer;
+    list-style: none;
+    background: #0f0f0f;
+    display: inline-block;
+    padding: 0.4em 0.8em;
+    border-radius: 0.5em;
+    margin-block-end: .5em;
+  }
+`)
 
   function sanitize (html: string) {
-    return dompurify.sanitize(html, { ALLOWED_TAGS: ['a', 'b', 'blockquote', 'br', 'center', 'del', 'div', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'hr', 'i', 'img', 'li', 'ol', 'p', 'pre', 'code', 'span', 'strike', 'strong', 'ul'], ALLOWED_ATTR: ['align', 'height', 'href', 'src', 'target', 'width', 'rel'] })
+    return dompurify.sanitize(html, { ALLOWED_TAGS: ['a', 'b', 'blockquote', 'br', 'center', 'del', 'div', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'hr', 'i', 'img', 'li', 'ol', 'p', 'pre', 'code', 'span', 'strike', 'strong', 'ul', 'details', 'summary'], ALLOWED_ATTR: ['align', 'height', 'href', 'src', 'target', 'width', 'rel'] })
   }
 
   // i mean holy shit anilist, could you have made it any harder on yourself
@@ -39,12 +50,12 @@
       // eslint-disable-next-line no-useless-escape
       .replace(/webm\s?\(h?([A-Za-z0-9-._~:\/?#\[\]@!$&()*+,;=%]+)\)/gi, 'webmv(`$1`)')
       .replace(/~{3}([^]*?)~{3}/gm, '+++$1+++')
-      .replace(/~!([^]*?)!~/gm, '<div rel="spoiler">$1</div>')
+      .replace(/~!([^]*?)!~/gm, '<details><summary>Spoiler, click to view</summary>$1</details>')
     html = sanitize(marked.parse(html, { async: false }))
       .replace(/\+{3}([^]*?)\+{3}/gm, '<center>$1</center>')
-      // t = t.replace(/<div rel="spoiler">([\s\S]*?)<\/div>/gm, "<p><span onclick='showSpoiler(this)' class='markdown-spoiler'><i class='hide-spoiler el-icon-circle-close' onclick='hideSpoiler(this)'></i><span>$1</span></span></p>")
-    // t = t.replace(/youtube\s?\(([-_0-9A-Za-z]{10,15})\)/gi, "<span class='youtube' id='$1' style='width: 500px; height: 200px; max-width: 100%;'><span class='play'></span></span>")
-    // eslint-disable-next-line no-useless-escape
+      .replace(/youtube\s?\(([-_0-9A-Za-z]{10,15})\)/gi, `<iframe style='width: 500px; height: 200px; max-width: 100%; border: none;'title='youtube-embed' allow='autoplay' allowfullscreen
+    src='https://www.youtube-nocookie.com/embed/$1?enablejsapi=1&autoplay=0&controls=1&mute=0&disablekb=1&loop=1&playlist=$1&cc_lang_pref=ja' />`)
+      // eslint-disable-next-line no-useless-escape
       .replace(/webmv\s?\(<code>([A-Za-z0-9-._~:\/?#\[\]@!$&()*+,;=%]+)<\/code>\)/gi, "<video muted loop controls><source src='h$1' type='video/webm'>Your browser does not support the video tag.</video>")
     // t = t.replace(/(?:<a href="https?:\/\/anilist.co\/(anime|manga)\/)([0-9]+).*?>(?:https?:\/\/anilist.co\/(?:anime|manga)\/[0-9]+).*?<\/a>/gm, '<span class="media-embed" data-media-type="$1" data-media-id="$2"></span>')
 
