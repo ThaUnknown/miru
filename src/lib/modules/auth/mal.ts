@@ -10,6 +10,7 @@ import native from '../native'
 import type { Entry, FullMediaList, UserFrag } from '../anilist/queries'
 import type { ResultOf, VariablesOf } from 'gql.tada'
 
+import { dev } from '$app/environment'
 import { arrayEqual } from '$lib/utils'
 
 type ALMediaStatus = 'CURRENT' | 'PLANNING' | 'COMPLETED' | 'DROPPED' | 'PAUSED' | 'REPEATING'
@@ -245,7 +246,9 @@ export default new class MALSync {
     const challenge = (crypto.randomUUID() + crypto.randomUUID()).replaceAll('-', '')
     const clientID = 'd93b624a92e431a9b6dfe7a66c0c5bbb'
 
-    const { code } = await native.authMAL(`${ENDPOINTS.API_AUTHORIZE}?response_type=code&client_id=${clientID}&state=${state}&code_challenge=${challenge}&code_challenge_method=plain&redirect_uri=http://localhost:7344/authorize`)
+    const redirect = dev ? 'http://localhost:7344/authorize' : 'https://hayase.app/authorize'
+
+    const { code } = await native.authMAL(`${ENDPOINTS.API_AUTHORIZE}?response_type=code&client_id=${clientID}&state=${state}&code_challenge=${challenge}&code_challenge_method=plain&redirect_uri=${redirect}`)
 
     const data = await this._post<MALOAuth>(
       ENDPOINTS.API_OAUTH,
@@ -254,7 +257,7 @@ export default new class MALSync {
         grant_type: 'authorization_code',
         code,
         code_verifier: challenge,
-        redirect_uri: 'http://localhost:7344/authorize'
+        redirect_uri: redirect
       })
     )
 
