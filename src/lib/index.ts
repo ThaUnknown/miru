@@ -3,7 +3,7 @@ import { writable } from 'simple-store-svelte'
 import type { Media } from './modules/anilist'
 
 // TODO: update these
-export const COMMITS_URL = 'https://api.github.com/repos/ThaUnknown/miru/commits'
+export const COMMITS_URL = 'https://api.github.com/repos/hayase-app/ui/commits'
 export const WEB_URL = 'https://hayase.watch'
 export const DEFAULT_EXTENSIONS = 'gh:hayase-app/extensions'
 export const SETUP_VERSION = 3
