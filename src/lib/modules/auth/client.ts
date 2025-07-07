@@ -6,6 +6,7 @@ import { client, episodes, type Media } from '../anilist'
 
 import kitsu from './kitsu'
 import local from './local'
+import mal from './mal'
 
 import type { Entry, UserFrag } from '../anilist/queries'
 import type { ResultOf, VariablesOf } from 'gql.tada'
@@ -15,7 +16,8 @@ export default new class AuthAggregator {
     // add other subscriptions here for MAL, kitsu, tvdb, etc
     const unsub = [
       client.viewer.subscribe(() => set(this.checkAuth())),
-      kitsu.viewer.subscribe(() => set(this.checkAuth()))
+      kitsu.viewer.subscribe(() => set(this.checkAuth())),
+      mal.viewer.subscribe(() => set(this.checkAuth()))
     ]
 
     return () => unsub.forEach(fn => fn())
@@ -32,8 +34,12 @@ export default new class AuthAggregator {
     return !!kitsu.id()
   }
 
+  mal () {
+    return !!mal.id()
+  }
+
   checkAuth () {
-    return this.anilist() || this.kitsu()
+    return this.anilist() || this.kitsu() || this.mal()
   }
 
   id () {
@@ -46,11 +52,13 @@ export default new class AuthAggregator {
   profile (): ResultOf<typeof UserFrag> | undefined {
     if (this.anilist()) return client.viewer.value?.viewer ?? undefined
     if (this.kitsu()) return kitsu.profile()
+    if (this.mal()) return mal.profile()
   }
 
   mediaListEntry (media: Pick<Media, 'mediaListEntry' | 'id'>) {
     if (this.anilist()) return media.mediaListEntry
     if (this.kitsu()) return kitsu.userlist.value[media.id]
+    if (this.mal()) return mal.userlist.value[media.id]
 
     return local.get(media.id)?.mediaListEntry
   }
@@ -65,9 +73,9 @@ export default new class AuthAggregator {
   // QUERIES/MUTATIONS
 
   schedule (onList = true) {
-    console.log('re-running')
     if (this.anilist()) return client.schedule(undefined, onList)
     if (this.kitsu()) return kitsu.schedule(onList)
+    if (this.mal()) return mal.schedule(onList)
 
     return local.schedule(onList)
   }
@@ -86,16 +94,18 @@ export default new class AuthAggregator {
     return null
   }
 
-  planningIDs = derived([client.planningIDs, kitsu.planningIDs, local.planningIDs], ([$client, $kitsu, $local]) => {
+  planningIDs = derived([client.planningIDs, kitsu.planningIDs, local.planningIDs, mal.planningIDs], ([$client, $kitsu, $local, $mal]) => {
     if (this.anilist()) return $client
     if (this.kitsu()) return $kitsu
+    if (this.mal()) return $mal
     if ($local.length) return $local
     return null
   })
 
-  continueIDs = derived([client.continueIDs, kitsu.continueIDs, local.continueIDs], ([$client, $kitsu, $local]) => {
+  continueIDs = derived([client.continueIDs, kitsu.continueIDs, local.continueIDs, mal.continueIDs], ([$client, $kitsu, $local, $mal]) => {
     if (this.anilist()) return $client
     if (this.kitsu()) return $kitsu
+    if (this.mal()) return $mal
     if ($local.length) return $local
     return null
   })
@@ -133,6 +143,7 @@ export default new class AuthAggregator {
     return Promise.allSettled([
       sync.al && this.anilist() && client.deleteEntry(media),
       sync.kitsu && this.kitsu() && kitsu.deleteEntry(media),
+      sync.mal && this.mal() && mal.deleteEntry(media),
       sync.local && local.deleteEntry(media)
     ])
   }
@@ -147,6 +158,7 @@ export default new class AuthAggregator {
     return Promise.allSettled([
       sync.al && this.anilist() && client.entry(variables),
       sync.kitsu && this.kitsu() && kitsu.entry(variables),
+      sync.mal && this.mal() && mal.entry(variables),
       sync.local && local.entry(variables)
     ])
   }

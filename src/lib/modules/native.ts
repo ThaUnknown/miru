@@ -68,6 +68,25 @@ export default Object.assign<Native, Partial<Native>>({
       check()
     })
   },
+  authMAL: (url: string) => {
+    return new Promise<{ code: string, state: string }>((resolve, reject) => {
+      const popup = open(url, 'authframe', 'popup,width=540,height=782')
+      if (!popup) return reject(new Error('Failed to open popup'))
+      const check = () => {
+        if (popup.closed) return reject(new Error('Popup closed'))
+        try {
+          if (popup.location.search.startsWith('?code=')) {
+            const search = Object.fromEntries(new URLSearchParams(popup.location.search).entries()) as unknown as { code: string, state: string }
+            resolve(search)
+            popup.close()
+            return
+          }
+        } catch (e) {}
+        setTimeout(check, 100)
+      }
+      check()
+    })
+  },
   restart: async () => location.reload(),
   openURL: async (url: string) => { open(url) },
   selectPlayer: async () => 'mpv',

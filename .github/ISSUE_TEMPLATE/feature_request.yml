@@ -12,17 +12,17 @@ body:
       options:
         - label: >-
             I have searched the [issue
-            tracker](https://github.com/ThaUnknown/miru/issues) for a bug report
+            tracker](https://github.com/hayase-app/ui/issues) for a bug report
             that matches the one I want to file, without success.
           required: true
         - label: >-
             I have searched the [features
-            list](https://github.com/ThaUnknown/miru#features) for this feature,
+            list](https://hayase.watch/features) for this feature,
             and I couldn't find it.
           required: true
         - label: >-
             I have checked that I'm using the [latest
-            stable](https://github.com/ThaUnknown/miru/releases/latest) version
+            stable](https://github.com/hayase-app/ui/releases/latest) version
             of the app.
           required: true
   - type: textarea

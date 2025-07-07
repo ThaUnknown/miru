@@ -440,6 +440,37 @@ class AnilistClient {
     return Object.entries(searchResults).map(([filename, id]) => [filename, search.data!.Page!.media!.find(media => media?.id === id)]) as Array<[string, Media | undefined]>
   }
 
+  async malIdsCompound (ids: number[]) {
+    if (!ids.length) return {}
+
+    // chunk every 50
+    let fragmentQueries = ''
+
+    for (let i = 0; i < ids.length; i += 50) {
+      fragmentQueries += /* gql */`
+        v${i}: Page(perPage: 50, page: ${Math.floor(i / 50) + 1}) {
+          media(idMal_in: $ids, type: ANIME) {
+            ...med
+          }
+        },
+      `
+    }
+
+    const query = _gql/* gql */`
+    query($ids: [Int]) {
+      ${fragmentQueries}
+    }
+    
+    fragment med on Media {
+      id,
+      idMal
+    }`
+
+    const res = await this.client.query<Record<string, { media: Array<{ id: number, idMal: number }>}>>(query, { ids })
+
+    return Object.fromEntries(Object.values(res.data ?? {}).flatMap(({ media }) => media).map(media => [media.idMal, media.id]))
+  }
+
   schedule (ids?: number[], onList = true) {
     return queryStore({ client: this.client, query: Schedule, variables: { ids, onList, seasonCurrent: currentSeason, seasonYearCurrent: currentYear, seasonLast: lastSeason, seasonYearLast: lastYear, seasonNext: nextSeason, seasonYearNext: nextYear } })
   }

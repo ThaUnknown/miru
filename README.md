@@ -1,5 +1,5 @@
 <p align="center">
-	<a href="https://github.com/ThaUnknown/miru">
+	<a href="https://github.com/hayase-app/ui">
 		<img src="./static/logo_white.svg" width="300">
 	</a>
 </p>
@@ -18,7 +18,7 @@
     <img src="https://img.shields.io/discord/953341991134064651?style=flat-square" alt="chat">
   </a>
   <a href="https://hayase.watch/download/">
-    <img alt="Download" src="https://img.shields.io/github/downloads/ThaUnknown/miru/total?style=flat-square">
+    <img alt="Download" src="https://img.shields.io/github/downloads/hayase-app/ui/total?style=flat-square">
   </a>
 </p>
 

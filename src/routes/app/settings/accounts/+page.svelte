@@ -5,6 +5,7 @@
 
   import Anilist from '$lib/components/icons/Anilist.svelte'
   import Kitsu from '$lib/components/icons/Kitsu.svelte'
+  import MyAnimeList from '$lib/components/icons/MyAnimeList.svelte'
   import * as Avatar from '$lib/components/ui/avatar'
   import { Button } from '$lib/components/ui/button'
   import * as Dialog from '$lib/components/ui/dialog'
@@ -15,6 +16,7 @@
   import { client } from '$lib/modules/anilist'
   import { authAggregator } from '$lib/modules/auth'
   import ksclient from '$lib/modules/auth/kitsu'
+  import malclient from '$lib/modules/auth/mal'
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
 
@@ -27,6 +29,10 @@
   $: kitsu = $kitsuviewer
 
   const syncSettings = authAggregator.syncSettings
+
+  const malviewer = malclient.viewer
+
+  $: mal = $malviewer
 
   let kitsuLogin = ''
   let kitsuPassword = ''
@@ -145,6 +151,41 @@
       <div class='flex gap-2 items-center'>
         <Switch hideState={true} id='kitsu-sync-switch' bind:checked={$syncSettings.kitsu} />
         <Label for='kitsu-sync-switch' class='cursor-pointer'>Enable Sync</Label>
+      </div>
+    </div>
+
+  </div>
+  <div>
+    <div class='bg-neutral-900 px-6 py-4 rounded-t-md flex flex-row gap-3'>
+      {#if mal?.id}
+        <div use:click={() => native.openURL(`https://myanimelist.net/profile/${mal.name}`)} class='flex flex-row gap-3'>
+          <Avatar.Root class='size-8 rounded-md'>
+            <Avatar.Image src={mal.avatar?.large ?? ''} alt={mal.name} />
+            <Avatar.Fallback>{mal.name}</Avatar.Fallback>
+          </Avatar.Root>
+          <div class='flex flex-col'>
+            <div class='text-sm'>
+              {mal.name}
+            </div>
+            <div class='text-[9px] text-muted-foreground leading-snug'>
+              MyAnimeList
+            </div>
+          </div>
+        </div>
+      {:else}
+        <div>Not logged in</div>
+      {/if}
+      <MyAnimeList class='size-6 ml-auto' />
+    </div>
+    <div class='bg-neutral-950 px-6 py-4 rounded-b-md flex justify-between'>
+      {#if mal?.id}
+        <Button variant='secondary' on:click={() => malclient.logout()}>Logout</Button>
+      {:else}
+        <Button variant='secondary' on:click={() => malclient.login()}>Login</Button>
+      {/if}
+      <div class='flex gap-2 items-center'>
+        <Switch hideState={true} id='mal-sync-switch' bind:checked={$syncSettings.mal} />
+        <Label for='mal-sync-switch' class='cursor-pointer'>Enable Sync</Label>
       </div>
     </div>
   </div>

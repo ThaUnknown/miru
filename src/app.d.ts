@@ -113,6 +113,7 @@ export interface LibraryEntry {
 
 export interface Native {
   authAL: (url: string) => Promise<AuthResponse>
+  authMAL: (url: string) => Promise<{ code: string, state: string }>
   restart: () => Promise<void>
   openURL: (url: string) => Promise<void>
   share: Navigator['share']
