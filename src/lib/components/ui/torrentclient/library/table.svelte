@@ -71,7 +71,7 @@
     goto('/app/player/')
   }
 
-// TODO
+// TODO once new resolver is implemented
   // $: allIDsPromise = client.multiple($lib.map(e => e.mediaID))
 </script>
 

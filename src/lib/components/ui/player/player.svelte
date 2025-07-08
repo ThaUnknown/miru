@@ -148,8 +148,8 @@
 
   $: fullscreenElement ? screen.orientation.lock('landscape') : screen.orientation.unlock()
 
-  beforeNavigate(() => {
-    if (fullscreenElement) fullscreen()
+  beforeNavigate(({ to }) => {
+    if (fullscreenElement && to?.route.id !== '/app/player') fullscreen()
   })
 
   function checkAudio () {
@@ -827,19 +827,21 @@
           <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
         </div>
       {/if}
-      {#each animations as { type, id } (id)}
-        <div class='absolute animate-pulse-once' on:animationend={() => endAnimation(id)}>
-          {#if type === 'play'}
-            <Play size='64px' fill='white' />
-          {:else if type === 'pause'}
-            <Pause size='64px' fill='white' />
-          {:else if type === 'seekforw'}
-            <FastForward size='64px' fill='white' />
-          {:else if type === 'seekback'}
-            <Rewind size='64px' fill='white' />
-          {/if}
-        </div>
-      {/each}
+      {#if !$settings.minimalPlayerUI}
+        {#each animations as { type, id } (id)}
+          <div class='absolute animate-pulse-once' on:animationend={() => endAnimation(id)}>
+            {#if type === 'play'}
+              <Play size='64px' fill='white' />
+            {:else if type === 'pause'}
+              <Pause size='64px' fill='white' />
+            {:else if type === 'seekforw'}
+              <FastForward size='64px' fill='white' />
+            {:else if type === 'seekback'}
+              <Rewind size='64px' fill='white' />
+            {/if}
+          </div>
+        {/each}
+      {/if}
     </div>
     <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity select:opacity-100' class:opacity-0={immersed}>
       <div class='flex justify-between gap-12 items-end'>

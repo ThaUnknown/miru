@@ -24,7 +24,13 @@
         return createRender(IpCell, { ip: value, seeder: row.original.seeder })
       }
     }),
-    table.column({ accessor: 'client', header: 'Client', id: 'client' }),
+    table.column({
+      accessor: 'client',
+      header: 'Client',
+      id: 'client',
+      // TODO: this needs to be its own component
+      cell: ({ value }) => value.slice(0, 21)
+    }),
     table.column({
       accessor: 'progress',
       header: 'Progress',

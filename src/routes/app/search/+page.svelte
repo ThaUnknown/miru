@@ -184,7 +184,6 @@
 
       trace = res
       search.ids = [...new Set(res.map(r => r.anilist))]
-    // TODO: sort by similarity, finish
     } catch (e) {
       console.error(e)
     }
