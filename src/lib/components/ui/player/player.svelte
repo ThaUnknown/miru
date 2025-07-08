@@ -332,6 +332,12 @@
     if (!isMiniplayer) video.play()
   }
 
+  const interval = setInterval(() => {
+    video.load()
+  }, 10_000)
+
+  $: if (readyState > 0) clearInterval(interval)
+
   let currentSkippable: string | null = null
   function checkSkippableChapters () {
     const current = findChapter(currentTime)
@@ -738,7 +744,7 @@
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
 
 <div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth class:seeking class:pip={pictureInPictureElement} bind:this={wrapper} on:navigate={resetMove}>
-  <video class='w-full h-full' preload='auto' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking || pictureInPictureElement} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
+  <video class='w-full h-full' preload='metadata' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking || pictureInPictureElement} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
     use:createSubtitles
     use:createDeband={$settings.playerDeband}
     use:holdToFF={'pointer'}
