@@ -160,11 +160,18 @@
           {/if}
           <div>{toTS(seekTime)}</div>
         {:then src}
-          <img {src} alt='thumbnail' class='w-40 rounded-lg min-h-10' loading='lazy' decoding='async' />
-          {#if title}
-            <div class='max-w-24 text-ellipsis overflow-clip absolute top-0 bg-white py-1 px-2 rounded-b-lg'>{title}</div>
+          {#if src}
+            <img {src} alt='thumbnail' class='w-40 rounded-lg min-h-10' loading='lazy' decoding='async' />
+            {#if title}
+              <div class='max-w-24 text-ellipsis overflow-clip absolute top-0 bg-white py-1 px-2 rounded-b-lg'>{title}</div>
+            {/if}
+            <div class='absolute bottom-0 bg-white py-1 px-2 rounded-t-lg'>{toTS(seekTime)}</div>
+          {:else}
+            {#if title}
+              <div class='max-w-24 text-ellipsis overflow-clip'>{title}</div>
+            {/if}
+            <div>{toTS(seekTime)}</div>
           {/if}
-          <div class='absolute bottom-0 bg-white py-1 px-2 rounded-t-lg'>{toTS(seekTime)}</div>
         {/await}
       </div>
     </div>

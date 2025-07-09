@@ -304,3 +304,7 @@ export const safefetch = async <T> (_fetch: typeof fetch, ...args: Parameters<ty
 export function arrayEqual <T> (a: T[], b: T[]) {
   return a.length === b.length && a.every((v, i) => v === b[i])
 }
+
+export function nextTick () {
+  return new Promise<void>(resolve => queueMicrotask(resolve))
+}

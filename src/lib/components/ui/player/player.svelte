@@ -791,7 +791,9 @@
       {/if}
       {#if seeking}
         {#await thumbnailer.getThumbnail(seekIndex) then src}
-          <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0 object-contain' loading='lazy' decoding='async' class:!object-cover={fitWidth} />
+          {#if src}
+            <img {src} alt='thumbnail' class='w-full h-full bg-black absolute top-0 right-0 object-contain' loading='lazy' decoding='async' class:!object-cover={fitWidth} />
+          {/if}
         {/await}
       {/if}
       {#if stats}

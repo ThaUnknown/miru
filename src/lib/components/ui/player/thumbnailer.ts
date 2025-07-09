@@ -16,7 +16,7 @@ export default class Thumbnailer {
   src
 
   constructor (src?: string) {
-    this.video.preload = 'none'
+    this.video.preload = 'metadata'
     this.video.playbackRate = 0
     this.video.muted = true
     this.video.crossOrigin = 'anonymous'
@@ -38,19 +38,31 @@ export default class Thumbnailer {
     }, { signal: this.timeUpdateCtrl.signal })
   }
 
+  _nextTask () {
+    this.currentTask = undefined
+    if (this.nextTask) {
+      this.currentTask = this.nextTask
+      this.nextTask = undefined
+      this.currentTask.run()
+    }
+  }
+
   _createTask (index: number): RenderItem {
     const { promise, resolve } = Promise.withResolvers<string | undefined>()
 
     const run = () => {
-      this.video.requestVideoFrameCallback(async (_now, meta) => {
+      const vfc = this.video.requestVideoFrameCallback(async (_now, meta) => {
+        clearTimeout(timeout)
         resolve(await this._paintThumbnail(this.video, index, meta.width, meta.height))
-        this.currentTask = undefined
-        if (this.nextTask) {
-          this.currentTask = this.nextTask
-          this.nextTask = undefined
-          this.currentTask.run()
-        }
+        this._nextTask()
       })
+      const timeout = setTimeout(() => {
+        this.video.cancelVideoFrameCallback(vfc)
+        // this cancels the current load request, in case something bad is happening like long loads or mass seeking
+        this.video.load()
+        resolve(undefined)
+        this._nextTask()
+      }, 3000)
       this.video.currentTime = index * this.interval
     }
 
