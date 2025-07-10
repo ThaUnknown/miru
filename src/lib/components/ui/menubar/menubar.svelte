@@ -5,6 +5,7 @@
 
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
+  import { SUPPORTS } from '$lib/modules/settings'
 
   const debug = persisted('debug', '')
   function tabindex (node: HTMLElement) {
@@ -15,24 +16,26 @@
 
 <svelte:document bind:fullscreenElement />
 
-<Wrapper let:platform>
-  <div class='w-[calc(100%-3.5rem)] left-[3.5rem] top-0 z-[2000] flex navbar absolute h-8'>
-    <div class='w-full {fullscreenElement ? 'not-draggable' : 'draggable'}' />
-    {#if platform !== 'macOS'}
-      <div class='window-controls not-draggable flex text-white backdrop-blur'>
-        <button class='max-button flex items-center justify-center h-8 w-[46px]' use:click={native.minimise} use:tabindex>
-          <svg class='svg-controls w-3 h-3' role='img' viewBox='0 0 12 12'><rect fill='currentColor' height='1' width='10' x='1' y='6' />
-        </button>
-        <button class='restore-button flex items-center justify-center h-8 w-[46px]' use:click={native.maximise} use:tabindex>
-          <svg class='svg-controls w-3 h-3' role='img' viewBox='0 0 12 12'><rect fill='none' height='9' stroke='currentColor' width='9' x='1.5' y='1.5' />
-        </button>
-        <button class='close-button flex items-center justify-center h-8 w-[46px]' use:click={native.close} use:tabindex>
-          <svg class='svg-controls w-3 h-3' role='img' viewBox='0 0 12 12'><polygon fill='currentColor' fill-rule='evenodd' points='11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1' />
-        </button>
-      </div>
-    {/if}
-  </div>
-</Wrapper>
+{#if !SUPPORTS.isAndroid}
+  <Wrapper let:platform>
+    <div class='w-[calc(100%-3.5rem)] left-[3.5rem] top-0 z-[2000] flex navbar absolute h-8'>
+      <div class='w-full {fullscreenElement ? 'not-draggable' : 'draggable'}' />
+      {#if platform !== 'macOS'}
+        <div class='window-controls not-draggable flex text-white backdrop-blur'>
+          <button class='max-button flex items-center justify-center h-8 w-[46px]' use:click={native.minimise} use:tabindex>
+            <svg class='svg-controls w-3 h-3' role='img' viewBox='0 0 12 12'><rect fill='currentColor' height='1' width='10' x='1' y='6' />
+          </button>
+          <button class='restore-button flex items-center justify-center h-8 w-[46px]' use:click={native.maximise} use:tabindex>
+            <svg class='svg-controls w-3 h-3' role='img' viewBox='0 0 12 12'><rect fill='none' height='9' stroke='currentColor' width='9' x='1.5' y='1.5' />
+          </button>
+          <button class='close-button flex items-center justify-center h-8 w-[46px]' use:click={native.close} use:tabindex>
+            <svg class='svg-controls w-3 h-3' role='img' viewBox='0 0 12 12'><polygon fill='currentColor' fill-rule='evenodd' points='11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1' />
+          </button>
+        </div>
+      {/if}
+    </div>
+  </Wrapper>
+{/if}
 {#if $debug}
   <div class='ribbon z-[1000] text-center fixed font-bold pointer-events-none'>Debug Mode!</div>
 {/if}
