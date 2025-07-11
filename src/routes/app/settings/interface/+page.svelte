@@ -56,8 +56,10 @@
     <SettingCard title='Idle Animation' description='Enable/Disable the 3d idle animation. Changing this setting will restart the app.' let:id>
       <Switch bind:checked={$settings.idleAnimation} on:click={native.restart} {id} />
     </SettingCard>
-    <SettingCard title='UI Scale' description='Change the zoom level of the interface.' let:id>
-      <Input type='number' inputmode='numeric' pattern='[0-9]*' min='0' max='65536' bind:value={$settings.uiScale} {id} class='w-32 shrink-0 bg-background' />
-    </SettingCard>
+  {:else}
+    <div class='font-weight-bold text-xl font-bold'>UI Settings</div>
   {/if}
+  <SettingCard title='UI Scale' description='Change the zoom level of the interface.' let:id>
+    <Input type='number' inputmode='numeric' pattern='[0-9]*' min='0' max='65536' bind:value={$settings.uiScale} {id} class='w-32 shrink-0 bg-background' />
+  </SettingCard>
 </div>
